@@ -269,9 +269,10 @@ New CIPs may be accepted with the following licenses. Each new CIP must identify
 
 #### Recommended license
 
-- Apache-2.0: [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
-- CC-BY-4.0: [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode)
+- for Software (for code): Apache-2.0: [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+- for documentation: CC-BY-4.0: [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode)
 
+Example: This file is documentation, and therefore subject to CC-BY-4.0 (and not subject to Apache 2.0).
 
 #### Unacceptable licenses
 
