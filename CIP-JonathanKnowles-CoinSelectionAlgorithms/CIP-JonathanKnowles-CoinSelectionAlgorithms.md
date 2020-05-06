@@ -1,13 +1,13 @@
-```
-CIP:           ?
-Title:         Coin Selection Algorithms for Cardano
-Author:        Jonathan Knowles <jonathan.knowles@iohk.io>
-Comments-URI:  ?
-Status:        Draft
-Type:          Informational
-Created:       2020-05-04
-License:       CC-BY-4.0
-```
+---
+CIP: ?
+Title: Coin Selection Algorithms for Cardano
+Author: Jonathan Knowles <jonathan.knowles@iohk.io>
+Comments-URI: ?
+Status: Draft
+Type: Informational
+Created: 2020-05-04
+License: CC-BY-4.0
+---
 
 # Abstract
 
