@@ -2,7 +2,7 @@
 CIP: 4
 Title: Wallet Checksums
 Authors: Ruslan Dudin <ruslan@emurgo.io>, Sebastien Guillemot <sebastien@emurgo.io>
-Comments-URI: https://github.com/Emurgo/EmIPs/pull/1
+Comments-URI: https://forum.cardano.org/t/cip4-wallet-checksum/32819
 Status: Draft
 Type: Standards
 Created: 2019-05-01
@@ -83,7 +83,7 @@ This alphabet satisfies the following requirements:
 The last two bytes are compressed to a 4-digit number. For this we will simply take the last 4 digits of the 16-bit integer number constructed from 2 bytes as `((A << 8) + B) % 10000` (zero-padded).
 
 This above produces 10000 unique values across all possible values of A and B and giving maximum of 7 potential collisions per value and 6.5 average collisions per value, which is the minimum, given the fact that we reduce maximum potential number 65025 to 4 digits.
-**Note**: resulting number is also zero-padded to 4 digits.
+**Note**: resulting number is zero-padded to 4 digits.
 
 ### ImagePart rationale
 
@@ -92,7 +92,7 @@ For the image, we take the result of `hash1` and use it as the seed for the [blo
 This library in particular has the following benefits:
 
 - Has been audited
-- Used by other blockchains which and therefore has common libraries for implementation
+- Used by other blockchains and therefore has common libraries for implementation
 
 **Note**: This library internally re-hashes its input to a 128-bit entropy string
 
@@ -121,7 +121,7 @@ Instead, we replace it with [FNV-1a](https://tools.ietf.org/html/draft-eastlake-
 
 ### When no public key is present
 
-Note that a different construction is needed for wallet types which do not have a public key (such as a balance tracking application which simply manages a set of addresses). Simply hashing the set of addresses used is possible, but it means that adding & removing an address would change the checksum (possibly unintuitive). Since the checksum is meant to represent the wallet itself, we also cannot run a checksum on the name or any other user-inputted data.
+Note that a different construction is needed for wallet types which do not have a public key (such as a balance tracking application which simply manages a set of addresses). In the blanace tracking case, simply hashing the set of addresses used is possible, but it means that adding & removing an address would change the checksum (possibly unintuitive). Since the checksum is meant to represent the wallet itself, we also cannot run a checksum on the name of the wallet or any other user-inputted data.
 
 ## Reference implementation
 
