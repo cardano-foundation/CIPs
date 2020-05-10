@@ -112,7 +112,7 @@ master key: 309c18090ec559d4c8e377b9b19b84804a4fc430e862ef99d97f1cceccad124d92d7
 
 #### Icarus
 
-Icarus master key generation style supports setting an extra password as an arbitrary byte array of any size. This password acts as a second factor applied to cryptographic key retrieval. When the seed comes from an encoded recovery phrase, the password can therefore be used to add extra protection in case where the recovery phrase were to be exposed.
+Icarus master key generation style supports setting an extra passphrase as an arbitrary byte array of any size (sometimes called a *mnemonic password*). This passphrase acts as a second factor applied to cryptographic key retrieval. When the seed comes from an encoded recovery phrase, the password can therefore be used to add extra protection in case where the recovery phrase were to be exposed.
 
 ```js
 function generateMasterKey(seed, password) {
@@ -160,14 +160,22 @@ When used < 24 words, the algorithm is the same as **Icarus**
 
 When using 24 words, **TODO**
 
-*Note*: Trezor also allows users to set an additional [passphrase](https://wiki.trezor.io/Passphrase)
+*Note*: Trezor also allows users to set an additional [passphrase](https://wiki.trezor.io/Passphrase) that works exactly the same as Icarus passphrase
 
 ##### Test vectors
 
 **TODO**: test vector for 24 words
 
-**TODO**: test vector with passphrase
+```
+mnemonic: lyrics tray aunt muffin brisk ensure wedding cereal capital path replace weasel
+master key: 5090a48c7fee4b626d5cfbf3ba73ed7ac6795b7b45ef3074af0a3528bb65d9403a539c78269390152b07df045bafc0e143c79e0d535d94548efc3e6fa1e3c46a59e5e734208bab469d62ac79a75bda673b522940db70020f7984e61a8356e0e1
+```
 
+```
+mnemonic: lyrics tray aunt muffin brisk ensure wedding cereal capital path replace weasel
+passphrase: foo (as utf8 bytes)
+master key: 88bed8fac19c2c59a7046fb6d11c4da0477de888a02b1da28d021e272cbf4e5b8867381e85b74d00b0ab1df769683f60f9ed7c991ac8e62c8af8421b8e5f032830a6180f890f4b80fa5f565cda4f17db34c9c22d63e5c173a11b1ad1be0279fa
+```
 
 #### Ledger
 
