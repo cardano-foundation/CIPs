@@ -970,13 +970,18 @@ are available in the following languages:
 
 ## Self Organisation in Coin Selection
 
-This article analyses the performance of various coin selection algorithms in
-relation to dust minimisation and the maintenance of healthy UTxO sets over
-time, giving an experimental basis to this analysis. It highlights several
-principles of self-organisation that inform the design of effective coin
-selection algorithms.
-
-https://cardanofoundation.org/en/news/self-organisation-in-coin-selection/
+> | **Title** | Self Organisation in Coin Selection |
+> |:--|:--|
+> | **Author** | [Edsko de Vries](http://www.edsko.net/) |
+> | **Year** | 2018 |
+> | **Location** | https://cardanofoundation.org/en/news/self-organisation-in-coin-selection/ |
+>
+> This article introduces the [Random-Improve](#random-improve) coin selection
+> algorithm, invented by [Edsko de Vries](http://www.edsko.net/).
+>
+> It describes the three principles of self-organisation that inform the
+> algorithm's design, and provides experimental evidence to demonstrate the
+> algorithm's effectiveness at maintaining healthy UTxO sets over time.
 
 # Copyright
 
