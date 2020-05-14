@@ -33,9 +33,22 @@ step-by-step descriptions of the computations involved.
 The [Reference Implementations](#reference-implementations) section provides
 links to reference implementations of each algorithm in various languages.
 
+# Motivation
+
+This document was written to help people gain an understanding of the coin
+selection algorithms used in Cardano, without having to read through and
+understand Cardano source code.
+
+We aim to provide descriptions of algorithms that are understandable for people
+unfamiliar with coin selection, and precise enough for software engineers to be
+able to reimplement these algorithms in their preferred programming languages.
+
+Where appropriate, we also provide mathematical descriptions, for added clarity.
+
 # Contents
 
 * [Abstract](#abstract)
+* [Motivation](#motivation)
 * [Background](#background)
   * [What is Coin Selection?](#what-is-coin-selection)
     * [Coin Selection in the Physical World](#coin-selection-in-the-physical-world)
