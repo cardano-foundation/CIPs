@@ -75,14 +75,14 @@ For letters, we render the bytes in hex, but replace the alphanumeric used in he
 This alphabet satisfies the following requirements:
 
 1) Has exactly 16 letters (one-to-one mapping with 2 bytes in HEX)
-1) No contained characters that look too much like each other
+1) Does not contain characters that look too much like each other
 1) Minimizes occurrences of undesirable words in [this list](https://www.noswearing.com/fourletterwords.php).
 
 #### Number part
 
 The last two bytes are compressed to a 4-digit number. For this we will simply take the last 4 digits of the 16-bit integer number constructed from 2 bytes as `((A << 8) + B) % 10000` (zero-padded).
 
-This above produces 10000 unique values across all possible values of A and B and giving maximum of 7 potential collisions per value and 6.5 average collisions per value, which is the minimum, given the fact that we reduce maximum potential number 65025 to 4 digits.
+This above produces 10000 unique values across all possible values of A and B and giving maximum of 7 potential collisions per value and 6.5 average collisions per value, which is the minimum, given the fact that we reduce maximum potential number 65536 to 4 digits.
 **Note**: resulting number is zero-padded to 4 digits.
 
 ### ImagePart rationale
@@ -121,7 +121,7 @@ Instead, we replace it with [FNV-1a](https://tools.ietf.org/html/draft-eastlake-
 
 ### When no public key is present
 
-Note that a different construction is needed for wallet types which do not have a public key (such as a balance tracking application which simply manages a set of addresses). In the blanace tracking case, simply hashing the set of addresses used is possible, but it means that adding & removing an address would change the checksum (possibly unintuitive). Since the checksum is meant to represent the wallet itself, we also cannot run a checksum on the name of the wallet or any other user-inputted data.
+Note that a different construction is needed for wallet types which do not have a public key (such as a balance tracking application which simply manages a set of addresses). In the balanace tracking case, simply hashing the set of addresses used is possible, but it means that adding & removing an address would change the checksum (possibly unintuitive). Since the checksum is meant to represent the wallet itself, we also cannot run a checksum on the name of the wallet or any other user-inputted data.
 
 ## Reference implementation
 
