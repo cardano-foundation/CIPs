@@ -15,16 +15,16 @@
 
 @media (prefers-color-scheme: light) {
 	:root {
-		--nc-tx-1: #ffffff;
-		--nc-tx-2: #eeeeee;
-		--nc-bg-1: #000000;
-		--nc-bg-2: #111111;
-		--nc-bg-3: #222222;
+		--nc-tx-1: #000000;
+		--nc-tx-2: #111111;
+		--nc-bg-1: #ffffff;
+		--nc-bg-2: #eeeeee;
+		--nc-bg-3: #dddddd;
 		--nc-lk-1: #3291FF;
 		--nc-lk-2: #0070F3;
-		--nc-lk-tx: #FFFFFF;
+		--nc-lk-tx: #000000;
 		--nc-ac-1: #7928CA;
-		--nc-ac-tx: #FFFFFF;
+		--nc-ac-tx: #000000;
 	}
 }
 
