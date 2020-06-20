@@ -4,7 +4,7 @@ Title: CIP process
 Authors: Frederic Johnson <frederic.johnson@cardanofoundation.org>, Sebastien Guillemot <sebastien@emurgo.io>, Matthias Benkort <matthias.benkort@iohk.io>, Duncan Coutts <duncan.coutts@iohk.io>
 Comments-Summary: No comments yet.
 Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-0001
-Status: Proposed
+Status: Active
 Type: Process
 Created: 2020-03-21
 License: CC-BY-4.0
