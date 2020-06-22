@@ -1,0 +1,22 @@
+{
+  "name": "quick-and-nasty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./scripts/build.js",
+    "serve": "node ./scripts/serve.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "gray-matter": "^4.0.2",
+    "handlebars": "^4.7.6",
+    "handlebars-dateformat": "^1.1.1",
+    "moment": "^2.26.0",
+    "rimraf": "^3.0.2",
+    "showdown": "^1.9.1"
+  }
+}
