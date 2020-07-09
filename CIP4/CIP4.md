@@ -125,7 +125,7 @@ Note that a different construction is needed for wallet types which do not have 
 
 ## Reference implementation
 
-- [Javascript implementation]([https://github.com/Emurgo/CIP4]) (contains test vectors)
+- [Javascript implementation](https://github.com/Emurgo/CIP4) (contains test vectors)
 
 ## Copyright
 
