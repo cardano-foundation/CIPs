@@ -2,7 +2,7 @@
 CIP: 5
 Title: Common Bech32 Prefixes 
 Authors: Matthias Benkort <matthias.benkort@iohk.io>
-Comments-URI: TODO
+Comments-URI: https://forum.cardano.org/t/cip5-common-bech32-prefixes/35189
 Status: Draft
 Type: Standards
 Created: 2020-05-28
@@ -23,14 +23,27 @@ Therefore, we can leverage bech32 for binary data encoding, with a set of common
 
 We define the following set of common prefixes with their corresponding semantic. Any software willing to represent binary data in a human-friendly way should abide by these guidelines. Should a data-type be missing, we encourage developers to update this CIP and register a new prefix. 
 
-| Prefix       | Semantic                        |
-| ---          | ---                             |
-| `addr`       | Mainnet address                 |
-| `addr_test`  | Testnet address                 |
-| `stake`      | Mainnet stake address           |
-| `stake_test` | Testnet stake address           |
-| `xprv`       | An Ed25519 extended private key |
-| `xpub`       | An Ed25519 extended public key  |
+| Prefix           | Semantic                                |
+| ---              | ---                                     |
+| `addr_vk`        | Address verification key                |
+| `addr_sk`        | Address signing key                     |
+| `addr_xvk`       | Address extended verification key       |
+| `addr_xsk`       | Address extended secret key             |
+| `addr`           | Mainnet address                         |
+| `addr_test`      | Testnet address                         |
+| `stake_addr_vk`  | Stake address verification key          |
+| `stake_addr_sk`  | Stake address signing key               |
+| `stake_addr_xvk` | Stake address extended verification key |
+| `stake_addr_xsk` | Stake address extended signing key      |
+| `stake`          | Mainnet stake address                   |
+| `stake_test`     | Testnet stake address                   |
+| `pool`           | Pool Id                                 |
+| `pool_vk`        | Pool operator verification key          |
+| `pool_sk`        | Pool operator signing key               |
+| `kes_vk`         | KES verification key                    |
+| `kes_sk`         | KES signing key                         |
+| `vrf_vk`         | VRF verification key                    |
+| `vrf_sk`         | VRF signing key                         |
 
 ## Rationale
 
@@ -49,6 +62,14 @@ Addresses probably are the most user-facing object in the current Cardano eco-sy
 #### About `stake` 
 
 Stake _addresses_ are references to reward account. They are used in many manipulation involving rewards (registering stake key, delegating, fetching reward balance etc..). We therefore make it a "first-class" object and assign it a dedicated prefix.
+
+#### About `sk` & `vk`
+
+Both are rather transparent abbreviations for **s**igning **k**ey and **v**erification **k**ey.
+
+#### About `xsk` & `xvk`
+
+The prefix `x` is typically used in cryptography to refer to e**x**tended keys (e.g. `xpub`, `xprv` ...). Following this convention, we prefix `sk` and `vk` as such when they refer to extended keys.
 
 ## Backwards compatibility
 
