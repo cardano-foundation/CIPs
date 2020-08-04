@@ -16,6 +16,46 @@ algorithms used by [Cardano
 Wallet](https://github.com/input-output-hk/cardano-wallet/) and other parts of
 the Cardano ecosystem.
 
+In the context of this article, **coin selection** refers to the process of
+choosing _unspent coins_ from a wallet (or [UTxO set](#utxo-set)) in order to
+pay money to one or more recipients.
+
+# Motivation
+
+This document was written to help people gain an understanding of the coin
+selection algorithms used in Cardano _without_ having to read through and
+understand Cardano source code.
+
+We aim to provide descriptions of algorithms that:
+
+  - don't require prior experience with any particular programming language;
+  - are understandable for people who are unfamiliar with coin selection;
+  - are precise enough for software engineers to be able to reimplement these
+    algorithms in their preferred programming languages.
+
+Where appropriate, we also provide mathematical descriptions, for added clarity.
+
+# Scope
+
+Coin selection is a large, complex topic, with many difficult problems to
+solve. However, all software that performs coin selection must ultimately deal
+with at least the following pair of problems:
+
+  - How to _generate_ a coin selection, by choosing unspent coins from a wallet
+    (or [UTxO set](#utxo-set)) in order to pay money to one or more
+    recipients.
+  - How to _adjust_ a coin selection in order to pay for a _network fee_, so
+    that the coin selection can be published as a transaction on the
+    blockchain.
+
+This article concerns itself with the _former_ problem of _how to generate_ a
+coin selection.
+
+Problems relating to network fees, and how to adjust coin selections to pay for
+such fees, are outside the scope of this article.
+
+# Structure
+
 The [Background](#background) section introduces the fundamental concepts
 behind coin selection, provides a discussion of why coin selection is
 a non-trivial problem, and describes the goals of coin selection algorithms.
@@ -33,22 +73,12 @@ step-by-step descriptions of the computations involved.
 The [Reference Implementations](#reference-implementations) section provides
 links to reference implementations of each algorithm in various languages.
 
-# Motivation
-
-This document was written to help people gain an understanding of the coin
-selection algorithms used in Cardano, without having to read through and
-understand Cardano source code.
-
-We aim to provide descriptions of algorithms that are understandable for people
-unfamiliar with coin selection, and precise enough for software engineers to be
-able to reimplement these algorithms in their preferred programming languages.
-
-Where appropriate, we also provide mathematical descriptions, for added clarity.
-
 # Contents
 
 * [Abstract](#abstract)
 * [Motivation](#motivation)
+* [Scope](#scope)
+* [Structure](#structure)
 * [Background](#background)
   * [What is Coin Selection?](#what-is-coin-selection)
     * [Coin Selection in the Physical World](#coin-selection-in-the-physical-world)
