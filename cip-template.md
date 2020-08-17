@@ -1,7 +1,7 @@
 ---
 CIP: <CIP number, or "?" before being assigned>  
 Title: <CIP title; maximum 44 characters>  
-Author: <list of authors' real names and email address>  
+Authors: <list of authors' real names and email address>  
 Discussions-To: <URL or email address>  
 Comments-Summary: <summary tone>  
 Comments-URI: <links to wiki page for comments>  
