@@ -1,7 +1,7 @@
 ---
 CIP: 2
 Title: Coin Selection Algorithms for Cardano
-Author: Jonathan Knowles <jonathan.knowles@iohk.io>
+Authors: Jonathan Knowles <jonathan.knowles@iohk.io>
 Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-0002
 Status: Draft
 Type: Informational
