@@ -62,7 +62,7 @@ If you have an idea you would like to propose, first search through previously p
 <details>
   <summary>2. Post a draft to the forum; engage with the community.</summary>
 
-When enough of an engaged conversation has taken place and the idea resonates with some, prepare a draft of your proposal. The draft proposal should be posted to the [Cardano CIPs forum](https://forum.cardano.org/c/developers/cips). 
+When enough of an engaged conversation has taken place and the idea resonates with some, prepare a draft of your proposal. The draft proposal should be posted to the [Cardano CIPs forum](https://forum.cardano.org/c/developers/cips/122). 
 This provides formal visibility beyond the original discussion, and helps the author(s) clarify details of the proposal as it is circulated more widely. 
 Because the author or authors are responsible for collecting and summarizing community feedback in the next phase, long open-ended discussions should be avoided when creating the initial draft. Consider accepting private comments during the early design phases, setting up a wiki page, GitHub repository, or some other method to keep the discussion focused.
 </details>
