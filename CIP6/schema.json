@@ -55,24 +55,16 @@
                 },
                 "rss": "https://mycoolpool.com/xml/poolrss.xml"
             },
-            "pools": [
-                {
-                    "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                    "country": "UK",
-                    "os": "LINUX",
-                    "infrastructure": "AWS",
-                    "status": "act",
-                    "saturated_recommend": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                },
-                {
-                    "id": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                    "country": "UK",
-                    "os": "LINUX",
-                    "infrastructure": "AWS",
-                    "status": "act",
-                    "saturated_recommend": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                }
-            ]
+            "pool": {
+                "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "country": "UK",
+                "os": "LINUX",
+                "infrastructure": "AWS",
+                "status": "act",
+                "saturated_recommend": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+            }
+
+
         }
     ],
     "required": [
@@ -324,7 +316,8 @@
                     "examples": [
                         {
                             "abuse": "abuse@pooldomain.org",
-                            "support": "help@pooldomain.org"
+                            "support": "help@pooldomain.org",
+                            "telegram_admin":"coolpool"
                         }
                     ],
 
@@ -344,6 +337,15 @@
                                 "help@pooldomain.org"
                             ],
                             "title": "Support Contact Email"
+                        },
+                        "telegram_admin": {
+                            "default": "",
+                            "description": "The administrator telegram contact handle",
+                            "examples": [
+                                "coolpool"
+                            ],
+                            "title": "he administrator telegram contact handle"
+
                         }
                     },
                     "additionalProperties": true
@@ -559,139 +561,108 @@
             },
             "additionalProperties": true
         },
-        "pools": {
+        "pool": {
             "$id": "#/properties/pools",
-            "type": "array",
-            "title": "Pool List",
-            "description": "Long Description.",
-            "default": [],
+            "type": "object",
+            "title": "Pool Details",
+            "description": "All pool details.",
+            "default": {},
             "examples": [
-                [
-                    {
-                        "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                        "country": "UK",
-                        "os": "LINUX",
-                        "infrastructure": "AWS",
-                        "status": "act",
-                        "saturated_recommend": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                    },
-                    {
-                        "id": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                        "country": "UK",
-                        "os": "LINUX",
-                        "infrastructure": "AWS",
-                        "status": "act",
-                        "saturated_recommend": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                    }
-                ]
+                {
+                    "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                    "country": "UK",
+                    "os": "LINUX",
+                    "infrastructure": "AWS",
+                    "status": "act",
+                    "saturated_recommend": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+                }
+
             ],
-            "additionalItems": true,
-            "items": {
-                "$id": "#/properties/pools/items",
-                "anyOf": [
-                    {
-                        "$id": "#/properties/pools/items/anyOf/0",
-                        "type": "object",
-                        "title": "Pool",
-                        "description": "",
-                        "default": {},
-                        "examples": [
-                            {
-                                "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                                "country": "UK",
-                                "os": "LINUX",
-                                "infrastructure": "AWS",
-                                "status": "act",
-                                "saturated_recommend": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                            }
-                        ],
-                        "required": [
-                            "id"
-                        ],
-                        "properties": {
-                            "id": {
-                                "$id": "#/properties/pools/items/anyOf/0/properties/id",
-                                "type": "string",
-                                "title": "The poolid",
-                                "description": "Valid Mainnet Pool Id (hex format)",
-                                "default": "",
-                                "examples": [
-                                    "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                                ]
-                            },
-                            "country": {
-                                "$id": "#/properties/pools/items/anyOf/0/properties/country",
-                                "type": "string",
-                                "title": "Pool country",
-                                "description": "ISO 3166-2 2-letter country code",
-                                "default": "",
-                                "examples": [
-                                    "UK"
-                                ]
-                            },
-                            "os": {
-                                "$id": "#/properties/pools/items/anyOf/0/properties/os",
-                                "type": "string",
-                                "title": "Pool Operating System",
-                                "description": "Pool Operating System",
-                                "default": "",
-                                "examples": [
-                                    "LINUX",
-                                    "OSX",
-                                    "WIN",
-                                    "FREEBSD",
-                                    "UNDISCLOSED"
-                                ]
-                            },
-                            "infrastructure": {
-                                "$id": "#/properties/pools/items/anyOf/0/properties/infrastructure",
-                                "type": "string",
-                                "title": "Pool Infrastructure",
-                                "description": "Pool infrastructure Platform",
-                                "default": "",
-                                "examples": [
-                                    "AWS",
-                                    "GOOGLE",
-                                    "AZURE",
-                                    "DIGITALOCEAN",
-                                    "BAREMETALL",
-                                    "BAREMETALH",
-                                    "OVH",
-                                    "HETZNER",
-                                    "VULTR",
-                                    "GODADDY",
-                                    "ARUBA",
-                                    "HOSTINGER",
-                                    "OTHERVPS",
-                                    "LPCSBC",
-                                    "UNDISCLOSED"
-                                ]
-                            },
-                            "status": {
-                                "$id": "#/properties/pools/items/anyOf/0/properties/status",
-                                "type": "string",
-                                "title": "Pool Status",
-                                "description": "Pool Current Status",
-                                "default": "",
-                                "examples": [
-                                    "ACT","RET","OFF","EXP","DNU"
-                                ]
-                            },
-                            "saturated_recommend": {
-                                "$id": "#/properties/pools/items/anyOf/0/properties/saturated_recommend",
-                                "type": "string",
-                                "title": "Saturated Recommend",
-                                "description": "If the pool is saturated recommend this pool",
-                                "default": "",
-                                "examples": [
-                                    "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                                ]
-                            }
-                        },
-                        "additionalProperties": true
-                    }
-                ]
-            }
+            "required": [
+                "id"
+            ],
+
+            "properties": {
+                "id": {
+                    "$id": "#/properties/pools/items/anyOf/0/properties/id",
+                    "type": "string",
+                    "title": "The poolid",
+                    "description": "Valid Mainnet Pool Id (hex format)",
+                    "default": "",
+                    "examples": [
+                        "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+                    ]
+                },
+                "country": {
+                    "$id": "#/properties/pools/items/anyOf/0/properties/country",
+                    "type": "string",
+                    "title": "Pool country",
+                    "description": "ISO 3166-2 2-letter country code",
+                    "default": "",
+                    "examples": [
+                        "UK"
+                    ]
+                },
+                "os": {
+                    "$id": "#/properties/pools/items/anyOf/0/properties/os",
+                    "type": "string",
+                    "title": "Pool Operating System",
+                    "description": "Pool Operating System",
+                    "default": "",
+                    "examples": [
+                        "LINUX",
+                        "OSX",
+                        "WIN",
+                        "FREEBSD",
+                        "UNDISCLOSED"
+                    ]
+                },
+                "infrastructure": {
+                    "$id": "#/properties/pools/items/anyOf/0/properties/infrastructure",
+                    "type": "string",
+                    "title": "Pool Infrastructure",
+                    "description": "Pool infrastructure Platform",
+                    "default": "",
+                    "examples": [
+                        "AWS",
+                        "GOOGLE",
+                        "AZURE",
+                        "DIGITALOCEAN",
+                        "BAREMETALL",
+                        "BAREMETALH",
+                        "OVH",
+                        "HETZNER",
+                        "VULTR",
+                        "GODADDY",
+                        "ARUBA",
+                        "HOSTINGER",
+                        "OTHERVPS",
+                        "LPCSBC",
+                        "UNDISCLOSED"
+                    ]
+                },
+                "status": {
+                    "$id": "#/properties/pools/items/anyOf/0/properties/status",
+                    "type": "string",
+                    "title": "Pool Status",
+                    "description": "Pool Current Status",
+                    "default": "",
+                    "examples": [
+                        "ACT","RET","OFF","EXP","DNU"
+                    ]
+                },
+                "saturated_recommend": {
+                    "$id": "#/properties/pools/items/anyOf/0/properties/saturated_recommend",
+                    "type": "string",
+                    "title": "Saturated Recommend",
+                    "description": "If the pool is saturated recommend this pool",
+                    "default": "",
+                    "examples": [
+                        "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+                    ]
+                }
+            },
+            "additionalProperties": true
         }
     },
     "additionalProperties": true

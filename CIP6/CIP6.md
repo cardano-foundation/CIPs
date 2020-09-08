@@ -6,7 +6,7 @@ Comments-URI:
 Status: Draft
 Type: Standards
 Created: 2020-07-20
-License: Apache-2.0
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -79,7 +79,8 @@ The purpose of this first (**itn**) extension is the verifiable linking of an IT
         },
         "contact": {
             "abuse": "abuse@pooldomain.org",
-            "support": "help@pooldomain.org"
+            "support": "help@pooldomain.org",
+            "telegram_admin":"coolpool"
         },
         "company": {
             "name": "Company Name",
@@ -104,23 +105,15 @@ The purpose of this first (**itn**) extension is the verifiable linking of an IT
         },
         "rss": "https://mycoolpool.com/xml/poolrss.xml"
     },
-    "pools": [{
-            "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-            "country": "UK",
-            "os": "LINUX",
-            "infrastructure": "AWS",
-            "status": "act",
-            "saturated_recommend":"0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-        },
-        {
-            "id": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-            "country": "UK",
-            "os": "LINUX",
-            "infrastructure": "AWS",
-            "status": "act",
-            "saturated_recommend":"0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-        }
-    ]
+    "pool": {
+        "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "country": "UK",
+        "os": "LINUX",
+        "infrastructure": "AWS",
+        "status": "act",
+        "saturated_recommend":"0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+    }
+
 }
 ```
 
@@ -180,4 +173,4 @@ N/A
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0.
+This file is documentation, and therefore subject to CC-BY-4.0 (and not subject to Apache 2.0).
