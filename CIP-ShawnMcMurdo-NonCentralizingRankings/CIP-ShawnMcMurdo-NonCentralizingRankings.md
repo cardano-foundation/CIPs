@@ -32,13 +32,13 @@ There are two main reasons for changing the current ranking methodology:
 
 This is a modification of the ranking methodology defined in section 5.6 Non-Myopic Utility of “Shelley Ledger: Delegation/Incentives Design Spec. (SL-D1 v.1.20, 2020/07/06)” as follows:
 
-1. Remove the follosing statement from section 5.6:
+1. Remove the following statement from section 5.6:
 
 "The idea is to first rank all pools by “desirability”, to then assume that the k most desirable
 pools will eventually be saturated, whereas all other pools will lose all their members, then to
 finally base all reward calculations on these assumptions."
 
-2. Remove the follosing statement from section 5.6.1:
+2. Remove the following statement from section 5.6.1:
 
 "We predict that pools with rank ≤ k will eventually be saturated, whereas pools with rank
 > k will lose all members and only consist of the owner(s)."
@@ -85,7 +85,7 @@ It will also bring the rankings more in line with the general Cardano principle 
 
 ## Backward Compatibility
 
-This proposal is not backwards compatible with the current ranking system.
+This proposal does not break backwards compatability because it is an offchain change.
 
 ## Implementations
 
