@@ -998,7 +998,7 @@ available in the following languages:
 
 | _Language_ | _Documentation_ | _Source_ |
 | -- | -- | -- |
-| **Haskell** | [Documentation](https://input-output-hk.github.io/cardano-coin-selection/haddock/cardano-coin-selection-1.0.0/Cardano-CoinSelection-Algorithm-LargestFirst.html) | [Source](https://input-output-hk.github.io/cardano-coin-selection/haddock/cardano-coin-selection-1.0.0/src/Cardano.CoinSelection.Algorithm.LargestFirst.html) |
+| **Haskell** | [Documentation](https://hackage.haskell.org/package/cardano-coin-selection/docs/Cardano-CoinSelection-Algorithm-LargestFirst.html) | [Source](https://hackage.haskell.org/package/cardano-coin-selection/docs/src/Cardano.CoinSelection.Algorithm.LargestFirst.html) |
 
 ## Random-Improve
 
@@ -1007,7 +1007,7 @@ are available in the following languages:
 
 | _Language_ | _Documentation_ | _Source_ |
 | -- | -- | -- |
-| **Haskell** | [Documentation](https://input-output-hk.github.io/cardano-coin-selection/haddock/cardano-coin-selection-1.0.0/Cardano-CoinSelection-Algorithm-RandomImprove.html) | [Source](https://input-output-hk.github.io/cardano-coin-selection/haddock/cardano-coin-selection-1.0.0/src/Cardano.CoinSelection.Algorithm.RandomImprove.html) |
+| **Haskell** | [Documentation](https://hackage.haskell.org/package/cardano-coin-selection/docs/Cardano-CoinSelection-Algorithm-RandomImprove.html) | [Source](https://hackage.haskell.org/package/cardano-coin-selection/docs/src/Cardano.CoinSelection.Algorithm.RandomImprove.html) |
 
 # External Resources
 
