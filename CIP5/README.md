@@ -1,6 +1,6 @@
 ---
 CIP: 5
-Title: Common Bech32 Prefixes 
+Title: Common Bech32 Prefixes
 Authors: Matthias Benkort <matthias.benkort@iohk.io>
 Comments-URI: https://forum.cardano.org/t/cip5-common-bech32-prefixes/35189
 Status: Draft
@@ -15,20 +15,20 @@ This CIP defines a set of common prefixes (or so-called human-readable part in t
 
 ## Motivation
 
-Many tools used within the Cardano eco-system are manipulating binary data. Binary data are typically encoded as hexadecimal text strings when shown in a user interface (might it be a console, a url or a structured document from a server). From the user perspective, it can be difficult to distinguish between various encoded data. From the tools developer perspective, it can also be difficult to validate inputs based only on raw bytes (in particular when encoded data often have the same length). 
+Many tools used within the Cardano eco-system are manipulating binary data. Binary data are typically encoded as hexadecimal text strings when shown in a user interface (might it be a console, a url or a structured document from a server). From the user perspective, it can be difficult to distinguish between various encoded data. From the tools developer perspective, it can also be difficult to validate inputs based only on raw bytes (in particular when encoded data often have the same length).
 
-Therefore, we can leverage bech32 for binary data encoding, with a set of common prefixes that can be used across tools and software to disambiguate payloads. 
+Therefore, we can leverage bech32 for binary data encoding, with a set of common prefixes that can be used across tools and software to disambiguate payloads.
 
 ## Specification
 
-We define the following set of common prefixes with their corresponding semantic. Any software willing to represent binary data in a human-friendly way should abide by these guidelines. Should a data-type be missing, we encourage developers to update this CIP and register a new prefix. 
+We define the following set of common prefixes with their corresponding semantic. Any software willing to represent binary data in a human-friendly way should abide by these guidelines. Should a data-type be missing, we encourage developers to update this CIP and register a new prefix.
 
 | Prefix       | Semantic                                |
 | ---          | ---                                     |
 | `addr_vk`    | Address verification key                |
 | `addr_sk`    | Address signing key                     |
 | `addr_xvk`   | Address extended verification key       |
-| `addr_xsk`   | Address extended secret key             |
+| `addr_xsk`   | Address extended signing key            |
 | `addr`       | Mainnet address                         |
 | `addr_test`  | Testnet address                         |
 | `stake_vk`   | Stake address verification key          |
@@ -49,17 +49,17 @@ We define the following set of common prefixes with their corresponding semantic
 
 #### About the `_test` suffix
 
-Address already contains a discriminant tag, yet it requires one to peek at the internal binary payload. With Base58-encoded addresses, people have been used to look at first few characters and distinguish address this way. Not only this is cumbersome, but it is also made harder with both Shelley and Bech32-encoded addresses. On the one hand, the "common" part of the internal payload is much less than in Byron addresses and thus, the first bytes of the payload are varying much more. Plus, the bech32 prefix which can now be fixed makes it even more error-prone. 
+Address already contains a discriminant tag, yet it requires one to peek at the internal binary payload. With Base58-encoded addresses, people have been used to look at first few characters and distinguish address this way. Not only this is cumbersome, but it is also made harder with both Shelley and Bech32-encoded addresses. On the one hand, the "common" part of the internal payload is much less than in Byron addresses and thus, the first bytes of the payload are varying much more. Plus, the bech32 prefix which can now be fixed makes it even more error-prone.
 
 Therefore, having a clear human-readable indicator regarding the network discrimination is useful.
 
 #### About `addr`
 
-Addresses probably are the most user-facing object in the current Cardano eco-system. Being able to clearly identify them 
+Addresses probably are the most user-facing object in the current Cardano eco-system. Being able to clearly identify them
 
 > :bulb: Open question: with side-chains and multi-currencies coming soon, would it make sense to include the currency in the bech32 prefix? e.g. `ada1...` or `ada_addr1.`
 
-#### About `stake` 
+#### About `stake`
 
 Stake _addresses_ are references to reward account. They are used in many manipulation involving rewards (registering stake key, delegating, fetching reward balance etc..). We therefore make it a "first-class" object and assign it a dedicated prefix.
 
