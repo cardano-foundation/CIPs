@@ -10,6 +10,7 @@ Type: Standards
 Created: 2020-09-22
 License: CC-BY-4.0
 Post-History: https://forum.cardano.org/t/40594
+Post-History: https://cardano.ideascale.com/a/dtd/324335-48088
 ```
 ## Summary
 
