@@ -80,7 +80,7 @@ and[n] = the average desirability of the network as a whole in the nth epoch una
 h = historical influence factor, which is any real number between 0 and 1 exlusive.
 i = integer(1 / h) which is the initial number of epochs during which we use the average desirability
 
-As an example, setting h to 0.1 would mean that the initial number of epochs for using the averaging functions (i) would be 10.  If a pool has been eligible to receive rewards (c) for 3 epochs then we use the average of the pool's desirability for those 3 epochs and the overall network desirability for the prior 7 epochs.  After the 10th epoch we would use 90% of the previous epoch's non-myopic historical desirability and 10% of the current epoch's desirability to arrive at the new non-myopic desirability.
+As an example, setting h to 0.1 would mean that the initial number of epochs for using the averaging functions (i) would be 10.  If a pool has been eligible to receive rewards (n) for 3 epochs then we use the average of the pool's desirability for those 3 epochs and the overall network desirability for the prior 7 epochs.  After the 10th epoch we would use 90% of the previous epoch's non-myopic historical desirability and 10% of the current epoch's desirability to arrive at the new non-myopic desirability.
 
 This gives a more reasonable ranking for newer pools that do not have enough historical data to provide fair rankings.
 
