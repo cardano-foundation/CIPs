@@ -4,6 +4,7 @@ Title: Message Signing
 Authors: Sebastien Guillemot <sebastien@emurgo.io>
 Comments-URI:
 - https://github.com/Emurgo/EmIPs/pull/5
+- https://forum.cardano.org/t/message-signing-specification/41032
 - https://cardano.ideascale.com/a/dtd/Create-message-signing-standard/323158-48088
 Status: Draft
 Type: Standards
