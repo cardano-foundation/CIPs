@@ -247,7 +247,7 @@ As `v2` and `v3` addresses are incompatible, we can simply try both options unti
 For `P2`, the algorithm that is used is uniquely determined by the public key used. *COSE* defines the `alg` pre-defined header to indicate which algorithm was used to sign/verify but we don't use this for the following reasons
 
 1) We want to limit the number of allowed signing algorithms to exactly the set used in Cardano because of `E2`.
-1) There is a 1-1 mapping between the pair `address`, `address_meta` and what signing algorithm is used and so this information would be redundant.
+1) There is a 1-1 mapping between the pair (`address`, `address_pubkey`) and what signing algorithm is used and so this information would be redundant.
 1) Allowed values in the `alg` field must be present in the [IANA COSE Algorithms registry](https://www.iana.org/assignments/cose/cose.xhtml#key-type) (and new entries have to be manually approved). This is not sufficient for us as we often have to use cutting edge cryptography specialized for our domain.
 
 ### Encryption
@@ -329,13 +329,13 @@ The `ciphertext` is simply the result of [the Yoroi encryption spec](https://git
 
 ##### Public key based encryption
 
-We only allow encrypting based on `BIP32ED25519` public keys (the ones used for Cardano). To encrypt based on these public keys, you must
+We only allow encrypting based on `ED25519` public keys (the ones used for Cardano). To encrypt based on these public keys, you must
 
 1) Compute a password consisting of 22 case-sensitive alphanumeric (a–z, A–Z, 0–9) characters (this gives you ~128 bits of entropy)
 
 Now, for each receiver, you must
 
-2) Compute an ephemeral key pair using `BIP32ED25519 extended`
+2) Compute an ephemeral key pair using `ED25519 extended`
 1) Compute the shared DH secret between the private key from step (1) and the public key received (using the `exchange` functionality)
 1) Compute the `Blake2b512` hash of the secret
 1) Use this as the password to encrypt the password in (1) using [the Yoroi encryption spec](https://github.com/Emurgo/yoroi-frontend/blob/737595fec5a89409aacef827d356c9a1605515c0/docs/specs/code/ENCRYPT.md)
@@ -360,10 +360,6 @@ PubKeyEncryption = 96 (COSE_Encrypt)
 The `Headers` for the body MUST have `enc_type: 2` in the `unprotected` field.
 
 The `Headers` for the recipient MUST have a `eph_pub: bstr` label containing the public key of the ephemeral keypair.
-
-### Multisig
-
-TODO
 
 #### Version
 
