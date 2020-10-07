@@ -16,10 +16,6 @@ Post-History: https://cardano.ideascale.com/a/dtd/324335-48088
 
 Support reading and writing weighted lists of stake pools through a URI scheme, facilitating automatic stake allocation in all Cardano wallets and other means of delegation.
 
-## Prerequisites
-
-Support in wallets & exchanges for multi-pool delegation.
-
 ## Abstract
 
 Cardano wallets and exchange delegation mechanisms currently have no means to receive an Internet friendly reference to one or more stake pools in a way that establishes their proportion for staking: in general terms, a *portfolio*.
@@ -59,9 +55,17 @@ Syntax items, in order:
     * if authority is omitted, assumed to be a payment URI (see Reference Implementation)
     * if authority is something else, it refers to a different Cardano subsystem than staking.
 * arguments (`?` before first argument, `&` before each additional argument
-    * `poolTicker` or `poolHexID` (mandatory)
+    * `poolReference`: either a `poolTicker` or `poolHexID` (mandatory)
     * `=proportion` (optional): integer or decimal, indicating relative size of stake allocation
 
+Syntax errors:
+
+* if any `PoolReference` (assumed to be a `poolTicker` or `poolHexID` by its length) is improperly formatted, the wrong length, or contains illegal characters, the software should generate an error or warning.
+* any `proportion` with non-numeric characters (digits, with at most one decimal point) will also cause an error or warning.
+* Handling of errors and warnings is left to the wallet or exchange.  Examples:
+    * a non-numerical proportion might assume `1` (as if the figure had been left out entirely) while also displaying a warning message & asking the user if they would like to proceed according to that assumption or abort.
+    * a non-existent stake pool might cause a warning, with an offer to proceed without that pool, to choose an alternative, or to abort.
+    
 Interpretation of `proportion`:
 
 * If only one stake pool is specified, any proportion is meaningless and ignored.
@@ -75,6 +79,21 @@ For this specification to be fully implemented by the wallet or exchange itself,
 
 * upon *receiving* a staking URI, invoke a UI to allocate stake in the proportion indicated by the URI (from a single wallet, if supported)
 * upon request from the user, format that user's stake allocation as a compliant URI suitable for copying & *sending*.
+
+
+### Development Plan
+
+Items from the Reference Implementation below have been incorporated into these project milestones:
+
+**Step 1 (no prerequisites):** Adapt Emurgo Improvment Proposal [emip-002](https://github.com/Emurgo/EmIPs/blob/master/specs/emip-002.md) as a CIP.  As soon as that is done, this CIP will closely follow the URI scheme & implementation details therein, and will be edited to avoid redundancy and address any dependencies.
+
+**Step 2 (no prerequisites):** Progress issue [Daedalus payment URLs #883](https://github.com/input-output-hk/daedalus/issues/883) which has been open since April 2018.  This will clear the way in Daedalus for URI integration issues identifed in the Emurgo proposal which are currently implemented in Yoroi but stalled indefinitely in Daedalus. Despite the urgent needs of Cardano SPOs for stake decentralisation, because of the broader market it is likely the demand for a payment URI will exceed the demand for URI (or JSON) stake pool-to-wallet linking.  So from the time this CIP is accepted, *this issue can no longer be postponed indefinitely* since it is a likely rerequisite for stake pool links.
+
+**Step 3 (dependent on Step 2)** Implement single-pool delegation links in Daedalus. Forum discussion establishes there is an immediate need for these.  The possible implementation choices for multi-pool delegation which @SebastienGllmt has outlined (mainly, protocol vs. wallet) do not have to be made before progressing this issue: only a commercially robust URI scheme implementation is needed.  NOTE the completion of this step will immediately begin to address the Motivation above by facilitating a more heterogenous distribution of stake.
+
+**Step 4 (dependent on Step 3 + Protocol or Wallet UI support of multi-pool delegation):** Implement multi-pool delegation links in Daedalus, in the full manner described above.  According to the @SebastienGllmt comment on this CIP's implementation as a Project Catalyst idea ([URIs for Stake Pools and Portfolios](https://cardano.ideascale.com/a/dtd/URIs-for-Stake-Pools-and-Portfolios/324335-48088): requires Ideascale login) "multiple pool delegation is probably at least half a year away if not more" (comment date = 2020-10-02) which allows a broad window to implement the above three steps.  As soon as the accepted strategy is available, it will be ready for implementation in the Daedalus wallet UI, since the URI processing & preliminary UI modifications will already have been handled in steps 2 & 3.
+
+**Step 5 (dependent on Step 4):** Standards implementation in wallets and exchanges, to follow the established example in Daedalus.
 
 ## Rationale
 
