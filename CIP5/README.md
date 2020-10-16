@@ -26,12 +26,14 @@ We define the following set of common prefixes with their corresponding semantic
 | Prefix       | Semantic                                |
 | ---          | ---                                     |
 | `addr_vk`    | Address verification key                |
+| `addr_vkh`   | Address verification key hash           |
 | `addr_sk`    | Address signing key                     |
 | `addr_xvk`   | Address extended verification key       |
 | `addr_xsk`   | Address extended signing key            |
 | `addr`       | Mainnet address                         |
 | `addr_test`  | Testnet address                         |
 | `stake_vk`   | Stake address verification key          |
+| `stake_vkh`  | Stake address verification key hash     |
 | `stake_sk`   | Stake address signing key               |
 | `stake_xvk`  | Stake address extended verification key |
 | `stake_xsk`  | Stake address extended signing key      |
@@ -41,8 +43,10 @@ We define the following set of common prefixes with their corresponding semantic
 | `pool_vk`    | Pool operator verification key          |
 | `pool_sk`    | Pool operator signing key               |
 | `kes_vk`     | KES verification key                    |
+| `kes_vkh`    | KES verification key hash               |
 | `kes_sk`     | KES signing key                         |
 | `vrf_vk`     | VRF verification key                    |
+| `vrf_vkh`    | VRF verification key hash               |
 | `vrf_sk`     | VRF signing key                         |
 
 ## Rationale
@@ -70,6 +74,17 @@ Both are rather transparent abbreviations for **s**igning **k**ey and **v**erifi
 #### About `xsk` & `xvk`
 
 The prefix `x` is typically used in cryptography to refer to e**x**tended keys (e.g. `xpub`, `xprv` ...). Following this convention, we prefix `sk` and `vk` as such when they refer to extended keys.
+
+#### About `vkh`
+
+An abbreviation for **v**erification **k**ey **h**ash.
+
+Verification key hashes are commonly utilized throughout the Cardano
+eco-system. For example, they're used in stake pool registration and
+retirement certificates, stake key registration, delegation, and
+deregistration certificates, etc. As a result, it seems useful to have a
+human-readable prefix by which one can discern the different kinds of
+verification key hashes.
 
 ## Backwards compatibility
 
