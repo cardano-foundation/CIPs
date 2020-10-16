@@ -23,31 +23,31 @@ Therefore, we can leverage bech32 for binary data encoding, with a set of common
 
 We define the following set of common prefixes with their corresponding semantic. Any software willing to represent binary data in a human-friendly way should abide by these guidelines. Should a data-type be missing, we encourage developers to update this CIP and register a new prefix.
 
-| Prefix       | Semantic                                |
-| ---          | ---                                     |
-| `addr_vk`    | Address verification key                |
-| `addr_vkh`   | Address verification key hash           |
-| `addr_sk`    | Address signing key                     |
-| `addr_xvk`   | Address extended verification key       |
-| `addr_xsk`   | Address extended signing key            |
-| `addr`       | Mainnet address                         |
-| `addr_test`  | Testnet address                         |
-| `stake_vk`   | Stake address verification key          |
-| `stake_vkh`  | Stake address verification key hash     |
-| `stake_sk`   | Stake address signing key               |
-| `stake_xvk`  | Stake address extended verification key |
-| `stake_xsk`  | Stake address extended signing key      |
-| `stake`      | Mainnet stake address                   |
-| `stake_test` | Testnet stake address                   |
-| `pool`       | Pool Id                                 |
-| `pool_vk`    | Pool operator verification key          |
-| `pool_sk`    | Pool operator signing key               |
-| `kes_vk`     | KES verification key                    |
-| `kes_vkh`    | KES verification key hash               |
-| `kes_sk`     | KES signing key                         |
-| `vrf_vk`     | VRF verification key                    |
-| `vrf_vkh`    | VRF verification key hash               |
-| `vrf_sk`     | VRF signing key                         |
+| Prefix       | Semantic                                      |
+| ---          | ---                                           |
+| `addr_vk`    | Address verification key                      |
+| `addr_vkh`   | Address verification key hash                 |
+| `addr_sk`    | Address signing key                           |
+| `addr_xvk`   | Address extended verification key             |
+| `addr_xsk`   | Address extended signing key                  |
+| `addr`       | Mainnet address                               |
+| `addr_test`  | Testnet address                               |
+| `stake_vk`   | Stake address verification key                |
+| `stake_vkh`  | Stake address verification key hash           |
+| `stake_sk`   | Stake address signing key                     |
+| `stake_xvk`  | Stake address extended verification key       |
+| `stake_xsk`  | Stake address extended signing key            |
+| `stake`      | Mainnet stake address                         |
+| `stake_test` | Testnet stake address                         |
+| `pool`       | Pool operator verification key hash (pool ID) |
+| `pool_vk`    | Pool operator verification key                |
+| `pool_sk`    | Pool operator signing key                     |
+| `kes_vk`     | KES verification key                          |
+| `kes_vkh`    | KES verification key hash                     |
+| `kes_sk`     | KES signing key                               |
+| `vrf_vk`     | VRF verification key                          |
+| `vrf_vkh`    | VRF verification key hash                     |
+| `vrf_sk`     | VRF signing key                               |
 
 ## Rationale
 
