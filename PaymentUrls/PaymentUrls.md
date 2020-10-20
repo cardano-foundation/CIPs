@@ -4,7 +4,7 @@ Title: Cardano URI Scheme
 Authors: Sebastien Guillemot <sebastien@emurgo.io>, Vicente Almonacid <vicente@emurgo.io>
 Comments-URI:
 - https://github.com/Emurgo/EmIPs/pull/2
-- TODO (forum link)
+- https://forum.cardano.org/t/cip-cardano-payment-uri-scheme/41457
 Status: Draft
 Type: Informational
 Created: 2020-10-20
@@ -20,15 +20,14 @@ as possible approaches for a multiplatform implementation.
 
 Users who create community content often want donations as a financial incentive. However, forcing users to open their wallet and copy-paste an address lowers the amount of people likely to send tokens (especially if they have to sync their wallet first).
 
-If donating was as simple as clicking a link that opens a light wallet with pre-populated fields, users may be more willing to send tokens. URI schemes would enable users to easily
-make payments by simply clicking links on webpages or scanning QR Codes.
+If donating was as simple as clicking a link that opens a light wallet with pre-populated fields, users may be more willing to send tokens. URI schemes would enable users to easily make payments by simply clicking links on webpages or scanning QR Codes.
 
 # Specification
 
 The core implementation should follow the [BIP-21](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki) standard (with `bitcoin:` replaced with `web+cardano:`)
 
 Rationale:
-- Use `cardano:` over `ada:` as other projects that implement this standard tend to take the project name over the currency name (this makes sense if we consider this protocol as a generic way for interacting with the blockchain through wallets -as opposed to a simple payment system)
+- Use `cardano:` over `ada:` as other projects that implement this standard tend to take the project name over the currency name (this makes sense if we consider this protocol as a generic way for interacting with the blockchain through wallets - as opposed to a simple payment system)
 - Many wallets support multiple currencies. Following the same standard will ensure higher adoption of our protocol.
 
 Example:
