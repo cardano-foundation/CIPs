@@ -30,7 +30,7 @@ Centralised sources of information, particularly a Daedalus ranking mechanism [c
 
 A growing Cardano blockchain, facing a likely sudden increase in load within the year from the introduction of Smart Contract applications, needs to more rigorously maintain its goal of decentralisation by distributing the balance of rewards, network/computing power, training, and operational knowledge among an increasingly larger group of operators.  Otherwise that sudden increase may require an equally sudden rise in K to a much greater figure without having at least that number of high-quality pools.
 
-There is also a subjective perception within and without the Cardano community that the stake pool conglomerates and Cardano foundational entities are effectively sponsoring centralisation of stake for their own benefit.  Supporting a means for small stake pools and staking peer groups to be individually recognised would reverse this trend both practically and subjectively.
+There is also a subjective perception within and without the Cardano community that the Cardano foundational entities have allowed stake to become centralised for their own benefit.  Supporting a means for small stake pools and staking peer groups to be individually recognised would reverse this trend both practically and subjectively.
 
 ## Specification
 
@@ -43,9 +43,12 @@ Example, simple case (a non-weighted portfolio of 3 equal favourites:
 Example, more general case (a weighted portfolio, top 10 pools by 30-day ROA at time of writing):
 `web+cardano://stake?CRAB=30.14&MYTH=20.84&NINJA=20.04&HYPE=17.80&MARLN=16.92&KINGS=16.81&COSD=15.62&RAID3=15.32&ZOE=15.20&XORN=14.93`
 
+The use of the `web+cardano` protocol must remain consistent and non-conflicting with **CIP: Cardano URI Scheme** ([current draft](https://github.com/Emurgo/CIPs/blob/payment-urls/PaymentUrls/PaymentUrls.md), not yet [merged](https://github.com/cardano-foundation/CIPs/pull/30)).
+
 Syntax explanation (see [Wikipedia: Uniform Resource Identifier](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)):
 
-* this takes protocol `web+cardano` from the Yoroi reference implementation linked below and adds an "authority" (`//stake`) to differentiate the stake pool reference(s) from a payment request URIs or references to some other Cardano resource.
+
+* Stake pool URI links extend the protocol `web+cardano` beyond payment links by adding an "authority" (`//stake`) to differentiate the stake pool reference(s) from a payment request URIs or references to some other Cardano resource.
 * For security the hex `pool ID` should be usable here instead of each stake pool name, although with [SMASH](https://github.com/input-output-hk/smash) currently slated for Daedalus integration this may not be necessary to avoid ambiguity.
 
 Syntax items, in order:
@@ -73,7 +76,7 @@ Interpretation of `proportion`:
 * If none of the proportions are given, all proportions are assumed to be equal.
 * If some of the proportions are missing, any missing proportions are set to the average of all those specified explicitly.
 * If a stake pool is mentioned multiple times, those proportions as determined above are added together.
-* When exporting proportions, order is not considered important but for readability should be in descending order by proportion, with the first proportion normalised to 1 (to avoid privacy risk of using actual delegation amounts).
+* When exporting proportions, order is not considered important but for readability should be in descending order by proportion, with the first proportion normalised to `1` (to avoid privacy risk of using actual delegation amounts).
 
 For this specification to be fully implemented by the wallet or exchange itself, it should be possible to do at least these two things, corresponding to both *import* and *export* of stake allocation:
 
@@ -85,9 +88,9 @@ For this specification to be fully implemented by the wallet or exchange itself,
 
 Items from the Reference Implementation below have been incorporated into these project milestones:
 
-**Step 1 (no prerequisites):** Adapt Emurgo Improvment Proposal [emip-002](https://github.com/Emurgo/EmIPs/blob/master/specs/emip-002.md) as a CIP.  As soon as that is done, this CIP will closely follow the URI scheme & implementation details therein, and will be edited to avoid redundancy and address any dependencies.
+**Step 1 (DONE):** Adapted Emurgo Improvment Proposal [emip-002](https://github.com/Emurgo/EmIPs/blob/master/specs/emip-002.md) as **CIP: Cardano URI Scheme** (see above for links).
 
-**Step 2 (no prerequisites):** Progress issue [Daedalus payment URLs #883](https://github.com/input-output-hk/daedalus/issues/883) which has been open since April 2018.  This will clear the way in Daedalus for URI integration issues identifed in the Emurgo proposal which are currently implemented in Yoroi but stalled indefinitely in Daedalus. Despite the urgent needs of Cardano SPOs for stake decentralisation, because of the broader market it is likely the demand for a payment URI will exceed the demand for URI (or JSON) stake pool-to-wallet linking.  So from the time this CIP is accepted, *this issue can no longer be postponed indefinitely* since it is a likely rerequisite for stake pool links.
+**Step 2 (no prerequisites):** Progress **CIP: Cardano URI Scheme** which will clear the way in Daedalus for stake pool URI integration issues. Despite the urgent needs of Cardano SPOs for stake decentralisation, because of the broader market it is likely the demand for a payment URI will exceed the demand for URI (or JSON) stake pool-to-wallet linking.
 
 **Step 3 (dependent on Step 2)** Implement single-pool delegation links in Daedalus. Forum discussion establishes there is an immediate need for these.  The possible implementation choices for multi-pool delegation which @SebastienGllmt has outlined (mainly, protocol vs. wallet) do not have to be made before progressing this issue: only a commercially robust URI scheme implementation is needed.  NOTE the completion of this step will immediately begin to address the Motivation above by facilitating a more heterogenous distribution of stake.
 
@@ -126,6 +129,8 @@ We offer this rationale how URI-based "crowdsourced" portfolios will provide bet
 
 ### Alternate designs
 
+#### JSON vs. URI
+
 A developer suggested using a JSON file instead of a URI, which the author believes is not acceptable as a universal recommendation:
 
 * HTTP `Content-Disposition:` headers sent with any downloaded file, as well as file extensions & MIME types, often disrupt that file's interpretation by the system or application: in this case creating a dead end from the user experience that wallet or exchange web site developers would not be able to prevent.
@@ -133,6 +138,15 @@ A developer suggested using a JSON file instead of a URI, which the author belie
 * The simplest, most common use case of pool owners and supporters being able to easily construct a single pool reference, without access to specialised knowledge or resources to post a JSON file (e.g. as one can for a YouTube link from a video ID), would be defeated by *only* allowing JSON data.
 
 JSON files would be a useful portfolio format in addition to the URI as long as developers and users remain aware of the limitations above.  The portfolio specification rules above could also apply to standards for building & interpreting such a JSON file. Therefore I would leave it to the developer community whether JSON processing or syntax should be a part of this CIP or submitted as feature requests for the relevant wallet software.
+
+#### Application routing vs. URI
+
+The relevant non-protocol-based Solution of using a "routing backend," also briefly mentioned in the discussion threads as an implementation difficulty of stake pool links, is reviewed and ruled out as a suitable "multi-app standard" in the related **CIP: Cardano URI Scheme**.  
+
+#### Useful general references about linking schemes
+
+See the **Read More** section at the end of related **CIP: Cardano URI Scheme**.  
+
 
 ## Backwards compatibility
 
