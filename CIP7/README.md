@@ -1,5 +1,5 @@
 ---
-CIP: TBD
+CIP: 7
 Title: Message Signing
 Authors: Sebastien Guillemot <sebastien@emurgo.io>
 Comments-URI:
