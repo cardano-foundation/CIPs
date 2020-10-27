@@ -7,7 +7,7 @@ Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-0003
 Status: Draft
 Type: Standards
 Created: 2020-05-07
-License: Apache-2.0
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -47,12 +47,12 @@ More specifically, the generation is a function from an initial seed to an exten
 
 Throughout the years, Cardano has used different styles of master key generation:
 
-|  Name          |  Created by |  Address prefix in Byron |  Is deprecated? |
-|----------------|-------------|--------------------------|-----------------|
-|  Byron         |  Daedalus   |  Ddz                     |  Yes            |
-|  Icarus        |  Yoroi      |  Ae2                     |  No             |
-|  Icarus-Trezor |  Trezor     |  Ae2                     |  No             |
-|  Ledger        |  Ledger     |  Ae2                     |  No             |
+|  Name                         |  Created by |  Address prefix in Byron |  Is deprecated? |
+|-------------------------------|-------------|--------------------------|-----------------|
+|  [Byron](./Byron.md)          |  Daedalus   |  Ddz                     |  Yes            |
+|  [Icarus](./Icarus.md)        |  Yoroi      |  Ae2                     |  No             |
+|  [Icarus-Trezor](./Icarus.md) |  Trezor     |  Ae2                     |  No             |
+|  [Ledger](./Ledger.md)        |  Ledger     |  Ae2                     |  No             |
 
 # Rationale
 
@@ -64,183 +64,6 @@ However, you can learn more at the following links:
 - [SLIP-0010](https://github.com/satoshilabs/slips/blob/master/slip-0010.md)
 - [SLIP-0023](https://github.com/satoshilabs/slips/blob/master/slip-0023.md)
 
-## Reference implementations
-
-We provide a description, reference implementation and test vectors for each algorithm
-
-#### Byron
-
-```js
-function generateMasterKey(seed) {
-    return hashRepeatedly(seed, 1);
-}
-
-function hashRepeatedly(key, i) {
-    (iL, iR) = HMAC
-        ( hash=SHA512
-        , key=key
-        , message="Root Seed Chain " + UTF8NFKD(i)
-        );
-
-    let prv = tweakBits(SHA512(iL));
-
-    if (prv[31] & 0b0010_0000) {
-        return hashRepeatedly(key, i+1);
-    }
-
-    return (prv + iR);
-}
-
-function tweakBits(data) {
-    // * clear the lowest 3 bits
-    // * clear the highest bit
-    // * set the highest 2nd bit
-    data[0]  &= 0b1111_1000;
-    data[31] &= 0b0111_1111;
-    data[31] |= 0b0100_0000;
-
-    return data;
-}
-```
-
-##### Test vectors
-
-```
-mnemonic: install neither high supreme hurdle tissue excite lava census harbor purpose shine
-master key: 309c18090ec559d4c8e377b9b19b84804a4fc430e862ef99d97f1cceccad124d92d7336d2d598affefc05c806fe2ff71cfc0fb78bfdb539178dbfcc567a04e358077d66a909e93f4577b5784b8c1c4ff3c77e706449f1c21793a79fc2abb68a9
-```
-
-#### Icarus
-
-Icarus master key generation style supports setting an extra passphrase as an arbitrary byte array of any size (sometimes called a *mnemonic password*). This passphrase acts as a second factor applied to cryptographic key retrieval. When the seed comes from an encoded recovery phrase, the password can therefore be used to add extra protection in case where the recovery phrase were to be exposed.
-
-```js
-function generateMasterKey(seed, password) {
-    let data = PBKDF2
-        ( kdf=HMAC-SHA512
-        , iter=4096
-        , salt=seed
-        , password=password
-        , outputLen=96
-        );
-
-    return tweakBits(data);
-}
-
-function tweakBits(data) {
-    // on the ed25519 scalar leftmost 32 bytes:
-    // * clear the lowest 3 bits
-    // * clear the highest bit
-    // * clear the 3rd highest bit
-    // * set the highest 2nd bit
-    data[0]  &= 0b1111_1000;
-    data[31] &= 0b0001_1111;
-    data[31] |= 0b0100_0000;
-
-    return data;
-}
-```
-
-##### Test vectors
-
-```
-mnemonic: eight country switch draw meat scout mystery blade tip drift useless good keep usage title
-master key: c065afd2832cd8b087c4d9ab7011f481ee1e0721e78ea5dd609f3ab3f156d245d176bd8fd4ec60b4731c3918a2a72a0226c0cd119ec35b47e4d55884667f552a23f7fdcd4a10c6cd2c7393ac61d877873e248f417634aa3d812af327ffe9d620
-```
-
-```
-mnemonic: eight country switch draw meat scout mystery blade tip drift useless good keep usage title
-passphrase: foo (as utf8 bytes)
-master key: 70531039904019351e1afb361cd1b312a4d0565d4ff9f8062d38acf4b15cce41d7b5738d9c893feea55512a3004acb0d222c35d3e3d5cde943a15a9824cbac59443cf67e589614076ba01e354b1a432e0e6db3b59e37fc56b5fb0222970a010e
-```
-
-#### Icarus-Trezor
-
-When used < 24 words, the algorithm is the same as **Icarus**
-
-When using 24 words, **TODO**
-
-*Note*: Trezor also allows users to set an additional [passphrase](https://wiki.trezor.io/Passphrase) that works exactly the same as Icarus passphrase
-
-##### Test vectors
-
-**TODO**: test vector for 24 words
-
-```
-mnemonic: lyrics tray aunt muffin brisk ensure wedding cereal capital path replace weasel
-master key: 5090a48c7fee4b626d5cfbf3ba73ed7ac6795b7b45ef3074af0a3528bb65d9403a539c78269390152b07df045bafc0e143c79e0d535d94548efc3e6fa1e3c46a59e5e734208bab469d62ac79a75bda673b522940db70020f7984e61a8356e0e1
-```
-
-```
-mnemonic: lyrics tray aunt muffin brisk ensure wedding cereal capital path replace weasel
-passphrase: foo (as utf8 bytes)
-master key: 88bed8fac19c2c59a7046fb6d11c4da0477de888a02b1da28d021e272cbf4e5b8867381e85b74d00b0ab1df769683f60f9ed7c991ac8e62c8af8421b8e5f032830a6180f890f4b80fa5f565cda4f17db34c9c22d63e5c173a11b1ad1be0279fa
-```
-
-#### Ledger
-
-```js
-function generateMasterKey(seed, password) {
-    let data = PBKDF2
-        ( kdf=HMAC-SHA512
-        , iter=2048
-        , salt="mnemonic" + UTF8NFKD(password)
-        , password=UTF8NFKD(spaceSeparated(toMnemonic(seed)))
-        , outputLen=64
-        );
-
-    let cc = HMAC
-        ( hash=SHA256
-        , key="ed25519 seed"
-        , message=UTF8NFKD(1) + seed
-        );
-
-    let (iL, iR) = hashRepeatedly(data);
-
-    return (tweakBits(iL) + iR + cc);
-}
-
-function hashRepeatedly(message) {
-    let (iL, iR) = HMAC
-        ( hash=SHA512
-        , key="ed25519 seed"
-        , message=message
-        );
-
-    if (iL[31] & 0b0010_0000) { 
-        return hashRepeatedly(iL + iR);
-    }
-
-    return (iL, iR);
-}
-
-function tweakBits(data) {
-    // * clear the lowest 3 bits
-    // * clear the highest bit
-    // * set the highest 2nd bit
-    data[0]  &= 0b1111_1000;
-    data[31] &= 0b0111_1111;
-    data[31] |= 0b0100_0000;
-
-    return data;
-}
-```
-
-*Note*: Ledger also allows users to set an additional [passphrase](https://support.ledger.com/hc/en-us/articles/115005214529-Advanced-passphrase-security)
-
-##### Test vectors
-
-```
-mnemonic: recall grace sport punch exhibit mad harbor stand obey short width stem awkward used stairs wool ugly trap season stove worth toward congress jaguar
-master key: a08cf85b564ecf3b947d8d4321fb96d70ee7bb760877e371899b14e2ccf88658104b884682b57efd97decbb318a45c05a527b9cc5c2f64f7352935a049ceea60680d52308194ccef2a18e6812b452a5815fbd7f5babc083856919aaf668fe7e4
-```
-
-```
-mnemonic: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
-passphrase: foo (as utf8 bytes)
-master key: f053a1e752de5c26197b60f032a4809f08bb3e5d90484fe42024be31efcba7578d914d3ff992e21652fee6a4d99f6091006938fac2c0c0f9d2de0ba64b754e92a4f3723f23472077aa4cd4dd8a8a175dba07ea1852dad1cf268c61a2679c3890
-```
-
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
