@@ -55,7 +55,7 @@ Syntax items, in order:
 
 * protocol: `web+cardano:`
 * authority: `//stake`
-    * if authority is omitted, assumed to be a payment URI (see Reference Implementation)
+    * if authority is omitted, assumed to be a payment URI (see **CIP: Cardano URI Scheme**)
     * if authority is something else, it refers to a different Cardano subsystem than staking.
 * arguments (`?` before first argument, `&` before each additional argument
     * `poolReference`: either a `poolTicker` or `poolHexID` (mandatory)
@@ -97,6 +97,15 @@ Items from the Reference Implementation below have been incorporated into these 
 **Step 4 (dependent on Step 3 + Protocol or Wallet UI support of multi-pool delegation):** Implement multi-pool delegation links in Daedalus, in the full manner described above.  According to the @SebastienGllmt comment on this CIP's implementation as a Project Catalyst idea ([URIs for Stake Pools and Portfolios](https://cardano.ideascale.com/a/dtd/URIs-for-Stake-Pools-and-Portfolios/324335-48088): requires Ideascale login) "multiple pool delegation is probably at least half a year away if not more" (comment date = 2020-10-02) which allows a broad window to implement the above three steps.  As soon as the accepted strategy is available, it will be ready for implementation in the Daedalus wallet UI, since the URI processing & preliminary UI modifications will already have been handled in steps 2 & 3.
 
 **Step 5 (dependent on Step 4):** Standards implementation in wallets and exchanges, to follow the established example in Daedalus.
+
+### Security Considerations
+
+Both these correpond to the Security Considerations subsection of **CIP: Cardano URI Scheme**:
+
+1. Even when links are properly formatted and refer to a valid list of stake pools, the wallet software must *first request confirmation from the user exactly as parameterised in the URI* before prompting the user to choose a wallet for the suggested delegation.
+
+1.  The wallet software should provide some *confirmation* to the user that they are in fact *in their wallet* and not some phishing web page, mocked up to look like a delegation confirmation page and prompting for personal & wallet information.
+
 
 ## Rationale
 
