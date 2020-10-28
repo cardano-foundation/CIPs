@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 7
 Title: Curve Pledge Benefit
 Author: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Discussions-To: 
