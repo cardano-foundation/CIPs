@@ -1,5 +1,5 @@
 ---
-CIP: 7
+CIP: 8
 Title: Message Signing
 Authors: Sebastien Guillemot <sebastien@emurgo.io>
 Comments-URI:
