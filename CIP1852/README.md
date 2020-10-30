@@ -2,7 +2,7 @@
 CIP: 1852
 Title: HD (Hierarchy for Deterministic) Wallets for Cardano
 Authors: Sebastien Guillemot <sebastien@emurgo.io>, Matthias Benkort <matthias.benkort@iohk.io>
-Comments-URI: TODO
+Comments-URI: https://forum.cardano.org/t/cip1852-hd-wallets-for-cardano/41740
 Status: Draft
 Type: Standards
 Created: 2019-10-28
