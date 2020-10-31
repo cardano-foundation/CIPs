@@ -16,7 +16,7 @@ Post-History: https://forum.cardano.org/t/double-treasury-taxation-of-40-and-pos
 
 ## Summary
 
-Application of Treasury fraction (tau parameter) to actual distributed rewards instead of the whole epoch reward pot
+Application of Treasury fraction (tau parameter) calculation to actual distributed rewards instead of the whole epoch reward pot
 
 ## Abstract
 
