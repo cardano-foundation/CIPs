@@ -38,6 +38,7 @@ A. Proposed modifications to Shelley Ledger: Formal Cardano Ledger Spec. (SL-D5 
    Page 62 of the document that corresponds to page 63 of the pdf file
 
    1. At the fourth bullet point the sentence:
+   
 	    Next we calculate the proportion of the reward pot that will move to the treasury, as determined by the tau protocol parameter. The remaining pot is called the R, just as in section 6.5 of [SL-D1].
 	    
       changes into:
@@ -45,9 +46,12 @@ A. Proposed modifications to Shelley Ledger: Formal Cardano Ledger Spec. (SL-D5 
 	    The reward pot is called the R, just as in section 6.5 of [SL-D1].
 	    
    2. At the fifth bullet point the sentence:
-	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal             amount and the actual amount received is added to the amount moved to the treasury.
+   
+	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved to the treasury.
+      
       changes into:
-	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal             amount and the actual amount received is added to the amount moved back to the reserve. Next we calculate the proportion of the actual amount that is added to the amount moved to treasury as determined by the tau parameter.
+
+	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved back to the reserve. Next we calculate the proportion of the actual amount that is added to the amount moved to treasury as determined by the tau parameter.
 
 
 B. Proposed modifications to Design Specification for Delegation and Incentives in Cardano (SL-D1 v1.21, 2020/07/23)
