@@ -39,8 +39,11 @@ A. Proposed modifications to Shelley Ledger: Formal Cardano Ledger Spec. (SL-D5 
 
    1. At the fourth bullet point the sentence:
 	    Next we calculate the proportion of the reward pot that will move to the treasury, as determined by the tau protocol parameter. The remaining pot is called the R, just as in section 6.5 of [SL-D1].
+	    
       changes into:
+      
 	    The reward pot is called the R, just as in section 6.5 of [SL-D1].
+	    
    2. At the fifth bullet point the sentence:
 	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal             amount and the actual amount received is added to the amount moved to the treasury.
       changes into:
