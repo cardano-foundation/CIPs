@@ -27,7 +27,7 @@ Applying the treasury fraction calculation to the actual distributed rewards ins
 At the time of the Shelley mainnet launch it has been decided that unclaimed rewards flow back to the reserve instead of going to increase the treasury pot.
 Given that this change is clearly a benefit for both delegators and pools it didn't solve the uncertainty of an estimation about the reserve quota that is and will be forwarded to the treasury pot.
 The reason is that the treasury quota is currently influenced by other factors like, for example, the total active stake and the pool pledge / pool saturation point ratio in relation with the value of a0 parameter.
-In case of lower-than-100% active staking participation and/or lower-than-saturation-point average pool pledging the quota of reserve that will flow to treasury will be higher than what defined by tau parameter in a range between tau and 100%.
+In case of lower-than-100% active staking participation and/or lower-than-saturation-point average pool pledging the quota of reserve that will flow to treasury is higher than what defined by tau parameter in a range between tau and 100%.
 
 ## Specification
 
