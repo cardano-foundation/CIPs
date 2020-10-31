@@ -41,12 +41,14 @@ A. Proposed modifications to Shelley Ledger: Formal Cardano Ledger Spec. (SL-D5 
 	    Next we calculate the proportion of the reward pot that will move to the treasury, as determined by the tau protocol parameter. The remaining pot is called the R, just as in section 6.5 of [SL-D1].
 	    
       changes into:
+      
 	    The reward pot is called the R, just as in section 6.5 of [SL-D1].
 	    
    2. At the fifth bullet point the sentence:
 	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved to the treasury.
       
       changes into:
+      
 	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved back to the reserve. Next the portion of rewards that belong to treasury as determined by thetau parameter is calculated and added to the amount moved to treasury.
 
 
@@ -58,7 +60,8 @@ B. Proposed modifications to Design Specification for Delegation and Incentives 
 	     The fraction tau [0, 1] of rewards going to the treasury.
 
       changes into:
-             The fraction tau [0, 1] of distributed rewards going to the treasury.
+     
+     	     The fraction tau [0, 1] of distributed rewards going to the treasury.
 
    Page 35 of the document that corresponds to page 36 of the pdf file, chapter 5.4.4 Treasury
 
@@ -66,7 +69,8 @@ B. Proposed modifications to Design Specification for Delegation and Incentives 
 	     A fraction tau of the rewards pot for each epoch will go to the treasury.
 	   
       changes into:
-             A fraction tau of distributed rewards for each epoch will go to the treasury.
+             
+	     A fraction tau of distributed rewards for each epoch will go to the treasury.
 		 
    Page 37 of the document that corresponds to page 38 of the pdf file, chapter 5.5.3 Pool Rewards
 
@@ -83,6 +87,7 @@ B. Proposed modifications to Design Specification for Delegation and Incentives 
 	     Setting tau is a policy decision; we will probably use tau = 0.2, i.e. 20% of available epoch rewards will be sent to the treasury.
 	     
       changes into:
+	     
 	     Setting tau is a policy decision; we will probably use tau = 0.2, i.e. 20% of distributed epoch rewards will be sent to the treasury.
 
 
