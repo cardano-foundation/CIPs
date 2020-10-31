@@ -20,12 +20,12 @@ Application of Treasury fraction (tau parameter) to actual distributed rewards i
 
 ## Abstract
 
-Applying the treasury fraction calculation to the actual distributed rewards instead of the epoch reward pot will garantee as certain the part of reserve that will flow to the treasury, increasing the trasparency of the reward mechanism. 
+Applying the treasury fraction calculation to the actual distributed rewards instead of the epoch reward pot will guarantee as certain the part of reserve that will flow to the treasury, increasing the transparency of the reward mechanism. 
 
 ## Motivation
 
 At the time of the Shelley mainnet launch it has been decided that unclaimed rewards flow back to the reserve instead of going to increase the treasury pot.
-Given that this change is clearly a benefit for both delegators and pools it didn't solve the uncertainity of an estimation about the reserve quota that is and will be forwarded to the treasury pot.
+Given that this change is clearly a benefit for both delegators and pools it didn't solve the uncertainty of an estimation about the reserve quota that is and will be forwarded to the treasury pot.
 The reason is that the treasury quota is currently influenced by other factors like, for example, the total active stake and the pool pledge / pool saturation point ratio in relation with the value of a0 parameter.
 In case of lower-than-100% active staking participation and/or lower-than-saturation-point average pool pledging the quota of reserve that will flow to treasury will be higher than what defined by tau parameter in a range between tau and 100%.
 
@@ -35,21 +35,22 @@ The proposal refers to documents that decribe how and when the portion of reward
 
 A. Proposed modifications to Shelley Ledger: Formal Cardano Ledger Spec. (SL-D5 v.0.2, 2019/10/08)
 
-   Page 62 of the document that corresponds to page 63 of the pdf file
+Page 62 of the document that corresponds to page 63 of the pdf file
 
-   1. At the fourth bullet point the sentence:
-   	Next we calculate the proportion of the reward pot that will move to the treasury, as determined by the tau protocol parameter. The remaining pot is called the R, just as in section 6.5 of [SL-D1].
+1. At the fourth bullet point the sentence:
+	Next we calculate the proportion of the reward pot that will move to the treasury, as determined by the tau protocol parameter. The remaining pot is called the R, just as in section 6.5 of [SL-D1].
+		
+   changes to:
+	
+	The reward pot is called the R, just as in section 6.5 of [SL-D1].
+
 	    
-      changes into:
+ 2. At the fifth bullet point the sentence:
+	 The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved to the treasury.
       
-	    The reward pot is called the R, just as in section 6.5 of [SL-D1].
-	    
-   2. At the fifth bullet point the sentence:
-	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved to the treasury.
+    changes to:
       
-      changes into:
-      
-	    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved back to the reserve. Next the portion of rewards that belong to treasury as determined by thetau parameter is calculated and added to the amount moved to treasury.
+    The rewards are calculated, using the oldest stake distribution snapshot (the one labeled “go”). As given by maxPool, each pool can receive a maximal amount, determined by its performance. The difference between the maximal amount and the actual amount received is added to the amount moved back to the reserve. Next, the portion of rewards that belong to treasury as determined by the tau parameter is calculated and added to the amount sent to treasury.
 
 
 B. Proposed modifications to Design Specification for Delegation and Incentives in Cardano (SL-D1 v1.21, 2020/07/23) 
@@ -57,28 +58,28 @@ B. Proposed modifications to Design Specification for Delegation and Incentives 
    Page 33 of the document that corresponds to page 34 of the pdf file, chapter 5.2 Parameters
    
    1. At the fourth bullet point the sentence:
-	     The fraction tau [0, 1] of rewards going to the treasury.
+	   The fraction tau [0, 1] of rewards going to the treasury.
 
-      changes into:
+      changes to:
      
-     	     The fraction tau [0, 1] of distributed rewards going to the treasury.
+     	The fraction tau [0, 1] of distributed rewards going to the treasury.
 
    Page 35 of the document that corresponds to page 36 of the pdf file, chapter 5.4.4 Treasury
 
    1. The first sentence of the chapter:
-	     A fraction tau of the rewards pot for each epoch will go to the treasury.
+	   A fraction tau of the rewards pot for each epoch will go to the treasury.
 	   
-      changes into:
+      changes to:
              
-	     A fraction tau of distributed rewards for each epoch will go to the treasury.
+	   A fraction tau of distributed rewards for each epoch will go to the treasury.
 		 
    Page 37 of the document that corresponds to page 38 of the pdf file, chapter 5.5.3 Pool Rewards
 
-   1. At the paragraph that starts with "The actual rewards tkae the apparent performance ...", after the reward formula we add:
-	     where actual rewards distributed to the pool will be reduced by the treasury contribution and are given by pf(s,sigma) * (1 - tau)
+   1. At the paragraph that starts with "The actual rewards take the apparent performance ...", after the reward formula the following sentence is added:
+	    where actual rewards distributed to the pool will be reduced by the treasury contribution and are given by pf(s,sigma) * (1 - tau)
 	     and pool contribution to the treasury is given by pf(s,sigma) * tau.
 	     
-   2. At the end of the page before the sentence "The diffence R ..." (character "E" in following formula must be considered as sigma summation notation for pools)
+   2. At the end of the page, before the sentence "The difference R ..." following sentence is added (character "E" in following formula must be considered as sigma summation notation with regard to pools):
 	     The sum of pools treasury contributions E(pf(s,sigma) * tau) will be sent to treasury.
 		
    Page 44 of the document that corresponds to page 45 of the pdf file, chapter 5.10.4 Tau
