@@ -46,9 +46,9 @@ We set `chain=2` to indicate the *staking key chain*. Keys in this chain MUST fo
 
 ### *address_index* value
 
-We RECOMMEND wallets only use `address_index=0` for compatibility with existing software. This also avoids the need for chimeric account discovery.
+We RECOMMEND wallets only use `address_index=0` for compatibility with existing software. This also avoids the need for staking key discovery.
 
-Wallets that use multiple chimeric accounts are REQUIRED to use sequential indexing with no gaps. This is to make detection of mangle addresses (addresses where the payment key belongs to the user, but the staking key doesn't) easier.
+Wallets that use multiple staking keys are REQUIRED to use sequential indexing with no gaps. This is to make detection of mangle addresses (addresses where the payment key belongs to the user, but the staking key doesn't) easier.
 
 *Note*: an observer looking at the blockchain will be able to tell if two staking keys belong to the same user if they are generated from the same wallet with different `address_index` values because the payment keys inside the *base addresses* will be the same.
 
