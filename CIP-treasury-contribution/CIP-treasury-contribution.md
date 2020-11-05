@@ -31,7 +31,7 @@ In case of lower-than-100% active staking participation and/or lower-than-satura
 
 ## Specification
 
-The proposal refers to documents that decribe how and when the portion of rewards that goes to treasury is calculated and forwarded.
+The proposal refers to documents that describe how and when the portion of rewards that goes to treasury is calculated and forwarded.
 
 A. Proposed modifications to Shelley Ledger: Formal Cardano Ledger Spec. (SL-D5 v.0.2, 2019/10/08)
 
