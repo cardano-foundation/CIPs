@@ -50,6 +50,8 @@ These are the registered `transaction_metadatum_label` values
 transaction_metadatum_label | description
 ----------------------------|-----------------------
 0 - 15                      | reserved*
+1967                        | nut.link metadata oracles registry
+1968                        | nut.link metadata oracles data points
 65536 - 131071              | reserved - private use
 
 \* It's best to avoid using `0` or any a similar number like `1` that other people are very likely to use. Prefer instead to generate a random number
