@@ -3,5 +3,5 @@
 
 This directory contains all files pertaining to **CIP 1 - "CIP process"**  
 
-Please refer to [CIP1.md](./CIP-0001.md). 
+Please refer to [CIP-0001.md](./CIP-0001.md). 
   
