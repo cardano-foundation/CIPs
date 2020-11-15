@@ -11,6 +11,8 @@ Created: 2020-09-22
 License: CC-BY-4.0
 Post-History: https://forum.cardano.org/t/40594
 Post-History: https://github.com/cardano-foundation/CIPs/pull/25
+```
+
 ## Summary
 
 Support stake pool references through a URI scheme, facilitating delegation via web links in all Cardano wallets and other means of delegation.
