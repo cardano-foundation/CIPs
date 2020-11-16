@@ -1,0 +1,73 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP?/CIP?.md",
+    "type": "object",
+    "title": "CIP?",
+    "description": "Transaction metadata schema for CIP?",
+    "required": [
+        "title",
+        "content"
+    ],
+    "properties": {
+        "title": {
+            "$id": "#/properties/title",
+            "type": "string",
+            "title": "Title",
+            "description": "Title of the communication.",
+            "maxLength": 64,
+            "examples": [
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do"
+            ]
+        },
+        "content": {
+            "$id": "#/properties/content",
+            "type": "array",
+            "title": "Content",
+            "description": "Content of the communication in chunks",
+            "items": [
+              {
+                "type": "string",
+                "maxLength": 64
+              }
+            ],
+            "examples": [
+                [
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ",
+                  "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut e",
+                  "nim ad minim veniam, quis nostrud exercitation ullamco laboris."
+                ]
+            ]
+        },
+        "link": {
+            "$id": "#/properties/link",
+            "type": "string",
+            "title": "Link",
+            "description": "Optional link for additional details about the communication",
+            "maxLength": 64,
+            "pattern": "^(https?)://",
+            "examples": [
+              "https://www.example.com/blog.html"
+            ]
+        },
+        "language": {
+            "$id": "#/properties/language",
+            "type": "string",
+            "title": "Language",
+            "description": "ISO 639-3 languange code of the content",
+            "pattern": "^[a-z]{3}$",
+            "examples": [
+              "lat"
+            ]
+        },
+        "expire": {
+            "$id": "#/properties/expire",
+            "type": "integer",
+            "title": "Expiration",
+            "description": "Slot number when the communication expires",
+            "examples": [
+              10669033
+            ]
+        }
+    },
+    "additionalProperties": false
+}
