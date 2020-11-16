@@ -94,7 +94,7 @@ No backwards compatibility breaking changes are introduced.
 
 We leave the decisions, such as what and how to display communication messages, up to downstream tools and wallets.
 
- * [Simple communication tool](https://github.com/fivebinaries/cip-metadata-communication-example)
+ * For simple implementation reference, refer to [CIPx communication tool examples](https://github.com/fivebinaries/cip-metadata-communication-example)
 
 ## Copyright
 
