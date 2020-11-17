@@ -47,12 +47,12 @@ More specifically, the generation is a function from an initial seed to an exten
 
 Throughout the years, Cardano has used different styles of master key generation:
 
-|  Name                         |  Created by |  Address prefix in Byron |  Is deprecated? | Is Recommended? |
-|-------------------------------|-------------|--------------------------|-----------------|-----------------|
-|  [Byron](./Byron.md)          |  Daedalus   |  Ddz                     |  Yes            | No              |
-|  [Icarus](./Icarus.md)        |  Yoroi      |  Ae2                     |  No             | Yes             |
-|  [Icarus-Trezor](./Icarus.md) |  Trezor     |  Ae2                     |  No             | No              |
-|  [Ledger](./Ledger.md)        |  Ledger     |  Ae2                     |  No             | No              |
+|  Name                         |  Used by         |  Address prefix in Byron |  Is deprecated? | Is Recommended? |
+|-------------------------------|------------------|--------------------------|-----------------|-----------------|
+|  [Byron](./Byron.md)          |  Daedalus        |  Ddz                     |  Yes            | No              |
+|  [Icarus](./Icarus.md)        |  Yoroi, Daedalus |  Ae2                     |  No             | Yes             |
+|  [Icarus-Trezor](./Icarus.md) |  Trezor          |  Ae2                     |  No             | No              |
+|  [Ledger](./Ledger.md)        |  Ledger          |  Ae2                     |  No             | No              |
 
 # Rationale
 
