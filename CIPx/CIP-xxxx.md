@@ -2,7 +2,7 @@
 CIP: ?
 Title: On-chain stake pool operator to delegates communication
 Authors: Marek Mahut <marek.mahut@fivebinaries.com>, Sebastien Guillemot <sebastien@emurgo.io>, Ján Hrnko <jan.hrnko@fivebinaries.com>
-Comments-URI: https://forum.cardano.org/t/
+Comments-URI: https://forum.cardano.org/t/on-chain-stake-pool-operator-to-delegates-communication/42229
 Status: Draft
 Type: Standards
 Created: 2020-11-07
