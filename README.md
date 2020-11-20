@@ -9,6 +9,7 @@ The current process is described in details in [CIP1 - "CIP Process"](https://gi
 | ----------------- |:----------------|:-------------------- |
 | 1                 | [CIP Process](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001)     | Active   |
 | 2                 | [Coin Selection Algorithms for Cardano](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0002) | Draft   |
+| 3                 | [Wallet key generation](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0003)                | Draft   |
 | 4                 | [Wallet Checksum](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0004)                | Draft   |
 | 5                 | [Common Bech32 Prefixes](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005)                | Draft   |
 | 7                 | [Curve Pledge Benefit](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0007)                | Draft   |
