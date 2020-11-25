@@ -59,6 +59,15 @@
               "lat"
             ]
         },
+        "valid": {
+          "$id": "#/properties/valid",
+          "type": "integer",
+          "title": "Validity",
+          "description": "Slot number when the communication becomes valid",
+          "examples": [
+            10669033
+          ]
+      },
         "expire": {
             "$id": "#/properties/expire",
             "type": "integer",

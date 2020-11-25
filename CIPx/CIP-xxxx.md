@@ -20,18 +20,18 @@ Standard format for metadata used in on-chain stake pool owner communication tow
 We define two types of communication metadata, which are distinguished by the transaction metadata label as defined in the [CIP10 Transaction metadata label registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP10/README.md).
 
  * *Message board communication* is a type of metadata that has been included in a on-chain transaction between two base addresses associated with the stake pool operator owner address. Given the onetime fee for this communication, we are considering this as a message board of the stake pool, as it also enables delegates to easier access historical metadata communication.
- 
+
  * *Direct delegate communication* is a type of metadata that has been included in an on-chain transaction between the stake pool owner account and the delegate's account. This type of communication is more expensive for the stake pool owner, preventing higher abuse and therefore enables wallets to implement notification granularity. It might be suitable for targeting specific delegates, such as messaging only new joined delegates, loyal delegates, high-amount delegates etc.
 
 
 
 ## Motivation
 
-The lack of on-chain communication standard between the stake pool owner and their delegates. 
+The lack of on-chain communication standard between the stake pool owner and their delegates.
 
 <!-- Link to CIP6 link once/if merged -->
 
-Working in progrress [CIP6](https://github.com/cardano-foundation/CIPs/pull/15) defines an external feed of a stake pool within the extended metadata, but as an alternative, there is a need for more verifiable on-chain communication standard, that will also ensure associated cost with such communication to prevent its abuse. 
+Working in progrress [CIP6](https://github.com/cardano-foundation/CIPs/pull/15) defines an external feed of a stake pool within the extended metadata, but as an alternative, there is a need for more verifiable on-chain communication standard, that will also ensure associated cost with such communication to prevent its abuse.
 
 ## Specification
 
@@ -51,6 +51,7 @@ Metadata is written in a JSON format and the maximum size of the metadata is 16k
 |||
 | `language` *(optional)*| ISO 639-3 languange code of the content | 3 bytes UTF-8 encoded string
 | `link` *(optional)*| Link for additional communication | 64 bytes UTF-8 encoded string, must be a valid URL |
+| `valid` *(optional)* | Slot number the communication becomes valid | Unsigned integer |
 | `expires` *(optional)* | Slot number until the communication is valid | Unsigned integer |
 
 ### Metadata JSON schema
@@ -74,6 +75,7 @@ The [schema.json](./schema.json) file defines the metadata inside the label.
     ],
     "link": "https://example.com/blog.html",
     "language": "lat",
+    "valid": 10661033,
     "expire": 10669033
   }
 }
