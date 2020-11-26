@@ -98,7 +98,7 @@ function build () {
   const cipsDirectory = path.join(__dirname, '..')
   const cips = fs.readdirSync(cipsDirectory)
   cips.forEach(item => {
-    if (!item.match(/^CIP[\d]{1,}$/)) return
+    if (!item.match(/^CIP-[\d][\d][\d][\d]{1,}$/)) return
     const assets = fs.readdirSync(path.join(cipsDirectory, item))
     assets.forEach(asset => {
       const assetPath = path.join(cipsDirectory, item, asset)
