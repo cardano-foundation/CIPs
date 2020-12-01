@@ -1,11 +1,12 @@
 ---
 CIP: 6
 Title: Extended Metadata
-Authors: Mike Fullman <mike@fullman.net>, Markus Gufler <gufmar@gmail.com>
+Authors: Markus Gufler <gufmar@gmail.com>, Mike Fullman <mike@fullman.net>
 Comments-URI:
 Status: Draft
 Type: Standards
-Created: 2020-07-20
+Created: 2020-07-20 original draft
+Updated: 2020-11-24 2nd key-pair for validation
 License: CC-BY-4.0
 ---
 
@@ -28,8 +29,8 @@ Many additional attributes can be envisioned for future wallets, pool explorers,
 
 ## Specification
 
-#### On Chain referenced metadata file
-We define one more line for the on chain referenced metadata file that references another json file on a url with the extended metadata.  The proposed metadata is as follows:
+### On Chain referenced (main) metadata file
+We define two more fields for the on chain referenced metadata file that references another json file on a url with the extended metadata.  The proposed metadata is as follows:
 
 | key           | Value                                | Rules  |
 | ---           | ---                                  | ---  |
@@ -37,91 +38,71 @@ We define one more line for the on chain referenced metadata file that reference
 |  `description` | Pool Description.  Text that describes the pool | 50 Characters Maximum |
 |  `homepage` | A website URL for the pool| 64 Characters Maximum, must be a valid URL |
 |  `name` | A name for the pool | 50 Characters Maximum |
-|  `extended` | A url for extended metadata| Optional, 64 Characters Maximum, must be a valid URL |
+| `extDataUrl` | A URL for extended metadata | optional, 128 Characters Maximum, must be a valid URL |
+| `extHashUrl` | A URL with the extended metadata hash | optional, 128 Characters Maximum, must be a valid URL |
+| `extVkey` | the public Key for verification | optional, 68 Characters |
 
-#### Extended Metadata
-The file located at the URL for extended data is a json compliant text file with the following top level fields:
+In order to include the additional ext Field data, we suggest increasing the maximum size of the main metadata file from currently 512 to 1024 bytes.
 
-| key           | Description                                |
-| ---           | ---                                  |
-| `serial` | set to YYYYMMDDxx on every update |
-|  `itn` | ITN pool validation data |
-|  `info` | Corporate image, contacts and about details |
-| `pools` | Pool details |
+### Extended Metadata - flexible but validable
 
-Since this extended metadata file has no checksum and can be updated at any time by the pool operator, a **serial number** is useful to easily identify updates.
+In difference to the main metadata, the extended metadata should be updateable without having to use the cold key of the pool and without having to perform an on-chain transaction. The consumer of these data should still have the possibility to verify the authenticity of the data.
 
-The purpose of this first (**itn**) extension is the verifiable linking of an ITN pool ticker with its counterpart in Mainnet to identify fraudulent duplicates.
+The operator notes all his additional pool information in the extended metadata (`extData.json`).
 
-#### Complete Extended Metadata Example
+We propose the pool operator generate a new public-secret key-pair (`extData.skey` and `extData.vkey`)
+
+```shell
+cardano-cli shelley node key-gen 
+  --cold-verification-key-file extData.vkey 
+  --cold-signing-key-file extData.skey 
+  --operational-certificate-issue-counter-file extData.counter
 ```
-{
-    "serial": 2020072001,
-    "itn": {
-        "owner": "ed25519_pk1...",
-        "witness": "ed25519_sig1..."
-    },
-    "info": {
-        "CI": {
-            "logo_url_png_icon_64x64": "https://mycoolpool.com/icon.png",
-            "logo_url_png_logo": "https://mycoolpool.com/logo.png",
-            "color_main": "#RRGGBB",
-            "logo_vector": "https://mycoolpool.com/logo.svg"
-        },
-        "social": {
-            "twitter_handle": "coolpool",
-            "telegram_handle": "coolpool",
-            "facebook_handle": "coolpool",
-            "youtube_handle": "coolpool",
-            "twitch_handle": "coolpool",
-            "discord_handle": "coolpool",
-            "github_handle": "coolpool"
-        },
-        "contact": {
-            "abuse": "abuse@pooldomain.org",
-            "support": "help@pooldomain.org",
-            "telegram_admin":"coolpool"
-        },
-        "company": {
-            "name": "Company Name",
-            "addr": "Street, Number",
-            "city": "London",
-            "country": "UK",
-            "company_id": "123456789",
-            "vat_id": "GB123456789"
-        },
-        "operator": {
-            "country": "UK",
-            "sex": "2"
-        },
-        "about": {
-            "team_affiliation": [
-                "ISPPA",
-                "Cardano Ambassador"
-            ],
-            "me": "Long description of me",
-            "server": "long description of server details",
-            "company": "long description of company details"
-        },
-        "rss": "https://mycoolpool.com/xml/poolrss.xml"
-    },
-    "pool": {
-        "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-        "country": "UK",
-        "os": "LINUX",
-        "infrastructure": "AWS",
-        "status": "act",
-        "saturated_recommend":"0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-    }
 
-}
+Then a new (not available yet) `cardano-cli` command generate the signed hash (`extData.sign`) .
+
+```shell
+cardano-cli shelley stake-pool rawdata-hash
+  --raw-metadata-file extData.json
+  --signing-key-file extData.skey
+  --out-file extData.sign
 ```
+
+The operator now:
+
+- has the `extData.json` and `extData.sign` files
+- will publish them at some https:// URL (probably same host as the main metadata)
+- use the `extData.vkey` string and the two extend file URLs to re-register the main metadata
+
+This re-registration of the main metadata file with the `extData.vkey` and the two URLs is only necessary once. Afterwards, the operator can update his extended metadata at any time, generate the new signature and put both files online.
+
+### Extended Metadata structure
+
+In the following we describe a first minimal version of the extended Json file format
+
+Since this extended metadata file can be updated at any time by the pool operator, a **serial number** is useful to easily identify updates.
+
+There are main thematic sections with respective subordinate data fields:
+
+- the **itn** section is about the verifiable linking of an ITN pool ticker with its counterpart in Mainnet to identify fraudulent duplicates. (already used as not standardized extension)
+- the **pool** section contains additional information about the pool instance
+- the **operator** section contains additional information about the people operating this pool
+- the **owner** section contains additional information about the pool owner(s)
+
+
+
+ToDo: describe the initial basic format, and a standard on how future CIPs need to approach an evolution of the extended metadata schema
+
+
 
 #### Extended Metadata Schema
+```
+work in progress
+```
 
-see incorporated file [schema.json](schema.json)
 
-## Infrastructure Mapping
+
+#### Infrastructure Mapping
 ```
 [
     {"Code": "aws", "Name": "Amazon Cloud"},
@@ -142,7 +123,7 @@ see incorporated file [schema.json](schema.json)
 ]
 ```
 
-## Operating System Mapping
+#### Operating System Mapping
 ```
 [
     {"Code": "linux", "Name": "Linux"},
@@ -153,7 +134,7 @@ see incorporated file [schema.json](schema.json)
 ]
 ```
 
-## Pool Status Mapping
+#### Pool Status Mapping
 ```
 [
     {"Code": "act","Name": "Active"},
@@ -165,7 +146,7 @@ see incorporated file [schema.json](schema.json)
 ```
 ## Backwards compatibility
 
-No fields are removed or changed in the current on chain metadata.  The new field `extended` is optional and not necessary to parse for any entities that do not need additional information about a pool
+No fields are removed or changed in the current on chain metadata.  The new `ext...` fields are optional and not necessary to parse for any entities that do not need additional information about a pool
 
 ## Reference implementation
 

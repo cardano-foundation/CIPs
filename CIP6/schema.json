@@ -1,464 +1,1231 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "http://example.com/example.json",
-    "type": "object",
-    "title": "The root schema",
-    "description": "The root schema comprises the entire JSON document.",
+    "$schema": "http://json-schema.org/draft-07/schema",
     "default": {},
+    "description": "additional information for Cardano Stake Pools",
     "examples": [
         {
             "serial": 2020072001,
-            "itn": {
-                "owner": "ed25519_pk1...",
-                "witness": "ed25519_sig1..."
-            },
-            "info": {
-                "CI": {
-                    "logo_url_png_icon_64x64": "https://mycoolpool.com/icon.png",
-                    "logo_url_png_logo": "https://mycoolpool.com/logo.png",
-                    "color_main": "#RRGGBB",
-                    "logo_vector": "https://mycoolpool.com/logo.svg"
-                },
-                "social": {
-                    "twitter_handle": "coolpool",
-                    "telegram_handle": "coolpool",
-                    "facebook_handle": "coolpool",
-                    "youtube_handle": "coolpool",
-                    "twitch_handle": "coolpool",
-                    "discord_handle": "coolpool",
-                    "github_handle": "coolpool"
-                },
-                "contact": {
-                    "abuse": "abuse@pooldomain.org",
-                    "support": "help@pooldomain.org"
-                },
-                "company": {
-                    "name": "Company Name",
-                    "addr": "Street, Number",
-                    "city": "London",
-                    "country": "UK",
-                    "company_id": "123456789",
-                    "vat_id": "GB123456789"
-                },
-                "operator": {
-                    "country": "UK",
-                    "sex": "2"
-                },
-                "about": {
-                    "team_affiliation": [
-                        "ISPPA",
-                        "Cardano Ambassador"
-                    ],
-                    "me": "Long description of me",
-                    "server": "long description of server details",
-                    "company": "long description of company details"
-                },
-                "rss": "https://mycoolpool.com/xml/poolrss.xml"
-            },
             "pool": {
                 "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                "country": "UK",
-                "os": "LINUX",
-                "infrastructure": "AWS",
+                "country": "DE",
                 "status": "act",
-                "saturated_recommend": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-            }
-
-
-        }
-    ],
-    "required": [
-        "serial"
-    ],
-    "properties": {
-        "serial": {
-            "default": 0,
-            "description": "YYYYMMDDxx set on every update",
-            "examples": [
-                2020072001
-            ],
-            "title": "Serial Number",
-            "pattern": "`\\d{10}`"
-        },
-        "itn": {
-            "default": {},
-            "description": "Link incentivised-testnet and mainnet tickers",
-            "examples": [
-                {
+                "saturated_recommend_id": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "contact": {
+                    "primary": "email",
+                    "discord": "coolpool",
+                    "email": "help@pooldomain.org",
+                    "facebook": "coolpool",
+                    "github": "coolpool",
+                    "phone_call": "+44 123456789",
+                    "phone_text": "+44 123456789",
+                    "feed": "https://mycoolpool.com/xml/poolrss.xml",
+                    "telegram": "coolpool",
+                    "telegram_channel": "https://t.me/coolchannel",
+                    "twitch": "coolpool",
+                    "twitter": "coolpool",
+                    "youtube": "coolpool"
+                },
+                "technology": {
+                    "description": "We have a high availability setup with 2 block producers and 4 relays in 2 different data centers.",
+                    "os": {
+                        "$id": "#/properties/pools/items/anyOf/0/properties/os",
+                        "type": "string",
+                        "title": "Pool Operating System",
+                        "description": "Pool Operating System",
+                        "default": "",
+                        "examples": [
+                            "Linux",
+                            "macOS",
+                            "Windows",
+                            "BSD",
+                            "Other",
+                            "Undisclosed"
+                        ]
+                    },
+                    "infrastructure": {
+                        "$id": "#/properties/pools/items/anyOf/0/properties/infrastructure",
+                        "type": "string",
+                        "title": "Pool Infrastructure",
+                        "description": "Pool infrastructure Platform",
+                        "default": "",
+                        "examples": [
+                            "cloud",
+                            "hosted bare metal",
+                            "local bare metal",
+                            "other",
+                            "undisclosed"
+                        ]
+                    }
+                },
+                "media_assets": {
+                    "icon_png_64x64": "https://mycoolpool.com/icon.png",
+                    "logo_png": "https://mycoolpool.com/logo.png",
+                    "logo_svg": "https://mycoolpool.com/logo.svg",
+                    "color_fg": "#RRGGBB",
+                    "color_bg": "#RRGGBB"
+                },
+                "affiliations": [
+                    "ISPPA",
+                    "Cardano Ambassador"
+                ],
+                "supporting": [
+                    "10% of fees donated to Save the Frogs.",
+                    "Some proceeds used to sponsor local Cardano meetup."
+                ],
+                "itn": {
                     "owner": "ed25519_pk1...",
                     "witness": "ed25519_sig1..."
                 }
-            ],
-            "required": [
-                "owner",
-                "witness"
-            ],
-            "title": "ITN relations",
-            "properties": {
-                "owner": {
-                    "default": "",
-                    "description": "Public key of ITN pool",
-                    "examples": [
-                        "ed25519_pk1..."
-                    ],
-                    "title": "owner public key"
+            },
+            "operator": {
+                "description": "Cool Ops operates pools for people.",
+                "person": {
+                    "name": "Juanita Lopez",
+                    "address": "101 Main St., Suite 3",
+                    "city": "London",
+                    "state_or_region": "",
+                    "postal_code": "123456",
+                    "country": "UK",
+                    "gender": "2"
                 },
-                "witness": {
-                    "default": "",
-                    "description": "Mainnet pool id signed by the ITN pool owner secret key",
-                    "examples": [
-                        "ed25519_sig1..."
-                    ],
-                    "title": "signed pool id"
+                "organization": {
+                    "name": "Cool Ops LLC",
+                    "government_id": "123456789",
+                    "vat_id": "GB123456789",
+                    "address": "101 Main St.",
+                    "city": "London",
+                    "state_or_region": "",
+                    "postal_code": "123456",
+                    "country": "UK"
                 }
             },
-            "additionalProperties": true
+            "owner": {
+                "description": "I am a podcaster and believer in Cardano.",
+                "person": {
+                    "name": "Ramesh Patel",
+                    "address": "",
+                    "city": "Vancouver",
+                    "state_or_region": "BC",
+                    "postal_code": "",
+                    "country": "CA",
+                    "gender": "1"
+                }
+            }
+        }
+    ],
+    "required": [
+        "serial",
+        "pool"
+    ],
+    "title": "Extended metadata",
+    "maxLength": 4096,
+    "type": "object",
+    "properties": {
+        "serial": {
+            "$id": "#/properties/serial",
+            "default": 0,
+            "description": "Integer number incremented on every update, by using YYYYMMDDxx (xx each day start by 01 and is incremented on each update",
+            "examples": [
+                2020072001
+            ],
+            "title": "serial number",
+            "maxLength": 10,
+            "minLength": 10,
+            "required": [],
+            "type": "integer"
         },
-        "info": {
-            "$id": "#/properties/info",
-            "type": "object",
-            "title": "The info schema",
-            "description": "An explanation about the purpose of this instance.",
+        "pool": {
+            "$id": "#/properties/pool",
             "default": {},
+            "description": "pool related metadata",
             "examples": [
                 {
-                    "CI": {
-                        "logo_url_png_icon_64x64": "https://mycoolpool.com/icon.png",
-                        "logo_url_png_logo": "https://mycoolpool.com/logo.png",
-                        "color_main": "#RRGGBB",
-                        "logo_vector": "https://mycoolpool.com/logo.svg"
-                    },
-                    "social": {
-                        "twitter_handle": "coolpool",
-                        "telegram_handle": "coolpool",
-                        "facebook_handle": "coolpool",
-                        "youtube_handle": "coolpool",
-                        "twitch_handle": "coolpool",
-                        "discord_handle": "coolpool",
-                        "github_handle": "coolpool"
-                    },
+                    "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                    "country": "DE",
+                    "status": "act",
+                    "saturated_recommend_id": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
                     "contact": {
-                        "abuse": "abuse@pooldomain.org",
-                        "support": "help@pooldomain.org"
+                        "primary": "email",
+                        "discord": "coolpool",
+                        "email": "help@pooldomain.org",
+                        "facebook": "coolpool",
+                        "github": "coolpool",
+                        "phone_call": "+44 123456789",
+                        "phone_text": "+44 123456789",
+                        "feed": "https://mycoolpool.com/xml/poolrss.xml",
+                        "telegram": "coolpool",
+                        "telegram_channel": "https://t.me/coolchannel",
+                        "twitch": "coolpool",
+                        "twitter": "coolpool",
+                        "youtube": "coolpool"
                     },
-                    "company": {
-                        "name": "Company Name",
-                        "addr": "Street, Number",
-                        "city": "London",
-                        "country": "UK",
-                        "company_id": "123456789",
-                        "vat_id": "GB123456789"
+                    "technology": {
+                        "description": "We have a high availability setup with 2 block producers and 4 relays in 2 different data centers.",
+                        "os": {
+                            "$id": "#/properties/pools/items/anyOf/0/properties/os",
+                            "type": "string",
+                            "title": "Pool Operating System",
+                            "description": "Pool Operating System",
+                            "default": "",
+                            "examples": [
+                                "Linux",
+                                "macOS",
+                                "Windows",
+                                "BSD",
+                                "Other",
+                                "Undisclosed"
+                            ]
+                        },
+                        "infrastructure": {
+                            "$id": "#/properties/pools/items/anyOf/0/properties/infrastructure",
+                            "type": "string",
+                            "title": "Pool Infrastructure",
+                            "description": "Pool infrastructure Platform",
+                            "default": "",
+                            "examples": [
+                                "cloud",
+                                "hosted bare metal",
+                                "local bare metal",
+                                "other",
+                                "undisclosed"
+                            ]
+                        }
                     },
-                    "operator": {
-                        "country": "UK",
-                        "sex": "2"
+                    "media_assets": {
+                        "icon_png_64x64": "https://mycoolpool.com/icon.png",
+                        "logo_png": "https://mycoolpool.com/logo.png",
+                        "logo_svg": "https://mycoolpool.com/logo.svg",
+                        "color_fg": "#RRGGBB",
+                        "color_bg": "#RRGGBB"
                     },
-                    "about": {
-                        "team_affiliation": [
-                            "ISPPA",
-                            "Cardano Ambassador"
-                        ],
-                        "me": "Long description of me",
-                        "server": "long description of server details",
-                        "company": "long description of company details"
-                    },
-                    "rss": "https://mycoolpool.com/xml/poolrss.xml"
+                    "affiliations": [
+                        "ISPPA",
+                        "Cardano Ambassador"
+                    ],
+                    "supporting": [
+                        "10% of fees donated to Save the Frogs.",
+                        "Some proceeds used to sponsor local Cardano meetup."
+                    ],
+                    "itn": {
+                        "owner": "ed25519_pk1...",
+                        "witness": "ed25519_sig1..."
+                    }
                 }
             ],
+            "required": [
+                "id"
+            ],
+            "title": "stake pool",
+            "type": "object",
             "properties": {
-                "CI": {
-                    "default": {},
-                    "description": "All details related to corporate image",
-                    "examples": [
-                        {
-                            "logo_url_png_icon_64x64": "https://mycoolpool.com/icon.png",
-                            "logo_url_png_logo": "https://mycoolpool.com/logo.png",
-                            "color_main": "#RRGGBB",
-                            "logo_vector": "https://mycoolpool.com/logo.svg"
-                        }
-                    ],
-                    "title": "Corporate Image Details",
-                    "properties": {
-                        "logo_url_png_icon_64x64": {
-                            "default": "",
-                            "description": "A small logo, 64x64 max size",
-                            "examples": [
-                                "https://mycoolpool.com/icon.png"
-                            ],
-                            "pattern": "https?://(?:[a-z0-9\\-]+\\.)+[a-z]{2,6}(?:/[^/#?]+)+\\.png$",
-                            "title": "The logo_url_png_icon_64x64"
-                        },
-                        "logo_url_png_logo": {
-                            "default": "",
-                            "description": "A pool logo",
-                            "examples": [
-                                "https://mycoolpool.com/logo.png"
-                            ],
-                            "pattern": "https?://(?:[a-z0-9\\-]+\\.)+[a-z]{2,6}(?:/[^/#?]+)+\\.png$",
-                            "title": "A url to a pool logo"
-                        },
-                        "color_main": {
-                            "default": "",
-                            "description": "HTML RGB color code with corporate background theme color",
-                            "examples": [
-                                "#RRGGBB"
-                            ],
-                            "title": "Background color",
-                            "pattern": "^[0-9a-fA-F]{6}$"
-                        },
-                        "logo_vector": {
-                            "default": "",
-                            "description": "svg defined vector logo",
-                            "pattern": "https?://(?:[a-z0-9\\-]+\\.)+[a-z]{2,6}(?:/[^/#?]+)+\\.svg$",
-                            "examples": [
-                                "https://mycoolpool.com/logo.svg"
-                            ],
-                            "title": "vector logo"
-                        }
-                    },
-                    "additionalProperties": true
-                },
-                "social": {
-                    "$id": "#/properties/info/properties/social",
-                    "type": "object",
-                    "title": "The social schema",
+                "id": {
+                    "$id": "#/properties/pool/properties/id",
+                    "type": "string",
+                    "title": "The id schema",
                     "description": "An explanation about the purpose of this instance.",
-                    "default": {},
+                    "default": "",
                     "examples": [
-                        {
-                            "twitter_handle": "coolpool",
-                            "telegram_handle": "coolpool",
-                            "facebook_handle": "coolpool",
-                            "youtube_handle": "coolpool",
-                            "twitch_handle": "coolpool",
-                            "discord_handle": "coolpool",
-                            "github_handle": "coolpool"
-                        }
+                        "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+                    ]
+                },
+                "country": {
+                    "$id": "#/properties/pool/properties/country",
+                    "type": "string",
+                    "title": "The country schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "DE"
+                    ]
+                },
+                "status": {
+                    "$id": "#/properties/pool/properties/status",
+                    "type": "string",
+                    "title": "The status schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "act"
+                    ]
+                },
+                "saturated_recommend_id": {
+                    "$id": "#/properties/pool/properties/saturated_recommend_id",
+                    "default": "",
+                    "description": "An explanation about the purpose of this instance.",
+                    "examples": [
+                        "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
                     ],
-
-                    "properties": {
-                        "twitter_handle": {
-                            "default": "",
-                            "description": "Twitter handle without leading @",
-                            "examples": [
-                                "coolpool"
-                            ],
-                            "title": "The twitter_handle schema",
-                            "pattern": "^(\\w){1,15}$"
-                        },
-                        "telegram_handle": {
-                            "default": "",
-                            "description": "An explanation about the purpose of this instance.",
-                            "examples": [
-                                "coolpool"
-                            ],
-                            "title": "The telegram_handle schema"
-
-                        },
-                        "facebook_handle": {
-                            "default": "",
-                            "description": "An explanation about the purpose of this instance.",
-                            "examples": [
-                                "coolpool"
-                            ],
-                            "title": "The facebook_handle schema",
-                            "pattern": "^(\\w){1,55}$"
-                        },
-                        "youtube_handle": {
-                            "$id": "#/properties/info/properties/social/properties/youtube_handle",
-                            "type": "string",
-                            "title": "The youtube_handle schema",
-                            "description": "An explanation about the purpose of this instance.",
-                            "default": "",
-                            "examples": [
-                                "coolpool"
-                            ]
-                        },
-                        "twitch_handle": {
-                            "$id": "#/properties/info/properties/social/properties/twitch_handle",
-                            "type": "string",
-                            "title": "The twitch_handle schema",
-                            "description": "An explanation about the purpose of this instance.",
-                            "default": "",
-                            "examples": [
-                                "coolpool"
-                            ]
-                        },
-                        "discord_handle": {
-                            "$id": "#/properties/info/properties/social/properties/discord_handle",
-                            "type": "string",
-                            "title": "The discord_handle schema",
-                            "description": "An explanation about the purpose of this instance.",
-                            "default": "",
-                            "examples": [
-                                "coolpool"
-                            ]
-                        },
-                        "github_handle": {
-                            "$id": "#/properties/info/properties/social/properties/github_handle",
-                            "type": "string",
-                            "title": "The github_handle schema",
-                            "description": "An explanation about the purpose of this instance.",
-                            "default": "",
-                            "examples": [
-                                "coolpool"
-                            ]
-                        }
-                    },
-                    "additionalProperties": true
+                    "title": "saturated recommendated",
+                    "type": "object"
                 },
                 "contact": {
-                    "$id": "#/properties/info/properties/contact",
+                    "$id": "#/properties/pool/properties/contact",
                     "type": "object",
                     "title": "The contact schema",
                     "description": "An explanation about the purpose of this instance.",
                     "default": {},
                     "examples": [
                         {
-                            "abuse": "abuse@pooldomain.org",
-                            "support": "help@pooldomain.org",
-                            "telegram_admin":"coolpool"
+                            "primary": "email",
+                            "discord": "coolpool",
+                            "email": "help@pooldomain.org",
+                            "facebook": "coolpool",
+                            "github": "coolpool",
+                            "phone_call": "+44 123456789",
+                            "phone_text": "+44 123456789",
+                            "feed": "https://mycoolpool.com/xml/poolrss.xml",
+                            "telegram": "coolpool",
+                            "telegram_channel": "https://t.me/coolchannel",
+                            "twitch": "coolpool",
+                            "twitter": "coolpool",
+                            "youtube": "coolpool"
                         }
                     ],
-
+                    "required": [
+                        "primary",
+                        "discord",
+                        "email",
+                        "facebook",
+                        "github",
+                        "phone_call",
+                        "phone_text",
+                        "feed",
+                        "telegram",
+                        "telegram_channel",
+                        "twitch",
+                        "twitter",
+                        "youtube"
+                    ],
                     "properties": {
-                        "abuse": {
+                        "primary": {
+                            "$id": "#/properties/pool/properties/contact/properties/primary",
                             "default": "",
-                            "description": "Abuse contact email",
+                            "description": "the pools prefered communication channel",
                             "examples": [
-                                "abuse@pooldomain.org"
+                                "email"
                             ],
-                            "title": "Abuse Contact email"
+                            "title": "primary contact preference",
+                            "type": "string"
                         },
-                        "support": {
+                        "email": {
+                            "$id": "#/properties/pool/properties/contact/properties/email",
                             "default": "",
-                            "description": "Support contact email",
+                            "description": "valid email contact address",
                             "examples": [
                                 "help@pooldomain.org"
                             ],
-                            "title": "Support Contact Email"
+                            "title": "email address",
+                            "type": "string"
                         },
-                        "telegram_admin": {
+                        "facebook": {
+                            "$id": "#/properties/pool/properties/contact/properties/facebook",
                             "default": "",
-                            "description": "The administrator telegram contact handle",
+                            "description": "a user or page name",
                             "examples": [
                                 "coolpool"
                             ],
-                            "title": "he administrator telegram contact handle"
-
+                            "title": "facebook account",
+                            "type": "string"
+                        },
+                        "github": {
+                            "$id": "#/properties/pool/properties/contact/properties/github",
+                            "default": "",
+                            "description": "a github username",
+                            "examples": [
+                                "coolpool"
+                            ],
+                            "title": "github account",
+                            "type": "string"
+                        },
+                        "feed": {
+                            "$id": "#/properties/pool/properties/contact/properties/feed",
+                            "default": "",
+                            "description": "RSS feed URL",
+                            "examples": [
+                                "https://mycoolpool.com/xml/poolrss.xml"
+                            ],
+                            "title": "RSS feed",
+                            "type": "string"
+                        },
+                        "telegram": {
+                            "$id": "#/properties/pool/properties/contact/properties/telegram",
+                            "default": "",
+                            "description": "a telegram username",
+                            "examples": [
+                                "coolpool"
+                            ],
+                            "title": "telegram account",
+                            "type": "string"
+                        },
+                        "twitter": {
+                            "$id": "#/properties/pool/properties/contact/properties/twitter",
+                            "default": "",
+                            "description": "a twitter username",
+                            "examples": [
+                                "coolpool"
+                            ],
+                            "title": "twitter account",
+                            "type": "string"
                         }
                     },
                     "additionalProperties": true
                 },
-                "company": {
-                    "$id": "#/properties/info/properties/company",
+                "technology": {
+                    "$id": "#/properties/pool/properties/technology",
                     "type": "object",
-                    "title": "Company Details",
-                    "description": "Contact details of company",
+                    "title": "The technology schema",
+                    "description": "An explanation about the purpose of this instance.",
                     "default": {},
                     "examples": [
                         {
-                            "name": "Company Name",
-                            "addr": "Street, Number",
-                            "city": "London",
-                            "country": "UK",
-                            "company_id": "123456789",
-                            "vat_id": "GB123456789"
+                            "description": "We have a high availability setup with 2 block producers and 4 relays in 2 different data centers.",
+                            "os": {
+                                "$id": "#/properties/pools/items/anyOf/0/properties/os",
+                                "type": "string",
+                                "title": "Pool Operating System",
+                                "description": "Pool Operating System",
+                                "default": "",
+                                "examples": [
+                                    "Linux",
+                                    "macOS",
+                                    "Windows",
+                                    "BSD",
+                                    "Other",
+                                    "Undisclosed"
+                                ]
+                            },
+                            "infrastructure": {
+                                "$id": "#/properties/pools/items/anyOf/0/properties/infrastructure",
+                                "type": "string",
+                                "title": "Pool Infrastructure",
+                                "description": "Pool infrastructure Platform",
+                                "default": "",
+                                "examples": [
+                                    "cloud",
+                                    "hosted bare metal",
+                                    "local bare metal",
+                                    "other",
+                                    "undisclosed"
+                                ]
+                            }
                         }
+                    ],
+                    "required": [
+                        "description",
+                        "os",
+                        "infrastructure"
+                    ],
+                    "properties": {
+                        "description": {
+                            "$id": "#/properties/pool/properties/technology/properties/description",
+                            "type": "string",
+                            "title": "The description schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "We have a high availability setup with 2 block producers and 4 relays in 2 different data centers."
+                            ]
+                        },
+                        "os": {
+                            "$id": "#/properties/pool/properties/technology/properties/os",
+                            "type": "object",
+                            "title": "The os schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "$id": "#/properties/pools/items/anyOf/0/properties/os",
+                                    "type": "string",
+                                    "title": "Pool Operating System",
+                                    "description": "Pool Operating System",
+                                    "default": "",
+                                    "examples": [
+                                        "Linux",
+                                        "macOS",
+                                        "Windows",
+                                        "BSD",
+                                        "Other",
+                                        "Undisclosed"
+                                    ]
+                                }
+                            ],
+                            "required": [
+                                "$id",
+                                "type",
+                                "title",
+                                "description",
+                                "default",
+                                "examples"
+                            ],
+                            "properties": {
+                                "$id": {
+                                    "$id": "#/properties/pool/properties/technology/properties/os/properties/%24id",
+                                    "type": "string",
+                                    "title": "The $id schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "#/properties/pools/items/anyOf/0/properties/os"
+                                    ]
+                                },
+                                "type": {
+                                    "$id": "#/properties/pool/properties/technology/properties/os/properties/type",
+                                    "type": "string",
+                                    "title": "The type schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "string"
+                                    ]
+                                },
+                                "title": {
+                                    "$id": "#/properties/pool/properties/technology/properties/os/properties/title",
+                                    "type": "string",
+                                    "title": "The title schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "Pool Operating System"
+                                    ]
+                                },
+                                "description": {
+                                    "$id": "#/properties/pool/properties/technology/properties/os/properties/description",
+                                    "type": "string",
+                                    "title": "The description schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "Pool Operating System"
+                                    ]
+                                },
+                                "default": {
+                                    "$id": "#/properties/pool/properties/technology/properties/os/properties/default",
+                                    "type": "string",
+                                    "title": "The default schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        ""
+                                    ]
+                                },
+                                "examples": {
+                                    "$id": "#/properties/pool/properties/technology/properties/os/properties/examples",
+                                    "type": "array",
+                                    "title": "The examples schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": [],
+                                    "examples": [
+                                        [
+                                            "Linux",
+                                            "macOS"
+                                        ]
+                                    ],
+                                    "additionalItems": true,
+                                    "items": {
+                                        "$id": "#/properties/pool/properties/technology/properties/os/properties/examples/items",
+                                        "anyOf": [
+                                            {
+                                                "$id": "#/properties/pool/properties/technology/properties/os/properties/examples/items/anyOf/0",
+                                                "type": "string",
+                                                "title": "The first anyOf schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "Linux",
+                                                    "macOS"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "additionalProperties": true
+                        },
+                        "infrastructure": {
+                            "$id": "#/properties/pool/properties/technology/properties/infrastructure",
+                            "type": "object",
+                            "title": "The infrastructure schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "$id": "#/properties/pools/items/anyOf/0/properties/infrastructure",
+                                    "type": "string",
+                                    "title": "Pool Infrastructure",
+                                    "description": "Pool infrastructure Platform",
+                                    "default": "",
+                                    "examples": [
+                                        "cloud",
+                                        "hosted bare metal",
+                                        "local bare metal",
+                                        "other",
+                                        "undisclosed"
+                                    ]
+                                }
+                            ],
+                            "required": [
+                                "$id",
+                                "type",
+                                "title",
+                                "description",
+                                "default",
+                                "examples"
+                            ],
+                            "properties": {
+                                "$id": {
+                                    "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/%24id",
+                                    "type": "string",
+                                    "title": "The $id schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "#/properties/pools/items/anyOf/0/properties/infrastructure"
+                                    ]
+                                },
+                                "type": {
+                                    "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/type",
+                                    "type": "string",
+                                    "title": "The type schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "string"
+                                    ]
+                                },
+                                "title": {
+                                    "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/title",
+                                    "type": "string",
+                                    "title": "The title schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "Pool Infrastructure"
+                                    ]
+                                },
+                                "description": {
+                                    "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/description",
+                                    "type": "string",
+                                    "title": "The description schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "Pool infrastructure Platform"
+                                    ]
+                                },
+                                "default": {
+                                    "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/default",
+                                    "type": "string",
+                                    "title": "The default schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        ""
+                                    ]
+                                },
+                                "examples": {
+                                    "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/examples",
+                                    "type": "array",
+                                    "title": "The examples schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": [],
+                                    "examples": [
+                                        [
+                                            "cloud",
+                                            "hosted bare metal"
+                                        ]
+                                    ],
+                                    "additionalItems": true,
+                                    "items": {
+                                        "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/examples/items",
+                                        "anyOf": [
+                                            {
+                                                "$id": "#/properties/pool/properties/technology/properties/infrastructure/properties/examples/items/anyOf/0",
+                                                "type": "string",
+                                                "title": "The first anyOf schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "cloud",
+                                                    "hosted bare metal"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "additionalProperties": true
+                        }
+                    },
+                    "additionalProperties": true
+                },
+                "media_assets": {
+                    "$id": "#/properties/pool/properties/media_assets",
+                    "type": "object",
+                    "title": "The media_assets schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "icon_png_64x64": "https://mycoolpool.com/icon.png",
+                            "logo_png": "https://mycoolpool.com/logo.png",
+                            "logo_svg": "https://mycoolpool.com/logo.svg",
+                            "color_fg": "#RRGGBB",
+                            "color_bg": "#RRGGBB"
+                        }
+                    ],
+                    "required": [
+                        "icon_png_64x64",
+                        "logo_png",
+                        "logo_svg",
+                        "color_fg",
+                        "color_bg"
+                    ],
+                    "properties": {
+                        "icon_png_64x64": {
+                            "$id": "#/properties/pool/properties/media_assets/properties/icon_png_64x64",
+                            "type": "string",
+                            "title": "The icon_png_64x64 schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "https://mycoolpool.com/icon.png"
+                            ]
+                        },
+                        "logo_png": {
+                            "$id": "#/properties/pool/properties/media_assets/properties/logo_png",
+                            "type": "string",
+                            "title": "The logo_png schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "https://mycoolpool.com/logo.png"
+                            ]
+                        },
+                        "logo_svg": {
+                            "$id": "#/properties/pool/properties/media_assets/properties/logo_svg",
+                            "type": "string",
+                            "title": "The logo_svg schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "https://mycoolpool.com/logo.svg"
+                            ]
+                        },
+                        "color_fg": {
+                            "$id": "#/properties/pool/properties/media_assets/properties/color_fg",
+                            "type": "string",
+                            "title": "The color_fg schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "#RRGGBB"
+                            ]
+                        },
+                        "color_bg": {
+                            "$id": "#/properties/pool/properties/media_assets/properties/color_bg",
+                            "type": "string",
+                            "title": "The color_bg schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "#RRGGBB"
+                            ]
+                        }
+                    },
+                    "additionalProperties": true
+                },
+                "affiliations": {
+                    "$id": "#/properties/pool/properties/affiliations",
+                    "type": "array",
+                    "title": "The affiliations schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": [],
+                    "examples": [
+                        [
+                            "ISPPA",
+                            "Cardano Ambassador"
+                        ]
+                    ],
+                    "additionalItems": true,
+                    "items": {
+                        "$id": "#/properties/pool/properties/affiliations/items",
+                        "anyOf": [
+                            {
+                                "$id": "#/properties/pool/properties/affiliations/items/anyOf/0",
+                                "type": "string",
+                                "title": "The first anyOf schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "ISPPA",
+                                    "Cardano Ambassador"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "supporting": {
+                    "$id": "#/properties/pool/properties/supporting",
+                    "type": "array",
+                    "title": "The supporting schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": [],
+                    "examples": [
+                        [
+                            "10% of fees donated to Save the Frogs.",
+                            "Some proceeds used to sponsor local Cardano meetup."
+                        ]
+                    ],
+                    "additionalItems": true,
+                    "items": {
+                        "$id": "#/properties/pool/properties/supporting/items",
+                        "anyOf": [
+                            {
+                                "$id": "#/properties/pool/properties/supporting/items/anyOf/0",
+                                "type": "string",
+                                "title": "The first anyOf schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "10% of fees donated to Save the Frogs.",
+                                    "Some proceeds used to sponsor local Cardano meetup."
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "itn": {
+                    "$id": "#/properties/pool/properties/itn",
+                    "type": "object",
+                    "title": "The itn schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "owner": "ed25519_pk1...",
+                            "witness": "ed25519_sig1..."
+                        }
+                    ],
+                    "required": [
+                        "owner",
+                        "witness"
+                    ],
+                    "properties": {
+                        "owner": {
+                            "$id": "#/properties/pool/properties/itn/properties/owner",
+                            "type": "string",
+                            "title": "The owner schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "ed25519_pk1..."
+                            ]
+                        },
+                        "witness": {
+                            "$id": "#/properties/pool/properties/itn/properties/witness",
+                            "type": "string",
+                            "title": "The witness schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "ed25519_sig1..."
+                            ]
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true
+        },
+        "operator": {
+            "$id": "#/properties/operator",
+            "type": "object",
+            "title": "The operator schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "description": "Cool Ops operates pools for people.",
+                    "person": {
+                        "name": "Juanita Lopez",
+                        "address": "101 Main St., Suite 3",
+                        "city": "London",
+                        "state_or_region": "",
+                        "postal_code": "123456",
+                        "country": "UK",
+                        "gender": "2"
+                    },
+                    "organization": {
+                        "name": "Cool Ops LLC",
+                        "government_id": "123456789",
+                        "vat_id": "GB123456789",
+                        "address": "101 Main St.",
+                        "city": "London",
+                        "state_or_region": "",
+                        "postal_code": "123456",
+                        "country": "UK"
+                    }
+                }
+            ],
+            "required": [
+                "description",
+                "person",
+                "organization"
+            ],
+            "properties": {
+                "description": {
+                    "$id": "#/properties/operator/properties/description",
+                    "type": "string",
+                    "title": "The description schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "Cool Ops operates pools for people."
+                    ]
+                },
+                "person": {
+                    "$id": "#/properties/operator/properties/person",
+                    "type": "object",
+                    "title": "The person schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "name": "Juanita Lopez",
+                            "address": "101 Main St., Suite 3",
+                            "city": "London",
+                            "state_or_region": "",
+                            "postal_code": "123456",
+                            "country": "UK",
+                            "gender": "2"
+                        }
+                    ],
+                    "required": [
+                        "name",
+                        "address",
+                        "city",
+                        "state_or_region",
+                        "postal_code",
+                        "country",
+                        "gender"
                     ],
                     "properties": {
                         "name": {
-                            "$id": "#/properties/info/properties/company/properties/name",
+                            "$id": "#/properties/operator/properties/person/properties/name",
                             "type": "string",
-                            "title": "Company Name",
-                            "description": "Company Name.",
+                            "title": "The name schema",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
-                                "Company Name"
+                                "Juanita Lopez"
                             ]
                         },
-                        "addr": {
-                            "$id": "#/properties/info/properties/company/properties/addr",
+                        "address": {
+                            "$id": "#/properties/operator/properties/person/properties/address",
                             "type": "string",
-                            "title": "Company ddress",
-                            "description": "Company ddress",
+                            "title": "The address schema",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
-                                "5534 HappyPool Lane"
+                                "101 Main St., Suite 3"
                             ]
                         },
                         "city": {
-                            "$id": "#/properties/info/properties/company/properties/city",
+                            "$id": "#/properties/operator/properties/person/properties/city",
                             "type": "string",
-                            "title": "Company City",
-                            "description": "Company City",
+                            "title": "The city schema",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
                                 "London"
                             ]
                         },
-                        "country": {
-                            "$id": "#/properties/info/properties/company/properties/country",
+                        "state_or_region": {
+                            "$id": "#/properties/operator/properties/person/properties/state_or_region",
                             "type": "string",
-                            "title": "Company Country",
-                            "description": "ISO 3166-2 2-letter country code",
+                            "title": "The state_or_region schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                ""
+                            ]
+                        },
+                        "postal_code": {
+                            "$id": "#/properties/operator/properties/person/properties/postal_code",
+                            "type": "string",
+                            "title": "The postal_code schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "123456"
+                            ]
+                        },
+                        "country": {
+                            "$id": "#/properties/operator/properties/person/properties/country",
+                            "type": "string",
+                            "title": "The country schema",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
                                 "UK"
                             ]
                         },
-                        "company_id": {
-                            "$id": "#/properties/info/properties/company/properties/company_id",
+                        "gender": {
+                            "$id": "#/properties/operator/properties/person/properties/gender",
                             "type": "string",
-                            "title": "company id",
-                            "description": "company id",
+                            "title": "The gender schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "2"
+                            ]
+                        }
+                    },
+                    "additionalProperties": true
+                },
+                "organization": {
+                    "$id": "#/properties/operator/properties/organization",
+                    "type": "object",
+                    "title": "The organization schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "name": "Cool Ops LLC",
+                            "government_id": "123456789",
+                            "vat_id": "GB123456789",
+                            "address": "101 Main St.",
+                            "city": "London",
+                            "state_or_region": "",
+                            "postal_code": "123456",
+                            "country": "UK"
+                        }
+                    ],
+                    "required": [
+                        "name",
+                        "government_id",
+                        "vat_id",
+                        "address",
+                        "city",
+                        "state_or_region",
+                        "postal_code",
+                        "country"
+                    ],
+                    "properties": {
+                        "name": {
+                            "$id": "#/properties/operator/properties/organization/properties/name",
+                            "type": "string",
+                            "title": "The name schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "Cool Ops LLC"
+                            ]
+                        },
+                        "government_id": {
+                            "$id": "#/properties/operator/properties/organization/properties/government_id",
+                            "type": "string",
+                            "title": "The government_id schema",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
                                 "123456789"
                             ]
                         },
                         "vat_id": {
-                            "$id": "#/properties/info/properties/company/properties/vat_id",
+                            "$id": "#/properties/operator/properties/organization/properties/vat_id",
                             "type": "string",
-                            "title": "company vat id",
-                            "description": "company vat id",
+                            "title": "The vat_id schema",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
                                 "GB123456789"
                             ]
-                        }
-                    },
-                    "additionalProperties": true
-                },
-                "operator": {
-                    "$id": "#/properties/info/properties/operator",
-                    "type": "object",
-                    "title": "The operator schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": {},
-                    "examples": [
-                        {
-                            "country": "UK",
-                            "sex": "0"
-                        }
-                    ],
-
-                    "properties": {
+                        },
+                        "address": {
+                            "$id": "#/properties/operator/properties/organization/properties/address",
+                            "type": "string",
+                            "title": "The address schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "101 Main St."
+                            ]
+                        },
+                        "city": {
+                            "$id": "#/properties/operator/properties/organization/properties/city",
+                            "type": "string",
+                            "title": "The city schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "London"
+                            ]
+                        },
+                        "state_or_region": {
+                            "$id": "#/properties/operator/properties/organization/properties/state_or_region",
+                            "type": "string",
+                            "title": "The state_or_region schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                ""
+                            ]
+                        },
+                        "postal_code": {
+                            "$id": "#/properties/operator/properties/organization/properties/postal_code",
+                            "type": "string",
+                            "title": "The postal_code schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "123456"
+                            ]
+                        },
                         "country": {
-                            "$id": "#/properties/info/properties/operator/properties/country",
+                            "$id": "#/properties/operator/properties/organization/properties/country",
                             "type": "string",
                             "title": "The country schema",
-                            "description": "ISO 3166-2 2-letter country code",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
                                 "UK"
                             ]
-                        },
-                        "sex": {
-                            "$id": "#/properties/info/properties/operator/properties/sex",
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true
+        },
+        "owner": {
+            "$id": "#/properties/owner",
+            "type": "object",
+            "title": "The owner schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "description": "I am a podcaster and believer in Cardano.",
+                    "person": {
+                        "name": "Ramesh Patel",
+                        "address": "",
+                        "city": "Vancouver",
+                        "state_or_region": "BC",
+                        "postal_code": "",
+                        "country": "CA",
+                        "gender": "1"
+                    }
+                }
+            ],
+            "required": [
+                "description",
+                "person"
+            ],
+            "properties": {
+                "description": {
+                    "$id": "#/properties/owner/properties/description",
+                    "type": "string",
+                    "title": "The description schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "I am a podcaster and believer in Cardano."
+                    ]
+                },
+                "person": {
+                    "$id": "#/properties/owner/properties/person",
+                    "type": "object",
+                    "title": "The person schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "name": "Ramesh Patel",
+                            "address": "",
+                            "city": "Vancouver",
+                            "state_or_region": "BC",
+                            "postal_code": "",
+                            "country": "CA",
+                            "gender": "1"
+                        }
+                    ],
+                    "required": [
+                        "name",
+                        "address",
+                        "city",
+                        "state_or_region",
+                        "postal_code",
+                        "country",
+                        "gender"
+                    ],
+                    "properties": {
+                        "name": {
+                            "$id": "#/properties/owner/properties/person/properties/name",
                             "type": "string",
-                            "title": "The sex schema",
-                            "description": "ISO/IEC 5218 sex",
+                            "title": "The name schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "Ramesh Patel"
+                            ]
+                        },
+                        "address": {
+                            "$id": "#/properties/owner/properties/person/properties/address",
+                            "type": "string",
+                            "title": "The address schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                ""
+                            ]
+                        },
+                        "city": {
+                            "$id": "#/properties/owner/properties/person/properties/city",
+                            "type": "string",
+                            "title": "The city schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "Vancouver"
+                            ]
+                        },
+                        "state_or_region": {
+                            "$id": "#/properties/owner/properties/person/properties/state_or_region",
+                            "type": "string",
+                            "title": "The state_or_region schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "BC"
+                            ]
+                        },
+                        "postal_code": {
+                            "$id": "#/properties/owner/properties/person/properties/postal_code",
+                            "type": "string",
+                            "title": "The postal_code schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                ""
+                            ]
+                        },
+                        "country": {
+                            "$id": "#/properties/owner/properties/person/properties/country",
+                            "type": "string",
+                            "title": "The country schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "CA"
+                            ]
+                        },
+                        "gender": {
+                            "$id": "#/properties/owner/properties/person/properties/gender",
+                            "type": "string",
+                            "title": "The gender schema",
+                            "description": "An explanation about the purpose of this instance.",
                             "default": "",
                             "examples": [
                                 "1"
@@ -466,200 +1233,6 @@
                         }
                     },
                     "additionalProperties": true
-                },
-                "about": {
-                    "$id": "#/properties/info/properties/about",
-                    "type": "object",
-                    "title": "The about schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": {},
-                    "examples": [
-                        {
-                            "team_affiliation": [
-                                "ISPPA",
-                                "Cardano Ambassador"
-                            ],
-                            "me": "Long description of me",
-                            "server": "long description of server details",
-                            "company": "long description of company details"
-                        }
-                    ],
-                    "properties": {
-                        "team_affiliation": {
-                            "$id": "#/properties/info/properties/about/properties/team_affiliation",
-                            "type": "array",
-                            "title": "Team Affiliations",
-                            "description": "Case insensitive affiliations.  Matching performed on entire string.",
-                            "default": [],
-                            "examples": [
-                                [
-                                    "ISPPA",
-                                    "Cardano Ambassador"
-                                ]
-                            ],
-                            "additionalItems": true,
-                            "items": {
-                                "$id": "#/properties/info/properties/about/properties/team_affiliation/items",
-                                "anyOf": [
-                                    {
-                                        "$id": "#/properties/info/properties/about/properties/team_affiliation/items/anyOf/0",
-                                        "type": "string",
-                                        "title": "Team Name",
-                                        "description": "Case insensitive affiliations.  Matching performed on entire string.",
-                                        "default": "",
-                                        "examples": [
-                                            "ISPPA",
-                                            "Cardano Ambassador"
-                                        ]
-                                    }
-                                ]
-                            }
-                        },
-                        "me": {
-                            "$id": "#/properties/info/properties/about/properties/me",
-                            "type": "string",
-                            "title": "Long Description Me",
-                            "description": "Long Description.  valid HTML tags are <b><p><br>",
-                            "default": "",
-                            "examples": [
-                                "Long description of me"
-                            ]
-                        },
-                        "server": {
-                            "$id": "#/properties/info/properties/about/properties/server",
-                            "type": "string",
-                            "title": "Long Description Server",
-                            "description": "Long Description.  valid HTML tags are <b><p><br>",
-                            "default": "",
-                            "examples": [
-                                "long description of server details"
-                            ]
-                        },
-                        "company": {
-                            "$id": "#/properties/info/properties/about/properties/company",
-                            "type": "string",
-                            "title": "Long Description Company",
-                            "description": "Long Description.  valid HTML tags are <b><p><br>",
-                            "default": "",
-                            "examples": [
-                                "long description of company details"
-                            ]
-                        }
-                    },
-                    "additionalProperties": true
-                },
-                "rss": {
-                    "$id": "#/properties/info/properties/rss",
-                    "type": "string",
-                    "title": "Rss Feed",
-                    "description": "URL to an RSS feed",
-                    "default": "",
-                    "examples": [
-                        "https://mycoolpool.com/xml/poolrss.xml"
-                    ]
-                }
-            },
-            "additionalProperties": true
-        },
-        "pool": {
-            "$id": "#/properties/pools",
-            "type": "object",
-            "title": "Pool Details",
-            "description": "All pool details.",
-            "default": {},
-            "examples": [
-                {
-                    "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                    "country": "UK",
-                    "os": "LINUX",
-                    "infrastructure": "AWS",
-                    "status": "act",
-                    "saturated_recommend": "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                }
-
-            ],
-            "required": [
-                "id"
-            ],
-
-            "properties": {
-                "id": {
-                    "$id": "#/properties/pools/items/anyOf/0/properties/id",
-                    "type": "string",
-                    "title": "The poolid",
-                    "description": "Valid Mainnet Pool Id (hex format)",
-                    "default": "",
-                    "examples": [
-                        "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                    ]
-                },
-                "country": {
-                    "$id": "#/properties/pools/items/anyOf/0/properties/country",
-                    "type": "string",
-                    "title": "Pool country",
-                    "description": "ISO 3166-2 2-letter country code",
-                    "default": "",
-                    "examples": [
-                        "UK"
-                    ]
-                },
-                "os": {
-                    "$id": "#/properties/pools/items/anyOf/0/properties/os",
-                    "type": "string",
-                    "title": "Pool Operating System",
-                    "description": "Pool Operating System",
-                    "default": "",
-                    "examples": [
-                        "LINUX",
-                        "OSX",
-                        "WIN",
-                        "FREEBSD",
-                        "UNDISCLOSED"
-                    ]
-                },
-                "infrastructure": {
-                    "$id": "#/properties/pools/items/anyOf/0/properties/infrastructure",
-                    "type": "string",
-                    "title": "Pool Infrastructure",
-                    "description": "Pool infrastructure Platform",
-                    "default": "",
-                    "examples": [
-                        "AWS",
-                        "GOOGLE",
-                        "AZURE",
-                        "DIGITALOCEAN",
-                        "BAREMETALL",
-                        "BAREMETALH",
-                        "OVH",
-                        "HETZNER",
-                        "VULTR",
-                        "GODADDY",
-                        "ARUBA",
-                        "HOSTINGER",
-                        "OTHERVPS",
-                        "LPCSBC",
-                        "UNDISCLOSED"
-                    ]
-                },
-                "status": {
-                    "$id": "#/properties/pools/items/anyOf/0/properties/status",
-                    "type": "string",
-                    "title": "Pool Status",
-                    "description": "Pool Current Status",
-                    "default": "",
-                    "examples": [
-                        "ACT","RET","OFF","EXP","DNU"
-                    ]
-                },
-                "saturated_recommend": {
-                    "$id": "#/properties/pools/items/anyOf/0/properties/saturated_recommend",
-                    "type": "string",
-                    "title": "Saturated Recommend",
-                    "description": "If the pool is saturated recommend this pool",
-                    "default": "",
-                    "examples": [
-                        "0a0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-                    ]
                 }
             },
             "additionalProperties": true
