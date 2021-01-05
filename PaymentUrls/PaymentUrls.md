@@ -47,7 +47,7 @@ This is an initial, simplified protocol definition for fast implementation; it o
 
 ```
 cardanourn     = "web+cardano:" cardanoaddress [ "?" amountparam ]
-cardanoaddress = *base58
+cardanoaddress = *(base58 | bech32)
 amountparam    = "amount=" *digit [ "." *digit ]
 ```
 
