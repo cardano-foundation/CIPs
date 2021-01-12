@@ -1,30 +1,20 @@
----
-* CIP: ?
-* Title: Cardano Protocol Parameters
-* Authors: Kevin Hammond (<kevin.hammond@iohk.io>)
-* Discussions-To: <kevin.hammond@iohk.io>
-* Comments-Summary: <summary tone>
-* Comments-URI: <links to wiki page for comments>
-* Status: Draft
-* Type: Informational
-* Created: 2020-10-14
-* License: <abbreviation for approved license(s)>
-* License-Code: <abbreviation for code under different approved license(s)>
-* Post-History: <dates of postings to Cardano Dev Forum, or link to thread>
-* Requires: <CIP number(s)>
-* Replaces: <CIP number>
-* Superseded-By: <CIP number>
----
-
 ## Simple Summary/Abstract
 
-This CIP describes the protocol parameter settings for the Shelley era of the Cardano blockchain.
+This CIP is an informational CIP that describes the initial protocol parameter settings for the Shelley era of the Cardano blockchain, plus the changes that have been made.
 It is intended to serve as a historic record, allowing protocol parameter changes to be tracked back to the original settings.  
 
 ## Motivation
 
 We need to provide a concise description of the initial protocol parameter choices, that can be used by the community as the base for future proposed protocol changes,
 and that document the chain of changes to the parameters.
+
+## Proposing Protocol Parameter Changes
+
+This CIP records only the changes to the protocol parameters that have actually been made.  Suggested changes to protocol parameters should be proposed by preparing and submitting a new CIP, rather than editing this CIP.  The following information should be included.
+
+| Name of the Parameter   | New Parameter (Y/N)  | Deleted Parameter (Y/N) | Proposed Value 	| Summary Rationale for Change 
+
+Where necessary, the summary rationale should be supported by a few paragraphs of text giving the full rationale, plus references to any external documents that are needed to understand the proposal.
 
 ## Specification
 
