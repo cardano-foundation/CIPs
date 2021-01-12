@@ -12,7 +12,8 @@ and that document the chain of changes to the parameters.
 
 This CIP records only the changes to the protocol parameters that have actually been made.  Suggested changes to protocol parameters should be proposed by preparing and submitting a new CIP, rather than editing this CIP.  The following information should be included.
 
-| Name of the Parameter   | New Parameter (Y/N)  | Deleted Parameter (Y/N) | Proposed Value 	| Summary Rationale for Change 
+| Name of the Parameter   | New Parameter (Y/N)  | Deleted Parameter (Y/N) | Proposed Value   | Summary Rationale for Change |
+|-----------------------  |--------------------  |------------------------ |---------------   | ---------------------------- |
 
 Where necessary, the summary rationale should be supported by a few paragraphs of text giving the full rationale, plus references to any external documents that are needed to understand the proposal.
 
