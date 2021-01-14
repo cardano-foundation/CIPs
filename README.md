@@ -16,6 +16,7 @@ The current process is described in details in [CIP1 - "CIP Process"](https://gi
 | 8                 | [Message Signing](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008)                | Draft   |
 | 10                 | [Transaction Metadata Label Registry](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0010)                | Draft   |
 | 11                 | [Staking key chain for HD wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0011)                | Draft   |
+| 12                 | [On-chain stake pool operator to delegates communication](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0012) | Draft |
 | 1852                 | [HD Wallets for Cardano](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852)                | Draft   |  
 
 :bulb: -  For more details about Statuses, refer to [CIP1](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001).
