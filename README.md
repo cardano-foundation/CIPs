@@ -28,5 +28,5 @@ _"Alice has a Cardano idea she'd like to build more formally":_
 ![Mary interacting with community and editors for a Cardano Proposal](./BiweeklyMeetings/sequence_diagram.png?raw=true "sequence_diagram.png")
 
 Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in #developers in Cardano Ambassadors Slack.  
-CIP Editors meetings are [public](https://www.crowdcast.io/cips-biweekly),[recorded](https://www.crowdcast.io/cips-biweekly) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you. 
+CIP Editors meetings are [public](https://www.crowdcast.io/cips-biweekly),[recorded](https://www.crowdcast.io/cips-biweekly) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you.  
 
