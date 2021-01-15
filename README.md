@@ -3,7 +3,7 @@
 Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. 
 The current process is described in details in [CIP1 - "CIP Process"](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/CIP-0001.md).  
 
-### Current CIPs (as of 12/09/20) 
+### Current CIPs (as of 01/15/20) 
 
 |#              |Title            | Status               |
 | ----------------- |:----------------|:-------------------- |
@@ -16,7 +16,8 @@ The current process is described in details in [CIP1 - "CIP Process"](https://gi
 | 8                 | [Message Signing](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008)                | Draft   |
 | 10                 | [Transaction Metadata Label Registry](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0010)                | Draft   |
 | 11                 | [Staking key chain for HD wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0011)                | Draft   |
-| 12                 | [On-chain stake pool operator to delegates communication](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0012) | Draft |
+| 12                 | [On-chain stake pool operator to delegates communication](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0012)                | Draft   |
+| 13                 | [Cardano URI Scheme](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013)                | Draft   |
 | 1852                 | [HD Wallets for Cardano](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852)                | Draft   |  
 
 :bulb: -  For more details about Statuses, refer to [CIP1](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001).
@@ -26,5 +27,6 @@ The current process is described in details in [CIP1 - "CIP Process"](https://gi
 _"Alice has a Cardano idea she'd like to build more formally":_
 ![Mary interacting with community and editors for a Cardano Proposal](./BiweeklyMeetings/sequence_diagram.png?raw=true "sequence_diagram.png")
 
-Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in #developers in Cardano Ambassadors Slack.
+Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in #developers in Cardano Ambassadors Slack.  
+CIP Editors meetings are [public](https://www.crowdcast.io/cips-biweekly),[recorded](https://www.crowdcast.io/cips-biweekly) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you. 
 
