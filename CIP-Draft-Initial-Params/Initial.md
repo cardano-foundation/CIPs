@@ -1,3 +1,13 @@
+---
+CIP: ?
+Title: Protocol Parameters
+Authors: Kevin Hammond <kevin.hammond@iohk.io>
+Status: Active
+Type: Informational
+Created: 2021-01-29
+License: CC-BY-4.0
+---
+
 ## Simple Summary/Abstract
 
 This CIP is an informational CIP that describes the initial protocol parameter settings for the Shelley era of the Cardano blockchain, plus the changes that have been made.
