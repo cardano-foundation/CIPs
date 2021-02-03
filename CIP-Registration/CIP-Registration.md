@@ -19,10 +19,11 @@ Cardano uses a sidechain for its treasury system ("Catalyst"). One of the desira
 
 However, since 1 ADA = 1 vote, a user needs to associate their mainnet ADA to their new voting key. This can be achieved through a registration transaction.
 
-We therefore need a registration transaction that serves two purposes:
+We therefore need a registration transaction that serves three purposes:
 
 1. Registers a "voting key" to be included in the sidechain
 2. Associates mainnet ADA to this voting key
+3. Declare an address to receive Catalyst rewards
 
 ## Specification
 
@@ -40,7 +41,7 @@ Given the above, we choose to only associate staking keys with voting keys. Sinc
 
 A Catalyst registration transaction are a regular Cardano transaction with a specific transaction metadata associated with it
 
-Notably, there should be two entries inside the metadata map:
+Notably, there should be three entries inside the metadata map:
 
 Voting key registration
 ```
@@ -48,7 +49,9 @@ Voting key registration
   // voting_key - CBOR byte array
   1: "0xa6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663",
   // stake_pub - CBOR byte array
-  2: "0xad4b948699193634a39dd56f779a2951a24779ad52aa7916f6912b8ec4702cee"
+  2: "0xad4b948699193634a39dd56f779a2951a24779ad52aa7916f6912b8ec4702cee",
+  // address - CBOR byte array
+  3: "0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee47b60edc7772855324c85033c638364214cbfc6627889f81c4"
 }
 ```
 
@@ -71,10 +74,12 @@ registration_cbor = {
 $voting_pub_key /= bytes .size 32
 $staking_pub_key /= bytes .size 32
 $ed25519_signature /= bytes .size 64
+$address /= bytes
 
 key_registration = {
   1 : $voting_pub_key
 , 2 : $staking_pub_key
+, 3 : $address
 }
 
 registration_signature = {
@@ -95,6 +100,10 @@ Here an example using CBOR diagnostic notation
   }
 }
 ```
+
+## Changelog
+
+Fund 3 added the `address` inside the `key_registration` field.
 
 ## Copyright
 
