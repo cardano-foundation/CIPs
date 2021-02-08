@@ -6,5 +6,21 @@
   {
     "transaction_metadatum_label": 1968,
     "description": "nut.link metadata oracles data points"
+  },
+  {
+    "transaction_metadatum_label": 6770,
+    "description": "fortunes.coconutpool.com fortune teller"
+  },
+  {
+    "transaction_metadatum_label": 61284,
+    "description": "CIP-0015 - Catalyst registration"
+  },
+  {
+    "transaction_metadatum_label": 61285,
+    "description": "CIP-0015 - Catalyst registration"
+  },
+  {
+    "transaction_metadatum_label": 61286,
+    "description": "CIP-0015 - Catalyst registration"
   }
 ]
