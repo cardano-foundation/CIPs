@@ -3,7 +3,7 @@
 Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. 
 The current process is described in details in [CIP1 - "CIP Process"](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/CIP-0001.md).  
 
-### Current CIPs (as of 01/31/21) 
+### Current CIPs (as of 02/12/21) 
 
 |#              |Title            | Status               |
 | ----------------- |:----------------|:-------------------- |
@@ -19,6 +19,7 @@ The current process is described in details in [CIP1 - "CIP Process"](https://gi
 | 11                 | [Staking key chain for HD wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0011)                | Draft   |
 | 12                 | [On-chain stake pool operator to delegates communication](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0012)                | Draft   |
 | 13                 | [Cardano URI Scheme](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013)                | Draft   |
+| 15                 | [Catalyst Registration Transaction](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0015)                | Draft   |
 | 1852                 | [HD Wallets for Cardano](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852)                | Draft   |  
 | 1853                 | [HD Stake Pool Cold Keys](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1853)                | Draft   |   
 
