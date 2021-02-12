@@ -50,10 +50,11 @@ These are the registered `transaction_metadatum_label` values
 transaction_metadatum_label | description
 ----------------------------|-----------------------
 0 - 15                      | reserved*
+411                         | General information metadata
 1967                        | nut.link metadata oracles registry
 1968                        | nut.link metadata oracles data points
 65536 - 131071              | reserved - private use
-161815161519112             | Crypto2099 Voting Proposal
+161815161519112             | Crypto2099 Vote Proposal
 22152051819                 | Crypto2099 Voter Registration
 211212152001 - 211212152099 | Crypto2099 Vote Ballot(s)
 
