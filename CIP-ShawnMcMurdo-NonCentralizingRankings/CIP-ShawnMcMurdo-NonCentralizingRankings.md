@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Non-Centralizing Rankings
-Author: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
+Authors: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Discussions-To: 
 Comments-Summary: 
 Comments-URI: 
