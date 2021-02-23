@@ -2,14 +2,11 @@
 CIP: ?
 Title: Non-Centralizing Rankings
 Authors: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
-Discussions-To: 
-Comments-Summary: 
-Comments-URI: 
+Comments-URI: https://forum.cardano.org/t/how-to-improve-daedalus-rankings/40478
 Status: Draft
 Type: Standards
 Created: 2020-09-15
-License: Apache 2.0
-Post-History: https://forum.cardano.org/t/how-to-improve-daedalus-rankings/40478
+License: CC-BY-4.0
 ---
 
 ## Summary
@@ -99,7 +96,5 @@ If someone will show me where the current desirability equation is implemented i
 
 ## Copyright
 
-Copyright 2020 Shawn McMurdo
-
-This CIP is licensed under the Apache-2.0 license.
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
 
