@@ -1,0 +1,28 @@
+ADDRESS = %b0000 | NETWORK-TAG | KEY-HASH    | KEY-HASH
+        \ %b0001 | NETWORK-TAG | SCRIPT-HASH | KEY-HASH
+        \ %b0010 | NETWORK-TAG | KEY-HASH    | SCRIPT-HASH
+        \ %b0011 | NETWORK-TAG | SCRIPT-HASH | SCRIPT-HASH
+        \ %b0100 | NETWORK-TAG | KEY-HASH    | POINTER
+        \ %b0101 | NETWORK-TAG | SCRIPT-HASH | POINTER
+        \ %b0110 | NETWORK-TAG | KEY-HASH
+        \ %b0111 | NETWORK-TAG | SCRIPT-HASH
+        \ %b1110 | NETWORK-TAG | KEY-HASH
+        \ %b1111 | NETWORK-TAG | SCRIPT-HASH
+        \ %b1000 | BYRON-PAYLOAD
+
+NETWORK-TAG  = %b0000 ; Testnet
+             \ %b0001 ; Mainnet
+
+POINTER = VARIABLE-LENGTH-UINT ; slot number
+        | VARIABLE-LENGTH-UINT ; transaction index
+        | VARIABLE-LENGTH-UINT ; output index
+
+VARIABLE-LENGTH-UINT = (%b1 | UINT7 | VARIABLE-LENGTH-UINT)
+                     / (%b0 | UINT7)
+UINT7 = 7BIT
+
+KEY-HASH = 28OCTET
+
+SCRIPT-HASH= 28OCTET
+
+BYRON-PAYLOAD = *OCTET ; see 'Byron Addresses' section or cddl specification.
