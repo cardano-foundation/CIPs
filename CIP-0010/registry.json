@@ -22,5 +22,21 @@
   {
     "transaction_metadatum_label": 61286,
     "description": "CIP-0015 - Catalyst registration"
+  },
+  {
+    "transaction_metadatum_label": 411,
+    "description": "General-purpose information"
+  },
+  {
+    "transaction_metadatum_label": 161815161519112,
+    "description": "On-Chain Vote Proposal"
+  },
+  {
+    "transaction_metadatum_label": 22152051819,
+    "description": "On-Chain Voter Registration"
+  },
+  {
+    "transaction_metadatum_label": 211212152001,
+    "description": "On-Chain Vote Ballot"
   }
 ]
