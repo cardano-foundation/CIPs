@@ -3,7 +3,7 @@
 Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. 
 The current process is described in details in [CIP1 - "CIP Process"](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/CIP-0001.md).  
 
-### Current CIPs (as of 03/08/21) 
+### Current CIPs (as of 04/07/21) 
 
 |#              |Title            | Status               |
 | ----------------- |:----------------|:-------------------- |
