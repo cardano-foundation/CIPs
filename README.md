@@ -3,7 +3,7 @@
 Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. 
 The current process is described in details in [CIP1 - "CIP Process"](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/CIP-0001.md).  
 
-### Current CIPs (as of 04/07/21) 
+### Current CIPs (as of 04/27/21) 
 
 |#              |Title            | Status               |
 | ----------------- |:----------------|:-------------------- |
@@ -22,6 +22,7 @@ The current process is described in details in [CIP1 - "CIP Process"](https://gi
 | 13                 | [Cardano URI Scheme](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013)                | Draft   |
 | 14                 | [User-facing Asset Fingerprint](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0014)                | Draft   |
 | 15                 | [Catalyst Registration Transaction](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0015)                | Draft   |
+| 16                 | [Cryptographic Key Serialisation Formats](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0016)                | Draft   |
 | 1852                 | [HD Wallets for Cardano](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852)                | Draft   |  
 | 1853                 | [HD Stake Pool Cold Keys](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1853)                | Draft   |   
 
@@ -34,4 +35,5 @@ _"Alice has a Cardano idea she'd like to build more formally":_
 
 Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in #developers in Cardano Ambassadors Slack.  
 CIP Editors meetings are [public](https://www.crowdcast.io/cips-biweekly), [recorded](https://www.crowdcast.io/cips-biweekly) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you.  
+Note: An auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/) to facilitate browsing and information sharing for non-Github users.
 
