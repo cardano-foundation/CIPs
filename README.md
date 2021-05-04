@@ -23,6 +23,7 @@ The current process is described in details in [CIP1 - "CIP Process"](https://gi
 | 14                 | [User-facing Asset Fingerprint](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0014)                | Draft   |
 | 15                 | [Catalyst Registration Transaction](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0015)                | Draft   |
 | 16                 | [Cryptographic Key Serialisation Formats](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0016)                | Draft   |
+| 19                 | [Cardano Addresses](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0019) | Draft |
 | 1852                 | [HD Wallets for Cardano](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852)                | Draft   |  
 | 1853                 | [HD Stake Pool Cold Keys](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1853)                | Draft   |   
 
