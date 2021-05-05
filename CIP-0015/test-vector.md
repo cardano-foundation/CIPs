@@ -19,7 +19,7 @@ Catalyst **private** key hex
 
 ### Intermediate steps
 
-Base address generated from payment key and staking key
+Reward address generated from staking key
 ```
 bech32
 stake_test1uzhr5zn6akj2affzua8ylcm8t872spuf5cf6tzjrvnmwemcehgcjm
