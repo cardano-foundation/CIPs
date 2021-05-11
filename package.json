@@ -13,7 +13,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "gray-matter": "^4.0.2",
-    "handlebars": "^4.7.6",
+    "handlebars": "^4.7.7",
     "handlebars-dateformat": "^1.1.1",
     "moment": "^2.26.0",
     "rimraf": "^3.0.2",
