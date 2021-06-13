@@ -1,7 +1,7 @@
 [
   {
     "transaction_metadatum_label": 674,
-    "description": "CIP-0674 - Transaction message/comment metadata"
+    "description": "CIP-0020 - Transaction message/comment metadata"
   },
   {
     "transaction_metadatum_label": 1967,
