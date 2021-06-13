@@ -1,5 +1,9 @@
 [
   {
+    "transaction_metadatum_label": 674,
+    "description": "CIP-0674 - Transaction message/comment metadata"
+  },
+  {
     "transaction_metadatum_label": 1967,
     "description": "nut.link metadata oracles registry"
   },
