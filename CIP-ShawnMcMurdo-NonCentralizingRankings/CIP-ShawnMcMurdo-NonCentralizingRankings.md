@@ -46,7 +46,7 @@ For all pools with proposed_pool_stake greater than saturation_warning_stake add
 Where:
 proposed_pool_stake = pool_live_stake + proposed_user_stake
 saturation_warning_stake = (total_stake / k) * saturation_warning_level
-saturation_warning_level is a real number greater than 0 representing the percent of ssaturation which is undesirable.  A proposed value for saturation_warning_level is 0.95 meaning 95% saturated.
+saturation_warning_level is a real number greater than 0 representing the percent of saturation which is undesirable.  A proposed value for saturation_warning_level is 0.95 meaning 95% saturated.
 
 For example, if a pool has non-myopic desirability rank of 3, pool_live_stake of 207m ADA, proposed_user_stake of 100k ADA with total_stake of 31.7b ADA, k = 150 and saturation_warning_level = 0.95, we would calculate:
 207m + 100k > (31.7b / 150) * 0.95
