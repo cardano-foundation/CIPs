@@ -64,7 +64,8 @@ function getTableOfContents (lines, { children = [], headingType = -1 } = {}) {
 }
 
 function loadFrontmatter (filePath) {
-  const contents = fs.readFileSync(filePath, { encoding: 'utf8' })
+  const raw = fs.readFileSync(filePath, { encoding: 'utf8' })
+  const contents = raw.replace(/\.\/.*CIP-0*([^\.]+)\.md/g, '/cips/cip$1')
   const parsed = matter(contents)
   parsed.html = converter.makeHtml(parsed.content)
   return parsed
