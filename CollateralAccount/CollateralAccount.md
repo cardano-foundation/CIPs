@@ -2,7 +2,7 @@
 CIP: ?
 Title: Collateral Account for HD Wallets
 Authors: Sebastien Guillemot <seba@dcspark.io>
-Comments-URI: TODO
+Comments-URI: https://forum.cardano.org/t/collateral-account-derivation/65879
 Status: Draft
 Type: Standards
 Created: 2021-06-29
