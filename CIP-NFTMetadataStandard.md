@@ -47,18 +47,23 @@ The structure allows for multiple token mints, also with different policies, in 
   "721": {
     "<policy_id>": {
       "<asset_name>": {
-        "name": "<name>",
-        "image": "<uri>",
-        "description": "<description>"
+        "name": <string>,
 
-        "type": "<mime_type>",
-        "src": "<uri>"
+        "image": <uri | array>,
+        "mediaType": "image/<mime_sub_type>",
+
+        "description": <string | array>
+
+        "files": [{
+          "name": <string>,
+          "mediaType": <mime_type>,
+          "src": <uri | array>,
+          <other_properties>
+        }],
 
         <other properties>
-      },
-      ...
-    },
-    ...,
+      }
+    }
     "version": "1.0"
   }
 }
@@ -68,9 +73,9 @@ The **`image`** and **`name`** property are marked as required. **`image`** shou
 
 The **`description`** property is optional.
 
-The **`type`** and **`src`** properties are optional. If **`type`** is defined, **`src`** will be an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`src`** points to the same image in an higher resolution.
+The **`mediaType`** and **`files`** properties are optional. If **`mediaType`** is defined, **`files`** will be an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image in an higher resolution.
 
-The **`version`** property is also optional. If not specified the version is "1.0". It will become mandatory in future versions if needed.
+The **`version`** property is also optional. If not specified the version is `1.0`. It will become mandatory in future versions if needed.
 
 This structure really just defines the basis. New properties and standards can be defined later on for varies uses cases. That's why there is an "other properties" tag.
 
@@ -83,15 +88,13 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
   "721": {
     "<policy_id>": {
       "<asset_name>": {
-        "name": "<name>",
-        "image": "<uri>"
+        "name": <string>,
+        "image": <uri | array>,
       }
     }
   }
 }
 ```
-
-This also makes this structure backward compatible with the most common format currently used in the blockchain.
 
 ### Retrieve valid metadata for a specific token
 
@@ -106,6 +109,11 @@ As mentioned above this metadata structure allows to have either one token or mu
 ### Update metadata link for a specific token
 
 Using the latest mint transaction with the label 721 as valid metadata for a token allows to update the metadata link of this token. As soon as a new mint transaction is occurring including metadata with the label 721, the metadata link is considered updated and the new metadata should be used. This is only possible if the policy allows to mint or burn the same token again.
+
+## Backward Compatibility
+
+To keep NFT metadata compatible with changes coming up in the future, we use the **`version`** property. Version `1.0` is used in the current metadata structure of this CIP.
+Version `2.0` will introduce [schema.org](https://schema.org).
 
 ## References
 
