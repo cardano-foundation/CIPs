@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Collateral Account for HD Wallets
+Title: Collateral Key for HD Wallets
 Authors: Sebastien Guillemot <seba@dcspark.io>
 Comments-URI: https://forum.cardano.org/t/collateral-account-derivation/65879
 Status: Draft
@@ -15,28 +15,31 @@ This document describes using a separate derivation path to ensure there is alwa
 
 # Motivation
 
-Collateral input | As of Alonzo, transactions that call non-native smart contracts are required to put up collateral to cover the potential cost of smart contract execution failure. Inputs used as collateral has the following properties:
+Collateral input | As of Alonzo, transactions that call Plutus smart contracts are required to put up collateral to cover the potential cost of smart contract execution failure. Inputs used as collateral has the following properties:
 
 - Cannot contain any tokens (only ADA)
 - Cannot be a script address
 - Must be a UTXO input
 - Must be at least some percentage of the fee in the tx (concrete percentage decided by a protocol parameter)
-- Can be the same UTXO entry as used in regular tx input
+- Can be the same UTXO entry as used in non-collateral tx input
 - Is consumed entirely (no change) if the contract execution fails during phase 2 validation
+- Is not consumed is phase phase 2 validation succeeds
+
+Additionally, there cannot be more than *maxColInputs* (protocol parameter) inputs and the inputs have to cover a percentage of the fee defined by *collateralPercent* (protocol parameter)
 
 We therefore need a way for the wallet to handle picking which inputs to use for collateral
 
 ## Naive solution
 
 The naive solution would do the following steps
-1. Add any regular input that satisfies the constraints as collateral as well
+1. Add any non-collateral input that satisfies the constraints as collateral as well
 1. If collateral is still insufficient, look at the wallet UTXO for any other entry that can be added as collateral
-1. If there are not enough UTXO entries that can be used as collateral, check if we can refactor the wallet UTXO to create enough UTXO entries that match the requirement
-1. If refactoring can unblock the wallet, prompt the user to send a transaction to refactor their UTXO (and pay the tx fee associated with it) before sending their transaction. If refactoring can't unblock the wallet, tell the user they will need more ADA to call this smart contract
+1. If there are not enough UTXO entries that can be used as collateral, check if we can rearrange the wallet UTXO to create enough UTXO entries that match the requirement
+1. If rearranging can unblock the wallet, prompt the user to send a transaction to rearrange their UTXO (and pay the tx fee associated with it) before sending their transaction. If rearranging can't unblock the wallet, tell the user they will need more ADA to call this smart contract
 
 This however, causes the following problems:
 1. This may cause users to risk more collateral than they are comfortable with. In general, software should run smart contracts locally to detect if a transaction would fail before sending and alert the user to avoid consuming the collateral, but relying on this is not ideal.
-1. Although the refactor transaction can be created under the hood for in-software wallet, it will confused users when it shows up on their transaction history. For hardware wallets, it will require explicit approval from the user which is also possibly confusing.
+1. Although the rearrange transaction can be created under the hood for in-software wallet, it will confused users when it shows up on their transaction history. For hardware wallets, it will require explicit approval from the user which is also possibly confusing.
 1. Altough wallets can try and always pick UTXOs to make sure there is always a valid UTXO entry for collateral, it can't be guaranteed because the wallet state can always be changed by any dApp or other wallet that doesn't use the same logic to guarantee the presence of satisfactory collateral input
 1. Multisig wallets don't have any non-script addresses in general and so would need some separate solution
 
@@ -58,26 +61,26 @@ We set `chain=3` to indicate the *collateral chain*.
 
 Wallets MUST only use `address_index=0` for this specification. Since a single address can contain multiple UTXO entries, there is no need to derive other addresses (using more addresses would not provide any privacy benefit and would complicate address discovery).
 
-We will call this specific derivation the *collateral account*.
+We will call this specific derivation the *collateral key*. Any address created with this payment key is called a *collateral address*.
 
 ## New solution for managing collateral
 
-Wallets SHOULD only use UTXO entries of the collateral account as collateral in the transaction. If the collateral is insufficient, the wallet should tell the user to send more ADA to their collateral account.
+Wallets SHOULD only use UTXO entries of the collateral key as collateral in the transaction. If the collateral is insufficient, the wallet SHOULD tell the user to send more ADA to their collateral key.
 
 The benefits of this solution are as follows:
 1. Transactions in the history to add collateral can be clearly marked as such by wallet software.
-1. Prompting the user to add ADA to their collateral account doesn't require explaining users about how UTXO works under the hood compared to the refactoring option.
+1. Prompting the user to add ADA to their collateral address doesn't require explaining users about how UTXO works under the hood compared to the rearranging option.
 1. No change required to input selection algorithms
 1. Multisig (or other script-based wallets) are handled the same way as regular wallets
 1. User only risks as much collateral as their are comfortable with
 
 However, this solution also comes with downsides:
 
-1. Reusing the same collateral account for all your smart contract calls gets rid of any privacy. However, base addresses in Cardano already forgo privacy and so users who want to call smart contracts with privacy will already need to handle things differently.
-1. The blockchain can't stop people from sending tokens to somebody's collateral account. This doesn't harm the user (since other UTXO entries can still be used) and wallets will already need to implement a way for the user to withdraw from their collateral account so the impact should be minimal.
-1. It's possible for the collateral account to contained mangled addresses (same as regular base addresses for the wallet), but empirically mangled addresses are rare and people should not be sending to collateral accounts directly anyway so this is of minimal concern
-1. Support for a collateral account needs to be added to hardware wallets
-1. If the user doesn't reduce the ADA in their collateral account when calling cheaper smart contracts, they are still be putting up more collateral than necessary
+1. Reusing the same collateral address for all your smart contract calls gets rid of any privacy. However, wallets using base addresses in Cardano already usually forgo privacy and so users who want to call smart contracts with privacy will already need to handle things differently.
+1. The blockchain can't stop people from sending tokens to somebody's collateral address. This doesn't harm the user (since other UTXO entries can still be used) and wallets will already need to implement a way for the user to withdraw from their collateral address so the impact should be minimal.
+1. It's possible for the collateral key to be contained in mangled addresses (same as regular base addresses for the wallet), but empirically mangled addresses are rare and people should not be sending to collateral addresses directly anyway so this is of minimal concern
+1. Support for a collateral key needs to be added to hardware wallets
+1. If the user doesn't reduce the ADA in their collateral address when calling cheaper smart contracts, they are still be putting up more collateral than necessary
 
 ## Test vectors
 
