@@ -75,6 +75,10 @@ APIError {
 }
 ```
 
+* InvalidRequest - Inputs do not conform to this spec or are otherwise invalid.
+* InternalError - An error occurred during execution of this API call.
+* Refused - The request was refused due to lack of access - e.g. wallet disconnects.
+
 ### DataSignError
 
 ```
@@ -94,10 +98,6 @@ type DataSignError = {
 * AddressNotPK - Address was not a P2PK address and thus had no SK associated with it.
 * UserDeclined - User declined to sign the data
 * InvalidFormat - If a wallet enforces data format requirements, this error signifies that the data did not conform to valid formats.
-
-* InvalidRequest - Inputs do not conform to this spec or are otherwise invalid.
-* InternalError - An error occurred during execution of this API call.
-* Refused - The request was refused due to lack of access - e.g. wallet disconnects.
 
 ### PaginateError
 
@@ -163,7 +163,7 @@ Returns true if the full API (`cardano` object) was injected and the dApp has ac
 
 ## Full API
 
-Upon successful connection via `cardano_request_read_access()`, a javascript object named `cardano` is injected with the following methods. All read-only methods (all but the signing functionality) should not require any as the user has already consented to the dApp reading information about the wallet's state when they agreed to `cardano_request_read_access()`. The remaining methods `cardano.sign_tx()`, `cardano.sign_tx_input()`, `cardano.sign_data()` must request the user's consent in an informative way for each and every API call in order to maintain security.
+Upon successful connection via `cardano_request_read_access()`, a javascript object named `cardano` is injected with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `cardano_request_read_access()`. The remaining methods `cardano.sign_tx()`, `cardano.sign_tx_input()`, `cardano.sign_data()` must request the user's consent in an informative way for each and every API call in order to maintain security.
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
@@ -179,19 +179,19 @@ Errors: `APIError`
 
 Returns the total balance available of the wallet. This is the same as summing the results of `cardano.get_utxos()`, but it is both useful to dApps and likely already maintained by the implementing wallet in a more efficient manner so it has been included in the API as well.
 
-### cardano.get_used_addresses(paginate: Paginate = undefined): Promise\<\<cbor<address>[]>
+### cardano.get_used_addresses(paginate: Paginate = undefined): Promise\<cbor\<address>[]>
 
 Errors: `APIError`
 
 Returns a list of all used (included in some on-chain transaction) addresses controlled by the wallet. The results can be further paginated by `paginate` if it is not `undefined`.
 
-### cardano.get_unused_addresses(): Promise\<\<cbor<address>[]>
+### cardano.get_unused_addresses(): Promise\<cbor\<address>[]>
 
 Errors: `APIError`
 
 Returns a list of unused addresses controlled by the wallet.
 
-### cardano.get_change_address(): Promise\<\<cbor<address>>
+### cardano.get_change_address(): Promise\<cbor\<address>>
 
 Errors: `APIError`
 
