@@ -15,6 +15,10 @@ handlebars.registerHelper('dateFormat', (d, f) => {
 });
 
 handlebars.registerHelper('getAuthors', function (Authors) {
+  
+  // Temporary fallback for CI to not fail
+  if(!Authors) return '';
+
   return Authors.split(',').map(author => {
     const [_, name, link] = author.trim().match(/^([^<]+)<?([^>]+)?>?$/) || []
     let type = 'url'
