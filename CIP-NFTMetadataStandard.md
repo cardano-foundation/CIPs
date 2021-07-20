@@ -73,7 +73,7 @@ The **`image`** and **`name`** property are marked as required. **`image`** shou
 
 The **`description`** property is optional.
 
-The **`mediaType`** and **`files`** properties are optional. If **`mediaType`** is defined, **`files`** will be an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image in an higher resolution.
+The **`mediaType`** and **`files`** properties are optional.<br /> **`mediaType`** is however required inside **`files`**. The **`src`** property inside **`files`** is an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image, like the on in the **`image`** property, but in an higher resolution.
 
 The **`version`** property is also optional. If not specified the version is `1.0`. It will become mandatory in future versions if needed.
 
