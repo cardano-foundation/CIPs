@@ -24,6 +24,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/CIP-0015.md) | Draft |
 | 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/CIP-0016.md) | Draft |
 | 19 | [Cardano Addresses](./CIP-0019/CIP-0019.md) | Active |
+| 24 | [Non-Centralizing Rankings](./CIP-0024/CIP-0024.md) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/CIP-1852.md) | Draft |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/CIP-1853.md) | Draft |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/CIP-1854.md) | Draft |
