@@ -1,0 +1,36 @@
+BYRON_ADDRESS =
+    ( #6.24(<<BYRON_ADDRESS_PAYLOAD>>)
+    , uint32 ; crc32 of the CBOR serialized address payload
+    )
+
+BYRON_ADDRESS_PAYLOAD =
+    ( bytes .size 28            ; blake2b_224(sha3_256(BYRON_ADDRESS_ROOT)) digest
+    , BYRON_ADDRESS_ATTRIBUTES
+    , BYRON_ADDRESS_TYPE
+    )
+
+BYRON_ADDRESS_ROOT =
+    ( BYRON_ADDRESS_TYPE
+    , BYRON_ADDRESS_SPENDING_DATA
+    , BYRON_ADDRESS_ATTRIBUTES
+    )
+
+BYRON_ADDRESS_TYPE =
+       0  ; Public key
+    // 2  ; Redemption
+
+BYRON_ADDRESS_SPENDING_DATA =
+    ( 0, bytes .size 64 ) ; Ed25519 Public key | Associated BIP-32 chain code
+    //
+    ( 2, bytes .size 32 ) ; Ed25519 Public key
+
+BYRON_ADDRESS_ATTRIBUTES =
+    { 1 : <<bytes .cbor BYRON_DERIVATION_PATH_CIPHERTEXT>>  ; Double CBOR-encoded ChaCha20/Poly1305 encrypted digest, see CIP for details.
+    , 2 : <<uint32>>                             ; CBOR-encoded network discriminant
+    }
+
+BYRON_DERIVATION_PATH_CIPHERTEXT = ; Obtained by encrypting a serialized derivation path
+    bytes .size 28
+
+BYRON_DERIVATION_PATH =
+    [ * uint32 ]
