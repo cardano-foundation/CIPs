@@ -3,7 +3,7 @@
 Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain.
 The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001/CIP-0001.md).
 
-### Current CIPs (as of 2021-05-11)
+### Current CIPs (as of 2021-07-28)
 
 | #                 | Title                                                                                                                                         | Status                |
 | ----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------- |
@@ -23,10 +23,15 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 14 | [User-Facing Asset Fingerprint](./CIP-0014/CIP-0014.md) | Draft |
 | 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/CIP-0015.md) | Draft |
 | 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/CIP-0016.md) | Draft |
+| 17 | [Cardano Delegation Portfolio](./CIP-0017/CIP-0017.md) | Draft |
 | 19 | [Cardano Addresses](./CIP-0019/CIP-0019.md) | Active |
+| 23 | [Fair Min Fees](./CIP-0023/CIP-0023.md) | Draft |
+| 24 | [Non-Centralizing Rankings](./CIP-0024/CIP-0024.md) | Draft |
+| 25 | [NFT Metadata Standard](./CIP-0025/CIP-0025.md) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/CIP-1852.md) | Draft |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/CIP-1853.md) | Draft |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/CIP-1854.md) | Draft |
+| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/CIP-1855.md) | Draft |
 
 > 💡 For more details about Statuses, refer to [CIP1](./CIP-0001/CIP-0001.md).
 
