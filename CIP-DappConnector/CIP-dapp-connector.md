@@ -148,19 +148,19 @@ type TxSignError = {
 
 ## Initial API
 
-In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.wallet_name.request_read_access()` in order for the dApp to read any information pertaining to the user's wallet.
+In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.walletName.requestReadAccess()` in order for the dApp to read any information pertaining to the user's wallet.
 
-### wallet.request_read_access(): Promise\<API>
+### wallet.requestReadAccess(): Promise\<API>
 
 Errors: APIError
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
 
-### wallet.check_read_access(): Promise\<bool>
+### wallet.checkReadAccess(): Promise\<bool>
 
 Errors: APIError
 
-Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.request_read_access()` during the current session should succeed and return the `API` object.
+Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.requestReadAccess()` during the current session should succeed and return the `API` object.
 
 ### wallet.version(): String
 
@@ -179,59 +179,59 @@ Returns a name for the wallet which can be used inside of the dApp for the purpo
 
 ## Full API
 
-Upon successful connection via `wallet.request_read_access()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `wallet.request_read_access()`. The remaining methods `api.sign_tx()`, `api.sign_tx_input()`, `api.sign_data()` must request the user's consent in an informative way for each and every API call in order to maintain security.
+Upon successful connection via `wallet.requestReadAccess()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `wallet.requestReadAccess()`. The remaining methods `api.signTx()`, `api.signTxInput()`, `api.signData()` must request the user's consent in an informative way for each and every API call in order to maintain security.
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
-### api.get_utxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | undefined>
+### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | undefined>
 
 Errors: `APIError`, `PaginateError`
 
 If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `undefined` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
 
-### api.get_balance(): Promise\<cbor\<value>>
+### api.getBalance(): Promise\<cbor\<value>>
 
 Errors: `APIError`
 
-Returns the total balance available of the wallet. This is the same as summing the results of `api.get_utxos()`, but it is both useful to dApps and likely already maintained by the implementing wallet in a more efficient manner so it has been included in the API as well.
+Returns the total balance available of the wallet. This is the same as summing the results of `api.getUtxos()`, but it is both useful to dApps and likely already maintained by the implementing wallet in a more efficient manner so it has been included in the API as well.
 
-### api.get_used_addresses(paginate: Paginate = undefined): Promise\<cbor\<address>[]>
+### api.getUsedAddresses(paginate: Paginate = undefined): Promise\<cbor\<address>[]>
 
 Errors: `APIError`
 
 Returns a list of all used (included in some on-chain transaction) addresses controlled by the wallet. The results can be further paginated by `paginate` if it is not `undefined`.
 
-### api.get_unused_addresses(): Promise\<cbor\<address>[]>
+### api.getUnusedAddresses(): Promise\<cbor\<address>[]>
 
 Errors: `APIError`
 
 Returns a list of unused addresses controlled by the wallet.
 
-### api.get_change_address(): Promise\<cbor\<address>>
+### api.getChangeAddress(): Promise\<cbor\<address>>
 
 Errors: `APIError`
 
 Returns an address owned by the wallet that should be used as a change address to return leftover assets during transaction creation back to the connected wallet. This can be used as a generic receive address as well.
 
-### api.sign_tx(tx: cbor\<transaction_body>, metadata: cbor\<auxiliary_data> = undefined): Promise\<cbor\<transaction>>
+### api.signTx(tx: cbor\<transaction_body>, metadata: cbor\<auxiliary_data> = undefined): Promise\<cbor\<transaction>>
 
 Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the supplied transaction body. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If the wallet could not sign the transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined it shall return the `UserDeclined` code.
 
-### api.sign_tx_input(tx: cbor\<transaction_body>, index: number): Promise\<cbor\<transaction_witness_set>>
+### api.signTxInput(tx: cbor\<transaction_body>, index: number): Promise\<cbor\<transaction_witness_set>>
 
 Errors: `APIError`, `TxSignError`
 
-Provides lower-level ability for signing that produces the witnesses for just a single input in a transaction. This exists in case dApps need to construct a transaction to satisfy certain properties and the user might only own some of the inputs. The wallet should ask user permission for signing similar to `api.sign_tx_input()` and errors are handled in the same way.
+Provides lower-level ability for signing that produces the witnesses for just a single input in a transaction. This exists in case dApps need to construct a transaction to satisfy certain properties and the user might only own some of the inputs. The wallet should ask user permission for signing similar to `api.signTxInput()` and errors are handled in the same way.
 
-### api.sign_data(addr: cbor\<address>, sig_structure: cbor\<Sig_structure>): Promise\<Bytes>
+### api.signData(addr: cbor\<address>, sigStructure: cbor\<Sig_structure>): Promise\<Bytes>
 
 Errors: `APIError`, `DataSignError`
 
 This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign data conforming to said spec. The user's consent should be requested and the details of `sig_structure` shown to them in an informative way. The  Please refer to the CIP-0008 spec for details on how to construct the sig structure.
 
-### api.submit_tx(tx: cbor\<transaction>): Promise\<hash32>
+### api.submitTx(tx: cbor\<transaction>): Promise\<hash32>
 
 Errors: `APIError`, `TxSendError`
 
