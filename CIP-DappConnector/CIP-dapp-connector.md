@@ -179,7 +179,7 @@ Returns a name for the wallet which can be used inside of the dApp for the purpo
 
 ## Full API
 
-Upon successful connection via `wallet.requestReadAccess()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `wallet.requestReadAccess()`. The remaining methods `api.signTx()`, `api.signTxInput()`, `api.signData()` must request the user's consent in an informative way for each and every API call in order to maintain security.
+Upon successful connection via `wallet.requestReadAccess()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `wallet.requestReadAccess()`. The remaining methods `api.signTx()` and `api.signData()` must request the user's consent in an informative way for each and every API call in order to maintain security.
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
@@ -213,17 +213,11 @@ Errors: `APIError`
 
 Returns an address owned by the wallet that should be used as a change address to return leftover assets during transaction creation back to the connected wallet. This can be used as a generic receive address as well.
 
-### api.signTx(tx: cbor\<transaction_body>, metadata: cbor\<auxiliary_data> = undefined): Promise\<cbor\<transaction>>
+### api.signTx(tx: cbor\<transaction>, partialSign: bool = false): Promise\<cbor\<transaction_witness_set>>
 
 Errors: `APIError`, `TxSignError`
 
-Requests that a user sign the supplied transaction body. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If the wallet could not sign the transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined it shall return the `UserDeclined` code.
-
-### api.signTxInput(tx: cbor\<transaction_body>, index: number): Promise\<cbor\<transaction_witness_set>>
-
-Errors: `APIError`, `TxSignError`
-
-Provides lower-level ability for signing that produces the witnesses for just a single input in a transaction. This exists in case dApps need to construct a transaction to satisfy certain properties and the user might only own some of the inputs. The wallet should ask user permission for signing similar to `api.signTxInput()` and errors are handled in the same way.
+Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
 ### api.signData(addr: cbor\<address>, sigStructure: cbor\<Sig_structure>): Promise\<Bytes>
 
