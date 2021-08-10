@@ -1,0 +1,119 @@
+{ "title": "Cardano Off-Chain Metadata"
+, "$schema": "https://json-schema.org/draft-07/schema"
+, "required":
+  [ "subject"
+  ]
+, "additionalProperties": { "$ref": "#/definitions/entry" }
+, "properties":
+  { "subject":
+    { "type": "string"
+    , "description": "The subject, a namespace for multiple metadata entries, typically a hash digest."
+    , "minLength": 1
+    , "maxLength": 255
+    }
+  , "policy":
+    { "type": "string"
+    , "description": "A CBOR-serialized phase-1 monetary policy, used as a pre-image to produce a policyId."
+    , "encoding": "base16"
+    , "minLength": 56
+    , "maxLength": 120
+    }
+  , "preimage":
+    { "type": "object"
+    , "description": "A hashing algorithm identifier and a base16-enocoded bytestring, such that the bytestring is the preimage of the metadata subject under that hash function."
+    , "requiredProperties": [ "alg", "msg" ]
+    , "properties":
+      { "alg":
+          { "type": "string"
+          , "description": "A hashing algorithm identifier. The length of the digest is given by the subject."
+          , "enum":
+            [ "sha1", "sha", "sha3", "blake2b", "blake2s", "keccak", "md5" ]
+          }
+      , "msg":
+        { "type": "string"
+        , "description": "The actual preimage."
+        , "encoding": "base16"
+        }
+      }
+    }
+  , "name":
+    { "type": "string"
+    , "description": "A human-readable name for the metadata subject, suitable for use in an interface or in running text."
+    , "maxLength": 50
+    , "minLength": 1
+    }
+  , "description":
+    { "type": "string"
+    , "description": "A longer description of the metadata subject, suitable for use when inspecting the metadata subject itself."
+    , "maxLength": 500
+    }
+  , "ticker":
+    { "type": "string"
+    , "description": "A short identifier for the metadata subject, suitable to show in listings or tiles."
+    , "maxLength": 5
+    , "minLength": 2
+    }
+  , "decimals":
+    { "type": "integer"
+    , "description": "When the metadata subject refers to a monetary policy, refers to the number of decimals of the currency."
+    , "minimum": 1
+    , "maximum": 19
+    }
+  , "url":
+    { "type": "string"
+    , "description": "A universal resource identifier pointing to additional information about the metadata subject."
+    , "format": "uri"
+    , "maxLength": 250
+    }
+  , "logo":
+    { "type": "string"
+    , "description": "A `image/png` object which is 64KB in size at most."
+    , "encoding": "base64"
+    , "maxLength": 87400
+    }
+  }
+, "definitions":
+  { "entry":
+    { "type": "object"
+    , "additionalProperties": false
+    , "required":
+      [ "value"
+      , "sequenceNumber"
+      , "signatures"
+      ]
+    , "properties":
+      { "value": {}
+      , "sequenceNumber": { "$ref": "#/definitions/sequenceNumber" }
+      , "signatures": { "$ref": "#/definitions/signatures" }
+      }
+    }
+  , "sequenceNumber":
+    { "type": "integer"
+    , "minimum": 0
+    }
+  , "signatures":
+    { "type": "object"
+    , "additionalProperties": false
+    , "required":
+      [ "publicKey"
+      , "signature"
+      ]
+    , "properties":
+      { "publicKey":
+        { "type": "string"
+        , "description": "An Ed25519 Public key, verifying the companion signature."
+        , "encoding": "base16"
+        , "minLength": 64
+        , "maxLength": 64
+        }
+      , "signature":
+        { "type": "string"
+        , "description": "A signed attestation."
+        , "encoding": "base16"
+        , "minLength": 128
+        , "maxLength": 128
+        }
+      }
+    }
+  }
+}
