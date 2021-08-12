@@ -4,6 +4,10 @@
     "description": "CIP-0020 - Transaction message/comment metadata"
   },
   {
+    "transaction_metadatum_label": 721,
+    "description": "CIP-0025 - NFT Metadata Standard"
+  },
+  {
     "transaction_metadatum_label": 1967,
     "description": "nut.link metadata oracles registry"
   },
