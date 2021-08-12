@@ -4,7 +4,7 @@
 Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain.
 The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001/CIP-0001.md).
 
-### Current CIPs (as of 2021-07-28)
+### Current CIPs (as of 2021-08-12)
 
 | #                 | Title                                                                                                                                         | Status                |
 | ----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------- |
@@ -25,7 +25,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/CIP-0015.md) | Draft |
 | 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/CIP-0016.md) | Draft |
 | 17 | [Cardano Delegation Portfolio](./CIP-0017/CIP-0017.md) | Draft |
-| 18 | [Multi-Stake-Keys Wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0018) | Draft |
+| 18 | [Multi-Stake-Keys Wallets](./CIP-0018/CIP-0018.md) | Draft |
 | 19 | [Cardano Addresses](./CIP-0019/CIP-0019.md) | Active |
 | 23 | [Fair Min Fees](./CIP-0023/CIP-0023.md) | Draft |
 | 24 | [Non-Centralizing Rankings](./CIP-0024/CIP-0024.md) | Draft |
