@@ -1,0 +1,14 @@
+METADATA-ENTRY =
+  { 178: METADATUM }
+
+METADATUM =
+  { * POLICY-ID => (  (0, KEY-HASH)
+                   // (1, { * ASSET-NAME => * KEY-HASH })
+                   )
+  }
+
+ASSET-NAME =
+  bytes .size (0..32)
+
+KEY-HASH =
+  bytes .size 28
