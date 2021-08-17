@@ -1,4 +1,7 @@
 [
+  { "transaction_metadatum_label": 178,
+    "description": "CIP-0028 - On-Chain Token Owner Key Registration"
+  },
   {
     "transaction_metadatum_label": 674,
     "description": "CIP-0020 - Transaction message/comment metadata"
