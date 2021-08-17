@@ -1,0 +1,109 @@
+{ "$schema": "<https://json-schema.org/draft-07/schema>"
+, "title": "Phase-1 Monetary Scripts"
+, "oneOf":
+    [ { "$ref": "#/definitions/Script@keyHash" }
+    , { "$ref": "#/definitions/Script@after" }
+    , { "$ref": "#/definitions/Script@before" }
+    , { "$ref": "#/definitions/Script@any" }
+    , { "$ref": "#/definitions/Script@all" }
+    , { "$ref": "#/definitions/Script@atLeast" }
+    ]
+, "definitions":
+    { "Script@keyHash":
+        { "type": "object"
+        , "additionalProperties": false
+        , "required": [ "type", "keyHash" ]
+        , "properties":
+            { "type":
+                { "type": "string"
+                , "enum": [ "sig" ]
+                }
+            , "keyHash":
+                { "type": "string"
+                , "encoding": "base16"
+                , "minLength": 56
+                , "maxLength": 56
+                }
+            }
+        }
+    , "Script@before":
+        { "type": "object"
+        , "additionalProperties": false
+        , "required": [ "type", "slot" ]
+        , "properties":
+            { "type":
+                { "type": "string"
+                , "enum": [ "before" ]
+                }
+            , "slot":
+                { "type": "integer"
+                , "minimum": 1
+                }
+            }
+        }
+    , "Script@after":
+        { "type": "object"
+        , "additionalProperties": false
+        , "required": [ "type", "slot" ]
+        , "properties":
+            { "type":
+                { "type": "string"
+                , "enum": [ "after" ]
+                }
+            , "slot":
+                { "type": "integer"
+                , "minimum": 1
+                }
+            }
+        }
+    , "Script@any":
+        { "type": "object"
+        , "additionalProperties": false
+        , "required": [ "type", "scripts" ]
+        , "properties":
+            { "type":
+                { "type": "string"
+                , "enum": [ "any" ]
+                }
+            , "scripts":
+              { "type": "array"
+              , "items": { "$ref": "#" }
+              }
+            }
+        }
+    , "Script@all":
+        { "type": "object"
+        , "additionalProperties": false
+        , "required": [ "type", "scripts" ]
+        , "properties":
+            { "type":
+                { "type": "string"
+                , "enum": [ "all" ]
+                }
+            , "scripts":
+              { "type": "array"
+              , "items": { "$ref": "#" }
+              }
+            }
+        }
+    , "Script@atLeast":
+        { "type": "object"
+        , "additionalProperties": false
+        , "required": [ "type", "required", "scripts" ]
+        , "properties":
+            { "type":
+                { "type": "string"
+                , "enum": [ "atLeast" ]
+                }
+            , "required":
+                { "type": "integer"
+                , "minimum": 0
+                }
+            , "scripts":
+              { "type": "array"
+              , "items": { "$ref": "#" }
+              }
+            }
+        }
+    }
+}
