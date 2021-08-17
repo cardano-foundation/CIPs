@@ -30,6 +30,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 23 | [Fair Min Fees](./CIP-0023/CIP-0023.md) | Draft |
 | 24 | [Non-Centralizing Rankings](./CIP-0024/CIP-0024.md) | Draft |
 | 25 | [NFT Metadata Standard](./CIP-0025/CIP-0025.md) | Draft |
+| 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/CIP-0029.md) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/CIP-1852.md) | Draft |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/CIP-1853.md) | Draft |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/CIP-1854.md) | Draft |
