@@ -33,12 +33,12 @@ A hex-encoded string of the corresponding bytes.
 
 ### cbor\<T>
 
-A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Mary binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
+A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Mult-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
 This representation was chosen when possible as it is consistent across the Cardano ecosystem and widely used by other tools, such as [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib), which has support to encode every type in the binary spec as CBOR bytes.
 
 ### TransactionUnspentOutput
 
-If we have CBOR specified by the following CDDL referencing the Shelley-Mara CDDL:
+If we have CBOR specified by the following CDDL referencing the Shelley-MA CDDL:
 ```cddl
 transaction_unspent_output = [
   input: transaction_input,
@@ -50,7 +50,7 @@ then we define
 type TransactionUnspentOutput = cbor<transaction_unspent_output>
 ```
 
-This allows us to use the output for constructing new transactions using it as an output as the `transaction_output` in the Shelley Mary CDDL does not contain enough information on its own to spend it.
+This allows us to use the output for constructing new transactions using it as an output as the `transaction_output` in the Shelley Multi-asset CDDL does not contain enough information on its own to spend it.
 
 ### Paginate
 
