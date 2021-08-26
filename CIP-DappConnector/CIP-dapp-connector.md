@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 30
 Title: Cardano dApp-Wallet Web Bridge
 Authors: rooooooooob
 Status: Draft
@@ -148,28 +148,28 @@ type TxSignError = {
 
 ## Initial API
 
-In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.walletName.requestReadAccess()` in order for the dApp to read any information pertaining to the user's wallet.
+In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.walletName.enable()` in order for the dApp to read any information pertaining to the user's wallet.
 
-### wallet.requestReadAccess(): Promise\<API>
+### wallet.enable(): Promise\<API>
 
 Errors: APIError
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
 
-### wallet.checkReadAccess(): Promise\<bool>
+### wallet.isEnabled(): Promise\<bool>
 
 Errors: APIError
 
-Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.requestReadAccess()` during the current session should succeed and return the `API` object.
+Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.enable()` during the current session should succeed and return the `API` object.
 
-### wallet.version(): String
+### wallet.version: String
 
 Errors: APIError
 
 Returns the version number of the API that the wallet supports.
 
 
-### wallet.name(): String
+### wallet.name: String
 
 Errors: APIError
 
@@ -179,7 +179,7 @@ Returns a name for the wallet which can be used inside of the dApp for the purpo
 
 ## Full API
 
-Upon successful connection via `wallet.requestReadAccess()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `wallet.requestReadAccess()`. The remaining methods `api.signTx()` and `api.signData()` must request the user's consent in an informative way for each and every API call in order to maintain security.
+Upon successful connection via `wallet.enable()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `wallet.enable()`. The remaining methods `api.signTx()` and `api.signData()` must request the user's consent in an informative way for each and every API call in order to maintain security.
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
