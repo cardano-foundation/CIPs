@@ -213,6 +213,12 @@ Errors: `APIError`
 
 Returns an address owned by the wallet that should be used as a change address to return leftover assets during transaction creation back to the connected wallet. This can be used as a generic receive address as well.
 
+### api.getRewardAddresses(): Promise\<cbor\<address>[]>
+
+Errors: `APIError`
+
+Returns the reward addresses owned by the wallet. This can return multiple addresses e.g. CIP-0018.
+
 ### api.signTx(tx: cbor\<transaction>, partialSign: bool = false): Promise\<cbor\<transaction_witness_set>>
 
 Errors: `APIError`, `TxSignError`
