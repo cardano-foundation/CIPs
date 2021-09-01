@@ -183,6 +183,12 @@ Upon successful connection via `wallet.enable()`, a javascript object we will re
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
+### api.getNetworkId(): Promise\<number>
+
+Errors: `APIError`
+
+Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet. This result will stay the same unless an `account_changed` event has been emitted.
+
 ### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | undefined>
 
 Errors: `APIError`, `PaginateError`
@@ -236,6 +242,27 @@ This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-fo
 Errors: `APIError`, `TxSendError`
 
 As wallets should already have this ability, we allow dApps to request that a transaction be sent through it. If the wallet accepts the transaction and tries to send it, it shall return the transaction id for the dApp to track. The wallet is free to return the `TxSendError` with code `Refused` if they do not wish to send it, or `Failure` if there was an error in sending it (e.g. preliminary checks failed on signatures).
+
+## Events
+
+In addition to the API methods that are actively called, the connector also must emit the following events. All methods events are required to be implemented.
+
+TODO: event emission method? Possible methods:
+
+1) Emitted event via `window.addEventListener(eventName , e => void)`
+2) Emitted message via `window.postMessage({eventName: string}, ...)`
+3) Some kind of callback registration i.e. `wallet.onDisconnect(() => void)` or `wallet.onEvent(eventName => void)`
+4) A combination of the two (event/message but with callback on `wallet` object as well
+5) Other?
+
+### wallet_disconnected
+
+Emitted when the user disconnects (not just changes) their current account from the page. This means that all `api` methods will return with an `APIError.Refused` error and a new `api` object must be obtained from `wallet.enable()` to continue to interact with the user's wallet.
+
+### account_changed
+
+Emitted when the user changes accounts (i.e. different root key pair and/or network id). The same `api` object will continue to work but will now return results based on the new account. After this event is received dApps should check `api.getNetworkId()` as changing accounts can also change the network.
+
 
 # Implementations
 
