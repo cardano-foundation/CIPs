@@ -11,7 +11,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-[CIP-1852](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/CIP-1852.md) establishes how Shelley-era hierarchical deterministic (HD) wallets should derive their keys. This document is a follow-up of this CIP specifying how stake pool cold keys should be derived.
+[CIP-1852] establishes how Shelley-era hierarchical deterministic (HD) wallets should derive their keys. This document is a follow-up of this CIP specifying how stake pool cold keys should be derived.
 
 ## Motivation
 
@@ -56,3 +56,5 @@ We chose hardened derivation at the usecase index as there is no incentive to mi
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+
+[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852

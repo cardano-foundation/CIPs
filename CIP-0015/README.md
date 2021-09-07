@@ -37,7 +37,7 @@ This method has been used since Fund 2.
 For future fund iterations, a new method making use of time-lock scripts may
 be introduced as described [below][future-development].
 
-Recall: Cardano uses the UTXO model so to completely associate a wallet's balance with a voting key (i.e. including enterprise addresses), we would need to associate every payment key to a voting key individually. Although there are attempts at this (see [CIP8](../CIP-0008/CIP-0008.md)), the resulting data structure is a little excessive for on-chain metadata (which we want to keep small)
+Recall: Cardano uses the UTXO model so to completely associate a wallet's balance with a voting key (i.e. including enterprise addresses), we would need to associate every payment key to a voting key individually. Although there are attempts at this (see [CIP-0008]), the resulting data structure is a little excessive for on-chain metadata (which we want to keep small)
 
 Given the above, we choose to only associate staking keys with voting keys. Since most Cardano wallets only use base addresses for Shelley wallet types, in most cases this should perfectly match the user's wallet.
 
@@ -123,3 +123,5 @@ This has been deferred to a future revision of the protocol.
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+
+[CIP-0008]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/CIP-0010.md",
+    "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010",
     "type": "array",
     "title": "Transaction Metadata Label Registry",
     "description": "JSON schema for transaction metadata label registry",

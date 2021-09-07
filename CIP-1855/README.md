@@ -88,7 +88,7 @@ A Formal Specification of the Cardano Ledger | https://hydra.iohk.io/job/Cardano
 CC-BY-4.0
 
 [BIP-0032]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
-[CIP-5]: https://github.com/cardano-foundation/CIPs/tree/master/CIP5
-[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/CIP-1852.md
+[CIP-0005]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005
+[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852
 [ledger-spec.pdf]: https://hydra.iohk.io/job/Cardano/cardano-ledger-specs/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec
 [SLIP-0044]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md

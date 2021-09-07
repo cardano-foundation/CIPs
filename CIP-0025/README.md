@@ -118,7 +118,7 @@ Version `2.0` will introduce [schema.org](https://schema.org).
 ## References
 
 - Mime type: https://tools.ietf.org/html/rfc6838.
-- CIP about reserved labels: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/CIP-0010.md
+- CIP about reserved labels: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010
 - EIP-721: https://eips.ethereum.org/EIPS/eip-721
 - URI: https://tools.ietf.org/html/rfc3986, https://tools.ietf.org/html/rfc2397
 

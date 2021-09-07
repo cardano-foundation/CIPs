@@ -239,7 +239,7 @@ CC-BY-4.0
 [rfc8152]: https://tools.ietf.org/html/rfc8152
 [BIP-0032]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 [CIP-5]: https://github.com/cardano-foundation/CIPs/tree/master/CIP5
-[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/CIP-1852.md
-[CIP-11]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011/CIP-0011.md
+[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852
+[CIP-11]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011
 [ledger-spec.pdf]: https://hydra.iohk.io/job/Cardano/cardano-ledger-specs/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec
 [SLIP-0044]: https://github.com/satoshilabs/slips/blob/master/slip-0044.md

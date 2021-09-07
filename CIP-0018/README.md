@@ -92,5 +92,5 @@ An address is said mangled when it has a stake part, and the stake part isn't re
 
 CC-BY-4.0
 
-[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/CIP-1852.md
-[CIP-0011]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011/CIP-0011.md
+[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852
+[CIP-0011]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011

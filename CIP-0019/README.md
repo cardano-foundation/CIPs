@@ -228,8 +228,8 @@ CC-BY-4.0
 [Byron addresses]: #byron-addresses
 [CBOR]: https://www.rfc-editor.org/rfc/rfc8949
 [CDDL specification of Byron addresses]: https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0019/CIP-0019-byron-addresses.cddl
-[CIP-0005]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005/CIP-0005.md
-[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/CIP-1852.md
+[CIP-0005]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005
+[CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852
 [derivation path]: #derivation-path
 [pointers]: #pointers
 [Shelley addresses]: #shelley-addresses

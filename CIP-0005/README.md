@@ -138,4 +138,4 @@ N/A
 
 This CIP is licensed under Apache-2.0.
 
-[CIP-0014]: https://github.com/cardano-foundation/CIPs/blob/645243e30b5aae109a70ec2b47af70dcc808bc56/CIP-0014/CIP-0014.md
+[CIP-0014]: https://github.com/cardano-foundation/CIPs/blob/645243e30b5aae109a70ec2b47af70dcc808bc56/CIP-0014
