@@ -8,7 +8,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 
 | #                 | Title                                                                                                                                         | Status                |
 | ----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------- |
-| 1 | [CIP process](../CIP-0001/CIP-0001.md) | Active |
+| 1 | [CIP process](./CIP-0001/CIP-0001.md) | Active |
 | 2 | [Coin Selection Algorithms for Cardano](./CIP-0002/CIP-0002.md) | Draft |
 | 3 | [Wallet key generation](./CIP-0003/CIP-0003.md) | Draft |
 | 4 | [Wallet Checksums](./CIP-0004/CIP-0004.md) | Draft |
@@ -19,7 +19,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 9 | [Protocol Parameters](./CIP-0009/CIP-0009.md) | Draft |
 | 10 | [Transaction Metadata Label Registry](./CIP-0010/CIP-0010.md) | Draft |
 | 11 | [Staking key chain for HD wallets](./CIP-0011/CIP-0011.md) | Draft |
-| 12 | [On-chain stake pool operator to delegates communication](../CIP-0012/CIP-0012.md) | Draft |
+| 12 | [On-chain stake pool operator to delegates communication](./CIP-0012/CIP-0012.md) | Draft |
 | 13 | [Cardano URI Scheme](./CIP-0013/CIP-0013.md) | Draft |
 | 14 | [User-Facing Asset Fingerprint](./CIP-0014/CIP-0014.md) | Draft |
 | 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/CIP-0015.md) | Draft |
