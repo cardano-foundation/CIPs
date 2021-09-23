@@ -3,6 +3,8 @@
 - **Deprecated**: no
 - **Summary**: Used by Ledger hardware wallets
 
+Reference implementation by Ledger: [HDEd25519.py](https://github.com/LedgerHQ/orakolo/blob/0b2d5e669ec61df9a824df9fa1a363060116b490/src/python/orakolo/HDEd25519.py)
+
 *Note*: Ledger also allows users to set an additional [passphrase](https://support.ledger.com/hc/en-us/articles/115005214529-Advanced-passphrase-security)
 
 ## Code
