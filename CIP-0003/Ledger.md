@@ -20,7 +20,7 @@ function generateMasterKey(seed, password) {
     let cc = HMAC
         ( hash=SHA256
         , key="ed25519 seed"
-        , message=UTF8NFKD(1) + seed
+        , message=UTF8NFKD(1) + data
         );
 
     let (iL, iR) = hashRepeatedly(data);
@@ -82,7 +82,7 @@ function tweakBits(data) {
 
   master key
   ```
-  1091f9fd9d2febbb74f08798490d5a5727eacb9aa0316c9eeecf1ff2cb5d8e55bc21db1a20a1d2df9260b49090c35476d25ecefa391baf3231e56699974bdd46652f8e7dd4f2a66032ed48bfdffa4327d371432917ad13909af5c47d0d356beb
+  587c6774357ecbf840d4db6404ff7af016dace0400769751ad2abfc77b9a3844cc71702520ef1a4d1b68b91187787a9b8faab0a9bb6b160de541b6ee62469901fc0beda0975fe4763beabd83b7051a5fd5cbce5b88e82c4bbaca265014e524bd
   ```
 </details>
 
