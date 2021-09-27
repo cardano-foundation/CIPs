@@ -16,6 +16,10 @@
     "description": "CIP-0025 - NFT Metadata Standard"
   },
   {
+    "transaction_metadatum_label": 777,
+    "description": "CIP-0027 - Royalties Standard"
+  },
+  {
     "transaction_metadatum_label": 1967,
     "description": "nut.link metadata oracles registry"
   },
