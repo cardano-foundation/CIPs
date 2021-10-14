@@ -1,0 +1,42 @@
+[
+  {
+    "transaction_metadatum_label": 87,
+    "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
+  },
+  {
+    "transaction_metadatum_label": 88,
+    "description": "milkomeda.com - the destination address in the sidechain"
+  },
+  {
+    "transaction_metadatum_label": 674,
+    "description": "CIP-0020 - Transaction message/comment metadata"
+  },
+  {
+    "transaction_metadatum_label": 721,
+    "description": "CIP-0025 - NFT Metadata Standard"
+  },
+  {
+    "transaction_metadatum_label": 1967,
+    "description": "nut.link metadata oracles registry"
+  },
+  {
+    "transaction_metadatum_label": 1968,
+    "description": "nut.link metadata oracles data points"
+  },
+  {
+    "transaction_metadatum_label": 6770,
+    "description": "fortunes.coconutpool.com fortune teller"
+  },
+  {
+    "transaction_metadatum_label": 61284,
+    "description": "CIP-0015 - Catalyst registration"
+  },
+  {
+    "transaction_metadatum_label": 61285,
+    "description": "CIP-0015 - Catalyst registration"
+  },
+  {
+    "transaction_metadatum_label": 61286,
+    "description": "CIP-0015 - Catalyst registration"
+  }
+]

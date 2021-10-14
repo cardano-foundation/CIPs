@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0012/CIP-0012.md",
+  "type": "object",
+  "title": "CIP12",
+  "description": "Transaction metadata schema for CIP12",
+  "patternProperties": {
+    "^199{0,1}$": {
+      "type": "array",
+      "items": [ {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*$": {
+                "type": "object",
+                "required": [
+                    "title",
+                    "content"
+                ],
+                "properties": {
+                    "title": {
+                        "$id": "#/properties/title",
+                        "type": "string",
+                        "title": "Title",
+                        "description": "Title of the communication.",
+                        "maxLength": 64,
+                        "examples": [
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do"
+                        ]
+                    },
+                    "content": {
+                        "$id": "#/properties/content",
+                        "type": "array",
+                        "title": "Content",
+                        "description": "Content of the communication in chunks",
+                        "items": [
+                          {
+                            "type": "string",
+                            "maxLength": 64
+                          }
+                        ],
+                        "examples": [
+                            [
+                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ",
+                              "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut e",
+                              "nim ad minim veniam, quis nostrud exercitation ullamco laboris."
+                            ]
+                        ]
+                    },
+                    "valid": {
+                      "$id": "#/properties/valid",
+                      "type": "integer",
+                      "title": "Validity",
+                      "description": "Slot number when the communication becomes valid",
+                      "examples": [
+                        10669033
+                      ]
+                    },
+                    "expire": {
+                        "$id": "#/properties/expire",
+                        "type": "integer",
+                        "title": "Expiration",
+                        "description": "Slot number when the communication expires",
+                        "examples": [
+                          10669033
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            }
+          }
+      } ]
+    }
+  }
+}
