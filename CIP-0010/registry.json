@@ -1,7 +1,23 @@
 [
   {
+    "transaction_metadatum_label": 87,
+    "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
+  },
+  {
+    "transaction_metadatum_label": 88,
+    "description": "milkomeda.com - the destination address in the sidechain"
+  },
+  {
+    "transaction_metadatum_label": 674,
+    "description": "CIP-0020 - Transaction message/comment metadata"
+  },
+  {
     "transaction_metadatum_label": 721,
     "description": "CIP-0025 - NFT Metadata Standard"
+  },
+    {
+    "transaction_metadatum_label": 777,
+    "description": "CIP-0025 - Royalties Standard"
   },
   {
     "transaction_metadatum_label": 1967,
