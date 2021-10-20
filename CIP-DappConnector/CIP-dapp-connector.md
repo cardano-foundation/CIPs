@@ -162,7 +162,7 @@ Errors: APIError
 
 Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.enable()` during the current session should succeed and return the `API` object.
 
-### wallet.version: String
+### wallet.apiVersion: String
 
 Errors: APIError
 
