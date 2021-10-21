@@ -2,6 +2,7 @@
 CIP: 30
 Title: Cardano dApp-Wallet Web Bridge
 Authors: rooooooooob
+Comments-URI: https://github.com/cardano-foundation/CIPs/pull/88
 Status: Draft
 Type: Standards
 Created: 2021-04-29
@@ -60,7 +61,7 @@ type Paginate = {|
   limit: number,
 |};
 ```
-Used to specify optional pagination for some API calls. Limits results to {limit} each page, and uses a 0-indexing {page} to refer to which of those pages of {limit} items each.
+Used to specify optional pagination for some API calls. Limits results to {limit} each page, and uses a 0-indexing {page} to refer to which of those pages of {limit} items each. dApps should be aware that if a wallet is modified between paginated calls that this will change the pagination, e.g. some results skipped or showing up multiple times but otherwise the wallet must respect the pagination order.
 
 
 ## Error Types
@@ -72,6 +73,7 @@ APIErrorCode {
 	InvalidRequest: -1,
 	InternalError: -2,
 	Refused: -3,
+	AccountChange: 4,
 }
 APIError {
 	code: APIErrorCode,
@@ -82,6 +84,7 @@ APIError {
 * InvalidRequest - Inputs do not conform to this spec or are otherwise invalid.
 * InternalError - An error occurred during execution of this API call.
 * Refused - The request was refused due to lack of access - e.g. wallet disconnects.
+* AccountChange - The account has changed. The dApp should call `wallet.enable()` to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
 
 ### DataSignError
 
@@ -164,17 +167,16 @@ Returns true if the dApp is already connected to the user's wallet, or if reques
 
 ### wallet.apiVersion: String
 
-Errors: APIError
-
-Returns the version number of the API that the wallet supports.
+The version number of the API that the wallet supports.
 
 
 ### wallet.name: String
 
-Errors: APIError
+A name for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
 
-Returns a name for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like connect with.
+### wallet.icon: String
 
+A URI image (e.g. data URI base64 or other) for img src for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
 
 
 ## Full API
@@ -187,7 +189,7 @@ The API chosen here is for the minimum API necessary for dApp <-> Wallet interac
 
 Errors: `APIError`
 
-Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet. This result will stay the same unless an `account_changed` event has been emitted.
+Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet but other networks can possibly be returned by wallets. Those other network ID values are not governed by this document. This result will stay the same unless the connected account has changed.
 
 ### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | undefined>
 
@@ -243,27 +245,6 @@ Errors: `APIError`, `TxSendError`
 
 As wallets should already have this ability, we allow dApps to request that a transaction be sent through it. If the wallet accepts the transaction and tries to send it, it shall return the transaction id for the dApp to track. The wallet is free to return the `TxSendError` with code `Refused` if they do not wish to send it, or `Failure` if there was an error in sending it (e.g. preliminary checks failed on signatures).
 
-## Events
-
-In addition to the API methods that are actively called, the connector also must emit the following events. All methods events are required to be implemented.
-
-TODO: event emission method? Possible methods:
-
-1) Emitted event via `window.addEventListener(eventName , e => void)`
-2) Emitted message via `window.postMessage({eventName: string}, ...)`
-3) Some kind of callback registration i.e. `wallet.onDisconnect(() => void)` or `wallet.onEvent(eventName => void)`
-4) A combination of the two (event/message but with callback on `wallet` object as well
-5) Other?
-
-### wallet_disconnected
-
-Emitted when the user disconnects (not just changes) their current account from the page. This means that all `api` methods will return with an `APIError.Refused` error and a new `api` object must be obtained from `wallet.enable()` to continue to interact with the user's wallet.
-
-### account_changed
-
-Emitted when the user changes accounts (i.e. different root key pair and/or network id). The same `api` object will continue to work but will now return results based on the new account. After this event is received dApps should check `api.getNetworkId()` as changing accounts can also change the network.
-
-
 # Implementations
 
-TODO: link to Yoroi's implementation once available
+[nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
