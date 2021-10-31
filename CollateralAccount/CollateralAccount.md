@@ -23,7 +23,7 @@ Collateral input | As of Alonzo, transactions that call Plutus smart contracts a
 - Must be at least some percentage of the fee in the tx (concrete percentage decided by a protocol parameter)
 - Can be the same UTXO entry as used in non-collateral tx input
 - Is consumed entirely (no change) if the contract execution fails during phase 2 validation
-- Is not consumed is phase phase 2 validation succeeds
+- Is not consumed if phase phase 2 validation succeeds
 
 Additionally, there cannot be more than *maxColInputs* (protocol parameter) inputs and the inputs have to cover a percentage of the fee defined by *collateralPercent* (protocol parameter)
 
