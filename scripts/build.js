@@ -15,7 +15,7 @@ handlebars.registerHelper('dateFormat', (d, f) => {
 });
 
 handlebars.registerHelper('getAuthors', function (Authors) {
-  
+
   // Temporary fallback for CI to not fail
   if(!Authors) return '';
 
@@ -72,7 +72,7 @@ function getTableOfContents(lines, { children = [], headingType = -1 } = {}) {
 
 function loadFrontmatter(filePath) {
   const raw = fs.readFileSync(filePath, { encoding: 'utf8' })
-  const contents = raw.replace(/\.\/.*CIP-0*([^\.]+)\.md/g, '/cips/cip$1')
+  const contents = raw.replace(/\.\/.*CIP-0*([^\.]+)/g, '/cips/cip$1')
   const parsed = matter(contents)
   parsed.html = converter.makeHtml(parsed.content)
   return parsed
@@ -110,7 +110,7 @@ function build() {
     const assets = fs.readdirSync(path.join(cipsDirectory, item))
     assets.forEach(asset => {
       const assetPath = path.join(cipsDirectory, item, asset)
-      if (asset === `${item}.md`) {
+      if (asset === 'README.md') {
         const cip = loadFrontmatter(assetPath)
         cip.tableOfContents = getTableOfContents(cip.content.split('\n'))
         types[cip.data.Type] = types[cip.data.Type] || []
