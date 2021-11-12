@@ -73,7 +73,7 @@ APIErrorCode {
 	InvalidRequest: -1,
 	InternalError: -2,
 	Refused: -3,
-	AccountChange: 4,
+	AccountChange: -4,
 }
 APIError {
 	code: APIErrorCode,
@@ -151,37 +151,37 @@ type TxSignError = {
 
 ## Initial API
 
-In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.walletName.enable()` in order for the dApp to read any information pertaining to the user's wallet.
+In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
 
-### wallet.enable(): Promise\<API>
+### cardano.{walletName}.enable(): Promise\<API>
 
 Errors: APIError
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
 
-### wallet.isEnabled(): Promise\<bool>
+### cardano.{walletName}.isEnabled(): Promise\<bool>
 
 Errors: APIError
 
 Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.enable()` during the current session should succeed and return the `API` object.
 
-### wallet.apiVersion: String
+### cardano.{walletName}.apiVersion: String
 
 The version number of the API that the wallet supports.
 
 
-### wallet.name: String
+### cardano.{walletName}.name: String
 
 A name for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
 
-### wallet.icon: String
+### cardano.{walletName}.icon: String
 
 A URI image (e.g. data URI base64 or other) for img src for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
 
 
 ## Full API
 
-Upon successful connection via `wallet.enable()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `wallet.enable()`. The remaining methods `api.signTx()` and `api.signData()` must request the user's consent in an informative way for each and every API call in order to maintain security.
+Upon successful connection via `cardano.{walletName}.enable()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following methods. All read-only methods (all but the signing functionality) should not require any user interaction as the user has already consented to the dApp reading information about the wallet's state when they agreed to `cardano.{walletName}.enable()`. The remaining methods `api.signTx()` and `api.signData()` must request the user's consent in an informative way for each and every API call in order to maintain security.
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
@@ -236,6 +236,8 @@ Requests that a user sign the unsigned portions of the supplied transaction. The
 ### api.signData(addr: cbor\<address>, sigStructure: cbor\<Sig_structure>): Promise\<Bytes>
 
 Errors: `APIError`, `DataSignError`
+
+This endpoint is due to be updated/finalized soon, see [discussion in the initial PR](https://github.com/cardano-foundation/CIPs/pull/88#issuecomment-954436243).
 
 This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign data conforming to said spec. The user's consent should be requested and the details of `sig_structure` shown to them in an informative way. The  Please refer to the CIP-0008 spec for details on how to construct the sig structure.
 
