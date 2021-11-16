@@ -2,8 +2,8 @@
 CIP: 2
 Title: Coin Selection Algorithms for Cardano
 Authors: Jonathan Knowles <jonathan.knowles@iohk.io>
-Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-0002
-Status: Draft
+Comments-URI: https://github.com/cardano-foundation/CIPs/issues
+Status: Active
 Type: Informational
 Created: 2020-05-04
 License: CC-BY-4.0
@@ -1017,7 +1017,7 @@ are available in the following languages:
 > |:--|:--|
 > | **Author** | [Edsko de Vries](http://www.edsko.net/) |
 > | **Year** | 2018 |
-> | **Location** | https://cardanofoundation.org/en/news/self-organisation-in-coin-selection/ |
+> | **Location** | https://iohk.io/en/blog/posts/2018/07/03/self-organisation-in-coin-selection/ |
 >
 > This article introduces the [Random-Improve](#random-improve) coin selection
 > algorithm, invented by [Edsko de Vries](http://www.edsko.net/).

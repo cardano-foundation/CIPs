@@ -3,8 +3,8 @@ CIP: 3
 Title: Wallet key generation
 Authors: Matthias Benkort <matthias.benkort@iohk.io>, Sebastien Guillemot <sebastien@emurgo.io>
 Comments-Summary: No comments yet.
-Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-0003
-Status: Draft
+Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/issues
+Status: Active
 Type: Standards
 Created: 2020-05-07
 License: CC-BY-4.0
