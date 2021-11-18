@@ -58,7 +58,7 @@ Metadata subjects, property names, and property values must all be represented a
 
 There is no particular interpretation attached to a metadata subject: it can be anything (see however the special-case of phase-1 monetary policy below). We anticipate however that the primary use-case for it will be something that appears on the blockchain, like the hash of a script.
 
-We will refer to a whole metadata as a _metadata object_ and to a particular property assignment for a particular metadata subject as a _metadata entry_. We will say that a metadata object is _well-formed_ when it validates according to the [JSON-schema specification given in annex](./schema.json). To be valid, a metadata object MUST be (at least) well-formed.
+We will refer to a whole metadata as a _metadata object_ and to a particular property assignment for a particular metadata subject as a _metadata entry_. We will say that a metadata object is _well-formed_ when it validates according to the [JSON-schema specification given in annex][schema.json]. To be valid, a metadata object MUST be (at least) well-formed.
 
 ```json
 {
@@ -243,7 +243,7 @@ The way by which the trusted keys are registered into clients is unspecified alt
 
 2. End-users SHOULD have the ability to add/remove keys from their trusted set. This allows end-users to introduce trusted keys they know before they end up in the pre-configured set (which likely follow the application release cycle). In this context, keys are advertised by the signing authority by some means, for instance, on social media or on another form of public key registry (e.g. [keybase.io](http://keybase.io/))
 
-3. Mappings of subjects to keys MAY be recorded on-chain, using transaction metadata and an appropriate label registered on [CIP-0010](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/CIP-0010.md). In some scenarios, the context within which the transaction is signed may be enough to reliably trust the legitimacy of a mapping. For example, in the case of a monetary policy, one could imagine _registering trusted keys_ in the same transaction minting tokens. Because the transaction is inserted in the ledger, it must have been signed by the token issuer and therefore, the specified keys are without doubt acknowledged by the token issuer. As a result, clients having access to on-chain data can automatically discover new mappings from observing the chain. 
+3. Mappings of subjects to keys MAY be recorded on-chain, using transaction metadata and an appropriate label registered on [CIP-0010]. In some scenarios, the context within which the transaction is signed may be enough to reliably trust the legitimacy of a mapping. For example, in the case of a monetary policy, one could imagine _registering trusted keys_ in the same transaction minting tokens. Because the transaction is inserted in the ledger, it must have been signed by the token issuer and therefore, the specified keys are without doubt acknowledged by the token issuer. As a result, clients having access to on-chain data can automatically discover new mappings from observing the chain. 
 
 ### Special Case: Phase-1 Monetary Policies
 
@@ -480,3 +480,6 @@ See [Special Case: Phase-1 Monetary Policies](#special-case--phase--1-monetary-p
 # Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+
+[schema.json]: https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0026/schema.json
+[CIP-0010]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010
