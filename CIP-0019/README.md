@@ -26,9 +26,9 @@ In Cardano, an address is a **sequence of bytes** that conforms to a particular 
 
 However, users will typically come into contact with addresses only after these addresses have been **encoded** into sequences of human-readable characters. In Cardano, the [Bech32][] and [Base58][] encodings are used to encode addresses, as opposed to standard hexadecimal notation (Base16, example `0x8A7B`). These encoded sequence of characters have to be distinguished from the byte sequences that they encode, but lay users will (and should) perceive the encoded form as "the" address.
 
-## User-facing Encoding 
+## User-facing Encoding
 
-By convention, **Shelley** and stake addresses are encoded using **[Bech32][]** with human-readable prefixes defined in [CIP-0005][]. The most common prefix is `addr`, representing an address on mainnet. Bech32 is the preferred encoding, as its built-in error detection may protect users against accidental misspellings or truncations. The encoding in Cardano does not strictly follow the Bech32 standard, but the only difference is that the character sequence may be longer than the 90 character length limit.
+By convention, **Shelley** and stake addresses are encoded using **[Bech32][]**, with the exception that Cardano does not impose a length limit on the sequence of characters. The human-readable prefixes are defined in [CIP-0005][]; the most common prefix is `addr`, representing an address on mainnet. Bech32 is the preferred encoding, as its built-in error detection may protect users against accidental misspellings or truncations.
 
 Again by convention, **Byron** addresses are encoded in **[Base58][]**.
 
