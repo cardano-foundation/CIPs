@@ -93,7 +93,6 @@ DataSignErrorCode {
 	ProofGeneration: 1,
 	AddressNotPK: 2,
 	UserDeclined: 3,
-	InvalidFormat: 4,
 }
 type DataSignError = {
 	code: DataSignErrorCode,
@@ -233,13 +232,18 @@ Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
-### api.signData(addr: cbor\<address>, sigStructure: cbor\<Sig_structure>): Promise\<Bytes>
+### api.signData(addr: cbor\<address>, payload: String): Promise\<cbor\<COSE_Sign1>>
 
 Errors: `APIError`, `DataSignError`
 
-This endpoint is due to be updated/finalized soon, see [discussion in the initial PR](https://github.com/cardano-foundation/CIPs/pull/88#issuecomment-954436243).
+This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. `payload` is hex-encoded bytes. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking will will be used for reward addresses. This key will be used to sign the COSE-Sign1 `Sig_structure` with the following headers set:
 
-This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign data conforming to said spec. The user's consent should be requested and the details of `sig_structure` shown to them in an informative way. The  Please refer to the CIP-0008 spec for details on how to construct the sig structure.
+* `alg` (1) - must be set to EdDSA (-8)
+* `kid` (4) - must be set to the Ed25519 public key bytes used to sign the `Sig_structure`
+
+The payload is not hashed and no `external_aad` is used.
+
+If the payment key for `addr` is not a P2Pk address then `DataSignError` will be returned with code `AddressNotPK`. `ProofGeneration` shall be returned if the wallet cannot generate a signature (i.e. the wallet does not own the requested payment private key), and `UserDeclined` will be returned if the user refuses the request. The corresponding `COSE_Sign1` object is returned on success.
 
 ### api.submitTx(tx: cbor\<transaction>): Promise\<hash32>
 
