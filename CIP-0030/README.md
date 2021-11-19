@@ -240,6 +240,7 @@ This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-fo
 
 * `alg` (1) - must be set to EdDSA (-8)
 * `kid` (4) - must be set to the Ed25519 public key bytes used to sign the `Sig_structure`
+* `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
 
 The payload is not hashed and no `external_aad` is used.
 
