@@ -5,6 +5,7 @@ Authors: Gabriel Kerekes <gabriel.kerekes@vacuumlabs.com>, Rafael Korbas <rafael
 Status: Draft
 Type: Standards
 Created: 2021-06-15
+Updated: 2021-11-23 multi-sig
 License: CC-BY-4.0
 ---
 
@@ -24,6 +25,10 @@ To ensure interoperability, SW wallets and other tools working with HW wallets s
 
 ## Specification
 
+Certain transaction elements, described as allowed in this document, might not be supported by some HW wallets. Support also depends on HW wallet firmware or app versions. If transaction signing fails for a transaction which is built according to this specification, make sure to check the documentation of the HW wallet you are using.
+
+_It might take some time for recent Cardano ledger spec changes to be implemented for HW wallets. Thus it might happen that further restrictions might apply on top of the restrictions mentioned in this CIP until the changes are implemented on HW wallets._
+
 ### Canonical CBOR serialization format
 
 Transactions must be serialized in line with suggestions from [Section 3.9 of CBOR specification RFC](https://datatracker.ietf.org/doc/html/rfc7049#section-3.9). In particular:
@@ -36,8 +41,6 @@ Transactions must be serialized in line with suggestions from [Section 3.9 of CB
 See the RFC for details.
 
 ### Transaction body
-
-Full support for some elements is not implemented yet (especially those related to scripts), but that is likely to change in the near future. The following restrictions are, however, unlikely to ever be lifted.
 
 **Unsupported entries**
 
@@ -53,7 +56,7 @@ The number of the following transaction elements individually must not exceed `U
 
 - inputs in transaction body
 - outputs in transaction body
-- asset groups (policy IDs) in an output
+- asset groups (policy IDs) in an output or in the mint field
 - tokens (asset names) in an asset group
 - certificates in transaction body
 - pool owners in a pool registration certificate
@@ -129,7 +132,7 @@ The specified auxiliary data format was chosen in order to be compatible with ot
 
 ## Backwards compatibility
 
-Most of the restrictions are already implemented in HW wallets except the canonical CBOR serialization. Tools interacting with HW wallets might need to be updated in order to continue being compatible with HW wallets when the canonical CBOR serialization format is enforced in HW wallets.
+Tools interacting with HW wallets might need to be updated in order to continue being compatible with HW wallets because of canonical CBOR serialization format, which is being enforced since multi-sig support.
 
 ## Copyright
 
