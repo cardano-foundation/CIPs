@@ -118,7 +118,7 @@ Once a CIP has been merged into the CIP GitHub repository, it benefits from publ
 The author or authors of a CIP can decide at any time to change the status from draft to on hold if they are currently unable to proactively progress the CIP.
 A CIP editor may also change the status to on hold if no progress is being made on the CIP for some time.
 
-A CIP's status should only be changed from draft (or rejected) to proposed when the author or authors deem it complete, it has a working implementation (where applicable), and has community plans to progress it to the Active status.
+A CIP's status should only be changed from draft (or rejected) to 'Proposed' when the author or authors deem it complete and it has a community-verifyiable explicit (Editor-approved) **path to 'Active'**: This could be a working implementation (where applicable), or a set of observable metrics on the network, but it should be clearly worded out in the CIP as its own section for all to refer to. 
 
 A CIP can be rejected by a CIP editor for a few specific reasons. CIPs should be changed from draft or proposed status to rejected status, upon request by any person, if they have not been progressed for more than three years. A rejected CIP can be changed to proposed status if it meets the criteria described in the previous paragraph, and if the author or author(s) provide revisions that meaningfully address the original criticism of the proposal that caused it to be rejected.
 
