@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 # Abstract
 
-This specification describes the binary structure of addresses in Cardano, covering both addresses introduced in the Shelley era and the legacy format from the Byron era.
+This specification describes the structure of addresses in Cardano, covering both addresses introduced in the Shelley era and the legacy format from the Byron era.
 
 # Motivation
 
@@ -20,11 +20,35 @@ Document design choices for posterity. Most applications interacting with the Ca
 
 # Specification
 
-## Overview
+## Introduction
 
-In Cardano, addresses are comprised of two parts, a **header** and a **payload**. Depending on the header, the interpretation of the payload varies. 
+In Cardano, an address is a **sequence of bytes** that conforms to a particular format, which we describe below.
 
-In the header, bits [7;4] indicate the type of addresses being used; we'll call these four bits the **header type**. The remaining four bits [3;0] are either unused or refer to what we'll call the **network tag**. There are currently 11 types of addresses in Cardano which we'll divide into three categories: [Shelley addresses], [stake addresses], and [Byron addresses]. 
+However, users will typically come into contact with addresses only after these addresses have been **encoded** into sequences of human-readable characters. In Cardano, the [Bech32][] and [Base58][] encodings are used to encode addresses, as opposed to standard hexadecimal notation (Base16, example `0x8A7B`). These encoded sequence of characters have to be distinguished from the byte sequences that they encode, but lay users will (and should) perceive the encoded form as "the" address.
+
+## User-facing Encoding
+
+By convention, **Shelley** and stake addresses are encoded using **[Bech32][]**, with the exception that Cardano does not impose a length limit on the sequence of characters. The human-readable prefixes are defined in [CIP-0005][]; the most common prefix is `addr`, representing an address on mainnet. Bech32 is the preferred encoding, as its built-in error detection may protect users against accidental misspellings or truncations.
+
+Again by convention, **Byron** addresses are encoded in **[Base58][]**.
+
+Historically, Byron addresses were introduced before the design of Bech32, which solves various issues of the Base58 encoding format (see [Bech32's motivation](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki#motivation) for more detail). Byron addresses were however kept as Base58 to easily distinguish them from new addresses introduced in Shelley, massively making use of Bech32 for encoding small binary objects.
+
+Cave: In principle, it is possible for a Shelley address to be encoded in Base58 and a Byron address to be encoded in Bech32 (without length limit). However, implementations are encouraged to reject addresses that were encoded against convention, as this helps with the goal that lay users only encounter a single, canonical version of every address.
+
+Examples of different addresses encoded in different eras:
+
+| Address Type | Encoding | Example                                                                                                              |
+| ---          | ---      | ---                                                                                                                  |
+| Byron        | Base58   | `37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na` |
+| Shelley      | bech32   | `addr1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5eg0yu80w`                                                         |
+| stake        | bech32   | `stake1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5egfu2p0u`                                                        |
+
+## Binary format
+
+In Cardano, the sequence of bytes (after decoding with Bech32 or Base58) that represents an address  comprises two parts, a one-byte **header** and a **payload** of several bytes. Depending on the header, the interpretation and length of the payload varies. 
+
+In the header-byte, bits [7;4] indicate the type of addresses being used; we'll call these four bits the **header type**. The remaining four bits [3;0] are either unused or refer to what we'll call the **network tag**. There are currently 11 types of addresses in Cardano which we'll divide into three categories: [Shelley addresses], [stake addresses], and [Byron addresses]. 
 
 ```
   1 byte     variable length   
@@ -41,7 +65,7 @@ In the header, bits [7;4] indicate the type of addresses being used; we'll call 
 
 See also the more detailed [ABNF grammar in annex].
 
-#### Network Tag
+### Network Tag
 
 Except for [Byron addresses] (type 8 = `1000`), the second half of the header (bits [3;0]) refers to the network tag which can have the following values and semantics. Other values of the network tag are currently reserved for future network types. In the case of [Byron addresses], bits [3;0] have a completely separate definition detailed in the section below.
 
@@ -50,20 +74,8 @@ Network Tag (`. . . . n n n n`)   | Semantic
 `....0000`                        | Testnet(s) 
 `....0001`                        | Mainnet
 
-#### User-facing Encoding 
 
-By convention, Shelley and stake addresses are encoded using [bech32] with human-readable prefixes defined in [CIP-0005]. Byron addresses are however encoded in [base58]. Historically, Byron addresses were introduced before the design of bech32, which solves various issues of the base58 encoding format (see [bech32's motivation](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki#motivation) for more detail). Byron addresses were however kept as Base58 to easily distinguish them from new addresses introduced in Shelley, massively making use of bech32 for encoding small binary objects.
-
-Summarizing:
-
-| Address Type | Encoding | Example                                                                                                              |
-| ---          | ---      | ---                                                                                                                  |
-| Byron        | Base58   | `37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na` |
-| Shelley      | bech32   | `addr1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5eg0yu80w`                                                         |
-| stake        | bech32   | `stake1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5egfu2p0u`                                                        |
-
-
-## Shelley Addresses 
+### Shelley Addresses 
 
 There are currently 8 types of Shelley addresses summarized in the table below:
 
@@ -86,11 +98,11 @@ Header type (`t t t t . . . .`) | Payment Part     | Delegation Part
 
 #### Payment part
 
-Fundamentally, the first part of a Shelley address indicates the ownership of the funds associated with the address. We call it, the **payment part**. Whoever owns the payment parts owns any funds at the address. As a matter of fact, in order to spend from an address, one must provide a witness attesting that the address can be spent. In the case of a `PubKeyHash`, it means providing a signature of the transaction body made with the signing key corresponding to the hashed public key (as well as the public key itself for verification). For monetary scripts, it means being able to provide the source script and meet the necessary conditions to validate the script. 
+Fundamentally, the first part of a Shelley address indicates the ownership of the funds associated with the address. We call it the **payment part**. Whoever owns the payment parts owns any funds at the address. As a matter of fact, in order to spend from an address, one must provide a witness attesting that the address can be spent. In the case of a `PubKeyHash`, it means providing a signature of the transaction body made with the signing key corresponding to the hashed public key (as well as the public key itself for verification). For monetary scripts, it means being able to provide the source script and meet the necessary conditions to validate the script. 
 
 #### Delegation part
 
-The second part of a Shelley address indicates the owner of the stake rights associated with the address. We call it, the **delegation part**. Whoever owns the delegation parts owns the stake rights of any funds associated with the address. In most scenarios, the payment part and the delegation part are owned by the same party. Yet it is possible to construct addresses where both parts are owned and managed by separate entities. We call such addresses **mangled addresses** or **hybrid addresses**. 
+The second part of a Shelley address indicates the owner of the stake rights associated with the address. We call it the **delegation part**. Whoever owns the delegation parts owns the stake rights of any funds associated with the address. In most scenarios, the payment part and the delegation part are owned by the same party. Yet it is possible to construct addresses where both parts are owned and managed by separate entities. We call such addresses **mangled addresses** or **hybrid addresses**. 
 
 Some addresses (types 6 and 7) carry no delegation part whatsoever. Their associated stake can't be delegated. They can be used by parties who want to prove that they are not delegating funds which is typically the case for custodial businesses managing funds on the behalf of other stakeholders. Delegation parts can also be defined in terms of on-chain [pointers]. 
 
@@ -115,7 +127,7 @@ VARIABLE-LENGTH-UINT = (%b1 | UINT7 | VARIABLE-LENGTH-UINT)
 UINT7 = 7BIT 
 ```
 
-## Stake Addresses
+### Stake Addresses
 
 Like [Shelley addresses], stake addresses (also known as **reward addresses**) start with a single header byte identifying their type and the network, followed by 28 bytes of payload identifying either a stake key hash or a script hash. 
 
@@ -128,9 +140,9 @@ Header type (`t t t t . . . .`) | Stake Reference
 
 - `ScriptHash` refers to `blake2b-224` hash digests of serialized monetary scripts. How scripts are constructed and serialized is out of the scope of this specification.
 
-## Byron Addresses
+### Byron Addresses
 
-Before diving, please acknowledge that a lot of the supported capabilities of Byron addresses have remained mainly unused. The initial design showed important trade-offs and rendered it unpractical to sustain the long-term goals of the network. A new format was created when introducing Shelley and Byron addresses were kept only for backward compatibility. Byron addresses are also sometimes called **bootstrap addresses**.
+Before diving in, please acknowledge that a lot of the supported capabilities of Byron addresses have remained largely unused. The initial design showed important trade-offs and rendered it unpractical to sustain the long-term goals of the network. A new format was created when introducing Shelley and Byron addresses were kept only for backward compatibility. Byron addresses are also sometimes called **bootstrap addresses**.
 
 
 Like many other objects on the Cardano blockchain yet unlike Shelley addresses, Byron addresses are [CBOR]-encoded binary objects. Conveniently enough, the first 4 bits of their first byte are always equal to `1000....` which allows us to land back on our feet w.r.t to the address type. Their internal structure is however vastly different and a bit unusual. 
