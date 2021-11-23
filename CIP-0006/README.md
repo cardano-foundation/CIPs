@@ -30,7 +30,7 @@ Many additional attributes can be envisioned for future wallets, pool explorers,
 ## Specification
 
 ### On Chain referenced (main) metadata file
-We define two more fields for the on chain referenced metadata file that references another json file on a url with the extended metadata.  The proposed metadata is as follows:
+We define two more fields for the on chain referenced metadata file that references another JSON file on a URL with the extended metadata.  The proposed metadata is as follows:
 
 | key           | Value                                | Rules  |
 | ---           | ---                                  | ---  |
@@ -81,7 +81,7 @@ This re-registration of the main metadata file with the `extData.vkey` and the t
 
 ### Extended Metadata structure
 
-In the following we describe a first minimal version of the extended Json file format
+In the following we describe a first minimal version of the extended JSON file format
 
 Since this extended metadata file can be updated at any time by the pool operator, a **serial number** is useful for consuming applications and services to identify updates.
 
@@ -93,256 +93,10 @@ There are main thematic sections with respective subordinate data fields:
   - the pool.**media_assets** section contains additional information about the pools media files and colors
   - the pool.**itn** section is an optional section for ITN pool operators  
 
+The full schema is given in annexe as [schema.json][]
 
-
-#### Extended Metadata Schema
-```json
-{
-    "$id": "http://example.com/example.json",
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "default": {},
-    "description": "additional information for Cardano Stake Pools",
-    "examples": [
-        {
-            "serial": 2020072001,
-            "pool": {
-                "id": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
-                "country": "DE",
-                "status": "act",
-                "contact": {
-                    "primary": "email",
-                    "email": "help@pooldomain.org",
-                    "facebook": "demopool",
-                    "github": "demopool",
-                    "feed": "https://demopool.com/xml/poolrss.xml",
-                    "telegram": "demopool",
-                    "twitter": "demopool"
-                },
-                "media_assets": {
-                    "icon_png_64x64": "https://mydemopool.com/icon.png",
-                    "logo_png": "https://mydemopool.com/logo.png",
-                    "logo_svg": "https://mydemopool.com/logo.svg",
-                    "color_fg": "#RRGGBB",
-                    "color_bg": "#RRGGBB"
-                },
-                "itn": {
-                    "owner": "ed25519_pk1...",
-                    "witness": "ed25519_sig1..."
-                }
-            },
-        }
-    ],
-    "maxLength": 4096,
-    "required": [
-        "serial",
-        "pool"
-    ],
-    "title": "Extended stake pool metadata",
-    "type": "object",
-    "properties": {
-        "serial": {
-            "$id": "#/properties/serial",
-            "default": 0,
-            "description": "Integer number incremented on every update, by using YYYYMMDDxx (xx each day start by 01 and is incremented on each update",
-            "examples": [
-                2021012001
-            ],
-            "maxLength": 10,
-            "minLength": 10,
-            "required": [],
-            "title": "serial number",
-            "type": "integer"
-        },
-        "pool": {
-            "$id": "#/properties/pool",
-            "default": {},
-            "description": "pool related metadata",
-            "required": [
-                "id"
-            ],
-            "title": "stake pool",
-            "type": "object",
-            "properties": {
-                "id": {
-                    "$id": "#/properties/pool/properties/id",
-                    "type": "string",
-                    "title": "Pool ID",
-                    "description": "the pools unique id in hex format",
-					"maxLength": 48,
-					"minLength": 48,
-                    "examples": [ "69579373ec20f2f82d2dc2360410350b308112f2939f92a" ]
-                },
-                "country": {
-                    "$id": "#/properties/pool/properties/country",
-                    "default": "",
-                    "description": "3 letter country code as defined in https://www.iso.org/iso-3166-country-codes.html (alpha-3)",
-					"maxLength": 3,
-					"minLength": 3,
-                    "examples": [ "JPN" ],
-                    "title": "declared pool location",
-                    "type": "string"
-                },
-                "status": {
-                    "$id": "#/properties/pool/properties/status",
-                    "default": "",
-					"maxLength": 3,
-					"minLength": 3,
-                    "description": "the current operative status (see examples).",
-                    "examples": [ "active", "retired", "offline", "experimental", "private" ],
-                    "title": "pool status",
-                    "type": "string"
-                },
-                "contact": {
-                    "$id": "#/properties/pool/properties/contact",
-                    "default": {},
-                    "description": "Optional contact information.",
-                    "examples": [
-                        {
-                            "primary": "email",
-                            "email": "help@demopool.org",
-                            "facebook": "demopool",
-                            "github": "demopool",
-                            "feed": "https://mydemopool.com/xml/poolrss.xml",
-                            "telegram": "demopool",
-                            "telegram_channel": "https://t.me/coolchannel",
-                            "twitter": "demopool"
-                        }
-                    ],
-                    "required": [
-                        "primary"
-                    ],
-                    "title": "Pool contact data",
-                    "type": "object",
-                    "properties": {
-                        "primary": {
-                            "$id": "#/properties/pool/properties/contact/properties/primary",
-                            "default": "email",
-                            "description": "the pools prefered communication channel",
-                            "title": "primary contact preference",
-                            "type": "string"
-                        },
-                        "email": {
-                            "$id": "#/properties/pool/properties/contact/properties/email",
-                            "description": "valid email contact address",
-                            "title": "email address",
-                            "type": "string"
-                        },
-                        "facebook": {
-                            "$id": "#/properties/pool/properties/contact/properties/facebook",
-                            "description": "a user or page name",
-                            "title": "facebook account",
-                            "examples": [ "demopool" ],
-                            "type": "string"
-                        },
-                        "github": {
-                            "$id": "#/properties/pool/properties/contact/properties/github",
-                            "description": "a github username",
-                            "examples": [ "demopool" ],
-                            "title": "github account",
-                            "type": "string"
-                        },
-                        "feed": {
-                            "$id": "#/properties/pool/properties/contact/properties/feed",
-                            "default": "",
-                            "description": "RSS feed URL",
-                            "examples": [ "https://mydemopool.com/xml/poolrss.xml" ],
-                            "title": "RSS feed",
-                            "type": "string"
-                        },
-                        "telegram": {
-                            "$id": "#/properties/pool/properties/contact/properties/telegram",
-                            "description": "a telegram username",
-                            "examples": [ "demopool" ],
-                            "title": "telegram account",
-                            "type": "string"
-                        },
-                        "twitter": {
-                            "$id": "#/properties/pool/properties/contact/properties/twitter",
-                            "description": "a twitter username",
-                            "examples": [ "demopool" ],
-                            "title": "twitter account",
-                            "type": "string"
-                        }
-                    }
-                },
-                "media_assets": {
-                    "$id": "#/properties/pool/properties/media_assets",
-                    "type": "object",
-                    "title": "The pools media assets",
-                    "description": "Media file URLs and colors",
-                    "required": [
-                        "icon_png_64x64"
-                    ],
-                    "properties": {
-                        "icon_png_64x64": {
-                            "$id": "#/properties/pool/properties/media_assets/properties/icon_png_64x64",
-                            "type": "string",
-                            "title": "Pool Icon in PNG file format 64x64 px",
-                            "description": "PNG image with exact 64x64 pixel size",
-                            "examples": [ "https://mydemopool.com/media/icon64.png" ]
-                        },
-                        "logo_png": {
-                            "$id": "#/properties/pool/properties/media_assets/properties/logo_png",
-                            "type": "string",
-                            "title": "Pool Logo in PNG file format",
-                            "description": "PNG image (should have less than 250 kByte of file size)",
-                            "examples": [ "https://mydemopool.com/media/logo.png" ]
-                        },
-                        "logo_svg": {
-                            "$id": "#/properties/pool/properties/media_assets/properties/logo_svg",
-                            "type": "string",
-                            "title": "Pool Logo in SVG file format",
-                            "description": "(shoud have less tha 250 kByte of file size)",
-                            "examples": [ "https://mydemopool.com/media/logo.svg" ]
-                        },
-                        "color_fg": {
-                            "$id": "#/properties/pool/properties/media_assets/properties/color_fg",
-                            "type": "string",
-                            "title": "Pool primary color",
-                            "description": "RGB color code.",
-                            "examples": [ "#AABBCC" ]
-                        },
-                        "color_bg": {
-                            "$id": "#/properties/pool/properties/media_assets/properties/color_bg",
-                            "type": "string",
-                            "title": "Pool secondary color",
-                            "description": "RGB color code.",
-                            "default": "",
-                            "examples": [ "#C0C0C0" ]
-                        }
-                    }
-                },
-                "itn": {
-                    "$id": "#/properties/pool/properties/itn",
-                    "type": "object",
-                    "title": "ITN verification",
-                    "description": "A proof of ownership for an established ITN pool brand.",
-                    "required": [
-                        "owner",
-                        "witness"
-                    ],
-                    "properties": {
-                        "owner": {
-                            "$id": "#/properties/pool/properties/itn/properties/owner",
-                            "type": "string",
-                            "title": "the ITN pool owner public key",
-                            "examples": [ "ed25519_pk1..." ]
-                        },
-                        "witness": {
-                            "$id": "#/properties/pool/properties/itn/properties/witness",
-                            "type": "string",
-                            "title": "the secret key generated witness",
-                            "examples": [ "ed25519_sig1..." ]
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-### JSON example
+<details>
+  <summary>See JSON example</summary>
 
 ```json
 {
@@ -374,8 +128,7 @@ There are main thematic sections with respective subordinate data fields:
   }
 }
 ```
-
-
+</details>
 
 ## Backwards compatibility
 
@@ -388,3 +141,5 @@ N/A
 ## Copyright
 
 This file is documentation, and therefore subject to CC-BY-4.0 (and not subject to Apache 2.0).
+
+[schema.json]: https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0006/schema.json
