@@ -28,6 +28,14 @@
     "description": "nut.link metadata oracles data points"
   },
   {
+    "transaction_metadatum_label": 1988,
+    "description": "cardahub.io marketplace metadata"
+  },
+  {
+    "transaction_metadatum_label": 1989,
+    "description": "cardahub.io services metadata"
+  },
+  {
     "transaction_metadatum_label": 6770,
     "description": "fortunes.coconutpool.com fortune teller"
   },
