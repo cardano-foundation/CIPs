@@ -5,7 +5,7 @@ Authors: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Discussions-To: 
 Comments-Summary: 
 Comments-URI: 
-Status: Draft
+Status: Proposed
 Type: Standards
 Created: 2020-08-11
 License: Apache 2.0
