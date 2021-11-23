@@ -22,10 +22,17 @@ handlebars.registerHelper('getAuthors', function (Authors) {
   return Authors.split(',').map(author => {
     const [_, name, link] = author.trim().match(/^([^<]+)<?([^>]+)?>?$/) || []
     let type = 'url'
-    if (link.match(/^[^@]+@[^@]+$/)) {
-      type = 'email'
+    if (link === undefined) {
+      type = 'github'
+    } else {
+      if (link.match(/^[^@]+@[^@]+$/)) {
+        type = 'email'
+      }
     }
-    const authorLink = type === 'email' ? 'mailto:' + link : link
+
+    const authorLink = type === 'email' ? 'mailto:' + link
+      : (type === 'github' ? 'https://github.com/' + name
+      : link)
     const authorName = name.trim()
 
     return ' ' + '<a href="' + authorLink + '" alt="' + authorLink + '">' + authorName + '</a>'
