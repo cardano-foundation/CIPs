@@ -1,0 +1,31 @@
+{
+    "definitions": {
+      "network": {
+        "$id": "#/definitions/network",
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string"
+          },
+          "NetworkId": {
+            "type": "integer"
+          },
+          "NetworkMagic": {
+            "type": "integer"
+          },
+          "GenesisHash": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Name",
+          "NetworkId",
+          "NetworkMagic",
+          "GenesisHash"
+        ]
+       }
+    },
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "additionalProperties": { "$ref": "#/definitions/network" }
+  }
