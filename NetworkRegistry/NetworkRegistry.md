@@ -18,8 +18,8 @@ Currently Cardano has two easily-usable networks: "mainnet" and "testnet". Howev
 ### Existing network IDs
 
 Cardano currently has three ways to refer to a network:
-- The "network ID" included in every address as part of [bech32](https://github.com/bitcoinjs/bech32). This only stores 16 possibilities (4 bits)
-- The "network magic" used for Byron addresses. This is a random 32-bit number
+- The "network ID" included in every address and also optionally present in the transaction body. This only stores 16 possibilities (4 bits)
+- The "network magic" used for Byron addresses and in the handshake with other nodes in the network layer. This is a random 32-bit number
 - The genesis block hash (a 28-byte number)
 
 ## Motivation
