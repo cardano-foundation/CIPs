@@ -14,7 +14,10 @@
             "type": "integer"
           },
           "GenesisHash": {
-            "type": "string"
+            "type": "string",
+            "encoding": "base16",
+            "minLength": 64,
+            "maxLength": 64
           }
         },
         "required": [
@@ -25,7 +28,7 @@
         ]
        }
     },
-    "$schema": "http://json-schema.org/schema#",
+    "$schema": "https://json-schema.org/schema#",
     "type": "object",
     "additionalProperties": { "$ref": "#/definitions/network" }
   }

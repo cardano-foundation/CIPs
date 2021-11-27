@@ -27,9 +27,9 @@ Cardano currently has three ways to refer to a network:
 Blockchains can have multiple deployments of the same codebase. For example:
 
 1. Test networks where the base asset has no value (so devs can test at no cost)
-1. Test networks where the protocol is simplified for ease of testing (ex: Cardano but with a Proof of Authority conensus for stable block production in testing)
+1. Test networks where the protocol is simplified for ease of testing (ex: Cardano but with a Proof of Authority consensus for stable block production in testing)
 1. Test networks for new features
-    1. PAB testnet
+    1. Plutus Application Backend (PAB) testnet
     2. Shelley incentivized testnet
 1. Forks that diverge in feature set (the many forks of Bitcoin and Ethereum)
 
