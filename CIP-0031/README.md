@@ -39,7 +39,7 @@ Here are some cases where we expect this to be helpful.
 
 ### Enabling further improvements
 
-This proposal was designed in tandem with two further proposals which make use of reference scripts, CIP-32 (Inline datums) and CIP-32 (Reference scripts).
+This proposal was designed in tandem with two further proposals which make use of reference scripts, CIP-32 (Inline datums) and CIP-33 (Reference scripts).
 A full assessment of the worth of this proposal should take into account the fact that it is an enabler for these other proposals.
 
 ## Specification
@@ -111,7 +111,7 @@ We have a number of requirements that we need to fulfil.
 - Determinism
     - It must be possible to predict the execution of scripts precisely, given the transaction.
 - Locality 
-    - All data involved in transaction validation should be included in the transaction or the outputs which it spends.
+    - All data involved in transaction validation should be included in the transaction or the outputs which it spends (or references).
 - Non-interference
     - As far as possible, transactions should not interfere with others. The key exception is when transactions consume resources that other transactions want (usually by consuming UTXO entries).
 - Replay protection
@@ -175,13 +175,17 @@ The easiest solution here is to reuse the existing mechanism for providing pre-i
 
 Providing datum hash pre-images remains optional, since there are reasons to use reference inputs even without looking at the datum, e.g. to look at the value in an output.
 
-### Accessing the value in outputs
+### Accessing the value locked in outputs
 
 The motivation of this proposal mainly requires looking at the _datums_ of outputs.
-But reference inputs allow us to do more: they let us look at the _value_ in an output.
+But reference inputs allow us to do more: they let us look at the _value_ locked in an output (i.e. how much Ada or other tokens it contains).
 
-This is a bonus feature, in that we don't think it's critical, but it is still useful.
-If a user wants to use reference inputs to actually look at the _state_ of an on-chain application, the amount of value locked in the script is likely to be an important part of the state, so it's valuable to allow access to that.
+This is actually a very important feature.
+Since anyone can lock an output with any address, addresses are not that useful for identifying _particular_ outputs on chain, and instead we usually rely on looking for particular tokens in the value locked by the output.
+Hence, if a script is interested in referring to the data attached to a _particular_ output, it will likely want to look at the value is locked in the output.
+
+For example, an oracle provider would need to distinguish the outputs that they create (with good data) from outputs created by adversaries (with bad data). 
+They can do this with a token, so long as scripts can then see the token!
 
 ### Hydra
 
