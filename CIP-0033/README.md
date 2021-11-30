@@ -22,7 +22,7 @@ This will allow transactions using common scripts to be much smaller.
 
 Script sizes pose a significant problem. This manifests itself in two ways:
 1. Every time a script is used, the transaction which caused the usage must supply the whole script as part of the transaction. This bloats the chain, and passes on the cost of that bloat to users in the form of transaction size fees.
-2. Transaction size limits become are for users. Even if individual scripts do not hit the limits, using multiple scripts has a proportionally greater risk of hitting the limit.
+2. Transaction size limits are problematic for users. Even if individual scripts do not hit the limits, a transaction which uses multiple scripts has a proportionally greater risk of hitting the limit.
 
 We would like to alleviate these problems.
 
