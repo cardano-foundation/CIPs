@@ -1,7 +1,7 @@
 ---
-CIP: CIP-0026
+CIP: 26
 Title: Cardano Off-Chain Metadata
-Author: Matthias Benkort <matthias.benkort@iohk.io>, Michael Peyton Jones <michael.peyton-jones@iohk.io>, Polina Vinogradova <polina.vinogradova@iohk.io>
+Authors: Matthias Benkort <matthias.benkort@iohk.io>, Michael Peyton Jones <michael.peyton-jones@iohk.io>, Polina Vinogradova <polina.vinogradova@iohk.io>
 Comments-Summary: No comments yet
 Comments-URI: https://github.com/CardanoFoundation/CIPs/pulls/112
 Status: Draft
