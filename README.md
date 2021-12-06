@@ -34,7 +34,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 24 | [Non-Centralizing Rankings](./CIP-0024/) | Draft |
 | 25 | [NFT Metadata Standard](./CIP-0025/) | Draft |
 | 26 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
-| 27 | [CNFT Community Royalties Standard]./CIP-0027/) | Draft |
+| 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Draft |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
