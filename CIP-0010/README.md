@@ -3,7 +3,7 @@ CIP: 10
 Title: Transaction Metadata Label Registry
 Authors: Sebastien Guillemot <sebastien@emurgo.io>
 Comments-URI: https://forum.cardano.org/t/cip10-transaction-metadata-label-registry/41746
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2020-10-31
 License: CC-BY-4.0

@@ -3,7 +3,7 @@ CIP: 11
 Title: Staking key chain for HD wallets
 Authors: Sebastien Guillemot <sebastien@emurgo.io>, Matthias Benkort <matthias.benkort@iohk.io>
 Comments-URI: https://forum.cardano.org/t/staking-key-chain-for-hd-wallets/41857
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2020-11-04
 License: CC-BY-4.0

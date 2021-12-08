@@ -16,9 +16,9 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 6 | [Stake Pool Extended Metadata](./CIP-0006/) | Draft |
 | 7 | [Curve Pledge Benefit](./CIP-0007/) | Proposed |
 | 8 | [Message Signing](./CIP-0008/) | Draft |
-| 9 | [Protocol Parameters](./CIP-0009/) | Draft |
-| 10 | [Transaction Metadata Label Registry](./CIP-0010/) | Draft |
-| 11 | [Staking key chain for HD wallets](./CIP-0011/) | Draft |
+| 9 | [Protocol Parameters](./CIP-0009/) | Active |
+| 10 | [Transaction Metadata Label Registry](./CIP-0010/) | Active |
+| 11 | [Staking key chain for HD wallets](./CIP-0011/) | Active |
 | 12 | [On-chain stake pool operator to delegates communication](../CIP-0012/) | Draft |
 | 13 | [Cardano URI Scheme](./CIP-0013/) | Draft |
 | 14 | [User-Facing Asset Fingerprint](./CIP-0014/) | Draft |
