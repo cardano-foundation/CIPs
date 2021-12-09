@@ -147,7 +147,21 @@ type TxSignError = {
 * ProofGeneration - User has accepted the transaction sign, but the wallet was unable to sign the transaction (e.g. not having some of the private keys)
 * UserDeclined - User declined to sign the transaction
 
+### TxBalanceError
 
+```
+TxBalanceErrorCode = {
+  InsufficientFunds: 1,
+  TxOutHasLessThanMinAda: 2,
+}
+type TxBalanceError = {
+  code: TxBalanceErrorCode
+  info: String
+
+* InsufficientFunds - There were insufficient wallet funds in order to correctly balance the transaction
+* TxOutHasLessThanMinAda - The calculated change when selecting inputs has less than the minimum amount of Ada (this is a constraint on the Cardano blockchain)
+}
+```
 
 ## Initial API
 
@@ -168,7 +182,6 @@ Returns true if the dApp is already connected to the user's wallet, or if reques
 ### cardano.{walletName}.apiVersion: String
 
 The version number of the API that the wallet supports.
-
 
 ### cardano.{walletName}.name: String
 
@@ -226,6 +239,12 @@ Returns an address owned by the wallet that should be used as a change address t
 Errors: `APIError`
 
 Returns the reward addresses owned by the wallet. This can return multiple addresses e.g. CIP-0018.
+
+### api.balanceTx(tx: cbor\<transaction>): Promise\<cbor\<transaction>>
+
+Errors: `TxBalanceError`
+
+Given an unbalanced transaction (or partial transaction), this request will attempt to balance it by adding the necessary inputs and outputs (change). If the resulting transaction could not be balanced, `TxBalanceError` shall be returned.
 
 ### api.signTx(tx: cbor\<transaction>, partialSign: bool = false): Promise\<cbor\<transaction_witness_set>>
 
