@@ -1,8 +1,8 @@
 ---
-CIP: TODO
+CIP: 34
 Title: Chain ID Registry
 Authors: Sebastien Guillemot <seba@dcspark.io>
-Comments-URI: TODO
+Comments-URI: No comments
 Status: Draft
 Type: Informational
 Created: 2021-11-24
@@ -51,7 +51,7 @@ All entries in this registry should have the following entries:
 When representing these networks in a human-readable string, the following format shall be used:
 
 ```
-cipxxx:NetworkId-NetworkMagic
+cip34:NetworkId-NetworkMagic
 ```
 
 # Rationale
