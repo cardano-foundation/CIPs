@@ -60,6 +60,10 @@ We pick this format for the following reason:
 - The network ID is too small to be used by itself. You can see from [chainlist](https://chainlist.org/) that 16 possibilities is too few
 - The genesis hash is too long and user-unfriendly to be used.
 
+# Reference implementation
+
+[CIP34-JS](https://www.npmjs.com/package/@dcspark/cip34-js)
+
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
