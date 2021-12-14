@@ -112,14 +112,14 @@ In an address, a **chain pointer** refers to a point of the chain containing a s
 
 - An absolute slot number 
 - A transaction index (within that slot)
-- An output index (within that transaction)
+- A (delegation) certificate index (within that transaction)
 
 These coordinates form a concise way of referring to a stake key (typically half the size of a stake key hash). They are serialized as three variable-length positive numbers following the ABNF grammar here below:
 
 ```abnf
 POINTER = VARIABLE-LENGTH-UINT ; slot number
         | VARIABLE-LENGTH-UINT ; transaction index
-        | VARIABLE-LENGTH-UINT ; output index
+        | VARIABLE-LENGTH-UINT ; certificate index
 
 VARIABLE-LENGTH-UINT = (%b1 | UINT7 | VARIABLE-LENGTH-UINT) 
                      / (%b0 | UINT7)
@@ -133,8 +133,8 @@ Like [Shelley addresses], stake addresses (also known as **reward addresses**) s
 
 Header type (`t t t t . . . .`) | Stake Reference
 ---                             | ---
-(8) `1110....`                  | `StakeKeyHash`
-(9) `1111....`                  | `ScriptHash`
+(14) `1110....`                  | `StakeKeyHash`
+(15) `1111....`                  | `ScriptHash`
 
 - `StakeKeyHash` refers to `blake2b-224` hash digests of Ed25519 verification keys. How keys are obtained is out of the scope of this specification. Interested readers may look at [CIP-1852] for more details.
 
@@ -213,8 +213,8 @@ mainnet:
     type-05: addr128phkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtupnz75xxcrtw79hu
     type-06: addr1vx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzers66hrl8
     type-07: addr1w8phkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcyjy7wx
-    type-08: stake1uyehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gh6ffgw
-    type-09: stake178phkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcccycj5
+    type-14: stake1uyehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gh6ffgw
+    type-15: stake178phkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcccycj5
 
 testnet:
     type-00: addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3n0d3vllmyqwsx5wktcd8cc3sq835lu7drv2xwl2wywfgs68faae
@@ -225,8 +225,8 @@ testnet:
     type-05: addr_test12rphkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtupnz75xxcryqrvmw
     type-06: addr_test1vz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzerspjrlsz
     type-07: addr_test1wrphkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcl6szpr
-    type-08: stake_test1uqehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gssrtvn
-    type-09: stake_test17rphkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcljw6kf
+    type-14: stake_test1uqehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gssrtvn
+    type-15: stake_test17rphkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcljw6kf
 ```
 
 # Copyright
