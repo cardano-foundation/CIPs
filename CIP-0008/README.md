@@ -391,6 +391,7 @@ The public key SHOULD NOT contain any chaincode information, as it could comprom
 ### Reference implementation
 
 - [COSE-JS](https://github.com/erdtman/cose-js)
+- [Rust message signing](https://github.com/Emurgo/message-signing)
 
 ### Unresolved
 
