@@ -9,7 +9,7 @@ Created: 2020-05-04
 License: CC-BY-4.0
 ---
 
-# Abstract
+## Abstract
 
 This article describes, in _human-readable terms_, the coin selection
 algorithms used by [Cardano
@@ -20,7 +20,7 @@ In the context of this article, **coin selection** refers to the process of
 choosing _unspent coins_ from a wallet (or [UTxO set](#utxo-set)) in order to
 pay money to one or more recipients.
 
-# Motivation
+## Motivation
 
 This document was written to help people gain an understanding of the coin
 selection algorithms used in Cardano _without_ having to read through and
@@ -35,7 +35,7 @@ We aim to provide descriptions of algorithms that:
 
 Where appropriate, we also provide mathematical descriptions, for added clarity.
 
-# Scope
+## Scope
 
 Coin selection is a large, complex topic, with many difficult problems to
 solve. However, all software that performs coin selection must ultimately deal
@@ -54,7 +54,7 @@ coin selection.
 Problems relating to network fees, and how to adjust coin selections to pay for
 such fees, are outside the scope of this article.
 
-# Structure
+## Structure
 
 The [Background](#background) section introduces the fundamental concepts
 behind coin selection, provides a discussion of why coin selection is
@@ -73,7 +73,7 @@ step-by-step descriptions of the computations involved.
 The [Reference Implementations](#reference-implementations) section provides
 links to reference implementations of each algorithm in various languages.
 
-# Contents
+## Contents
 
 * [Abstract](#abstract)
 * [Motivation](#motivation)
@@ -144,18 +144,18 @@ links to reference implementations of each algorithm in various languages.
   * [Self Organisation in Coin Selection](#self-organisation-in-coin-selection)
 * [Copyright](#copyright)
 
-# Background
+## Background
 
 This section introduces the fundamental concepts behind coin selection,
 provides a discussion of why coin selection is a non-trivial problem, and
 describes important goals of coin selection algorithms.
 
-## What is Coin Selection?
+### What is Coin Selection?
 
 Coin selection is the process of choosing unspent coins from a wallet in order
 to pay money to one or more recipients.
 
-### Coin Selection in the Physical World
+#### Coin Selection in the Physical World
 
 In the familiar world of _physical_ money, our wallets hold value in the form
 of _coins and banknotes_.
@@ -185,7 +185,7 @@ than the required amount, and then receive the excess value back as _change_.
 > _one-euro_ coins. She uses the coins to make the payment, and then receives
 > **one** 50-cent coin as change.
 
-### Coin Selection in Cardano
+#### Coin Selection in Cardano
 
 Similarly to how a physical wallet holds value in the form of _unspent coins
 and banknotes_, a Cardano wallet holds value in the form of _unspent
@@ -212,12 +212,12 @@ Coin selection refers to the process of selecting a combination of unspent
 outputs from a wallet's [UTxO set](#utxo-set) in order to make one or more
 payments, and computing the set of change to be paid back to the wallet.
 
-## Why is Coin Selection Non-Trivial?
+### Why is Coin Selection Non-Trivial?
 
 There are a number of issues which make the problem of coin selection more
 complicated than would initially appear.
 
-### The Transaction Size Limitation
+#### The Transaction Size Limitation
 
 Each [transaction](#transaction) has a _maximum size_, as defined by the
 protocol. The size of a transaction increases as we add more
@@ -226,7 +226,7 @@ protocol. The size of a transaction increases as we add more
 Therefore, there's a practical limit on the number of coins we can select for
 any given transaction.
 
-### The Problem of Dust
+#### The Problem of Dust
 
 One simple strategy for *selecting coins* might be to mimic what we do when
 making a payment with coins and banknotes in the physical world. By giving the
@@ -248,7 +248,7 @@ the target amount.
 For more information on dust avoidance, see [Self Organisation in Coin
 Selection](#self-organisation-in-coin-selection).
 
-### The Problem of Concurrency
+#### The Problem of Concurrency
 
 One simple strategy for *generating change* might be to mimic what a shop
 assistant does when accepting a payment in the real world, which is to minimize
@@ -272,7 +272,7 @@ reasons:
 2.  The approach of coalescing all change into a single output is widely
     considered to have negative privacy implications.
 
-## Goals of Coin Selection Algorithms
+### Goals of Coin Selection Algorithms
 
 In light of the issues described above, we'd ideally like for our coin selection
 algorithms to be able to:
@@ -284,11 +284,11 @@ algorithms to be able to:
     outputs: that is, outputs that allow us to process future payments with a
     reasonably small number of [inputs](#transaction-input).
 
-# Definitions
+## Definitions
 
 This section defines common terms that are used throughout this document.
 
-### Address
+#### Address
 
 An _address_ is a unique identifier that represents a payment recipient, a
 destination for a payment.
@@ -299,7 +299,7 @@ In general, coin selection algorithms are agnostic to the type of addresses
 used to identify payment recipients. Any address type may be used, so long as
 the set of possible addresses is totally-ordered.
 
-### Coin Value
+#### Coin Value
 
 A _coin value_ is a non-negative integer value that represents a number of
 [Lovelace](https://cardanodocs.com/cardano/monetary-policy/).
@@ -307,7 +307,7 @@ A _coin value_ is a non-negative integer value that represents a number of
 One [Ada](https://cardanodocs.com/cardano/monetary-policy/) is _exactly_ equal
 to one million Lovelace.
 
-### Transaction
+#### Transaction
 
 In a [UTxO](#utxo-set)-based blockchain, a _transaction_ is a binding between
 [inputs](#transaction-input) and [outputs](#transaction-output).
@@ -320,7 +320,7 @@ input #2  >-----+------+
 input #3  >---+          +---> output #2
 ```
 
-### Transaction Input
+#### Transaction Input
 
 A _transaction input_ is a _unique reference_ to a single
 [output](#transaction-output) from a previous transaction.
@@ -338,14 +338,14 @@ generally consists of a pair of values (**_h_**, **_n_**), where:
   * **_n_** is a 0-based integer index into the output list of transaction
     **_t_**.
 
-### Transaction Output
+#### Transaction Output
 
 A _transaction output_ consists of a pair of values (**_a_**, **_v_**), where:
 
   * **_a_** is the [address](#address) of a recipient.
   * **_v_** is the [coin value](#coin-value) to pay to the recipient.
 
-### Spent Transaction Output
+#### Spent Transaction Output
 
 A _spent transaction output_ is an [output](#transaction-output) from an
 existing [transaction](#transaction) that has already been referenced as an
@@ -354,7 +354,7 @@ existing [transaction](#transaction) that has already been referenced as an
 In effect, the [coin value](#coin-value) associated with that transaction
 output has been _spent_, and cannot be reused.
 
-### Unspent Transaction Output
+#### Unspent Transaction Output
 
 An _unspent transaction output_ is an [output](#transaction-output) from an
 existing [transaction](#transaction) that has not yet been referenced as an
@@ -363,7 +363,7 @@ existing [transaction](#transaction) that has not yet been referenced as an
 In effect, the [coin value](#coin-value) associated with that transaction
 output has _not yet_ been spent, and is still available.
 
-### UTxO Set
+#### UTxO Set
 
 A _UTxO set_ is a set of [unspent transaction
 outputs](#unspent-transaction-output).
@@ -392,7 +392,7 @@ In practice however, the type of each unique reference **_u_** is equivalent
 to the type of a [transaction input](#transaction-input), as transaction inputs
 are simply references to unspent outputs from previous transactions.
 
-### Change Output
+#### Change Output
 
 In the context of a wallet, a _change output_ is a [transaction
 output](#transaction-output) that transfers value _back_ to the wallet, rather
@@ -410,7 +410,7 @@ recipients, and will therefore need to select more than is strictly required.
 To avoid the destruction of value, selection algorithms create _change outputs_
 to return the excess value back to the wallet.
 
-### Dust Output
+#### Dust Output
 
 A _dust output_ is a [transaction output](#transaction-output) with an
 associated [coin value](#coin-value) that is:
@@ -425,7 +425,7 @@ that dust in a given transaction, we may run out of space (by reaching the
 [transaction size limit](#the-transaction-size-limitation)) before we can cover
 the target amount.
 
-# Interface
+## Interface
 
 All coin selection algorithms used by Cardano Wallet implement a
 _common interface_.
@@ -448,7 +448,7 @@ This section describes:
 In this section, the terms _coin selection algorithm_ and _coin selection
 function_ will be used interchangeably.
 
-## Parameters
+### Parameters
 
 All coin selection functions accept the following parameters:
 
@@ -476,7 +476,7 @@ All coin selection functions accept the following parameters:
     This parameter is necessary for blockchains that impose an upper limit on
     the size of transactions.
 
-## Results
+### Results
 
 All coin selection functions produce the following result values:
 
@@ -517,13 +517,13 @@ All coin selection functions produce the following result values:
     the wallet's _complete_ UTxO set, then the _remaining_ UTxO set represents
     the _updated_ UTxO set of that wallet.
 
-## Properties
+### Properties
 
 All coin selection algorithms satisfy a common set of _properties_: general
 rules that govern the relationship between the _parameters_ supplied to coin
 selection functions and the _results_ they are allowed to produce.
 
-### Coverage of Payments
+#### Coverage of Payments
 
 This property states that the total value of _inputs_ in the resulting [coin
 selection](#coin-selection) result is sufficient to _cover_ the total value of
@@ -545,7 +545,7 @@ Where:
     is the total value of the _inputs_ field of the [coin
     selection](#coin-selection) result.
 
-### Correctness of Change
+#### Correctness of Change
 
 This property states that the correct amount of _change_ was generated.
 
@@ -570,7 +570,7 @@ Where:
     is the total value of the _inputs_ field of the [coin
     selection](#coin-selection) result.
 
-### Conservation of UTxO
+#### Conservation of UTxO
 
 This property states that every entry in the [initial UTxO
 set](#initial-utxo-set) is included in _either_ the inputs set of the generated
@@ -609,7 +609,7 @@ Where:
     is the value of the _inputs_ field of the [coin selection](#coin-selection)
     result.
 
-### Conservation of Outputs
+#### Conservation of Outputs
 
 This property states that the [requested output set](#requested-output-set)
 is _conserved_ in the [coin selection](#coin-selection) result.
@@ -617,7 +617,7 @@ is _conserved_ in the [coin selection](#coin-selection) result.
 In particular, the _outputs_ field of the [coin selection](#coin-selection)
 result should be _equal to_ the [requested output set](#requested-output-set).
 
-## Failure Modes
+### Failure Modes
 
 There are a number of ways in which a coin selection algorithm can fail:
 
@@ -655,7 +655,7 @@ There are a number of ways in which a coin selection algorithm can fail:
     the resulting selection beyond an acceptable limit, specified by the
     [maximum input count](#maximum-input-count) parameter.
 
-# Algorithms
+## Algorithms
 
 This section describes the coin selection algorithms used by Cardano Wallet,
 along with step-by-step descriptions of the computations involved.
@@ -678,7 +678,7 @@ However, in rare cases, the [Random-Improve](#random-improve) algorithm may
 fail to produce a result. In such cases, Cardano Wallet will fall back to the
 [Largest-First](#largest-first) algorithm.
 
-## Largest-First
+### Largest-First
 
 The **Largest-First** coin selection algorithm considers UTxO set entries
 in _descending order of value_, from largest to smallest.
@@ -696,7 +696,7 @@ entry is always selected **first**. Specifically:
 > unselected entry **_u_<sub>2</sub>** with value **_v_<sub>2</sub>** where
 > **_v_<sub>2</sub>** > **_v_<sub>1</sub>**.
 
-### State
+#### State
 
 At all stages of processing, the algorithm maintains the following pieces of
 state:
@@ -716,7 +716,7 @@ state:
 
     This is initially equal to the empty set.
 
-### Computation
+#### Computation
 
 The algorithm proceeds according to the following sequence of steps:
 
@@ -778,7 +778,7 @@ The algorithm proceeds according to the following sequence of steps:
 
         * The _change_ set is empty.
 
-## Random-Improve
+### Random-Improve
 
 The **Random-Improve** coin selection algorithm works in _two phases_:
 
@@ -821,11 +821,11 @@ _approximately equal_ to the value of the output itself:
 > **_v_**<sub>change</sub>
 >   ≈ **_v_**<sub>output</sub>
 
-### Motivating Principles
+#### Motivating Principles
 
 There are several motivating principles behind the design of the algorithm.
 
-#### Principle 1: Dust Management
+##### Principle 1: Dust Management
 
 The probability that random selection will choose dust entries from a UTxO
 set _increases_ with the proportion of dust in the set.
@@ -836,7 +836,7 @@ probability that a random subset will include a large amount of dust.
 Over time, selecting entries randomly in this way will tend to _limit_ the
 amount of dust that accumulates in the UTxO set.
 
-#### Principle 2: Change Management
+##### Principle 2: Change Management
 
 As mentioned in the [Goals](#goals-of-coin-selection-algorithms) section, it is
 desirable that coin selection algorithms, over time, are able to create UTxO
@@ -862,7 +862,7 @@ requests.
 > Over time, her wallet will self-organize to contain multiple coins of around
 > €1.00, which are useful for the kinds of payments that Alice frequently makes.
 
-#### Principle 3: Performance Management
+##### Principle 3: Performance Management
 
 Searching the UTxO set for additional entries to _improve_ our change outputs
 is _only_ useful if the UTxO set contains entries that are sufficiently
@@ -870,7 +870,7 @@ small enough. But it is precisely when the UTxO set contains many small
 entries that it is less likely for a randomly-chosen UTxO entry to push the
 total above the upper bound.
 
-### Cardinality
+#### Cardinality
 
 The Random-Improve algorithm imposes the following cardinality restriction:
 
@@ -883,7 +883,7 @@ Fragmented Enough](#utxo-not-fragmented-enough) error if the number of entries
 in the [initial UTxO set](#initial-utxo-set) is _smaller than_ the number of
 entries in the [requested output set](#requested-output-set).
 
-### State
+#### State
 
 At all stages of processing, the algorithm maintains the following pieces of
 state:
@@ -897,11 +897,11 @@ state:
     The accumulated coin selection is a [coin selection](#coin-selection) where
     all fields are initially equal to the _empty set_.
 
-### Computation
+#### Computation
 
 The algorithm proceeds in two phases.
 
-#### Phase 1: Random Selection
+##### Phase 1: Random Selection
 
 In this phase, the algorithm iterates through each of the [requested
 outputs](#requested-output-set) in descending order of coin value, from
@@ -916,7 +916,7 @@ entries are then _associated with_ that output, and _removed_ from the
 This phase ends when _every_ output has been associated with a selection of
 UTxO entries.
 
-#### Phase 2: Improvement
+##### Phase 2: Improvement
 
 In this phase, the algorithm attempts to improve upon each of the UTxO
 selections made in the previous phase, by conservatively expanding the
@@ -979,7 +979,7 @@ This phase ends when every output has been processed, **or** when the
 [available UTxO set](#available-utxo-set) has been exhausted, whichever occurs
 sooner.
 
-### Termination
+#### Termination
 
 When both phases are complete, the algorithm terminates.
 
@@ -989,9 +989,9 @@ to the caller as the [coin selection](#coin-selection) result.
 The [available UTxO set](#available-utxo-set) is returned to the caller as the
 [remaining UTxO set](#remaining-utxo-set) result.
 
-# Reference Implementations
+## Reference Implementations
 
-## Largest-First
+### Largest-First
 
 Reference implementations of the [Largest-First](#largest-first) algorithm are
 available in the following languages:
@@ -1000,7 +1000,7 @@ available in the following languages:
 | -- | -- | -- |
 | **Haskell** | [Documentation](https://hackage.haskell.org/package/cardano-coin-selection/docs/Cardano-CoinSelection-Algorithm-LargestFirst.html) | [Source](https://hackage.haskell.org/package/cardano-coin-selection/docs/src/Cardano.CoinSelection.Algorithm.LargestFirst.html) |
 
-## Random-Improve
+### Random-Improve
 
 Reference implementations of the [Random-Improve](#random-improve) algorithm
 are available in the following languages:
@@ -1009,9 +1009,9 @@ are available in the following languages:
 | -- | -- | -- |
 | **Haskell** | [Documentation](https://hackage.haskell.org/package/cardano-coin-selection/docs/Cardano-CoinSelection-Algorithm-RandomImprove.html) | [Source](https://hackage.haskell.org/package/cardano-coin-selection/docs/src/Cardano.CoinSelection.Algorithm.RandomImprove.html) |
 
-# External Resources
+## External Resources
 
-## Self Organisation in Coin Selection
+### Self Organisation in Coin Selection
 
 > | **Title** | Self Organisation in Coin Selection |
 > |:--|:--|
@@ -1026,6 +1026,6 @@ are available in the following languages:
 > algorithm's design, and provides experimental evidence to demonstrate the
 > algorithm's effectiveness at maintaining healthy UTxO sets over time.
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
