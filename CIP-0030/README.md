@@ -252,10 +252,10 @@ As wallets should already have this ability, we allow dApps to request that a tr
 Functions in this section must be under the `experimental` namespace (ex: `api.experimental.myFunctionality`).
 
 The benefits of this are:
-1. Wallets can non-standardized features while still following the CIP30 structure
-1. dApp developers can use this functions explicitly knowing they are experimental (not stable or standardized)
+1. Wallets can add non-standardized features while still following the CIP30 structure
+1. dApp developers can use these functions explicitly knowing they are experimental (not stable or standardized)
 1. New features can be added to CIP30 as experimental features and only moved to non-experimental once multiple wallets implement it
-1. Provides a clear path to updating the CIP version number (when functions move from experimental -> stable)
+1. It provides a clear path to updating the CIP version number (when functions move from experimental -> stable)
 
 # Implementations
 
