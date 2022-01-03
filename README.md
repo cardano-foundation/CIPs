@@ -37,6 +37,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Draft |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
+| 34 | [Smart Contract Software Licensing](./CIP-0034/) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Draft |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
