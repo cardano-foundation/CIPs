@@ -4,7 +4,7 @@
 Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain.
 The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001).
 
-### Current CIPs (as of 2021-12-03)
+### Current CIPs (as of 2022-01-05)
 
 | # | Title | Status | 
 | --- | --- | --- |
@@ -19,7 +19,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 9 | [Protocol Parameters](./CIP-0009/) | Active |
 | 10 | [Transaction Metadata Label Registry](./CIP-0010/) | Active |
 | 11 | [Staking key chain for HD wallets](./CIP-0011/) | Active |
-| 12 | [On-chain stake pool operator to delegates communication](../CIP-0012/) | Draft |
+| 12 | [On-chain stake pool operator to delegates communication](./CIP-0012/) | Draft |
 | 13 | [Cardano URI Scheme](./CIP-0013/) | Draft |
 | 14 | [User-Facing Asset Fingerprint](./CIP-0014/) | Draft |
 | 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/) | Draft |
@@ -35,6 +35,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 | 25 | [NFT Metadata Standard](./CIP-0025/) | Draft |
 | 26 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
+| 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Draft |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Draft |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
