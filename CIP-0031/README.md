@@ -47,7 +47,7 @@ A full assessment of the worth of this proposal should take into account the fac
 ### Reference inputs
 
 We introduce a new kind of transaction input, a reference input.
-Transaction authors specify inputs as either normal (spending) inputs or reference inputs.[^1]
+Transaction authors specify inputs as either normal (spending) inputs or reference inputs.
 
 A reference input is a transaction input, which is linked to a particular transaction output as normal, except that it _references_ the output rather than _spending_ it. That is:
 
@@ -58,10 +58,13 @@ A reference input is a transaction input, which is linked to a particular transa
 - Referenced outputs are _not_ removed from the UTXO set if the transaction validates.
 - Reference inputs _are_ visible to scripts.
 
-Finally, a transaction must _spend_ at least one output.[^2] 
+For clarity, the following two behaviours which are present today are unchanged by this proposal:
 
-[^1]: Note in particular that this proposal does not affect _outputs_ in any way.
-[^2]: This restriction already exists, but repeat it here for clarity.
+1. Transactions must _spend_ at least one output.[^1] 
+2. Spending an output _does_ require the spending conditions to be checked.[^2]
+
+[^1]: This restriction already exists, and is important. It seems unnecessary, since transactions must always pay fees and fees must come from somewhere, but fees could in principle be paid via reward withdrawals, so the requirement to spend a UTXO is relevant. 
+[^2]: That is, this proposal does not change outputs or the spending of outputs, it instead adds a new way of _referring_ to outputs.
 
 ### Script context
 
@@ -202,9 +205,32 @@ One thing that a user might want to do is to control who can reference an output
 For example, an oracle provider might want to only allow a transaction to reference a particular output if the transaction also pays them some money.
 
 Reference inputs alone do _not_ provide any way to do this.
+Another mechanism would be required, but there is no consensus on what the design should be, so it is currently out of scope for this proposal.
+A brief summary of a few options and reasons why they are not obvious choices is included below.
+
+A key issue is that the choice to control referencing must lie with the _creator_ of the output, not the _spender_.
+Therefore we _must_ include some kind of change to outputs so that the creator can record their requirements.
+
+#### Check inputs
+
+A "check input" is like a reference input except that the spending conditions _are_ checked.
+That is, it acts as proof that you _could_ spend the input, but does not in fact spend it.
+
+Since check inputs cause validator scripts to be run, it seems like they could allow us to control referencing.
+There are two wrinkles:
+
+- The same script would be used for both referencing and spending, overloading the meaning of the validator script. This is still _usable_, however, since the redeemer could be used to indicate which action is being taken.
+- We would need a flag on outputs to say "this output cannot be referenced, but only checked". Exactly what this should look like is an open question, perhaps it should be generic enough to control all the possible ways in which an output might be used (of which there would be three).
+
+#### Referencing conditions
+
+"Referencing conditions" would mean adding a new field to outputs to indicate under what conditions the output may be referenced.
+This could potentially be an entire additional address, since the conditions might be any of the normal spending conditions (public key or script witnessing).
+
+However, this would make outputs substantially bigger and more complicated.
 
 ### Related work
 
 Reference inputs are very similar to Ergo's "data inputs".
 We chose to name them differently since "data" is already a widely used term with risk for confusion.
-We might also want to introduce other "verb" inputs in future, e.g. "check" inputs that check that an output _can_ be spent, but don't actually spend it.
+We might also want to introduce other "verb" inputs in future.
