@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0012/CIP-0012.md",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0012",
   "type": "object",
   "title": "CIP12",
   "description": "Transaction metadata schema for CIP12",

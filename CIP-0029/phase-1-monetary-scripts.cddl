@@ -1,0 +1,33 @@
+script =
+  [  script_key
+  // script_all
+  // script_any
+  // script_n_of_k
+  // script_after
+  // script_before
+  ]
+
+script_key =
+  (0, keyhash)
+
+script_all =
+  (1, [ * script ])
+
+script_any =
+  (2, [ * script ])
+
+script_n_of_k =
+  (3, n: uint, [ * script ])
+
+; Timelock validity intervals are half-open intervals [a, b).
+; This field specifies the left (included) endpoint a.
+script_after =
+  (4, uint)
+
+; Timelock validity intervals are half-open intervals [a, b).
+; This field specifies the right (excluded) endpoint b.
+script_before =
+  (5, uint)
+
+keyhash =
+  bytes .size 28

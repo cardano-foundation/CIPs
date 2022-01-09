@@ -6,16 +6,16 @@ ADDRESS = %b0000 | NETWORK-TAG | KEY-HASH    | KEY-HASH       ; type 00, Base Sh
         \ %b0101 | NETWORK-TAG | SCRIPT-HASH | POINTER        ; type 05, Pointer Shelley address
         \ %b0110 | NETWORK-TAG | KEY-HASH                     ; type 06, Payment Shelley address
         \ %b0111 | NETWORK-TAG | SCRIPT-HASH                  ; type 07, Payment Shelley address
-        \ %b1110 | NETWORK-TAG | KEY-HASH                     ; type 08, Stake Shelley address
-        \ %b1111 | NETWORK-TAG | SCRIPT-HASH                  ; type 09, Stake Shelley address
-        \ %b1000 | BYRON-PAYLOAD                              ; type 10, Byron / Bootstrap address
+        \ %b1000 | BYRON-PAYLOAD                              ; type 08, Byron / Bootstrap address
+        \ %b1110 | NETWORK-TAG | KEY-HASH                     ; type 14, Stake Shelley address
+        \ %b1111 | NETWORK-TAG | SCRIPT-HASH                  ; type 15, Stake Shelley address
 
 NETWORK-TAG  = %b0000 ; Testnet
              \ %b0001 ; Mainnet
 
 POINTER = VARIABLE-LENGTH-UINT ; slot number
         | VARIABLE-LENGTH-UINT ; transaction index
-        | VARIABLE-LENGTH-UINT ; output index
+        | VARIABLE-LENGTH-UINT ; certificate index
 
 VARIABLE-LENGTH-UINT = (%b1 | UINT7 | VARIABLE-LENGTH-UINT)
                      / (%b0 | UINT7)

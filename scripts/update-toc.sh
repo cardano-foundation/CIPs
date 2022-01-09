@@ -11,7 +11,7 @@ pandoc_template="$(mktemp template.XXXXX.gfm)"
 trap 'rm -f "$pandoc_template"' EXIT
 
 get_last_update() {
-  git log --date=local --format=%cs -1 -- CIP-*/CIP-*.md
+  git log --date=local --format=%cs -1 -- CIP-*
 }
 
 all_metadata_jsonlines() {
