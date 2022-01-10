@@ -5,7 +5,6 @@ Authors: Gabriel Kerekes <gabriel.kerekes@vacuumlabs.com>, Rafael Korbas <rafael
 Status: Draft
 Type: Standards
 Created: 2021-06-15
-Updated: 2021-11-23 multi-sig
 License: CC-BY-4.0
 ---
 
