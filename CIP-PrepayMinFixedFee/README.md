@@ -60,25 +60,25 @@ This gives us:
 * Current Pool D rewards after fees = 50000 - 340 - (49660 * 0.01) = 49163.4 ADA
 * Proposed Pool D rewards after fees = 49190 - (49190 * 0.01) = 48698.1 ADA
 
-The chart below shows the amount of fees earned by the SPO, the amount of rewards earned by the delegator and the effective fee percent paid by the delegator for each of the 4 pools in the current and proposed models.
+The table below shows the amount of fees earned by the SPO, the amount of rewards earned by the delegator and the effective fee percent paid by the delegator for each of the 4 pools in the current and proposed models.
 
-Who     Current         Proposed
----     -------         --------
-SPO A   346.6 ADA       349.8 ADA
-Del A    65.3 ADA        97.4 ADA
-Fee A    34.7%            2.6%
-
-SPO B   386.6 ADA       389.2 ADA
-Del B    92.3 ADA        97.4 ADA
-Fee B     7.7%            2.6%
-
-SPO C   436.6 ADA       438.4 ADA
-Del C    95.6 ADA        97.4 ADA
-Fee C     4.4%            2.6%
-
-SPO D   836.6 ADA       831.9 ADA
-Del D    98.3 ADA        97.4 ADA
-Fee D     1.7%            2.6%
+| Who   | Current   | Proposed  |
+|-------|-----------|-----------|
+| SPO A | 346.6 ADA | 349.8 ADA |
+| Del A |  65.3 ADA |  97.4 ADA |
+| Fee A |  34.7%    |   2.6%    |
+|       |           |           |
+| SPO B | 386.6 ADA | 389.2 ADA |
+| Del B |  92.3 ADA |  97.4 ADA |
+| Fee B |   7.7%    |   2.6%    |
+|       |           |           |
+| SPO C | 436.6 ADA | 438.4 ADA |
+| Del C |  95.6 ADA |  97.4 ADA |
+| Fee C |   4.4%    |   2.6%    |
+|       |           |           |
+| SPO D | 836.6 ADA | 831.9 ADA |
+| Del D |  98.3 ADA |  97.4 ADA |
+| Fee D |   1.7%    |   2.6%    |
 
 As you can see from this example, a delegator delegating to a pool with 50m ADA total stake receives over 50% more rewards (98.3 / 65.3) than if they delegated to a pool with 1m total stake, even though the pools are performing equally well.
 This is a flaw in the current design that causes centralization to popular pools rather than better performing pools.
