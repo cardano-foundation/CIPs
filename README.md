@@ -49,7 +49,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 
   “_Alice has a Cardano idea she'd like to build more formally…_”
 
-![Diagram: Mary interacting with community and editors for a Cardano Proposal](./BiweeklyMeetings/sequence_diagram.png?raw=true "sequence_diagram.png")
+![Diagram: Mary interacting with community and editors for a Cardano Proposal](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/BiweeklyMeetings/sequence_diagram.png "sequence_diagram.png")
 
 Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in `#developers` in Cardano Ambassadors Slack.
 CIP Editors meetings are [public](https://www.crowdcast.io/cips-biweekly), [recorded](https://www.crowdcast.io/cips-biweekly) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you.
