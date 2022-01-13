@@ -37,6 +37,15 @@ A hex-encoded string of the corresponding bytes.
 A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Mult-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
 This representation was chosen when possible as it is consistent across the Cardano ecosystem and widely used by other tools, such as [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib), which has support to encode every type in the binary spec as CBOR bytes.
 
+### DataSignature
+
+```
+type DataSignature = {|
+  signature:cbor\<COSE_Sign1>,
+  key: cbor\<COSE_Key>,
+|};
+```
+
 ### TransactionUnspentOutput
 
 If we have CBOR specified by the following CDDL referencing the Shelley-MA CDDL:
@@ -232,19 +241,25 @@ Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
-### api.signData(addr: cbor\<address>, payload: String): Promise\<cbor\<COSE_Sign1>>
+### api.signData(addr: cbor\<address>, payload: String): Promise\<DataSignature>
 
 Errors: `APIError`, `DataSignError`
 
-This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. `payload` is hex-encoded bytes. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking will will be used for reward addresses. This key will be used to sign the COSE-Sign1 `Sig_structure` with the following headers set:
+This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. `payload` is hex-encoded bytes. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking will will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
-* `alg` (1) - must be set to EdDSA (-8)
-* `kid` (4) - must be set to the Ed25519 public key bytes used to sign the `Sig_structure`
+* `alg` (1) - must be set to `EdDSA` (-8)
+* `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
 * `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
 
 The payload is not hashed and no `external_aad` is used.
 
-If the payment key for `addr` is not a P2Pk address then `DataSignError` will be returned with code `AddressNotPK`. `ProofGeneration` shall be returned if the wallet cannot generate a signature (i.e. the wallet does not own the requested payment private key), and `UserDeclined` will be returned if the user refuses the request. The corresponding `COSE_Sign1` object is returned on success.
+If the payment key for `addr` is not a P2Pk address then `DataSignError` will be returned with code `AddressNotPK`. `ProofGeneration` shall be returned if the wallet cannot generate a signature (i.e. the wallet does not own the requested payment private key), and `UserDeclined` will be returned if the user refuses the request. The return shall be a `DataSignature` with `signature` set to the hex-encoded CBOR bytes of the `COSE_Sign1` object specified above and `key` shall be the hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
+
+* `kty` (1) - must be set to `OKP` (1)
+* `kid` (2) - Optional, if present must be set to the same value as in the `COSE_Sign1` specified above.
+* `alg` (3) - must be set to `EdDSA` (-8)
+* `crv` (-1) - must be set to `Ed25519` (6)
+* `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
 ### api.submitTx(tx: cbor\<transaction>): Promise\<hash32>
 
