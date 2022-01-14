@@ -69,6 +69,8 @@ The structure allows for multiple token mints, also with different policies, in 
 }
 ```
 
+The **`asset_name`** must be `UTF-8` encoded for the key in the metadata map and the actual NFT. This is true for version `1.0`, future versions will use the `hex` encoding for **`asset_name`**.
+
 The **`image`** and **`name`** property are marked as required. **`image`** should be an URI pointing to a resource with mime type `image/*` used as thumbnail or as actual link if the NFT is an image (ideally <= 1MB).
 
 The **`description`** property is optional.
