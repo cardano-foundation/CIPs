@@ -25,7 +25,7 @@ HD       | Hierarchical Deterministic, refers to wallets as described in [BIP-00
 
 ## Overview 
 
-Forging tokens is derived from a script policy. The script policy includes hashes of keys needed to forge new tokens and must be witnessed by the keys with hashes listed.
+Forging tokens is derived from a script policy. The script policy includes hashes of keys needed to forge new tokens and must be witnessed by these keys in such a way as the script stipulates.
 This CIP defines the derivation path at wich parties are expected to derive such keys.
 
 # Specification
