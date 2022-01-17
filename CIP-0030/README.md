@@ -249,7 +249,9 @@ As wallets should already have this ability, we allow dApps to request that a tr
 
 ## Experimental API
 
-Functions in this section must be under the `experimental` namespace (ex: `api.experimental.myFunctionality`).
+Multiple experimental namespaces are used:
+- under `api` (ex: `api.experimental.myFunctionality`).
+- under `cardano.{walletName}` (ex: `window.cardano.{walletName}.experimental.myFunctionality`)
 
 The benefits of this are:
 1. Wallets can add non-standardized features while still following the CIP30 structure
