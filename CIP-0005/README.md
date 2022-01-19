@@ -45,6 +45,8 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_shared_xvk`  | CIP-1854's address extended verification key       | Ed25519 public key with chain code |
 | `kes_sk`           | KES signing key                                    | KES signing key                    |
 | `kes_vk`           | KES verification key                               | KES verification key               |
+| `policy_sk`        | CIP-1855's policy private key                      | Ed25519 private key                |
+| `policy_vk`        | CIP-1855's policy public key                       | Ed25519 public key                 |
 | `pool_sk`          | Pool operator signing key                          | Ed25519 private key                |
 | `pool_vk`          | Pool operator verification key                     | Ed25519 public key                 |
 | `root_sk`          | CIP-1852's root private key                        | Ed25519 private key                |
@@ -75,6 +77,7 @@ We define the following set of common prefixes with their corresponding semantic
 | `script`           | Script hash                                        | blake2b\_224 digest of a serialized transaction script |
 | `addr_vkh`         | Address verification key hash                      | blake2b\_224 digest of a payment verification key      |
 | `addr_shared_vkh`  | Shared address verification key hash               | blake2b\_224 digest of a payment verification key      |
+| `policy_vkh`       | Policy verification key hash                       | blake2b\_224 digest of a policy verification key       |
 | `stake_vkh`        | Stake address verification key hash                | blake2b\_224 digest of a delegation verification key   |
 | `stake_shared_vkh` | Shared stake address verification key hash         | blake2b\_224 digest of a delegation verification key   |
 | `vrf_vkh`          | VRF verification key hash                          | blake2b\_256 digest of a VRF verification key          |

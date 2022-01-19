@@ -1,7 +1,7 @@
 ---
 CIP: 1855
 Title: Forging policy keys for HD Wallets
-Authors: Samuel Leathers <samuel.leathers@iohk.io>, John Lotoski <john.lotoski@iohk.io>, Michael Bishop <michael.bishop@iohk.io>
+Authors: Samuel Leathers <samuel.leathers@iohk.io>, John Lotoski <john.lotoski@iohk.io>, Michael Bishop <michael.bishop@iohk.io>, David Arnold <david.arnold@iohk.io>
 Comments-Summary: Multi-party transaction signing and key management for HD wallets.
 Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-1855
 Status: Draft
@@ -25,7 +25,8 @@ HD       | Hierarchical Deterministic, refers to wallets as described in [BIP-00
 
 ## Overview 
 
-Forging tokens is derived from a script policy. The script policy includes hashes of keys needed to forge new tokens and must be witnessed by the keys with hashes listed. 
+Forging tokens is derived from a script policy. The script policy includes hashes of keys needed to forge new tokens and must be witnessed by these keys in such a way as the script stipulates.
+This CIP defines the derivation path at wich parties are expected to derive such keys.
 
 # Specification
 
@@ -38,7 +39,7 @@ m / purpose' / coin_type' / policy_ix'
 ```
 
 
-To associate policy keys to a wallet, we reserve however `purpose=1855'` to reserve for policy keys for forging tokens. The coin type remains `coin_type=1815'` to identify Ada as registered in [SLIP-0044]. We use a hardened index for each policy key as derivation is not needed.
+To associate policy keys to a wallet, we reserve however `purpose=1855'` for policy keys for forging tokens. The coin type remains `coin_type=1815'` to identify Ada as registered in [SLIP-0044]. We use a hardened index for each policy key as derivation is not needed.
 
 We can summarize the various paths and their respective domain in the following table:
 
@@ -46,11 +47,29 @@ We can summarize the various paths and their respective domain in the following 
 | ---       | ---         | ---                 |
 | `1855'`   | `1815'`     | `[2^31 .. 2^32-1]` |
 
+## CIP-0005 prefixes
+
+To distinguish such keys & derived material in the human readable prefix of the bech32 representation, we introduce the following prefixes for insertion into CIP-0005:
+
+#### Keys
+
+| Prefix             | Meaning                                            | Contents                           |
+| ---                | ---                                                | ---                                |
+| `policy_sk`        | CIP-1855's policy private key                      | Ed25519 private key                |
+| `policy_vk`        | CIP-1855's policy public key                       | Ed25519 public key                 |
+
+#### Hashes
+
+| Prefix             | Meaning                                            | Contents                                               |
+| ---                | ---                                                | ---                                                    |
+| `policy_vkh`       | CIP-1855's Policy verification key hash            | blake2b\_224 digest of a policy verification key       |
 
 ### Rationale
-
 - ERC20 Converter IOHK is developing needs to keep track of policy keys. Rather than having randomly generated policy keys, a policy key can be associated with a mnemonic which is easier to backup.
 - A 3rd party may want to have multiple tokens tied to same mnemonic, so we allow an index to specify the token.
+- Contrary to CIP 1852, we don't use the `role` and `index` levels of the derivation path, since index is expressed at the 3rd level and no roles for policy signing keys are currently anticipated.
+
+- No prefixes are defined for extended keys, since currently this CIP does not define further derivations.
 
 - We use a different purpose for mainly two reasons:
 
