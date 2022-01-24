@@ -40,6 +40,14 @@
     "description": "fortunes.coconutpool.com fortune teller"
   },
   {
+    "transaction_metadatum_label": 54167,
+    "description": "stakingdao.ai bucket registration"
+  },
+  {
+    "transaction_metadatum_label": 54168,
+    "description": "stakingdao.ai pool registration"
+  },
+  {
     "transaction_metadatum_label": 61284,
     "description": "CIP-0015 - Catalyst registration"
   },
