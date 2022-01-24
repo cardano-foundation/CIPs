@@ -52,7 +52,7 @@ The structure allows for multiple token mints, also with different policies, in 
         "image": <uri | array>,
         "mediaType": "image/<mime_sub_type>",
 
-        "description": <string | array>
+        "description": <string | array>,
 
         "files": [{
           "name": <string>,
@@ -63,7 +63,7 @@ The structure allows for multiple token mints, also with different policies, in 
 
         <other properties>
       }
-    }
+    },
     "version": "1.0"
   }
 }
@@ -89,7 +89,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
     "<policy_id>": {
       "<asset_name>": {
         "name": <string>,
-        "image": <uri | array>,
+        "image": <uri | array>
       }
     }
   }
