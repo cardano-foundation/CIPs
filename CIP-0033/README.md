@@ -5,7 +5,7 @@ Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Comments-Summary: No comments
 Comments-URI: 
 Status: Draft
-Type: Standards Track
+Type: Standards
 Created: 2021-11-29
 License: CC-BY-4.0
 Requires: CIP-31
