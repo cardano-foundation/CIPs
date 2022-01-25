@@ -1,0 +1,27 @@
+registration_cbor = {
+  61284: key_registration,
+  61285: registration_signature
+}
+
+$voting_pub_key /= bytes .size 32
+$staking_pub_key /= bytes .size 32
+$ed25519_signature /= bytes .size 64
+$reward_address /= bytes
+$nonce /= uint
+$proportion /= uint
+$voting_purpose /= uint
+legacy_key_registration = $voting_pub_key
+delegation = ($voting_pub_key, $proportion)
+
+key_registration = {
+  1 : [+delegation] / legacy_key_registration,
+  2 : $staking_pub_key,
+  3 : $reward_address,
+  4 : $nonce,
+  ? 5 : $voting_purpose .default 0
+}
+
+
+registration_signature = {
+  1 : $ed25519_signature
+}
