@@ -30,7 +30,7 @@ Conversion from a recovery phrase to entropy is the same as described in [BIP39]
 
 ### Hierarchical Deterministic Wallets
 
-In Cardano, hierarchical deterministic (abbrev. HD) wallets are similar to those described in [BIP-0032](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki). Notably, we use a variation called [ED25519-BIP32](https://github.com/input-output-hk/adrestia/raw/master/user-guide/static/Ed25519_BIP.pdf). A reference implementation can be found [here](https://docs.rs/ed25519-bip32/)
+In Cardano, hierarchical deterministic (abbrev. HD) wallets are similar to those described in [BIP-0032](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki). Notably, we use a variation called [ED25519-BIP32](https://github.com/input-output-hk/adrestia/raw/bdf00e4e7791d610d273d227be877bc6dd0dbcfb/user-guide/static/Ed25519_BIP.pdf). A reference implementation can be found [here](https://docs.rs/ed25519-bip32/)
 
 ### Master Key Generation
 
@@ -47,12 +47,12 @@ More specifically, the generation is a function from an initial seed to an exten
 
 Throughout the years, Cardano has used different styles of master key generation:
 
-|  Name                         |  Used by         |  Address prefix in Byron |  Is deprecated? | Is Recommended? |
-|-------------------------------|------------------|--------------------------|-----------------|-----------------|
-|  [Byron](./Byron.md)          |  Daedalus        |  Ddz                     |  Yes            | No              |
-|  [Icarus](./Icarus.md)        |  Yoroi, Daedalus |  Ae2                     |  No             | Yes             |
-|  [Icarus-Trezor](./Icarus.md) |  Trezor          |  Ae2                     |  No             | No              |
-|  [Ledger](./Ledger.md)        |  Ledger          |  Ae2                     |  No             | No              |
+| Name                                    | Used by         | Address prefix in Byron | Is deprecated? | Is Recommended? |
+|-----------------------------------------|-----------------|-------------------------|----------------|-----------------|
+| [Byron](./Byron.md)                     | Daedalus        | Ddz                     | Yes            | No              |
+| [Icarus](./Icarus.md)                   | Yoroi, Daedalus | Ae2                     | No             | Yes             |
+| [Icarus-Trezor](./Icarus.md)            | Trezor          | Ae2                     | No             | No              |
+| [Ledger/BitBox02](./Ledger_BitBox02.md) | Ledger/BitBox02 | Ae2                     | No             | No              |
 
 # Rationale
 

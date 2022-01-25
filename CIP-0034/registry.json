@@ -1,0 +1,14 @@
+{
+    "Mainnet": {
+        "Name": "Mainnet",
+        "NetworkId": 1,
+        "NetworkMagic": 764824073,
+        "GenesisHash": "5f20df933584822601f9e3f8c024eb5eb252fe8cefb24d1317dc3d432e940ebb"
+    },
+    "Testnet": {
+        "Name": "Testnet",
+        "NetworkId": 0,
+        "NetworkMagic": 1097911063,
+        "GenesisHash": "96fceff972c2c06bd3bb5243c39215333be6d56aaf4823073dca31afe5038471"
+    }
+}

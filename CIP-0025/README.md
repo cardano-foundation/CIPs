@@ -52,7 +52,7 @@ The structure allows for multiple token mints, also with different policies, in 
         "image": <uri | array>,
         "mediaType": "image/<mime_sub_type>",
 
-        "description": <string | array>
+        "description": <string | array>,
 
         "files": [{
           "name": <string>,
@@ -63,11 +63,13 @@ The structure allows for multiple token mints, also with different policies, in 
 
         <other properties>
       }
-    }
+    },
     "version": "1.0"
   }
 }
 ```
+
+The **`asset_name`** must be `UTF-8` encoded for the key in the metadata map and the actual NFT. This is true for version `1.0`, future versions will use the `hex` encoding for **`asset_name`**.
 
 The **`image`** and **`name`** property are marked as required. **`image`** should be an URI pointing to a resource with mime type `image/*` used as thumbnail or as actual link if the NFT is an image (ideally <= 1MB).
 
@@ -89,7 +91,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
     "<policy_id>": {
       "<asset_name>": {
         "name": <string>,
-        "image": <uri | array>,
+        "image": <uri | array>
       }
     }
   }

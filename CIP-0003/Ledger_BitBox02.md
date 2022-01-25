@@ -1,11 +1,13 @@
-# Ledger key format
+# Ledger/BitBox02 key format
 
 - **Deprecated**: no
 - **Summary**: Used by Ledger hardware wallets
 
 Reference implementation by Ledger: [HDEd25519.py](https://github.com/LedgerHQ/orakolo/blob/0b2d5e669ec61df9a824df9fa1a363060116b490/src/python/orakolo/HDEd25519.py)
 
-*Note*: Ledger also allows users to set an additional [passphrase](https://support.ledger.com/hc/en-us/articles/115005214529-Advanced-passphrase-security)
+Implementation by BitBox02: [keystore.c](https://github.com/digitalbitbox/bitbox02-firmware/blob/1e36dbfb3c71c3a9d8ea81fe6fad13b18dd735a4/src/keystore.c#L676-L709)
+
+*Note*: Ledger and BitBox02 also allow users to set an additional [passphrase](https://support.ledger.com/hc/en-us/articles/115005214529-Advanced-passphrase-security)
 
 ## Code
 
@@ -37,7 +39,7 @@ function hashRepeatedly(message) {
         , message=message
         );
 
-    if (iL[31] & 0b0010_0000) { 
+    if (iL[31] & 0b0010_0000) {
         return hashRepeatedly(iL + iR);
     }
 
