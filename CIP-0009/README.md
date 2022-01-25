@@ -247,7 +247,7 @@ as practical after the conclusion of the vote.
 
 Protocol parameter changes must be submitted and endorsed within the first 24 hours of the epoch before they are required to come into effect.
 For example, a change that is intended for epoch 300 must be submitted and endorsed in the first 24 hours of epoch 299.
-Once a change has been submittedf and endorsed by a sufficient quorum of keyholders (currently 5 of the 7 genesis keys), it cannot be revoked.
+Once a change has been submitted and endorsed by a sufficient quorum of keyholders (currently 5 of the 7 genesis keys), it cannot be revoked.
 
 ### Voiding Proposed Protocol Parameter Changes
 
