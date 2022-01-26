@@ -51,7 +51,7 @@ There are two changes in the new version of the interface:
 - The datum field on transaction outputs can either be a hash or the actual datum.
 - The datum field on transaction inputs can either be a hash or the actual datum.
 
-Old versions of the language will retain the old interface, but the construction of the script context in the old interface is also changed as follows: if either an input or an output has an inline datum, we replace it by its hash, and put the datum in the existing datum-hash-to-datum mapping.
+The interface for old versions of the language will not be changed, and scripts with old versions will not be able to be spent in transactions that include inline datums.
 
 ### CDDL
 
@@ -115,14 +115,51 @@ However, the other approaches also have some advantages.
 
 Any one of these factors could be important to particular use cases, so it is good to retain the other options.
 
-### Changing the script context
+### The script context
 
-We don't strictly need to change the script context.
-We could use the fall-back approach that we use for the old interface, namely continuing to pretend that datums are always hashes, and providing the mapping from hashes to datums.
-This would be functionally equivalent.
+#### Including information about inline datums
 
-The only advantage of changing it is that it's more honest to the real representation of transactions, and therefore allows scripts to insist on inline datums if they want.
-It's unclear whether this is desirable.
+In principle we do not need to let scripts see whether a datum is inline or not.
+We could pretend that inline datums are non-inline and insert them into the datum witness map.
+
+The underlying question is: do we want scripts to be able to make assertions about whether datums are inline or not?
+There are reasons to want to do this: _not_ using inline datums causes communication issues for users, and so it is quite reasonable that an application developer may want to be able to enforce their use.
+
+Furthermore, as a general principle we try to keep the script context as faithful to real transactions as possible.
+Even if the use for the information is not immediately obvious, we try to err on the side of providing it and letting users decide.
+
+Hence we _do_ include information about inline datums in the script context.
+
+#### Representation and backwards compatibility
+
+There are a couple of options for how to change the representation of the script context to include the new information, and whether to make a backwards compatibility effort for old language versions.
+
+For the new script context:
+
+1. Match the ledger representation as much as possible: change the fields on inputs and outputs to be either a datum hash or a datum.
+2. Try to only have one way to look up datums: put inline datums in the datum witness map and insert their hashes into the corresponding inputs and outputs; optionally add a boolean to inputs and outputs to indicate whether the datum was originally inline.
+
+For backwards compatibility:
+
+1. Don't try to represent inline datums for scripts using old language versions: old scripts simply can't be run in transactions that use inline datums (since we can't represent the information).
+2. Rewrite inline datums as non-inline datums: put inline datums in the datum witness map and insert their hashes into the corresponding inputs and outputs.
+
+For the new script context, option 1 has the significant advantage of matching the ledger representation of transactions.
+This makes it easier to implement, and also avoids conceptual overhead for users who would have to distinguish the two ways of representing transactions.
+While the conceptual distance here may be small, if we let it grow over time then it may become quite confusing.
+
+We then have the choice of what to do about backwards compatibility.
+Option 2 would work, but is more complicated for the ledger and is inconsistent in representation with our choice for the new script context (inline datums are sometimes represented faithfully, and sometimes put in the witness map).
+Option 1 is simple, but doesn't allow old scripts to work with inline datums.
+This would not be so bad if it just meant that old scripts could not be spent in transactions that include inline datums, but it also introduces a new way to make an unspendable output.
+If a user creates an output with an old script and an inline datum, then any transaction spending that output will include an inline datum, which we would not allow.
+
+Unfortunately, we cannot prevent users from creating such outputs in general, since script addresses do not include the script language, so the ledger cannot tell whether the inline datum is permissible or not.
+Client code typically _will_ be able to do this, since it will usually know the script.
+
+The mitigating factor is that we expect this to be uncommon in practice, particularly since we expect that most users will move to the new version relatively quickly, since we expect support for inline datums to be desirable, and released alongside other desirable features.
+
+Hence we choose both option 1s and do _not_ provide backwards compatibility for old language versions.
 
 ## References
 
