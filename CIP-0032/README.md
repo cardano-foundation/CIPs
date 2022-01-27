@@ -51,7 +51,8 @@ There are two changes in the new version of the interface:
 - The datum field on transaction outputs can either be a hash or the actual datum.
 - The datum field on transaction inputs can either be a hash or the actual datum.
 
-The interface for old versions of the language will not be changed, and scripts with old versions will not be able to be spent in transactions that include inline datums.
+The interface for old versions of the language will not be changed. 
+Scripts with old versions cannot be spent in transactions that include inline datums, attempting to do so will be a phase 1 transaction validation failure.
 
 ### CDDL
 
