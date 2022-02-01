@@ -234,11 +234,7 @@ Errors: `APIError`, `TxSignError`
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
 
-### ⚗️ api.signTx(request: {
-	tx: cbor\<transaction>,
-	partialSign?: bool = false,
-	inputHints?: cbor\<transaction>[] = []
-}): Promise\<cbor\<transaction_witness_set>>
+### ⚗️ api.signTx(request: { tx: cbor\<transaction>, partialSign?: bool = false, inputHints?: cbor\<transaction>[] = [] }): Promise\<cbor\<transaction_witness_set>>
 
 Errors: `APIError`, `TxSignError`
 
