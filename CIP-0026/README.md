@@ -178,7 +178,7 @@ The following properties are considered well-known, and the JSON in their values
 {
   "type": "string",
   "description": "A short identifier for the metadata subject, suitable to show in listings or tiles.",
-  "maxLength": 5,
+  "maxLength": 9,
   "minLength": 2
 }
 ```

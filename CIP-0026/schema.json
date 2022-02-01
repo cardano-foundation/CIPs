@@ -50,7 +50,7 @@
   , "ticker":
     { "type": "string"
     , "description": "A short identifier for the metadata subject, suitable to show in listings or tiles."
-    , "maxLength": 5
+    , "maxLength": 9
     , "minLength": 2
     }
   , "decimals":
