@@ -227,11 +227,26 @@ Errors: `APIError`
 
 Returns the reward addresses owned by the wallet. This can return multiple addresses e.g. CIP-0018.
 
-### api.signTx(tx: cbor\<transaction>, partialSign: bool = false): Promise\<cbor\<transaction_witness_set>>
+### 👎 api.signTx(tx: cbor\<transaction>, partialSign: bool = false): Promise\<cbor\<transaction_witness_set>>
 
 Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
+
+
+### ⚗️ api.signTx(request: {
+	tx: cbor\<transaction>,
+	partialSign?: bool = false,
+	inputHints?: cbor\<transaction>[] = []
+}): Promise\<cbor\<transaction_witness_set>>
+
+Errors: `APIError`, `TxSignError`
+
+Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction.
+
+- `partialSign`: if true, the wallet only tries to sign what it can. If false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
+
+- `inputHints`: to allow dApps to chain transactions together, they may need to provide to the wallet hints about some of the inputs of the transaction that are not on-chain yet. In order to do this in a trustless way, we have to provide the full transaction body (so that the wallet can hash the tx body and compare it to the hash in the inputs). Providing the full transaction instead of just the transaction body also allows access to any scripts or data in the witness that may be useful for the wallet. Note these hints could be use by the wallet to resolve regular transaction inputs, collateral or any other feature of Cardano in the future
 
 ### api.signData(addr: cbor\<address>, sigStructure: cbor\<Sig_structure>): Promise\<Bytes>
 
