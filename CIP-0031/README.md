@@ -74,16 +74,16 @@ The script context therefore needs to be augmented to contain information about 
 Changing the script context will require a new Plutus language version in the ledger to support the new interface.
 The change in the new interface is: a _new_ field is added to the structure which contains the list of reference inputs.
 
-Old versions of the language will retain the old interface.
-We do not propose to include information about reference inputs in the old interface.
+The interface for old versions of the language will not be changed. 
+Scripts with old versions cannot be spent in transactions that include reference inputs, attempting to do so will be a phase 1 transaction validation failure.
 
-### Optional datums
+### Extra datums
 
-Today, transactions can contain optional datums that are not required for validation.
-Currently the optional datums must all be pre-images of datum hashes that appear in outputs.
-We change this so that the optional datums can also be pre-images of datum hashes that appear in reference inputs.[^3]
+Today, transactions can contain extra datums that are not required for validation.
+Currently the extra datums must all be pre-images of datum hashes that appear in outputs.
+We change this so that the extra datums can also be pre-images of datum hashes that appear in reference inputs.[^3]
 
-Note that the existing mechanism includes the hash of the optional datum structure in the transaction body, so that additional datums cannot be stripped by an attacker without voiding transaction signatures.
+Note that the existing mechanism includes the hash of the extra datum structure in the transaction body, so that additional datums cannot be stripped by an attacker without voiding transaction signatures.
 
 [^3]: Pre-images of datum hashes that appear in _spent_ inputs are of course mandatory.
 
@@ -167,6 +167,12 @@ But we have at least two options for how we represent this in the script context
 
 Keeping them separate seems wise given the potential for confusing reference inputs for normal inputs.
 That would be quite a dangerous programming error, as it might lead a script to believe that e.g. an output had been spent when in fact it had only been referenced.
+
+We also have the question of what to do about old scripts.
+We can't really present the information about reference inputs to them in a faithful way: representing them as spending inputs would be wildly misleading, and there is nowhere else to put them.
+We could omit the information entirely, but this is dangerous in a different way.
+Omitting information may lead scripts to make assumptions about the transaction that are untrue; for this reason we prefer not to silently omit information as a general principle.
+That leaves us only one option: reject transactions where we would have to present information about reference inputs to old scripts.
 
 ### Accessing the datums of reference inputs
 
