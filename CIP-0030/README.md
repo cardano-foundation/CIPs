@@ -153,11 +153,17 @@ type TxSignError = {
 
 In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
 
-### cardano.{walletName}.enable(): Promise\<API>
+### cardano.{walletName}.enable(params?: { networkId?: 0|1|* }): Promise\<API>
 
 Errors: APIError
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
+
+The single optional argument of the function is a JSON object of parameters so it can be easily extended in the future. Passing no object is equiavalent to passing no parameters.
+
+##### Parameters:
+
+1. `networkId` - optional, allows the dapp to specify which network it operates on so that the wallet forces the user to only connect to a wallet/account on that network (e.g. `dapp.io` is on mainnet and `testnet.dapp.io` is on testnet, etc). If not specified - the user is free to select any network and the dapp must be able to handle it then. Other values than 0 or 1 are allowed to keep compatibility with `getNetworkId` API function, those networks are not governed by this document.
 
 ### cardano.{walletName}.isEnabled(): Promise\<bool>
 
