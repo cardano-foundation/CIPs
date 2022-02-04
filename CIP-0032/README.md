@@ -24,7 +24,8 @@ However, in practice datums are implemented by attaching _hashes_ of datums to o
 
 This is quite inconvenient for users. 
 Datums tend to represent the result of computation done by the party who creates the output, and as such there is almost no chance that the spending party will know the datum without communicating with the creating party.
-That means that either the datum must be communicated between parties off-chain, or communicated on-chain by attaching it to the transaction that creates the output (which is also inconvenient in that the spending party must watch the whole chain to spot it).
+That means that either the datum must be communicated between parties off-chain, or communicated on-chain by including it in the witness map of the transaction that creates the output ("extra datums").
+This is also inconvenient for the spending party, who must watch the whole chain to spot it.
 
 It would be much more convenient to just put the _datum itself_ in an output, which is what we propose.
 
@@ -94,25 +95,25 @@ In practice, what is implemented here may depend on whether the UTXO-on-disk wor
 
 ### Other modes of specifying datums
 
-We could deprecate the other methods of specifying datums (datum hashes or datum hashes+optional datums).
+We could deprecate the other methods of specifying datums (datum hashes or datum hashes+extra datums).
 However, the other approaches also have some advantages.
 
 - Transmission costs: creator pays versus consumer pays
     - Inline datums: creator pays
     - Datum hashes: consumer pays
-    - Datum hashes+optional datums: both pay
+    - Datum hashes+extra datums: both pay
 - Min UTXO value costs
     - Inline datums: depends on data size
     - Datum hashes: fixed cost
-    - Datum hashes+optional datums: fixed cost
+    - Datum hashes+extra datums: fixed cost
 - Privacy
     - Inline datums: datum is immediately public
     - Datum hashes: datum is not public until consumed
-    - Datum hashes+optional datums: datum is immediately public, but only to chain-followers
+    - Datum hashes+extra datums: datum is immediately public, but only to chain-followers
 - Communication of datums
     - Inline datums: easy on-chain communication
     - Datum hashes: off-chain communication necessary
-    - Datum hashes+optional datums: complicated on-chain communication
+    - Datum hashes+extra datums: complicated on-chain communication
 
 Any one of these factors could be important to particular use cases, so it is good to retain the other options.
 
