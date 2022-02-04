@@ -185,7 +185,7 @@ But reference inputs allow us to do more: they let us look at the _value_ locked
 
 This is actually a very important feature.
 Since anyone can lock an output with any address, addresses are not that useful for identifying _particular_ outputs on chain, and instead we usually rely on looking for particular tokens in the value locked by the output.
-Hence, if a script is interested in referring to the data attached to a _particular_ output, it will likely want to look at the value is locked in the output.
+Hence, if a script is interested in referring to the data attached to a _particular_ output, it will likely want to look at the value that is locked in the output.
 
 For example, an oracle provider would need to distinguish the outputs that they create (with good data) from outputs created by adversaries (with bad data). 
 They can do this with a token, so long as scripts can then see the token!
