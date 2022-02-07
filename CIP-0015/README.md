@@ -95,9 +95,13 @@ Signature example:
 
 See the [schema file](./schema.cddl)
 
-# Test vector
+### Test vector
 
 See [test vector file](./test-vector.md)
+
+### Rereference implementation
+
+[catalyst-registration-js](https://www.npmjs.com/package/@dcspark/catalyst-registration-js)
 
 ### Future development
 
