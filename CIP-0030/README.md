@@ -202,7 +202,7 @@ If `amount` is `undefined`, this shall return a list of all UTXOs (unspent trans
 Errors: `APIError`
 
 The function takes a required object with parameters. With a single **required** parameter for now: `amount`. (**NOTE:** some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the `amount` parameter is required:
-1. Dapps must be incentivised to understand what they are doing with the collateral, in case they decide to handle it manually.
+1. Dapps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
 2. Depending on the specific wallet implementation, requesting more collateral than necessarily might worsen the user experience with that dapp, requiring the wallet to make explicit wallet reorganisation when it is not necessary and can be avoided.
 3. If dapps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
 
