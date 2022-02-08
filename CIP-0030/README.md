@@ -197,11 +197,18 @@ Errors: `APIError`, `PaginateError`
 
 If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `undefined` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
 
-### api.getCollateralUtxos(amount: cbor\<Coin>): Promise\<TransactionUnspentOutput[] | null>
+### api.getCollateral(params: { amount: cbor\<Coin> }): Promise\<TransactionUnspentOutput[] | null>
 
 Errors: `APIError`
 
-The `amount` is required. This shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet that are required to reach the combined ADA value target specified in `amount` **AND** the best suitable to be used as collateral inputs for transactions with plutus script inputs. If this cannot be attained, `null` shall be returned.
+The function takes a required object with parameters. With a single **required** parameter for now: `amount`. (**NOTE:** some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the `amount` parameter is required:
+1. Dapps must be incentivised to understand what they are doing with the collateral, in case they decide to handle it manually.
+2. Depending on the specific wallet implementation, requesting more collateral than necessarily might worsen the user experience with that dapp, requiring the wallet to make explicit wallet reorganisation when it is not necessary and can be avoided.
+3. If dapps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
+
+So requiring the `amount` parameter would be a by-spec behavior for a wallet. Not requiring it is possible, but not specified, so dapps should not rely on that and the behavior is not recommended.
+
+This shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet that are required to reach the combined ADA value target specified in `amount` **AND** the best suitable to be used as collateral inputs for transactions with plutus script inputs. If this cannot be attained, `null` shall be returned.
 
 The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see https://github.com/cardano-foundation/CIPs/pull/104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
 
