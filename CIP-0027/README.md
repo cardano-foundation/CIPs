@@ -4,7 +4,7 @@ Title: CNFT Community Royalties Standard
 Authors: Huth S0lo <john@digitalsyndicate.io>, TheRealAdamDean <adam@crypto2099.io>
 Comments-URI: https://forum.cardano.org/t/cip-royalties/68599
 Status: Draft
-Type: Standards
+Type: Informational
 Created: 2021-08-29
 License: Apache-2.0
 ---
@@ -70,6 +70,9 @@ By creating a new tag for the distinct purpose of royalties distributions, Carda
 ## Minor Revision - August 31st, 2011
 ## Minor Revision - September 27th, 2021
 ## Minor Revision - November 8th, 2021
+## Minor Revision - December 30th, 2021
+- Change CIP Type from Standards to Informational
+- Change CIP Status from Draft to Active
 
 Copyright
 
