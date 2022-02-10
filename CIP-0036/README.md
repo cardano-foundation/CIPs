@@ -1,9 +1,8 @@
 ---
 CIP: 36
-Title: New Plutus built-in: serialiseBuiltinData
+Title: New Plutus built-in serialiseBuiltinData
 Authors: Matthias Benkort <matthias.benkort@iohk.io>, Sebastian Nagel <sebastian.nagel@iohk.io> 
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/218
-Comments-Summary: -
 Comments-URI: https://github.com/cardano-foundation/CIPs/pull/218
 Status: Draft
 Type: Standards Track
@@ -13,8 +12,8 @@ Requires: CIP-35
 
 ---
 
-# New Plutus built-in: serialiseBuiltinData
-  
+# New Plutus built-in serialiseBuiltinData
+
 ## Abstract
 
 This document describes the addition of a new Plutus builtin for serialising `BuiltinData` to `BuiltinByteString`.
