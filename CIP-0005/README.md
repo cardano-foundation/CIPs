@@ -3,8 +3,8 @@ CIP: 5
 Title: Common Bech32 Prefixes
 Authors: Matthias Benkort <matthias.benkort@iohk.io>
 Comments-URI: https://forum.cardano.org/t/cip5-common-bech32-prefixes/35189
-Status: Draft
-Type: Active
+Status: Active
+Type: Standards
 Created: 2020-05-28
 License: Apache-2.0
 ---
