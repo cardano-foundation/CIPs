@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Explicit Collateral Output
-Authors: Sebastien Guillemot <seba@dcspark.io>
+Authors: Sebastien Guillemot <seba@dcspark.io>, Jared Corduan <jared.corduan@iohk.io>
 Status: Draft
 Type: Standards
 Created: 2022-02-10
@@ -54,6 +54,10 @@ However, if collateral output is specified, then
 1. Each collateral output needs to satisfy the same minimum ADA requirement as regular outputs
 2. Collateral output needs to be balanced according to `sum(collateral_input) = sum(collateral_output) + collateral_consumed`
 Where `collateral_consumed` is equal to the old formula (`quot (txfee txb * (collateralPercent pp)) 100`). Note that when collateral is consumed, any certificate, etc. in the transaction is ignored so they have no impact on the change calculation.
+
+## Self-contained balancing
+
+Some use-cases like hardware wallets, who do not have access to the content of the collateral inputs, cannot easily check if the collateral is balanced. Similar to how we specify an explicit fee as part of the transaction body to tackle this problem, the transaction body also needs a new field that explicitly specified how much collateral will be consumed in the case of phase-2 validation failure.
 
 ## Copyright
 
