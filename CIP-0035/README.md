@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP proposes a process for proposing changes to Plutus Core itself, and the parts of the Cardano ledger which relate to it.
+This CIP proposes a process for proposing changes to Plutus Core, its builtins, and its interface to the Cardano ledger.
 
 ## Motivation
 
@@ -133,18 +133,28 @@ The following table lists, for each type of change in "Types of change", what ki
 
 ## Specification
 
+This proposal deals only with the types of change listed in "Types of change", all others are out of scope.
+
 ### Changes that require a CIP
 
-Changes that require a CIP do not have to each be in an individual CIP, they can be included in batches or in other CIPs. 
-So, for example, a single CIP could propose multiple new builtin functions, or a CIP proposing a change to the ledger could also propose a change to the ledger-script interface.
+This proposal recommends that some of the changes listed in "Types of change" (specified below) should:
+
+1. Be proposed in a CIP.
+2. Go through additional process in addition to the [usual CIP process](.../CIP-0001/README.md).
+
+The additional process mostly takes the form of additional information that should be present in the CIP before it moves to particular stages.
+As such, it is up to the CIP Editors to enforce this.
 
 The requirement to propose a change via a CIP is, as all CIPs are, advisory. 
 In exceptional circumstances or where swift action is required, we expect that changes may still be made without following this process. 
 In such circumstances, a retrospective CIP SHOULD be made after the fact to record the changes and the rationale for them.
 
+Changes that require a CIP do not have to each be in an individual CIP, they can be included in batches or in other CIPs. 
+So, for example, a single CIP could propose multiple new builtin functions, or a CIP proposing a change to the ledger could also propose a change to the ledger-script interface.
+
 #### Additions to the Plutus Core Builtins
 
-Proposals for additions to the set of Plutus Core builtins SHOULD be included in a CIP and should follow both the usual CIP process and the process laid out in this document.
+Proposals for additions to the set of Plutus Core builtins SHOULD be proposed in a CIP and SHOULD adhere to the following additional process.
 
 In order to move to Draft status, it MUST include:
 - In the Specification:
@@ -165,11 +175,9 @@ In order to move to Proposed status, it MUST include:
 - In the Rationale:
     - If an external implementation is provided: an argument that it is trustworthy.
     - Discussion of how any measures and costing functions were determined.
-- In the Path to Active section:
-    - A named implementor (person or organization) who will implement the support for the new builtins in the Plutus Core interpreter, or a pull request to the `plutus` repository with an implementation.
 
 In order to move to Active status, the following must be true:
-- The external implementations must be available.
+- The external implementations MUST be available.
 - The `plutus` repository MUST be updated with an implementation including costing.
 - The Plutus Core specification MUST be updated to include the new builtins.
 - The ledger MUST be updated to include new protocol parameters to control costing of the new builtins.
@@ -177,18 +185,18 @@ In order to move to Active status, the following must be true:
 
 #### Other changes
 
-Proposals for other additions, removals, or changes to behaviour of any part of Plutus Core or its builtins SHOULD be included in a CIP following the usual CIP process, with the following additions.
+Proposals for other additions, removals, or changes to behaviour of any part of Plutus Core or its builtins SHOULD be proposed in a CIP and SHOULD adhere to the following additional process.
 
 In order to move to Active status, the following must be true:
 - The `plutus` repository MUST be updated with an implementation of the proposal.
-- For changes to Plutus Core itself, there SHOULD be a formal specification of the changes, either a sufficiently formal presentation in the CIP or a pull  request to the Plutus Core specification.
+- For changes to Plutus Core itself, there MUST be a formal specification of the changes, either a sufficiently formal presentation in the CIP or a pull request to the Plutus Core specification.
 - The completion of these steps MUST be tracked in the Path to Active section.
 
 ### Changes that do NOT require a CIP
 
 #### Performance changes and protocol parameter updates
 
-This CIP does not propose any process for making these changes. 
+This CIP does not propose any process for proposing these changes. 
 
 #### Bug fixes
 
@@ -196,19 +204,19 @@ A "bug fix" is a change to behaviour where:
 - The implemented behaviour does not match the specification; or
 - The specified behaviour is clearly wrong (in the judgement of relevant experts)
 
-In this case the fix may be submitted directly to the `plutus` repository and is not required to go through the CIP process. 
-It must still be released as appropriate, for example, if a bug fix changes behaviour, it will have to wait for a new Plutus Core language version.
+In this case the fix may be submitted directly to the `plutus` repository and is NOT required to go through the CIP process. 
+It must still be released as appropriate. 
+For example, if a bug fix changes behaviour, it will have to wait for a new Plutus Core language version.
 
-### Releasing changes
+### Implementing and releasing changes
+
+This CIP does not cover the process of implementing changes.
+As usual, the CIP process covers the design phase, and it is up to the implementor to ensure that their proposal is implemented, which may require additional work to meet the requirements of the maintainers of the Cardano code repositories (testing, implementation quality, approach), and so on.
 
 Changes can be released after their CIPs have reached Active status. 
 Different changes will require different releases as described in "Types of release".
-
-This CIP does not cover the process of incorporating features into an actual release of Cardano. 
-Inclusion in a release is an implementation matter and is out of scope for the CIP process. 
-It is up to the implementor to make sure that their changes are accepted into the relevant code repositories.
-
-In particular, there is NO assumption that a feature which requires a particular release will be implemented and included in the next such release.
+This CIP does not cover the process by which changes are actually incorporated into releases after having been implemented.
+In particular, there is NO assumption that a feature which requires a particular release will be included in the next such release, even after it has been implemented.
 
 ### Plutus Core CIP registry
 
