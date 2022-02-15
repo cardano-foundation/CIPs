@@ -28,6 +28,10 @@ The API specified in this document will count as version 0.1.0 for version-check
 
 ## Data Types
 
+### Address
+
+A string represnting an address in either bech32 format, or hex-encoded bytes. All return types containing `Address` must return the bech32 format, but must accept either format for inputs.
+
 ### Bytes
 
 A hex-encoded string of the corresponding bytes.
@@ -112,7 +116,6 @@ type DataSignError = {
 * ProofGeneration - Wallet could not sign the data (e.g. does not have the secret key associated with the address)
 * AddressNotPK - Address was not a P2PK address and thus had no SK associated with it.
 * UserDeclined - User declined to sign the data
-* InvalidFormat - If a wallet enforces data format requirements, this error signifies that the data did not conform to valid formats.
 
 ### PaginateError
 
@@ -211,25 +214,25 @@ Errors: `APIError`
 
 Returns the total balance available of the wallet. This is the same as summing the results of `api.getUtxos()`, but it is both useful to dApps and likely already maintained by the implementing wallet in a more efficient manner so it has been included in the API as well.
 
-### api.getUsedAddresses(paginate: Paginate = undefined): Promise\<cbor\<address>[]>
+### api.getUsedAddresses(paginate: Paginate = undefined): Promise\<Address[]>
 
 Errors: `APIError`
 
 Returns a list of all used (included in some on-chain transaction) addresses controlled by the wallet. The results can be further paginated by `paginate` if it is not `undefined`.
 
-### api.getUnusedAddresses(): Promise\<cbor\<address>[]>
+### api.getUnusedAddresses(): Promise\<Address[]>
 
 Errors: `APIError`
 
 Returns a list of unused addresses controlled by the wallet.
 
-### api.getChangeAddress(): Promise\<cbor\<address>>
+### api.getChangeAddress(): Promise\<Address>
 
 Errors: `APIError`
 
 Returns an address owned by the wallet that should be used as a change address to return leftover assets during transaction creation back to the connected wallet. This can be used as a generic receive address as well.
 
-### api.getRewardAddresses(): Promise\<cbor\<address>[]>
+### api.getRewardAddresses(): Promise\<Address[]>
 
 Errors: `APIError`
 
@@ -241,11 +244,11 @@ Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
-### api.signData(addr: cbor\<address>, payload: String): Promise\<DataSignature>
+### api.signData(addr: Address, payload: Bytes): Promise\<DataSignature>
 
 Errors: `APIError`, `DataSignError`
 
-This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. `payload` is hex-encoded bytes. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking will will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
+This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
 * `alg` (1) - must be set to `EdDSA` (-8)
 * `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
