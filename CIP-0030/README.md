@@ -26,7 +26,7 @@ In order to facilitate future dApp development, we will need a way for dApps to 
 
 The API specified in this document will count as version 0.1.0 for version-checking purposes below.
 
-Note that wallets can have their own separate API version number as well, [see below](https://github.com/cardano-foundation/CIPs/edit/master/CIP-0030/README.md#cardanowalletnamewalletexperimentalapiversion-string).
+Note that wallets can have their own separate API version number as well, [see below](#cardanowalletnamewalletexperimentalapiversion-string).
 
 ## Data Types
 
@@ -170,7 +170,7 @@ Returns true if the dApp is already connected to the user's wallet, or if reques
 ### cardano.{walletName}.apiVersion: String
 
 The version number of the **specification** API that the wallet supports.
-This document has it's own version ([see above](https://github.com/cardano-foundation/CIPs/edit/master/CIP-0030/README.md#version)), this parameter indicates which latest version of the specification that wallet supports.
+This document has it's own version ([see above](#version)), this parameter indicates which latest version of the specification that wallet supports.
 
 ### cardano.{walletName}.walletExperimentalApiVersion: String
 
