@@ -1,10 +1,21 @@
 # Cardano Improvement Proposals (CIPs)
 
+Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. CIPs do **not** represent commitment of any form towards existing projects. Rather, they are a collection of sensible and sound solutions to common problems within the Cardano ecosystem. CIPs evolves around different statuses, driven by one of more authors:
 
-Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain.
-The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001).
+| Status   | Description                                                                                                                    |
+| ---      | ---                                                                                                                            |
+| Draft    | The idea has been formally accepted in the repository, and is being worked on by its authors.                                  |
+| Proposed | A working implementation exists, as well as a clear plan highlighting what is required for this CIP to transition to "Active". |
+| Active   | The proposal is deemed to have met all the appropriate criterias to be considered Active.                                      |
+| On Hold  | The CIP author is not currently working on this effort.                                                                        |
+| Obsolete | The CIP was either retired or made obsolete by a newer CIP.                                                                    |
+| Rejected | There is some issue with the CIP that makes it not acceptable at this point.                                                   |
 
-### Current CIPs (as of 2022-01-05)
+It is therefore quite common for proposals and implementations to be worked on concomitantly. Even more so that a working implementation (when relevant) is a mandatory condition for reaching an `Active` status. 
+
+The entire process is described in greater details in [CIP1 - "CIP Process"](./CIP-0001).
+
+### Reviewed Proposals (as of 2022-02-24)
 
 | # | Title | Status | 
 | --- | --- | --- |
@@ -47,6 +58,22 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
 
 > 💡 For more details about Statuses, refer to [CIP1](./CIP-0001).
 
+### Proposals Under Review (as of 2022-02-24)
+
+Below are listed tentative CIPs still under discussions with the community. Discussions and progresses will be reviewed by CIP editors in [bi-weekly meetings](https://www.crowdcast.io/cips-biweekly). Note that they are listed below for easing navigation and also, tentatively allocating numbers to avoid clashes later on.
+
+| # | Title | 
+| --- | --- | 
+| 31? | [Reference Inputs](https://github.com/cardano-foundation/CIPs/pull/159)  |
+| 32? | [Inline Datums](https://github.com/cardano-foundation/CIPs/pull/160)| 
+| 35? | [Plutus Core Evolution](https://github.com/cardano-foundation/CIPs/pull/215) |
+| 36? | [Add support for Catalyst multi-delegation](https://github.com/cardano-foundation/CIPs/pull/200) |
+| 37? | [Dynamic Saturation Based on Pledge](https://github.com/cardano-foundation/CIPs/pull/163) |
+| 38? | [On-Chain Token Metadata Standard](https://github.com/cardano-foundation/CIPs/pull/137) | 
+| 39? | [Smart Contract Software Licenses](https://github.com/cardano-foundation/CIPs/pull/185) |
+| 40? | [Collateral Output](https://github.com/cardano-foundation/CIPs/pull/216) | 
+| 41? | [Collateral Rewards](https://github.com/cardano-foundation/CIPs/pull/217) | 
+
 ### CIP creation process as a Sequence Diagram
 
   “_Alice has a Cardano idea she'd like to build more formally…_”
@@ -57,3 +84,11 @@ Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.or
 CIP Editors meetings are [public](https://www.crowdcast.io/cips-biweekly), [recorded](https://www.crowdcast.io/cips-biweekly) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you.
 
 > 🛈 To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
+
+### Current Editors
+
+- Matthias Benkort (@KtorZ)
+- _(Duncan Coutts (@dcoutts))_
+- Sebastien Guillemot (@SebastienGllmt)
+- Frederic Johnson (@crptmppt)
+- Robert Phair (@rphair)
