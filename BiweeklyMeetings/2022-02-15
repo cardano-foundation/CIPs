@@ -1,0 +1,334 @@
+**Table of Contents:** 
+
+- [Summary](#summary)
+- [Editors Meeting Flow](#editors-meeting-flow)
+- [February 15 2022 notes](#february-15-2022-notes)
+  * [Triage](#triage)
+    + [PR136 - metadata onchain standard ](#pr136)
+    + [PR153 - moving CIP 23 status to 'Proposed'](#pr153)
+    + [PR157](#pr157)
+  * [Last Check](#last-check)
+    + [PR148 - Update to CIP 30 (signData API)](#pr148)
+     
+  * [Review](#review)    
+    + [PR159 - tentative CIP 31: "Reference Inputs"](#pr159)  
+    + [PR160 - tentative CIP 32: "Inline Datums"](#pr160)
+    + [PR163 - Tentative CIP: "Dynamic Saturation based on Pledge"](#pr163) 
+  * [Discussions](#discussions)
+    + [Pr151 - CIP30 event API](#pr151)
+  * [Close](#close)
+- [Extra](#extra)
+  * [Current CIPs in the CIP repository and their status](#current-cips-in-the-cip-repository-and-their-status)
+  * [CIP creation process as a Sequence Diagram](#cip-creation-process-as-a-sequence-diagram)
+  * [Understanding CIPs further](#understanding-cips-further)
+
+## Summary
+
+Rough writeup of 02/15/22 Editors meeting notes taken during that day's CIP meeting, to increase transparency and dialogue with the community regarding proposed changes, implementations and considerations.  
+<sub>_Notes might contain errors or miss pieces - call out issues as needed_
+</sub>  
+Editors meetings are [public](https://www.crowdcast.io/cips-biweekly), [recorded](https://www.crowdcast.io/e/cip-editors-meeting-39) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you.  
+
+
+## Editors Meeting Flow
+
+- [x] **Triage/Review**: Some CIPs might fall out of grace or not get updated, a CIP that hasn’t seen activity for 3 months should be checked on, and appropriate action taken. Ex: did any of the recent changes obsolete current CIPs? Consider ‘Active’ -> ‘Obsolete’ transitions..  
+- [x] **Last Check**: Review of the PRIOR meetings Decisions  - if no objection, apply change (effectively a two week lag from decision to action, as a grace period)  
+- [x] **New CIPs Review**: CIPs up for review should be looked over collectively, with discussion where needed. (on top of the asynchronous reviews)  
+PR -> ‘Draft’: Needs format + approval.  
+‘Draft’ -> ‘Proposed’: Needs a PLAN towards Active + implementation.  
+‘Proposed’ -> ‘Active’:  Objective criteria as laid out observed, and consensus agreeing.   
+- [x] **Current Discussions**: What the current CIPs discussions are on social media / forums / Discord.  
+- [x] **Close**: Recap of actions taken and decisions. List the CIPs that are due for review.  Distribution of the minutes via mailing list.  
+
+## February 15 2022 notes 
+
+**Attending Editors**: Matthias Benkort,  Sebastien Guillemot, Frederic Johnson, Maria Jover + guests (MPJ)
+
+
+### Triage 
+
+#### PR136
+[PR136 - metadata onchain standard ](https://github.com/cardano-foundation/CIPs/pull/137) 
+
+**Matthias** - Before I begin also, I would like to present Maria who is with us today from the Cardano Foundation. She will be taking over Frederic Johnson on the project management for CIP Editors sessions. We will jump right in to the first PR on the Triage list, which is PR137 - metadata onchain standard, which has been approved for a while. As I recall, we left to comment on that back in November. Regarding a few points in this pull request. The general idea here is the proposal about defining a standard for using the Cardanol blockchain as a data store. When it comes to specific data related to transactions or DApps. And it comes obviously as an alternative to storing metadata off chain. And it's currently proposing a few other CIPs. The main concern on the onchain metadata is that the blockchain is probably not really suited for that kind of storage. So that's what I started to outline back in November. There are also some security concerns with that, because if you start adopting the standard and then not everyone is following that standard,, there is a good chance that there will be some misinterpretation of this data. This  was actually outlined by Michael PJ also back in November in another CIP. So there is a comment linking to that. There have also been some recent comments, which I haven't got time to go through. Sebastien, did you have time to look at this PR, because it's pretty old?
+**Sebastien** - Yes, I remember we looked at this a while back. We had some concerns about the ability of these and then also backboarding existing tokens. These were two concerns. I'm not sure what to do about this one because although it's not perfect some people are really early using it. At the same time some other people are not using it, and they're using the 7.21 proposal. Even though they're not making NFTs. It is just because wallets are currently implementing this 7.21 version. Wallets are now stuck having to look at a token and see if it is saying 7.21 token. Then based on the supply of these tokens then decide if it is NFT or not, instead of just policy or standard. We can either double down on these routes or just cancel the CIP in a sense, and then double down on CIP-0025 which is this 7.21 version and extend it for tokens.  This is how we stay backwards compatible with those people who took that route, or we just acknowledge that this standard is not perfect, but it is something and move to merge it. 
+**Matthias** - There is no perfect solution, and that is a potential liability for some projects and the risk that it may include. I mean, it seems we've already reviewed that proposal, a while back, and most of the comments we made haven't been addressed. I would just ping Matt on that and see if they can provide any updates. I guess  they made a proposal at a point where  it made sense to them as well, but they reverted the decision later on. I don't know. We definitely need some updates from the author here. I guess there is something to do regarding onchain metadata. I don't think that proposal is it. I hope there is someone that can rework if possible. I am just too afraid to have two standards that are not completely compatible. But they can also cover different use cases, that's fine. Michael pointing out, actually these comments we had before. And this is the same. Yes it is poofing, as outlined in the previous proposal. So, I guess we can simply go back to this one. In the meantime, contact the author Matt and see if he can provide any additional feedback on what we already provided or maybe reviewed. That will make more sense.
+**Frederic** - Would we put it back for Triage in the next meeting?  
+**Matthias** - No, I would wait for another update. I will write a message on the pool request asking for updates. Then we can reconsider it for Triage when there is an update. Otherwise it will just be there.
+
+=> [PR136](https://github.com/cardano-foundation/CIPs/pull/137)  Moved off the agenda (and off from 'Triage') until Matthias have update from Matt and see if he can provide any additional feedback (check in on it in a few meetings)
+
+#### PR153 
+[PR153 - moving CIP 23 status to 'Proposed'](https://github.com/cardano-foundation/CIPs/pull/153)
+
+**Matthias** -  CIP 23 - Moving to status proposed, which is PR153. It should be draft to proposed. I have approved this one while back, there has not been a recent date. I don't have any rejection regarding moving it to proposed, since it was actually proposed a while back. I was reaching out to research this morning on a few CIPs including that one. To get back on while trying to review this. A few of those CIPs which involve core changes.  Most of them are actually regarding stake pools, pledge mechanisms, rewards or ranking. As this last comment highlights, there are concerns and secret reasons why some of these CIPs may not be implementable. Stil, I would like to get very clear answers from the research team on that. Just to be able to label those CIPs as  not doable or obsolete. If they are not doable, or if they are not then try to see how we can start a process to get them implemented in the core part of the code base. Any comments on Sebastien, Frederic or Maria in terms of moving this from draft to proposed?  It was merged as a draft almost a year ago. 
+**Frederic** - I approve it would be good to merge this or to move it to the last check. I do not know which is more appropriate. I think that it'd be fine to merge it as it is. How do you feel about giving it like two weeks to review it? 
+**Matthias** - No. I mean this is a pretty old CIP and it should be merged as proposed already. Still, we won't be merging it as easily. Because the pool request is quite weird. There are five commits there which are unrelated. Only the last one is changing status.  I'll do a bit of github cleanup before merging that. So we can just get one status change and not have a heavy weird history out of it. 
+ 
+
+=> [PR153](https://github.com/cardano-foundation/CIPs/pull/153) being looked into and to be followed on of next meeting (should it be moved to 'Last Check')  
+
+#### PR157
+[PR157 - Adding multisig changes to CIP-0021](https://github.com/cardano-foundation/CIPs/pull/157)   
+**Matthias** - This PR is adding multisig changes to CIP-0021 which describe all the requirements for the hardware integrations, what the hardware supports and what are the capabilities. Back when this was written, there was no support for multisig native scripts and phase 1 monitor in scripts. I think that's what this is referring to. Which has now been implemented by the hardware team. It is quite a minor update.
+**Frederic** - Maria can you scroll up and click on the file changes, to show the changes?
+**Matthias** - Yes, it will just give us a summary of what's being changed. So it is stating that many things which were not supported back in the days, and now it is supported correctly. I think there are still limitations on the hardware devices. Obviously. The VacuumLabs team has been updating this CIP regularly with their progress. It is a dynamic change log of what the hardware devices can do. Which include both tresor and ledger, as I recall. I guess we can merge this one then. 
+**Maria** - Shall we move this one to last reviewed?
+**Matthias** - Well, given that this one is a small update on an existing CIP, there is no need to do like the last review, last cheek, for this kind of minor update. We can just proceed with merging that one. I see Sebastian has already agreed.
+**Maria** - We have both approvals.
+**Matthias** - I will just ping Robert on that. Now we can move into the last check items.
+
+
+=> Merge NOW ([PR157 - Adding multisig changes to CIP-0021](https://github.com/cardano-foundation/CIPs/pull/157))
+
+
+### Last Check   
+
+#### PR148
+[PR148 - Update to CIP 30 (signData API)](https://github.com/cardano-foundation/CIPs/pull/148)  
+**Matthias** - So we had PR148 - Update to CIP 30 (signData API), which we already reviewed last week. And before that even it comes with few changes, and I guess the remaining one was this format for the addresses in the API. Which was here “It was merely hex-encoded bytes of the signature or what.”
+We decided it would be better to actually favor take through encoded addresses. This is how we manipulate the addresses and facing interfaces. I don't think Rob has done anything. Yes, he was probably busy with other stuff. Because last time we pointed that out it was back in January. I think there is not any progress on that one. I would just ping Rob and see if we can move that one to the Last check on the next CIP meeting. Is that fine for everyone?
+**Maria** - We are moving this one to Last Check for the next meeting? 
+**Matthias** - Yes, I am pinging him on github, and we can move this one for the Last check for next week. To check if there are any updates.
+  
+
+=> [PR148](https://github.com/cardano-foundation/CIPs/pull/148) moved to 'Last Check' for next week
+
+### Review 
+
+#### PR159
+[PR159 - tentative CIP 31: "Reference Inputs"](https://github.com/cardano-foundation/CIPs/pull/159)  
+
+**Matthias** -  Next one is CIP 31, which we've already reviewed quite a bit. There has been a recent update from Michaele. Here in the chat, we can also invite him onboard. I think the update was mainly about forbidding the usage of these new features for old scripts. Plutus V.1 script that is already ongoing on-chain. That racional for doing that is actually quite good, because you do not want to silently be failing, and silently be deconstructing the transactions that already look different from what they are. That could lead to very interesting but bad behaviors
+**MPJ** - Not really, the discussion was mostly around the same topic of old scripts. 
+**Matthias** - From my perspective, this one's ready to go as a draft at least? While the implementation is also going on, there might be still a few changes. Maybe a few things got discovered, forbidding it for the old scripts. I actually approved that a while back. What is your state of mind on that, Sebastian?
+**Sebastien** - Yeah, I think it was also good to go.
+**Matthias** - Okay. So Michael is saying, “summary: the ledger would like to maintain the principle of "constructing the transaction context is as injective as possible", i.e. we don't throw away information silently. That's what's guiding the changes to all of CIP-31 to 33.” Okay, that's good. And I guess maybe that's a bit off record, but while we're at it, for the Plutus V2, we might also consider the case of biome addresses, by silently omitting stuff that would be maybe good or maybe completely remove biome from the ledger at some point.
+**Sebastien** - Well, I have a question about the banning of old scripts. Is the definition of old scripts Plutus V1, or is the definition of old scripts native scripts?
+**Matthias** - No, Plutus V1 here. So that would be really the Plutus V1 that doesn't support or not yet aware of these capabilities. So the idea is to say, " If you want to use these new features, that would be a reference input, that would be a reference outputs and inland datums, all those things, you would have to use the V2 version of Plutus. And if you try to construct a transaction that contains a Plutus V1 script that is making use of those new features, that should be a ledger of failure and your transaction should be rejected in phase one. Right, Michael? That's the goal? Okay. Phase one failure. So that's good. That's really contextualizing the transaction correctly before you start validating it and running the validators.
+So I guess we can move into last check for next week, unless there is any major changes that should just be kept in Ripple as draft until the implementation is sorted out, and then we can move it to propose or active. So Les is saying, "Should it be treated phase one?" It has to be a phase one. "Yes, I do agree with that."" It is sad that Michael doesn't have any microphone so that would be nice to bring Les and Michael on the voice. But maybe then if that's actually not quite clear, Michael, could you add a justification of why this should be added as a phase one validation failure? What would be the rationale for that? So that it is clear from the proposal. 
+  
+
+=> [PR159 - tentative CIP 31: "Reference Inputs"](https://github.com/cardano-foundation/CIPs/pull/159) moved to 'Last Check' 
+
+ 
+
+#### PR160
+[PR160 - tentative CIP 32: "Inline Datums"](https://github.com/cardano-foundation/CIPs/pull/160)  
+**Matthias** - Good. So next one on the agenda is CIP 32, inline datums, which is also quite simple. I thought we merged that one already last meeting. CIP 33, right? So CIP 32 is about using this datum field that we currently have on output, which currently can only contain the data hash to use it, to contains actually non hash data, which would be suitable for small datums, actually, and really transform the EUTXO as a ... really give it the ability to carry a bit more data than what it currently] does. That's particularly useful for [inaudible 00:20:57], for instance, and a few other use cases that needs to just publish some very short data onchain. This one has been through far less comments than the others, but there were a few comments from Sebastian back in December. So I'm not sure if you want to continue and take that one on, Sebastian. I haven't watched following in the discussion on this one. So I will be glad if you can give us a summary.
+**S** - No, I think everything we've answered already. 
+**Matthias** - We'll move to Last check. I would give it a proper read also again for the next meeting, especially all the conversation that has been going on. I had looked at the CIP a while back, but there has been quite a few comments. Okay, if Michael have any comments to say, otherwise, we can move to the next meeting as last check.
+
+=> [PR160 - tentative CIP 32: "Inline Datums"](https://github.com/cardano-foundation/CIPs/pull/160) moved to 'Last Check'
+
+#### PR163
+[PR163 - Tentative CIP: "Dynamic Saturation based on Pledge"](https://github.com/cardano-foundation/CIPs/pull/163)
+
+**Matthias** - The PR 163, which is CIP not yet assigned.  So that's also one of the CIPs I've written to the research team's attention this morning, as I would like them to chip in a bit on how this would impact our current reward mechanism and other assumptions. So the core-ID here is to limit the amount of the pledge cap that is currently fixed to in away proportion of the total stake divided by K, K being the protocol parameters, currently fixed to 500. So instead of limiting the saturation by the whole stake of a K, we want to limit it by a proportion of this amount based on the amount of pledge such that pools with lower pledges have also lower saturation cap.
+And the goal is actually to sort of favor state pool operators to use bigger pledge instead of duplicating or splitting small pledges into more pools. And the goal of that CIP is to avoid the multiple construction that's currently happening on Cardano and try to favor a bit more single pools. On the comments on that CIP, there was actually a good remark from Jerry, asking for what are the thresholds and what are the expectations for the thresholds? Currently, the threshold is 500K ADA, you got to 100% of the K saturation level. For 250K ADA, you 50% of that, and so on. The thresholds currently are a bit arbitrary, although they have been, I guess, calculated from what's currently observable from the main chain.
+There may be a good argument for saying that the threshold could be a protocol parameter, in the very same way that K is a protocol parameter, so those things could be adjusted dynamically to react to market changes or what's happening on chain. Anyone has any comment on that one? Sebastian, Frederic or Mario? I guess that's no. So from now, I would like someone from the research team to chip in on that. From my own perspective, I find the proposal interesting. It should be also relatively simple to implement as a first maybe step in that direction if this is also something that is wanted by the community. Which brings us to another question regarding CIPs like that, and that are quite opinionated, is how can we tell whether or not some changes are actively wanted by the community or granted by the majority of the people on the network.
+So that's maybe a good topic for discussion to get a few people from a panel and see how we can approach these kinds of changes, because there are many CIPs like that, that would be sound and fair and good ideas for many, and that would be terrible ideas for others. So yeah, I would very much question that, how we can get consensus on this sort of thing.  I see Kevin saying “I'll point the research team at it”
+
+I did it this morning, Kevin, so hopefully we should get someone to review that and to get some feedback. And I would like to sort of have a more streamlined way of doing that, generally speaking, with the CIPs, because there are at least, I think, six or seven ones that have prompted me to research this morning, which I would like to get research inputs. And once we have actual research input, we can bring the discussions into engineering to see the feasibility of implementation. And then there is this other political aspect, which is deciding on whether or not a CIP, a proposal, should be implemented. I don't have the answer yet on that. So something to be discussed within the community.
+**Maria** - So right now, we are going to leave this PR on hold, until we get the input from the research team. Right? And start thinking next steps if we want to bring the store conversation within the community, right?
+**Matthias** - Yeah, but that's a bit out of scope of the CIP process here, but more of a general work on organizing changes around Cardano. So as a CIP editors here, and as part of this process, our goal is really to tell whether or not proposal is sound, secure and holistic as an implementation proposal, but it doesn't give any form of authority on whether or not a proposal would be implemented. And that step is still a bit missing. So because we insist this proposal is sound and we want to get it merged, that doesn't mean it will immediately be implemented as part of a whole major change. And I know that a lot of people have been frustrated, but that's the second step because there are many things involved. And as I said, some proposals which are sound from a technical perspective, that will please some people, some other will disagree with. And this is where we need to find how to reach consensus on that. But this is also not our role as editors. So that is just what I wanted to point out.
+
+=> [PR163](https://github.com/cardano-foundation/CIPs/pull/163) Moved off the agenda (and off from 'Last Check') and put on hold until we have update from research team and from community (check in on it in a few meetings)
+
+
+#### CIP 35 - Plutus Core Evolutions
+**Frederic** - Also, just to flag for this meeting, we have 25 minutes left. We're getting to the discussion section of the meeting, but maybe there's still pull requests that should be brought up that we didn't get on the agenda?
+**Michael** - So yes, there are a few small ones that we can actually resolve probably synchronously. There have been a few ones, actually. There is one I would like to talk about because it's also root PR or root CIP that would give birth to other things which is tentatively the CIP 35, which is called Plutus Core Evolutions. Since we have Michael here, that would be a good opportunity to talk about that. So that CIP's proposing a process for proposing changes into produce and actually getting them implemented. Right. So it's sort of a way to ensure that this can actually happen and have a process for that, which involve also the ledger team so that people can start making proposals to Plutus. There have been quite a lot of comments on the CIP and conversations going on. So maybe Michael, not sure if you have sorted out your microphone issues, you can give us a small update. Yeah, not about implementation, but still it gives a process for reaching out to implementers, right.
+**MPJ** - The actual reflection, probably it's not time for the editors to look at this because there have been some comments and hasn't been opened for very long. So probably we should wait for more people to weigh in.
+**Michael** - I'm not asking for review now, I'm just wanting to bring it to the lights so that people can actually go and see comments.
+**MPJ** - So a couple things that would be useful to have comments and things on, one is this is a process CIP.  I'm actually not sure if there have been any other process CIPs? 
+**Michael** -  It has been.
+**MPJ** - There have been? But in particular it's proposing tweaks to CIP process, not necessarily to some other process. I'm not sure whether the form is ideal. You know, I'm basically saying you should propose these changes in CIP themselves, and also you should do the following things. I'm saying, "Well, it's up to the editors to make sure that it happens", stuff like that. I'm not sure whether it is totally appropriate.
+The thing about implementation has proven a bit contentious. So there was some good comments from calls, but who was really very interested in and who would really like to pin down the contribution process. And in some ways this would be a more useful document if it said, "Well, in order to get your change merged, you need to have good testing and have blah, blah, blah, blah, blah". But as far I can tell, that's just really out of scope for the CIP person. It's about the design.
+This says what you have to do to get the design document approved. And then in order for it to be active, you have to get that implemented and how you do that is really not covered.
+And we have to improve our documentation about what is required for actual contributions elsewhere. This just says what you have to achieve, which is still useful to people because they can see what they have to achieve one way or another.
+Part of the point of this is to make people sort of take a step back and think, "Hmm, can I do all this? Do I have a good argument that people want this? Do I have a good implementation? Do I know how this thing would be costed?", whatever. Otherwise people just open issues on the Plutus core. Which is not a bad thing. But I think we can say, "Look, if you really think this is a good idea, show it."
+**Michael** - Regarding the implementation, we already have quite extensive contribution guidelines on the Plutus repository. Which maybe could be extended also to cover a bit more of this process.
+**MPJ** - It's also going to be context dependent. Right. So, for example, there's this thing the club has been working on, their new cryptography that they wanted into Cardano base. So we could use it from there and then it's contributed in a clear place. And then it has to pass whatever gate keepers that are on that repository to make sure that's acceptable before then it can get to Plutus.. You still need to work out where to make the changes and then get people to accept them.
+I think probably we will then write something like this, a guide, for implementers of built-ins in the Plutus repository, which hopefully will provide a complement to this.
+**Matthias** - Yep. And that sounds like a good step in the right direction for open sourcing this whole thing really. 
+**MPJ** - It's certainly about making it public, but also giving people ways to implement things in it, to work with it. The guidelines currently are already pretty extensive and you can definitely extend that to include a few more steps.
+**Matthias** - But as you said, it's always been dependent on the context and on the features, right? You don't look at the same things, depending on what you're trying to modify.
+But at least the CIP, I think, already gives some steps and some things to think about before actually considering making a change to produce, which is good. As you said, there is a cost model taking to into account our hard fork, there are Plutus version changes and all those things, right?
+Once you have carefully considered all of that and you still think your CIPs or your proposal makes sense, then you can move it to the next step, which is implementation and proposing that to the Plutus core team, following the Plutus guidelines.
+Or maybe we'll just do it because you convince us it's a good idea and we schedule it or something. So, I think some people are like, "You're saying, we're just like going to just say your problem. You sort everything out."
+That's not necessarily true. The process of implementation might be that the person who wrote the CIP does all the work because they're really on it. Or it might be, they persuade IOG that it's a super great idea and we schedule the work to do it, or whatever, or we help them, you know?
+**MPJ** - I don't think that belongs in the CIP.
+**Matthias** - Exactly. And that's what I was raising before. There is another step after CIP, which is getting the work implemented.
+Or you can, as you said, get, IOG convinced that this is a great idea that should be implemented.
+**Matthias** - I don't think this is really in scope of the CIP team per se, but I still want to have this conversation. Not necessarily be part of it, but at least have that conversation set up somewhere between relevant people.
+**MPJ** - But I think that if we made that clearer...For example, you could have a mandatory section in the CIP for implementers. And then you say, "Look, this is where you edit this, when you find someone who's going to implement it. And if it's blank, you don't have anyone to implement it."
+
+**Matthias** - That's sort of what the past two active, currently is in the CIPs. It should highlight clear steps that can bring the CIP from proposed to active. And that includes an implementation for the CIP, that algorithms, some are not related to code necessarily, right?
+But yeah, some step might be get that implemented in Plutus by X or Z. And then you have either to have already reached out to the Plutos team for that.
+If you can reach the Plutus team for instance, and they clearly tell you, "No, we won't implement that proposal, even if it's technically sound because this and this and that," then you can go back to the CIP and make it obsolete, right? Or duplicate it because the past to active is actually not...You cannot act, but you did it. You cannot realize it, right?
+If there is no way for you to implement it and to get into the active position, then you might as well not give your CIP as proposed forever, which is you turn it off.
+**MJP** - Okay. In my opinion, this isn't totally easy to understand from  CIP-001.
+**Frederic** - So let me step in on this one. By past to active, really what we mean is observable criteria that we agree as a group reflect the active status of that CIP.
+So whether those criteria are observed, it should be something that someone external to the editorial panel can go and verify.
+So it's something that people will push into the body of the pool request or the CIP, and say, "I want to see five implementations of this to consider it active". And the past to active agreement on the PR by the editors is effectively saying, "Yes, we agree. Those criterias will be observable". And if they're observable, it should effectively mean that it's active.
+**MJP** - Sounds like the editors should get together to decide what path to active means.
+**Matthias** - I hope I didn't imply anything else, but yeah, that's what we stated in the CIP-001, actually.
+**MJP** - In that case, maybe just elaboration that adds, for example, that might mean naming an implementer, but that doesn't even fit there, right?
+I think there's a useful thing to be able to say, which is to say this CIP either has someone who's agreed to do the work or it doesn't. And at the moment, the path to active, as I understand it, might say something like "Here's a checkbox saying there is an implementation" or something.
+But I think that, as someone looking at the CIP or considering its status, it'd be quite helpful. If you just see an empty check box saying "implementation", it's not complete. That doesn't tell you very much.
+But if you see an empty section where it says "implementer blank", then you're like, "Okay, no one has even agreed to do this", right?
+And it's meaningfully different to see there is an implementer, but they haven't done the implementation. Okay. That tells them something else.
+**Matthias** - Yeah. So Kevin is also saying in the chat maybe that we could add an extra status to the CIPs. For those that are relevant like the Plutus core changes, or the ledger changes, right? After the proposed date and before the active state, we have the state that is accepted or adopted, meaning the identified implementer has accepted to implement the CIP, and will work on implementation.
+That's similar to this past to active is, or it's maybe the step before the past to active, right?
+Past to active would be: reach out to those people and then have actually the implementation done that you can review and see.
+**Maria** - So what do you want to do with this CIP 35, do you want to still discuss it at the next meeting or?
+**Matthias** - Yeah, we can move it for review for the next meetings maybe. I mean, we'll see when we create the agenda. I would also like to leave a bit more time for that one. I mean, the next things will be in two weeks, but maybe we want to have it in the next meeting, but in a month from now.
+
+
+=> [CIP 35 - Plutus Core Evolutions](https://github.com/cardano-foundation/CIPs/pull/215) put on hold and wait for more comments
+
+
+
+
+### Discussions  
+
+#### Pr151 - CIP30 event API
+
+**F** - We have PR 151, Is this worth reviving to CIP30 event API, or should we move this in? 
+**Matthias** - I revived it some time ago, I think. That wasn't that one, actually. The event API, yes, it doesn't seem to have gotten a lot of changes recently.
+
+#### PR 211 - Add reference implementation CIP15
+**Sebastien** -- Can we look at 211? Add reference implementation for CIP15. A simple change.
+So basically, I was looking into how to get catalyst support for Flint, which is our new wallet, and I noticed there's no library for this, so I created a reference implantation. This is based off the same core idea we had for [inaudible 00:44:01] originally, so it is used in production networks, although this library is not used by [inaudible 00:44:06], so it's not the same.
+**Matthias** - That's your reference implementation by the author, right? You also want that CIP back, so I guess that's fine.
+Okay, well, let's also ping Robert about that, I guess, but yeah, we can take that off. It's fine by me, and since it's a quite minor change, we can also merge it synchronously. Any questions in the chat? No, no questions asked either on the platform.
+**Sebastien** -  We also merged 207. Seven updates came, you take care, Max said.
+But what I'm saying, this has already influenced it, and they're just updating the CIP.
+**Mathias** - Well, yeah, I kind of disagree with that one, but I see that four of you agreed. I mean, I don't disagree with increasing things in particular, right, or changing, but hear it sounds more like an implementation detail of the implementation rather than CIP. 
+**Sebastien** - Yeah. I mean the other changes we could have removed this line from CIP.
+**Matthias** - Yeah, and that actually implemented ... Several implementing that decides on where they want to draw the cost out, and at the same time, if the implementation is based on that, right, that's also breaking change per se, so, yeah. Anything else from your side, Sebastian?
+
+
+=> [PR 211 - Add reference implementation CIP15](https://github.com/cardano-foundation/CIPs/pull/211) put on hold and wait for more comments
+
+
+**** Collateral CIPs
+
+**Sebastien** - If there's nothing else, I'd like to talk about the collateral CIPs, so we have three collateral CIPs, collateral key, collateral output, and collateral reward. Collateral key is an old one. We can close it. Collateral reward is a new one. We can close it as well. I'm not going to push for this, but we can leave it up for now, and close it at a dedicated time, so it might be good. 
+Collateral output, so I'm gonna give you some backgrounds, final stuff. So basically, for the past hard fork, last time there was no hard fork, for Alonzo, we introduced the concept of collateral. I was not happy with the way it was implemented, so I talked to the IOG team about how I think it should have worked instead. As this was happening, the IOG people also took my feedback into account, talked to other people, like Beck Labs, took their feedback into account, and brought the specification for it, and I in the parallel wrote the CIP part. So there is still four months-ish, until a hard fork, so I guess I'm good changing, so there's no rush to merge it, but just the background on this collateral output specification is just the write up of what we discussed internally.
+
+ I mean, this is before the hard fork happened, like leading up to the hard fork, and I don't remember who was involved because there's a lot of people involved in this. I could go back in my slack history. I put Jared because he's the one managing the spec, and myself, so I put the CIP which I had like three months to do this spec. I don't particularly mind removing myself, as I'm just the person who is capturing the discussion right on Slack, and just only having Jared as the author because he's still managing the spec change, but it's how it's set up.
+
+The collateral reward was purely included for ... Yeah, I did update it to match the spec by the way.
+Andre, I believe that your discussion with the feedback from the Harvard Law guys was after I brought this discussion up to Jer, and I told him this won't work with a Harvard wallet, so you're gonna have to go talk to Beckley Labs about how to get this; and that discussion was included in the collateral key discussion, so basically, collateral key was the old CIP. One of the problems I laid out in the collateral key was that we need this approach because the current approach doesn't work with Harvard wallet. That's how that discussion started. So collateral reward is purely included for your completionist purposes in different ways we could have it.
+And this is basically saying, instead of saying the collateral output to a new address, the collateral output instead gets sent to the reward account. Now, obviously, this is not doable in current implementation of Cardano, I mean, it's doable, but I would not suggest it as a good idea for many reasons. I mostly brought this up because one, it is technically speaking doable, but also two, because there's been some discussion about primary ledgers, and how primary ledgers could affect stuff like drip drops, SPOs. And I was just mostly writing this up to say, hey, if we bring back primary ledgers, they would affect these SPO cases, and could be a way we could do collateral output and so on. I don't think anybody would've push for this.
+
+**Matthias** - So if the intent is actually to show that this was a path that was discussed, but sort of rejected, there is always the option of merging it as a rejected CIP or obsolete CIP. So that it can really show that, yeah, this was discussed and this was really rejected for these and those reasons.
+
+**Maria** - Could you make a quick summary? I think you said there's three collateral PRs, but I've only been able to locate two of them..
+
+**Matthias** - I think the first, or third one should be, or will be closed anyway by Sebastian. Yeah. It's the PR 104, which is now labeled as likely deprecated, and then, so Sebastian, since you also the author of that one, I guess you can move forward and close it.
+
+**Sebastien** - This is from before the hard fork, before we discussed collateral output and collateral output
+**Matthias** - I remember that. There was also the case of merging that one as a rejected obsolete CIP. Just to keep the discussion recorded.
+**Maria** - Okay, so we have this collateral key that is going to be closed or marked as obsolete?
+Then we have a collateral reward that is going to be closed, but we have time to do that?
+And then there's the collateral output, that it needs to be done before the hard fork, so there's no rush, but ... Shall we put them on review?
+
+**Matthias** - We could probably put that on review for next week or next month, at least, to also give you a bit of time. It seems like the spec is being worked on by the ledger team in parallel, so that already gives a more streamlined path to implementation, possibly. It is quite observable from past to be active. I'm not sure if they will be done in two weeks from now, but yeah, maybe we can have it as review for the next meeting, and if it's still being cooked, we can look at it back. Yeah, more weeks for the next one. I think we'll just stop it here, and thank you everyone for joining, coming, and commenting. It's good actually, to see more and more people joining these meetings, and see you in two weeks.
+
+=> [CIP-1856 | Collateral Key derivation](https://github.com/cardano-foundation/CIPs/pull/104) moved to Triage for next meeting
+=> [Collateral reward #217](https://github.com/cardano-foundation/CIPs/pull/217) moved to Triage for next meeting
+=> [Collateral output #216](https://github.com/cardano-foundation/CIPs/pull/216) moved to review
+
+
+
+
+### Close    
+
+=> Merged minor changes to CIP-0021 - [PR157 - Adding multisig changes to CIP-0021](https://github.com/cardano-foundation/CIPs/pull/157)    
+=> Hold on [PR136](https://github.com/cardano-foundation/CIPs/pull/137)  Moved off the agenda (and off from 'Triage') until update or any additional feedback
+=> Hold on [PR153](https://github.com/cardano-foundation/CIPs/pull/153) being looked into and to be followed on of next meeting (moved to 'Last Check')
+=> Hold on [PR148](https://github.com/cardano-foundation/CIPs/pull/148) moved to 'Last Check' for next week 
+=> Hold on [PR159 - tentative CIP 31: "Reference Inputs"](https://github.com/cardano-foundation/CIPs/pull/159) moved to 'Last Check'
+=> Hold on [PR160 - tentative CIP 32: "Inline Datums"](https://github.com/cardano-foundation/CIPs/pull/160) moved to 'Last Check' 
+=> Hold on [PR163](https://github.com/cardano-foundation/CIPs/pull/163) as conversation continues  
+=> Hold on [CIP 35 - Plutus Core Evolutions](https://github.com/cardano-foundation/CIPs/pull/215) put on hold and wait for more comments
+=> Hold on [PR 211 - Add reference implementation CIP15](https://github.com/cardano-foundation/CIPs/pull/211) put on hold and wait for more comments
+=> Hold on [CIP-1856 | Collateral Key derivation](https://github.com/cardano-foundation/CIPs/pull/104) moved to Triage for next meeting
+=> Hold on [Collateral reward #217](https://github.com/cardano-foundation/CIPs/pull/217) moved to Triage for next meeting
+=> Hold on [Collateral output #216](https://github.com/cardano-foundation/CIPs/pull/216) moved to review
+
+
+
+---
+## Extra
+
+### Current CIPs in the CIP repository and their status
+
+| #                 | Title                                                                                                                                         | Status                |
+| ----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------- |
+| 1 | [CIP process](../CIP-0001/) | Active |
+| 2 | [Coin Selection Algorithms for Cardano](../CIP-0002/) | Active |
+| 3 | [Wallet key generation](../CIP-0003/) | Active |
+| 4 | [Wallet Checksums](../CIP-0004/) | Draft |
+| 5 | [Common Bech32 Prefixes](../CIP-0005/) | Draft |
+| 6 | [Stake Pool Extended Metadata](../CIP-0006/) | Draft |
+| 7 | [Curve Pledge Benefit](../CIP-0007/) | Proposed |
+| 8 | [Message Signing](../CIP-0008/) | Draft |
+| 9 | [Protocol Parameters](../CIP-0009/) | Draft |
+| 10 | [Transaction Metadata Label Registry](../CIP-0010/) | Draft |
+| 11 | [Staking key chain for HD wallets](../CIP-0011/) | Draft |
+| 12 | [On-chain stake pool operator to delegates communication](../CIP-0012/) | Draft |
+| 13 | [Cardano URI Scheme](../CIP-0013/) | Draft |
+| 14 | [User-Facing Asset Fingerprint](../CIP-0014/) | Draft |
+| 15 | [Catalyst Registration Transaction Metadata Format](../CIP-0015/) | Draft |
+| 16 | [Cryptographic Key Serialisation Formats](../CIP-0016/) | Draft |
+| 17 | [Cardano Delegation Portfolio](../CIP-0017/) | Active |
+| 18 | [Multi-Stake-Keys Wallets](../CIP-0018/) | Draft |
+| 19 | [Cardano Addresses](../CIP-0019/) | Active |
+| 20 | [Transaction message/comment metadata](../CIP-0020/) | Active |
+| 21 | [Transaction requirements for interoperability with hardware wallets](../CIP-0021/) | Draft |
+| 22 | [Pool operator verification](../CIP-0022/) | Active |
+| 23 | [Fair Min Fees](../CIP-0023/) | Draft |
+| 24 | [Non-Centralizing Rankings](../CIP-0024/) | Draft |
+| 25 | [NFT Metadata Standard](../CIP-0025/) | Draft |
+| 26 | [Cardano Off-Chain Metadata](../CIP-0026/) | Draft |
+| 27 | [CNFT Community Royalties Standard](../CIP-0027/) | Draft |
+| 28 | [Protocol Parameters (Alonzo)](../CIP-0028/) | Draft |
+| 29 | [Phase-1 Monetary Scripts Serialization Formats](../CIP-0029/) | Draft |
+| 30 | [Cardano dApp-Wallet Web Bridge](../CIP-0030/) | Draft |
+| 33 | [Reference Scripts](../CIP-0033/) | Draft |
+| 34 | [Chain ID Registry](../CIP-0034/) | Draft |
+| 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](../CIP-1852/) | Draft |
+| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](../CIP-1853/) | Draft |
+| 1854 | [Multi-signatures HD Wallets](../CIP-1854/) | Draft |
+| 1855 | [Forging policy keys for HD Wallets](../CIP-1855/) | Draft |
+
+:bulb: -  For more details about Statuses, refer to [CIP1](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001).
+
+
+### CIP creation process as a Sequence Diagram  
+
+_"Alice has a Cardano idea she'd like to build more formally":_
+![Mary interacting with community and editors for a Cardano Proposal](../sequence_diagram.png?raw=true "sequence_diagram.png")
+
+### Understanding CIPs further
+
+[![Cardano Improvement Proposals](https://img.youtube.com/vi/q7U10EfqXJw/0.jpg)](https://www.youtube.com/watch?v=q7U10EfqXJw)
+[![The Cardano Effect Ep.94](https://img.youtube.com/vi/dnw7k7VKVyo/0.jpg)](https://www.youtube.com/watch?v=dnw7k7VKVyo)
+
+
+
+
+  1  README.md 
+@@ -38,6 +38,7 @@ The current process is described in details in [CIP1 - "CIP Process"](./CIP-0001
+| 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Draft |
+| 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Draft |
+| 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
+| 33 | [Reference Scripts](./CIP-0033/) | Draft |
+| 34 | [Chain ID Registry](./CIP-0034/) | Draft |
+| 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
+| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Draft |
