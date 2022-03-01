@@ -3,7 +3,7 @@ CIP: 23
 Title: Fair Min Fees
 Authors: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Comments-URI: https://forum.cardano.org/t/fair-min-fees-cip/47534
-Status: Draft
+Status: Proposed
 Type: Standards
 Created: 2021-02-04
 License: CC-BY-4.0
