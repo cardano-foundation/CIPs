@@ -52,9 +52,13 @@ Note that the Set is defined in the cardano-ledger specification as an Array of 
 
 In theory we could pre-calculate the index of the searched transaction input off-chain, by relying on the ordering of transaction inputs (lexicographic ordering on `(TransactionID, TransactionIndex)`). But then, to pass this information to the script, we would need to use a redeemer, which could defeat the purpose of this optimisation with it's own fees. Also, we could only reliably do this after transaction balancing, but changing the transaction after balancing could affect fees, rendering the transaction unbalanced again. This method also introduces unnecessary complexity.
 
+## Security considerations
+
+We considered the possibility of a man-in-the-middle attack, where the adversary could change the transaction input ordering, and altering the behaviour of a script. However the existing ledger rules for deriving txid are sufficient to guarantee the integrity of transactions, because the inputs (whether a set or a list) are included in the transaction body that gets hashed to a txid. Therefore, no changes would be required to txid derivation.
+
 ## Backward Compatibility
 
-As noted in the specification above, the underlying CBOR data structure only changes semantically, so we do not need any backwards compatibility measures.
+For ledger transactions before this CIP is implemented, the underlying CBOR data structure only changes semantically, and the difference between input order at submission and at script evaluation is irrelevant, because the scripts in those transactions do not rely on pattern matching by position. Whereas, transactions after this CIP could optionally do positional pattern matching.
 
 ## Test Cases
 
