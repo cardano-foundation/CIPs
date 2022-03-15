@@ -1,6 +1,6 @@
 ---
 CIP: ?  
-Title: Deterministic transaction input ordering
+Title: Preserve submitter's ordering of transaction inputs
 Authors: Gergely Szabo <gergely@mlabs.city>  
 Discussions-To:   
 Comments-Summary:   
@@ -11,7 +11,7 @@ Created: 2022-02-25
 License: Apache-2.0  
 ---
 
-# Deterministic transaction input ordering
+# Preserve submitter's ordering of transaction inputs
 
 ## Abstract
 
