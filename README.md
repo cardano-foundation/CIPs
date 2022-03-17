@@ -1,19 +1,19 @@
 # Cardano Improvement Proposals (CIPs)
 
-Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. CIPs do **not** represent commitment of any form towards existing projects. Rather, they are a collection of sensible and sound solutions to common problems within the Cardano ecosystem. CIPs evolves around different statuses, driven by one of more authors:
+Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. CIPs do **not** represent a commitment of any form towards existing projects. Rather, they are a collection of sensible and sound solutions to common problems within the Cardano ecosystem. CIPs evolves around different statuses, driven by one or more authors:
 
 | Status   | Description                                                                                                                    |
 | ---      | ---                                                                                                                            |
-| Draft    | The idea has been formally accepted in the repository, and is being worked on by its authors.                                  |
+| Draft    | The idea has been formally accepted in the repository and is being worked on by its authors.                                   |
 | Proposed | A working implementation exists, as well as a clear plan highlighting what is required for this CIP to transition to "Active". |
-| Active   | The proposal is deemed to have met all the appropriate criterias to be considered Active.                                      |
+| Active   | The proposal is deemed to have met all the appropriate criteria to be considered Active.                                       |
 | On Hold  | The CIP author is not currently working on this effort.                                                                        |
 | Obsolete | The CIP was either retired or made obsolete by a newer CIP.                                                                    |
 | Rejected | There is some issue with the CIP that makes it not acceptable at this point.                                                   |
 
 It is therefore quite common for proposals and implementations to be worked on concomitantly. Even more so that a working implementation (when relevant) is a mandatory condition for reaching an `Active` status. 
 
-The entire process is described in greater details in [CIP1 - "CIP Process"](./CIP-0001).
+The entire process is described in greater detail in [CIP1 - "CIP Process"](./CIP-0001).
 
 ### Reviewed Proposals (as of 2022-02-24)
 
@@ -49,6 +49,8 @@ The entire process is described in greater details in [CIP1 - "CIP Process"](./C
 | 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Draft |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Draft |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
+| 31 | [Reference Inputs](./CIP-0031/) | Draft |
+| 32 | [Inline Datums](./CIP-0032/) | Draft |
 | 33 | [Reference Scripts](./CIP-0033/) | Draft |
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
@@ -58,14 +60,12 @@ The entire process is described in greater details in [CIP1 - "CIP Process"](./C
 
 > 💡 For more details about Statuses, refer to [CIP1](./CIP-0001).
 
-### Proposals Under Review (as of 2022-02-24)
+### Proposals Under Review (as of 2022-03-17)
 
-Below are listed tentative CIPs still under discussions with the community. Discussions and progresses will be reviewed by CIP editors in [bi-weekly meetings](https://www.crowdcast.io/cips-biweekly). Note that they are listed below for easing navigation and also, tentatively allocating numbers to avoid clashes later on.
+Below are listed tentative CIPs still under discussion with the community. Discussions and progress will be reviewed by CIP editors in [bi-weekly meetings](https://www.crowdcast.io/cips-biweekly). Note that they are listed below for easing navigation and also, tentatively allocating numbers to avoid clashes later on.
 
 | # | Title | 
 | --- | --- | 
-| 31? | [Reference Inputs](https://github.com/cardano-foundation/CIPs/pull/159)  |
-| 32? | [Inline Datums](https://github.com/cardano-foundation/CIPs/pull/160)| 
 | 35? | [Plutus Core Evolution](https://github.com/cardano-foundation/CIPs/pull/215) |
 | 36? | [Add support for Catalyst multi-delegation](https://github.com/cardano-foundation/CIPs/pull/200) |
 | 37? | [Dynamic Saturation Based on Pledge](https://github.com/cardano-foundation/CIPs/pull/163) |
@@ -73,6 +73,12 @@ Below are listed tentative CIPs still under discussions with the community. Disc
 | 39? | [Smart Contract Software Licenses](https://github.com/cardano-foundation/CIPs/pull/185) |
 | 40? | [Collateral Output](https://github.com/cardano-foundation/CIPs/pull/216) | 
 | 41? | [Collateral Rewards](https://github.com/cardano-foundation/CIPs/pull/217) | 
+| 42? | [New Plutus Builtin: serialiseBuiltinData](https://github.com/cardano-foundation/CIPs/pull/218) |
+| 42? | [New Plutus Builtin: dataHash](https://github.com/cardano-foundation/CIPs/pull/222) |
+| 43? | [Plutus Support For Pairings Over Curve Bls12-381](https://github.com/cardano-foundation/CIPs/pull/220) |
+| 44? | [Additional Factors For NFT Market Verification](https://github.com/cardano-foundation/CIPs/pull/226) | 
+| 45? | [Decentralization: Using Pledge as a Bidding Param](https://github.com/cardano-foundation/CIPs/pull/229) |
+| 46? | [Prepay Min Fixed Fee](https://github.com/cardano-foundation/CIPs/pull/190) | 
 
 ### CIP creation process as a Sequence Diagram
 
