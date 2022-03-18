@@ -53,6 +53,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 32 | [Inline Datums](./CIP-0032/) | Draft |
 | 33 | [Reference Scripts](./CIP-0033/) | Draft |
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
+| 35 | [Desktop wallet application URL](./CIP-0035/) | Draft |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Draft |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |

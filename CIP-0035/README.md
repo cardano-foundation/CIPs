@@ -48,5 +48,5 @@ Wrong examples:
 Since Daedalus is shiped for a single network separately (mainnet and testnet) and can be installed alongside a fligt version (mainnet), the url needs to specify what version is being refered.
 
 # ⚠️ Open questions
-1. Most of the DEX relies on timing due to price volatility. If the user is only using a secure full-node wallet and when clicking on a URL handler that opens a wallet, which is not yet synchronized is the wallet, how is a timeout handled?
-2. Similar to 1. what if the starting of the wallet takes 2-10 mins? Is that still acceptable for a DEX? Should be defined timeout parameter to the URL so that the user DOES NOT make a transaction if the dApp runs in a timeout?
+1. Most of the DEX relies on timing due to price volatility. If the user is only using a secure full-node wallet, which is not yet fully synchronized, how is a timeout handled?
+2. Similar to 1. what if the starting of the wallet takes 2-10 mins? Is that still acceptable for a DEX? Should a timeout parameter be defined in the URL so that the user DOES NOT make the transaction if the dApp runs in a timeout?
