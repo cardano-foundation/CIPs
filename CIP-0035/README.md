@@ -23,30 +23,16 @@ The usage of a different URL will solve the problem of users, which have multipl
 
 # 📖 Specification
 
-The core implementation should follow the [BIP-21](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki) standard (with `bitcoin:` replaced with `desktop+cardano:`)
+The core implementation should follow the [BIP-21](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki) standard (with `bitcoin:` replaced with `web+cardano:`)
 
 Correct examples:
 ```
-<a href="desktop+cardano-mainnet://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd">Buy/Send/Donate</a>
-<a href="desktop+cardano-testnet://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd">Buy/Send/Donate</a>
-<a href="desktop+cardano-mainnet-flight://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd">Buy/Send/Donate</a>
-
-<a href="desktop+cardano-mainnet://stake?c94e6fe1123bf111b77b57994bcd836af8ba2b3aa72cfcefbec2d3d4">Stake with us</a>
-<a href="desktop+cardano-mainnet://stake?POOL1=3.14159&POOL2=2.71828">Split between our 2 related pools</a>
-<a href="desktop+cardano-mainnet://stake?COSD">Choose our least saturated pool</a>
-```
-
-Wrong examples:
-```
-<a href="desktop+cardano://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd?network=testnet">Buy/Send/Donate</a>
-<a href="desktop+cardano-testnet://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd?network=mainnet">Buy/Send/Donate</a>
-<a href="desktop+cardano-mainnet://stake?POOL1=3.14159&POOL2=2.71828&network=testnet">Split between our 2 related pools</a>
+<a href="web+cardano://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd?unix-timestamp-timeout=1647896861">Buy/Send/Donate</a>
+<a href="web+cardano-testnet://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd?unix-timestamp-timeout=1647896861">Buy/Send/Donate (Testnet)</a>
+<a href="web+cardano-flight://Ae2tdPwUPEZ76BjmWDTS7poTekAvNqBjgfthF92pSLSDVpRVnLP7meaFhVd?unix-timestamp-timeout=1647896861">Buy/Send/Donate (Mainnet and using Daedalus Flight)</a>
 ```
 
 ## Considerations
 
-Since Daedalus is shiped for a single network separately (mainnet and testnet) and can be installed alongside a fligt version (mainnet), the url needs to specify what version is being refered.
-
-# ⚠️ Open questions
-1. Most of the DEX relies on timing due to price volatility. If the user is only using a secure full-node wallet, which is not yet fully synchronized, how is a timeout handled?
-2. Similar to 1. what if the starting of the wallet takes 2-10 mins? Is that still acceptable for a DEX? Should a timeout parameter be defined in the URL so that the user DOES NOT make the transaction if the dApp runs in a timeout?
+- Since Daedalus is shiped for a single network separately (mainnet and testnet) and can be installed alongside a fligt version (mainnet), the url needs to specify what version is being refered.
+- Adding the unix-timestamp-timeout parameter, in other words: the time in (Unix format) in the future where the transaction is no longer valid. This will allow using a desktop wallet that might take minutes to start or not be yet synchronized will avoid the user to send unnecessarily a transaction.
