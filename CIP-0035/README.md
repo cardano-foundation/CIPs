@@ -34,5 +34,5 @@ Correct examples:
 
 ## Considerations
 
-- Since Daedalus is shiped for a single network separately (mainnet and testnet) and can be installed alongside a fligt version (mainnet), the url needs to specify what version is being refered.
-- Adding the unix-timestamp-timeout parameter, in other words: the time in (Unix format) in the future where the transaction is no longer valid. This will allow using a desktop wallet that might take minutes to start or not be yet synchronized will avoid the user to send unnecessarily a transaction.
+- Since Daedalus is shipped for a single network separately (mainnet and testnet), and can be installed alongside a flight version (mainnet), the URL needs to specify which version is being referred.
+- Adding the unix-timestamp-timeout parameter, in other words: the time in (Unix format) in the future where the transaction is no longer valid. This will allow using a desktop wallet that might take minutes to start, or not yet be synchronized, will prevent the user from unnecessarily sending a transaction.
