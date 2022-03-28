@@ -58,7 +58,7 @@ We considered the possibility of a man-in-the-middle attack, where the adversary
 
 ## Backward Compatibility
 
-For ledger transactions before this CIP is implemented, the underlying CBOR data structure only changes semantically, and the difference between input order at submission and at script evaluation is irrelevant for the ledger. However, because scripts could rely on pattern matching by position, a new Plutus version is advised.
+For ledger transactions before this CIP is implemented, the underlying CBOR data structure only changes semantically, and the difference between input order at submission and at script evaluation is irrelevant for the ledger. However, because scripts could rely on pattern matching by position, a new Plutus version is required.
 
 ## Test Cases
 
