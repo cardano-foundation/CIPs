@@ -61,6 +61,8 @@ The number of the following transaction elements individually must not exceed `U
 - pool owners in a pool registration certificate
 - pool relays in a pool registration certificate
 - withdrawals in transaction body
+- collateral inputs in transaction body
+- required signers in transaction body
 - the total number of witnesses
 
 **Optional empty lists and maps**
@@ -69,7 +71,7 @@ Unless mentioned otherwise in this CIP, optional empty lists and maps must not b
 
 **Outputs**
 
-Outputs containing no multi-asset tokens must be serialized as a simple tuple, i.e. `[address, coin]` instead of `[address, [coin, {}]]`.
+Outputs containing no multi-asset tokens must be serialized as a simple tuple, i.e. `[address, coin, ?datum_hash]` instead of `[address, [coin, {}], ?datum_hash]`. In addition, including `datum_hash` is only allowed if the payment part of the output's `address` is a script hash.
 
 **Multiassets**
 
@@ -83,13 +85,27 @@ If a transaction contains a pool registration certificate, then it must not cont
 
 - any other certificate;
 - any withdrawal;
-- mint entry.
+- mint entry;
+- any output containing datum hash;
+- script data hash;
+- any collateral input;
+- any required signer.
 
-It is allowed to arbitrarily combine other supported certificate types, but all the certificates included in a transaction must have the same type of stake credential i.e. either 0 - `addr_keyhash` or 1 - `scripthash`. The stake credential type must also be consistent with the type used for withdrawals.
+It is allowed to arbitrarily combine other supported certificate types.
+
+Certificate stake credentials must be:
+- only key hashes in ordinary (single-sig) transactions;
+- only script hashes in multi-sig transactions.
+(There is no restriction for transactions involving Plutus.)
 
 **Withdrawals**
 
-Since withdrawals are represented as a map of reward accounts, withdrawals also need to be sorted in accordance with the specified canonical CBOR format. A transaction must not contain duplicate withdrawals. All withdrawals included in a transaction must have the same type of stake credential i.e. either 0 - `addr_keyhash` or 1 - `scripthash`. The stake credential type must also be consistent with the type used for certificates.
+Since withdrawals are represented as a map of reward accounts, withdrawals also need to be sorted in accordance with the specified canonical CBOR format. A transaction must not contain duplicate withdrawals.
+
+Withdrawal reward accounts must be:
+- only based on key hashes in ordinary (single-sig) transactions;
+- only based on script hashes in multi-sig transactions.
+(There is no restriction for transactions involving Plutus.)
 
 **Auxiliary data**
 
