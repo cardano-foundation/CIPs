@@ -38,14 +38,14 @@ In this document, we will use the term 'delegations' to refer to all these possi
 
 ### Registration metadata format
 
-A Catalyst registration transaction is a regular Cardano transaction with a specific transaction metadata associated with it.
+A registration transaction is a regular Cardano transaction with a specific transaction metadata associated with it.
 
 Notably, there should be five entries inside the metadata map:
  - A non-empty array of delegations, as described below;
  - A stake address for the network that this transaction is submitted to (to point to the Ada that is being delegated);
  - A Shelley address discriminated for the same network  this transaction is submitted to to receive rewards.
  - A nonce that identifies that most recent delegation
- - A number that indicates the purpose of the vote
+ - A non-negative integer that indicates the purpose of the vote. This is an optional field to allow for compatibility with CIP-15. For now, we define 0 as the value to use for Catalyst, and leave others for future use. A new registration should not invalidate a previous one with a different voting purpose value.
 
 ### Delegation format
 
@@ -96,7 +96,7 @@ Voting registration example:
   3: "0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee47b60edc7772855324c85033c638364214cbfc6627889f81c4",
   // nonce
   4: 5479467
-  // voting_purpose: 0 = Catalyst, 1 = Council Election
+  // voting_purpose: 0 = Catalyst
   5: 0
 }
 ```
