@@ -128,7 +128,7 @@ Plugging in the values,
 **Example 2**: **ecosystem is over-pledged**.  
 Here, we will provide the derivation for the penalty factor (<span style="color: #008000">**Δ**</span>) and we will prove that it leads to a close system, _i.e._, the total saturation limit is always equal to the circulation supply no matter how under-pledged or over-pledged the ecosystem is. The penalty factor (<span style="color: #008000">**Δ**</span>) has the following characteristics:
 * <span style="color: #008000">**Δ**</span> = 1, when the ecosystem is either under-pledged or at equilibrium. Under this condition, the excess saturation limit of over-pledged pools are unaffected. In essence, they are not yet "returning" any of the borrowed excess.
-* <span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged, and **_p<sub>a</sub>_** of the under-pledged pools approaches  **_p<sub>opt</sub>_**. Under this condition, the excess saturation limit of over-pledged pools also approaches zero. In essence, they are "returning" the borrowed excess.  
+* <span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged and under-pledged pools keep pledging. Under this condition, the excess saturation limit of over-pledged pools also approaches zero. In essence, they are "returning" the borrowed excess.  
   
 We first calculate the total saturation limit (**_α<sub>total</sub>_**) excluding:
   - <span style="background-color:yellow; color:black">saturation limit from over-pledges.</span>
@@ -223,15 +223,10 @@ Because the Gibson proposal does not gurantee that the total saturation limit of
 * **The Gibson proposal may be less effective in dealing with abrupt changes in the staking parameters.**  
 Since the Gibson proposal rely on parameters that can only be changed when there is network consensus, such design is less robust against abrupt changes in the ecosystem, _e.g._, when there is a need for the number of validators to scale up with demand or when the number of pools declines abruptly due to extreme events. <span style="background-color:yellow; color:black">Our proposal scales up and down without further intervention because the protocol is governed by equations.</span>
 
-* **The CIP effectively decreases the _k-effective_ parameter.**  
+* **The CIP effectively decreases the **_k-effective_** parameter.**  
 The **_k-effective_** is a parameter that attempts to measure decentralization, and is defined by the equation shown as follows:
-<br>
-<br>
-![k-effective](https://drive.google.com/uc?export=view&id=1A_foc_uYzkbSG3lJlcQt5F2IMh5T-e1z)
-<br>
-<br>
-The parameter **_k-effective_** should increase as decentralization increases. However, recently it had plateaued between the values 40 to 43. The strategy described in this CIP effectively increases this parameter as the number of pools increases due to the fact that the saturation limit (**_α_**) defined in this proposal is inversely propotional to the number of pools **_k_**. As the number of pools increases, saturation limit decreases. This decrease, in turn, should decrease the ratio of group stake to total stake in Equation 12 which then leads to the increase of **_k-effective_**.
-  <br>
+![k-effective](https://drive.google.com/uc?export=view&id=1A_foc_uYzkbSG3lJlcQt5F2IMh5T-e1z)<br>
+The parameter **_k-effective_** should increase as decentralization increases. However, recently it had plateaued between the values 40 to 43. The strategy described in this CIP effectively increases this parameter as the number of pools increases due to the fact that the saturation limit (**_α_**) defined in this proposal is inversely propotional to the number of pools **_k_**. As the number of pools increases, saturation limit decreases. This decrease, in turn, should decrease the ratio of group stake to total stake in Equation 12 which then leads to the increase of **_k-effective_**.<br>
 # **Copyright**
-  This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
   
