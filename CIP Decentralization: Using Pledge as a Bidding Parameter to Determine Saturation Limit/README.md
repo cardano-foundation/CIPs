@@ -140,7 +140,7 @@ where **_p<sub>ai</sub>_** is the actual pledge of pool _i_. Since total saturat
   
 ![Equation6](https://drive.google.com/uc?export=view&id=1JcYX5u499lXnhN9Ha7WSeN49d1WcSbtz)  
   
-<span style="background-color:yellow; color:black">It is important to note that for the calculation of **_α<sub>total</sub>_**, we must only use **_p<sub>a</sub>_**≤**_p<sub>opt</sub>_** for all pools even for over-pledging pools</span>. Realistically, some pools will be over-pledged and their total excess saturation limit (**_α<sub>ovp</sub>_**) may be added as follows:  
+Realistically, some pools will be over-pledged and their total excess saturation limit (**_α<sub>ovp</sub>_**) may be added as follows:  
   
 ![Equation7](https://drive.google.com/uc?export=view&id=1Yj-_PGbl1WcWttDMX1acEex0e7ZFHWDM)  
   
@@ -159,13 +159,12 @@ where _j_ is any over-pledging pool. Plugging in Equation 9 into Equation 8, we 
 Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simplifying, we have:  
   
 ![Equation10](https://drive.google.com/uc?export=view&id=1lQYewlKuCotMs0QQ8I3xJcc4rfddyHk3)  
-  
-<span style="background-color:yellow; color:black">It is very important to note that at **_α<sub>unc</sub> ≤ 0_**, its value must be zero, otherwise a close system cannot be guaranteed.</span>  
+    
   
 **Now, we will prove that Equation 11 guarantees a close system, _i.e._,**
 
 <span style="color: #008000">**Δ**</span> = 1, when the ecosystem is either under-pledged or at equilibrium.  
-<span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged, and **_p<sub>a</sub>_** of the under-pledged pools approaches **_p<sub>opt</sub>_**.<br> 
+<span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged, and under-pledged pools continue to pledge.<br> 
 <br>
 
 **Case 1**: Ecosystem is under-pledged and over-pledging pools keep over-pledging to borrow additional saturation limit: the denominator is going to increase (<span style="color:red">red</span> arrow) while the numerator is going to increase by the same magnitude through a decrease (<span style="color: #0000FF">blue</span> arrow) in the unclaimed saturation limit (**_α<sub>unc</sub>_**) :  
@@ -178,11 +177,11 @@ Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simp
 ![logic2](https://drive.google.com/uc?export=view&id=1XK1F2zG1zyaLPn2sz8rrISKPFEI0_r8B)<br>
 <br>
   
-**Case 3**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and under-pledged pools keep pledging to take back the borrowed saturation limit: the total saturation limit of under-pledging pools increases (<span style="color:red">red</span> arrow) which causes a decrease in the penalty factor (<span style="color: #0000FF">blue</span> arrow). The decrease in the penalty factor, in turn, causes a decrease in an over-pledged pool’s excess saturation limit (see Equation 3). In this scenario, an over-pledged pool is simply returning the “borrowed” excess.  
+**Case 3**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and under-pledged pools keep pledging to take back the borrowed saturation limit: the total saturation limit of under-pledging pools increases (<span style="color:red">red</span> arrow) which causes a decrease in the numerator and, therefore a decrease in the penalty factor (<span style="color: #0000FF">blue</span> arrow). The decrease in the penalty factor, in turn, causes a decrease in an over-pledged pool’s excess saturation limit (see Equation 3). In this scenario, an over-pledged pool is simply returning the “borrowed” excess.  
   
 ![logic2](https://drive.google.com/uc?export=view&id=182u2H0u72eDxSX04vjulPkeXWzjEdZmW)<br>
 <br>
-**Case 4**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and over-pledged pools keep over-pledging even when there’s no longer any saturation limit left for them to borrow: the denominator increases which causes the penalty factor to decrease. This, in turn, decreases the excess saturation limit of an over-pledge pool but leave the saturation limit of all under-pledged pools unaffected. This situation will cause the total saturation limit to go below the circulation supply (**_α<sub>total</sub> < φ_**) even if the ecosystem is over-pledged. This decrease should be sufficient to prevent over-pledged pools from continuing to over-pledge when **_α<sub>unc</sub> = 0_**. However, such weakness may possiby be exploited. Hence, when **_α<sub>unc</sub> = 0_**, any continuing pledge from an over-pledged pool should rejected.  
+**Case 4**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and over-pledged pools keep over-pledging even when there’s no longer any saturation limit left for them to borrow: the denominator increases which causes the penalty factor to decrease. This, in turn, decreases the excess saturation limit of an over-pledge pool but leave the saturation limit of all under-pledged pools unaffected. This situation will cause the total saturation limit to go below the circulation supply (**_α<sub>total</sub> < φ_**) even if the ecosystem is over-pledged. This decrease should be sufficient to prevent over-pledged pools from continuing to over-pledge when **_α<sub>unc</sub> = 0_**. However, such weakness may possiby be exploited. Hence, when **_α<sub>unc</sub> = 0_**, any continuing pledge from an over-pledged pool should be rejected.  
   
 ![logic2](https://drive.google.com/uc?export=view&id=1j45ZEEhqwDDJoXcVxs4p1NqixegXGbmM)  
   
@@ -194,13 +193,13 @@ Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simp
 **_n_** = 15 and **_k_** = 500,  
 **_p<sub>opt</sub>_** = ~ 774,763 ADA
 
-A Sybil attack requires 501 nodes, number of pools (**_k_**) totals 1001 (500 + 501), and optimal pledge (**_p<sub>opt</sub>_**) decreases to 148, 011 ADA. Therefore, an attack requires 501 pools that need to be fully saturated (16.5M in stake) and a total of ~74M ADA (501*148,011) in pledge.
+A Sybil attack requires 501 nodes which makes the number of pools (**_k_**) totals to 1001 (500 + 501) and optimal pledge (**_p<sub>opt</sub>_**) decreases to 148, 011 ADA. Therefore, an attack requires 501 pools that need to be fully saturated (16.5M in stake) and a total of ~74M ADA (501*148,011) in pledge.
 
 **scenario 2** (large number of pools):  
 **_n_** = 15 and **_k_** = 3119 (epoch 321),  
 **_p<sub>opt</sub>_** = 47,205 ADA
 
-A Sybil attack requires 3120 nodes, number of pools (**_k_**) totals 6239 (3119 + 3120), and optimal pledge (**_p<sub>opt</sub>_**) decreases to 35,992 ADA. Therefore, an attack requires 3120 pools that need to be fully saturated (16.5M in stake) and a total of ~112M ADA (3120*35,992) in pledge.
+A Sybil attack requires 3120 nodes which makes the number of pools (**_k_**) totals to 6239 (3119 + 3120) and optimal pledge (**_p<sub>opt</sub>_**) decreases to 35,992 ADA. Therefore, an attack requires 3120 pools that need to be fully saturated (16.5M in stake) and a total of ~112M ADA (3120*35,992) in pledge.
 
 # **Rationale**
 The steady centralization of stake concentrated to only a few MPOs primarily arises from the substantial saturation limit (68M) allocated for each pool. This large allocation allows moneyed MPOs to gain substantial delegation simply by setting up multiple pools and offering lucrative rewards. If left unchanged, the current state of affairs deters would-be SPOs from setting up pools and discourages current SPOs from continuing to operate because, for a significant number of them, the cost/reward is economically disadvantageous. This only leads to further centralization.
@@ -223,6 +222,16 @@ Because the Gibson proposal does not gurantee that the total saturation limit of
 
 * **The Gibson proposal may be less effective in dealing with abrupt changes in the staking parameters.**  
 Since the Gibson proposal rely on parameters that can only be changed when there is network consensus, such design is less robust against abrupt changes in the ecosystem, _e.g._, when there is a need for the number of validators to scale up with demand or when the number of pools declines abruptly due to extreme events. <span style="background-color:yellow; color:black">Our proposal scales up and down without further intervention because the protocol is governed by equations.</span>
+
+* **The CIP effectively decreases the _k-effective_ parameter.**  
+The **_k-effective_** is a parameter that attempts to measure decentralization, and is defined by the equation shown as follows:
+<br>
+<br>
+![k-effective](https://drive.google.com/uc?export=view&id=1A_foc_uYzkbSG3lJlcQt5F2IMh5T-e1z)
+<br>
+<br>
+The parameter **_k-effective_** should increase as decentralization increases. However, recently it had plateaued between the values 40 to 43. The strategy described in this CIP effectively increases this parameter as the number of pools increases due to the fact that the saturation limit (**_α_**) defined in this proposal is inversely propotional to the number of pools **_k_**. As the number of pools increases, saturation limit decreases. This decrease, in turn, should decrease the ratio of group stake to total stake in Equation 12 which then leads to the increase of **_k-effective_**.
+  <br>
 # **Copyright**
   This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
   
