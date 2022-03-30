@@ -33,7 +33,7 @@ There is no barrier to entry to set up a pool, but there exists an **optimal ple
   
 ![equation1](https://drive.google.com/uc?export=view&id=1O_gmZ9LwpVV3xs2RVNqaXLh3um3zfFKs)
 
-where **_p<sub>opt</sub>_** is the optimal pledge, **φ** is the amount of ADA in circulation (currently 33B), **_k_** is the total number of pools, and **_n_** is a variable that is determined via consensus to warrant an economically viable optimal pledge (**_p<sub>opt</sub>_**). Therefore, it appears that **_n_** is a variable that the community can vote for adjustment to increase or decrease **_p<sub>opt</sub>_**. In effect, it can be used to control the total number of pools (**_k_**) so that at some value **_n_**, the ecosystem gradually settles to some value **_k_** which the community thinks is the optimal value.  
+where **_p<sub>opt</sub>_** is the optimal pledge, **φ** is the amount of ADA in circulation (currently 33B), **_k_** is the total number of pools, and **_n_** is a variable that is determined via consensus to warrant an economically viable optimal pledge (**_p<sub>opt</sub>_**). Therefore, it appears that **_n_** is a variable that the community can vote for adjustment to increase or decrease **_p<sub>opt</sub>_**. In effect, it can be used to control the total number of pools (**_k_**) so that at some value **_n_**, the ecosystem gradually settles to some value **_k_** which the community thinks is the optimal value.
   
 If we set **_n_** =15,
 
@@ -79,7 +79,7 @@ Distribution of **_α<sub>unc</sub>_** based, yet again, on pledge will further 
   
 **_α_** = $\frac{33B}{3119}$ $e^{1 - 47,205/47,205}$ = $\frac{33B}{3119}$ = 10.6M  
   
-**Conclusion**: Epoch 321 saturation limit for pools with at least 47,205 ADA in pledge is 10.6M (at **_n_** = 15). The ratio $\frac{33B}{3119}$ guarantees that every ADA in circulation has a pool to stake to without risking oversaturation. Note that the current average stake per pool is only 7.6M, suggesting that a vast number of pools are not adequately staked. Setting the saturation limit, on average, to 10.6M would make some large pools to become oversaturated which will encourage delegators of these pools to move their stakes to small pools.  
+**Conclusion**: Epoch 321 saturation limit for pools with at least 47,205 ADA in pledge is 10.6M (at **_n_** = 15). Setting the saturation limit to 10.6M would make some large pools to become oversaturated which will encourage delegators of these pools to move their stakes to small pools. It is very important that the number of pools (**_k_**) is properly controlled by the parameter **_n_** so that **_k_** remains optimal - _i.e._, even if **_k_** is large but optimal, no pool will be devoid of blocks.
 
 **Example 2** (same variable values as in example 1 but lower **_p<sub>a</sub>_**).
 * **_k_** = 3119 (epoch 321)
