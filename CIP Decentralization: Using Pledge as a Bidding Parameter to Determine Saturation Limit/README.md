@@ -8,7 +8,7 @@ Type: Process
 Created: 2022-02-28  
 ---
 # **Abstract**
-With the current saturation limit set at 68 M per pool and with 3119 pools (epoch 321), the current staking mechanism can accommodate a total stake of 212.1 B ADA (68M*3119). This amount of ADA is 543% in excess of the current circulating supply of 33B. Because of this substantial saturation limit, one can set up a few pools and offer lucrative rewards to capture a sizeable amount of stake (_e.g._, Binance APY is 17.7%). This leads to centralization and weakening of the ecosystem against Sybil attack. Here, we describe a mechanism that uses pledge as a stake-bidding parameter under a close system, _i.e._, the total saturation limit is always equal to the total ADA in circulation. The proposed mechanism ensures that no single entity can get away with excessive stake without putting up a hefty pledge and expending for computing and related infrastructure. This expense, likewise, confers the ecosystem a very high resistance against Sybil attack.  
+With the current saturation limit set at 68 M per pool and with 3119 pools (epoch 321), the current staking mechanism can accommodate a total stake of 212.1 B ADA (68M*3119). This amount of ADA is 543% in excess of the current circulating supply of 33B. Because of this substantial saturation limit, one can set up a few pools and offer lucrative rewards to capture a sizeable amount of stake (_e.g._, Binance APY is 17.7%). This leads to centralization and weakening of the ecosystem against Sybil attack. Here, we describe a mechanism that uses pledge as a stake-bidding parameter under a close system, _i.e._, the total saturation limit is always equal to the total ADA in circulation. The proposed mechanism ensures that no single entity can get away with excessive stake without putting up a hefty pledge and expending for computing and related infrastructure. This expense, likewise, confers the ecosystem a very high resistance against Sybil attack. For epoch 321, the cost of attack is 52 M ADA in plege from at least 1108 adversarial pools. We dare say that the cost to conduct a Sybil attack under the current protocol is 0 pledge in ADA from at least 177 adversarial pools only. These pools can be readily saturated using lucrative but fake ISPOs. We, therefore, posit that the current CIP is not only fair for all but also enhances decentralization and better security than the current protocol. 
   
   
 # **Motivation**
@@ -20,7 +20,7 @@ This proposal attempts to solve the ongoing stake centralization by allocating p
 There is no barrier to entry to set up a pool, but there exists an **optimal pledge** which is used as a yardstick to determine pool saturation limit in proportion to pledge.
 * Individual pool saturation limit decreases exponentially when **pool pledge < optimal pledge**.
 * Individual pool saturation limit increases **only incrementally** when **pool pledge > optimal pledge**.
-* The ecosystem is **under-pledged** when the **total saturation limit < circulating supply**. Under this condition, pools can over-pledge to “borrow” additional saturation limit from the under-pledged pools. If there is still remaining saturation limit even after some pools have over-pledged, the unclaimed saturation limit will be distributed in accordance with Equation 1. However, the distributed unclaimed limit can still be claimed by any pool by continuing to pledge.
+* The ecosystem is **under-pledged** when the **total saturation limit < circulating supply**. Under this condition, pools can over-pledge to “borrow” additional saturation limit unclaimed by the under-pledged pools. If there is still remaining saturation limit even after some pools have over-pledged, the unclaimed saturation limit will be distributed in accordance with Equation 1. However, the distributed unclaimed limit can still be claimed by any pool by continuing to pledge.
 * The ecosystem is in **equilibrium** when the **total saturation limit = circulating supply**. Under this condition, only the under-pledged pools can continue to pledge to take back the borrowed saturation limit allocated for them. The over-pledge pools’ excess saturation limit, likewise, will continue to decrease until all excess had been returned. This and the proposition from the previous bullet point ensures that:
   - a **close system** is maintained, _i.e._, the total saturation limit is always equal to the total ADA in circulation regardless of the pledge status of the ecosystem, _i.e._, under-pledged, fully pledged, or over-pledged.
   - no single pool has a saturation limit that dwarfs other pools’ limits, encouraging decentralization.
@@ -50,7 +50,7 @@ If we set **_n_** =15,
 * **_p<sub>opt</sub>_**  = 27,440 ADA per pool  
   
 
-**Conclusion**: **_p<sub>opt</sub>_** becomes cheaper as the total number of pools (**_k_**) increases, but more expensive when the total number of pools decreases.<br>
+**Conclusion**: **_p<sub>opt</sub>_** becomes cheaper as the total number of pools (**_k_**) increases, but more expensive as the total number of pools decreases. Setting **_n_** = 15 is only for illustration purposes. The Cardano scientists and engineers may want to place a more restrictive value of this parameter. For example, at **_n_** = 14 and **_k_** = 3119, **_p<sub>opt</sub>_** = 124k ADA.<br>
 <br>
 ### **_Calculating Saturation Limit (α)_**
 
@@ -68,7 +68,7 @@ The first term of Equation 2 allocates saturation limit based on pledge, and ens
   
  It is ideal that **_α<sub>unc</sub>_** = 0, but if **_α<sub>unc</sub>_** > 0, the second term of Equation 2 ensures its distribution. The distributed **_α<sub>unc</sub>_**, however, can still be claimed by any pool by increasing its pledge.  
   
-Distribution of **_α<sub>unc</sub>_** based, yet again, on pledge will further disadvantage those who are under-pledged. Therefore, we use accumulated time of operation,**_T<sub>a</sub>_**, as a parameter for the distribution of **_α<sub>unc</sub>_** which, in turn, ensures that the unclaimed saturation limit is distributed into pools that had been securing the ecosystem for the longest time. This manner of distribution prevents any would-be attacker, likely someone who had just registered a pool (or pools), from getting a significant portion of **_α<sub>unc</sub>_**. This mechanism is very important when the number of pools (**_k_**) suddenly decreased to a very low number, making **_p<sub>opt</sub>_** very expensive and leading to significant under-pledging. Under this condition, pools that are under-pledged but had been in operation for a significant amount of time will be rewarded with a significant portion of **_α<sub>unc</sub>_**.
+Distribution of **_α<sub>unc</sub>_** based, yet again, on pledge will further disadvantage those who are under-pledged. Therefore, we use accumulated time of operation,**_T<sub>a</sub>_**, as a parameter for the distribution of **_α<sub>unc</sub>_** which, in turn, ensures that the unclaimed saturation limit is distributed into pools that had been securing the ecosystem for the longest time. This manner of distribution prevents any would-be attacker, likely someone who had just registered a pool (or pools), from getting a significant portion of **_α<sub>unc</sub>_**. This mechanism is very important when the number of pools (**_k_**) is suddenly decreased to a very low number, making **_p<sub>opt</sub>_** very expensive and leading to significant under-pledging. Under this condition, pools that are under-pledged but had been in operation for a significant amount of time will be rewarded with a significant portion of **_α<sub>unc</sub>_**.
 
 **Example 1**
 * **_k_** = 3119 (epoch 321)
@@ -91,7 +91,7 @@ Distribution of **_α<sub>unc</sub>_** based, yet again, on pledge will further 
 **_α_** = $\frac{33B}{3119}$ $e^{1 - 47,205/30000}$ = 6.0 M  
   
 **Conclusion**: 
-Saturation limit decreases exponentially when **_p<sub>a</sub>_**<**_p<sub>opt</sub>_**, encouraging pools to achieve **_p<sub>opt</sub>_**. In an under-pledged ecosystem, pools can over-pledge to borrow saturation limit from under-pledged pools (see next case).<br>
+Saturation limit decreases exponentially when **_p<sub>a</sub>_**<**_p<sub>opt</sub>_**, encouraging pools to achieve **_p<sub>opt</sub>_**. In an under-pledged ecosystem, pools can over-pledge to borrow saturation limit unclaimed by the under-pledged pools (see next case).<br>
 <br>
   
 **case 2: _p<sub>a</sub>_>_p<sub>opt</sub>_ (<span style="background-color: yellow; color: black">**the equation is quite complex so please bear with me**</span>)**.
@@ -104,7 +104,7 @@ where:
 * **$\frac{(x-|x|)}{2}$** returns 0 when x is positive, otherwise it returns the value of x.
 * The first term in equation 3 (<span style="color: #0000FF">**blue**</span> text) is the guaranteed saturation limit since the pool exceeded **_p<sub>opt</sub>_**.
 * The second term in equation 3 (<span style="color: #FF0000">**red**</span> + <span style="color: #008000">**green**</span> text) calculates saturation limit in excess of the guaranteed limit.
-* The second factor of the second term in equation 3 (<span style="color: #008000">**green**</span> text), is the penalty factor that is accounted when the ecosystem is over-pledged. This factor decreases when under-pledge pools continue to increase their pledges. The decrease in the penalty factor, in turn, leads to a decrease in the excess saturation limit (<span style="color: #FF0000">**red**</span> text) of the over-pledged pools. Using this equation, an over-pledged pool "return" the borrowed saturation limit even without further intervention.  
+* The second factor of the second term in equation 3 (<span style="color: #008000">**green**</span> text), is the penalty factor that is accounted when the ecosystem is over-pledged. This factor decreases as under-pledge pools continue to increase their pledges. The decrease in the penalty factor, in turn, leads to a decrease in the excess saturation limit (<span style="color: #FF0000">**red**</span> text) of an over-pledged pool. The penalty factor assures that over-pledged pools "return" the borrowed saturation limit even without further intervention.  
   
   
 **Example 1**: **ecosystem is not over-pledged**.
@@ -128,7 +128,7 @@ Plugging in the values,
 **Example 2**: **ecosystem is over-pledged**.  
 Here, we will provide the derivation for the penalty factor (<span style="color: #008000">**Δ**</span>) and we will prove that it leads to a close system, _i.e._, the total saturation limit is always equal to the circulation supply no matter how under-pledged or over-pledged the ecosystem is. The penalty factor (<span style="color: #008000">**Δ**</span>) has the following characteristics:
 * <span style="color: #008000">**Δ**</span> = 1, when the ecosystem is either under-pledged or at equilibrium. Under this condition, the excess saturation limit of over-pledged pools are unaffected. In essence, they are not yet "returning" any of the borrowed excess.
-* <span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged and under-pledged pools keep pledging. Under this condition, the excess saturation limit of over-pledged pools also approaches zero. In essence, they are "returning" the borrowed excess.  
+* <span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged and under-pledged pools keep pledging. Under this condition, the excess saturation limit of over-pledged pools decreases and approaches zero. In essence, they are "returning" the borrowed excess.  
   
 We first calculate the total saturation limit (**_α<sub>total</sub>_**) excluding:
   - <span style="background-color:yellow; color:black">saturation limit from over-pledges.</span>
@@ -177,7 +177,7 @@ Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simp
 ![logic2](https://drive.google.com/uc?export=view&id=1XK1F2zG1zyaLPn2sz8rrISKPFEI0_r8B)<br>
 <br>
   
-**Case 3**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and under-pledged pools keep pledging to take back the borrowed saturation limit: the total saturation limit of under-pledging pools increases (<span style="color:red">red</span> arrow) which causes a decrease in the numerator and, therefore a decrease in the penalty factor (<span style="color: #0000FF">blue</span> arrow). The decrease in the penalty factor, in turn, causes a decrease in an over-pledged pool’s excess saturation limit (see Equation 3). In this scenario, an over-pledged pool is simply returning the “borrowed” excess.  
+**Case 3**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and under-pledged pools keep pledging to take back the borrowed saturation limit: the total saturation limit of under-pledging pools increases (<span style="color:red">red</span> arrow) which causes a decrease in the numerator and, therefore, a decrease in the penalty factor (<span style="color: #0000FF">blue</span> arrow). The decrease in the penalty factor, in turn, causes a decrease in an over-pledged pool’s excess saturation limit (see Equation 3). In this scenario, an over-pledged pool is simply returning the “borrowed” excess.  
   
 ![logic2](https://drive.google.com/uc?export=view&id=182u2H0u72eDxSX04vjulPkeXWzjEdZmW)<br>
 <br>
@@ -187,19 +187,15 @@ Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simp
   
 ## **_Sybil Attack_**
 
-**Simplifying scenario: ecosystem average pledge = optimal pledge and 33B ADA staked.**
+We can calculate the cost to conduct a Sybil attack using the following equation:
 
-**scenario 1** (small number of pools):  
-**_n_** = 15 and **_k_** = 500,  
-**_p<sub>opt</sub>_** = ~ 774,763 ADA
+![cost](https://drive.google.com/uc?export=view&id=1cqZJ7y9oBi1bA6rOYWzlseUAIyOH3avg)
 
-A Sybil attack requires 501 nodes which makes the number of pools (**_k_**) totals to 1001 (500 + 501) and optimal pledge (**_p<sub>opt</sub>_**) decreases to 148, 011 ADA. Therefore, an attack requires 501 pools that need to be fully saturated (16.5M in stake) and a total of ~74M ADA (501*148,011) in pledge.
+We can give the best scenario for the attacker or group of attackers by assuming that their pools are fully saturated. We can then plot the cost of attack as a function of the number of pools (**_k_**) and considering a scenario when some pools turn adversarial (**_k<sub>adversarial</sub>_**).
 
-**scenario 2** (large number of pools):  
-**_n_** = 15 and **_k_** = 3119 (epoch 321),  
-**_p<sub>opt</sub>_** = 47,205 ADA
+![costfuncpools](https://drive.google.com/uc?export=view&id=1lW93crB3YIFeOd4Y8iG0fxkmKHZKlrgr)
 
-A Sybil attack requires 3120 nodes which makes the number of pools (**_k_**) totals to 6239 (3119 + 3120) and optimal pledge (**_p<sub>opt</sub>_**) decreases to 35,992 ADA. Therefore, an attack requires 3120 pools that need to be fully saturated (16.5M in stake) and a total of ~112M ADA (3120*35,992) in pledge.
+Notice the existence of a minimum in the plot at around 1600 pools. The cost of attack at this minimum is 45 M ADA in pledge and at least 600 adversarial pools. The cost increases as the number of pools decreases or increases from this minimum. For epoch 321, the cost of attack is 52 M ADA in pledge and at least 1108 adversarial pools. We dare say that the cost of attack under the current protocol is 0 ADA in pledge and only 177 adversarial pools, and these pools can easily get saturated using fake ISPOs.
 
 ## **_New Reward Structure_**
 This CIP describes a protocol that attempts to enhance decentralization but is vastly different from the current protocol that uses a reward structure which is a function of stake, pledge, and saturation limit. The current reward structure has known issues (described below) that is actually antagonistic to decentralization. While the current protocol is formulated based on game theory, the would-be protocol from this CIP is not. The reason is because there are only two decisions that a pool need to choose: to pledge or not to pledge, and these decisions are not influenced by the decision of any other pool. Here, we propose a simple reward structure (in general terms) that is fair for all.
@@ -212,10 +208,10 @@ Because we no longer need the current reward structure and it is expected that p
 where 
 * **_r<sub>d</sub>_** is the delegator reward
 * **_δ_** is the pool delegation
-* **_α_** is the saturation limit
+* **_α_** is the pool saturation limit
 * the factor 10 in the exponent ensures that the reward drops by ~60% when pool delegation exceeds by 10% of the saturation limit.
 
-The mechanism described above further enhance decentralization. In the current protocol, delegators are biased towards nearly saturated pools because these pools generate better rewards just because of how the reward in the current protocol is structured. This bias causes centralization of stake towards pools that are at near saturation. In this CIP, such bias is eliminated because it no longer matter which pool a delegator is staked - all are getting the same reward. Finally, the delegator reward should increase as Cardano adoption increases. This increase in the reward is expected to encourage more and more delegation which will enhance the security of the ecosystem. There may come a time when Cardano is able to increase the delegator reward to a point when it becomes more profitable to delegate ADA than to use it as a medium of exchange. Thereby, reducing the amount of liquid ADA in the ecosystem. This mechanism is akin to coin burning but in a rather more meaningful manner.
+The mechanism described above further enhance decentralization. In the current protocol, delegators are biased towards nearly saturated pools because these pools generate better rewards just because of how the reward in the current protocol is structured. This bias causes centralization of stake towards pools that are at near saturation. In this CIP, such bias is eliminated because it no longer matter which pool a delegator is staked - all are getting the same reward. Finally, the delegator reward should increase as Cardano adoption increases. This increase in the reward is expected to encourage more and more delegation which will enhance the security of the ecosystem. There may come a time when Cardano is able to increase the delegator reward to a point when it becomes more profitable to delegate ADA than to use it as a medium of exchange. Thereby, reducing the amount of liquid ADA in the ecosystem. This mechanism is akin to coin burning but in a rather more meaningful manner. ADA is then use as a security coin, and the medium of exchange will shift to stable coins.
 
 # **Rationale**
 The steady centralization of stake concentrated to only a few MPOs primarily arises from the substantial saturation limit (68M) allocated for each pool. This large allocation allows moneyed MPOs to gain substantial delegation simply by setting up multiple pools and offering lucrative rewards. If left unchanged, the current state of affairs deters would-be SPOs from setting up pools and discourages current SPOs from continuing to operate because, for a significant number of them, the cost/reward is economically disadvantageous. This only leads to further centralization.
@@ -229,10 +225,10 @@ To illustrate this argument, let's detemine how the Gibson proposal would affect
   **_p<sub>opt</sub>_** = 33B*$e^{1-15*(1+erf(-100/(3119-60+pools)))}$  **_α_** = $\frac{33B}{3119-60+pools}$  
   **_pools_** = 2.8B/(**_α_**+**_p<sub>opt</sub>_**)
   
-  We have three equations and three unknowns which resolves to **_pools_** = 282 and total pledge to 12.8M (282 pools * 45.5K in pledge)  
+  We have three equations and three unknowns which resolves to **_pools_** = 282 and total pledge to 12.8M (282 pools * 45.5K in pledge). These numbers will increase as the number of pools increases.
   
 * **The Gibson proposal may disenfranchise a significant portion of ADA in circulation from getting staked at low pool number.**  
-Because the Gibson proposal does not gurantee that the total saturation limit of all pools is equal to the amount of ADA in circulation, there exists a significant risk of disenfranchising some portion of ADA in circulation from getting staked. For example, if the number of pools abruptly dropped to 500, all pools need to pledge at maximum (500,000 ADA to get 65M saturation limit) so that the ecosystem can achieve a total saturation limit that is approximately equal to the total ADA in circulation. However, all pools pledging at maximum is a very unlikely scenario, leaving some ADA disenfranchised. Risk of disenfranchisement exists even at the current number of pools. <span style="background-color:yellow; color:black">In contrast, the total saturation limit under our proposal is always equal to ADA in circulation regardless of the pledge status in the ecosystem.</span>
+Because the Gibson proposal does not gurantee that the total saturation limit of all pools is equal to the amount of ADA in circulation, there exists a significant risk of disenfranchising some portion of ADA in circulation. For example, if the number of pools abruptly drops to 500, all pools need to pledge at maximum (500,000 ADA to get 65M saturation limit) so that the ecosystem can achieve a total saturation limit that is approximately equal to the total ADA in circulation. However, all pools pledging at maximum is a very unlikely scenario, leaving some ADA disenfranchised. Risk of disenfranchisement exists even at the current number of pools. <span style="background-color:yellow; color:black">In contrast, the total saturation limit under our proposal is always equal to ADA in circulation regardless of the pledge status in the ecosystem.</span>
   
 
 * **The Gibson proposal may be less effective in dealing with abrupt changes in the staking parameters.**  
@@ -241,7 +237,7 @@ Since the Gibson proposal rely on parameters that can only be changed when there
 * **The CIP effectively decreases the **_k<sub>effective</sub>_** parameter.**  
 The **_k<sub>effective</sub>_** is a parameter that attempts to measure decentralization, and is defined by the equation shown as follows:
 ![k-effective](https://drive.google.com/uc?export=view&id=1A_foc_uYzkbSG3lJlcQt5F2IMh5T-e1z)<br>
-The parameter **_k<sub>effective</sub>_** should increase as decentralization increases. However, recently it had plateaued between the values 40 to 43. The strategy described in this CIP effectively increases this parameter as the number of pools increases due to the fact that the saturation limit (**_α_**) defined in this proposal is inversely propotional to the number of pools **_k_**. As the number of pools increases, saturation limit decreases. This decrease, in turn, should decrease the ratio of group stake to total stake in Equation 12 which then leads to the increase of **_k<sub>effective</sub>_**.<br>
+The parameter **_k<sub>effective</sub>_** should increase as decentralization increases. However, recently it had plateaued between the values 40 to 43. The strategy described in this CIP effectively increases this parameter as the number of pools increases due to the fact that the saturation limit (**_α_**) defined in this proposal is inversely propotional to the number of pools (**_k_**), _i.e._ as the number of pools increases, saturation limit decreases. This decrease, in turn, should decrease the ratio of group stake to total stake in Equation 14 which then leads to the increase of **_k<sub>effective</sub>_**.
 # **Copyright**
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
   
