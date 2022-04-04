@@ -127,6 +127,5 @@ This ensures end-users can know they are encrypting their DID for the intended S
 
 This change to SPO registration certificates would require a hard-fork due to requisite Ledger changes.
 
-
 ### SPO Retrieval of DID data
 The process described above requires the underlying SPO is able to retrieve a DID from each stake delegation transaction bound for said SPO. Thus an additional tool/service would be required, which could be developed as part of this CIP. The tool would be used to query the ledger on a set cadence, fetch the array of delegates, pull their DID from their respective transaction's metadata and process the DID.
