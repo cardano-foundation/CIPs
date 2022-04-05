@@ -8,16 +8,12 @@ $staking_pub_key /= bytes .size 32
 $ed25519_signature /= bytes .size 64
 $reward_address /= bytes
 $nonce /= uint
-$prop /= uint
-$voting_purpose /= uint
-delegation = (vote_key: $voting_pub_key, proportion: $prop)
 
 key_registration = {
-  1 : [+delegation],
+  1 : $voting_pub_key,
   2 : $staking_pub_key,
   3 : $reward_address,
   4 : $nonce,
-  5 : $voting_purpose
 }
 
 registration_signature = {
