@@ -17,7 +17,7 @@ This proposal attempts to solve the ongoing stake centralization by allocating p
     
 # **Specification**
 ## **Nonmathematical Description**
-There is no barrier to entry to set up a pool, but there exists an **optimal pledge** which is used as a yardstick to determine pool saturation limit in proportion to pledge.
+Under this CIP, there is no barrier to entry to set up a pool, but there exists an **optimal pledge** which is used as a yardstick to determine pool saturation limit in proportion to pledge.
 * Individual pool saturation limit decreases exponentially when **pool pledge < optimal pledge**.
 * Individual pool saturation limit increases **only incrementally** when **pool pledge > optimal pledge**.
 * The ecosystem is **under-pledged** when the **total saturation limit < circulating supply**. Under this condition, pools can over-pledge to “borrow” additional saturation limit unclaimed by the under-pledged pools. If there is still remaining saturation limit even after some pools have over-pledged, the unclaimed saturation limit will be distributed in accordance with Equation 1. However, the distributed unclaimed limit can still be claimed by any pool by continuing to pledge.
@@ -195,7 +195,7 @@ We can give the best scenario for the attacker or group of attackers by assuming
 
 ![costfuncpools](https://drive.google.com/uc?export=view&id=1lW93crB3YIFeOd4Y8iG0fxkmKHZKlrgr)
 
-Notice the existence of a minimum in the plot at around 1600 pools. The cost of attack at this minimum is 45 M ADA in pledge and at least 600 adversarial pools. The cost increases as the number of pools decreases or increases from this minimum. For epoch 321 at **_n_** = 15, the cost of attack is 52 M ADA in pledge and at least 1108 adversarial pools. We dare say that the cost of attack under the current protocol is 0 ADA in pledge and only 177 adversarial pools, and these pools can easily get saturated by implementing lucrative (and maybe fake) ISPOs. This mechanism of stake centralization had already been demonstrated during the Sundaeswap ISPO which involved 98 pools at near saturation.
+Notice the existence of a minimum in the plot at around 1600 pools. The cost to conduct an attack at this minimum is 45 M ADA in pledge and at least 600 adversarial pools. The cost increases as the number of pools decreases or increases from this minimum. For epoch 321 at **_n_** = 15, the cost to conduct an attack is 52 M ADA in pledge and at least 1108 adversarial pools. We dare say that the cost to conduct an attack under the current protocol is 0 ADA in pledge and only 177 adversarial pools, and these pools can easily get saturated by implementing lucrative (and maybe fake) ISPOs. This mechanism of stake centralization had already been demonstrated during the Sundaeswap ISPO which involved 98 pools at near saturation.
 
 ## **_New Reward Structure_**
 This CIP describes a protocol that attempts to enhance decentralization but is vastly different from the current protocol that uses a reward structure which is a function of stake, pledge, and saturation limit. The current reward structure has known issues (described below) that is actually antagonistic to decentralization. While the current protocol is formulated based on game theory, the would-be protocol from this CIP is not. The reason is because there are only two decisions that a pool need to choose: to pledge or not to pledge, and these decisions are not influenced by the decision of any other pool. Here, we propose a simple reward structure (in general terms) that is fair for all.
