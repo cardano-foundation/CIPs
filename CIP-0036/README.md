@@ -69,7 +69,7 @@ be introduced as described [below][future-development].
 
 Recall: Cardano uses the UTXO model so to completely associate a wallet's balance with a voting key (i.e. including enterprise addresses), we would need to associate every payment key to a voting key individually. Although there are attempts at this (see [CIP-0008]), the resulting data structure is a little excessive for on-chain metadata (which we want to keep small)
 
-Given the above, we choose to only associate staking keys with voting keys. Since most Cardano wallets only use base addresses for Shelley wallet types, in most cases this should perfectly match the user's wallet.
+Given the above, we choose to associate staking credentials with voting keys. At the moment, the only supported staking credential is a staking key. Since most Cardano wallets only use base addresses for Shelley wallet types, in most cases this should perfectly match the user's wallet.
 
 The voting power that is associated with each delegated voting key is derived from the user's total voting power
 as follows.
@@ -101,7 +101,7 @@ Voting registration example:
 }
 ```
 The entries under keys 1, 2, 3, 4 and 5 represent the Catalyst delegation array,
-the staking key on the Cardano network, the address to receive rewards,
+the staking credential on the Cardano network, the address to receive rewards,
 a nonce, and a voting purpose, respectively. A registration with these metadata will be
 considered valid if the following conditions hold:
 
@@ -119,19 +119,20 @@ considered valid if the following conditions hold:
 Delegation to the voting key `0xa6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663` will have relative weight 1 and delegation to the voting key `0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee` relative weight 3 (for a total weight of 4).
 Such a registration will assign 1/4 and 3/4 of the value in ADA to those keys respectively, with any remainder assigned to the second key.
 
-To produce the signature field, the CBOR representation of a map containing
+The registration witness depends on the type of stake credential used.
+To produce the witness field in case of a staking public key, the CBOR representation of a map containing
 a single entry with key 61284 and the registration metadata map in the
 format above is formed, designated here as `sign_data`.
 This data is signed with the staking key as follows: first, the
 blake2b-256 hash of `sign_data` is obtained. This hash is then signed
-using the Ed25519 signature algorithm. The signature metadata entry is
+using the Ed25519 signature algorithm. The witness metadata entry is
 added to the transaction under key 61285 as a CBOR map with a single entry
 that consists of the integer key 1 and signature as obtained above as the byte array value.
 
-Signature example:
+Witness example:
 ```
 61285: {
-  // signature - ED25119 signature CBOR byte array
+  // witness - ED25119 signature CBOR byte array
   1: "0x8b508822ac89bacb1f9c3a3ef0dc62fd72a0bd3849e2381b17272b68a8f52ea8240dcc855f2264db29a8512bfcd522ab69b982cb011e5f43d0154e72f505f007"
 }
 ```
@@ -149,8 +150,8 @@ See [test vector file](./test-vector.md)
 [future-development]: #future-development
 
 A future change of the Catalyst system may make use of a time-lock script to commit ADA on the mainnet for the duration of a voting period. The voter registration metadata in this method will not need an association
-with the staking key. Therefore, the `staking_pub_key` map entry
-and the `registration_signature` payload with key 61285 will no longer
+with a staking credential. Therefore, the `staking_credential` map entry
+and the `registration_witness` payload with key 61285 will no longer
 be required.
 
 ## Changelog
@@ -168,6 +169,7 @@ This has been deferred to a future revision of the protocol.
 Fund 8: 
  - renamed the `voting_key` field to `delegations` and add support for splitting voting power across multiple vote keys.
  - added the `voting_purpose` field to limit the scope of the delegations.
+ - rename the `staking_pub_key` field to `stake_credential` and `registration_signature` to `registration_witness` to allow for future credentials additions.
 
 ## Copyright
 
