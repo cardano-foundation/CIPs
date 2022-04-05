@@ -1,7 +1,7 @@
 ---
 CIP: 36
 Title: Catalyst/Voltaire Registration Transaction Metadata Format (Updated)
-Authors: Sebastien Guillemot <sebastien@emurgo.io>, Rinor Hoxha <rinor.hoxha@iohk.io>, Mikhail Zabaluev <mikhail.zabaluev@iohk.io>, Giacomo Pasini <giacomo.pasini@iohk.io>, Kevin Hammond <kevin.hammond@iohk.io>
+Authors: Giacomo Pasini <giacomo.pasini@iohk.io>, Kevin Hammond <kevin.hammond@iohk.io>, Mark Stopka <mark.stopka@perlur.cloud>
 Comments-URI: https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
 Status: Draft
 Type: Standards
