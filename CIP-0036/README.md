@@ -53,8 +53,7 @@ A delegation assigns (a portion of) the ADA controlled by one or more UTxOs on m
 
 Each delegation therefore contains:
   - a voting key: simply an ED25519 public key. This is the spending credential in the sidechain that will receive voting power from this delegation. For direct voting it's necessary to have the corresponding private key to cast votes in the sidechain. How this key is created is up to the wallet.
-  - the weight that is associated with this key: this is an unsigned integer (CBOR major type 0) that represents the relative weight of this delegation over the total weight of all delegations in the same registration transaction.
-  The weight may range from 0 to 2^32-1.  Any greater value is capped to 2^32-1.
+  - the weight that is associated with this key: this is a 4-byte unsigned integer (CBOR major type 0, The weight may range from 0 to 2^32-1) that represents the relative weight of this delegation over the total weight of all delegations in the same registration transaction.
 
 ### Voting key derivation path
 
