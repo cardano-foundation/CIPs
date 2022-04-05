@@ -56,6 +56,11 @@ Each delegation therefore contains:
   - the weight that is associated with this key: this is an unsigned integer (CBOR major type 0) that represents the relative weight of this delegation over the total weight of all delegations in the same registration transaction.
   The weight may range from 0 to 2^32-1.  Any greater value is capped to 2^32-1.
 
+### Voting key derivation path
+
+To avoid linking voting keys directly with Cardano spending keys, the voting key derivation path must start with a specific segment:
+
+`m / 1694' / 1815' / account' / chain / address_index`
 
 ### Associating voting power with a voting key
 
