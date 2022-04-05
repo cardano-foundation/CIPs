@@ -6,7 +6,7 @@ Comments-URI: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentra
 Status: Draft
 Type: Standards
 Created: 2022-04-04
-License: 
+License: CC-BY-4.0
 Post-History: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685 https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
 ---
 
