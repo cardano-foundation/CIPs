@@ -46,12 +46,13 @@ The Cardano network currently produces ~21,600 blocks per epoch with ~2400 group
 
 (2) https://iohk.io/en/blog/posts/2018/10/29/preventing-sybil-attacks/
 
-<img src="equation1.png" width="400">
+<img src="equation1.png" width="400"> (1)
 
 ![Figure 1](k-effective.png)
 Figure 1. Historical k-effective from epoch 245 to present.
 
 ![Figure 2](k-effective-table.png)
+Figure 2. K-effective table.
 
 
 ## The Intent of (a0,k)
@@ -72,14 +73,20 @@ The analysis of the current reward formula in [4] equated 1 pool to 1 entity. In
 
 From “4.1 Our RSS construction” of “Reward Sharing Schemes for Stake Pools” [5] the current rewards equation is:
 
-<img src="equation2.png" width="600">
+<img src="equation2.png" width="600"> (2)
 
 where:
+
 λ’ = min{λ,β}, σ’ = min{σ,β} and β,α are fixed parameters.
+
 A natural choice is β = 1/k, where k is the target number of pools.
+
 and the following are current protocol parameters:
+
 k = 500
+
 α = a0 = 0.3
+
  
 The a0 parameter represents the fraction of the rewards (R/(1+a0)) which are not paid out unless all of the stake is pledged. An a0 of 0.3 ensures that 1-1/(1.0+0.3) = **23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The σ’ = min{σ,β} term enforces diminishing rewards based on k. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available from R at current network stake size.
 
@@ -123,7 +130,7 @@ The intent of parameters (a0, k) has not been realized. The graph of k-effective
 
 Another important determinant of the ability for small pools to compete with larger pools is the mandatory minimum fee (minFee parameter) which is currently 340₳. This minimum fee is a higher percentage of the total rewards for a small pool compared to a larger pool. It means that delegator yields for a small pool will not exceed 4% until the pool has at least 10% saturation (currently ~6.8M₳). This is a significant barrier to entry for small pools.
 
-Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following chart shows the distribution of stake as a function of group leverage on a log(Leverage)-log(Stake) scale.
+Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Leverage)-log(Stake) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2250 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22.
 
 <img src="stake vs leverage current.png">
 
@@ -137,13 +144,13 @@ The SundaeSwap Initial Stake Offering (ISO) proved that community delegator stak
 
 ## a0: The pledge yield boosting parameter
 
-An intentional design of the current reward equation is to purposefully allow large stakeholders pleading to private pools to earn the maximum possible yields while excluding community delegation. The vast majority of pools with pledge <10% stake saturation have an asymptotic yield currently approaching a maximum yield of 4.25%. A high pledge fraction in a private pool can earn up to the maximum available 5.5% yield, 30% more yield than low pledge community pools. 
+An intentional design of the current reward equation is to purposefully allow large stakeholders pledging to private pools to earn the maximum possible yields while excluding community delegation. The vast majority of pools with pledge <10% stake saturation have an asymptotic yield currently approaching a maximum yield of 4.25%. A high pledge fraction in a private pool can earn up to the maximum available 5.5% yield, 30% more yield than low pledge community pools. 
 
 The R/(1+a0) term guarantees that small pools will not earn the same fraction of the reserve as large pledged pools. Currently, approximately 1.25B₳ is earning full rewards in 19 pools. If left unchanged over time custodial wealth management companies will be able to offer materially higher yields than individuals. Wave financial is an example of a company currently providing this business model to clients. Eternl/ccvalut is introducing multi-signature features to allow many individuals to collectively pledge to pools. Over time this difference results in two different classes of stakeholders and erodes the decentralized self-custodial appeal of Cardano.
 
 ## The danger of ‘just increase k’
 
-Forcing the k-parameter to be radically different from the effective decentralization, k-effective, of the network has resulted in unintended consequences. Large differences between k-parameter and the k-effective of the network represents a stress on the current state of the network. A k-effective of >100 with an adjustable k-parameter of ~2*k-effective is a numerically justifiable long term goal.
+Forcing the k-parameter to be radically different from the effective decentralization, k-effective, of the network has resulted in unintended consequences. Large differences between k-parameter and the k-effective of the network represents a stress on the current state of the network. A k-effective of >100 with an adjustable k-parameter of ~2.0*k-effective is a numerically justifiable long term goal.
 
 When k was increased large groups created new pools to retain delegators. More pools in the hands of a smaller number of groups does not improve decentralization and in fact takes more time and network resources to propagate the blockchain to more relays and nodes. If the k-parameter is increased without updating the rewards formula, more large stakeholders will be able to earn full yields by pledging to private pools excluding community delegation.
 
@@ -163,11 +170,11 @@ When k was increased large groups created new pools to retain delegators. More p
 
 ## The Proposed Reward Formula
 
-The proposed reward Equation 2 retains the function of k for diminishing rewards based on stake but repurposes the a0 parameter for enforcing diminishing rewards based on pledge leverage. The equation equally balances both diminishing reward parameters. Instead of a0 ranging from 0.0 to 1.0 the a0 parameter is intended to range from 100 down to 1. An a0 value of 100 would require pools to pledge 1% of stake and an a0 of 1 would require all pools to be 100% pledged.
+The proposed reward Equation 2 retains the function of k for diminishing rewards based on stake but repurposes the a0 parameter for enforcing diminishing rewards based on pledge leverage. The equation equally balances both diminishing reward parameters. Instead of a0 ranging from 0.0 to infinity the a0 parameter is intended to range from 1,000.0 down to 1.0. An a0 value of 100.0 would require pools to pledge 1% of stake and an a0 of 1 would require all pools to be 100% pledged.
 
 <img src="new equation.png" width="400">
 
-Equation 2 is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience Equation 2 enforces both egalitarian rewards and pledge-based Sybil resilience.
+The new equation is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience Equation 2 enforces both egalitarian rewards and pledge-based Sybil resilience.
 
 # Rationale
 
@@ -179,7 +186,7 @@ The new a0 parameter will range from 100 to 1. The initial value of the maximum 
 
 ## The new reward equation
 
-The proposed reward formula should be visualized on a log(saturation)-linear(yield) scale independent of k. Figure 3 shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of a recast a0 becomes obvious, pool saturation will be limited first by pledge amount and then eventually by k. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At a0=100 to support a 100% saturated stake pool 1% pledge will be required.
+The proposed reward formula should be visualized on a log(saturation)-linear(yield) scale independent of k. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of a recast a0 becomes obvious, pool saturation will be limited first by pledge amount and then eventually by k. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At a0=100 to support a 100% saturated stake pool 1% pledge will be required.
 
 <img src="a0 100 minfee 30.png">
 
@@ -193,7 +200,7 @@ The proposed reward formula should be visualized on a log(saturation)-linear(yie
 
 ## The yield ceiling
 
-Equation 2 is purposefully designed so that stakeholders of dramatically different size can all reach the exact same maximum reward R. The yield ceiling feature prevents the formation of two classes of stakeholders and removes the economic benefits of centralization. The yield ceiling is the ‘egalitarian reward’ described but not implemented by the original paper.
+The new equation is purposefully designed so that stakeholders of dramatically different size can all reach the exact same maximum reward R. The yield ceiling feature prevents the formation of two classes of stakeholders and removes the economic benefits of centralization. The yield ceiling is the ‘egalitarian reward’ described but not implemented by the original paper.
 
 With the minFee < 30 once a pool grows to >0.5% of saturation the intermittent rewards will, on average, provide a competitive yield for delegators at >5.0%. At k=500 and a0=100 this corresponds to a pool size 500k₳ with a minimum pledge of only 5k₳. The yield ceiling is also compatible with a potential future implementation of the Conclave collective stake pool concept. Because of the yield ceiling large collective stake pools will only provide more predictable returns, not a materially larger yield which would compete with smaller independent pools.
 
