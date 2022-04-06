@@ -4,7 +4,7 @@ Title: Plutus Core Evolution
 Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Comments-Summary: No comments
 Comments-URI: 
-Status: Draft
+Status: Active
 Type: Process
 Created: 2022-02-09
 License: CC-BY-4.0
