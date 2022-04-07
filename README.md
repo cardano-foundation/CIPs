@@ -15,7 +15,7 @@ It is therefore quite common for proposals and implementations to be worked on c
 
 The entire process is described in greater detail in [CIP1 - "CIP Process"](./CIP-0001).
 
-### Reviewed Proposals (as of 2022-02-24)
+### Reviewed Proposals (as of 2022-04-07)
 
 | # | Title | Status | 
 | --- | --- | --- |
@@ -53,6 +53,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 32 | [Inline Datums](./CIP-0032/) | Draft |
 | 33 | [Reference Scripts](./CIP-0033/) | Draft |
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
+| 35 | [Plutus Core Evolution](./CIP-0035) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Draft |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
@@ -66,7 +67,6 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 
 | # | Title | 
 | --- | --- | 
-| 35? | [Plutus Core Evolution](https://github.com/cardano-foundation/CIPs/pull/215) |
 | 36? | [Add support for Catalyst multi-delegation](https://github.com/cardano-foundation/CIPs/pull/200) |
 | 37? | [Dynamic Saturation Based on Pledge](https://github.com/cardano-foundation/CIPs/pull/163) |
 | 38? | [On-Chain Token Metadata Standard](https://github.com/cardano-foundation/CIPs/pull/137) | 
@@ -74,11 +74,14 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 40? | [Collateral Output](https://github.com/cardano-foundation/CIPs/pull/216) | 
 | 41? | [Collateral Rewards](https://github.com/cardano-foundation/CIPs/pull/217) | 
 | 42? | [New Plutus Builtin: serialiseBuiltinData](https://github.com/cardano-foundation/CIPs/pull/218) |
-| 42? | [New Plutus Builtin: dataHash](https://github.com/cardano-foundation/CIPs/pull/222) |
+| ~~42?~~ | ~~[New Plutus Builtin: dataHash](https://github.com/cardano-foundation/CIPs/pull/222)~~ |
 | 43? | [Plutus Support For Pairings Over Curve Bls12-381](https://github.com/cardano-foundation/CIPs/pull/220) |
 | 44? | [Additional Factors For NFT Market Verification](https://github.com/cardano-foundation/CIPs/pull/226) | 
 | 45? | [Decentralization: Using Pledge as a Bidding Param](https://github.com/cardano-foundation/CIPs/pull/229) |
 | 46? | [Prepay Min Fixed Fee](https://github.com/cardano-foundation/CIPs/pull/190) | 
+| 47? | [Proposal for deep-link to desktop wallet app](https://github.com/cardano-foundation/CIPs/pull/234) | 
+| 50? | [Liesenfelt Shelleys Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
+| 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
 
 ### CIP creation process as a Sequence Diagram
 
