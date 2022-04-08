@@ -1,12 +1,12 @@
 ---
-CIP: ?
+CIP: 50?
 Title: Shelley’s Voltaire decentralization update 
 Author: Michael Liesenfelt <michael.liesenfelt@gmail.com>
 Comments-URI: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
 Status: Draft
 Type: Standards
 Created: 2022-04-04
-License: CC-BY-4.0
+License: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
 Post-History: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685 https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
 ---
 
@@ -54,7 +54,6 @@ Figure 1. Historical k-effective from epoch 245 to present.
 ![Figure 2](k-effective-table.png)
 Figure 2. K-effective table.
 
-
 ## The Intent of (a0,k)
 
 To cite Aggelos Kiayias, Chief Scientist of IOG:
@@ -86,7 +85,6 @@ and the following are current protocol parameters:
 k = 500
 
 α = a0 = 0.3
-
  
 The a0 parameter represents the fraction of the rewards (R/(1+a0)) which are not paid out unless all of the stake is pledged. An a0 of 0.3 ensures that 1-1/(1.0+0.3) = **23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The σ’ = min{σ,β} term enforces diminishing rewards based on k. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available from R at current network stake size.
 
@@ -107,6 +105,10 @@ The a0 parameter represents the fraction of the rewards (R/(1+a0)) which are not
 ## If a0 is increased to 1.0
 
 <img src="a0 1.0 minfee 340.png">
+
+## If a0 is increased to 10.0
+
+<img src="a0 10.0 minfee 340.png">
 
 ## If a0 is decreased to 0.2
 
@@ -150,9 +152,11 @@ The R/(1+a0) term guarantees that small pools will not earn the same fraction of
 
 ## The danger of ‘just increase k’
 
-Forcing the k-parameter to be radically different from the effective decentralization, k-effective, of the network has resulted in unintended consequences. Large differences between k-parameter and the k-effective of the network represents a stress on the current state of the network. A k-effective of >100 with an adjustable k-parameter of ~2.0*k-effective is a numerically justifiable long term goal.
+Forcing the k-parameter to be radically different from the effective decentralization, k-effective, of the network has resulted in unintended consequences. When k was increased large groups created new pools to retain delegators. If the k-parameter is increased without updating the rewards formula, more large stakeholders will be able to earn full yields by pledging to private pools excluding community delegation.
 
-When k was increased large groups created new pools to retain delegators. More pools in the hands of a smaller number of groups does not improve decentralization and in fact takes more time and network resources to propagate the blockchain to more relays and nodes. If the k-parameter is increased without updating the rewards formula, more large stakeholders will be able to earn full yields by pledging to private pools excluding community delegation.
+Large differences between k-parameter and the k-effective of the network represents a stress on the current state of the network. More pools in the hands of a smaller number of groups does not improve decentralization and in fact takes more time and resources to propagate the blockchain to more relays and nodes. A k-effective of >100.0 with an adjustable k-parameter of ~2.0*k-effective is a numerically justifiable long term goal. 
+
+
 
 # Specification
 
@@ -170,11 +174,16 @@ When k was increased large groups created new pools to retain delegators. More p
 
 ## The Proposed Reward Formula
 
-The proposed reward Equation 2 retains the function of k for diminishing rewards based on stake but repurposes the a0 parameter for enforcing diminishing rewards based on pledge leverage. The equation equally balances both diminishing reward parameters. Instead of a0 ranging from 0.0 to infinity the a0 parameter is intended to range from 1,000.0 down to 1.0. An a0 value of 100.0 would require pools to pledge 1% of stake and an a0 of 1 would require all pools to be 100% pledged.
+The proposed reward retains the function of k for diminishing rewards based on stake but repurposes the a0 parameter for enforcing diminishing rewards based on pledge leverage. The equation equally balances both diminishing reward parameters. Instead of a0 ranging from 0.0 to infinity the a0 parameter is intended to range from 1,000.0 down to 1.0. An a0 value of 100.0 would require pools to pledge 1.0% of stake and an a0 of 1.0 would require all pools to be 100.0% pledged.
 
 <img src="new equation.png" width="400">
 
-The new equation is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience Equation 2 enforces both egalitarian rewards and pledge-based Sybil resilience.
+R = ( reserve * rho + fees )( 1.0 - tau )
+
+r( sigma, lambda ) = R * min{ sigma, a0 * lambda, 1/k }
+
+
+The new equation is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience the new equation enforces both egalitarian rewards and pledge-based Sybil resilience.
 
 # Rationale
 
@@ -182,11 +191,11 @@ The new equation is computationally simple and purposefully does not use logarit
 
 The a0 parameter will be redefined to establish a maximum pledge leverage before diminishing rewards, similar to the k parameter for pool size. The recast a0 parameter enforces the principle that pledge is absolutely required to support community delegation. This change will directly align the a0 parameter for protecting the network from Sybil attacks. Pledge will not be a statistically unnoticed slight incentive used only by large private stakeholders. Community governance to reduce/adjust a0 would be the preferred mechanism to constrain sybil behavior. 
 
-The new a0 parameter will range from 100 to 1. The initial value of the maximum pledge leverage ratio a0 should initially be set conservatively high at 100 and optionally decreased slightly over time to a healthy equilibrium by community governance. At (a0=100, k=500) approximately 680k₳ pledge would be required to support a fully saturated pool. 
+The new a0 parameter will range from 1,000.0 to 1.0. The initial value of the maximum pledge leverage ratio a0 should initially be set conservatively high (>=100.0) and optionally decreased slightly over time to a healthy equilibrium by community governance. At (a0=100, k=500) approximately 680k₳ pledge would be required to support a fully saturated pool. 
 
 ## The new reward equation
 
-The proposed reward formula should be visualized on a log(saturation)-linear(yield) scale independent of k. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of a recast a0 becomes obvious, pool saturation will be limited first by pledge amount and then eventually by k. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At a0=100 to support a 100% saturated stake pool 1% pledge will be required.
+The proposed reward formula should be visualized on a log(saturation)-linear(yield) scale independent of k. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of a recast a0 becomes obvious, pool saturation will be limited first by pledge amount and then eventually by k. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At a0=100.0 to support a 100.0% saturated stake pool 1.0% pledge will be required.
 
 <img src="a0 100 minfee 30.png">
 
@@ -269,7 +278,7 @@ The implementation of this proposal must be slow, smooth, staged, deliberate, an
 
 Copyright 2022 Michael Liesenfelt
 
-This CIP is licensed under  [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
 
 # Conflict of Interest Declaration 
 
