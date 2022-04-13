@@ -34,5 +34,5 @@ key_registration = {
 
 
 registration_witness = {
-  ? 1 : $stake_witness
+  1 : $stake_witness
 }
