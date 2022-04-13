@@ -4,7 +4,7 @@ Title: New Plutus built-in serialiseBuiltinData
 Authors: Matthias Benkort <matthias.benkort@iohk.io>, Sebastian Nagel <sebastian.nagel@iohk.io> 
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/218
 Comments-URI: https://github.com/cardano-foundation/CIPs/pull/218
-Status: Draft
+Status: Proposed
 Type: Standards Track
 Created: 2022-02-09
 License: Apache-2.0
@@ -94,7 +94,7 @@ The `Data` type is a recursive data-type, so costing it properly is a little tri
 
 We propose to re-use this instance to define a cost model linear in the size of data defined by this instance. What remains is to find a proper coefficient and offset for that linear model. To do so, we can benchmark the execution costs of encoding arbitrarily generated `Data` of various sizes, and retro-fit the cost into a linear model (provided that the results are still attesting for that type of model).
 
-> NOTE: To be done before moving the CIP to _proposed_. We want to discuss the approach first with the Plutus core team and eventually, if confirmed, post the results here and reword that last paragraph. 
+Benchmarking and costing `serialiseData` was done in [this PR](https://github.com/input-output-hk/plutus/pull/4480) according to this strategy. As the benchmark is not very uniform, because some cases of `Data` "structures" differ in CPU time taken to process, the linear model is used as an **upper bound** and thus conservatively overestimating actual costs.
  
 ## Rationale
 
@@ -109,13 +109,11 @@ We propose to re-use this instance to define a cost model linear in the size of 
   
   Results can be reproduced with the [plutus-cbor benchmark][].
 
-
 ## Path To Active
 
-- [ ] Using the existing _sizing metric_ for `Data`, we need to determine a costing function (using existing tooling / benchmarks? TBD)
-- [ ] The Hydra Team creates a PR which adds the built-in to PlutusV1 and PlutusV2 and uses a suitable cost function
+- [x] Using the existing _sizing metric_ for `Data`, we need to determine a costing function (using existing tooling / benchmarks? TBD)
+- [x] The Plutus team updates plutus to add the built-in to PlutusV1 and PlutusV2 and uses a suitable cost function
 - [ ] Release it as a backward-compatible change within the next hard-fork
-
 
 ## Alternatives
 
@@ -130,7 +128,6 @@ We propose to re-use this instance to define a cost model linear in the size of 
 ## Copyright
 
 This CIP is licensed under Apache-2.0
-
 
 [CBOR]: https://www.rfc-editor.org/rfc/rfc8949
 [plutus-cbor]: https://github.com/input-output-hk/hydra-poc/tree/a4b843a040897e45120cb63b666d965759091651/plutus-cbor
