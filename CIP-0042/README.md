@@ -113,6 +113,7 @@ Benchmarking and costing `serialiseData` was done in [this PR](https://github.co
 
 - [x] Using the existing _sizing metric_ for `Data`, we need to determine a costing function (using existing tooling / benchmarks? TBD)
 - [x] The Plutus team updates plutus to add the built-in to PlutusV1 and PlutusV2 and uses a suitable cost function
+- [ ] The binary format of `Data` is documented and embraced as an interface within `plutus`.
 - [ ] Release it as a backward-compatible change within the next hard-fork
 
 ## Alternatives
