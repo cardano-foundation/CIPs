@@ -1,5 +1,5 @@
 ---
-CIP: 36
+CIP: 42
 Title: New Plutus built-in serialiseBuiltinData
 Authors: Matthias Benkort <matthias.benkort@iohk.io>, Sebastian Nagel <sebastian.nagel@iohk.io> 
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/218
