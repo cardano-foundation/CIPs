@@ -1,6 +1,6 @@
 ---
 CIP: 42
-Title: New Plutus built-in serialiseBuiltinData
+Title: New Plutus built-in serialiseData
 Authors: Matthias Benkort <matthias.benkort@iohk.io>, Sebastian Nagel <sebastian.nagel@iohk.io> 
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/218
 Comments-URI: https://github.com/cardano-foundation/CIPs/pull/218
@@ -12,7 +12,7 @@ Requires: CIP-35
 
 ---
 
-# New Plutus built-in serialiseBuiltinData
+# New Plutus built-in serialiseData
 
 ## Abstract
 
@@ -45,7 +45,7 @@ Underneath it all, it seems that it would be beneficial to have a new built-in a
 We define a new Plutus built-in function with the following type signature:
 
 ```hs
-serialiseBuiltinData :: BuiltinData -> BuiltinByteString
+serialiseData :: BuiltinData -> BuiltinByteString
 ```
 
 ### Binary data format
