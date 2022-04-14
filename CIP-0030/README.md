@@ -28,6 +28,10 @@ The API specified in this document will count as version 0.1.0 for version-check
 
 ## Data Types
 
+### Address
+
+A string represnting an address in either bech32 format, or hex-encoded bytes. All return types containing `Address` must return the bech32 format, but must accept either format for inputs.
+
 ### Bytes
 
 A hex-encoded string of the corresponding bytes.
@@ -36,6 +40,15 @@ A hex-encoded string of the corresponding bytes.
 
 A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Mult-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
 This representation was chosen when possible as it is consistent across the Cardano ecosystem and widely used by other tools, such as [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib), which has support to encode every type in the binary spec as CBOR bytes.
+
+### DataSignature
+
+```
+type DataSignature = {|
+  signature:cbor\<COSE_Sign1>,
+  key: cbor\<COSE_Key>,
+|};
+```
 
 ### TransactionUnspentOutput
 
@@ -93,7 +106,6 @@ DataSignErrorCode {
 	ProofGeneration: 1,
 	AddressNotPK: 2,
 	UserDeclined: 3,
-	InvalidFormat: 4,
 }
 type DataSignError = {
 	code: DataSignErrorCode,
@@ -104,7 +116,6 @@ type DataSignError = {
 * ProofGeneration - Wallet could not sign the data (e.g. does not have the secret key associated with the address)
 * AddressNotPK - Address was not a P2PK address and thus had no SK associated with it.
 * UserDeclined - User declined to sign the data
-* InvalidFormat - If a wallet enforces data format requirements, this error signifies that the data did not conform to valid formats.
 
 ### PaginateError
 
@@ -197,31 +208,48 @@ Errors: `APIError`, `PaginateError`
 
 If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `undefined` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
 
+### api.getCollateral(params: { amount: cbor\<Coin> }): Promise\<TransactionUnspentOutput[] | null>
+
+Errors: `APIError`
+
+The function takes a required object with parameters. With a single **required** parameter for now: `amount`. (**NOTE:** some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the `amount` parameter is required:
+1. Dapps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
+2. Depending on the specific wallet implementation, requesting more collateral than necessarily might worsen the user experience with that dapp, requiring the wallet to make explicit wallet reorganisation when it is not necessary and can be avoided.
+3. If dapps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
+
+So requiring the `amount` parameter would be a by-spec behavior for a wallet. Not requiring it is possible, but not specified, so dapps should not rely on that and the behavior is not recommended.
+
+This shall return a list of one or more UTXOs (unspent transaction outputs) controlled by the wallet that are required to reach **AT LEAST** the combined ADA value target specified in `amount` **AND** the best suitable to be used as collateral inputs for transactions with plutus script inputs (pure ADA-only utxos). If this cannot be attained, an error message with an explanation of the blocking problem shall be returned. **NOTE:** wallets are free to return utxos that add up to a **greater** total ADA value than requested in the `amount` parameter, but wallets must never return any result where utxos would sum up to a smaller total ADA value, instead in a case like that an error message must be returned.
+
+The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see https://github.com/cardano-foundation/CIPs/pull/104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
+
+The `amount` parameter is required, specified as a `string` (BigNumber) or a `number`, and the maximum allowed value must be agreed to be something like 5 ADA. Not limiting the maximum possible value might force the wallet to attempt to purify an unreasonable amount of ADA just because the dapp is doing something weird. Since by protocol the required collateral amount is always a percentage of the transaction fee, it seems that the 5 ADA limit should be enough for the foreseable future.
+
 ### api.getBalance(): Promise\<cbor\<value>>
 
 Errors: `APIError`
 
 Returns the total balance available of the wallet. This is the same as summing the results of `api.getUtxos()`, but it is both useful to dApps and likely already maintained by the implementing wallet in a more efficient manner so it has been included in the API as well.
 
-### api.getUsedAddresses(paginate: Paginate = undefined): Promise\<cbor\<address>[]>
+### api.getUsedAddresses(paginate: Paginate = undefined): Promise\<Address[]>
 
 Errors: `APIError`
 
 Returns a list of all used (included in some on-chain transaction) addresses controlled by the wallet. The results can be further paginated by `paginate` if it is not `undefined`.
 
-### api.getUnusedAddresses(): Promise\<cbor\<address>[]>
+### api.getUnusedAddresses(): Promise\<Address[]>
 
 Errors: `APIError`
 
 Returns a list of unused addresses controlled by the wallet.
 
-### api.getChangeAddress(): Promise\<cbor\<address>>
+### api.getChangeAddress(): Promise\<Address>
 
 Errors: `APIError`
 
 Returns an address owned by the wallet that should be used as a change address to return leftover assets during transaction creation back to the connected wallet. This can be used as a generic receive address as well.
 
-### api.getRewardAddresses(): Promise\<cbor\<address>[]>
+### api.getRewardAddresses(): Promise\<Address[]>
 
 Errors: `APIError`
 
@@ -233,13 +261,25 @@ Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
-### api.signData(addr: cbor\<address>, sigStructure: cbor\<Sig_structure>): Promise\<Bytes>
+### api.signData(addr: Address, payload: Bytes): Promise\<DataSignature>
 
 Errors: `APIError`, `DataSignError`
 
-This endpoint is due to be updated/finalized soon, see [discussion in the initial PR](https://github.com/cardano-foundation/CIPs/pull/88#issuecomment-954436243).
+This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
-This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign data conforming to said spec. The user's consent should be requested and the details of `sig_structure` shown to them in an informative way. The  Please refer to the CIP-0008 spec for details on how to construct the sig structure.
+* `alg` (1) - must be set to `EdDSA` (-8)
+* `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
+* `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
+
+The payload is not hashed and no `external_aad` is used.
+
+If the payment key for `addr` is not a P2Pk address then `DataSignError` will be returned with code `AddressNotPK`. `ProofGeneration` shall be returned if the wallet cannot generate a signature (i.e. the wallet does not own the requested payment private key), and `UserDeclined` will be returned if the user refuses the request. The return shall be a `DataSignature` with `signature` set to the hex-encoded CBOR bytes of the `COSE_Sign1` object specified above and `key` shall be the hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
+
+* `kty` (1) - must be set to `OKP` (1)
+* `kid` (2) - Optional, if present must be set to the same value as in the `COSE_Sign1` specified above.
+* `alg` (3) - must be set to `EdDSA` (-8)
+* `crv` (-1) - must be set to `Ed25519` (6)
+* `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
 ### api.submitTx(tx: cbor\<transaction>): Promise\<hash32>
 
