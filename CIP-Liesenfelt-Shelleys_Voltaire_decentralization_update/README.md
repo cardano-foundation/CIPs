@@ -20,7 +20,6 @@ Post-History: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentra
 - Shawn McMurdo
 - Tobias Francee
 - Colin Edwards
-- Tim Harrison
 - Tom Stafford
 - Francisco Landino
 - Mark Stopka
@@ -38,7 +37,7 @@ Improving decentralization is absolutely necessary for the long term health and 
 
 K and a0 are input parameters to the reward formulation designed to promote decentralization. The original intention for parameter k was for it to set a ‘soft-cap’ on a pool’s size and thereby encourage the system to converge toward k pools of equal size delivering equal return per unit of stake for all delegates. In the ideal world this would mean k pools that are roughly equally saturated producing a roughly equal proportion of the blocks [1]. An underlying assumption was that one entity would run only one pool and design discussions about these parameters have described running multiple pools as a form of Sybil attack [2].
 
-However, the input parameters have not achieved these goals. Currently there are single entities that run 10,20,30 or even 62 separate pools. It is proposed that the “average resulting decentralization” should be measured based on the stake held by entire entities/groups, rather than a count of individual pools. “k-effective” is hereby used to measure the “average resulting decentralization” and is computed using Equation 1.
+However, the input parameters have not achieved these goals. Currently there are single entities that run 10,20,30 or even 100 separate pools. It is proposed that the “average resulting decentralization” should be measured based on the stake held by entire entities/groups, rather than a count of individual pools. “K-effective” is hereby used to measure the “average resulting decentralization” and is computed using Equation 1. The Nakamoto Coefficient is approximately half of k-effective rounded up to the nearest integer. K-effective provides a higher resolution quantification of network decentralization compared to the Nakamoto Coefficient.
 
 The Cardano network currently produces ~21,600 blocks per epoch with ~2400 groups producing between 0 and ~3600 blocks per group. If averaged, 41 equal sized groups would each be creating ~527 blocks per epoch. The historical decentralization of the network shown in Figure 1 has improved from 30.0 in epoch 245 to between 39.0 and 43.0 after epoch 260. This “effective decentralization” or “k-effective” is not even close to the 500 figure targeted by the current k=500 parameter. A partial example of the table used to compute k-effective is shown in Figure 2.
 
@@ -86,7 +85,7 @@ k = 500
 
 α = a0 = 0.3
  
-The a0 parameter represents the fraction of the rewards (R/(1+a0)) which are not paid out unless all of the stake is pledged. An a0 of 0.3 ensures that 1-1/(1.0+0.3) = **23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The σ’ = min{σ,β} term enforces diminishing rewards based on k. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available from R at current network stake size.
+The a0 parameter represents the fraction of the rewards (R/(1+a0)) which are not paid out unless all of the stake is pledged. An a0 of 0.3 ensures that 1.0-1.0/(1.0+0.3) = **23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The σ’ = min{σ,β} term enforces a reward limit based on k. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available at current network stake size.
 
 <img src="a0 0.3 minfee 340.png">
 
@@ -128,17 +127,17 @@ The a0 parameter represents the fraction of the rewards (R/(1+a0)) which are not
 
 ## The Reality of (a0,k)
 
-The intent of parameters (a0, k) has not been realized. The graph of k-effective shows that increasing k from 150 to 500 did not result in a proportional increase to decentralization. The k parameter is currently 500 / 41 = 12.2 times larger than the effective decentralization k-effective.
+The intent of parameters (a0, k) has not been realized. The graph of k-effective shows that increasing k from 150 to 500 did not result in a proportional increase to decentralization. The k parameter is currently 500 / 41 = 12.2 times larger than the effective decentralization k-effective. In epoch 333  46% of all stake was controlled by non-exchange multi-pool operators. 
 
-Another important determinant of the ability for small pools to compete with larger pools is the mandatory minimum fee (minFee parameter) which is currently 340₳. This minimum fee is a higher percentage of the total rewards for a small pool compared to a larger pool. It means that delegator yields for a small pool will not exceed 4% until the pool has at least 10% saturation (currently ~6.8M₳). This is a significant barrier to entry for small pools.
+Another important determinant of the ability for small pools to compete with larger pools is the mandatory minimum fee (minFee parameter) which is currently 340₳. This minimum fee is a higher percentage of the total rewards for a small pool compared to a larger pool. It means that delegator yields for a small pool will not exceed 4.0% until the pool has at least 10.0% saturation (currently ~6.8M₳). This is a significant barrier to entry for small pools.
 
-Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Leverage)-log(Stake) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2250 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22.
+Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Stake) vs log(Leverage) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2250 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22. The SPA is the anchor of decentralization on Cardano.
 
 <img src="stake vs leverage current.png">
 
-In the original design, parameter a0 represented the influence the operator’s pledge had on the desirability of the pool. In other words, more pledge should mean the pool would be more desirable for stake delegation. However the current reward formula has not produced this effect. See Figure 2. With increasing pledge as a proportion of total stake there is little noticeable effect on rewards until very high pledge percentages. These very high pledge percentages are not attainable except by extremely large stakeholders. Furthermore having such a high pledge percentage would defeat the purpose of staking since the pool would already be saturated when the maximum pledge benefit is earned.
+In the original design, parameter a0 represented the influence the operator’s pledge had on the desirability of the pool. In other words, more pledge should mean the pool would be more desirable for stake delegation. However the current reward formula has not produced this effect. See Figure 2. With increasing pledge as a proportion of total stake there is little noticeable effect on rewards until very high pledge percentages. These very high pledge percentages are not attainable except by extremely large stakeholders. Furthermore having such a high pledge percentage would defeat the purpose of community staking since the pool would already be saturated when the maximum pledge benefit is earned.
 
-The reality of the past 18 months is that pool operators have split pledge across multiple pools because it is more profitable to earn fees (minFee + margin%) than it is to benefit from increasing their pledge to a single pool. The small increase in yield for pools with less than 10M₳ pledge is also much less than the random statistical uncertainty of rewards per epoch. The current reward equation has sacrificed fair egalitarian rewards for an incentive that is not providing Sybil protection as intended.
+The reality of the past 18 months is that pool operators have split pledge across multiple pools because it is more profitable to earn fees (minFee + margin%) than it is to benefit from increasing their pledge to a single pool. The small increase in yield for pools with less than 10M₳ pledge is also much less than the random statistical uncertainty of rewards per epoch. The pledge incentive is currently a statistically unnoticed benefit used only by large private stakeholders. The current reward equation has sacrificed fair egalitarian rewards for an incentive that is not providing Sybil protection as intended.
 
 ## The SundaeSwap Effect
 
@@ -154,7 +153,7 @@ The R/(1+a0) term guarantees that small pools will not earn the same fraction of
 
 Forcing the k-parameter to be radically different from the effective decentralization, k-effective, of the network has resulted in unintended consequences. When k was increased large groups created new pools to retain delegators. If the k-parameter is increased without updating the rewards formula, more large stakeholders will be able to earn full yields by pledging to private pools excluding community delegation.
 
-Large differences between k-parameter and the k-effective of the network represents a stress on the current state of the network. More pools in the hands of a smaller number of groups does not improve decentralization and in fact takes more time and resources to propagate the blockchain to more relays and nodes. A k-effective of >100.0 with an adjustable k-parameter of ~2.0*k-effective is a numerically justifiable long term goal. 
+Large differences between k-parameter and the k-effective of the network represents a stress on the current state of the network. More pools under the control of a smaller number of groups does not improve decentralization and in fact takes more time and resources to propagate the blockchain to more relays and nodes. A k-effective of >100.0 with an adjustable k-parameter of ~3.0*k-effective is a numerically justifiable long term goal. 
 
 
 
@@ -174,7 +173,7 @@ Large differences between k-parameter and the k-effective of the network represe
 
 ## The Proposed Reward Formula
 
-The proposed reward retains the function of k for diminishing rewards based on stake but repurposes the a0 parameter for enforcing diminishing rewards based on pledge leverage. The equation equally balances both diminishing reward parameters. Instead of a0 ranging from 0.0 to infinity the a0 parameter is intended to range from 1,000.0 down to 1.0. An a0 value of 100.0 would require pools to pledge 1.0% of stake and an a0 of 1.0 would require all pools to be 100.0% pledged.
+The proposed reward retains the function of k for limiting rewards based on stake but repurposes the a0 parameter for enforcing reward limits based on pledge leverage. The equation equally balances both reward parameters. Instead of a0 ranging from 0.0 to infinity the a0 parameter is intended to range from 10,000.0 down to 1.0. An a0 value of 100.0 would require pools to pledge 1.0% of stake and an a0 of 1.0 would require all pools to be 100.0% pledged.
 
 <img src="new equation.png" width="400">
 
@@ -183,19 +182,20 @@ R = ( reserve * rho + fees )( 1.0 - tau )
 r( sigma, lambda ) = R * min{ sigma, a0 * lambda, 1/k }
 
 
-The new equation is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience the new equation enforces both egalitarian rewards and pledge-based Sybil resilience.
+The new equation is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience the new equation enforces both egalitarian rewards and pledge-based Sybil resilience. A simple flat egalitarian yield ceiling with pledge leverage enforcement for Sybil defense has a profound psychological effect: Stakeholders know there is no way to game the system for yield, either individually or collectively with governance, and pledge is absolutely mandatory. Without any engineered bias Cardano decentralization would converge to the diversity of the underlying community, services, and stakeholder distribution. If this proposal is eventually adopted changes in community diversity, not changes in a formula or parameters, would change decentralization.
+
 
 # Rationale
 
 ## Recast of a0
 
-The a0 parameter will be redefined to establish a maximum pledge leverage before diminishing rewards, similar to the k parameter for pool size. The recast a0 parameter enforces the principle that pledge is absolutely required to support community delegation. This change will directly align the a0 parameter for protecting the network from Sybil attacks. Pledge will not be a statistically unnoticed slight incentive used only by large private stakeholders. Community governance to reduce/adjust a0 would be the preferred mechanism to constrain sybil behavior. 
+The a0 parameter will be redefined to establish a maximum pledge leverage before limiting rewards, similar to the k parameter for pool size. Pledge leverage establishes a different ‘saturation point’ for each pool based on its pledge. The recast a0 parameter enforces the principle that growing pledge is absolutely required to support growing community delegation. This change will directly align the a0 parameter for protecting the network from Sybil behavior. The pledge leverage factor provides an enforcable limit on sybil actors and their maximum return on invested capital. Pledge will not be a statistically unnoticed slight incentive used only by large private stakeholders. Community governance to adjust leverage factor a0 would be the preferred mechanism to constrain sybil behavior. 
 
 The new a0 parameter will range from 1,000.0 to 1.0. The initial value of the maximum pledge leverage ratio a0 should initially be set conservatively high (>=100.0) and optionally decreased slightly over time to a healthy equilibrium by community governance. At (a0=100, k=500) approximately 680k₳ pledge would be required to support a fully saturated pool. 
 
 ## The new reward equation
 
-The proposed reward formula should be visualized on a log(saturation)-linear(yield) scale independent of k. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of a recast a0 becomes obvious, pool saturation will be limited first by pledge amount and then eventually by k. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At a0=100.0 to support a 100.0% saturated stake pool 1.0% pledge will be required.
+The proposed reward formula should be visualized on a linear(yield) vs log(saturation) scale independent of k. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of a recast a0 becomes obvious, pool saturation will be limited first by pledge amount and then eventually by k. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At a0=100.0 to support a 100.0% saturated stake pool 1.0% pledge will be required.
 
 <img src="a0 100 minfee 30.png">
 
@@ -209,7 +209,7 @@ The proposed reward formula should be visualized on a log(saturation)-linear(yie
 
 ## The yield ceiling
 
-The new equation is purposefully designed so that stakeholders of dramatically different size can all reach the exact same maximum reward R. The yield ceiling feature prevents the formation of two classes of stakeholders and removes the economic benefits of centralization. The yield ceiling is the ‘egalitarian reward’ described but not implemented by the original paper.
+The new equation is purposefully designed so that stakeholders of dramatically different size can all reach the exact same maximum yield. The yield ceiling feature prevents the formation of two classes of stakeholders and removes the economic benefits of custodial centralization. The yield ceiling is the ‘egalitarian reward’ described but not implemented by the original paper.
 
 With the minFee < 30 once a pool grows to >0.5% of saturation the intermittent rewards will, on average, provide a competitive yield for delegators at >5.0%. At k=500 and a0=100 this corresponds to a pool size 500k₳ with a minimum pledge of only 5k₳. The yield ceiling is also compatible with a potential future implementation of the Conclave collective stake pool concept. Because of the yield ceiling large collective stake pools will only provide more predictable returns, not a materially larger yield which would compete with smaller independent pools.
 
@@ -219,9 +219,9 @@ The winners of block forks and slot battles are determined by which pool has a l
 
 ## The economic motivations of large stakeholders and collective pools
 
-The new formula will not decrease the yields of any large stakeholders pledging to private pools. Large ADA stakeholders such as exchanges, liquidity pools, or smart contracts would not be required to pledge a vast majority of those holdings to earn yields currently only achievable with fully pledged pools. The only economic motivation remaining for groups with large stake including founder(s), founding organizations, exchanges, investment capital, trusts, and venture capital would be to secure diversification and enhance the value of the entire network by dividing delegation.
+The new formula will not decrease the yields of any large stakeholders pledging to private pools. Large ADA stakeholders such as exchanges, liquidity pools, or smart contracts would not be required to pledge a vast majority of those holdings to earn yields currently only achievable with fully pledged pools. This property improves overall liquidity. The only economic motivation remaining for groups with large stake including founder(s), founding organizations, exchanges, investment capital, trusts, and venture capital would be to enhance the value of the entire network by dividing delegation to secure diversification.
 
-The large stakeholders who are able to divide their stake to dozens of pools will also achieve more reward diversification and fault tolerance than self-operating a small number of private pools. A number of wallets including Eternl/ccvault are offering the capability to divide stake delegation to many pools. This design decision aligns the interest of the largest stakeholders with the interests of the whole community.
+The large stakeholders who are able to divide their stake to dozens of pools will also achieve more fault tolerance than self-operating a small number of centralized private pools. A number of wallets including Eternl/ccvault are offering the capability to divide stake delegation to many pools. This design decision aligns the interest of the largest stakeholders with the interests of the whole community.
 
 ## Relevant prior CIP proposals and drafts
 
@@ -234,7 +234,7 @@ The large stakeholders who are able to divide their stake to dozens of pools wil
 
 ## Methods and paradigms for equation validation
 
-To validate any reward equation simulations must consider that an entity can choose to delegate to another entity, operate one stake pool, or operate many stake pools. Any new equation should be compared to the current equation with a0=0.3 and the current equation with minFee=0, a0=0.0. A large number of entities (>100) should be simulated for each trial of each equation. Additionally, during each epoch of each simulation for each equation block production could be sampled from a normal distribution. Block production and rewards have statistical uncertainty.
+To validate any reward equation simulations must consider that an entity can choose to delegate to another entity, operate one stake pool, or operate many stake pools. Any new equation should be compared to the current equation with a0=0.3 and the current equation with minFee=0, a0=0.0. A large number of entities (>100000) should be simulated for each trial of each equation. Additionally, during each epoch of each simulation for each equation block production could be sampled from a normal distribution. Block production and rewards have statistical uncertainty.
 
 ```
 Each equation:
@@ -246,7 +246,7 @@ Each equation:
       delegate to the pool of a different entity
 ```
 
-For each equation in consideration the average (and variation) of the nakamoto coefficient, k-effective coefficient (or an entity/group based equivalent), and a sybil coefficient shall be computed for every epoch until conclusion. It is likely that the nakamoto coefficient will be approximately half of k-effective. The sybil coefficient would quantify the fraction of stake controlled by all entities operating multiple pools.
+For each equation in consideration the average (and variation) of the nakamoto coefficient, k-effective coefficient (or an entity/group based equivalent), and a sybil coefficient shall be computed for every epoch until conclusion. The sybil coefficient would quantify the fraction of stake controlled by all entities operating multiple pools excluding regulated businesses such as exchanges.
 
 # Backwards compatibility
 
@@ -254,25 +254,33 @@ Implementation will occur in two distinct phases with the first phase being only
 
 # Path to Active
 
-The implementation of this proposal must be slow, smooth, staged, deliberate, and well communicated through advertising and education. Each change in the implementation schedule should include clear communication to the community on expectations. Transparent education on how the parameters will work and the effect on rewards is important.
+The implementation of this proposal must be smooth, staged, deliberate, and well communicated through advertising and education. Each change in the implementation schedule should include clear communication to the community on expectations. Transparent education on how the parameters will work and the effect on rewards is important.
 
 1. Get statements of support from a large fraction of the Cardano community.
-2. Reduce minFee from 340₳ to 0-30₳.
+
+Although we haven't entered the Voltaire era yet, we should still reach community concensus.
+
+2. Reduce minFee from 340₳ to 0₳.
+
+Reducing the mandatory minimum fee to 0 will allow smaller pools to become more competitive while allowing each individual pool to select an appropriate fixed fee.
+
 3. Wait 5 to 10 epochs, measure decentralization, gather community feedback.
+
 4. Get more statements of support from a larger fraction of the Cardano community.
-5. Reduce a0 from 0.3 to 0.2.
-6. Wait 5 to 10 epochs, measure decentralization, gather community feedback.
-7. Reduce a0 from 0.2 to 0.1.
-8. Wait 5 to 10 epochs, measure decentralization, gather community feedback.
-9. Reduce a0 from 0.1 to 0.0.
-10. At this point the influence of the large stakeholder pledge yield boosting parameter a0 will be eliminated and the yield curve will have a flat fair ceiling at ~5.5%.
-11. Wait 0 to 10 epochs, measure decentralization, gather community feedback.
-12. Reduce k from 500 to approximately 2-3 times K-effective. Allow multipools and large groups time to consolidate pledge and delegation. Group consolidation will not decrease decentralization of group block production, will improve network efficiency, will allow for unifying pledge, and make life easier for operators. It’s a rare win-win-win.
-13. Wait 5 to 10 epochs, measure decentralization, measure pledge concentration, and gather community feedback.
-14. HARDFORK implementation of the new formula enforcing pledge leverage diminishing returns ( a0 = 100, k = 3.0*k-effective ).
-15. Measure decentralization, gather community feedback.
-16. Adjust a0 and k by 5% at most every 10 epochs until the end of Voltaire.
-17. After Voltaire adjust a0 and k annually/bi-annually by community vote.
+
+5. Reduce k from 500 to approximately 3 times K-effective and decrease a0 from 0.3 to 0.1.
+
+This will improve yields for community delegators and allow multipools time to consolidate pledge, consolidate delegation, and retire unnecessary pools. Group consolidation will not decrease decentralization of group block production, will improve network efficiency, will allow for unifying pledge, and make life easier for operators. It’s a rare win-win-win.
+
+6. Wait 5 to 10 epochs, measure decentralization, measure pledge concentration, and gather community feedback.
+
+7. HARDFORK implementation of the new formula enforcing pledge leverage diminishing returns ( a0 >= 100, k = 3.0*k-effective ).
+
+8. Measure decentralization, gather community feedback.
+
+9. Slightly adjust a0 and k by approximately 5% every 10 epochs until the end of Voltaire.
+
+10. After Voltaire adjust a0 and k annually/bi-annually by community vote.
 
 # Copyright
 
