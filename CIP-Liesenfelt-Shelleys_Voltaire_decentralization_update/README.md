@@ -12,17 +12,18 @@ Post-History: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentra
 
 # List of Potential Reviewers:
 
-- Lars Brünjes
 - Aggelos Kiayias
-- Elias Koutsoupias
 - Aikaterini-Panagiota Stouka
 - Charles Hoskinson
+- Christia Ovezik
+- Colin Edwards
+- Elias Koutsoupias
+- Francisco Landino
+- Lars Brünjes
+- Mark Stopka
 - Shawn McMurdo
 - Tobias Francee
-- Colin Edwards
 - Tom Stafford
-- Francisco Landino
-- Mark Stopka
 
 # Abstract
 
@@ -131,7 +132,7 @@ The intent of parameters (a0, k) has not been realized. The graph of k-effective
 
 Another important determinant of the ability for small pools to compete with larger pools is the mandatory minimum fee (minFee parameter) which is currently 340₳. This minimum fee is a higher percentage of the total rewards for a small pool compared to a larger pool. It means that delegator yields for a small pool will not exceed 4.0% until the pool has at least 10.0% saturation (currently ~6.8M₳). This is a significant barrier to entry for small pools.
 
-Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Stake) vs log(Leverage) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2250 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22. The SPA is the anchor of decentralization on Cardano.
+Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Stake) vs log(Leverage) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2250 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22.
 
 <img src="stake vs leverage current.png">
 
