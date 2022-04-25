@@ -17,10 +17,12 @@ Post-History: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentra
 - Charles Hoskinson
 - Christia Ovezik
 - Colin Edwards
+- Duncan Coutts
 - Elias Koutsoupias
 - Francisco Landino
 - Lars Brünjes
 - Mark Stopka
+- Philipp Kant
 - Shawn McMurdo
 - Tobias Francee
 - Tom Stafford
