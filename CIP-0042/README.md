@@ -102,13 +102,13 @@ Core (such as `PlutusTx`), no existing functionality should be affected.
 On-chain, this requires a hard fork: the upcoming July hardfork [already takes
 this feature into account](https://www.youtube.com/watch?v=B0tojqvMgB0&t=1148s).
 
-## Implementations
+## Path to Active
 
 An implementation by MLabs already exists, and has been [merged into
 Plutus](https://github.com/input-output-hk/plutus/pull/4368). Tests of the
 functionality have also been included, although costing is currently
 outstanding, as it cannot be done by MLabs due to limitations in how costing is
-calculated.
+calculated. Costing will instead be done by the Plutus Core team.
 
 ## Copyright
 
