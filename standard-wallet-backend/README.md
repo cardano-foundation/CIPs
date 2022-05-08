@@ -2,7 +2,7 @@
 CIP: ?
 Title: Standard for light wallet backend connection
 Authors: Miguel Angel Cabrera Minagorri <devgorri@gmail.com>
-Comments-URI: 
+Comments-URI: https://github.com/cardano-foundation/CIPs/pull/254 
 Status: Draft
 Type: Standards Track 
 Created: 2022-05-08
