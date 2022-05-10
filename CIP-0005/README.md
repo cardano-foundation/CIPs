@@ -135,7 +135,7 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 
 ## Reference implementation
 
-N/A
+[cip5-js](https://www.npmjs.com/package/@dcspark/cip5-js)
 
 ## Copyright
 
