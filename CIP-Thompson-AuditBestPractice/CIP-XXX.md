@@ -26,7 +26,7 @@ DApp users seek assurance about DApps that they wish to use. This comes from run
 
 DApp developers seek to drive adoption through their DApps being certified. Wallets and DApp stores are enhanced by providing certification services, and the wider Cardano ecosystem is strengthened through certification becoming widespread. Best practice standards can be developed by the audit and tooling communities, and systematised by the Cardano Foundation. This document is a first step in that direction.
 
-Assurance can only ever be partial: a DApp can be shown to have some good features and to avoid some bad ones, but this is not a guarantee that using a DApp will not have negative consequences for a user. This is not simply because tools and audits cannot give complete coverage, but also because attacks may come at lower (e.g. network, browser) or higher (e.g. crypto-economic) levels than addressed here.
+**Assurance can only ever be partial:** a DApp can be shown to have some good features and to avoid some bad ones, but this is not a guarantee that using a DApp will not have negative consequences for a user. This is not simply because tools and audits cannot give complete coverage, but also because attacks may come at lower (e.g. network, browser) or higher (e.g. crypto-economic) levels than addressed here.
 
 ### An audit FAQ
 
