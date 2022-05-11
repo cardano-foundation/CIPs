@@ -112,7 +112,7 @@ Submitters might also wish to explain mitigating actions that they have taken to
 
 #### *On-Chain Specification* 
 
-The format of transactions accepted by the smart contracts should be specified using the template [here](https://docs.google.com/document/d/1j1s17Sdb7i8NzhK5GvgvcZqYbBtUzJB9Qpalmk8xElY). 
+The format of transactions accepted by the smart contracts should be specified using the template provided in the auxiliary document `Tx-spec.md`.
 
 The document should clearly specify the properties to be satisfied by the smart contract.
 * Properties shall be as extensive as possible and ideally would cover functionality, robustness, safety, liveness and efficiency, e.g. cost of execution, of the smart contract. 
