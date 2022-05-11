@@ -3,7 +3,7 @@ CIP: 16
 Title: Cryptographic Key Serialisation Formats
 Authors: Luke Nadur <luke.nadur@iohk.io>
 Comments-URI: https://github.com/cardano-foundation/CIPs/pull/57
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2020-12-21
 License: Apache-2.0

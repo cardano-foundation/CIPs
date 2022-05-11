@@ -34,7 +34,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 13 | [Cardano URI Scheme](./CIP-0013/) | Draft |
 | 14 | [User-Facing Asset Fingerprint](./CIP-0014/) | Active |
 | 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/) | Active |
-| 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/) | Draft |
+| 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/) | Active |
 | 17 | [Cardano Delegation Portfolio](./CIP-0017/) | Active |
 | 18 | [Multi-Stake-Keys Wallets](./CIP-0018/) | Draft |
 | 19 | [Cardano Addresses](./CIP-0019/) | Active |
