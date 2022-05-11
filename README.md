@@ -46,7 +46,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 25 | [NFT Metadata Standard](./CIP-0025/) | Active |
 | 26 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
-| 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Draft |
+| 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Active |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Draft |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
 | 31 | [Reference Inputs](./CIP-0031/) | Draft |
