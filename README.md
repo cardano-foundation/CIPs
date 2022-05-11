@@ -54,10 +54,10 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 33 | [Reference Scripts](./CIP-0033/) | Draft |
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
 | 35 | [Plutus Core Evolution](./CIP-0035) | Active |
-| 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
-| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Draft |
+| 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
+| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
-| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Draft |
+| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 
 > 💡 For more details about Statuses, refer to [CIP1](./CIP-0001).
 
