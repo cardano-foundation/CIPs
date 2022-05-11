@@ -8,6 +8,10 @@
     "description": "milkomeda.com - the destination address in the sidechain"
   },
   {
+    "transaction_metadatum_label": 309,
+    "description": "Proof of Existence record"
+  },
+  {
     "transaction_metadatum_label": 674,
     "description": "CIP-0020 - Transaction message/comment metadata"
   },
