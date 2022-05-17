@@ -302,4 +302,5 @@ The benefits of this are:
 # Implementations
 
 [nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
+
 [yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
