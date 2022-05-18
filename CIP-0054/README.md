@@ -151,22 +151,26 @@ For example, to create a Smart NFT which is rendered by another token, and is al
 
 When an on-chain javascript NFT is rendered which specifies any of the metadata options above, the website / dApp / wallet which creates the `<iframe>` sandbox, should inject the API defined here into that `<iframe>` sandbox. It is worth saying that the wallet dApp integration API from [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) should probably not be exposed inside the sandbox, to prevent cross-site-scripting attacks. 
 
-It is recommended that the API not be injected for every NFT – only the ones which specify the relevant metadata - this is an important step so that it’s clear which NFTs require this additional API, and also to enable pre-loading and caching of the required data. We are aiming to expose only the specific data requested by the NFT in its metadata – in this CIP we are not providing a more general API for querying arbitrary data from the blockchain. 
+The Paginate data type along with APIError and PaginateError are copied directly from [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) and these functions should operate in a similar manner to that API. 
+
+It is recommended that the Smart NFT API not be injected for every NFT – only the ones which specify the relevant metadata - this is an important step so that it’s clear which NFTs require this additional API, and also to enable pre-loading and caching of the required data. We are aiming to expose only the specific data requested by the NFT in its metadata – in this CIP we are not providing a more general API for querying arbitrary data from the blockchain. 
 
 *There is potentially a desire to provide a more open-ended interface to query arbitrary data from the blockchain – perhaps in the form of direct access to GraphQL – but that may follow in a later CIP – additional fields which could be added to the `uses: {}` metadata to enable the NFT to perform more complex queries on the blockchain.*
 
 Although an asynchronous API is specified – so the data could be retrieved at the time when the NFT actually requests it – it is expected that in most instances the site which renders the NFT would gather the relevant transaction logs in advance, and inject them into the `<iframe>` sandbox at the point where the sandbox is created, so that the data is immediately available to the NFT without having to
 perform an HTTP request. 
 
-### cardano.nft.getFingerprint() : Promise
+### cardano.nft.fingerprint: String
 
-Return the fingerprint of the current token - in the case where we're rendering a child token, this will be the fingerprint of the child token. 
+The fingerprint of the current token - in the case where we're rendering a child token, this will be the fingerprint of the child token. 
 
-### cardano.nft.getMetadata() : Promise
+### cardano.nft.metadata : Array
  
-Return the content of the 721 key from the metadata json from the mint transaction of the current NFT - if we are rendering on behalf of a child NFT, this will be the metadata from the child NFT.
+The content of the 721 key from the metadata json from the mint transaction of the current NFT - if we are rendering on behalf of a child NFT, this will be the metadata from the child NFT.
 
-### cardano.nft.getTransactions( string ) : Promise
+### cardano.nft.getTransactions( string,  paginate: Paginate = undefined ) : Promise\<Object>
+
+Errors: `APIError`, `PaginateError`
 
 The argument to this function should be either an address, token fingerprint or the keyword “own”. It must match one of the ones specified via the `transactions` key in the new metadata mechanism detailed above.
 
@@ -186,7 +190,9 @@ This function will return a list of transaction hashes and metadata relating to 
 ```
 For simplicity, we do not include anything other than the txHash and the metadata – since any other relevant details about the transaction can always be encoded into the metadata, there is no need to over-complicate by including other transaction data like inputs, outputs or the date of the transaction etc. That is left for a potential future extension of the API to include more full GraphQL support.
 
-### cardano.nft.getTokens( string ) : Promise
+### cardano.nft.getTokens( string, paginate: Paginate = undefined ) : Promise\<Object>
+
+Errors: `APIError`, `PaginateError`
 
 This function accepts either an address or the keyword “own” as its argument - it must match one of the ones specified via the the `tokens` key in the new metadata mechanism detailed above.
 
@@ -207,7 +213,9 @@ This function will return a list of the tokens held by the address specified in 
 }
 ```
 
-### cardano.nft.getFileURL( string id=null, string fingerprint=null ) : Promise
+### cardano.nft.getFileURL( string id = null, string fingerprint = null ) : Promise\<String>
+
+Errors: `APIError`
 
 This function provides access to the contents of files listed in the `files[]` array for this NFT - if the NFT is rendering on behalf of another NFT, the files arrays from both should be merged, with the child NFT items overwriting the rendering NFT, in the case of ID conflicts. 
 
