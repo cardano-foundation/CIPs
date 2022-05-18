@@ -149,7 +149,7 @@ For example, to create a Smart NFT which is rendered by another token, and is al
 
 ## The Javascript API
 
-When an on-chain javascript NFT is rendered which specifies any of the metadata options above, the website / dApp / wallet which creates the `<iframe>` sandbox, should inject the API defined here into that `<iframe>` sandbox. It is worth saying that the wallet dApp integration API from [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) should probably not be exposed inside the sandbox, to prevent cross-site-scripting attacks. 
+When an on-chain Javascript NFT is rendered which specifies any of the metadata options above, the website / dApp / wallet which creates the `<iframe>` sandbox, should inject the API defined here into that `<iframe>` sandbox. It is worth saying that the wallet dApp integration API from [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) should probably not be exposed inside the sandbox, to prevent cross-site-scripting attacks. 
 
 The Paginate data type along with APIError and PaginateError are copied directly from [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) and these functions should operate in a similar manner to that API. 
 
@@ -168,7 +168,7 @@ The fingerprint of the current token - in the case where we're rendering a child
  
 The content of the 721 key from the metadata json from the mint transaction of the current NFT - if we are rendering on behalf of a child NFT, this will be the metadata from the child NFT.
 
-### cardano.nft.getTransactions( string,  paginate: Paginate = undefined ) : Promise\<Object>
+### cardano.nft.getTransactions( string which,  paginate: Paginate = undefined ) : Promise\<Object>
 
 Errors: `APIError`, `PaginateError`
 
@@ -190,7 +190,7 @@ This function will return a list of transaction hashes and metadata relating to 
 ```
 For simplicity, we do not include anything other than the txHash and the metadata – since any other relevant details about the transaction can always be encoded into the metadata, there is no need to over-complicate by including other transaction data like inputs, outputs or the date of the transaction etc. That is left for a potential future extension of the API to include more full GraphQL support.
 
-### cardano.nft.getTokens( string, paginate: Paginate = undefined ) : Promise\<Object>
+### cardano.nft.getTokens( string address, paginate: Paginate = undefined ) : Promise\<Object>
 
 Errors: `APIError`, `PaginateError`
 
@@ -223,7 +223,3 @@ The first argument specifies which entry from the files array should be retreive
 The second argument allows you to specify which token's files to search - it should either be the token itself (either the child token or the rendering token, in the case of tokens with a separate renderer). In the case where an NFT also uses the `tokens` part of this API, then the getFileURL() function will also allow you to specify any one of the fingerprints returned by the getTokens() query.
 
 The URL returned by this function should be in a format that is accessible from within the `<iframe>` sandbox - perhaps using `window.URL.createObjectURL()` to generate a static URL from raw data if necessary. 
-
-
-
-
