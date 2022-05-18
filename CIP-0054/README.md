@@ -36,33 +36,33 @@ Minting metadata for Smart NFTs – based on the existing [CIP-0025](https://git
 
 ```
 {
-    "721": {
-    	"<policy_id>": {
-        	"<asset_name>": {
-            	"name": <string>,
-    
-            	"image": <uri | array>,
-            	"mediaType": "image/<mime_sub_type>",
-    
-            	"description": <string | array>,
-    
-            	"files": [{
+	"721": {
+		"<policy_id>": {
+			"<asset_name>": {
+				"name": <string>,
+
+				"image": <uri | array>,
+				"mediaType": "image/<mime_sub_type>",
+
+				"description": <string | array>,
+
+				"files": [{
 					"id": <string>
-        			"name": <string>,
-              		"mediaType": <mime_type>,
-            		"src": <uri | array>,
-            		<other_properties>
-            	}],
-    
-            	"uses": {
+					"name": <string>,
+					"mediaType": <mime_type>,
+					"src": <uri | array>,
+					<other_properties>
+				}],
+
+				"uses": {
 	            	"transactions": <string | array>,
 					"tokens": <string | array>,
 					"renderer": <string>	  
 	        	}
-          	}
-        },
-        "version": "1.0"
-    }
+			}
+		},
+		"version": "1.0"
+	}
 }
 ```
 
@@ -152,8 +152,7 @@ For example, to create a Smart NFT which is rendered by another token, and is al
 When an on-chain javascript NFT is rendered which specifies any of the metadata options above, the website / dApp / wallet which creates the `<iframe>` sandbox, should inject the API defined here into
 that `<iframe>` sandbox. 
 
-It is recommended that the API not be injected for every NFT – only the ones which specify the relevant metadata - this is an important step so that it’s clear which NFTs require this additional API, and also to
-enable pre-loading and caching of the required data. We are aiming to expose only the specific data requested by the NFT in its metadata – in this CIP we are not providing a more general API for querying arbitrary data from the blockchain. 
+It is recommended that the API not be injected for every NFT – only the ones which specify the relevant metadata - this is an important step so that it’s clear which NFTs require this additional API, and also to enable pre-loading and caching of the required data. We are aiming to expose only the specific data requested by the NFT in its metadata – in this CIP we are not providing a more general API for querying arbitrary data from the blockchain. 
 
 *There is potentially a desire to provide a more open-ended interface to query arbitrary data from the blockchain – perhaps in the form of direct access to GraphQL – but that may follow in a later CIP – additional fields which could be added to the `uses: {}` metadata to enable the NFT to perform more complex queries on the blockchain.*
 
@@ -166,7 +165,7 @@ Return the fingerprint of the current token - in the case where we're rendering 
 
 ### cardano.nft.getTransactions( string ) : Promise
 
-The argument to this function should be either an address, token fingerprint or the keyword “own”. It must match one of the ones specified via the new metadata mechanism detailed above.
+The argument to this function should be either an address, token fingerprint or the keyword “own”. It must match one of the ones specified via the `transactions` key in the new metadata mechanism detailed above.
 
 This function will return a list of transaction hashes and metadata relating to the specified address or token. The list will be ordered by date with the newest transaction first, and will match the following format:
 
@@ -182,12 +181,13 @@ This function will return a list of transaction hashes and metadata relating to 
 	"fetched": "2022-05-01T22:39:03.369Z"
 }
 ```
-For simplicity, we do not include anything other than the txHash and the metadata – since any other relevant details about the transaction can always be encoded into the metadata, there is no need to
-over-complicate by including other transaction data like inputs, outputs or the date of the transaction etc. That is left for a potential future extension of the API to include more full GraphQL support.
+For simplicity, we do not include anything other than the txHash and the metadata – since any other relevant details about the transaction can always be encoded into the metadata, there is no need to over-complicate by including other transaction data like inputs, outputs or the date of the transaction etc. That is left for a potential future extension of the API to include more full GraphQL support.
 
 ### cardano.nft.getTokens( string ) : Promise
 
+This function accepts either an address or the keyword “own” - it must match one of the ones specified via the the `tokens` key ikn the new metadata mechanism detailed above.
 
+This function will return a list of the tokens held by the address specified in the argument, 
 
 ### cardano.nft.getFile( string tokenFingerprint, string id ) : Promise
 
