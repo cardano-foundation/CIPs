@@ -55,10 +55,10 @@ Minting metadata for Smart NFTs – based on the existing [CIP-0025](https://git
 				}],
 
 				"uses": {
-	            	"transactions": <string | array>,
+					"transactions": <string | array>,
 					"tokens": <string | array>,
 					"renderer": <string>	  
-	        	}
+				}
 			}
 		},
 		"version": "1.0"
@@ -149,8 +149,7 @@ For example, to create a Smart NFT which is rendered by another token, and is al
 
 ## The Javascript API
 
-When an on-chain javascript NFT is rendered which specifies any of the metadata options above, the website / dApp / wallet which creates the `<iframe>` sandbox, should inject the API defined here into
-that `<iframe>` sandbox. 
+When an on-chain javascript NFT is rendered which specifies any of the metadata options above, the website / dApp / wallet which creates the `<iframe>` sandbox, should inject the API defined here into that `<iframe>` sandbox. It is worth saying that the wallet dApp integration API from [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) should probably not be exposed inside the sandbox, to prevent cross-site-scripting attacks. 
 
 It is recommended that the API not be injected for every NFT – only the ones which specify the relevant metadata - this is an important step so that it’s clear which NFTs require this additional API, and also to enable pre-loading and caching of the required data. We are aiming to expose only the specific data requested by the NFT in its metadata – in this CIP we are not providing a more general API for querying arbitrary data from the blockchain. 
 
@@ -162,6 +161,10 @@ perform an HTTP request.
 ### cardano.nft.getFingerprint() : Promise
 
 Return the fingerprint of the current token - in the case where we're rendering a child token, this will be the fingerprint of the child token. 
+
+### cardano.nft.getMetadata() : Promise
+ 
+Return the content of the 721 key from the metadata json from the mint transaction of the current NFT - if we are rendering on behalf of a child NFT, this will be the metadata from the child NFT.
 
 ### cardano.nft.getTransactions( string ) : Promise
 
@@ -185,9 +188,34 @@ For simplicity, we do not include anything other than the txHash and the metadat
 
 ### cardano.nft.getTokens( string ) : Promise
 
-This function accepts either an address or the keyword “own” - it must match one of the ones specified via the the `tokens` key ikn the new metadata mechanism detailed above.
+This function accepts either an address or the keyword “own” as its argument - it must match one of the ones specified via the the `tokens` key in the new metadata mechanism detailed above.
 
-This function will return a list of the tokens held by the address specified in the argument, 
+This function will return a list of the tokens held by the address specified in the argument, or held by the same stake key as the current token in the case of the “own” keyword. 
 
-### cardano.nft.getFile( string tokenFingerprint, string id ) : Promise
+```
+ {
+	"tokens": [
+		{ 
+			"policyID": "781ab7667c5a53956faa09ca2614c4220350f361841a0424448f2f30",
+			"assetName": "Life150",
+			"fingerprint": "asset1frc5wn889lcmj5y943mcn7tl8psk98mc480v3j",
+			"quantity": 1
+		},
+		<more tokens here>
+	],
+	"fetched": "2022-05-01T22:39:03.369Z"
+}
+```
+
+### cardano.nft.getFileURL( string id=null, string fingerprint=null ) : Promise
+
+This function provides access to the contents of files listed in the `files[]` array for this NFT - if the NFT is rendering on behalf of another NFT, the files arrays from both should be merged, with the child NFT items overwriting the rendering NFT, in the case of ID conflicts. 
+
+The first argument specifies which entry from the files array should be retreived - if this argument is null, then the NFT's default image should be returned, which will typically come from the NFT's `image` metadata field rather than the files array. 
+The second argument allows you to specify which token's files to search - it should either be the token itself (either the child token or the rendering token, in the case of tokens with a separate renderer). In the case where an NFT also uses the `tokens` part of this API, then the getFileURL() function will also allow you to specify any one of the fingerprints returned by the getTokens() query.
+
+The URL returned by this function should be in a format that is accessible from within the `<iframe>` sandbox - perhaps using `window.URL.createObjectURL()` to generate a static URL from raw data if necessary. 
+
+
+
 
