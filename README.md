@@ -85,6 +85,7 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 51? | [Preserve Submitter's Ordering of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/231) | 
 | 52? | [Cardano Audit Best Practice Guidelines](https://github.com/cardano-foundation/CIPs/pull/252) | 
 | 53? | [Light Wallet Backend Connection](https://github.com/cardano-foundation/CIPs/pull/254) | 
+| 54? | [Cardano Smart NFTs](https://github.com/cardano-foundation/CIPs/pull/263) | 
 | 381? | [Plutus Support For Pairings Over Curve Bls12-381](https://github.com/cardano-foundation/CIPs/pull/220) |
 | 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
 
