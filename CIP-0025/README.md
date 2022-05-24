@@ -128,6 +128,7 @@ metadata = { 721 : uint => label_metadata }
 ```
 
 In version `1` the **`asset_name`** must be `utf-8` encoded and in text format for the key in the metadata map. In version `2` the the raw bytes of the **`asset_name`** are used.
+
 In version `1` the **`policy_id`** is used in text format for the key in the metadata map. In version `2` the the raw bytes of the **`policy_id`** are used.
 
 
