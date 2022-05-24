@@ -91,7 +91,7 @@ metadata_details =
     name : string,
     image : string / [* string], 
     ? mediaType: string,
-    ? description: string / [* string]
+    ? description: string / [* string],
     ? files: [* files_details]
   }
 
@@ -120,7 +120,7 @@ metadata_details =
     name : string,
     image : string / [* string], 
     ? mediaType : string,
-    ? description : string / [* string]
+    ? description : string / [* string],
     ? files : [* files_details]
   }
 
