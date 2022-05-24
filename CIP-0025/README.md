@@ -75,22 +75,24 @@ The structure allows for multiple token mints, also with different policies, in 
 
 ```cddl
 
-policy_id = text
-asset_name = text ; utf-8
+string = text .size (0..64)
+
+policy_id = string
+asset_name = string ; utf-8
 
 files_details = 
   {
-    name: text,
-    mediaType: text,
-    src: text / [* text]
+    name: string,
+    mediaType: string,
+    src: string / [* string]
   }
 
 metadata_details = 
   {
-    name : text,
-    image : text, 
-    ? mediaType: text,
-    ? description: text / [* text]
+    name : string,
+    image : string / [* string], 
+    ? mediaType: string,
+    ? description: string / [* string]
     ? files: [* files_details]
   }
 
@@ -103,22 +105,24 @@ metadata = { 721 : uint => label_metadata }
 
 ```cddl
 
+string = text .size (0..64)
+
 policy_id = bytes ; no longer in text
 asset_name = bytes ; no longer in text and utf-8
 
 files_details = 
   {
-    name : text,
-    mediaType : text,
-    src : text / [* text]
+    name : string,
+    mediaType : string,
+    src : string / [* string]
   }
 
 metadata_details = 
   {
-    name : text,
-    image : text, 
-    ? mediaType : text,
-    ? description : text / [* text]
+    name : string,
+    image : string / [* string], 
+    ? mediaType : string,
+    ? description : string / [* string]
     ? files : [* files_details]
   }
 
