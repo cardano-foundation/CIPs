@@ -74,7 +74,6 @@ The structure allows for multiple token mints, also with different policies, in 
 #### Version 1
 
 ```cddl
-
 string = text .size (0..64)
 
 policy_id = string
@@ -104,7 +103,6 @@ metadata = { 721 : uint => label_metadata }
 #### Version 2
 
 ```cddl
-
 string = text .size (0..64)
 
 policy_id = bytes ; no longer in text
@@ -131,22 +129,21 @@ label_metadata = { * policy_id => { * asset_name => metadata_details }, version:
 metadata = { 721 : uint => label_metadata }
 ```
 
-In version `1` the **`asset_name`** must be `utf-8` encoded and in text format for the key in the metadata map. In version `2` the the raw bytes of the **`asset_name`** are used.
+- In version `1` the **`asset_name`** must be `utf-8` encoded and in text format for the key in the metadata map. In version `2` the the raw bytes of the **`asset_name`** are used.
 
-In version `1` the **`policy_id`** is used in text format for the key in the metadata map. In version `2` the the raw bytes of the **`policy_id`** are used.
+- In version `1` the **`policy_id`** must be in text format for the key in the metadata map. In version `2` the the raw bytes of the **`policy_id`** are used.
 
+- The **`image`** and **`name`** property are marked as required. **`image`** should be an URI pointing to a resource with mime type `image/*` used as thumbnail or as actual link if the NFT is an image (ideally <= 1MB).
 
-The **`image`** and **`name`** property are marked as required. **`image`** should be an URI pointing to a resource with mime type `image/*` used as thumbnail or as actual link if the NFT is an image (ideally <= 1MB).
+- The **`description`** property is optional.
 
-The **`description`** property is optional.
+- The **`mediaType`** and **`files`** properties are optional.<br /> **`mediaType`** is however required inside **`files`**. The **`src`** property inside **`files`** is an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image, like the on in the **`image`** property, but in an higher resolution.
 
-The **`mediaType`** and **`files`** properties are optional.<br /> **`mediaType`** is however required inside **`files`**. The **`src`** property inside **`files`** is an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image, like the on in the **`image`** property, but in an higher resolution.
+- The **`version`** property is also optional. If not specified the version is `1`. It will become mandatory in future versions if needed.
 
-The **`version`** property is also optional. If not specified the version is `1`. It will become mandatory in future versions if needed.
+- This structure really just defines the basis. New properties and standards can be defined later on for varies uses cases. That's why there is an "other properties" tag.
 
-This structure really just defines the basis. New properties and standards can be defined later on for varies uses cases. That's why there is an "other properties" tag.
-
-The retrieval of the metadata should be the same for all however.
+- The retrieval of the metadata should be the same for all however.
 
 Optional fields allow to save space in the blockchain. Consequently the minimal structure for a single token is:
 
