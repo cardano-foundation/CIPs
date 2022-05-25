@@ -32,9 +32,9 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 11 | [Staking key chain for HD wallets](./CIP-0011/) | Active |
 | 12 | [On-chain stake pool operator to delegates communication](./CIP-0012/) | Draft |
 | 13 | [Cardano URI Scheme](./CIP-0013/) | Draft |
-| 14 | [User-Facing Asset Fingerprint](./CIP-0014/) | Draft |
-| 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/) | Draft |
-| 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/) | Draft |
+| 14 | [User-Facing Asset Fingerprint](./CIP-0014/) | Active |
+| 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/) | Active |
+| 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/) | Active |
 | 17 | [Cardano Delegation Portfolio](./CIP-0017/) | Active |
 | 18 | [Multi-Stake-Keys Wallets](./CIP-0018/) | Draft |
 | 19 | [Cardano Addresses](./CIP-0019/) | Active |
@@ -43,11 +43,11 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 22 | [Pool operator verification](./CIP-0022/) | Active |
 | 23 | [Fair Min Fees](./CIP-0023/) | Draft |
 | 24 | [Non-Centralizing Rankings](./CIP-0024/) | Draft |
-| 25 | [NFT Metadata Standard](./CIP-0025/) | Draft |
+| 25 | [NFT Metadata Standard](./CIP-0025/) | Active |
 | 26 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
-| 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Draft |
-| 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Draft |
+| 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Active |
+| 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Active |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
 | 31 | [Reference Inputs](./CIP-0031/) | Draft |
 | 32 | [Inline Datums](./CIP-0032/) | Draft |
@@ -55,10 +55,10 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
 | 35 | [Plutus Core Evolution](./CIP-0035) | Active |
 | 36 | [Catalyst/Voltaire Registration Transaction Metadata Format](./CIP-0036) | Proposed | 
-| 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Draft |
-| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Draft |
+| 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
+| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
-| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Draft |
+| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 
 > 💡 For more details about Statuses, refer to [CIP1](./CIP-0001).
 

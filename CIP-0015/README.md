@@ -3,7 +3,7 @@ CIP: 15
 Title: Catalyst Registration Transaction Metadata Format
 Authors: Sebastien Guillemot <sebastien@emurgo.io>, Rinor Hoxha <rinor.hoxha@iohk.io>, Mikhail Zabaluev <mikhail.zabaluev@iohk.io>
 Comments-URI: https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2020-01-05
 License: CC-BY-4.0

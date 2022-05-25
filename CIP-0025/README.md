@@ -3,7 +3,7 @@ CIP: 25
 Title: NFT Metadata Standard
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Smaug <smaug@pool.pm>
 Comments-URI:
-Status: Draft
+Status: Active
 Type: Informational
 Created: 2021-04-08
 Post-History: https://forum.cardano.org/t/cip-nft-metadata-standard/45687 and https://www.reddit.com/r/CardanoDevelopers/comments/mkhlv8/nft_metadata_standard/

@@ -4,7 +4,7 @@ Title: User-Facing Asset Fingerprint
 Authors: Matthias Benkort <matthias.benkort@iohk.io>, Rodney Lorrimar <rodney.lorrimar@iohk.io>
 Comments-Summary: A common format for displaying a user-facing identifier for assets.
 Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-0014
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2020-02-01
 License: CC-BY-4.0
