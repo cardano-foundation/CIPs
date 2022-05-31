@@ -11,7 +11,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano's treasury is currently denominated purely in ADA and has no source of revenue other than the existing reward splitting mechanism implemented at the protocol level. This CIP intends to diversity the treasury holdings and increase protocol revenue to the treasury.
+Cardano's treasury is currently denominated purely in ADA and has no source of revenue other than the existing reward splitting mechanism implemented at the protocol level. This CIP intends to diversify the treasury holdings and increase protocol revenue to the treasury.
 
 ## Motivation
 
