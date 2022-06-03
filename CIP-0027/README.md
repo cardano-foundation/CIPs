@@ -27,7 +27,7 @@ A new tag of 777 is proposed for this implementation.  The community guidelines 
 1) A brand new unused policy for implementation is required.
 2) The royalties tags are to be written to an unnamed token, using the policy to be used for the intended Cardano Assets.
 3) Only the first minted set of instructions will be honored.  Any future updates or rewrites will be ignored.  This prevents a Cardano Asset maker from changing the royalties at a future date.
-4) Within this created asset will be the metadata for royalties distributions.  It will use a tag of 777, and then have two tags to identify the percentage of future sales requested as a royalty, and the payment address to forward those royalties to.  Those tags will be "rate" and "addr" respectively.
+4) Within this created asset will be the metadata for royalties distributions.  It will use a tag of 777, have either an object or array depending on the number of royalty addresses, then have two tags to identify the percentage of future sales requested as a royalty, and the payment address to forward those royalties to.  Those tags will be "rate" and "addr" respectively.
 5) The "rate" key tag can be any floating point value from 0.0 to 1.0, to represent between 0 and 100 percent.  For example, a 12.5 percent royalty would be represented with "rate": "0.125".  Previous version 1.0 of this proposal used pct instead of rate.  Marketplaces to continue to honor legacy pct tag.
 6) The "addr" key tag can be a string value, or an array.  It is to include a single payment address.  By allowing for an array, the payment address can exceed the per line 64 character limitation.  This payment address could be part of a smart contract, which should allow for greater flexibility of royalties distributions, controlled by the asset creator.
 7) The royalty token must be minted prior to creating any assets off the policy.  All markets will be instructed to look only for the first minted asset on a policy, which would need to be the unnamed 777 token.
@@ -53,6 +53,23 @@ A new tag of 777 is proposed for this implementation.  The community guidelines 
 	}
 }
 
+## Example JSON with multiple addresses
+
+{
+	"777": [
+	{
+		"rate": "0.2",
+		"addr": "addr1v9nevxg9wunfck0gt7hpxuy0elnqygglme3u6l3nn5q5gnq5dc9un"
+	},
+	{
+		"rate": "0.12",
+		"addr": [
+			"addr1q8g3dv6ptkgsafh7k5muggrvfde2szzmc2mqkcxpxn7c63l9znc9e3xa82h",
+			"pf39scc37tcu9ggy0l89gy2f9r2lf7husfvu8wh"
+		]
+	}]
+}
+
 ## Process Flow
 1) Create policy for planned assets.
 2) Mint no name token with community standard royalties metadata.
@@ -61,7 +78,7 @@ A new tag of 777 is proposed for this implementation.  The community guidelines 
 
 ## Rationale
 
-By creating a new tag for the distinct purpose of royalties distributions, Cardano Asset makers, and Marketplaces can uniformly apply royalties to assets with predictable results.  By creating the instructions on a single, no name token, all marketplaces will know the correct location of the royalties asset, without having to further locate it.  By enforcing the requirement of honoring only the first mint, cardano asset buyers and owners can predict the future resale value of the assets in their possession.  The solution is scalable to any desired royalty percentage.  It is easy to work with this new standard, and does not require an in depth understanding of smart contracts.
+By creating a new tag for the distinct purpose of royalties distributions, Cardano Asset makers, and Marketplaces can uniformly apply royalties to assets with predictable results.  By creating the instructions on a single, no name token, all marketplaces will know the correct location of the royalties asset, without having to further locate it.  By enforcing the requirement of honoring only the first mint, cardano asset buyers and owners can predict the future resale value of the assets in their possession.  The solution is scalable to any desired royalty percentage and number of royalty addresses.  It is easy to work with this new standard, and does not require an in depth understanding of smart contracts.
 
 ## Change Log
 
@@ -71,8 +88,8 @@ By creating a new tag for the distinct purpose of royalties distributions, Carda
 ## Minor Revision - September 27th, 2021
 ## Minor Revision - November 8th, 2021
 ## Minor Revision - December 30th, 2021
-- Change CIP Type from Standards to Informational
-- Change CIP Status from Draft to Active
+## Major Revision - June 3rd, 2022
+- Adding multiple royalty address support proposal
 
 Copyright
 
