@@ -221,6 +221,7 @@ DApps are used by *DApp users*, and built by *DApp developers*. Audit is perform
 | FYEO Inc.       | https://gofyeo.com/blockchain-security  | james@gofyeo.com  |
 | Hachi           | https://hachi.one                       | team@hachi.one        |
 | MLabs           | https://mlabs.city                      | info@mlabs.city      |
+| Runtime Verification           | https://www.runtimeverification.com | contact@runtimeverification.com  |
 
 ### 4. A sample audit report
 
