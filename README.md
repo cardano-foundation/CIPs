@@ -15,7 +15,7 @@ It is therefore quite common for proposals and implementations to be worked on c
 
 The entire process is described in greater detail in [CIP1 - "CIP Process"](./CIP-0001).
 
-### Reviewed Proposals (as of 2022-04-07)
+### Reviewed Proposals 
 
 | # | Title | Status | 
 | --- | --- | --- |
@@ -55,26 +55,28 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
 | 35 | [Plutus Core Evolution](./CIP-0035) | Active |
 | 36 | [Catalyst/Voltaire Registration Transaction Metadata Format](./CIP-0036) | Proposed | 
+| 42 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Proposed | 
+| 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |  
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 
+<p align="right"><i>Last updated on 2022-06-14</i></p>
+
 > 💡 For more details about Statuses, refer to [CIP1](./CIP-0001).
 
-### Proposals Under Review (as of 2022-03-17)
+### Proposals Under Review
 
 Below are listed tentative CIPs still under discussion with the community. Discussions and progress will be reviewed by CIP editors in [bi-weekly meetings](https://www.crowdcast.io/cips-biweekly). Note that they are listed below for easing navigation and also, tentatively allocating numbers to avoid clashes later on.
 
-| # | Title | 
-| --- | --- | 
+| **#** | **Title** | 
+| --- | --- |
 | 37? | [Dynamic Saturation Based on Pledge](https://github.com/cardano-foundation/CIPs/pull/163) |
 | 38? | [On-Chain Token Metadata Standard](https://github.com/cardano-foundation/CIPs/pull/137) | 
 | 39? | [Smart Contract Software Licenses](https://github.com/cardano-foundation/CIPs/pull/185) |
 | 40? | [Collateral Output](https://github.com/cardano-foundation/CIPs/pull/216) | 
 | 41? | [Collateral Rewards](https://github.com/cardano-foundation/CIPs/pull/217) | 
-| 42? | [New Plutus Builtin: serialiseBuiltinData](https://github.com/cardano-foundation/CIPs/pull/218) |
-| 43? | ~~[New Plutus Builtin: dataHash](https://github.com/cardano-foundation/CIPs/pull/222)~~ |
 | 44? | [Additional Factors For NFT Market Verification](https://github.com/cardano-foundation/CIPs/pull/226) | 
 | 45? | [Decentralization: Using Pledge as a Bidding Param](https://github.com/cardano-foundation/CIPs/pull/229) |
 | 46? | [Prepay Min Fixed Fee](https://github.com/cardano-foundation/CIPs/pull/190) | 
@@ -83,10 +85,16 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 49? | [ECDSA and Schnorr signatures in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/250) | 
 | 50? | [Liesenfelt Shelleys Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 51? | [Preserve Submitter's Ordering of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/231) | 
-| 52? | [Cardano Audit Best Practice Guidelines](https://github.com/cardano-foundation/CIPs/pull/252) | 
 | 53? | [Light Wallet Backend Connection](https://github.com/cardano-foundation/CIPs/pull/254) | 
+| 54? | [Cardano Smart NFTs](https://github.com/cardano-foundation/CIPs/pull/263) |
+| 55? | [Babbage Era's coinsPerUTxOByte](https://github.com/cardano-foundation/CIPs/pull/265) | 
+| 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) | 
+| 57? | [On-Chain Script Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) | 
+| 58? | [Plutus Bitwise Primitives](https://github.com/cardano-foundation/CIPs/pull/268) |
 | 381? | [Plutus Support For Pairings Over Curve Bls12-381](https://github.com/cardano-foundation/CIPs/pull/220) |
 | 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
+
+<p align="right"><i>Last updated on 2022-06-14</i></p>
 
 ### CIP creation process as a Sequence Diagram
 
