@@ -71,7 +71,7 @@ The structure allows for multiple token mints, also with different policies, in 
 
 ### CDDL
 
-[Version 1](./cddl/version_1.cddl)
+[Version 1](./cddl/version_1.cddl)\
 [Version 2](./cddl/version_2.cddl)
 
 - In version `1` the **`asset_name`** must be `utf-8` encoded and in text format for the key in the metadata map. In version `2` the the raw bytes of the **`asset_name`** are used.
