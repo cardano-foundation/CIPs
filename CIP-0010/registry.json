@@ -19,9 +19,17 @@
     "transaction_metadatum_label": 721,
     "description": "CIP-0025 - NFT Metadata Standard"
   },
-    {
+  {
     "transaction_metadatum_label": 777,
     "description": "CIP-0027 - Royalties Standard"
+  },
+  {
+    "transaction_metadatum_label": 1188,
+    "description": "paradiso.app marketplace metadata"
+  },
+  {
+    "transaction_metadatum_label": 1189,
+    "description": "paradiso.app services metadata"
   },
   {
     "transaction_metadatum_label": 1967,
