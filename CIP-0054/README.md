@@ -181,7 +181,8 @@ This function will return a list of transaction hashes and metadata relating to 
 	"transactions": [
 		{ 
 			"txHash":  "1507d1b15e5bd3c7827f1f0575eb0fdc3b26d69af0296a260c12d5c0c78239e0",
-			"metadata": <raw metadata from blockchain>
+			"metadata": <raw metadata from blockchain>,
+			"datum": <the datum from the UTXO holding the token, if set>
 		},
 		<more transactions here>
 	],
@@ -205,7 +206,8 @@ This function will return a list of the tokens held by the address specified in 
 			"policyID": "781ab7667c5a53956faa09ca2614c4220350f361841a0424448f2f30",
 			"assetName": "Life150",
 			"fingerprint": "asset1frc5wn889lcmj5y943mcn7tl8psk98mc480v3j",
-			"quantity": 1
+			"quantity": 1,
+			"datum": <the datum from the UTXO holding the token, if set>
 		},
 		<more tokens here>
 	],
