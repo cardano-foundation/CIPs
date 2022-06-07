@@ -71,63 +71,8 @@ The structure allows for multiple token mints, also with different policies, in 
 
 ### CDDL
 
-#### Version 1
-
-```cddl
-string = text .size (0..64)
-
-policy_id = string
-asset_name = string ; utf-8
-
-files_details = 
-  {
-    name: string,
-    mediaType: string,
-    src: string / [* string]
-  }
-
-metadata_details = 
-  {
-    name : string,
-    image : string / [* string], 
-    ? mediaType: string,
-    ? description: string / [* string],
-    ? files: [* files_details]
-  }
-
-label_metadata = { * policy_id => { * asset_name => metadata_details } }
-
-metadata = { 721 : uint => label_metadata }
-```
-
-#### Version 2
-
-```cddl
-string = text .size (0..64)
-
-policy_id = bytes ; no longer in text
-asset_name = bytes ; no longer in text and utf-8
-
-files_details = 
-  {
-    name : string,
-    mediaType : string,
-    src : string / [* string]
-  }
-
-metadata_details = 
-  {
-    name : string,
-    image : string / [* string], 
-    ? mediaType : string,
-    ? description : string / [* string],
-    ? files : [* files_details]
-  }
-
-label_metadata = { * policy_id => { * asset_name => metadata_details }, version: 2 } ; version 2
-
-metadata = { 721 : uint => label_metadata }
-```
+[Version 1](./cddl/version_1.cddl)
+[Version 2](./cddl/version_2.cddl)
 
 - In version `1` the **`asset_name`** must be `utf-8` encoded and in text format for the key in the metadata map. In version `2` the the raw bytes of the **`asset_name`** are used.
 
