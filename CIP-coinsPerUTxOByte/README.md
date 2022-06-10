@@ -65,7 +65,7 @@ At the moment that the hard fork combinator translates the Alonzo era ledger sta
 the current value of `coinsPerUTxOWord` will be converted to
 
 ```
-⌈ coinsPerUTxOWord / 8 ⌉
+⌊ coinsPerUTxOWord / 8 ⌋
 ```
 
 ### The new minimum lovelace calculation
