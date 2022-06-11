@@ -53,8 +53,6 @@ an intra-era hard fork.
 This is an implementation detail which involves bumping the major protocol version
 but not creating a new ledger era.
 The Alonzo era experienced an intra-era hard fork when going from major protocol version 5 to 6.
-See this [table](https://github.com/input-output-hk/cardano-ledger/wiki/First-Block-of-Each-Era)
-in the cardano-ledger repository's wiki.
 
 Yet another complication stems from the named releases.
 We chose to honor the late Cardano community member and Bulgarian mathematician Vasil Dabov
@@ -73,6 +71,8 @@ how block bodies are validated (era).
 The Shelley era used the "transitional Praos" protocol (or TPraos for short).
 It consisted of Praos together with a transition system to move away from Ouroboros-BFT.
 The Babbage era replaced TPraos with Praos.
+
+A table of all the features, as of the time this CIP was submitted, can be found [here](feature-table.md).
 
 ## Specification
 
