@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Transferring Stake Pool Ownership
-Author: Jerry Sinayuk (nomadpool.io@protonmail.com)
+Author: zhekson (nomadpool.io@protonmail.com)
 Comments-URI: https://forum.cardano.org/t/cip-transferring-stake-pool-ownership/95329
 Status: Draft
 Type: Standards
