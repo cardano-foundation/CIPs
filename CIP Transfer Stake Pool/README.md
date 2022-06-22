@@ -1,3 +1,14 @@
+---
+CIP: ?
+Title: Transferring Stake Pool Ownership
+Author: Jerry Sinayuk (nomadpool.io@protonmail.com)
+Comments-URI: https://forum.cardano.org/t/cip-transferring-stake-pool-ownership/95329
+Status: Draft
+Type: Standards
+Created: 2022-03-10
+License: CC-BY-4.0
+---
+
 # Abstract
 
 This CIP proposes a way to transfer ownership of a stake pool from one pair of cold keys to another. 
