@@ -38,7 +38,7 @@ We provide a range of applications that could be useful or beneficial on-chain,
 but are difficult or impossible to implement without some, or all, of the
 primitives we propose.
 
-## Succinct data structures
+### Succinct data structures
 
 Due to the on-chain size limit, many data structures become impractical or
 impossible, as they require too much space either for their elements, or their
@@ -104,7 +104,7 @@ In order to make such techniques viable, bitwise primitives are mandatory.
 Furthermore, succinct data structures are not limited to sets of integers, but
 *all* require bitwise operations to be implementable.
 
-## Binary representations and encodings
+### Binary representations and encodings
 
 On-chain, space is at a premium. One way that space can be saved is with binary
 representations, which can potentially represent something much closer to the
@@ -120,7 +120,7 @@ where complex structures or values are represented using fixed-size
 implemented more efficiently than currently possible, as there exist numerous
 bitwise techniques for this.
 
-## On-chain vectors
+### On-chain vectors
 
 For linear structures on-chain, we are currently limited to `BuiltinList`
 and `BuiltinMap`, which don't allow constant-time indexing. This is a
