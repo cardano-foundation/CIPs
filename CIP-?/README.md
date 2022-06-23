@@ -303,17 +303,17 @@ Lastly, we define the following additional operations:
 ```haskell
 shiftByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString
 ```
-Performs a bitwise shift of the first argument by the
-absolute value of the second argument, with zero padding, the direction being
-indicated by the sign of the second argument.
+Performs a bitwise shift of the first argument by a number of bit positions
+equal to the absolute value of the second argument, the direction of the shift
+being indicated by the sign of the second argument.
 
 ---
 ```haskell
 rotateByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString
 ```
-Performs a bitwise rotation of the first argument by
-the absolute value of the second argument, the direction being indicated by
-the sign of the second argument.
+Performs a bitwise rotation of the first argument by a number of bit positions
+equal to the absolute value of the second argument, the direction being
+indicated by the sign of the second argument.
 
 ---
 ```haskell
@@ -419,7 +419,6 @@ and
 integerToByteString . byteStringToInteger = id
 ```
 
-
 ### Bitwise logical operations on `BuiltinByteString`
 
 Throughout, let $s = s_n s_{n-1} \ldots s_0$ and 
@@ -475,16 +474,46 @@ complementByteString (iorByteString b b') = andByteString (complementByteString 
 
 ### Mixed operations
 
-Throughout this section, let $s = s_n s_{n-1} \ldots s_0$ and 
-$t = t_m t_{m - 1} \ldots t_0$ be byte sequences, and let $i \in \mathbb{Z}$.
+Throughout this section, let $s = s_n s_{n-1} \ldots s_0$ be a byte sequence, 
+and let $i \in \mathbb{Z}$.
 
-We describe the semantics of `shiftByteString`. Informally, these are logical 
-shifts, with negative shifts moving *away* from bit index $0$, and positive 
-shifts moving *towards* bit index $0$. More precisely, given the arguments
-$s$ and $i$, the result of `shiftByteString` is the byte sequence 
-$u = u_n u_{n - 1} \ldots u_0$, such that for all 
-$j \in \\{0, 1, \ldots, n \\}$, we have $u_j = s_{j + i}$ if 
-$j - i \in \\{0, 1, \ldots, n \\}$, and $0$ otherwise.
+We describe the semantics of `shiftByteString` and `rotateByteString`.
+Informally, both of these are 'index modifiers' for bit sequences: given a
+positive $i$, the index of a bit in $s$ 'increases' in the result; given a
+negative $i$, the index of a bit in $s$ 'decreases' in the result. This can mean
+that for some indexes in the result, there are no corresponding bits in $s$ by
+the previous definition: we term these *missing indexes*. Additionally, by such
+calculations, bits at some indexes in $s$ may be projected to negative indexes,
+or indexes over $n$, in the result; we term these *out-of-bounds indexes*. How
+we handle missing and out-of-bounds indexes is what distinguishes
+`shiftByteString` and `rotateByteString`:
+
+* `shiftByteString` sets any missing index to $0$ and ignores any data at
+  out-of-bounds indexes.
+* `rotateByteString` uses out-of-bounds indexes as sources for missing indexes
+  by 'wraparound'.
+
+We describe the semantics of `shiftByteString` precisely. Given arguments $s$
+and $i$, the result of `shiftByteString` is the byte sequence 
+$u = u_n u_{n - 1} \ldots u_0$, such that for all $j \in \\{0, 1, \ldots, n \\}$, we have 
+$u_j = s_{j - i}$ if $j - i \in \\{0, 1, \ldots, n \\}$, and $0$ otherwise. For
+example, let $t = 01011110$ and $k = 2$. If we perform `shiftByteString` with
+$t$ and $k$ as arguments, the result will be
+
+$$
+u = t_{(8 - 2)}t_{(7 - 2)}t_{(6 - 2)}t_{(5 - 2)}t_{(4 - 2)}t_{(3 - 2)}t_{(2 - 2)}00
+  = t_6t_5t_4t_3t_2t_1t_000
+  = 01111000
+$$
+
+If instead we perform `shiftByteString` with $t$ and 
+$-k$ as arguments, the result will be
+
+$$
+u = 00t_{(6 + 2}t_{5 + 2}t_{(4 + 2)}t_{(3 + 2)}t_{(2 + 2)}t_{(1 + 2)}t_{(0 + 2)}
+  = 00t_8t_7t_6t_5t_4t_3t_2
+  = 00010111
+$$
 
 Let $k, \ell \in \mathbb{Z}$ 
 such that either 
@@ -497,12 +526,31 @@ We observe that, for any `bs`, we have
 shiftByteString (shiftBytestring bs k) l = shiftByteString bs (k + l)
 ```
 
-We now describe `rotateByteString`, assuming the same inputs as the description 
-of `shiftByteString` above. Informally, the 'direction' of rotations matches 
-that of `shiftByteString` above. More precisely, given then arguments $s$ and 
-$i$, the result of `rotateByteString` is the byte sequence
-$u = u_n u_{n - 1} \ldots u_0$ such that for all $j \in \\{0, 1, \ldots, n\\}$, 
-we have $u_j = s_{j + i \mod (n + 1)}$. We observe that for any $k, \ell$, and any
+We now describe the semantics of `rotateByteString` precisely; we assume the
+same arguments as for `shiftByteString` above. The result of `rotateByteString`
+is the byte sequence $u = u_n u_{n + 1} \ldots u_0$ such that for all 
+$j \in \\{0, 1, \ldots, n\\}$, we have $u_j = s_{n + 1 + j - i \mod (n + 1)}$. For
+example, let $t = 01011110$ and $k = 2$. If we perform `rotateByteString` with
+$t$ and $k$ as arguments, the result will be
+
+$$
+u = t_{(15 \mod 9)}t_{(14 \mod 9)}t_{(13 \mod 9)}t_{(12 \mod 9)}t_{(11 \mod 9)}t_{(10 \mod 9)}t_{(9 \mod 9)}t_{(8
+\mod 9)}t_{(7 \mod 9)}
+  = t_6t_5t_4t_3t_2t_1t_0t_8t_7
+  = 01111001
+$$
+
+If instead we perform `rotateByteString` with $t$ and 
+$-k$ as arguments, the result will be
+
+$$
+u = t_{(19 \mod 9)}t_{(18 \mod 9)}t_{(17 \mod 9)}t_{(16 \mod 9)}t_{(15 \mod 9)}t_{(14 \mod 9)}t_{(13 \mod 9)}t_{(12
+\mod 9)}t_{(11 \mod 9)}
+  = t_1t_0t_8t_7t_6t_5t_4t_3t_2
+  = 10010111
+$$
+
+We observe that for any $k, \ell$, and any
 `bs`, we have
 
 ```haskell
