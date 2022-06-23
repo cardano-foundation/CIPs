@@ -356,10 +356,11 @@ $s = s_n s_{n-1} \ldots s_0$ is a *byte sequence* if $n = 8k - 1$ for some
 $k \in \mathbb{N}$. We denote the *empty bit sequence* (and, indeed, empty byte 
 sequence as well) by $\emptyset$.
 
-We assume that `BuiltinByteString`s represent byte sequences, with the sequence
-of bits being exactly as the description above. For example, given the byte
-sequence `0110111100001100`, the corresponding `BuiltinByteString` would be 
-`"o\f"`.
+We assume that `BuiltinByteString`s represent byte sequences, with the indexes
+of the represented byte sequence being treated in little-endian,
+least-significant-bit-first encoding. For example, consider the byte sequence 
+$s = 110110011100000$; the `BuiltinByteString` literal corresponding to this would
+be `"\217\224"`.
 
 Let $i \in \mathbb{N}^{+}$. 
 We define the sequence $\texttt{binary}(i) = (d_0, m_0), (d_1, m_1), \ldots$ as 
@@ -397,6 +398,27 @@ represent any $i \in \\{ x \in \mathbb{Z} \mid x < 0 \\}$ as the
 twos-complement of the representation of its additive inverse. We observe that 
 any such sequence is by definition a byte sequence.
 
+For example, consider the representation of $23$. We note that
+
+$$
+\texttt{binary}(23) = (11, 1), (5, 1), (2, 1), (1, 0), (0, 1), (0, 0), (0, 0),
+(0, 0), \ldots
+$$
+
+The representation of $23$ as a byte sequence is
+
+$$
+s = s7s6s5s4s3s2s1s0
+  = 00010111
+$$
+
+If we instead consider $-23$, its representation would instead be
+
+$$
+t = t7t6t5t4t3t2t1t0
+  = 11101001
+$$
+
 To interpret a byte sequence $s = s_n s_{n - 1} \ldots s_0$ as a
 `BuiltinInteger`, we use the following process:
 
@@ -404,6 +426,16 @@ To interpret a byte sequence $s = s_n s_{n - 1} \ldots s_0$ as a
 - Otherwise, if $s_n = 1$, let $s^{\prime}$ be the twos-complement of $s$. Then 
   the result is the additive inverse of the result of interpreting $s^{\prime}$.
 - Otherwise, the result is $\sum_{i \in \\{0, 1, \ldots, n\\}} s_i \cdot 2^i$.
+
+Going by our previous example, for the sequence $s = 00010111$ as above, as 
+$s_7 = 0$, we have
+
+$$
+\sum_{i \in \\{0, 1, \ldots, 7\\}} s_i \cdot 2^i = 
+2^4 + 2^2 + 2^1 + 2^0 = 
+16 + 4 + 2 + 1 = 
+23
+$$
 
 We implement the above as the `byteStringToInteger` primitive. We observe that
 `byteStringToInteger` and `integerToByteString` form an isomorphism. More
@@ -501,8 +533,8 @@ example, let $t = 01011110$ and $k = 2$. If we perform `shiftByteString` with
 $t$ and $k$ as arguments, the result will be
 
 $$
-u = t_{(8 - 2)}t_{(7 - 2)}t_{(6 - 2)}t_{(5 - 2)}t_{(4 - 2)}t_{(3 - 2)}t_{(2 - 2)}00
-  = t_6t_5t_4t_3t_2t_1t_000
+u = t_{(7 - 2)}t_{(6 - 2)}t_{(5 - 2)}t_{(4 - 2)}t_{(3 - 2)}t_{(2 - 2)}00
+  = t_5t_4t_3t_2t_1t_000
   = 01111000
 $$
 
@@ -510,8 +542,8 @@ If instead we perform `shiftByteString` with $t$ and
 $-k$ as arguments, the result will be
 
 $$
-u = 00t_{(6 + 2}t_{5 + 2}t_{(4 + 2)}t_{(3 + 2)}t_{(2 + 2)}t_{(1 + 2)}t_{(0 + 2)}
-  = 00t_8t_7t_6t_5t_4t_3t_2
+u = 00t_{(5 + 2)}t_{(4 + 2)}t_{(3 + 2)}t_{(2 + 2)}t_{(1 + 2)}t_{(0 + 2)}
+  = 00t_7t_6t_5t_4t_3t_2
   = 00010111
 $$
 
@@ -534,9 +566,9 @@ example, let $t = 01011110$ and $k = 2$. If we perform `rotateByteString` with
 $t$ and $k$ as arguments, the result will be
 
 $$
-u = t_{(15 \mod 9)}t_{(14 \mod 9)}t_{(13 \mod 9)}t_{(12 \mod 9)}t_{(11 \mod 9)}t_{(10 \mod 9)}t_{(9 \mod 9)}t_{(8
-\mod 9)}t_{(7 \mod 9)}
-  = t_6t_5t_4t_3t_2t_1t_0t_8t_7
+u = t_{(13 \mod 8)}t_{(12 \mod 8)}t_{(11 \mod 8)}t_{(10 \mod 8)}t_{(9 \mod 8)}t_{(8 \mod 8)}t_{(7 \mod 8)}t_{(6
+\mod 8)}
+  = t_5t_4t_3t_2t_1t_0t_7t_6
   = 01111001
 $$
 
@@ -544,9 +576,9 @@ If instead we perform `rotateByteString` with $t$ and
 $-k$ as arguments, the result will be
 
 $$
-u = t_{(19 \mod 9)}t_{(18 \mod 9)}t_{(17 \mod 9)}t_{(16 \mod 9)}t_{(15 \mod 9)}t_{(14 \mod 9)}t_{(13 \mod 9)}t_{(12
-\mod 9)}t_{(11 \mod 9)}
-  = t_1t_0t_8t_7t_6t_5t_4t_3t_2
+u = t_{(17 \mod 8)}t_{(16 \mod 8)}t_{(15 \mod 8)}t_{(14 \mod 8)}t_{(13 \mod 8)}t_{(12 \mod 8)}t_{(11 \mod 8)}t_{(10
+\mod 8)}
+  = t_1t_0t_7t_6t_5t_4t_3t_2
   = 10010111
 $$
 
