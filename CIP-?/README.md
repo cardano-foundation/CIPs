@@ -598,7 +598,7 @@ For either `testBitByteString` or `writeBitByteString`, if $i < 0$ or $i > n$,
 the result is an out-of-bounds error.
 
 Lastly, we describe the semantics of `findFirstSetByteString`. Given the
-argument $s$, if for any $j \in \\{0, 1, \ldots, n \\}$, $s_j = 0$, the result 
+argument $s$, if for all $j \in \\{0, 1, \ldots, n \\}$, $s_j = 0$, the result 
 is $-1$; otherwise, the result is $k$ such that all of the following hold:
 
 - $k \in \\{0, 1, \ldots, n\\}$;
