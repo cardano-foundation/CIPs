@@ -11,7 +11,8 @@ License: Apache-2.0
 
 # Abstract
 
-Add primitives for bitwise operations, based on `BuiltinByteString`, without requiring new data types.
+Add primitives for bitwise operations, based on `BuiltinByteString`, without 
+requiring new data types.
 
 # Motivation
 
@@ -43,10 +44,12 @@ primitives we propose.
 Due to the on-chain size limit, many data structures become impractical or
 impossible, as they require too much space either for their elements, or their
 overheads, to allow them to fit alongside the operations we want to perform on
-them. Succinct data structures could serve as a solution to this, as they
-represent data in an amount of space much closer to the entropy limit and ensure
-only constant overheads. There are several examples of these, and all rely on
-bitwise operations for their implementations.
+them. [Succinct data
+structures](https://en.wikipedia.org/wiki/Succinct_data_structure) could serve 
+as a solution to this, as they represent data in an amount of space much 
+closer to the entropy limit and ensure only constant overheads. There are 
+several examples of these, and all rely on bitwise operations for their 
+implementations.
 
 For example, consider wanting to store a set of `BuiltinInteger`s
 on-chain. Given current on-chain primitives, the most viable option involves
@@ -66,7 +69,8 @@ becomes intolerable quickly, especially when taking into account the need to
 also store the operations manipulating such a structure on-chain with the script
 where the set is being used.
 
-If we instead represented the same set as a bitmap based on
+If we instead represented the same set as a
+[bitmap](https://en.wikipedia.org/wiki/Bit_array) based on
 `BuiltinByteString`, the amount of space required would instead be 
 
 $$\left\lceil \frac{k}{8} \right\rceil \cdot 8 + \left\lceil
@@ -79,7 +83,8 @@ as instead of having to crawl through a cons-like structure, we can implement
 set operations on a memory-contiguous byte string:
 
 - The cardinality of the set can be computed as a population count. This
-can have terrifyingly efficient implementations: the Muła-Kurz-Lemire
+can have terrifyingly efficient implementations: the
+[Muła-Kurz-Lemire](https://lemire.me/en/publication/arxiv161107612/)
 algorithm (the current state of the art) can process four kilobytes per loop
 iteration, which amounts to over four thousand potential stored integers.
 - Insertion or removal is a bit set or bit clear respectively.
@@ -90,14 +95,17 @@ iteration, which amounts to over four thousand potential stored integers.
 - Set symmetric difference is bitwise exclusive or.
 
 A potential implementation could use a range of techniques to make these
-operations extremely efficient, by relying on SWAR (SIMD-within-a-register)
-techniques if portability is desired, and SIMD instructions for maximum speed.
-This would allow both potentially large integer sets to be represented on-chain
-without breaking the size limit, and nodes to efficiently compute with such,
-reducing the usage of resources by the chain. Lastly, in practice, if
-compression techniques are used (which also rely on bitwise operations!), the
-number of required bits can be reduced considerably in most cases without
-compromising performance: the current state-of-the-art (Roaring Bitmaps) can be
+operations extremely efficient, by relying on
+[SWAR](https://en.wikipedia.org/wiki/SWAR)
+techniques if portability is desired, and
+[SIMD](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) 
+instructions for maximum speed. This would allow both potentially large 
+integer sets to be represented on-chain without breaking the size limit, and 
+nodes to efficiently compute with such, reducing the usage of resources by the 
+chain. Lastly, in practice, if compression techniques are used (which also 
+rely on bitwise operations!), the number of required bits can be reduced 
+considerably in most cases without compromising performance: the current 
+state-of-the-art ([Roaring Bitmaps](https://roaringbitmap.org/)) can be
 used as an example of the possible gains.
 
 In order to make such techniques viable, bitwise primitives are mandatory.
@@ -132,7 +140,8 @@ require both implementing and costing a large API.
 
 While for variable-length data, we don't have any alternatives if constant-time
 indexing is a goal, for fixed-length (or limited-length at least) data, there is
-a possibility, based on a similar approach taken by the `finitary`
+a possibility, based on a similar approach taken by the
+[`finitary`](https://hackage.haskell.org/package/finitary)
 library. Essentially, given finitary data, we can transform any item into a
 numerical index, which is then stored by embedding into a byte array. As the
 indexes are of a fixed maximum size, this can be done efficiently, but only if
@@ -162,14 +171,15 @@ enable as much as possible to be implemented.
 
 ### Maintaining as many algebraic laws as possible
 
-Bitwise operations, via Boolean algebras, have a long and storied history of
-algebraic laws, dating back to important results by the like of de Morgan, Post
-and many others. These algebraic laws are useful for a range of reasons: they
-guide implementations, enable easier testing (especially property testing) and
-in some cases much more efficient implementations. To some extent, they also
-formalize our intuition about how these operations 'should work'. Thus,
-maintaining as many of these laws in our implementation, and being clear about
-them, is important.
+Bitwise operations, via [Boolean
+algebras](https://en.wikipedia.org/wiki/Boolean_algebra_(structure)), have a 
+long and storied history of algebraic laws, dating back to important results 
+by the like of de Morgan, Post and many others. These algebraic laws are 
+useful for a range of reasons: they guide implementations, enable easier 
+testing (especially property testing) and in some cases much more efficient 
+implementations. To some extent, they also formalize our intuition about how 
+these operations 'should work'. Thus, maintaining as many of these laws in our 
+implementation as possible, and being clear about them, is important.
 
 ### Allowing efficient, portable implementations
 
@@ -196,12 +206,15 @@ We also specify some specific non-goals of this proposal.
 A widespread legacy of C is the mixing of treatment of numbers and blobs of
 bits: specifically, the allowing of logical operations on representations of
 numbers. This applies to Haskell as much as any other language: according to the
-Haskell Report, it is in fact *required* that any type implementing
-`Bits` implement `Num` first. While GHC Haskell only mandates
-`Eq`, it still defines `Bits` instances for types clearly meant to
+[Haskell
+Report](https://www.haskell.org/onlinereport/haskell2010/haskellch15.html#x23-20800015), 
+it is in fact *required* that any type implementing
+`Bits` implement `Num` first. While GHC Haskell [only mandates
+`Eq`](https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-Bits.html#t:Bits), 
+it still defines `Bits` instances for types clearly meant to
 represent numbers. This is a bad choice, as it creates complex situations and
-partiality in several cases, for arguably no real gain other than C-like bit
-twiddling code.
+partiality in several cases, for arguably no real gain other than easier
+translation of bit twiddling code originally written in C.
 
 Even if two types share a representation, their type distinctness is meant to be
 a semantic or abstraction boundary: just because a number is represented as a
@@ -259,13 +272,13 @@ inter-conversion between  `BuiltinByteString` and `BuiltinInteger`:
 ```haskell
 integerToByteString :: BuiltinInteger -> BuiltinByteString
 ```
-Convert a number to a bitwise representation.
+Convert a number to its bitwise representation.
 
 ---
 ```haskell
 byteStringToInteger :: BuiltinByteString -> BuiltinInteger
 ```
-Reinterpret a bitwise representation as a number.
+Reinterpret a bitwise representation to the corresponding number.
 
 ---
 We also propose several logical operations on `BuiltinByteString`s:
@@ -304,16 +317,18 @@ Lastly, we define the following additional operations:
 shiftByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString
 ```
 Performs a bitwise shift of the first argument by a number of bit positions
-equal to the absolute value of the second argument, the direction of the shift
-being indicated by the sign of the second argument.
+equal to the absolute value of the second argument. A positive second argument
+indicates a shift towards higher bit indexes; a negative second argument
+indicates a shift towards lower bit indexes.
 
 ---
 ```haskell
 rotateByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString
 ```
 Performs a bitwise rotation of the first argument by a number of bit positions
-equal to the absolute value of the second argument, the direction being
-indicated by the sign of the second argument.
+equal to the absolute value of the second argument.  A positive second argument
+indicates a rotation towards higher bit indexes; a negative second argument
+indicates a rotation towards lower bit indexes.
 
 ---
 ```haskell
@@ -333,7 +348,7 @@ position is $1$, return `True`, and `False` otherwise.
 ```haskell
 writeBitByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinBool -> BuiltinByteString
 ```
-If the position given by the second argument is not in bound for the first 
+If the position given by the second argument is not in bounds for the first 
 argument, error; otherwise, set the bit given by that position to $1$ if the 
 third argument is `True`, and $0$ otherwise.
 
@@ -352,15 +367,14 @@ We define $\mathbb{N}^{+} = \\{ x \in \mathbb{N} \mid x \neq 0 \\}$. We assume
 that `BuiltinInteger` is a faithful representation of $\mathbb{Z}$. A
 *bit sequence* $s = s_n s_{n-1} \ldots s_0$ is a sequence such that for
 all $i \in \\{ 0,1,\ldots,n \\}$, $s_i \in \\{ 0, 1 \\}$. A bit sequence 
-$s = s_n s_{n-1} \ldots s_0$ is a *byte sequence* if $n = 8k - 1$ for some 
-$k \in \mathbb{N}$. We denote the *empty bit sequence* (and, indeed, empty byte 
-sequence as well) by $\emptyset$.
+$s = s_n s_{n-1} \ldots s_0$ is a *byte sequence* if:
 
-We assume that `BuiltinByteString`s represent byte sequences, with the indexes
-of the represented byte sequence being treated in little-endian,
-least-significant-bit-first encoding. For example, consider the byte sequence 
-$s = 110110011100000$; the `BuiltinByteString` literal corresponding to this would
-be `"\217\224"`.
+- Either $s$ is empty (that is, contains no bits); or
+- $n = 8k - 1$ for some $k \in \mathbb{N}^{+}$. 
+
+We assume that `BuiltinByteString`s represent byte sequences, such that the
+lowest bit indexes are at the end of the representation; that is, bit $0$ is the
+least-significant bit in the highest-index byte.
 
 Let $i \in \mathbb{N}^{+}$. 
 We define the sequence $\texttt{binary}(i) = (d_0, m_0), (d_1, m_1), \ldots$ as 
@@ -380,11 +394,13 @@ Some examples follow.
 
 ### Representation of `BuiltinInteger` as `BuiltinByteString` and conversions
 
-We describe the translation of `BuiltinInteger` into `BuiltinByteString` which 
+We describe the translation of `BuiltinInteger` into `BuiltinByteString`, which
 is implemented as the `integerToByteString` primitive. Informally, we represent
-`BuiltinInteger`s with the least significant bit at bit position $0$, using a 
-twos-complement representation. More precisely, let $i \in \mathbb{N}^{+}$. We 
-represent $i$ as the bit sequence $s = s_n s_{n-1} \ldots s_0$, such that:
+`BuiltinInteger`s as [little
+endian](https://en.wikipedia.org/wiki/Endianness#Little), with the least
+significant bit at bit index $0$, using a [two's-complement](https://en.wikipedia.org/wiki/Two%27s_complement) 
+representation. More precisely, let $i \in \mathbb{N}^{+}$. We represent $i$ as the bit sequence 
+$s = s_n s_{n-1} \ldots s_0$, such that:
 
 - $\sum_{j \in \\{0, 1, \ldots, n\\}} s_j \cdot 2^j = i$; and
 - $s_n = 0$.
@@ -395,8 +411,9 @@ represent $i$ as the bit sequence $s = s_n s_{n-1} \ldots s_0$, such that:
 
 For $0$, we represent it as the sequence `00000000` (one zero byte). We
 represent any $i \in \\{ x \in \mathbb{Z} \mid x < 0 \\}$ as the 
-twos-complement of the representation of its additive inverse. We observe that 
-any such sequence is by definition a byte sequence.
+[two's-complement](https://en.wikipedia.org/wiki/Two%27s_complement) of 
+the representation of its additive inverse. We observe that any such 
+sequence is by definition a byte sequence.
 
 For example, consider the representation of $23$. We note that
 
@@ -422,9 +439,8 @@ $$
 To interpret a byte sequence $s = s_n s_{n - 1} \ldots s_0$ as a
 `BuiltinInteger`, we use the following process:
 
-- If $s$ is `00000000`, then the result is $0$.
-- Otherwise, if $s_n = 1$, let $s^{\prime}$ be the twos-complement of $s$. Then 
-  the result is the additive inverse of the result of interpreting $s^{\prime}$.
+- If $s_n = 1$, let $s^{\prime}$ be the two's-complement of $s$. Then the result
+  is the additive inverse of the result of interpreting $s^{\prime}$.
 - Otherwise, the result is $\sum_{i \in \\{0, 1, \ldots, n\\}} s_i \cdot 2^i$.
 
 Going by our previous example, for the sequence $s = 00010111$ as above, as 
@@ -438,18 +454,19 @@ $$
 $$
 
 We implement the above as the `byteStringToInteger` primitive. We observe that
-`byteStringToInteger` and `integerToByteString` form an isomorphism. More
-specifically, we have:
+`integerToByteString` and `byteStringToInteger` round-trip; mor especifically,
+we have:
 
 ```haskell
 byteStringToInteger . integerToByteString = id
 ```
 
-and
-
-```haskell
-integerToByteString . byteStringToInteger = id
-```
+The other direction does not necessarily hold: informally, this is due to
+'trailing zeroes' not contributing to a numerical value. More precisely,
+consider the `BuiltinByteString` consisting of two zero bytes. If we convert
+this `BuiltinByteString` to a `BuiltinInteger` using `byteStringToInteger`, we
+would get $0$; however, if we convert $0$ to a `BuiltinByteString`, it would
+consist of _one_ zero byte.
 
 ### Bitwise logical operations on `BuiltinByteString`
 
@@ -494,7 +511,8 @@ $i \in \{0, 1, \ldots, n\}$ we have $u_i = 0$ if $s_i = 1$, and $1$ otherwise.
 
 We observe that `complementByteString` is self-inverting. We also note
 the following equivalences hold assuming `b` and `b'` have the
-same length; these are the DeMorgan laws:
+same length; these are [De Morgan's
+laws](https://en.wikipedia.org/wiki/De_Morgan%27s_laws):
 
 ```haskell
 complementByteString (andByteString b b') = iorByteString (complementByteString b) (complementByteString b')
@@ -595,6 +613,12 @@ We also note that
 rotateByteString bs 0 = shiftByteString bs 0 = bs
 ```
 
+Lastly, we note that
+
+```haskell
+rotateByteString bs k = rotateByteString bs (k `remInteger` (lengthByteString bs * 8))
+```
+
 For `popCountByteString` with argument $s$, the result is
 
 $$\sum_{j \in \\{0, 1, \ldots, n\\}} s_j$$
@@ -663,9 +687,10 @@ Primitive | Linear in
 
 There needs to be a well-defined interface between the 'world' of 
 `BuiltinInteger` and `BuiltinByteString`. To provide this, we require
-`integerToByteString` and `byteStringToInteger`, which are designed to roundtrip
-(that is, describe two halves of an isomorphism). Furthermore, by spelling out 
-a precise description of the conversions, we make this predictable and portable.
+`integerToByteString` and `byteStringToInteger`; we require that
+`integerToByteString` and `byteStringToInteger` roundtrip. Furthermore, 
+by spelling out a precise description of the conversions, we make this 
+predictable and portable.
 
 Our choice of logical AND, IOR, XOR and complement as the primary logical 
 operations is driven by a mixture of prior art, utility and convenience. These
