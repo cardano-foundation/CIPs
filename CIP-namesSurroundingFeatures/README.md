@@ -74,6 +74,14 @@ The Babbage era replaced TPraos with Praos.
 
 A table of all the features, as of the time this CIP was submitted, can be found [here](feature-table.md).
 
+Note that the protocol version mentioned above is unrelated to the node-to-node and node-to-client protocol versions.
+The consensus layer maintains a versioning scheme for the node queries which does not necessarily
+align with the protocol version described in this CIP.
+
+Note also that the protocol version present inside of each block header indicates the maximum supported protocol version
+that the block producer is capable of supporting (see section 13, Software Updates, of the
+[Shelley ledger specification](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec)).
+
 ## Specification
 
 Let us use the following language:
