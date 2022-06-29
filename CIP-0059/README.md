@@ -1,8 +1,8 @@
 ---
-CIP: ?
-Title: Names surrounding features
+CIP: 59
+Title: Terminology Surrounding Core Features
 Authors: Jared Corduan <jared.corduan@iohk.io>
-Status: Draft
+Status: Active
 Type: Informational
 Created: 2022-06-09
 License: CC-BY-4.0
