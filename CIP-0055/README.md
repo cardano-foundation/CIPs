@@ -1,8 +1,8 @@
 ---
-CIP: ?
+CIP: 55
 Title: Babbage Era Protocol Parameters
 Authors: Jared Corduan <jared.corduan@iohk.io>
-Status: Draft
+Status: Proposed
 Type: Informational
 Created: 2022-05-19
 License: CC-BY-4.0
