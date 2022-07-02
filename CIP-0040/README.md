@@ -1,8 +1,8 @@
 ---
-CIP: ?
+CIP: 40
 Title: Explicit Collateral Output
 Authors: Sebastien Guillemot <seba@dcspark.io>, Jared Corduan <jared.corduan@iohk.io>, Andre Knispel <andre.knispel@iohk.io>
-Status: Draft
+Status: Proposed
 Type: Standards
 Created: 2022-02-10
 License: CC-BY-4.0
