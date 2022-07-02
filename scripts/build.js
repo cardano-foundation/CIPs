@@ -4,28 +4,42 @@ const path = require('path')
 const rimraf = require('rimraf')
 const handlebars = require('handlebars')
 const showdown = require('showdown')
+const moment = require('moment')
 const converter = new showdown.Converter({ tables: true })
 
 const publicPath = path.join(__dirname, '..', 'public')
 const templates = {}
 
-handlebars.registerHelper('dateFormat', require('handlebars-dateformat'));
+handlebars.registerHelper('dateFormat', (d, f) => {
+  return moment(d).format(f);
+});
 
-handlebars.registerHelper('getAuthors', function(Authors) {
+handlebars.registerHelper('getAuthors', function (Authors) {
+
+  // Temporary fallback for CI to not fail
+  if(!Authors) return '';
+
   return Authors.split(',').map(author => {
     const [_, name, link] = author.trim().match(/^([^<]+)<?([^>]+)?>?$/) || []
     let type = 'url'
-    if (link.match(/^[^@]+@[^@]+$/)) {
-      type = 'email'
+    if (link === undefined) {
+      type = 'github'
+    } else {
+      if (link.match(/^[^@]+@[^@]+$/)) {
+        type = 'email'
+      }
     }
-    const authorLink = type === 'email' ? 'mailto:' + link : link
+
+    const authorLink = type === 'email' ? 'mailto:' + link
+      : (type === 'github' ? 'https://github.com/' + name
+      : link)
     const authorName = name.trim()
 
     return ' ' + '<a href="' + authorLink + '" alt="' + authorLink + '">' + authorName + '</a>'
   })
 });
 
-handlebars.registerHelper("debug", function(optionalValue) {
+handlebars.registerHelper("debug", function (optionalValue) {
   console.log("Current Context");
   console.log("====================");
   console.log(this);
@@ -37,7 +51,7 @@ handlebars.registerHelper("debug", function(optionalValue) {
   }
 });
 
-function getTableOfContents (lines, { children = [], headingType = -1 } = {}) {
+function getTableOfContents(lines, { children = [], headingType = -1 } = {}) {
   while (lines.length > 0) {
     const line = lines.shift()
     const heading = line.match(/^([#]{1,})\s([^\n]+)$/)
@@ -63,20 +77,21 @@ function getTableOfContents (lines, { children = [], headingType = -1 } = {}) {
   return children
 }
 
-function loadFrontmatter (filePath) {
-  const contents = fs.readFileSync(filePath, { encoding: 'utf8' })
+function loadFrontmatter(filePath) {
+  const raw = fs.readFileSync(filePath, { encoding: 'utf8' })
+  const contents = raw.replace(/\.\/.*CIP-0*([^\.]+)/g, '/cips/cip$1')
   const parsed = matter(contents)
   parsed.html = converter.makeHtml(parsed.content)
   return parsed
 }
 
-function copyAsset (fromPath, toPath) {
+function copyAsset(fromPath, toPath) {
   const toPathDirectory = toPath.replace(/^(.*)\/.*?$/, '$1')
   fs.mkdirSync(path.join(publicPath, toPathDirectory), { recursive: true })
   fs.copyFileSync(fromPath, path.join(publicPath, toPath))
 }
 
-function renderHTML (uriPath, template, data) {
+function renderHTML(uriPath, template, data) {
   const hbTemplate = handlebars.compile(templates[template])
   fs.mkdirSync(path.join(publicPath, uriPath), { recursive: true })
   fs.writeFileSync(path.join(publicPath, uriPath, 'index.html'), hbTemplate(data), { encoding: 'utf8' })
@@ -84,16 +99,16 @@ function renderHTML (uriPath, template, data) {
 
 const types = { All: [] }
 
-function slugify (string) {
+function slugify(string) {
   return string.toLowerCase().replace(/\s/g, '-')
 }
 
-function getCipContents (cip) {
+function getCipContents(cip) {
   // get all the headings from markdown
   // inside cip.hbs create
 }
 
-function build () {
+function build() {
   fs.mkdirSync(publicPath)
   const cipsDirectory = path.join(__dirname, '..')
   const cips = fs.readdirSync(cipsDirectory)
@@ -102,7 +117,7 @@ function build () {
     const assets = fs.readdirSync(path.join(cipsDirectory, item))
     assets.forEach(asset => {
       const assetPath = path.join(cipsDirectory, item, asset)
-      if (asset === `${item}.md`) {
+      if (asset === 'README.md') {
         const cip = loadFrontmatter(assetPath)
         cip.tableOfContents = getTableOfContents(cip.content.split('\n'))
         types[cip.data.Type] = types[cip.data.Type] || []
@@ -123,7 +138,7 @@ function build () {
   })
 
   Object.keys(types).forEach(type => {
-    
+
     renderHTML(`/${slugify(type)}/`, 'cips', {
       headerData,
       cips: types[type],
@@ -149,11 +164,11 @@ function build () {
   })
 }
 
-function clean () {
+function clean() {
   rimraf.sync(publicPath)
 }
 
-function loadTemplates () {
+function loadTemplates() {
   const templatedDirectory = path.join(__dirname, '..', 'templates')
   const templateItems = fs.readdirSync(templatedDirectory)
   templateItems.forEach(template => {
@@ -164,7 +179,7 @@ function loadTemplates () {
   })
 }
 
-function copyAssets (relativePath = '') {
+function copyAssets(relativePath = '') {
   let assetsDirectory = path.join(__dirname, '..', 'assets')
   if (relativePath) {
     assetsDirectory = path.join(assetsDirectory, relativePath)

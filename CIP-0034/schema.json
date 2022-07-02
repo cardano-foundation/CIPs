@@ -1,0 +1,37 @@
+{
+  "definitions": {
+    "network": {
+      "$id": "#/definitions/network",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "NetworkId": {
+          "type": "integer",
+          "minimum": 0,
+          "exclusiveMaximum": 16
+        },
+        "NetworkMagic": {
+          "type": "integer",
+          "minimum": 0,
+          "exclusiveMaximum": 4294967295
+        },
+        "GenesisHash": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]+$",
+          "minLength": 64,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "Name",
+        "NetworkId",
+        "NetworkMagic",
+        "GenesisHash"
+      ]
+     }
+  },
+  "type": "object",
+  "additionalProperties": { "$ref": "#/definitions/network" }
+}
