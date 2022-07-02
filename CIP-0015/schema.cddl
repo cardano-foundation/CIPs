@@ -1,0 +1,21 @@
+registration_cbor = {
+  61284: key_registration,
+  61285: registration_signature
+}
+
+$voting_pub_key /= bytes .size 32
+$staking_pub_key /= bytes .size 32
+$ed25519_signature /= bytes .size 64
+$reward_address /= bytes
+$nonce /= uint
+
+key_registration = {
+  1 : $voting_pub_key,
+  2 : $staking_pub_key,
+  3 : $reward_address,
+  4 : $nonce,
+}
+
+registration_signature = {
+  1 : $ed25519_signature
+}

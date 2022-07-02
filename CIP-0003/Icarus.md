@@ -74,6 +74,6 @@ function tweakBits(data) {
 
 When used < 24 words, the algorithm is the same as **Icarus**
 
-When using 24 words, **TODO**
+When using 24 words, due to incorrect removal of the [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#generating-the-mnemonic) entropy checksum bits (via integer division by 8, incorrectly assuming the entropy checksum is always less than 8 bits), the entropy bytes are passed into the `generateMasterKey()` function together with the checksum which for 24-word mnemonics happens to be 8 bits = 1 byte. This bug has been identified and documented in the following Trezor firmware pull request: https://github.com/trezor/trezor-firmware/pull/1388
 
 *Note*: Trezor also allows users to set an additional [passphrase](https://wiki.trezor.io/Passphrase) that works exactly the same as Icarus passphrase
