@@ -55,7 +55,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
 | 35 | [Plutus Core Evolution](./CIP-0035) | Active |
 | 36 | [Catalyst/Voltaire Registration Transaction Metadata Format](./CIP-0036) | Proposed | 
-| 40 | [Collateral Output](https://github.com/cardano-foundation/CIPs/pull/216) | 
+| 40 | [Collateral Output](./CIP-0040) | Proposed | 
 | 42 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Proposed | 
 | 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |  
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
