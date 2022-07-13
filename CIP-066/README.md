@@ -41,7 +41,7 @@ Now what can Paris Hilton do to verify that all of these accounts are connected 
 
 She can use an Identity Provider, where she can simply connect the accounts of her liking using OAuth or any other login standard. Then this Identity Provider can issue a Decentralized Identifier Document (DID) and reference all the accounts that Paris Hilton has just connected using OAuth. 
 Now that this DID is created, Paris Hilton can link it on-chain to her new NFT collection.
-Once the DID is linked to the NFT collection on-chain, the NFT platofrms can simply query this information and display to the end-users/potential buyers of these NFTs which social accounts are unmistakeably linked to the collection.
+Once the DID is linked to the NFT collection on-chain, the NFT platforms can simply query this information and display to the end-users/potential buyers of these NFTs which social accounts are unmistakeably linked to the collection.
 
 The end-users/potential buyers then can judge for themselves if they want to trust these social accounts or not. THe more trustworthy social accounts are connected to the collection, the more likely it is that the end-users will trust the authenticity of the collection.
 
@@ -158,10 +158,188 @@ The policy can also be left unlocked in case the identity information requires c
 
 #### 1. DID Document
 
-In this example the DID Document is stored on IPFS.
+In this example the DID Document is stored on [IPFS](https://gateway.pinata.cloud/ipfs/QmacjTQe5q1ur2FbqW9TehScoP7cZEcAWnSA6gz4FEEMi2).
+This DID is usually created by a trusted DID issuing company.
 
 ```
-coming soon
+{
+  "context": [
+    "https://www.w3.org/ns/did/v1",
+    [
+      [
+        "https://github.com/IAMXID/did-method-iamx/blob/main/IAMX_DID_met",
+        "hod.md"
+      ]
+    ]
+  ],
+  "id": [
+    [
+      "did:iamx:cardanozggW2SuC7Phxth3SAjhtz7YuNfrcDhoRTz5WrSZ2xh38BTwf",
+      "Xpi6R1vn5PzPFkBZYYwwBsDVn9VrZ1KuUAkDK1cFfAK794s4QtMvpSd19kpKYs8Y",
+      "F6NdpQV8YPUNbQKLMKkpy2iGQerEbuXD48SANG9o98R4J9fXqe6auqHAnX2asQER",
+      "WHHoY9F3zeDMaxUoXTcUL9iA7ymZRKdmxsY5sRoPQUjwqnNad2kB7z9u2kZdpPzt",
+      "mKPRPaEvdFjCpTscFimjMNH34h1V7rgFXLBNunV5VXtYrFNKnWVaNwY1ZPcrpqcQ",
+      "g9c3Qi21mNMWPc5XLANX6Rja7ALPp9qy65KpVR1p8eWvEdDkf9uoJQfNMgZxKvVm",
+      "wP3s3Q5FGyi8WisgPoncLQG9RS5EgrG6C7m25fTiV11fEBQU5Aiec5xj3tf7dj8u",
+      "VpQpKmSF7Ayv915VtEZCCJy2cLYMQVD2CfwRcimcaeQommhmNzyo5NnsztS2SMa4",
+      "JaSqV9pr2fbKAkRPCVrpGYa2A1y7apXZ9vJEzLRjhdgbCEAus7gJ8XZnQHD4haXh",
+      "TMHYCcCaYc2s5CGPz3MsP713MgStMXiYNf6PGNJ62pgmqKCu8FMuiKqo5Xj3AEKX",
+      "U5cNivJSU6eJ6u3HFrdWougyfAmodfYx8CHfWCMkcz1UZgNf7q45fXgRw7v6TGwL",
+      "DXgGbcuCPcgmkHw6X7fzDaViAuPnJdZMtbmcDbursH3uUoFdxhfWPeTVzSXgwUB6",
+      "ry2zgqfK4TssLAHghqGLq3dtqV2t1kZxuTnt81hQkN3Wdo4MpkBExC12RV89RJwe",
+      "tqodhMipD9Y8WUYEw3Uu2WGy4U1cu1Qt5c9rc6vPrJV6YR2hJ5tRpaCmWFLxppXz",
+      "3j4yjLxPUjRVtBoJoekB1NJG4o84TzcVohpi5naLABtCp1K8tiNXvRdCafXFcZBh",
+      "VmFJS1mp4vnyDqHsLzrbbQWsdD8SSNoXoArMrihZj4xwneUC2mE2BFeGic58kx84"
+    ]
+  ],
+  "updated": "Fri, 08 Jul 2022 09:04:43 GMT",
+  "version": "1.0.0",
+  "description": "CIP-0066_IAMX",
+  "verificationMethod": [
+    {
+      "id": [
+        [
+          "did:iamx:cardanozggW2SuC7Phxth3SAjhtz7YuNfrcDhoRTz5WrSZ2xh38BTwf",
+          "Xpi6R1vn5PzPFkBZYYwwBsDVn9VrZ1KuUAkDK1cFfAK794s4QtMvpSd19kpKYs8Y",
+          "F6NdpQV8YPUNbQKLMKkpy2iGQerEbuXD48SANG9o98R4J9fXqe6auqHAnX2asQER",
+          "WHHoY9F3zeDMaxUoXTcUL9iA7ymZRKdmxsY5sRoPQUjwqnNad2kB7z9u2kZdpPzt",
+          "mKPRPaEvdFjCpTscFimjMNH34h1V7rgFXLBNunV5VXtYrFNKnWVaNwY1ZPcrpqcQ",
+          "g9c3Qi21mNMWPc5XLANX6Rja7ALPp9qy65KpVR1p8eWvEdDkf9uoJQfNMgZxKvVm",
+          "wP3s3Q5FGyi8WisgPoncLQG9RS5EgrG6C7m25fTiV11fEBQU5Aiec5xj3tf7dj8u",
+          "VpQpKmSF7Ayv915VtEZCCJy2cLYMQVD2CfwRcimcaeQommhmNzyo5NnsztS2SMa4",
+          "JaSqV9pr2fbKAkRPCVrpGYa2A1y7apXZ9vJEzLRjhdgbCEAus7gJ8XZnQHD4haXh",
+          "TMHYCcCaYc2s5CGPz3MsP713MgStMXiYNf6PGNJ62pgmqKCu8FMuiKqo5Xj3AEKX",
+          "U5cNivJSU6eJ6u3HFrdWougyfAmodfYx8CHfWCMkcz1UZgNf7q45fXgRw7v6TGwL",
+          "DXgGbcuCPcgmkHw6X7fzDaViAuPnJdZMtbmcDbursH3uUoFdxhfWPeTVzSXgwUB6",
+          "ry2zgqfK4TssLAHghqGLq3dtqV2t1kZxuTnt81hQkN3Wdo4MpkBExC12RV89RJwe",
+          "tqodhMipD9Y8WUYEw3Uu2WGy4U1cu1Qt5c9rc6vPrJV6YR2hJ5tRpaCmWFLxppXz",
+          "3j4yjLxPUjRVtBoJoekB1NJG4o84TzcVohpi5naLABtCp1K8tiNXvRdCafXFcZBh",
+          "VmFJS1mp4vnyDqHsLzrbbQWsdD8SSNoXoArMrihZj4xwneUC2mE2BFeGic58kx84",
+          "#key-1"
+        ]
+      ],
+      "type": "RSA_mod4096",
+      "controller": [
+        [
+          "did:iamx:cardanozggW2SuC7Phxth3SAjhtz7YuNfrcDhoRTz5WrSZ2xh38BTwf",
+          "Xpi6R1vn5PzPFkBZYYwwBsDVn9VrZ1KuUAkDK1cFfAK794s4QtMvpSd19kpKYs8Y",
+          "F6NdpQV8YPUNbQKLMKkpy2iGQerEbuXD48SANG9o98R4J9fXqe6auqHAnX2asQER",
+          "WHHoY9F3zeDMaxUoXTcUL9iA7ymZRKdmxsY5sRoPQUjwqnNad2kB7z9u2kZdpPzt",
+          "mKPRPaEvdFjCpTscFimjMNH34h1V7rgFXLBNunV5VXtYrFNKnWVaNwY1ZPcrpqcQ",
+          "g9c3Qi21mNMWPc5XLANX6Rja7ALPp9qy65KpVR1p8eWvEdDkf9uoJQfNMgZxKvVm",
+          "wP3s3Q5FGyi8WisgPoncLQG9RS5EgrG6C7m25fTiV11fEBQU5Aiec5xj3tf7dj8u",
+          "VpQpKmSF7Ayv915VtEZCCJy2cLYMQVD2CfwRcimcaeQommhmNzyo5NnsztS2SMa4",
+          "JaSqV9pr2fbKAkRPCVrpGYa2A1y7apXZ9vJEzLRjhdgbCEAus7gJ8XZnQHD4haXh",
+          "TMHYCcCaYc2s5CGPz3MsP713MgStMXiYNf6PGNJ62pgmqKCu8FMuiKqo5Xj3AEKX",
+          "U5cNivJSU6eJ6u3HFrdWougyfAmodfYx8CHfWCMkcz1UZgNf7q45fXgRw7v6TGwL",
+          "DXgGbcuCPcgmkHw6X7fzDaViAuPnJdZMtbmcDbursH3uUoFdxhfWPeTVzSXgwUB6",
+          "ry2zgqfK4TssLAHghqGLq3dtqV2t1kZxuTnt81hQkN3Wdo4MpkBExC12RV89RJwe",
+          "tqodhMipD9Y8WUYEw3Uu2WGy4U1cu1Qt5c9rc6vPrJV6YR2hJ5tRpaCmWFLxppXz",
+          "3j4yjLxPUjRVtBoJoekB1NJG4o84TzcVohpi5naLABtCp1K8tiNXvRdCafXFcZBh",
+          "VmFJS1mp4vnyDqHsLzrbbQWsdD8SSNoXoArMrihZj4xwneUC2mE2BFeGic58kx84"
+        ]
+      ],
+      "publicKey": [
+        [
+          "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAowyU5YxcEYGUdJO/7XZw",
+          "aymotFny7qocYQPRnFDUDXwLwLoMFpiTeUKBX79dULeTPMHma2m3JByzqeSMfEaL",
+          "bxeIuIctyG9ZiCnSEx2mGEpKIsHwgGcqPNfdfa0gwXZerWtH5+6YgSuLW49L5Byx",
+          "Tn9fF77gnOqrj4xRriCAneQrZdagi+rk6QoLPEYbM7Ctvw4x59scYf3Lo0Ak495T",
+          "IbjjyFo6mq+bMJWLAmSsaeSX5H3kuZTOcv5h4VloRlPiScuuVLotP3cH2afvM8wp",
+          "fsRe1TOgZLO7azCv6xb7leIUmBYDGDgctHvxmN/bUvw1iflOtHkMH/EeXwPQ7BBQ",
+          "3+NHPLhWvygrOXeBNhJKq1uZCyJQRKcVP6z0r/McEvjRiJOAffvD0YN10n+C4eAP",
+          "byW9h+fu3e2D4gnjLVlXFCdVayEJt0nK0PTMzqfTeYmcDfJn+yj9nQzHytq4WqIr",
+          "vo7wn/goKUMiqQwy9YVgyu89EgswaDFqq9r/LTrjca7O84Jf7s2kCv2qpsuuCF+4",
+          "IqI1r3b0HxisKVNKKcl81rFgL9Uf9pkqUg4k7Tty+iiI7kfv3yld9ESLO5bSlHcU",
+          "rJzBm2agIyPUdnXnUg+CbBONFgY7ayWYnmAcCBBs/dTFrcUx7guhl4IPXY/8MMjS",
+          "rZqb/5Uml4KdVHHUDaBnkQ8CAwEAAQ=="
+        ]
+      ]
+    }
+  ],
+  "authentication": [
+    [
+      [
+        "did:iamx:cardanozggW2SuC7Phxth3SAjhtz7YuNfrcDhoRTz5WrSZ2xh38BTwf",
+        "Xpi6R1vn5PzPFkBZYYwwBsDVn9VrZ1KuUAkDK1cFfAK794s4QtMvpSd19kpKYs8Y",
+        "F6NdpQV8YPUNbQKLMKkpy2iGQerEbuXD48SANG9o98R4J9fXqe6auqHAnX2asQER",
+        "WHHoY9F3zeDMaxUoXTcUL9iA7ymZRKdmxsY5sRoPQUjwqnNad2kB7z9u2kZdpPzt",
+        "mKPRPaEvdFjCpTscFimjMNH34h1V7rgFXLBNunV5VXtYrFNKnWVaNwY1ZPcrpqcQ",
+        "g9c3Qi21mNMWPc5XLANX6Rja7ALPp9qy65KpVR1p8eWvEdDkf9uoJQfNMgZxKvVm",
+        "wP3s3Q5FGyi8WisgPoncLQG9RS5EgrG6C7m25fTiV11fEBQU5Aiec5xj3tf7dj8u",
+        "VpQpKmSF7Ayv915VtEZCCJy2cLYMQVD2CfwRcimcaeQommhmNzyo5NnsztS2SMa4",
+        "JaSqV9pr2fbKAkRPCVrpGYa2A1y7apXZ9vJEzLRjhdgbCEAus7gJ8XZnQHD4haXh",
+        "TMHYCcCaYc2s5CGPz3MsP713MgStMXiYNf6PGNJ62pgmqKCu8FMuiKqo5Xj3AEKX",
+        "U5cNivJSU6eJ6u3HFrdWougyfAmodfYx8CHfWCMkcz1UZgNf7q45fXgRw7v6TGwL",
+        "DXgGbcuCPcgmkHw6X7fzDaViAuPnJdZMtbmcDbursH3uUoFdxhfWPeTVzSXgwUB6",
+        "ry2zgqfK4TssLAHghqGLq3dtqV2t1kZxuTnt81hQkN3Wdo4MpkBExC12RV89RJwe",
+        "tqodhMipD9Y8WUYEw3Uu2WGy4U1cu1Qt5c9rc6vPrJV6YR2hJ5tRpaCmWFLxppXz",
+        "3j4yjLxPUjRVtBoJoekB1NJG4o84TzcVohpi5naLABtCp1K8tiNXvRdCafXFcZBh",
+        "VmFJS1mp4vnyDqHsLzrbbQWsdD8SSNoXoArMrihZj4xwneUC2mE2BFeGic58kx84"
+      ]
+    ],
+    {
+      "id": [
+        [
+          "did:iamx:cardanozggW2SuC7Phxth3SAjhtz7YuNfrcDhoRTz5WrSZ2xh38BTwf",
+          "Xpi6R1vn5PzPFkBZYYwwBsDVn9VrZ1KuUAkDK1cFfAK794s4QtMvpSd19kpKYs8Y",
+          "F6NdpQV8YPUNbQKLMKkpy2iGQerEbuXD48SANG9o98R4J9fXqe6auqHAnX2asQER",
+          "WHHoY9F3zeDMaxUoXTcUL9iA7ymZRKdmxsY5sRoPQUjwqnNad2kB7z9u2kZdpPzt",
+          "mKPRPaEvdFjCpTscFimjMNH34h1V7rgFXLBNunV5VXtYrFNKnWVaNwY1ZPcrpqcQ",
+          "g9c3Qi21mNMWPc5XLANX6Rja7ALPp9qy65KpVR1p8eWvEdDkf9uoJQfNMgZxKvVm",
+          "wP3s3Q5FGyi8WisgPoncLQG9RS5EgrG6C7m25fTiV11fEBQU5Aiec5xj3tf7dj8u",
+          "VpQpKmSF7Ayv915VtEZCCJy2cLYMQVD2CfwRcimcaeQommhmNzyo5NnsztS2SMa4",
+          "JaSqV9pr2fbKAkRPCVrpGYa2A1y7apXZ9vJEzLRjhdgbCEAus7gJ8XZnQHD4haXh",
+          "TMHYCcCaYc2s5CGPz3MsP713MgStMXiYNf6PGNJ62pgmqKCu8FMuiKqo5Xj3AEKX",
+          "U5cNivJSU6eJ6u3HFrdWougyfAmodfYx8CHfWCMkcz1UZgNf7q45fXgRw7v6TGwL",
+          "DXgGbcuCPcgmkHw6X7fzDaViAuPnJdZMtbmcDbursH3uUoFdxhfWPeTVzSXgwUB6",
+          "ry2zgqfK4TssLAHghqGLq3dtqV2t1kZxuTnt81hQkN3Wdo4MpkBExC12RV89RJwe",
+          "tqodhMipD9Y8WUYEw3Uu2WGy4U1cu1Qt5c9rc6vPrJV6YR2hJ5tRpaCmWFLxppXz",
+          "3j4yjLxPUjRVtBoJoekB1NJG4o84TzcVohpi5naLABtCp1K8tiNXvRdCafXFcZBh",
+          "VmFJS1mp4vnyDqHsLzrbbQWsdD8SSNoXoArMrihZj4xwneUC2mE2BFeGic58kx84",
+          "#key-1"
+        ]
+      ],
+      "type": "RSA_mod4096",
+      "controller": [
+        [
+          "did:iamx:cardanozggW2SuC7Phxth3SAjhtz7YuNfrcDhoRTz5WrSZ2xh38BTwf",
+          "Xpi6R1vn5PzPFkBZYYwwBsDVn9VrZ1KuUAkDK1cFfAK794s4QtMvpSd19kpKYs8Y",
+          "F6NdpQV8YPUNbQKLMKkpy2iGQerEbuXD48SANG9o98R4J9fXqe6auqHAnX2asQER",
+          "WHHoY9F3zeDMaxUoXTcUL9iA7ymZRKdmxsY5sRoPQUjwqnNad2kB7z9u2kZdpPzt",
+          "mKPRPaEvdFjCpTscFimjMNH34h1V7rgFXLBNunV5VXtYrFNKnWVaNwY1ZPcrpqcQ",
+          "g9c3Qi21mNMWPc5XLANX6Rja7ALPp9qy65KpVR1p8eWvEdDkf9uoJQfNMgZxKvVm",
+          "wP3s3Q5FGyi8WisgPoncLQG9RS5EgrG6C7m25fTiV11fEBQU5Aiec5xj3tf7dj8u",
+          "VpQpKmSF7Ayv915VtEZCCJy2cLYMQVD2CfwRcimcaeQommhmNzyo5NnsztS2SMa4",
+          "JaSqV9pr2fbKAkRPCVrpGYa2A1y7apXZ9vJEzLRjhdgbCEAus7gJ8XZnQHD4haXh",
+          "TMHYCcCaYc2s5CGPz3MsP713MgStMXiYNf6PGNJ62pgmqKCu8FMuiKqo5Xj3AEKX",
+          "U5cNivJSU6eJ6u3HFrdWougyfAmodfYx8CHfWCMkcz1UZgNf7q45fXgRw7v6TGwL",
+          "DXgGbcuCPcgmkHw6X7fzDaViAuPnJdZMtbmcDbursH3uUoFdxhfWPeTVzSXgwUB6",
+          "ry2zgqfK4TssLAHghqGLq3dtqV2t1kZxuTnt81hQkN3Wdo4MpkBExC12RV89RJwe",
+          "tqodhMipD9Y8WUYEw3Uu2WGy4U1cu1Qt5c9rc6vPrJV6YR2hJ5tRpaCmWFLxppXz",
+          "3j4yjLxPUjRVtBoJoekB1NJG4o84TzcVohpi5naLABtCp1K8tiNXvRdCafXFcZBh",
+          "VmFJS1mp4vnyDqHsLzrbbQWsdD8SSNoXoArMrihZj4xwneUC2mE2BFeGic58kx84"
+        ]
+      ],
+      "publicKey": [
+        [
+          "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAowyU5YxcEYGUdJO/7XZw",
+          "aymotFny7qocYQPRnFDUDXwLwLoMFpiTeUKBX79dULeTPMHma2m3JByzqeSMfEaL",
+          "bxeIuIctyG9ZiCnSEx2mGEpKIsHwgGcqPNfdfa0gwXZerWtH5+6YgSuLW49L5Byx",
+          "Tn9fF77gnOqrj4xRriCAneQrZdagi+rk6QoLPEYbM7Ctvw4x59scYf3Lo0Ak495T",
+          "IbjjyFo6mq+bMJWLAmSsaeSX5H3kuZTOcv5h4VloRlPiScuuVLotP3cH2afvM8wp",
+          "fsRe1TOgZLO7azCv6xb7leIUmBYDGDgctHvxmN/bUvw1iflOtHkMH/EeXwPQ7BBQ",
+          "3+NHPLhWvygrOXeBNhJKq1uZCyJQRKcVP6z0r/McEvjRiJOAffvD0YN10n+C4eAP",
+          "byW9h+fu3e2D4gnjLVlXFCdVayEJt0nK0PTMzqfTeYmcDfJn+yj9nQzHytq4WqIr",
+          "vo7wn/goKUMiqQwy9YVgyu89EgswaDFqq9r/LTrjca7O84Jf7s2kCv2qpsuuCF+4",
+          "IqI1r3b0HxisKVNKKcl81rFgL9Uf9pkqUg4k7Tty+iiI7kfv3yld9ESLO5bSlHcU",
+          "rJzBm2agIyPUdnXnUg+CbBONFgY7ayWYnmAcCBBs/dTFrcUx7guhl4IPXY/8MMjS",
+          "rZqb/5Uml4KdVHHUDaBnkQ8CAwEAAQ=="
+        ]
+      ]
+    }
+  ]
+}
 ```
 
 #### 2. Unnamed Token
@@ -205,28 +383,29 @@ coming soon
 
 ## Cross-Chain Compatibility
 
-To make this standard cross-chain compatible it is possible to set the value of the src parameter to a unique identifier on another blockchain.
+To make this standard cross-chain compatible it is possible to set the value of the src parameter under files to a unique identifier on another blockchain, where the DID might be located.
 
 ## Backwards Compatibility
 
 To keep NFT metadata compatible with changes coming up in the future, we use the **`version`** property.
 
 ## Rationale
-The focous of this standard is on easy-of-use & flexibility. Using this standard it is possible to reference DIDs not only on Cardano but at any arbitrary location, even cross-chain. It is also relatively simple to understand and implement because it borrows heavily from pre-existing metadata standards.
+The focus of this standard is on ease-of-use & flexibility. Using this standard it is possible to reference DIDs not only on Cardano but at any arbitrary location, even cross-chain. It is also relatively simple to understand and implement because it borrows heavily from pre-existing metadata standards.
 
 ## Path to Active
 
 [IAMX](https://iamx.id/) and [NMKR](https://www.nmkr.io/) have created a reference implementation of the standard that can be viewed [here](https://cardanoscan.io/transaction/608dd4fba7df5c523a1dfdca8d48fd1d69e7e1995a342ceb01c8355c62a0845b?tab=metadata).
 
-[IAMX](https://iamx.id/) will be creating a tool to create the DIDs that will be integrated nativel into [NMKR](https://www.nmkr.io/) studio.
+[IAMX](https://iamx.id/) will be creating a tool to create the DIDs that will be integrated natively into [NMKR](https://www.nmkr.io/) studio.
 
 By displaying this solution at the Catalyst Guild Hall we hope to reach more creators that are willing to integrate this solution.
 
 ## References
 
 - W3C DID Specification: https://www.w3.org/TR/did-core/#did-syntaxg
-- CIP-0025 that introduced the unnamed Token: hhttps://github.com/cardano-foundation/CIPs/tree/master/CIP-0027
+- CIP-0027 that introduced the unnamed Token: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0027/README.md
+- CIP-0025 that introduced the NFT metadata standard: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under CC-BY 4.0
