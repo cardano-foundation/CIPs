@@ -72,7 +72,7 @@ The Shelley era used the "transitional Praos" protocol (or TPraos for short).
 It consisted of Praos together with a transition system to move away from Ouroboros-BFT.
 The Babbage era replaced TPraos with Praos.
 
-A table of all the features, as of the time this CIP was submitted, can be found [here](feature-table.md).
+A table of all the features, as of the time this CIP was submitted, can be found [here](./feature-table.md).
 
 Note that the protocol version mentioned above is unrelated to the node-to-node and node-to-client protocol versions.
 The consensus layer maintains a versioning scheme for the node queries which does not necessarily
