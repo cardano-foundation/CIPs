@@ -51,7 +51,7 @@ and the extra entropy parameter useless.
 ## Specification
 
 The removal of the decentralization parameter and the extra entropy parameter is self explanatory.
-We now describe the specifacion of the `coinsPerUTxOByte` parameter.
+We now describe the specification of the `coinsPerUTxOByte` parameter.
 
 
 ### Rename
