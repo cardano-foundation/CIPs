@@ -69,13 +69,17 @@ There are three different key components to this structure.
 
 This is an example DID taken from the official [W3C specification](https://www.w3.org/TR/did-core/#did-syntaxg).
 To keep the scope reasonable, this CIP will not explain the DID specification deeper. Please refer to the W3C specifation as linked above.
+The only important thing to note is that inside the DID document the payload will contain the different social accounts that were linked to the DID document.
 
 ```
 {
   "@context": [
     "https://www.w3.org/ns/did/v1",
     "https://w3id.org/security/suites/ed25519-2020/v1"
-  ]
+  ],
+  "payload": {
+    ...
+  },
   "id": "did:example:123456789abcdefghi",
   "authentication": [{
     
@@ -172,6 +176,23 @@ This DID is usually created by a trusted DID issuing company.
       ]
     ]
   ],
+  "payload": {
+    "date": "Fri, 08 Jul 2022 09:03:43 GMT",
+    "accounts": {
+        "twitter": {
+            "handle": [
+                "https://twitter.com/nmkr_io",
+                "https://twitter.com/IAM_X_IDENTITY"
+            ]
+        },
+        "website": [
+            "https://www.nmkr.io/",
+            "https://www.iamx.id/"
+        ]
+    },
+    "policyID": "fdb275fb75db33313626e0361fc763b6995e97db312be87590e48aa1",
+    "description": "CIP-0066 NFT-Identity by NMKR.IO and IAMX.ID"
+  },
   "id": [
     [
       "did:iamx:cardanozggW2SuC7Phxth3SAjhtz7YuNfrcDhoRTz5WrSZ2xh38BTwf",
@@ -358,27 +379,11 @@ This DID is usually created by a trusted DID issuing company.
                     "mediaType": "application/ld+json"
                 }
             ],
-            "payload": {
-                "date": "Fri, 08 Jul 2022 09:03:43 GMT",
-                "accounts": {
-                    "twitter": {
-                        "handle": [
-                            "https://twitter.com/nmkr_io",
-                            "https://twitter.com/IAM_X_IDENTITY"
-                        ]
-                    },
-                    "website": [
-                        "https://www.nmkr.io/",
-                        "https://www.iamx.id/"
-                    ]
-                },
-                "policyID": "fdb275fb75db33313626e0361fc763b6995e97db312be87590e48aa1",
-                "description": "CIP-0066 NFT-Identity by NMKR.IO and IAMX.ID"
-            },
             "@context": "https://github.com/IAMXID/did-method-iamx"
         }
     }
-} }
+  } 
+}
 ```
 
 ## Cross-Chain Compatibility
