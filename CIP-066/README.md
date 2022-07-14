@@ -58,12 +58,18 @@ This is the registered `transaction_metadatum_label` value
 
 There are three different key components to this structure.
 
-| component                   | description                                                                                                                |
+| Component                   | description                                                                                                                |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | DID                         | The actual Decentralized Identity Document where the information about the connected identity data points is stored.       |
-| Unnamed Token               | This token is minted under the policy ID of the NFT collection. It defines the connecton to the DID or the Identity Token. |
+| Collection Token            | This token is minted under the policy ID of the NFT collection. It defines the connecton to the DID or the Identity Token. |
 | Identity Token              | This token is optional and only relevant if the DID needs to be changeable.                                                |
 
+
+These two graphics demonstrate how the three components may interact with each other:
+
+![NFT Identity structure Simple](NFT Identity Diagram Simple.jpg)
+
+![NFT Identity structure COomplex](NFT Identity Diagram Complex.jpg)
 
 #### 1. DID
 
@@ -91,7 +97,7 @@ The only important thing to note is that inside the DID document the payload wil
 }
 ```
 
-#### 2. Unnamed Token
+#### 2. Collection Token
 
 This is an unnamed token, as first described in the [CIP-0027](hhttps://github.com/cardano-foundation/CIPs/tree/master/CIP-0027).
 
@@ -363,7 +369,7 @@ This DID is usually created by a trusted DID issuing company.
 }
 ```
 
-#### 2. Unnamed Token
+#### 2. Collection Token
 
 ```
 {
@@ -408,7 +414,7 @@ By displaying this solution at the Catalyst Guild Hall we hope to reach more cre
 ## References
 
 - W3C DID Specification: https://www.w3.org/TR/did-core/#did-syntaxg
-- CIP-0027 that introduced the unnamed Token: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0027/README.md
+- CIP-0027 that introduced the unnamed Token - in this proposal referenced as Collection Token: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0027/README.md
 - CIP-0025 that introduced the NFT metadata standard: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025
 
 ## Copyright
