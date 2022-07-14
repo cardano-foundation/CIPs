@@ -67,9 +67,9 @@ There are three different key components to this structure.
 
 These two graphics demonstrate how the three components may interact with each other:
 
-![NFT Identity Structure Simple](/NFTIdentityDiagramSimple.jpg)
+![NFT Identity Structure Simple](./NFTIdentityDiagramSimple.jpg)
 
-![NFT Identity Structure Complex](/NFTIdentityDiagramComplex.jpg)
+![NFT Identity Structure Complex](./NFTIdentityDiagramComplex.jpg)
 
 #### 1. DID
 
