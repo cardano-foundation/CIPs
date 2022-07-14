@@ -12,26 +12,25 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines a metadata standard making use of output datums not only for NFTs but any asset class.
+This proposal defines a metadata standard for native assets making use of output datums not only for NFTs but any asset class.
 
 ## Motivation
 
-[CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025) has plenty of limitations:
+[CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025) has plenty of limitations, to name a few
 
 - zero programmability
 - it is very hard to update/evolve the metadata
 - the metadata are not readable from a plutus validator. 
 
-This standard tackles all these problems and offers many more advantages not only for NFTs, but also for any asset class. Additionally, this CIP will introduce a way to classify tokens so that third parties like wallets can easily know what the kind of token it is.
+This standard tackles all these problems and offers many more advantages, not only for NFTs, but also for any asset class that may follow. Additionally, this CIP will introduce a way to classify tokens so that third parties like wallets can easily know what the kind of token it is.
 
 ## Considerations
 
-The basic idea is to have two assets issued in the same transaction, where one references the other. We call these two a `reference NFT` and an `user token`, where the `user token` can be an NFT, FT or any other asset class that is transferable and represents any value. So, the `user token` is the actual asset that lives in a user's wallet.
+The basic idea is to have two assets issued, where one references the other. We call these two a `reference NFT` and an `user token`, where the `user token` can be an NFT, FT or any other asset class that is transferable and represents any value. So, the `user token` is the actual asset that lives in a user's wallet.
 
-To find the metadata for the `user token` you need to look for the output, where the `reference NFT` is locked in (this is tracable since they are forged in the same transaction). This output contains an inline datum, which holds the metadata. The advantage of this approach is that the issuer of the assets can decide how the transaction output with the `reference NFT` is locked and further handled. If the issuer wants complete immutable metadata, the `reference NFT` can be locked at the address of an unspendable script. Similarly, if the issuer wants the NFTs/FTs to evolve or wants a mechanism to update the metadata, the `reference NFT` can be locked at the address of a script with arbitrary logic that the issuer decides.
+To find the metadata for the `user token` you need to look for the output, where the `reference NFT` is locked in. How this is done concretely will become clear below. Moreover, this output contains a datum, which holds the metadata. The advantage of this approach is that the issuer of the assets can decide how the transaction output with the `reference NFT` is locked and further handled. If the issuer wants complete immutable metadata, the `reference NFT` can be locked at the address of an unspendable script. Similarly, if the issuer wants the NFTs/FTs to evolve or wants a mechanism to update the metadata, the `reference NFT` can be locked at the address of a script with arbitrary logic that the issuer decides.
 
-Lastly and most importantly, with this construction the metadata can be referenced by a PlutusV2 scripts with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space. 
-
+Lastly and most importantly, with this construction, the metadata can be used by a PlutusV2 script with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space. 
 
 ## Specification
 
@@ -41,15 +40,16 @@ This is the registered `asset_name_label` value
 | --------------------------- | ------------ | --------------------------------------------------------- |
 | 100                         | NFT          | Reference NFT locked at a script containing the datum     |
 
-The `user token` and `reference NFT` **MUST** be under the same policy id
+For a correct relationship between the `user token` and the `reference NFT` a few conditions **must** be met.
+- The `user token` and `reference NFT` **must** be under the same policy ID. 
+- For a specific `user token` there **must** exist exactly **one** `reference NFT`
+- The `user token` and associated `reference NFT` **must** follow the standard naming pattern. The asset name of both assets is prefixed with its respective `asset_name_label` followed by a pattern defined by the asset class (e.g. asset_name_label 222)
 
-For a specific `user token` there **MUST** exist exactly **one** `reference NFT`, but there can be multiple `user tokens` referencing the same `reference NFT`
+Some remarks about the above,
+1. The `user token` and `reference NFT` do not need to be minted in the same transaction. The order of minting is also not important.
+2. It may be the case that there can be multiple `user tokens` referencing the same `reference NFT`. More explicit with this standard, if a specific `user token` has a quantity bigger than 1, then they all reference the same `reference NFT`.
 
-If a specific `user token` has a quantity > 1, then they do all reference the same `reference NFT`
-
-The `user token` and belonging `reference NFT` **MUST** follow a certain pattern. The asset name of boths assets is prefixed with its respective `asset_name_label` followed by a pattern defined by the asset class (e.g. asset_name_label 222)
-
-The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field:
+The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor:
 ```
 big_int = int / big_uint / big_nint
 big_uint = #6.2(bounded_bytes)
@@ -68,10 +68,7 @@ datum = #6.121([metadata, version])
 
 ## 222 NFT Standard
 
-We are introducing two specific token standards in this CIP. Note the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, semi fungible tokens, etc.
-
-
-This is the registered `asset_name_label` value
+Besides the necessary standard for the `reference NFT` we're introducing two specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, semi fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
@@ -80,12 +77,11 @@ This is the registered `asset_name_label` value
 
 ### Class
 
-The `user token` is an NFT.
-
+The `user token` represents a NFT (non-fungible token).
 
 ### Pattern
 
-The `user token` and `reference NFT` **MUST** have an identical name followed after the `asset_name_label` prefix.
+The `user token` and `reference NFT` **must** have an identical name, followed by the `asset_name_label` prefix.
 
 Example:\
 `user token`: `(222)Test123`\
@@ -94,22 +90,22 @@ Example:\
 
 ### Metadata
 
-This is a low-level representation of the metadata following closely the structure of CIP-0025. All utf-8 encoded keys and values need to be converted into their respective bytes representation when creating the datum on-chain.
+This is a low-level representation of the metadata, following closely the structure of CIP-0025. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
 ```
 files_details = 
   {
-    name : bounded_bytes, ; utf-8
-    mediaType : bounded_bytes, ; utf-8
-    src : bounded_bytes ; utf-8
+    name : bounded_bytes, ; UTF-8
+    mediaType : bounded_bytes, ; UTF-8
+    src : bounded_bytes ; UTF-8
   }
 
 metadata = 
   {
-    name : bounded_bytes, ; utf-8
-    image : bounded_bytes, ; utf-8
-    ? mediaType : bounded_bytes, ; utf-8
-    ? description : bounded_bytes, ; utf-8
+    name : bounded_bytes, ; UTF-8
+    image : bounded_bytes, ; UTF-8
+    ? mediaType : bounded_bytes, ; UTF-8
+    ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
   }
   
@@ -122,25 +118,25 @@ Example datum as JSON:
 
 ### Retrieve metadata as 3rd party
 
-A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken`:
+A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` they want to lookup. The steps are
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
-2. Look up `reference NFT` and find the utxo it's locked in.
-3. Get the datum from the utxo and lookup metadata by going into the first field of constructor 0.
+2. Look up `reference NFT` and find the output it's locked in.
+3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
 ### Retrieve metadata from a Plutus validator
 
-We want to bring the metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` in the Plutus validator context:
+We want to bring the metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` in the Plutus validator context. To do this we
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken` (off-chain)
-2. Look up `reference NFT` and find the utxo it's locked in. (off-chain)
-3. Reference the utxo in the transaction. (off-chain)
-4. Verify validity of datum of the referenced utxo by checking if policy id of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
+2. Look up `reference NFT` and find the output it's locked in. (off-chain)
+3. Reference the output in the transaction. (off-chain)
+4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
 ## 333 FT Standard
 
-This is the registered `asset_name_label` value
+The second introduced standard is the `333` FT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
@@ -154,7 +150,7 @@ The `user token` is an FT (fungible token).
 
 ### Pattern
 
-The `user token` and `reference NFT` **MUST** have an identical name followed after the `asset_name_label` prefix.
+The `user token` and `reference NFT` **must** have an identical name, followed by the `asset_name_label` prefix.
 
 Example:\
 `user token`: `(333)Test123`\
@@ -163,18 +159,18 @@ Example:\
 
 ### Metadata
 
-This is a low-level representation of the metadata following closely the structure of the Cardano foundation off-chain metadata registry. All utf-8 encoded keys and values need to be converted into their respective bytes representation when creating the datum on-chain.
+This is a low-level representation of the metadata, following closely the structure of the Cardano foundation off-chain metadata registry. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
 
 metadata = 
   {
-    name : bounded_bytes, ; utf-8
-    description : bounded_bytes, ; utf-8
-    ? ticker: bounded_bytes, ; utf-8
-    ? url: bounded_bytes, ; utf-8
-    ? logo: bounded_bytes, ; utf-8
+    name : bounded_bytes, ; UTF-8
+    description : bounded_bytes, ; UTF-8
+    ? ticker: bounded_bytes, ; UTF-8
+    ? url: bounded_bytes, ; UTF-8
+    ? logo: bounded_bytes, ; UTF-8
     ? decimals: big_int
   }
   
@@ -187,21 +183,21 @@ Example datum as JSON:
 
 ### Retrieve metadata as 3rd party
 
-A third party has the following FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken`:
+A third party has the following FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` they want to lookup. The steps are
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
-2. Look up `reference NFT` and find the utxo it's locked in.
-3. Get the datum from the utxo and lookup metadata by going into the first field of constructor 0.
+2. Look up `reference NFT` and find the output it's locked in.
+3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
 ### Retrieve metadata from a Plutus validator
 
-We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` in the Plutus validator context:
+We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` in the Plutus validator context. To do this we 
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken` (off-chain)
-2. Look up `reference NFT` and find the utxo it's locked in. (off-chain)
-3. Reference the utxo in the transaction. (off-chain)
-4. Verify validity of datum of the referenced utxo by checking if policy id of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
+2. Look up `reference NFT` and find the output it's locked in. (off-chain)
+3. Reference the output in the transaction. (off-chain)
+4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
 ## Backward Compatibility
 
@@ -215,3 +211,4 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
