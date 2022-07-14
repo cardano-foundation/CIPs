@@ -69,9 +69,11 @@ interface KeyPath = {
 ## **Namespace**
 
 ### **cardano.{walletName}.governance.enable(): Promise\<API>**
-The `cardano.{walletName}.governance.enable()` method is used to enable the governance API. It should request permission from the wallet to enable the API. If permission is granted, the rest of the API will be available. The walelt may choose to maintain a whitelist of allowed clients to avoid asking for permission every time.
+The `cardano.{walletName}.governance.enable()` method is used to enable the governance API. It should request permission from the wallet to enable the API. If permission is granted, the rest of the API will be available. The wallet should maintain a specific whitelist of allowed clients for this API. This whitelist can be used to avoid asking for permission every time.
 
-This api being an extension of [CIP-30 (Cardano dApp-Wallet Web Bridge)](https://cips.cardano.org/cips/cip30/), expects that `cardano.{walletName}.enable()` to be enabled implicitly. 
+This api being an extension of [CIP-30 (Cardano dApp-Wallet Web Bridge)](https://cips.cardano.org/cips/cip30/), expects that `cardano.{walletName}.enable()` to be enabled and added to CIP-30 whitelist implicitly.
+
+When both this API and **CIP-30** is being enabled, is up to the wallet to decide the number of prompts requesting permissions to be displayed to the user.
 
 # **`Jormungandr API`**
 
@@ -127,8 +129,6 @@ Should derive and return the wallets voting public key
 
 ### **Returns**
 `cbor\<vkey>` - cbor serialized 64 bytes (x, y) Ed25519 public key  
-
-There should be only a single single voting key per wallet / mnemonic. 
 
 The **`votingKey`** should be derived from the following path. 
 
