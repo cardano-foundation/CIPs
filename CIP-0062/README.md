@@ -75,10 +75,6 @@ This api being an extension of [CIP-30 (Cardano dApp-Wallet Web Bridge)](https:/
 
 # **`Jormungandr API`**
 
-## **api.connectToNode**(url: string): Promise\<API>
-
-The `api.connectToNode` method is used to connect to a Jormungandr node.
-
 ## **api.submitVote**(keyPath: KeyPath, proposal: Proposal, choice: Choice, validUntil: BlockDate, spendingCounter: number): Promise\<hash32>
 
 `keyPath`: The derivation path values to the voting key for which transaction should be signed with. The derivation path should follow the already establish in [CIP-36 (Catalyst/Voltaire Registration Transaction Metadata Format - Updated)](https://cips.cardano.org/cips/cip36/). 
