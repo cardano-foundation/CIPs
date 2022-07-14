@@ -32,6 +32,10 @@
     "description": "paradiso.app services metadata"
   },
   {
+    "transaction_metadatum_label": 1870,
+    "description": "Open Badges v2.0 compliant metadata"
+  },
+  {
     "transaction_metadatum_label": 1967,
     "description": "nut.link metadata oracles registry"
   },
