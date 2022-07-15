@@ -1,12 +1,10 @@
-###### tags: `CIP`
-# CIP-0381
 ---
 CIP: 0381
 Title: Plutus support for Pairings over BLS12_381
 Authors: Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/220
 Comments-URI: https://github.com/cardano-foundation/CIPs/pull/220
-Status: Draft
+Status: Proposed
 Type: Standards Track
 Created: 2022-02-11
 License: Apache-2.0
