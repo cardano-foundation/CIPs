@@ -57,7 +57,8 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 36 | [Catalyst/Voltaire Registration Transaction Metadata Format](./CIP-0036) | Proposed | 
 | 40 | [Collateral Output](./CIP-0040) | Proposed | 
 | 42 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Proposed | 
-| 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |  
+| 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
+| 381 | [Plutus Support For Pairings Over Curve Bls12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
@@ -91,7 +92,6 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) | 
 | 57? | [On-Chain Script Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) | 
 | 58? | [Plutus Bitwise Primitives](https://github.com/cardano-foundation/CIPs/pull/268) |
-| 381? | [Plutus Support For Pairings Over Curve Bls12-381](https://github.com/cardano-foundation/CIPs/pull/220) |
 | 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
 
 <p align="right"><i>Last updated on 2022-06-14</i></p>
