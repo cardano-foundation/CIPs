@@ -202,11 +202,11 @@ Errors: `APIError`
 
 Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet but other networks can possibly be returned by wallets. Those other network ID values are not governed by this document. This result will stay the same unless the connected account has changed.
 
-### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | undefined>
+### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | null>
 
 Errors: `APIError`, `PaginateError`
 
-If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `undefined` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
+If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `null` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
 
 ### api.getCollateral(params: { amount: cbor\<Coin> }): Promise\<TransactionUnspentOutput[] | null>
 
@@ -302,3 +302,5 @@ The benefits of this are:
 # Implementations
 
 [nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
+
+[yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)

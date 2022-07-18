@@ -3,7 +3,7 @@ CIP: 1853
 Title: HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano
 Authors: Rafael Korbas <rafael.korbas@vacuumlabs.com>
 Comments-URI: https://forum.cardano.org/t/stake-pool-cold-keys-hd-derivation/43360
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2020-12-14
 License: CC-BY-4.0

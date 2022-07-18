@@ -4,7 +4,7 @@ Title: Forging policy keys for HD Wallets
 Authors: Samuel Leathers <samuel.leathers@iohk.io>, John Lotoski <john.lotoski@iohk.io>, Michael Bishop <michael.bishop@iohk.io>, David Arnold <david.arnold@iohk.io>
 Comments-Summary: Multi-party transaction signing and key management for HD wallets.
 Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-1855
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2021-06-02
 License: CC-BY-4.0
