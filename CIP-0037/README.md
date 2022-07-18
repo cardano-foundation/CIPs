@@ -83,6 +83,70 @@ One of the questions raised by the community was, will the lower limit stop the 
 1. The value is a percentage of k, such as 10%. This percentage could increase as needed, such as to 15% of k.
 2. The value could be calculated based on the average of active stake compared to active pools. E.g, active stake = 23837 M / 3000 = saturation point of 7.94 M ADA
 
+## Proposals Based On Feedback
+
+After some discussions among the community and some help from https://github.com/cffls, the below code example has been proposed for how the dynamic saturation could work.
+
+```
+let lovelace = 1000000;
+
+function calc_sat(pledge){
+    k = 500;
+    e = 0.2;
+    l = 125;
+    total_supply = 33719282563 * lovelace;
+    orig_sat = total_supply / k;
+    new_sat = orig_sat * Math.max(e, min(1 / k, pledge / orig_sat * l));
+    final_sat = max(new_sat, orig_sat);
+    console.log(`pledge: ${pledge / lovelace}, sat: ${final_sat / lovelace}`);
+}
+
+function max(val1, val2){
+    if(val1 < val2){
+        return val1;
+    }
+    return val2;
+}
+
+function min(val1, val2){
+    if(val1 > val2){
+        return val1;
+    }
+    return val2;
+}
+
+calc_sat(50000 * lovelace);
+calc_sat(100000 * lovelace);
+calc_sat(150000 * lovelace);
+calc_sat(250000 * lovelace);
+calc_sat(500000 * lovelace);
+calc_sat(750000 * lovelace);
+calc_sat(1000000 * lovelace);
+calc_sat(2000000 * lovelace);
+```
+
+Results:
+
+```
+[Log] pledge: 50000, sat: 13487713.0252
+[Log] pledge: 100000, sat: 13487713.0252
+[Log] pledge: 150000, sat: 18750000
+[Log] pledge: 250000, sat: 31250000
+[Log] pledge: 500000, sat: 62500000
+[Log] pledge: 750000, sat: 67438565.126
+[Log] pledge: 1000000, sat: 67438565.126
+[Log] pledge: 2000000, sat: 67438565.126
+```
+
+## Path To Active
+
+CIP-0037 has had active discussions for over 6 months and is now waiting for a review from IOG to provide feedback on the feasibility and soundness of the approach.
+
+1. This CIP should be considered a medium priority as it directly impacts the health and growth of the Cardano ecosystem. Large Cardano pools have had several years to take advantage of the lack of oversight and have control of a large portion of mining operations. This continued lack of restrictions will further damage the trust and reliability of the framework.
+
+2. Timelines around the implementation of the CIP will depend on urgency, however its implementation should be trivial as there are no new parameters required or risks involved. Further this CIP from a high-level aspect only requires an update to the existing algorithm. From an external context, the CIP will require trivial updates as it should be self-contained in cardano-node.
+
+
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
