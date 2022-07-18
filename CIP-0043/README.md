@@ -45,18 +45,60 @@ Two new builtin functions would be provided:
 
 These would be based on `libsecp256k1`, a reference implementation of both kinds
 of signature scheme in C. This implementation would be called from Haskell using
-a mixture of direct bindings to C (for Schnorr signatures) and bindings in
-`secp256k1-haskell`; we need to do this because `secp256k1-haskell` does not
-currently have support for Schnorr signatures at all.
-
-The binds would be implemented in `cardano-base`, with new builtins in Plutus
-Core on the basis of those binds.
+direct bindings to C. This implementation would be implemented in
+`cardano-base`, with new builtins in Plutus Core on the basis of the
+`cardano-base`-provided interface for signature schemes.
 
 The builtins would be costed as follows: ECDSA signature verification has
 constant cost, as the message, verification key and signature are all
 fixed-width; Schnorr signature verification is instead linear in the message
 length, as this can be arbitrary, but as the length of the verification key and
 signature are constant, the costing will be constant in both.
+
+More specifically, Plutus would gain the following primitive operations:
+
+* ```verifyEcdsaSecp256k1Signature :: BuiltinByteString -> BuiltinByteString ->
+  BuiltinByteString -> BuiltinBool```, for verifying 32-byte message hashes signed 
+  using the ECDSA signature scheme on the SECP256k1 curve; and
+* ```verifySchnorrSecp256k1Signature :: BuiltinByteString -> BuiltinByteString
+  -> BuiltinByteString -> BuiltinBool```, for verifying arbitrary binary messages 
+  signed using the Schnorr signature scheme on the SECP256k1 curve.
+
+Both functions take parameters of a specific part of the signature scheme, even
+though they are all encoded as `BuiltinByteString`s. In order, for both
+functions, these are:
+
+1. A verification key;
+2. A message (possibly hashed);
+3. A signature.
+
+The two different schemes have different expectations of each argument and how
+it is encoded into a `BuiltinByteString`. We describe these below.
+
+For the ECDSA signature scheme, we have the following requirements:
+
+* The verification key must be 33 bytes. Furthermore, the encoding must
+  correspond to the result produced by
+  [``secp256k1_ec_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1.h#L394),
+  given a length argument of 33, and the ``SECP256K1_EC_COMPRESSED`` flag.
+* The message must be a 32-byte hash. This is typically SHA256, but in practice,
+  as long as the signature was computed against the same form as the message
+  hash being verified, it will work.
+* The signature must be 64 bytes. Furthermore, the encoding must correspond to
+  the result produced by
+  [``secp256k1_ecdsa_serialize_compact``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1.h#L487).
+
+For the Schnorr signature scheme, we have the following requirements:
+
+* The verification key must be 32 bytes. Furthermore, the encoding must
+  correspond to the result produced by
+  [``secp256k1_xonly_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1_extrakeys.h#L61).
+* The message can be of any length, and can contain any bytes in any position.
+* The signature must be 64 bytes.
+
+The builtin operations will error with a descriptive message if given inputs
+that don't correspond to the constraints above, return `False` if the signature
+fails to verify the message given the key, and `True` otherwise.
 
 ## Rationale
 
@@ -68,9 +110,7 @@ provided.
 
 We consider the implementation trustworthy: `libsecp256k1` is the reference
 implementation for both signature schemes, and is already being used in
-production by Bitcoin. `secp256k1-haskell` is a library of fairly low-level and
-thin wrappers around the functionality provided by `libsecp256k1`: its only
-purpose is convenience, and it provides no new functionality.
+production by Bitcoin. 
 
 An alternative approach could be to provide low-level primitives, which would
 allow any signature scheme (not just the ones under consideration here) to be
@@ -98,8 +138,7 @@ backwards-incompatibility: the proposed new primitives do not break any existing
 functionality or affect any other builtins. Likewise, at levels above Plutus
 Core (such as `PlutusTx`), no existing functionality should be affected.
 
-On-chain, this requires a hard fork: the upcoming July hardfork [already takes
-this feature into account](https://www.youtube.com/watch?v=B0tojqvMgB0&t=1148s).
+On-chain, this requires a hard fork.
 
 ## Path to Active
 
