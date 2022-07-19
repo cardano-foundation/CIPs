@@ -1,5 +1,5 @@
 ---
-CIP: CIP-0037 
+CIP: 37 
 Title: Dynamic Saturation 
 Authors: Casey Gibson <caseygibson@protonmail.ch>
 Status: Proposed
