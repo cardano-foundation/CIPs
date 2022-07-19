@@ -2,7 +2,7 @@
 CIP: CIP-0037 
 Title: Dynamic Saturation 
 Authors: Casey Gibson <caseygibson@protonmail.ch>
-Status: In Review
+Status: Proposed
 Type: Standards Track
 Created: 2021-12-03
 Updated: 2022-07-19
