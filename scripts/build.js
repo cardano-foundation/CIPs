@@ -79,7 +79,9 @@ function getTableOfContents(lines, { children = [], headingType = -1 } = {}) {
 
 function loadFrontmatter(filePath) {
   const raw = fs.readFileSync(filePath, { encoding: 'utf8' })
-  const contents = raw.replace(/\.\/.*CIP-0*([^\.]+)/g, '/cips/cip$1')
+  const contents = raw
+    .replace(/\.\/.*CIP-0*([^\.]+)/g, '/cips/cip$1')
+    .replace(/\(\.\/(.*\.md)\)/g, '(./$1.html)')
   const parsed = matter(contents)
   parsed.html = converter.makeHtml(parsed.content)
   return parsed
@@ -88,7 +90,7 @@ function loadFrontmatter(filePath) {
 function copyAsset(fromPath, toPath) {
   const toPathDirectory = toPath.replace(/^(.*)\/.*?$/, '$1')
   fs.mkdirSync(path.join(publicPath, toPathDirectory), { recursive: true })
-  fs.copyFileSync(fromPath, path.join(publicPath, toPath))
+  fs.cpSync(fromPath, path.join(publicPath, toPath), { recursive: true })
 }
 
 function renderHTML(uriPath, template, data) {
@@ -101,11 +103,6 @@ const types = { All: [] }
 
 function slugify(string) {
   return string.toLowerCase().replace(/\s/g, '-')
-}
-
-function getCipContents(cip) {
-  // get all the headings from markdown
-  // inside cip.hbs create
 }
 
 function build() {
@@ -124,14 +121,27 @@ function build() {
         types[cip.data.Type].push(cip)
         types.All.push(cip)
       } else {
-        copyAsset(assetPath, `/cips/${item.toLowerCase()}/${asset}`)
+        const name = item.toLowerCase().replace(/cip-0*([1-9][0-9]*)/g, 'cip$1')
+        const title = `${name.replace(/cip/g, 'CIP ')} - Annexe`;
+        const cipDir = path.join('cips', name)
+        if (asset.endsWith('.md') || asset.endsWith('.markdown')) {
+          const absoluteCipDir = path.join(publicPath, cipDir)
+          const template = handlebars.compile(templates.annexe)
+          const html = converter.makeHtml(fs.readFileSync(assetPath).toString())
+          fs.mkdirSync(absoluteCipDir, { recursive: true })
+          fs.writeFileSync(
+            path.join(absoluteCipDir, asset + '.html'),
+            template({ html, title }),
+            { encoding: 'utf8' }
+          )
+        } else {
+          copyAsset(assetPath , '/' + path.join(cipDir, asset))
+        }
       }
     })
   })
 
   const headerData = []
-
-
 
   Object.keys(types).forEach(type => {
     headerData.push({ label: type, path: `/${slugify(type)}/` })

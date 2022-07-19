@@ -2,7 +2,7 @@
 CIP: 28
 Title: Protocol Parameters (Alonzo)
 Authors: Kevin Hammond <kevin.hammond@iohk.io>
-Status: Draft
+Status: Active
 Type: Informational
 Created: 2021-10-14
 License: CC-BY-4.0
