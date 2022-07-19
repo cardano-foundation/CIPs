@@ -58,6 +58,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 40 | [Collateral Output](./CIP-0040) | Proposed | 
 | 42 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Proposed | 
 | 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |  
+| 54 | [Cardano Smart NFTs](./CIP-0054) | Draft | 
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
@@ -86,7 +87,6 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 50? | [Liesenfelt Shelleys Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 51? | [Preserve Submitter's Ordering of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/231) | 
 | 53? | [Light Wallet Backend Connection](https://github.com/cardano-foundation/CIPs/pull/254) | 
-| 54? | [Cardano Smart NFTs](https://github.com/cardano-foundation/CIPs/pull/263) |
 | 55? | [Babbage Era's coinsPerUTxOByte](https://github.com/cardano-foundation/CIPs/pull/265) | 
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) | 
 | 57? | [On-Chain Script Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) | 
