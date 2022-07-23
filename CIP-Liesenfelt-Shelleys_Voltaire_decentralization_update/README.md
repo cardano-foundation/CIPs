@@ -83,7 +83,8 @@ The Cardano network currently produces ~21,600 blocks per epoch with ~2400 group
 
 (2) https://iohk.io/en/blog/posts/2018/10/29/preventing-sybil-attacks/
 
-$ Ref (1) $
+$Ref (1)$
+
 <p align="center">
  <img src="equation1.png" width="500">
 </p>
@@ -128,7 +129,7 @@ $k = 500$
 
 $α = a0 = 0.3$
  
-The $a0$ parameter represents the fraction of the rewards $(R/(1+a0))$ which are not paid out unless all of the stake is pledged. An $a0$ of 0.3 ensures that **$1.0-1.0/(1.0+0.3) = 23\%$ of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The $\sigma’ = min\\{σ,β\\}$ term enforces a reward limit based on $k$. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available at current network stake size.
+The $a0$ parameter represents the fraction of the rewards $(R/(1+a0))$ which are not paid out unless all of the stake is pledged. An $a0$ of 0.3 ensures that **1.0 - 1.0/(1.0+0.3) = 23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The $\sigma’ = min\\{σ,β\\}$ term enforces a reward limit based on $k$. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available at the stated network size.
 
 <img src="a0 0.3 minfee 340.png">
 
@@ -208,9 +209,9 @@ Large differences between k-parameter and the k-effective of the network represe
 
 1. Everybody in the community should be treated fairly from tiny starfish delegators (1-2k₳) to massive blue whales (>100M₳) and exchanges.
 2. Everybody in the community should have the opportunity to on average earn the same yield and there should not be two classes of stakeholders.
-3. There should be a very clear cause and effect relationship between the $(a0,k)$ input parameters and the resulting K-effective decentralization.
-4. The $a0$ input parameter must require, not incentivize, pool operators to pledge to support community delegation and sybil protection.
-5. The decentralization result will be quantified in terms of group decentralization of block production, not stake saturation relative to pools.
+3. There should be a very clear cause and effect relationship between the input parameters and the resulting K-effective decentralization.
+4. The equation must require, not incentivize, pool operators to pledge to support community delegation and sybil protection.
+5. The decentralization result will be quantified in terms of group decentralization of block production.
 6. Implementation should be smooth, easy, clear, and beneficial for all stakeholders and operators.
 7. A new reward equation should be computationally simple and elegant.
 
@@ -259,10 +260,11 @@ The winners of block forks and slot battles are determined by which pool has a l
 
 ## Leverage-based Pool Ranking Recommendation
 
+Pool ranking scores in wallet browsers have a significant impact on delegator choices. When pledge becomes the most important factor for total pool size lower leverage factors are more desirable. Lists should be sorted by leverage and presented in an ascending order with the lowest leverage pools first.
 
 ## Oversaturation Attacks (OA)
 
-An oversaturation attack occurs when a large stakeholder would significantly oversaturate a pool with the intention of pressuring current and future delegators to select a new pool. Limiting pool sizes based on pledge leverage provides a robust sybil enforcement, however lower saturation limits also lowers the cost of an oversaturation attack. The ultimate mitigation is not a formula modification, but instead 2-way at-will delegator acceptance staking which would allow a stake pool operator to exclude select stake keys. This solution has been previously discussed in the community and would benefit from its own CIP.
+An oversaturation attack occurs when a large stakeholder would significantly oversaturate a pool with the intention of pressuring current and future delegators to select a new pool. Limiting pool sizes based on pledge leverage provides a robust sybil enforcement, however lower saturation limits also lowers the cost of an oversaturation attack. The ultimate mitigation is not a formula modification, but instead 2-way at-will delegator acceptance staking which would allow a stake pool operator to exclude or 'veto' select stake keys. This solution has been previously discussed in the community and would benefit from its own CIP.
 
 ## The economic motivations of large stakeholders and collective pools
 
@@ -278,15 +280,16 @@ This design decision aligns the interest of the largest stakeholders with the in
 4. https://forum.cardano.org/t/cip-leverage-based-saturation-and-pledge-benefit/95632
 5. https://forum.cardano.org/t/cip-change-the-reward-formula/33615
 6. https://forum.cardano.org/t/an-alternative-to-a0-and-k/42784
+7. https://dynamicstrategies.io/crewardcalculator
 
 ## Methods and paradigms for equation validation
 
-To validate any reward equation simulations must consider that an entity can choose to delegate to another entity, operate one stake pool, or operate many stake pools. Any new equation should be compared to the current equation with $a0=0.3$ and the current equation with minFee=0, $a0=0.0$. A large number of entities (>100000) should be simulated for each trial of each equation. Additionally, during each epoch of each simulation for each equation block production could be sampled from a normal distribution. Block production and rewards have statistical uncertainty.
+To validate any reward equation simulations must consider that an entity can choose to delegate to another entity, operate one stake pool, or operate many stake pools. Any new equation should be compared to the current equation with $a0=0.3$ and the current equation with minFee=0, $a0=0.0$. A large number of entities (>100000) should be simulated for each trial of each equation. Additionally, during each epoch of each simulation for each equation block production should be sampled from a discrete binomial or skellam distribution. Block production and rewards have statistical uncertainty.
 
 ```
 Each equation:
   Each epoch:
-    sample block production (rewards) per pool from a normal distribution
+    sample block production (rewards) per pool
     Each entity may choose to:
       create/retire 1 or more pools
       adjust the fee/margin structure of their pool(s)
@@ -311,23 +314,38 @@ Proposed Unbiased Egalitarian Equation:
 - with $k = 1000$ and $L = 100$
 - with $k = 1000$ and $L = 1000$
 
-Biased variation of the proposed equation:
+Linear Biased variation of the proposed equation:
 
 <img src="equation4-newRewardsEqBiased.png" width="400">
 
-- with $k = 150$, $a0=0.05$, and $L = 50$
-- with $k = 150$, $a0=0.05$, and $L = 100$
-- with $k = 150$, $a0=0.05$, and $L = 1000$
-- with $k = 500$, $a0=0.05$, and $L = 50$
-- with $k = 500$, $a0=0.05$, and $L = 100$
-- with $k = 500$, $a0=0.05$, and $L = 1000$
-- with $k = 1000$, $a0=0.05$, and $L = 50$
-- with $k = 1000$, $a0=0.05$, and $L = 100$
-- with $k = 1000$, $a0=0.05$, and $L = 1000$
+- with $k = 150$, $bias=0.05$, and $L = 50$
+- with $k = 150$, $bias=0.05$, and $L = 100$
+- with $k = 150$, $bias=0.05$, and $L = 1000$
+- with $k = 500$, $bias=0.05$, and $L = 50$
+- with $k = 500$, $bias=0.05$, and $L = 100$
+- with $k = 500$, $bias=0.05$, and $L = 1000$
+- with $k = 1000$, $bias=0.05$, and $L = 50$
+- with $k = 1000$, $bias=0.05$, and $L = 100$
+- with $k = 1000$, $bias=0.05$, and $L = 1000$
 
-Current Equation Form:
+Current RSS Equation Form:
 
 <img src="equation4-currentEq.png" width="400">
+
+- with $k = 150$ and $a0 = 0.0$
+- with $k = 500$ and $a0 = 0.0$
+- with $k = 1000$ and $a0 = 0.0$
+- with $k = 150$ and $a0 = 0.3$
+- with $k = 500$ and $a0 = 0.3$
+- with $k = 1000$ and $a0 = 0.3$
+- with $k = 150$ and $a0 = 0.6$
+- with $k = 500$ and $a0 = 0.6$
+- with $k = 1000$ and $a0 = 0.6$
+
+CIP-7 Equation Form:
+
+(incomplete)
+<img src="equation-cip7-currentEq.png" width="400">
 
 - with $k = 150$ and $a0 = 0.0$
 - with $k = 500$ and $a0 = 0.0$
