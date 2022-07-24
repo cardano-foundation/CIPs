@@ -1,3 +1,4 @@
+---
 CIP: ?0043 
 Title: ECDSA and Schnorr signatures in Plutus Core  
 Authors: Koz Ross (koz@mlabs.city), Michael Peyton-Jones 
@@ -34,7 +35,11 @@ can verify signatures produced by other systems as they are today, without
 requiring other people to produce signatures specifically for us. This not only
 provides us with improved interoperability with systems based on Bitcoin, but
 also compatibility with other interoperability systems, such as Wanchain and
-Renbridge, which use SECP256k1 signatures for verification.
+Renbridge, which use SECP256k1 signatures for verification. Lastly, if we can
+verify Schnorr signatures, we can also verify Schnorr-compatible multi or
+threshold signatures, such as those using
+[MuSig2](https://eprint.iacr.org/2020/1261.pdf) or
+[Frost](https://eprint.iacr.org/2020/852).
 
 ## Specification
 
@@ -43,11 +48,12 @@ Two new builtin functions would be provided:
 * A verification function for ECDSA signatures using the SECP256k1 curve; and
 * A verification function for Schnorr signatures using the SECP256k1 curve.
 
-These would be based on `libsecp256k1`, a reference implementation of both kinds
-of signature scheme in C. This implementation would be called from Haskell using
-direct bindings to C. This implementation would be implemented in
-`cardano-base`, with new builtins in Plutus Core on the basis of the
-`cardano-base`-provided interface for signature schemes.
+These would be based on [`secp256k1`](https://github.com/bitcoin-core/secp256k1), 
+a reference implementation of both kinds of signature scheme in C. This 
+implementation would be called from Haskell using direct bindings to C. These
+bindings would be defined in `cardano-base`, using its existing `DSIGN`
+interface, with new builtins in Plutus Core on the basis of the `DSIGN`
+interface for both schemes.
 
 The builtins would be costed as follows: ECDSA signature verification has
 constant cost, as the message, verification key and signature are all
@@ -57,11 +63,11 @@ signature are constant, the costing will be constant in both.
 
 More specifically, Plutus would gain the following primitive operations:
 
-* ```verifyEcdsaSecp256k1Signature :: BuiltinByteString -> BuiltinByteString ->
-  BuiltinByteString -> BuiltinBool```, for verifying 32-byte message hashes signed 
+* `verifyEcdsaSecp256k1Signature :: BuiltinByteString -> BuiltinByteString ->
+  BuiltinByteString -> BuiltinBool`, for verifying 32-byte message hashes signed 
   using the ECDSA signature scheme on the SECP256k1 curve; and
-* ```verifySchnorrSecp256k1Signature :: BuiltinByteString -> BuiltinByteString
-  -> BuiltinByteString -> BuiltinBool```, for verifying arbitrary binary messages 
+* `verifySchnorrSecp256k1Signature :: BuiltinByteString -> BuiltinByteString
+  -> BuiltinByteString -> BuiltinBool`, for verifying arbitrary binary messages 
   signed using the Schnorr signature scheme on the SECP256k1 curve.
 
 Both functions take parameters of a specific part of the signature scheme, even
@@ -69,7 +75,7 @@ though they are all encoded as `BuiltinByteString`s. In order, for both
 functions, these are:
 
 1. A verification key;
-2. A message (possibly hashed);
+2. An input to verify (either the message itself, or a hash);
 3. A signature.
 
 The two different schemes have different expectations of each argument and how
@@ -77,28 +83,50 @@ it is encoded into a `BuiltinByteString`. We describe these below.
 
 For the ECDSA signature scheme, we have the following requirements:
 
-* The verification key must be 33 bytes. Furthermore, the encoding must
-  correspond to the result produced by
-  [``secp256k1_ec_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1.h#L394),
-  given a length argument of 33, and the ``SECP256K1_EC_COMPRESSED`` flag.
-* The message must be a 32-byte hash. This is typically SHA256, but in practice,
-  as long as the signature was computed against the same form as the message
-  hash being verified, it will work.
-* The signature must be 64 bytes. Furthermore, the encoding must correspond to
-  the result produced by
+* The verification key must correspond to a result produced by
+  [``secp256k1_ec_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1.h#L394), 
+  when given a length argument of 33, and the ``SECP256K1_EC_COMPRESSED`` flag.
+  This implies all of the following:
+    * The verification key is 33 bytes long.
+    * The first byte corresponds to the sign of the _y_ coordinate; this is
+      `0x02` if _y_ is even, and `0x03` otherwise.
+    * The remaining 32 bytes are the bytes of the _x_ coordinate, as a
+      big-endian integer.
+* The input to verify must be a 32-byte hash of the message to be checked. We 
+  assume that the caller of `verifyEcdsaSecp256k1Signature` receives the 
+  message and hashes it, rather than accepting a hash directly: doing so 
+  [can be dangerous](https://bitcoin.stackexchange.com/a/81116/35586).
+  Typically, the hashing function used would be SHA256; however, this is not
+  required, as only the length is checked.
+* The signature must correspond to a result produced by
   [``secp256k1_ecdsa_serialize_compact``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1.h#L487).
+  This implies all of the following:
+    * The signature is 64 bytes long.
+    * The first 32 bytes are the bytes of `r`, as a big-endian integer.
+    * The last 32 bytes are the bytes of `s`, as a big-endian integer.
 
 For the Schnorr signature scheme, we have the following requirements:
 
-* The verification key must be 32 bytes. Furthermore, the encoding must
-  correspond to the result produced by
-  [``secp256k1_xonly_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1_extrakeys.h#L61).
-* The message can be of any length, and can contain any bytes in any position.
-* The signature must be 64 bytes.
+* The verification key must follow the
+  [BIP-340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki)
+  standard for encoding, as emboded by the [``secp256k1_xonly_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1_extrakeys.h#L61).
+  This implies all of the following:
+    * The verification key is 32 bytes long.
+    * The bytes of the signature correspond to the _x_ coordinate, as a
+      big-endian integer, as per BIP-340.
+* The input to verify is the message to be checked; this can be of any length,
+  and can contain any bytes in any position.
+* The signature must follow the BIP-340 standard for encoding. This implies all
+  of the following:
+    * The signature is 64 bytes long.
+    * The first 32 bytes are the bytes of the _x_ coordinate, as a big-endian
+      integer, as per BIP-340.
+    * The last 32 bytes are the bytes of `s`, as a big-endian integer, as per
+      BIP-340.
 
 The builtin operations will error with a descriptive message if given inputs
 that don't correspond to the constraints above, return `False` if the signature
-fails to verify the message given the key, and `True` otherwise.
+fails to verify the input given the key, and `True` otherwise.
 
 ## Rationale
 
@@ -108,9 +136,11 @@ example of such a workflow would be: given some Cardano assets, their Bitcoin
 equivalent could be minted, but only if the correct Schnorr signature can be
 provided. 
 
-We consider the implementation trustworthy: `libsecp256k1` is the reference
+We consider the implementation trustworthy: `secp256k1` is the reference
 implementation for both signature schemes, and is already being used in
-production by Bitcoin. 
+production by Bitcoin. Specifically, ECDSA signatures over the SECP256k1 curve
+were used by Bitcoin before Taproot, while Schnorr signatures over the same
+curve have been used since Taproot.
 
 An alternative approach could be to provide low-level primitives, which would
 allow any signature scheme (not just the ones under consideration here) to be
@@ -119,8 +149,8 @@ flexible, it has two significant drawbacks:
 
 * It requires 'rolling your own crypto', rather than re-using existing
   implementations. This has been shown historically to be a bad idea;
-  furthermore, if existing implementations have undergone review and audit, and
-  such re-implementations would not benefit.
+  furthermore, if existing implementations have undergone review and audit, any
+  such re-implementations would not benefit, or gain the same assurances.
 * It would be significantly costlier, as the computation would happen in Plutus
   Core. Given the significant on-chain size restrictions, this would likely be
   too costly for general use: many such schemes rely on large precomputed
