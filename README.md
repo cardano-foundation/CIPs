@@ -70,7 +70,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 
 ### Proposals Under Review
 
-Below are listed tentative CIPs still under discussion with the community. Discussions and progress will be reviewed by CIP editors in bi-weekly meetings held [on Discord](https://discord.com/channels/971785110770831360/973185848759701504) ([invite](https://discord.gg/qd6jE9Xj)), then transcribed and summarized [here](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings). Note that they are listed below for easing navigation and also, tentatively allocating numbers to avoid clashes later on.
+Below are listed tentative CIPs still under discussion with the community. Discussions and progress will be reviewed by CIP editors in bi-weekly meetings held [on Discord](https://discord.com/channels/971785110770831360/973185848759701504) ([invite](https://discord.gg/qd6jE9Xj)), then transcribed and summarized [here](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings). Note that they are listed below for easing navigation and also tentatively allocating numbers to avoid clashes later on.
 
 | **#** | **Title** | 
 | --- | --- |
