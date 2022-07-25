@@ -77,25 +77,25 @@ When both this API and **CIP-30** is being enabled, is up to the wallet to decid
 
 # **`Jormungandr API`**
 
-## **api.submitVote**(keyPath: KeyPath, proposal: Proposal, choice: Choice, validUntil: BlockDate, spendingCounter: number): Promise\<hash32>
+## **api.submitVotes**(keyPath: KeyPath, votes: Vote[], spendingCounter: number): Promise\<hash32>
 
 `keyPath`: The derivation path values to the voting key for which transaction should be signed with. The derivation path should follow the already establish in [CIP-36 (Catalyst/Voltaire Registration Transaction Metadata Format - Updated)](https://cips.cardano.org/cips/cip36/). 
 _`m / 1694' / 1815' / account' / role' / address_index'`_
 
+### `spendingCounter`: 
+The spending counter is used to prevent double voting. The current spending counter for the account should be provided and the implementation should increment it for each vote before submission and attach it to the vote according to [Jormungandr Voting] (https://input-output-hk.github.io/jormungandr/jcli/vote.html#voting). This needs to be in sequential order.
 
-`proposal` : proposal information. Include the range of options we can use to vote. This defines the allowed values in `choice`.
+### **`votes`**: 
 
 ```
-interface Proposal {
-  votePlanId: number
-  index: number
-  voteOptions: number[]
+interface Vote {
+  proposal: Proposal,
+  choice: number,
+  expiration: BlockDate
 }
 ```
-
-`choice`: The choice we want to vote for. An `UnkownChoiceError` should be thrown is the value is not within the `proposal` option set.
-
-`validUntil`: chain epoch \& slot for when the vote will expire.
+#### `expiration`: 
+chain epoch \& slot for when the vote will expire. The type used is: 
 
 ```
 interface BlockDate {
@@ -104,11 +104,30 @@ interface BlockDate {
 }
 ```
 
-### Returns
+#### `choice`: 
+The choice **index** we want to vote for. An `UnkownChoiceError` should be thrown is the value is not within the `proposal` option set.
+
+#### **`proposal`** : 
+proposal information. Include the range of options we can use to vote. This defines the allowed values in `choice`.
+
+```
+interface Proposal {
+  votePlanId: number
+  voteOptions: number[]
+}
+```
+
+##### `votePlanId`: 
+the vote plan id. This is used to identify the vote plan. This should be the same as anchored on chain.
+
+##### `voteOptions`: 
+The vote options. This is the set of options we can vote for.
+
+### **Returns**
 
 `hash32` - This is the hash of the transaction that will be submitted to the node.
 
-#### Errors
+#### **Errors**
 `InvalidArgumentError` - Generic error for errors in the formatting of the arguments.
 
 `UnknownChoiceError` - If the `choice` is not within the `proposal` option set.
@@ -140,22 +159,17 @@ m / 1694' / 1815' / account' / role' / address_index'
 
 `address_index` - index of the key to use. 
 
+## **api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>**
 
-## **api.buildDelegation**(keys: GovernanceKey[], purpose: Purpose, networkId: number, stakeAccountPath: number = 0, stakeRolePath: number = 0, stakeIndex: number = 0): Promise\<**`Delegation`**>
+This endpoint should construct the cbor encoded delegation certificate according to the specs in [CIP-36 Example](https://github.com/Zeegomo/CIPs/blob/472181b9c69feeedae0b5b2db8b42d0cf4eb1a11/CIP-0036/README.md#example).
 
-Should create the metadata object to be submitted by a metadata transaction to register the delegations on-chain. 
+It should then sign the certificate with the staking key as described in the same example as above.
 
-### **Params**
+The implementation of this endpoint can make use of the already existing [CIP-30](https://cips.cardano.org/cips/cip30/) `api.signData` and `api.submitTx` to perform the broadcasting of the transaction containing the metadata. 
 
-`account`: In case the wallet supports multiple accounts. defaults to 0
+Upon submission of the transaction containing the delegation cert as part of metadata, the wallet should store the delegation in its local storage and return an object that contains the delegation cert, the signature and the txhash of the transaction that the certificate was submitted with.
 
-`chain`: Part of the derivation path. defaults to 0
-
-`role`: 
-
-### **Returns**
-
-#### **`Delegation`**
+## **`Delegation`**
 
 ```
 export interface Delegation {
@@ -183,36 +197,23 @@ The ***`reward_address`*** as specified in [CIP-8](https://cips.cardano.org/cips
 The ***`nonce`*** is an unsigned integer (of CBOR major type 0) that should be monotonically increasing across all transactions with the same staking key. The wallet manages this and guarantees that nonces are always unique and greater than the previous ones. A suitable nonce value is the `linux epoch timestamp`.
 
 
-## **api.signDelegation**(delegation: DelegationMetadata, account: number = 0, role: number = 0, index: number = 0): Promise\<**`SignedDelegationMetadata`**>
-
-Since [CIP-18](https://cips.cardano.org/cips/cip18), multi-staking keys should be considered.  However, a single voting profile should exist per wallet. A single staking key should be used to perform EDDSA over the voting profile blake2b-256 hash.  The staking key used should still be the one defined in [CIP-11]((https://cips.cardano.org/cips/cip11). 
-
-### **Returns**
-
-#### **`SignedDelegationMetadata`**
-
-```
-export interface SignedDelegationMetadata {
-    '61284': DelegationMetadata,
-    '61285': string
-}
-```
-
-Defines the result of signing the DelegationMetadata.
-
-- `61284`: Key that defines the registration metadata map
-
-- `61285`: Signature of the blake2b hash of the `DelegationMetadata`
-
-## **api.submitDelegation(delegation: SignedDelegationMetadataw): Promise\<hash32>**
-
 This should be a call that implicitly cbor encodes the `delegation` object and uses the already existing [CIP-30](https://cips.cardano.org/cips/cip30/) `api.submitTx` to submit the transaction. The resulting transaction hash should be returned.
 
 This should be trigger a request to the wallet to approve the transaction.
 
+### **Returns**
+
+```
+interface SignedDelegationMetadata {
+    delegation: Delegation,
+    signature: string,
+    txHash: string // of the transaction that submitted the delegation 
+}
+```
+
 Errors: `APIError`, `TxSendError`
 
-### Delegation Cert process
+## **Delegation Cert process**
 
 1. **`Get Voting Key`** - use the method **api.getVotingKey** to return a ed25519 32 bytes public key (x value of the point on the curve).
 
