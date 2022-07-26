@@ -199,6 +199,15 @@ We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8c
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
+## Rationale
+
+Without seperation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be quite cumbersome as you would need to add the metadata everytime to the new output where the `user token` is sent to. Hence you separate metadata and `user token` and lock the metadata inside another UTxO, so you can freely move the `user token` around.
+
+In order to reference the correct UTxO containing the metadata, it needs to be authenticated, otherwise metadata spoofing attacks become possible. One way to achieve that is by adding an NFT (`reference NFT`) to the UTxO. This NFT needs to under the same Policy ID as the `user token`, followed by an asset name pattern defined in the standard. This way you create a secure link between `reference NFT` and `user token` without the need for any extra data and you can make use of this off-chain and on-chain. 
+
+The security for the link is derived from the minting policy itself, so it's important to write the validator with the right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
+
+
 ## Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
