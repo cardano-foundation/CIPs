@@ -1,19 +1,21 @@
 ---
 CIP: ?0043 
 Title: ECDSA and Schnorr signatures in Plutus Core  
-Authors: Koz Ross (koz@mlabs.city), Michael Peyton-Jones 
+Authors: Koz Ross (koz@mlabs.city), 
+         Michael Peyton-Jones (michael.peyton-jones@iohk.io), 
+         Iñigo Querejeta Azurmendi (querejeta.azurmendi@iohk.io)
 Discussions-To: koz@mlabs.city
 Comments-Summary: 
 Comments-URI:  
 Status: Proposed
 Type: Standards Track
 Created: 2022-04-27  
-* License:   
-* License-Code:   
-* Post-History:  
+* License: 
+* License-Code:
+* Post-History:
 * Requires:
-* Replaces:  
-Superseded-By:
+* Replaces:
+* Superseded-By:
 ---
 ## Simple Summary
 
@@ -37,8 +39,7 @@ provides us with improved interoperability with systems based on Bitcoin, but
 also compatibility with other interoperability systems, such as Wanchain and
 Renbridge, which use SECP256k1 signatures for verification. Lastly, if we can
 verify Schnorr signatures, we can also verify Schnorr-compatible multi or
-threshold signatures, such as those using
-[MuSig2](https://eprint.iacr.org/2020/1261.pdf) or
+threshold signatures, such as [MuSig2](https://eprint.iacr.org/2020/1261.pdf) or
 [Frost](https://eprint.iacr.org/2020/852).
 
 ## Specification
@@ -78,51 +79,62 @@ functions, these are:
 2. An input to verify (either the message itself, or a hash);
 3. A signature.
 
-The two different schemes have different expectations of each argument and how
-it is encoded into a `BuiltinByteString`. We describe these below.
+The two different schemes handle deserialization internally: specifically, there
+is a distinction made between 'external' representations, which are expected as
+arguments, and 'internal' representations, used only by the implementations
+themselves. This creates different expecations for each argument for both of
+these schemes; we describe these below.
 
-For the ECDSA signature scheme, we have the following requirements:
+For the [ECDSA signature
+scheme](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
+the requirements are as follows. Note that these differ from the serialization
+used by Bitcoin.
 
+* The verification key must correspond to the _(x, y)_ coordinates of a point 
+  on the SECP256k1 curve, where _x, y_ are unsigned integers in big-endian form.
 * The verification key must correspond to a result produced by
   [``secp256k1_ec_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1.h#L394), 
   when given a length argument of 33, and the ``SECP256K1_EC_COMPRESSED`` flag.
   This implies all of the following:
     * The verification key is 33 bytes long.
-    * The first byte corresponds to the sign of the _y_ coordinate; this is
+    * The first byte corresponds to the parity of the _y_ coordinate; this is
       `0x02` if _y_ is even, and `0x03` otherwise.
-    * The remaining 32 bytes are the bytes of the _x_ coordinate, as a
-      big-endian integer.
+    * The remaining 32 bytes are the bytes of the _x_ coordinate.
 * The input to verify must be a 32-byte hash of the message to be checked. We 
   assume that the caller of `verifyEcdsaSecp256k1Signature` receives the 
   message and hashes it, rather than accepting a hash directly: doing so 
   [can be dangerous](https://bitcoin.stackexchange.com/a/81116/35586).
   Typically, the hashing function used would be SHA256; however, this is not
   required, as only the length is checked.
+* The signature must correspond to two unsigned integers in big-endian form;
+  henceforth _r_ and _s_.
 * The signature must correspond to a result produced by
   [``secp256k1_ecdsa_serialize_compact``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1.h#L487).
   This implies all of the following:
     * The signature is 64 bytes long.
-    * The first 32 bytes are the bytes of `r`, as a big-endian integer.
-    * The last 32 bytes are the bytes of `s`, as a big-endian integer.
+    * The first 32 bytes are the bytes of _r_.
+    * The last 32 bytes are the bytes of _s_.
 
-For the Schnorr signature scheme, we have the following requirements:
+For the Schnorr signature scheme, we have the following requirements, as
+described in the requirements for [BIP-340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki):
 
-* The verification key must follow the
-  [BIP-340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki)
-  standard for encoding, as emboded by the [``secp256k1_xonly_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1_extrakeys.h#L61).
+* The verification key must correspond to the _(x, y)_ coordinates of a point 
+  on the SECP256k1 curve, where _x, y_ are unsigned integers in big-endian form.
+* The verification key must correspond to a result produced by 
+  [``secp256k1_xonly_pubkey_serialize``](https://github.com/bitcoin-core/secp256k1/blob/master/include/secp256k1_extrakeys.h#L61).
   This implies all of the following:
     * The verification key is 32 bytes long.
-    * The bytes of the signature correspond to the _x_ coordinate, as a
-      big-endian integer, as per BIP-340.
+    * The bytes of the signature correspond to the _x_ coordinate.
 * The input to verify is the message to be checked; this can be of any length,
   and can contain any bytes in any position.
+* The signature must correspond to a point _R_ on the SECP256k1 curve, and an
+  unsigned integer _s_ in big-endian form.
 * The signature must follow the BIP-340 standard for encoding. This implies all
   of the following:
     * The signature is 64 bytes long.
-    * The first 32 bytes are the bytes of the _x_ coordinate, as a big-endian
-      integer, as per BIP-340.
-    * The last 32 bytes are the bytes of `s`, as a big-endian integer, as per
-      BIP-340.
+    * The first 32 bytes are the bytes of the _x_ coordinate of _R_, as a 
+      big-endian unsigned integer.
+    * The last 32 bytes are the bytes of `s`.
 
 The builtin operations will error with a descriptive message if given inputs
 that don't correspond to the constraints above, return `False` if the signature
@@ -150,7 +162,8 @@ flexible, it has two significant drawbacks:
 * It requires 'rolling your own crypto', rather than re-using existing
   implementations. This has been shown historically to be a bad idea;
   furthermore, if existing implementations have undergone review and audit, any
-  such re-implementations would not benefit, or gain the same assurances.
+  such re-implementations would give us the same assurances as those that have
+  been reviewed and audited.
 * It would be significantly costlier, as the computation would happen in Plutus
   Core. Given the significant on-chain size restrictions, this would likely be
   too costly for general use: many such schemes rely on large precomputed
