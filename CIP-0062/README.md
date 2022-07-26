@@ -147,7 +147,7 @@ The vote options. This is the set of options we can vote for.
 Should derive and return the wallets voting public key
 
 ### **Returns**
-`cbor\<vkey>` - cbor serialized 64 bytes (x, y) Ed25519 public key  
+`cbor\<vkey>` - cbor serialized 32 bytes (x, y) Ed25519 public key  
 
 The **`votingKey`** should be derived from the following path. 
 
