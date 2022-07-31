@@ -50,6 +50,7 @@ Therefore, this proposal suggests the definition be changed to
 ```BNF
 <native_script> ::=
              <RequireSignature>  <vkeyhash>
+           | <RequireScript>     <scripthash>
            | <RequireTimeBefore> <slotno>
            | <RequireTimeAfter>  <slotno>
 
