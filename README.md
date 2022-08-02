@@ -70,7 +70,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 
 ### Proposals Under Review
 
-Below are listed tentative CIPs still under discussion with the community. Discussions and progress will be reviewed by CIP editors in [bi-weekly meetings](https://www.crowdcast.io/cips-biweekly). Note that they are listed below for easing navigation and also, tentatively allocating numbers to avoid clashes later on.
+Below are listed tentative CIPs still under discussion with the community. Discussions and progress will be reviewed by CIP editors in bi-weekly meetings held [on Discord](https://discord.com/channels/971785110770831360/973185848759701504) ([invite](https://discord.gg/qd6jE9Xj)), then transcribed and summarized [here](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings). Note that they are listed below for easing navigation and also tentatively allocating numbers to avoid clashes later on.
 
 | **#** | **Title** | 
 | --- | --- |
@@ -103,9 +103,9 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 ![Diagram: Mary interacting with community and editors for a Cardano Proposal](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/BiweeklyMeetings/sequence_diagram.png "sequence_diagram.png")
 
 Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in `#developers` in Cardano Ambassadors Slack.
-CIP Editors meetings are [public](https://www.crowdcast.io/cips-biweekly), [recorded](https://www.crowdcast.io/cips-biweekly) and [summarized](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings): do join and participate for discussions/PRs of significances to you.
+CIP Editors meetings are public and recorded: do join and participate for discussions/PRs of significance to you.
 
-> 🛈 To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
+> To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
 
 ### Current Editors
 
