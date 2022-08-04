@@ -16,15 +16,21 @@ With the current saturation limit set at 68 M per pool and with 3119 pools (epoc
 # **Specification**
 ## **Nonmathematical Description**
 Under this CIP, there is no barrier to entry to set up a pool, but there exists an **optimal pledge** which is used as a yardstick to determine pool saturation limit in proportion to pledge.
-* Individual pool saturation limit increases/decreases exponentially when **pool pledge < optimal pledge**.
-* Individual pool saturation limit increases **only incrementally** when **pool pledge > optimal pledge**.
-* The ecosystem is **under-pledged** when the **total saturation limit < circulating supply**. Under this condition, pools can over-pledge to “borrow” additional saturation limit unclaimed by the under-pledged pools. If there is still unclaimed saturation limit even after some pools have over-pledged, the unclaimed saturation limit will be distributed in accordance with Equation 1. However, the distributed unclaimed saturation limit can still be claimed by any pool by continuing to pledge.
-* The ecosystem is in **equilibrium** when the **total saturation limit = circulating supply**. Under this condition, only the under-pledged pools can continue to pledge to take back the borrowed saturation limit allocated for them. The over-pledge pools’ excess saturation limit, on the otherhand, will continue to decrease as under-pledge pools continue to pledge until all excess had been returned. This and the proposition from the previous bullet point ensures that:
-  - a **close system** is maintained, _i.e._, the total saturation limit is always equal to the total ADA in circulation regardless of the pledge status of the ecosystem, _i.e._, under-pledged, fully pledged, or over-pledged.
+* The ecosystem **total saturation limit is always equal to total ADA in circulation**.
+* The optimal pool saturation limit is **total ADA in circulation divided by the total number of pools**.
+* Individual pool saturation limit is optimal when **pool pledge = optimal pledge**
+* Individual pool saturation limit decreases exponentially when **pool pledge < optimal pledge**.
+* Individual pool saturation limit increases **only incrementally** past the optimal saturation limit when **pool pledge > optimal pledge**.
+* The ecosystem is **under-pledged** when the **ecosystem total saturation limit < circulating supply**. The saturation limit unclaimed by under-pledged pools is equal to the circulating supply minus the ecosystem total saturation limit.
+  - Under this condition, pools can over-pledge to “borrow” additional saturation limit unclaimed by the under-pledged pools. 
+  - If there is still unclaimed saturation limit even after some pools have over-pledged, the unclaimed saturation limit will be distributed in accordance with Equation 1. 
+  - However, the distributed unclaimed saturation limit can still be claimed by any pool by continuing to pledge.
+* The ecosystem is in **equilibrium** when the **total saturation limit = circulating supply**. Under this condition, only the under-pledged pools can continue to pledge to take back the borrowed saturation limit that was supposed to be allocated for them. The over-pledge pools’ excess saturation limit, on the otherhand, will continue to decrease as under-pledge pools continue to pledge until all excess had been returned. This and the proposition from the previous bullet point ensures that:
+  - a **close system** is maintained, _i.e._, the ecosystem total saturation limit is always equal to the total ADA in circulation regardless of the pledge status of the ecosystem, _i.e._, under-pledged, fully pledged, or over-pledged.
   - no single pool has a saturation limit that dwarfs other pools’ limits, encouraging decentralization.
 * Optimal pledge decreases down to a minimum as the total number of pools increases but increases exponentially as the total number of pools decreases. This mechanism addresses Sybil attack:
   - optimal pledge becomes expensive when the total number of pools decreases, thereby increasing the expense to conduct a Sybil attack.
-  - expense to conduct Sybil attack also increases as the total number of pools increases because although the optimal pledge decreases, the attacker needs to setup a large number of pools in order to obtain 51% of the total delegated ADA.
+  - expense to conduct Sybil attack also increases as the total number of pools increases because although the optimal pledge decreases, optimal saturation limit decreases as well. Therefore, the attacker needs to setup a large number of pools in order to obtain 51% of the total delegated ADA.
   
 ## **Mathematical Description**
 ### _**Calculating Optimal Pledge**_
@@ -55,7 +61,8 @@ If we set **_n_** =15,
 **case 1: _p<sub>a</sub> ≤ p<sub>opt</sub>_**  
 ![equation2](https://drive.google.com/uc?export=view&id=1vwM9i8voMM6AnNtlxIzuwu8mQj1ntgi5) 
   
-where:  
+where:<br>
+**_φ_/_k_** is the optimal saturation limit<br>
 **_p<sub>a</sub>_** = actual pool pledge  
 **_p<sub>opt</sub>_** = optimal pledge  
 **_α<sub>unc</sub>_**  = saturation limit left unclaimed even after some pools have over-pledged. This variable is defined in Equation 7.  
