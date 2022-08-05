@@ -17,7 +17,7 @@ With the current saturation limit set at 68 M per pool and with 3119 pools (epoc
 ## **Nonmathematical Description**
 Under this CIP, there is no barrier to entry to set up a pool, but there exists an **optimal pledge** which is used as a yardstick to determine pool saturation limit in proportion to pledge.
 * The ecosystem **total saturation limit is always equal to total ADA in circulation**.
-* The optimal pool saturation limit is **total ADA in circulation divided by the total number of pools**.
+* The optimal pool saturation limit is equal to the **total ADA in circulation divided by the total number of pools**.
 * Individual pool saturation limit is optimal when **pool pledge = optimal pledge**
 * Individual pool saturation limit decreases exponentially when **pool pledge < optimal pledge**.
 * Individual pool saturation limit increases **only incrementally** past the optimal saturation limit when **pool pledge > optimal pledge**.
@@ -31,10 +31,11 @@ Under this CIP, there is no barrier to entry to set up a pool, but there exists 
   - since the ecosystem total saturation limit is always equal to ADA in circulation, the ADA delegation per pool will be more or less even.
 * Optimal pledge decreases down to a minimum as the total number of pools increases but increases exponentially as the total number of pools decreases. This mechanism addresses Sybil attack:
   - optimal pledge becomes expensive when the total number of pools decreases, thereby increasing the expense to conduct a Sybil attack.
-  - expense to conduct Sybil attack also increases as the total number of pools increases because although the optimal pledge decreases, optimal saturation limit decreases as well. Therefore, the attacker needs to setup a large number of pools in order to obtain 51% of the total delegated ADA.
+  - expense to conduct Sybil attack also increases as the total number of pools increases because although the optimal pledge decreases, optimal saturation limit decreases as well. Therefore, the attacker needs to setup a very large number of pools in order to obtain 51% of the total delegated ADA.
   
 ## **Mathematical Description**
-### _**Calculating Optimal Pledge**_
+### _**Calculating Optimal Pledge**_<br>
+<br>
   
 ![equation1](https://drive.google.com/uc?export=view&id=1O_gmZ9LwpVV3xs2RVNqaXLh3um3zfFKs)
 
@@ -136,9 +137,9 @@ Here, we will provide the derivation for the penalty factor (<span style="color:
 * <span style="color: #008000">**Δ**</span> = 1, when the ecosystem is either under-pledged or at equilibrium. Under this condition, the excess saturation limit of over-pledged pools are unaffected. In essence, they are not yet "returning" any of the borrowed excess.
 * <span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged and under-pledged pools keep pledging. Under this condition, the excess saturation limit of over-pledged pools decreases and approaches zero. In essence, they are "returning" the borrowed excess.  
   
-We first calculate the total saturation limit (**_α<sub>total</sub>_**) excluding:
+Using Equation 2, we first calculate the total saturation limit (**_α<sub>total</sub>_**) excluding:
   - <span style="background-color:yellow; color:black">saturation limit from over-pledges.</span>
-  - <span style="background-color:yellow; color:black">unclaimed saturation limit (**_α<sub>unc</sub>_**, see second term in Equation 1).</span>
+  - <span style="background-color:yellow; color:black">unclaimed saturation limit (**_α<sub>unc</sub>_**).</span>
  
 ![Equation5](https://drive.google.com/uc?export=view&id=19VQyenWAntcKh8VavMpJxscc4scqT6_O)  
   
@@ -154,7 +155,7 @@ Solving for **_α<sub>ovp</sub>_** we have,
   
 ![Equation8](https://drive.google.com/uc?export=view&id=1NnoNPLEhp8cihYNvscXdXKP8lPikuADQ)  
   
-Now, we have to remember that the second term in Equation 3 calculates the excess saturation limit of an over-pledged pool. Therefore, the total excess saturation limit (**_α<sub>ovp</sub>_**) can also be expressed as the sum of the second term of Equation 3 of all over-pledged pools and is given as follows:  
+Now, we have to remember that the second term in Equation 3 calculates the excess saturation limit of an over-pledged pool. Therefore, the total excess saturation limit (**_α<sub>ovp</sub>_**) can also be expressed as the sum of the second term in Equation 3 of all over-pledged pools and is given as follows:  
   
 ![Equation9](https://drive.google.com/uc?export=view&id=15FezfQXXCskq6rblQdauD1jJOEtCFSpH)  
   
@@ -162,7 +163,7 @@ where _j_ is any over-pledging pool. Plugging in Equation 9 into Equation 8, we 
   
 ![Equation10](https://drive.google.com/uc?export=view&id=15iwumKXAAhPy6t98uHZpiJk0CsltAWkd)  
   
-Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simplifying, we have:  
+Dividing both sides of Equation 10 by the left-hand side and simplifying, we have:  
   
 ![Equation10](https://drive.google.com/uc?export=view&id=1lQYewlKuCotMs0QQ8I3xJcc4rfddyHk3)  
     
@@ -173,7 +174,7 @@ Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simp
 <span style="color: #008000">**Δ**</span> **⟶ 0**, when the ecosystem is over-pledged, and under-pledged pools continue to pledge.<br> 
 <br>
 
-**Case 1**: Ecosystem is under-pledged and over-pledged pools keep over-pledging to borrow additional saturation limit: the total excess saturation limit is going to increase (<span style="color:red">red</span> arrow) while unclaimed saturation limit is going to decrease (<span style="color: #0000FF">blue</span> arrow), thereby increasing the numerator by the same magnitude as the denominator.
+**Case 1**: Ecosystem is under-pledged and over-pledged pools keep over-pledging to borrow additional saturation limit: the total excess saturation limit is going to increase (<span style="color:red">red</span> arrow) while unclaimed saturation limit is going to decrease (<span style="color: #0000FF">blue</span> arrow). Therefore the numerator is going to increase (because the third term is negative) by the same magnitude as the denominator.
     
   ![logic1](https://drive.google.com/uc?export=view&id=1-vvc_xUd8KSY5zmkR9xXP8ebZ_re3y6h)<br>
   <br>
@@ -183,7 +184,7 @@ Dividing both sides of Equation 10 by the right-hand side of Equation 9 and simp
 ![logic2](https://drive.google.com/uc?export=view&id=1XK1F2zG1zyaLPn2sz8rrISKPFEI0_r8B)<br>
 <br>
   
-**Case 3**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and under-pledged pools keep pledging to take back the saturation limit borrowed by the over-pleding pools: the total saturation limit of under-pledging pools increases (<span style="color:red">red</span> arrow) which causes a decrease in the numerator and, therefore, a decrease in the penalty factor (<span style="color: #0000FF">blue</span> arrow). The decrease in the penalty factor, in turn, causes a decrease in an over-pledged pool’s excess saturation limit (see Equation 3). In this scenario, an over-pledged pool is simply returning the “borrowed” excess.  
+**Case 3**: Ecosystem is over-pledged (**_α<sub>unc</sub> = 0_**) and under-pledged pools keep pledging to take back the saturation limit borrowed by the over-pledged pools: the total saturation limit of under-pledged pools increases (<span style="color:red">red</span> arrow) which causes a decrease in the numerator (<span style="color: #0000FF">blue</span> arrow) and, therefore, a decrease in the penalty factor. The decrease in the penalty factor, in turn, causes a decrease in an over-pledged pool’s excess saturation limit (see Equation 3). In this scenario, an over-pledged pool is simply returning the “borrowed” excess.  
   
 ![logic2](https://drive.google.com/uc?export=view&id=182u2H0u72eDxSX04vjulPkeXWzjEdZmW)<br>
 <br>
