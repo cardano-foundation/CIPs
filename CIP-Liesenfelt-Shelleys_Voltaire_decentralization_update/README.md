@@ -131,43 +131,51 @@ $α = a0 = 0.3$
  
 The $a0$ parameter represents the fraction of the rewards $(R/(1+a0))$ which are not paid out unless all of the stake is pledged. An $a0$ of 0.3 ensures that **1.0 - 1.0/(1.0+0.3) = 23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The $\sigma’ = min\\{σ,β\\}$ term enforces a reward limit based on $k$. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available at the stated network size.
 
-<img src="a0 0.3 minfee 340.png">
+<img src="chart current equation a0 0.3 minfee 340.png">
 
 ## If the minimum fee is 30
 
-<img src="a0 0.3 minfee 30.png">
+<img src="chart current equation a0 0.3 minfee 30.png">
 
 ## If the minimum fee is 0
 
-<img src="a0 0.3 minfee 0.png">
+<img src="chart current equation a0 0.3 minfee 0.png">
 
 ## If a0 is increased to 0.5
 
-<img src="a0 0.5 minfee 340.png">
+<img src="chart current equation a0 0.5 minfee 340.png">
 
 ## If a0 is increased to 1.0
 
-<img src="a0 1.0 minfee 340.png">
+<img src="chart current equation a0 1.0 minfee 340.png">
 
 ## If a0 is increased to 10.0
 
-<img src="a0 10.0 minfee 340.png">
+<img src="chart current equation a0 10.0 minfee 340.png">
 
 ## If a0 is decreased to 0.2
 
-<img src="a0 0.2 minfee 340.png">
+<img src="chart current equation a0 0.2 minfee 340.png">
 
 ## If a0 is decreased to 0.1
 
-<img src="a0 0.1 minfee 340.png">
+<img src="chart current equation a0 0.1 minfee 340.png">
 
 ## If a0 is decreased to 0.0
 
-<img src="a0 0.0 minfee 340.png">
+<img src="chart current equation a0 0.0 minfee 340.png">
 
 ## If a0 is decreased to 0.0 and minFee = 0
 
-<img src="a0 0.0 minfee 0.png">
+<img src="chart current equation a0 0.0 minfee 0.png">
+
+## If minFee is increaesd to 1000
+
+<img src="chart current equation a0 0.3 minfee 1000.png">
+
+## If minFee is increaesd to 2000
+
+<img src="chart current equation a0 0.3 minfee 2000.png">
 
 ## The Reality of (a0,k)
 
@@ -238,11 +246,11 @@ The new $L$ parameter will range from 10,000.0 to 1.0. The initial value of the 
 
 The proposed reward formula should be visualized on a linear(yield) vs log(saturation) scale independent of $k$. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of $L$ becomes obvious, pool saturation will be limited first by pledge amount and then eventually by $k$. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At $L=100.0$ to support a 100.0% saturated stake pool 1.0% pledge will be required.
 
-<img src="a0 100 minfee 30.png">
+<img src="chart constant leverage L 100 minfee 30.png">
 
 ## The new reward equation without a minimum fee
 
-<img src="a0 100 minfee 0.png">
+<img src="chart constant leverage L 100 minfee 0.png">
 
 ## The new reward equation zone
 
@@ -314,6 +322,8 @@ Proposed Unbiased Egalitarian Equation:
 - with $k = 1000$ and $L = 100$
 - with $k = 1000$ and $L = 1000$
 
+<img src="chart constant leverage L 100 minfee 0.png">
+
 Linear Biased variation of the proposed equation:
 
 <img src="equation4-newRewardsEqBiased.png" width="400">
@@ -327,6 +337,8 @@ Linear Biased variation of the proposed equation:
 - with $k = 1000$, $bias=0.05$, and $L = 50$
 - with $k = 1000$, $bias=0.05$, and $L = 100$
 - with $k = 1000$, $bias=0.05$, and $L = 1000$
+
+<img src="chart constant leverage L 100 minfee 0 bias 0.05.png">
 
 Current RSS Equation Form:
 
