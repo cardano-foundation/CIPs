@@ -198,7 +198,7 @@ We can calculate the total pledge to conduct a Sybil attack using the following 
 
 ![cost](https://drive.google.com/uc?export=view&id=1cqZJ7y9oBi1bA6rOYWzlseUAIyOH3avg)
 
-We consider a scenario where some pools turn adversarial (**_k<sub>adversarial</sub>_**), and we can give the best scenario for the attackers by assuming that their pools are fully saturated. We can then plot the total pledge to conduct a Sybil attack as a function of the number of pools (**_k_**).
+We consider a scenario where some pools turn adversarial (**_k<sub>adversarial</sub>_**), and we can give the best scenario for the attackers by assuming that their pools are fully saturated. We can then plot the total pledge to conduct a Sybil attack as well as (**_k<sub>adversarial</sub>_**) vs the number of pools (**_k_**).
 
 ![costfuncpools](https://drive.google.com/uc?export=view&id=1lW93crB3YIFeOd4Y8iG0fxkmKHZKlrgr)
 
