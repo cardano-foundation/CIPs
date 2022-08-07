@@ -107,7 +107,7 @@ Saturation limit decreases exponentially when **_p<sub>a</sub>_**<**_p<sub>opt</
 where:  
 ![equation4](https://drive.google.com/uc?export=view&id=1JhEh0dmbdUaENq512t_ftz3HyI-EY0x6)  
   
-* **_n_** = (**_p<sub>a</sub>_**\\**_p<sub>opt</sub>_**) is an integer division (example: 4\3 = 1).
+* The function /\ must be defined such that if the quotient of two numbers is not an integer, the quotient is rounded off to the **next** integer (_e.g._ 4/\3 = 2 but also 6/\3 = 2).
 * **$\frac{(x-|x|)}{2}$** returns 0 when x is positive, otherwise it returns the value of x.
 * The first term in equation 3 (<span style="color: #0000FF">**blue**</span> text) is the guaranteed saturation limit since the pool exceeded **_p<sub>opt</sub>_**.
 * The second term in equation 3 (<span style="color: #FF0000">**red**</span> + <span style="color: #008000">**green**</span> text) calculates saturation limit in excess of the guaranteed limit.
