@@ -1,6 +1,6 @@
 ---
 CIP: 0045?  
-Title: Ouroboros Julius: Using Pledge as a Bidding Parameter to Determine Saturation Limit Under a Close System.  
+Title: Pledge-Based Saturation Limit Under a Closed System  
 Author: Jay Pseudonym Cappucino <jycappucino@gmail.com>
 Comments-URI: https://forum.cardano.org/t/cip-stake-decentralization-using-pledge-as-a-bidding-parameter-to-determine-saturation-limit/95936  
 Status: Draft  
@@ -11,7 +11,7 @@ Created: 2022-02-28
 This proposal attempts to solve the ongoing stake centralization by allocating pool saturation limit in proportion to pool pledge while at the same time guaranteeing that the total saturation limit is always equal to the circulating supply regardless of the number of pools and pledge status, _i.e._, whether the ecosystem is under-pledged, fully-pledged, or over-pledged. The specification under this proposal is governed in a very dynamic manner using a set of well-defined equations which allows the staking mechanism to operate without the need for frequent network consensus.
 
 # **Motivation**
-With the current saturation limit set at 68 M per pool and with 3119 pools (epoch 321), the current staking mechanism can accommodate a total stake of 212.1 B ADA (68M*3119). This amount of ADA is 543% in excess of the current circulating supply of 33B. Because of this substantial saturation limit, one can set up a few pools and offer lucrative rewards to capture a sizeable amount of stake (_e.g._, Binance APY is 17.7%). This leads to centralization and weakening of the ecosystem against Sybil attack. Staying true to the nature of **Ouroboros**, we describe a mechanism that uses pledge as a stake-bidding parameter under a **close system**, _i.e._, the ecosystem total saturation limit is always equal to the total ADA in circulation. The proposed mechanism ensures that no single entity can get away with excessive stake without putting up a hefty pledge and expending for computing and related infrastructure. This expense, likewise, confers the ecosystem a very high resistance against Sybil attack. For epoch 321, the cost to conduct a Sybil attack under this CIP is millions in pledge and at least 1108 adversarial pools. We dare say that the cost to conduct a Sybil attack under the current protocol is 0 pledge in ADA and at least 177 adversarial pools **only**. This number of adversarial pools needed to attack the ecosystem under the current protocol does not change even if the total number of pools increases, unless the saturation limit (68 M) is decreased. These pools can be readily saturated using lucrative ISPOs and had been demonstrated during the Sundaeswap ISPO which involved 98 pools that were at or near saturation. We, therefore, posit that this CIP is not only fair to all but also enhances decentralization and better security than the current protocol. 
+With the current saturation limit set at 68 M per pool and with 3119 pools (epoch 321), the current staking mechanism can accommodate a total stake of 212.1 B ADA (68M*3119). This amount of ADA is 543% in excess of the current circulating supply of 33B. Because of this substantial saturation limit, one can set up a few pools and offer lucrative rewards to capture a sizeable amount of stake (_e.g._, Binance APY is 17.7%). This leads to centralization and weakening of the ecosystem against Sybil attack. Staying true to the nature of **Ouroboros**, we describe a mechanism that uses pledge as a stake-bidding parameter under a **closed system**, _i.e._, the ecosystem total saturation limit is always equal to the total ADA in circulation. The proposed mechanism ensures that no single entity can get away with excessive stake without putting up a hefty pledge and expending for computing and related infrastructure. This expense, likewise, confers the ecosystem a very high resistance against Sybil attack. For epoch 321, the cost to conduct a Sybil attack under this CIP is millions in pledge and at least 1108 adversarial pools. We dare say that the cost to conduct a Sybil attack under the current protocol is 0 pledge in ADA and at least 177 adversarial pools **only**. This number of adversarial pools needed to attack the ecosystem under the current protocol does not change even if the total number of pools increases, unless the saturation limit (68 M) is decreased. These pools can be readily saturated using lucrative ISPOs and had been demonstrated during the Sundaeswap ISPO which involved 98 pools that were at or near saturation. We, therefore, posit that this CIP is not only fair to all but also enhances decentralization and better security than the current protocol. 
   
 # **Specification**
 ## **Nonmathematical Description**
@@ -26,7 +26,7 @@ Under this CIP, there is no barrier to entry to set up a pool, but there exists 
   - If there is still unclaimed saturation limit even after some pools have over-pledged, the unclaimed saturation limit will be distributed in accordance with Equation 1. 
   - However, the distributed unclaimed saturation limit can still be claimed by any pool by continuing to pledge.
 * The ecosystem is in **equilibrium** when the **total saturation limit = circulating supply**. Under this condition, only the under-pledged pools can continue to pledge to take back the borrowed saturation limit that was supposed to be allocated for them. The over-pledge pools’ excess saturation limit, on the otherhand, will continue to decrease as under-pledge pools continue to pledge until all excess had been returned. This and the proposition from the previous bullet point ensures that:
-  - a **close system** is maintained, which means that the ecosystem total saturation limit is always equal to the total ADA in circulation regardless of the pledge status of the ecosystem, _i.e._, under-pledged, fully-pledged, or over-pledged. **TRULY OUROBOROS**.
+  - a **closed system** is maintained, which means that the ecosystem total saturation limit is always equal to the total ADA in circulation regardless of the pledge status of the ecosystem, _i.e._, under-pledged, fully-pledged, or over-pledged. **TRULY OUROBOROS**.
   - no single pool has a saturation limit that dwarfs other pools’ limits, encouraging decentralization.
   - since the ecosystem total saturation limit is always equal to ADA in circulation, the ADA delegation per pool will be more or less even.
 * Optimal pledge decreases down to a minimum as the total number of pools increases but increases exponentially as the total number of pools decreases. This mechanism addresses Sybil attack:
@@ -133,7 +133,7 @@ Plugging in the values,
 <br>
 
 **Example 2**: **ecosystem is over-pledged**.  
-Here, we will provide the derivation for the penalty factor (<span style="color: #008000">**Δ**</span>) and we will prove that it leads to a close system, _i.e._, the total saturation limit is always equal to the circulation supply no matter how under-pledged or over-pledged the ecosystem is. The penalty factor (<span style="color: #008000">**Δ**</span>) has the following characteristics:
+Here, we will provide the derivation for the penalty factor (<span style="color: #008000">**Δ**</span>) and we will prove that it leads to a closed system, _i.e._, the total saturation limit is always equal to the circulation supply no matter how under-pledged or over-pledged the ecosystem is. The penalty factor (<span style="color: #008000">**Δ**</span>) has the following characteristics:
 * <span style="color: #008000">**Δ**</span> = 1, when the ecosystem is either under-pledged or at equilibrium. Under this condition, the excess saturation limit of over-pledged pools are unaffected. In essence, they are not yet "returning" any of the borrowed excess.
 * <span style="color: #008000">**Δ**</span> ⟶ 0, when the ecosystem is over-pledged and under-pledged pools keep pledging. Under this condition, the excess saturation limit of over-pledged pools decreases and approaches zero. In essence, they are "returning" the borrowed excess.  
   
@@ -168,7 +168,7 @@ Dividing both sides of Equation 10 by the left-hand side and simplifying, we hav
 ![Equation10](https://drive.google.com/uc?export=view&id=1lQYewlKuCotMs0QQ8I3xJcc4rfddyHk3)  
     
   
-**Now, we will prove that Equation 11 guarantees a close system, _i.e._,**
+**Now, we will prove that Equation 11 guarantees a closed system, _i.e._,**
 
 <span style="color: #008000">**Δ**</span> **= 1**, when the ecosystem is either under-pledged or at equilibrium.  
 <span style="color: #008000">**Δ**</span> **⟶ 0**, when the ecosystem is over-pledged, and under-pledged pools continue to pledge.<br> 
