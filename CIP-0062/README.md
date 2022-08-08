@@ -142,14 +142,16 @@ The vote options. This is the set of options we can vote for.
 
 # **`Delegation API`**
 
-## **api.getVotingKey**(path: KeyPath): Promise\<Bip32PublicKey>
-
-Should derive and return the wallets voting public key
+## **api.getVotingKeys**(): Promise<cbor<PublicKey\>[]>
+Should return a list of all the voting keys for the current wallet. 
 
 ### **Returns**
-`cbor\<vkey>` - cbor serialized 32 bytes (x, y) Ed25519 public key  
+An array with the cbor hex encoded public keys.
 
-The **`votingKey`** should be derived from the following path. 
+## **api.rotateVotingKey**(): Promise<cbor<PublicKey\>>
+This call should explicitly rotate the current in-use voting key. Given the current `address_index` in the derivation path defined in [CIP-36](https://cips.cardano.org/cips/cip36/), it should be incremented by 1.
+
+The key should be derived from the following path. 
 
 ```
 m / 1694' / 1815' / account' / role' / address_index'
@@ -158,6 +160,17 @@ m / 1694' / 1815' / account' / role' / address_index'
 `1694` (year Voltaire was born) Sets a dedicated `purpose` in the derivation path for the voting profile.  
 
 `address_index` - index of the key to use. 
+
+### **Returns**
+cbor hex encoded representation of the public key
+
+
+## **api.getCurrentVotingKey**(): Promise\<cbor<PublicKey\>>
+
+Should return the current in-use voting public-key. The wallet should maintain a reference to the current `adress_index` counter and return the public key for that index.
+
+### **Returns**
+cbor hex encoded representation of the public key.
 
 ## **api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>**
 
