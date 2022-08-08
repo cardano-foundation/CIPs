@@ -55,17 +55,6 @@ type enum Purpose = {
 
 `Purpose`: Defines the purpose of the delegations. This is used to limit the scope of the delegations.  For example, a purpose might be a subset of Catalyst proposals, a council election, or even some private purpose (agreed by convention).
 
-### **KeyPath**
-```
-interface KeyPath = {
-  address_index: number 
-  account: number
-  role: number
-}
-```
-
-
-
 ## **Namespace**
 
 ### **cardano.{walletName}.governance.enable(): Promise\<API>**
@@ -77,10 +66,7 @@ When both this API and **CIP-30** is being enabled, is up to the wallet to decid
 
 # **`Jormungandr API`**
 
-## **api.submitVotes**(keyPath: KeyPath, votes: Vote[], spendingCounter: number): Promise\<hash32>
-
-`keyPath`: The derivation path values to the voting key for which transaction should be signed with. The derivation path should follow the already establish in [CIP-36 (Catalyst/Voltaire Registration Transaction Metadata Format - Updated)](https://cips.cardano.org/cips/cip36/). 
-_`m / 1694' / 1815' / account' / role' / address_index'`_
+## **api.submitVotes**(votes: Vote[], spendingCounter: number): Promise\<hash32>
 
 ### `spendingCounter`: 
 The spending counter is used to prevent double voting. The current spending counter for the account should be provided and the implementation should increment it for each vote before submission and attach it to the vote according to [Jormungandr Voting] (https://input-output-hk.github.io/jormungandr/jcli/vote.html#voting). This needs to be in sequential order.
@@ -133,8 +119,6 @@ The vote options. This is the set of options we can vote for.
 `UnknownChoiceError` - If the `choice` is not within the `proposal` option set.
 
 `InvalidBlockDateError` - If the `validUntil` is not a valid block date.
-
-`InvalidVotingKeyError` - If the `keyPath` is not a valid voting key.
 
 `InvalidVotePlanError` - If the `votePlanId` is not a valid vote plan.
 
