@@ -170,14 +170,14 @@ Upon submission of the transaction containing the delegation cert as part of met
 
 ```
 export interface Delegation {
-    voting_delegation: GovernanceKey[],
+    delegations: GovernanceKey[],
     purpose: Purpose
 }
 ```
 
 Defines the structure to be crafted and signed for delegation of voting & their respectively voting power.   Embeds the stake key and reward address from the wallet, and constructs a suitable nonce.
 
-***`voting_delegation`***: List of keys and their voting weight to delegate voting power to.
+***`delegations`***: List of keys and their voting weight to delegate voting power to.
 
 This should be a call that implicitly cbor encodes the `delegation` object and uses the already existing [CIP-30](https://cips.cardano.org/cips/cip30/) `api.submitTx` to submit the transaction. The resulting transaction hash should be returned.
 
@@ -212,6 +212,4 @@ Errors: `APIError`, `TxSendError`
 
 2. **`Collect Voting Keys`** - Collect the keys to delegate voting power to.
 
-3. **`Craft delegation cert`** - Use **api.buildDelegation** to construct the object containing the key array set to delegate voting power to. Each value will express the `weight` of the voting powers given.
-
-4. **`Submit delegation`** - Submit the metadata transaction to the chain using **api.submitDelegation** which implicitly sign and/or can use the already existing **api.submitTx**,  available from [CIP-30](https://cips.cardano.org/cips/cip30/)
+3. **`Submit delegation`** - Submit the metadata transaction to the chain using **api.submitDelegation** which implicitly sign and/or can use the already existing **api.submitTx**,  available from [CIP-30](https://cips.cardano.org/cips/cip30/)
