@@ -73,7 +73,7 @@ the current value of `coinsPerUTxOWord` will be converted to
 In the Babbage era, unspent transaction outputs will be required to contain _at least_
 
 ```
-160 + |serialized_output| * coinsPerUTxOByte
+(160 + |serialized_output|) * coinsPerUTxOByte
 ```
 
 many lovelace. The constant overhead of 160 bytes accounts for the transaction input
