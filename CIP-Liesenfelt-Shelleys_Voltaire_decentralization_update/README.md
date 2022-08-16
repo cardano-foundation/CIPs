@@ -360,7 +360,7 @@ For each equation in consideration the average (and variation) of the nakamoto c
 
 ## Alternate Equation Forms and Parameter Variations
 
-Proposed Unbiased Egalitarian Equation:
+### Proposed Unbiased Egalitarian Leverage Limiting Equation:
 
 <img src="equation4-newRewardsEq.png" width="300">
 
@@ -376,7 +376,36 @@ Proposed Unbiased Egalitarian Equation:
 
 <img src="chart constant leverage L 100 minfee 0.png">
 
-Linear Biased variation of the proposed equation:
+### Current RSS Equation Form:
+
+<img src="equation4-currentEq.png" width="400">
+
+- with $k = 150$ and $a0 = 0.0$
+- with $k = 500$ and $a0 = 0.0$
+- with $k = 1000$ and $a0 = 0.0$
+- with $k = 150$ and $a0 = 0.3$
+- with $k = 500$ and $a0 = 0.3$
+- with $k = 1000$ and $a0 = 0.3$
+- with $k = 150$ and $a0 = 0.6$
+- with $k = 500$ and $a0 = 0.6$
+- with $k = 1000$ and $a0 = 0.6$
+
+### CIP-7 Equation Form:
+
+(incomplete)
+<img src="equation-cip7-currentEq.png" width="400">
+
+- with $k = 150$ and $a0 = 0.0$
+- with $k = 500$ and $a0 = 0.0$
+- with $k = 1000$ and $a0 = 0.0$
+- with $k = 150$ and $a0 = 0.3$
+- with $k = 500$ and $a0 = 0.3$
+- with $k = 1000$ and $a0 = 0.3$
+- with $k = 150$ and $a0 = 0.6$
+- with $k = 500$ and $a0 = 0.6$
+- with $k = 1000$ and $a0 = 0.6$
+
+### Linearly Biased Variation with a Leverage Limit:
 
 <img src="equation4-newRewardsEqBiased.png" width="400">
 
@@ -392,35 +421,19 @@ Linear Biased variation of the proposed equation:
 
 <img src="chart constant leverage L 100 minfee 0 bias 0.05.png">
 
-Current RSS Equation Form:
-
-<img src="equation4-currentEq.png" width="400">
-
-- with $k = 150$ and $a0 = 0.0$
-- with $k = 500$ and $a0 = 0.0$
-- with $k = 1000$ and $a0 = 0.0$
-- with $k = 150$ and $a0 = 0.3$
-- with $k = 500$ and $a0 = 0.3$
-- with $k = 1000$ and $a0 = 0.3$
-- with $k = 150$ and $a0 = 0.6$
-- with $k = 500$ and $a0 = 0.6$
-- with $k = 1000$ and $a0 = 0.6$
-
-CIP-7 Equation Form:
+### Linearly Biased Variation with a Diminishing Leverage Limit:
 
 (incomplete)
-<img src="equation-cip7-currentEq.png" width="400">
 
-- with $k = 150$ and $a0 = 0.0$
-- with $k = 500$ and $a0 = 0.0$
-- with $k = 1000$ and $a0 = 0.0$
-- with $k = 150$ and $a0 = 0.3$
-- with $k = 500$ and $a0 = 0.3$
-- with $k = 1000$ and $a0 = 0.3$
-- with $k = 150$ and $a0 = 0.6$
-- with $k = 500$ and $a0 = 0.6$
-- with $k = 1000$ and $a0 = 0.6$
-
+- with $k = 150$, $bias=0.05$, and $L = 50$
+- with $k = 150$, $bias=0.05$, and $L = 100$
+- with $k = 150$, $bias=0.05$, and $L = 1000$
+- with $k = 500$, $bias=0.05$, and $L = 50$
+- with $k = 500$, $bias=0.05$, and $L = 100$
+- with $k = 500$, $bias=0.05$, and $L = 1000$
+- with $k = 1000$, $bias=0.05$, and $L = 50$
+- with $k = 1000$, $bias=0.05$, and $L = 100$
+- with $k = 1000$, $bias=0.05$, and $L = 1000$
 
 # Backwards compatibility
 
