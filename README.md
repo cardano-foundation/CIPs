@@ -128,7 +128,10 @@ CIP Editors meetings are public and recorded: do join and participate for discus
 
 ### Current Editors
 
-- Matthias Benkort (@KtorZ)
-- Sebastien Guillemot (@SebastienGllmt)
-- Frederic Johnson (@crptmppt)
-- Robert Phair (@rphair)
+| Frederic Johnson <br/> [@crptmppt][] | Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] |
+| ---                                  | ---                               | ---                                           | ---                            |
+
+[@crptmppt]: https://github.com/crptmppt
+[@KtorZ]: https://github.com/KtorZ
+[@SebastienGllmt]: https://github.com/SebastienGllmt
+[@rphair]: https://github.com/rphair
