@@ -32,6 +32,10 @@
     "description": "paradiso.app services metadata"
   },
   {
+    "transaction_metadatum_label": 1564,
+    "description": "Marlowe - a DSL for writing and executing financial contracts"
+  },
+  {
     "transaction_metadatum_label": 1870,
     "description": "Open Badges v2.0 compliant metadata"
   },
