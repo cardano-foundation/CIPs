@@ -2,7 +2,7 @@
 CIP: HeptaSean-DomainValidation
 Title: Domain Validation for Cardano Addresses
 Authors: Benjamin Braatz <bb@bbraatz.eu>
-Comments-URI: 
+Comments-URI: https://forum.cardano.org/t/cip-draft-domain-validation-for-cardano-addresses/106328
 Status: Draft
 Type: Process
 Created: 2022-08-21
