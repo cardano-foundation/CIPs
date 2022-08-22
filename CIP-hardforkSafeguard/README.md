@@ -17,23 +17,26 @@ Ever since the Shelley ledger era, block headers have included a protocol
 version indicating the maximum supported protocol version that the block
 producer is capable of supporting (see section 13, Software Updates, of the
 [Shelley ledger specification](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec)).
-This provides a helpful metric for determining how many blocks will be produced
-after a hardfork, since nodes that have not upgraded will no longer produce blocks.
+
+This (semantically meaningless) field provides a helpful metric for determining
+how many blocks will be produced after a hardfork,
+since nodes that have not upgraded will no longer produce blocks.
 (Nodes that have not upgraded will fail the `chainChecks` check from Figure 74
 of the Shelley ledger specification, since the major protocol version in the
 ledger state will exceed the node's max major protocol version value,
 and hence can no longer make blocks.)
 
-If most of the blocks in the recent past (e.g. the last twenty-four hours) are
+If most of the blocks in the recent past (e.g. the last epoch) are
 broadcasting their readiness for a hardfork,
 we know that it is safe to propose an update to the major protocol version
 which triggers a hardfork.
 
-We propose automating this process.
+This CIP proposes automating this process,
+and making the protocol version in the header semantically meaningful.
 The ledger state will determine the stake
 (represented as the proportion of the active stake) of all the block producers
 whose last block contained the next major protocol version.
-Moreover, a new protocol parameter `hfThreshold` will be used to reject any
+Moreover, a new protocol parameter `hardforkThreshold` will be used to reject any
 protocol parameter update that proposes to change the major protocol version
 but does not have enough backing stake.
 
@@ -51,8 +54,15 @@ it is imperative that we codify this human judgment in the protocol itself.
 
 ### New Protocol Parameter
 
-There will be a new protocol parameter named `hfThreshhold`,
-containing a rational number between zero and one.
+There will be a new protocol parameter named `hardforkThreshold`,
+containing a rational number.
+
+The bounds of `hardforkThreshold` need to be considered with care
+so that unsafe values are not possible and to place checks and balances on the
+governance mechanism.
+The minimum value should greater than a half, and the maximum value should be
+less than one.
+The exact bounds need further, careful consideration.
 
 ### Tracking Hardfork endorsements
 
@@ -68,6 +78,9 @@ is not ready for any hardfork.
 When a new release is introduced which can handle an upcoming hardfork,
 the node will be configured to use the next major protocol version in the
 block header.
+Note also that there is no ambiguity regarding what the endorsement in the
+block header is referring to, since the major protocol version is only allowed
+to increase by one.
 
 Whenever the major protocol version is updated, the set of endorsements is
 reset to the empty set.
@@ -136,7 +149,7 @@ The new logic for determining if the major protocol version will change is:
     Note that the stake distribution used here is the same as stake
     distribution currently being used for block production.
   * Is the sum computed above at least as large as the value of the
-    `hfThreshhold` protocol parameter?
+    `hardforkThreshold` protocol parameter?
     * If not, the entire update is rejected.
     * If so, the update will be applied on the epoch boundary.
 
