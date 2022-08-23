@@ -1,0 +1,87 @@
+---
+CIP: 0069
+Title: Script Signature Unification 
+Authors: Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>
+Status: Draft
+Type: Standards Track
+Created: 2022-08-23
+License: CC-BY-4.0
+---
+
+## Simple Summary / Abstract
+
+This CIP unifies the arguments given to all types of Plutus scripts currently available (spending, certifying, rewarding, minting) by removing the argument of a datum.
+
+For a while now every builder, myself included have struggled with the mutual dependency issue (two validators that need to know each other's hash) when designing dapps and it is widely considered a substantial barrier to safe protocols and one that limits our design space considerably. 
+
+The exact change would be to have every validator take as argument the redeemer and then the script context. Datums, only relevant to locking validators would be able to be provided by either looking them up in the ScriptContext or by extending the `Spending` constructor of `TxInfo` to carry `(TxOutRef, Datum)`. 
+
+If this CIP were to be accepted and implemented, we'd be able to resolve a mutual dependency by merging two scripts into one, that can act as both say minting and spending depending on the purpose given. 
+
+## Motivation / History
+
+As it stands the scripts being made on cardano often suffer this problem, and the tokens usually are made to be able to be minted at any time. This leads to further checks being made on the frontend and further fragilitiy of the systems we create.
+
+Use Case 1: Minting validator checks datum given to spending validator. The spending validator requires the token be present as witness of the datum's correctness.
+
+Use Case 2 (taken from Optim's Liquidity Bonds): Unique NFT is minted to give a unique identifier to a loan, that then gets reused by Bond Tokens. The spending validators require that NFT be present. 
+
+Use Case 3 (taken from Minswap's Dex V1): NFT is minted for the same reason as above. It allows a minting policy to later mint LP tokens with that unique id token name.
+
+We see a similar pattern repeating over and over again, as I bid you, the developer reading this to provide witness. By allowing the multi-purpose policies (spending and any other) we increase the security of Cardano by giving us more confidence and allowing to design protocols that have their design driven by cardano's features, not limited by cardano's language. 
+
+## Specification
+
+### Removing the datum argument
+
+All the sctipt purposes have a form of `Redeemer -> ScriptContext -> ()` except the `Spending` one.
+It has form of `Datum -> Redeemer -> ScriptContext -> ()`. This is enforced by the cardano node. 
+
+We make it conform to the general pattern by having it also have a 'signature' of `Redeemer -> ScriptContext -> ()`
+
+### (Optional) Providing the Datum in ScriptPurpose
+
+The datatype in question defined as
+
+```
+data ScriptPurpose
+  = Minting CurrencySymbol
+  | Spending TxOutRef
+  | Rewarding StakingCredential
+  | Certifying DCert
+```
+
+to be redefined to
+
+```
+data ScriptPurpose
+  = Minting CurrencySymbol
+  | Spending TxOutRef Datum
+  | Rewarding StakingCredential
+  | Certifying DCert
+```
+
+which will allow a script to easily match on its purpose and pick the datum out as it would do so normally.
+
+If this change is to not be added, the Datum can be picked out of `ScriptConext`. Adding unnecessary boilerplate and clock cycles. 
+
+Cardano node would naturally verify that the correct `Datum` is given, as it does currently. 
+
+## Rationale
+
+Unifying of the script signature is a very elegant solution to the problem, streamlining the experience of developing on cardano.
+Given that accessing the datum is almost always made by a spending script, it makes sense to intdoduce that argument back to the `ScriptPurpose` that now plays a more important role.
+It begs the question if it should be added as an argument to all validators, to further emphasize that fact. 
+
+## Backwards compatibility
+
+This change is not backwards compatible; it must be introduced in a new Plutus language version.
+Node code must be modified.
+
+## Path to Active
+
+The appropriate changes need to be made to the node code and a new language major version be introduced. 
+
+## Copyright
+
+This CIP is licensed under Apache-2.0
