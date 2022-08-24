@@ -389,7 +389,6 @@ using the new algorithm the ```ByteString``` serialization space complexity goes
 
 ### ```data``` serialization
 
-
 All the effort of minimizing the size of on-chain scripts by prefering ```flat``` over ```CBOR``` serialization are ignored when it comes to ```data``` serialization.
 
 citing the june 2022 plutus core specification ( Appendix B, Section B.2, Note 1; page 23 )
@@ -413,17 +412,8 @@ data Data =
     | B ByteString
 ```
 
-a more efficient implementation could be obtained by introducing some tags for the various construcors, each taking 3 bits:
-
-data constructor | binary | decimal
------------------|--------|--------
-Constr           | 000    | 0
-Map              | 001    | 1
-List             | 010    | 2
-I                | 011    | 3
-B                | 100    | 4
-
-directly followed by the respective serialized value; in particoular
+a more efficient implementation could be obtained by introducing some tags for the various construcors, each taking 3 bits ( option 1 in specification );
+directly followed by the respective serialized value; in particular
 
 - ```Constr``` is followed by an **unsigned** integer and the a list of ```Data```
 - ```Map``` is followed by a list of ```Data``` pairs; where the paris are serialized as in the constant pair specification (only the value)
@@ -431,39 +421,13 @@ directly followed by the respective serialized value; in particoular
 - ```I``` is followed by a **signed** integer
 - ```B``` is followed by a ```ByteString``` 
 
-An important **alternative design** that should be considered and discussed with the comunity would see the ```Data``` type requiring only 4 tags which would then be:
+An important **alternative design** is the one described in the option 2.
 
-data tag  | binary | decimal
-----------|--------|--------
-data-pair | 00     | 0
-data-list | 01     | 1
-data-int  | 10     | 2
-data-bs   | 11     | 3
+this alternative allows for 2 bits data tags for the ```Constr``` constructor and the simple values constructors ```I``` and ```B``` containitng the actual data;
 
-and the constructors would map to:
+and a 3 bit tag for ```List``` and ```Map``` constructors;
 
-- ```Constr``` becomes a ```data-pair``` expecting an unsigned integer and a list of ```Data```
-- ```Map``` becomes a ```data-list``` containing 2 ```Data``` per element
-- ```List``` becomes a ```data-list``` containing 1 ```Data``` per element
-- ```I``` becomes a ```data-int``` tag expecting a signed integer
-- ```B``` becomes a ```data-bs``` tag expecting a ```ByteString```
-
-this design is unambigous since ```data-list``` that maps back to two of the constructors contains different values depending on what Constructor is intended.
-
-the only edge case for the ```data-list``` constructor is the empty list, but the problem can be easly solved by expecting one single bit only in the case of the empty list indicating the intended constructor.
-
-so the empty ```Map``` would serialize as
-```
-01 # data-list tag
-0  # list nil construcor ( empty list )
-0  # bit indicating Map data constructor
-```
-and the empty ```List``` as
-```
-01 # data-list tag
-0  # list nil construcor ( empty list )
-1  # bit indicating List data constructor
-```
+this is done in order to minimize the number of bits per constructor without introducing unused tags (which is the case of a 3 bit tag for all constructors; tags 5, 6 and 7 would be unused) but still being capable of encoding all 5 constructors.
 
 the second design also implies no more ```Data``` constructors will be added in the future, or that for those added it will be possible to find an unambigous representation using the ones specified.
 
