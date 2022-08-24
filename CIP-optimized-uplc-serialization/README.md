@@ -29,22 +29,203 @@ the major benefit of a uplc-optimized algorithm is the possibility to store more
 
 ## Specification
 
-### Table of contents
+### Proposed Changes
 
-- [```pad0``` should add nothing](#pad0)
-- [constant's types list should work as Integer ones](#constT)
+- [```pad0``` encodes as no bits](#pad0)
+- [both constructors of the constant type list carry data](#constT)
 - [remove the "type application" tag for constant types](#tyApp)
 - [```ByteString```s encoded as unsinged integer followed by the bytes](#ByteStrings)
-- [```data``` serialization
-](#data)
+- [```data``` serialization](#data)
 
 <a name="pad0"></a>
 
-### ```pad0``` should add nothing rather than an entire byte
+### ```pad0``` encodes as no bits
+
+current ```pad0``` serialization:
+```
+pad0 -> 00000001
+```
+
+new ```pad0``` serialization:
+```
+pad0 -> 
+```
+
+<a name="constT"></a>
+
+### both constructors of the constant type list carry data
+
+> **_NOTE_** constant's types are encoded as 4 bits identifyng a tag for the type; in this section the specific type is irrelevan so the bits corresponding to the type are indicated as ```xxxx```
+
+current ```type``` serialization:
+```
+Cons tag restList   -> 1 xxxx ( serialized restList )
+Nil                 -> 0
+```
+
+new ```type``` serialization:
+```
+Cons tag restList   -> 1 xxxx ( serialized restList )
+Nil  tag            -> 0 xxxx
+```
+
+> _examples_
+> 
+>  tag list length | old specification | new specifiaction
+>  ----------------|-------------------|-------------------
+>  1               | 1 xxxx 0          | 0 xxxx
+>  2               | 1 xxxx 1 xxxx 0   | 1 xxxx 0 xxxx
+>  3               | 1 xxxx 1 xxxx 1 xxxx 0     | 1 xxxx 1 xxxx 0 xxxx
+
+<a name="tyApp"></a>
+
+### remove the "type application" tag for constant types
+
+current ```type tags``` serialization:
+
+type        | binary | decimal
+------------|--------|--------
+integer     | 0000   | 0
+bytestring  | 0001   | 1
+string      | 0010   | 2
+unit        | 0011   | 3
+bool        | 0100   | 4
+list        | 0101   | 5
+pair        | 0110   | 6
+type app    | 0111   | 7
+data        | 1000   | 8
+
+> **_NOTE_**: see the Rationale section to understand pros and cons of the provided options
+
+new ```type tags``` serialization (option 1):
+
+type        | binary | decimal
+------------|--------|--------
+integer     | 0000   | 0
+bytestring  | 0001   | 1
+string      | 0010   | 2
+unit        | 0011   | 3
+bool        | 0100   | 4
+list        | 0101   | 5
+pair        | 0110   | 6
+data        | 1000   | 8
+
+new ```type tags``` serialization (option 2):
+
+type        | binary | decimal
+------------|--------|--------
+integer     | 000    | 0
+bytestring  | 001    | 1
+string      | 010    | 2
+unit        | 011    | 3
+bool        | 100    | 4
+list        | 101    | 5
+pair        | 110    | 6
+data        | 111    | 7
+
+<a name="ByteStrings"></a>
+
+### ```ByteString```s encoded as unsinged integer followed by the bytes
+
+current ```ByteString``` serialization:
+```
+pad (context dependent)     -> (1 to 8 bits)
+
+1 byte ecoding the length
+of the following
+chunk of bytes              -> xxxxxxxx ( total of ceil( nChunks ) bytes )
+
+0 to 255 bytes
+according to the value
+of the above one            -> xxxxxxxx[0-255]
+
+other chunk untill empty    -> ...
+```
+
+new ```ByteString``` serialization:
+```
+unsigned integer
+as per current specification
+encoding the length of the
+following bytes              -> ~ ceil( log_2( nChunks + 1 ) ) bytes
+
+bytes                        -> ...
+```
+
+<a name="data"></a>
+
+### ```data``` serialization
+
+> **_NOTE_**: see the Rationale section to understand pros and cons of the provided options
+
+proposed ```data``` serialization (option 1):
+
+data constructor | binary | decimal
+-----------------|--------|--------
+Constr           | 000    | 0
+Map              | 001    | 1
+List             | 010    | 2
+I                | 011    | 3
+B                | 100    | 4
+
+directly followed by the respective serialized value; in particular
+
+- ```Constr``` is followed by an **unsigned** integer and the a list of ```Data```
+- ```Map``` is followed by a list of ```Data``` pairs; where the paris are serialized as in the constant pair specification (only the value)
+- ```List``` is folloed by a list of ```Data``` elements
+- ```I``` is followed by a **signed** integer
+- ```B``` is followed by a ```ByteString```
+
+proposed ```data``` serialization (option 2):
+
+introducing specific 2 bits tags for a generic ```data``` element
+
+data tag  | binary 
+----------|--------
+data-pair | 00     
+data-list | 01     
+data-int  | 10     
+data-bs   | 11     
+
+data constructors are mapped to the above tags as
+
+data constructor | data tag  | binary 
+-----------------|-----------|--------
+Constr           | data-pair | 00     
+Map              | data-list | 01     
+List             | data-list | 01     
+I                | data-int  | 10     
+B                | data-bs   | 11     
+
+with the aim of making the serialization and deserialization of the constructors ```Map``` and ```List``` unambiguous, only the ```data-list``` tag requires an additional bit indicating the intended constructor; adding ```0``` for ```Map```s and ```1``` for ```List```s
+
+the final encoding of constructors is then:
+
+data constructor | data tag         | binary 
+-----------------|------------------|--------
+Constr           | data-pair        | 00     
+Map              | data-list (map)  | 01 0
+List             | data-list (list) | 01 1
+I                | data-int         | 10
+B                | data-bs          | 11
+
+the encoding of the value is then the same of the one specified in option 1
+
+## Rationale
+
+This proposal suggest ways to reduce serialized scripts size.
+
+the changes where designed to keep the bit oriented style of flat minimizing the number of required bits for values where possible.
+
+here the motivations behind the choices in design are made explicit:
+
+### ```pad0``` encodes as no bits
 
 sometimes it is necessary to allign the serialized program (partial or total) to fit into a byte;
 
-in order to do so, some padding is added based on the current bit-length of the program;
+in order to do so, the specification includes a ```pad``` fuction used to allign a partially serialized program prior the append of an elements that requires it, and at the end of a program in order to encode the result as a ```ByteString```.
+
+by definition ```pad``` adds ```n - 1``` ```0```s directly followed by a ```1```.
 
 the needed padding can be obtained as follows
 ```ts
@@ -67,9 +248,11 @@ pad( missingBits: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ): string
     }
 }
 ```
-the case in which the ```missingBits``` is 0 implies that the current serialized program is already byte-alligned and, since this padding carries no usefull informations, the current ```pad( 0 )``` adds a useless byte each time a padding is needed and the number of used bits is a multiple of 8.
+the case in which the ```missingBits``` is 0 implies that the current serialized program is already byte-alligned
 
-An alternative implementation would be
+since this padding carries no usefull informations, the current ```pad( 0 )``` adds a useless byte each time a padding is needed and the number of used bits is a multiple of 8.
+
+An alternative implementation is:
 ```ts
 pad( missingBits: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ): string
 {
@@ -87,11 +270,11 @@ pad( missingBits: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ): string
 }
 ```
 
-this modification would make the padding deserialization contex-dependent (just like the serialization already is) but saves a byte 1 time every 8 ( probably more ofthen due to the high presence of tags and items of which serialization has a bit-length of a multiple of 4 )
+this modification makes the padding deserialization contex-dependent (just like the serialization already is) but saves a byte 1 time every 8 ( probably more ofthen due to the high presence of tags and items of which serialization has a bit-length of a multiple of 4 )
 
-<a name="constT"></a>
+### both constructors of the constant type list carry data
 
-### constant's types list should work as Integer ones
+#### current ```type``` serialization:
 
 citing the draft plutus core specification paper of june 2022 
 
@@ -101,7 +284,7 @@ citing the draft plutus core specification paper of june 2022
 > (Appendix D, Section D.2.2, page 31 )
 > Suppose that we have a set 𝑋 for which we have defined an encoder 𝖤 𝑋 and a decoder 𝖣 𝑋 ; we define an 𝑋 which encodes lists of elements of 𝑋 by emitting the encodings of the elements of the list, encoder 𝖤 each preceded by a 𝟷 bit, then emitting a 𝟶 bit to mark the end of the list.
 
-from what cited above we can understand that the current constant's types serialization works exactly as the list one, in particoular a list of 4 bit values.
+from what cited above we can understand that the current constant's types serialization works exactly as the list one, in particular a list of 4 bit values.
 
 this encoding takes care also of the "empty list" case which is never the case for well formed list of types.
 
@@ -111,26 +294,41 @@ for lists that are non empty ( such as 7 bits lists used for unsigned integers s
 
 the same should be applied to constant's types so that a generic (simple) type serializes as ```0 xxxx```( nil construcotr + tag )
 
-#### some examples
+for explanation purposes it is assumed that a constant type list is defined as:
 
-```
-int ->   0 0000 
-# before 1 0000 0
-```
+```hs
+data ConstTag = IntTag | Bs | Str | UnitTag | BoolTag | ListTag | PairTag | TyApp | DataTag
 
-> **NOTE**: see "[remove the "type application" tag for constant types](#tyApp)" below
-```
-list int -> 1 0101 0 0000 
-# before    1 0111 1 0101 0 0000
+data TagList = Cons ConstTag TagList | Nil
 ```
 
-> **NOTE**: see "[remove the "type application" tag for constant types](#tyApp)" below
-```
-pair int bytestring -> 1 0110 1 0000 0 0001
-# before               1 0111 1 0111 1 0110 1 0000 1 0001 0
+on which is defined an ```encode``` function that returns a ```String``` representing the encoded bits
+
+```hs
+encodeTag :: ConstTag -> String
+encodeTag tag = "xxxx"
+
+encodeTagList :: TagList -> String
+encodeTagList ( Cons tag types ) = "1" ++ encodeTag tag ++ encodeTagList types
+encodeTagList ( Nil ) = "0"
 ```
 
-<a name="tyApp"></a>
+#### new ```type``` serialization
+
+using the same model of before the new specification would require to change the ```TagList``` definition to
+```hs
+data TagList = Cons ConstTag TagList | Nil ConstTag
+```
+
+allowing to encode as:
+```hs
+encodeTag :: ConstTag -> String
+encodeTag tag = "xxxx"
+
+encodeTagList :: TagList -> String
+encodeTagList ( Cons tag types ) = "1" ++ encodeTag tag ++ encodeTagList types
+encodeTagList ( Nil tag ) = "0" ++ encodeTag tag
+```
 
 ### remove the "type application" tag for constant types
 
@@ -138,59 +336,23 @@ as per specification constant terms are typed using tags.
 
 these tags are serialized as 4 bits and currently so 16 options ( 0 to 15 inclusive ) of wich 9 are used as follows
 
-type        | binary | decimal
-------------|--------|--------
-integer     | 0000   | 0
-bytestring  | 0001   | 1
-string      | 0010   | 2
-unit        | 0011   | 3
-bool        | 0100   | 4
-list        | 0101   | 5
-pair        | 0110   | 6
-type app    | 0111   | 7
-data        | 1000   | 8
-
 tags from ```integer``` to ```bool``` and the ```data``` one are directly followed by the respective value encoding;
 
-tags ```list``` and ```pair``` are the only reason the ```type application``` tag is presente, and those tags always require some other type in order to be valid, so the type application is implcit and it should be removed.
+tags ```list``` and ```pair``` are the only tags that do require some other tag in order to be a defined type; since the twos always require some other type in order to be valid, the type application is implcit and it should be removed.
 
-during serialization this saves 4 bits for each ```lsit``` tag ( ```0111 0101``` becomes ```0101``` ) and 8 bits for pair tags which requires 2 type applications to be satisfied ( ```0111 0111 0110``` becomes ```0110``` )
+during serialization this saves 4 bits for each ```list``` tag ( ```0111 0101``` becomes ```0101``` ) and 8 bits for pair tags which requires 2 type applications to be satisfied ( ```0111 0111 0110``` becomes ```0110``` ).
 
-to help backwards compatibitlity with exsisting serializaations algoritms the new table would look like
+two options are provided as alternative to the current design;
 
-type        | binary | decimal
-------------|--------|--------
-integer     | 0000   | 0
-bytestring  | 0001   | 1
-string      | 0010   | 2
-unit        | 0011   | 3
-bool        | 0100   | 4
-list        | 0101   | 5
-pair        | 0110   | 6
-data        | 1000   | 8
+option 1 helps backwards compatibitlity since it doesn't changes the serialization of same tags; but takes 4 bits per tag when 3 bits are enough to express all the alternatives. 
 
-even if the remotion of the tag  would allow to reduce the size of every tag, further reducing the size of constants by 1 bit per constant at the cost of missing bits for expansion in the evenience new constant types will be added
-
-if the cost is acceptable ( needs to be discussed with the comunity ) an even better soultion would be to encode constant types as follows
-
-type        | binary | decimal
-------------|--------|--------
-integer     | 000    | 0
-bytestring  | 001    | 1
-string      | 010    | 2
-unit        | 011    | 3
-bool        | 100    | 4
-list        | 101    | 5
-pair        | 110    | 6
-data        | 111    | 7
-
-<a name="ByteStrings"></a>
+this is why option 2 is present; allowing the 3 bits per tag serialization at the cost of missing bits for expansion in the evenience new constant types will be added; this cost needs to be discussed with the comunity since 1 bit per tag is a considerable improvment for complex types and is a 20% improvement on single element types. 
 
 ### ```ByteString```s encoded as unsinged integer followed by the bytes
 
 ByteStrings are probably the values that have the most important impact on the serialized output;
 
-Bytestrings are used to represent a wide variety of types (```TokenName```, ```ValidatorHash```, ```PubKeyHash```, ```CurrencySymbol```, etc. are all ```ByteString``` wrappers ) ence widely used in smart contracts.
+ByteStrings are used to represent a wide variety of types (```TokenName```, ```ValidatorHash```, ```PubKeyHash```, ```CurrencySymbol```, etc. are all ```ByteString``` wrappers ) ence widely used in smart contracts.
 
 citing the plutus core specificaiton draft released in june 2022 (latest specification at the time of writing)
 
@@ -225,9 +387,8 @@ the new algorithm for ```ByteString``` serialization would consist of two parts:
 
 using the new algorithm the ```ByteString``` serialization space complexity goes form ```O(n)``` to ```O(log n)``` where ```n``` is the number of bytes in the ```ByteString``` 
 
-<a name="data"></a>
-
 ### ```data``` serialization
+
 
 All the effort of minimizing the size of on-chain scripts by prefering ```flat``` over ```CBOR``` serialization are ignored when it comes to ```data``` serialization.
 
@@ -305,12 +466,6 @@ and the empty ```List``` as
 ```
 
 the second design also implies no more ```Data``` constructors will be added in the future, or that for those added it will be possible to find an unambigous representation using the ones specified.
-
-## Rationale
-
-This proposal suggest ways to reduce serialized scripts size.
-
-the changes where designed to keep the bit oriented style of flat minimizing the number of required bits for values where possible.
 
 ## Backward Compatibility
 
