@@ -202,6 +202,20 @@ Errors: `APIError`
 
 Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet but other networks can possibly be returned by wallets. Those other network ID values are not governed by this document. This result will stay the same unless the connected account has changed.
 
+### api.getNetworkMagic(): Promise\<number>
+
+Errors: `APIError`
+
+Returns the network magic of the currently connected account. The network ID serves to identify the network ID defined in the transaction headers and addresses. The network magic (or protocol magic as defined in the genesis files) serves the purpose to identify individual networks. Well-known magic numbers are documented below, but other magic numbers can possibly be returned by wallets. This result will stay the same unless the connected account has changed.
+
+| Name           | Magic      |
+| -------------- | ---------- |
+| Mainnet        | 764824073  |
+| Preprod        | 1          |
+| Preview        | 2          |
+| Vasil devnet   | 9          |
+| Legacy testnet | 1097911063 |
+
 ### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | null>
 
 Errors: `APIError`, `PaginateError`
