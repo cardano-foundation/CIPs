@@ -1,0 +1,12 @@
+; defines a scheme to use for binary encoding for CBOR based APIs
+
+chain_id =
+{ 0 : bytes       ; Name
+  1 : network_id  ; NetworkId
+  2 : uint        ; NetworkMagic
+  3 : $hash32     ; GenesisHash
+}
+
+network_id = uint .le 16
+
+$hash32 /= bytes .size 32

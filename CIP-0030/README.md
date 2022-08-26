@@ -164,11 +164,13 @@ type TxSignError = {
 
 In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
 
-### cardano.{walletName}.enable(): Promise\<API>
+### cardano.{walletName}.enable(chainId: cbor\<chain_id> = undefined): Promise\<API>
 
 Errors: APIError
 
-This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
+This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object, unless a different chainId was requested.
+
+Through optional `chainId` parameter encoded as cbor according to the schema from CIP-0034, the dapp can explicitely request an API that is connected to a specific chain. If not provided, the wallet should return an api associated with any of the supported chains and give user the option to pick a preferred network or account. If the wallet is already connected to the dapp and this function is called with a different `chainId`, the wallet should should reset the session. If the chain is not supported the function throw `InvalidRequest` error.
 
 ### cardano.{walletName}.isEnabled(): Promise\<bool>
 
@@ -189,6 +191,10 @@ A name for the wallet which can be used inside of the dApp for the purpose of as
 
 A URI image (e.g. data URI base64 or other) for img src for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
 
+### cardano.{walletName}.supportedChains: cbor\<chain_id>[]
+
+Returns the list of chains the wallet is supporting encoded as cbor according to the schema from CIP-0034. The purpose of this for the dApp to only provide connection options to the user that are supported for the app. Some dapps or wallets are bound to specific networks or provide a manual switch between them (e.g. Nami). Other wallets support both mainnet and selected testnets with different accounts (e.g. Flint).
+
 
 ## Full API
 
@@ -202,19 +208,11 @@ Errors: `APIError`
 
 Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet but other networks can possibly be returned by wallets. Those other network ID values are not governed by this document. This result will stay the same unless the connected account has changed.
 
-### api.getNetworkMagic(): Promise\<number>
+### api.getChainId(): Promise\<chain_id>
 
 Errors: `APIError`
 
-Returns the network magic of the currently connected account. The network ID serves to identify the network ID defined in the transaction headers and addresses. The network magic (or protocol magic as defined in the genesis files) serves the purpose to identify individual networks. Well-known magic numbers are documented below, but other magic numbers can possibly be returned by wallets. This result will stay the same unless the connected account has changed.
-
-| Name           | Magic      |
-| -------------- | ---------- |
-| Mainnet        | 764824073  |
-| Preprod        | 1          |
-| Preview        | 2          |
-| Vasil devnet   | 9          |
-| Legacy testnet | 1097911063 |
+Returns the chain ID of the currently connected account. See CIP-0034 for the CBOR schema definition. This result will stay the same unless the connected account has changed.
 
 ### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | null>
 
