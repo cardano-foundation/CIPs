@@ -70,17 +70,20 @@ We define the following set of common prefixes with their corresponding semantic
 
 #### Hashes
 
-| Prefix             | Meaning                                            | Contents                                               |
-| ---                | ---                                                | ---                                                    |
-| `asset`            | Fingerprint of a native asset for human comparison | See [CIP-0014]                                         |
-| `pool`             | Pool operator verification key hash (pool ID)      | blake2b\_224 digest of an operator verification key    |
-| `script`           | Script hash                                        | blake2b\_224 digest of a serialized transaction script |
-| `addr_vkh`         | Address verification key hash                      | blake2b\_224 digest of a payment verification key      |
-| `addr_shared_vkh`  | Shared address verification key hash               | blake2b\_224 digest of a payment verification key      |
-| `policy_vkh`       | Policy verification key hash                       | blake2b\_224 digest of a policy verification key       |
-| `stake_vkh`        | Stake address verification key hash                | blake2b\_224 digest of a delegation verification key   |
-| `stake_shared_vkh` | Shared stake address verification key hash         | blake2b\_224 digest of a delegation verification key   |
-| `vrf_vkh`          | VRF verification key hash                          | blake2b\_256 digest of a VRF verification key          |
+| Prefix             | Meaning                                            | Contents                                                 |
+| ---                | ---                                                | ---                                                      |
+| `asset`            | Fingerprint of a native asset for human comparison | See [CIP-0014]                                           |
+| `pool`             | Pool operator verification key hash (pool ID)      | blake2b\_224 digest of an operator verification key       |
+| `script`           | Script hash                                        | blake2b\_224 digest of a serialized transaction script    |
+| `addr_vkh`         | Address verification key hash                      | blake2b\_224 digest of a payment verification key         |
+| `addr_shared_vkh`  | Shared address verification key hash               | blake2b\_224 digest of a payment verification key         |
+| `policy_vkh`       | Policy verification key hash                       | blake2b\_224 digest of a policy verification key          |
+| `stake_vkh`        | Stake address verification key hash                | blake2b\_224 digest of a delegation verification key      |
+| `stake_shared_vkh` | Shared stake address verification key hash         | blake2b\_224 digest of a delegation verification key      |
+| `req_signer_vkh`   | Required signer verification key hash              | blake2b\_224 digest of a required signer verification key |
+| `vrf_vkh`          | VRF verification key hash                          | blake2b\_256 digest of a VRF verification key             |
+| `datum`            | Output datum hash                                  | blake2b\_256 digest of output datum                       |
+| `script_data`      | Script data hash                                   | blake2b\_256 digest of script data                        |
 
 #### Miscellaneous 
 
@@ -135,7 +138,7 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 
 ## Reference implementation
 
-N/A
+[cip5-js](https://www.npmjs.com/package/@dcspark/cip5-js)
 
 ## Copyright
 

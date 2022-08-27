@@ -3,7 +3,7 @@ CIP: 29
 Title: Phase-1 Monetary Scripts Serialization Formats
 Authors: Matthias Benkort <matthias.benkort@iohk.io>
 Comments-URI: https://github.com/cardano-foundation/CIPs/pulls/117
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2020-08-17
 License: CC-BY-4.0

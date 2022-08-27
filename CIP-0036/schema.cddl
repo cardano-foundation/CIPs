@@ -1,0 +1,38 @@
+registration_cbor = {
+  61284: key_registration,
+  61285: registration_witness
+}
+
+$voting_pub_key /= bytes .size 32
+$reward_address /= bytes
+$nonce /= uint
+$proportion /= uint .size 4
+$voting_purpose /= uint
+legacy_key_registration = $voting_pub_key
+delegation = ($voting_pub_key, $proportion)
+
+; May support other stake credentials in the future.
+; Such additional credentials should be tagged at the CDDL/CBOR level
+; so that parsing is not ambiguous and future proof.
+; However, to avoid breaking changes, the simple key credential is
+; left untagged.
+$stake_credential /= $staking_pub_key
+$stake_witness /= $ed25519_signature
+; A stake key credential, not tagged for backward compatibility
+$staking_pub_key /= bytes .size 32
+; Witness for a stake key credential, not tagged for backward compatibility
+$ed25519_signature /= bytes .size 64
+
+
+key_registration = {
+  1 : [+delegation] / legacy_key_registration,
+  2 : $stake_credential,
+  3 : $reward_address,
+  4 : $nonce,
+  ? 5 : $voting_purpose .default 0
+}
+
+
+registration_witness = {
+  1 : $stake_witness
+}

@@ -1,0 +1,24 @@
+string = text .size (0..64)
+
+policy_id = string
+asset_name = string ; utf-8
+
+files_details = 
+  {
+    name : string,
+    mediaType : string,
+    src : string / [* string]
+  }
+
+metadata_details = 
+  {
+    name : string,
+    image : string / [* string], 
+    ? mediaType : string,
+    ? description : string / [* string],
+    ? files : [* files_details]
+  }
+
+label_metadata = { * policy_id => { * asset_name => metadata_details } }
+
+metadata = { 721 : uint => label_metadata }

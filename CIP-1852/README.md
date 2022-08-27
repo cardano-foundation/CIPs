@@ -3,7 +3,7 @@ CIP: 1852
 Title: HD (Hierarchy for Deterministic) Wallets for Cardano
 Authors: Sebastien Guillemot <sebastien@emurgo.io>, Matthias Benkort <matthias.benkort@iohk.io>
 Comments-URI: https://forum.cardano.org/t/cip1852-hd-wallets-for-cardano/41740
-Status: Draft
+Status: Active
 Type: Standards
 Created: 2019-10-28
 License: CC-BY-4.0
@@ -26,7 +26,7 @@ There are two (incompatible) implementations of BIP32-Ed25519 in Cardano:
 1) HD Random (notably used initially in Daedalus)
 2) HD Sequential (notably used initially in Icarus)
 
-The difference is explained in more detail in [CIP3](../CIP-0003)
+The difference is explained in more detail in [CIP3](https://cips.cardano.org/cips/cip3)
 
 ## Motivation
 
@@ -54,15 +54,15 @@ Here, `role` can be the following
 |----------------|-------|-------------
 | External chain | `0`   | Same as defined in [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
 | Internal chain | `1`   | Same as defined in [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
-| Staking Key    | `2`   | See [CIP11](../CIP-0011)
+| Staking Key    | `2`   | See [CIP11](https://cips.cardano.org/cips/cip11)
 
-Wallets **MUST** implement this new scheme using the master node derivation algorithm from Icarus with sequential addressing (see [CIP3](../CIP-0003) for more information)
+Wallets **MUST** implement this new scheme using the master node derivation algorithm from Icarus with sequential addressing (see [CIP3](https://cips.cardano.org/cips/cip3) for more information)
 
 ### Future extensions
 
-As a general pattern, new wallet schemes should use a different purpose if they intend to piggy-back on the same structure but for a different use-case (see for instance [CIP-1854](https://cips.cardano.org/cips/cip1854)). 
+As a general pattern, new wallet schemes should use a different purpose if they intend to piggy-back on the same structure but for a different use-case (see for instance [CIP-1854](https://cips.cardano.org/cips/cip1854)).
 
-The `role` can however be extending with new roles so long as they have no overlapping semantic with existing roles. If they do, then they likely fall into the first category of extension and would better be done via a new purpose. 
+The `role` can however be extending with new roles so long as they have no overlapping semantic with existing roles. If they do, then they likely fall into the first category of extension and would better be done via a new purpose.
 
 ## Copyright
 
