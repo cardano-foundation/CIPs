@@ -66,6 +66,16 @@ type TransactionUnspentOutput = cbor<transaction_unspent_output>
 
 This allows us to use the output for constructing new transactions using it as an output as the `transaction_output` in the Shelley Multi-asset CDDL does not contain enough information on its own to spend it.
 
+
+### EnableOptions
+
+```
+type EnableOptions = {|
+  chainId?: cbor\<chain_id>
+|}
+```
+Options passed to the `enable` function. The optinal `chainId` should be encoded as cbor according to the schema defined in CIP-0034.
+
 ### Paginate
 
 ```
@@ -164,13 +174,13 @@ type TxSignError = {
 
 In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
 
-### cardano.{walletName}.enable(chainId: cbor\<chain_id> = undefined): Promise\<API>
+### cardano.{walletName}.enable(options: EnableOptions = undefined): Promise\<API>
 
 Errors: APIError
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object, unless a different chainId was requested.
 
-Through optional `chainId` parameter encoded as cbor according to the schema from CIP-0034, the dapp can explicitely request an API that is connected to a specific chain. If not provided, the wallet should return an api associated with any of the supported chains and give user the option to pick a preferred network or account. If the wallet is already connected to the dapp and this function is called with a different `chainId`, the wallet should should reset the session. If the chain is not supported the function throw `InvalidRequest` error.
+Through optional `chainId` in the options the dapp can explicitely request an API that is connected to a specific chain. If the chain is not supported the function throw `InvalidRequest` error. If the whole `options` or the `chainId` is omitted the wallet should return an `API` associated with any of the supported chains and give users the option to pick a preferred network or account. If the wallet is already connected to the dapp and this function is called with different options, the wallet should reset the session and return a new `API`.
 
 ### cardano.{walletName}.isEnabled(): Promise\<bool>
 
