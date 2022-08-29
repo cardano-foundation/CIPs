@@ -20,15 +20,17 @@ This proposal addresses a few shortcomings of [CIP-0025](https://github.com/card
 
 - Lack of programmability;
 - Difficult metadata update / evolution;
-- Non-inspectable metadata from within Plutus validators... 
+- Non-inspectable metadata from within Plutus validators...
 
-- zero programmability
-- it is very hard to update/evolve the metadata
-- the metadata are not readable from a plutus validator. 
+Besides these shortcomings CIP-0025 has some [flaws](https://github.com/cardano-foundation/CIPs/pull/85#issuecomment-1054123645) in its design.
+For people unaware of CIP-0025 or want to use a different way of minting or want to use a different metadata format/mechanism you open up a protocol to metadata spoofing, because this standard is so established and metadata in minting transactions are interpreted by most platforms by default. Since this standard is not enforced at the protocol level there is no guarantee everyone will be aware of it or follow the rules. At the same time you limit and constraint the capabilities of the ledger if everyone was forced to follow the rules of CIP-0025. 
 
 This standard tackles all these problems and offers many more advantages, not only for NFTs, but also for any asset class that may follow. Additionally, this CIP will introduce a way to classify tokens so that third parties like wallets can easily know what the kind of token it is.
 
-## Considerations
+
+## Specification
+
+### Considerations
 
 The basic idea is to have two assets issued, where one references the other. We call these two a `reference NFT` and an `user token`, where the `user token` can be an NFT, FT or any other asset class that is transferable and represents any value. So, the `user token` is the actual asset that lives in a user's wallet.
 
@@ -36,13 +38,15 @@ To find the metadata for the `user token` you need to look for the output, where
 
 Lastly and most importantly, with this construction, the metadata can be used by a PlutusV2 script with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space. 
 
-## Specification
+### Reference NFT label
 
 This is the registered `asset_name_label` value
 
 | asset_name_label            | class        | description                                               |
 | --------------------------- | ------------ | --------------------------------------------------------- |
 | 100                         | NFT          | Reference NFT locked at a script containing the datum     |
+
+### Constraints and conditions
 
 For a correct relationship between the `user token` and the `reference NFT` a few conditions **must** be met.
 - The `user token` and `reference NFT` **must** be under the same policy ID. 
@@ -51,7 +55,7 @@ For a correct relationship between the `user token` and the `reference NFT` a fe
 
 Some remarks about the above,
 1. The `user token` and `reference NFT` do not need to be minted in the same transaction. The order of minting is also not important.
-2. It may be the case that there can be multiple `user tokens` referencing the same `reference NFT`. More explicit with this standard, if a specific `user token` has a quantity bigger than 1, then they all reference the same `reference NFT`.
+2. It may be the case that there can be multiple `user tokens` (multiple asset names or quantity greater than 1) referencing the same `reference NFT`.
 
 The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor:
 ```
@@ -65,7 +69,7 @@ metadata =
   / big_int
   / bounded_bytes
   
-version = big_int
+version = int
 
 datum = #6.121([metadata, version])
 ```
@@ -81,7 +85,7 @@ Besides the necessary standard for the `reference NFT` we're introducing two spe
 
 ### Class
 
-The `user token` represents a NFT (non-fungible token).
+The `user token` represents an NFT (non-fungible token).
 
 ### Pattern
 
