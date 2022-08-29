@@ -16,7 +16,11 @@ This proposal defines a metadata standard for native assets making use of output
 
 ## Motivation
 
-[CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025) has plenty of limitations, to name a few
+This proposal addresses a few shortcomings of [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025):
+
+- Lack of programmability;
+- Difficult metadata update / evolution;
+- Non-inspectable metadata from within Plutus validators... 
 
 - zero programmability
 - it is very hard to update/evolve the metadata
