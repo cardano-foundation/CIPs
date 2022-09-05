@@ -2,8 +2,8 @@
 CIP: 21
 Title: Transaction requirements for interoperability with hardware wallets
 Authors: Gabriel Kerekes <gabriel.kerekes@vacuumlabs.com>, Rafael Korbas <rafael.korbas@vacuumlabs.com>, Jan Mazak <jan.mazak@vacuumlabs.com>
-Status: Draft
-Type: Standards
+Status: Active
+Type: Informational
 Created: 2021-06-15
 License: CC-BY-4.0
 ---
