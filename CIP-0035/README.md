@@ -140,7 +140,7 @@ This proposal deals only with the types of change listed in "Types of change", a
 This proposal recommends that some of the changes listed in "Types of change" (specified below) should:
 
 1. Be proposed in a CIP.
-2. Go through additional process in addition to the [usual CIP process](../CIP-0001/README.md).
+2. Go through additional process in addition to the [usual CIP process](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/README.md).
 
 The additional process mostly takes the form of additional information that should be present in the CIP before it moves to particular stages.
 As such, it is up to the CIP Editors to enforce this.
