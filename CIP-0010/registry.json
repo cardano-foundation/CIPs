@@ -36,6 +36,10 @@
     "description": "Open Badges v2.0 compliant metadata"
   },
   {
+    "transaction_metadatum_label": 1888,
+    "description": "amphitheatre by the ape society"
+  },
+  {
     "transaction_metadatum_label": 1967,
     "description": "nut.link metadata oracles registry"
   },
