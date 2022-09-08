@@ -2,8 +2,8 @@
 CIP: 21
 Title: Transaction requirements for interoperability with hardware wallets
 Authors: Gabriel Kerekes <gabriel.kerekes@vacuumlabs.com>, Rafael Korbas <rafael.korbas@vacuumlabs.com>, Jan Mazak <jan.mazak@vacuumlabs.com>
-Status: Draft
-Type: Standards
+Status: Active
+Type: Informational
 Created: 2021-06-15
 License: CC-BY-4.0
 ---
@@ -63,6 +63,7 @@ The number of the following transaction elements individually must not exceed `U
 - withdrawals in transaction body
 - collateral inputs in transaction body
 - required signers in transaction body
+- reference inputs in transaction body
 - the total number of witnesses
 
 **Optional empty lists and maps**
@@ -71,7 +72,15 @@ Unless mentioned otherwise in this CIP, optional empty lists and maps must not b
 
 **Outputs**
 
-Outputs containing no multi-asset tokens must be serialized as a simple tuple, i.e. `[address, coin, ?datum_hash]` instead of `[address, [coin, {}], ?datum_hash]`. In addition, including `datum_hash` is only allowed if the payment part of the output's `address` is a script hash.
+A new, "post Alonzo", output format has been introduced in the Babbage era which uses a map instead of an array to store the output data. For now, both the "legacy" (array) and "post Alonzo" (map) output formats are supported by HW wallets but we encourage everyone to migrate to the "post Alonzo" format as support for the "legacy" output format might be removed in the future. Both formats can be mixed within a single transaction, both in outputs and in the collateral return output.
+
+_Legacy outputs_
+
+Outputs containing no multi-asset tokens must be serialized as a simple tuple, i.e. `[address, coin, ?datum_hash]` instead of `[address, [coin, {}], ?datum_hash]`.
+
+_Post Alonzo outputs_
+
+If the `data` of `datum_option` is included in an output, it must not be empty. `script_ref` (reference script) must also not be empty if it is included in an output.
 
 **Multiassets**
 
@@ -148,6 +157,10 @@ The specified auxiliary data format was chosen in order to be compatible with ot
 ## Backwards compatibility
 
 Tools interacting with HW wallets might need to be updated in order to continue being compatible with HW wallets because of canonical CBOR serialization format, which is being enforced since multi-sig support.
+
+## Tools
+
+[`cardano-hw-interop-library`](https://github.com/vacuumlabs/cardano-hw-interop-lib) or [`cardano-hw-cli'](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library) can be used to validate or transform transactions into a HW wallet compatible format if possible.
 
 ## Copyright
 

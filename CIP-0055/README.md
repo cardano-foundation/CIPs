@@ -51,7 +51,7 @@ and the extra entropy parameter useless.
 ## Specification
 
 The removal of the decentralization parameter and the extra entropy parameter is self explanatory.
-We now describe the specifacion of the `coinsPerUTxOByte` parameter.
+We now describe the specification of the `coinsPerUTxOByte` parameter.
 
 
 ### Rename
@@ -73,7 +73,7 @@ the current value of `coinsPerUTxOWord` will be converted to
 In the Babbage era, unspent transaction outputs will be required to contain _at least_
 
 ```
-160 + |serialized_output| * coinsPerUTxOByte
+(160 + |serialized_output|) * coinsPerUTxOByte
 ```
 
 many lovelace. The constant overhead of 160 bytes accounts for the transaction input
