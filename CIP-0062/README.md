@@ -212,27 +212,28 @@ API Error Codes, which are continue to be valid for this API Extension.
 
 ### Extended TxSignError
 
-DataSignErrorCode {
- ProofGeneration: 1,
- AddressNotPK: 2,
- UserDeclined: 3,
- VoteRejected: 4,
+```js
+TxSignErrorCode {
+  ProofGeneration: 1,
+  UserDeclined: 2,
+  VoteRejected: 3,
 }
+```
 
 ```js
-type DataSignError = {
- code: DataSignErrorCode,
- info: String,
- rejectedVotes: number[]
+type TxSignError = {
+  code: TxSignErrorCode,
+  info: String,
+  rejectedVotes: number[]
 }
 ```
 
 All TxSignErrors defined in [CIP-30](https://cips.cardano.org/cips/cip30/#txsignerror) are unchanged.
 
-* UserDeclined - Raised when the user declined to sign the entire transaction.
+* UserDeclined - Raised when the user declined to sign the entire transaction, in the case of a vote submission, this would be returned if the user declined to sign ALL of the votes.
 * VoteRejected - On a vote transaction, where there may be multiple votes.  If the user accepted some votes, but rejected others, then this error is raised, AND `rejectedVotes` is present in the Error instance.
 
-## Governance Extension
+## Governance Extension to CIP-30
 
 ### cardano.{walletName}.governance.apiVersion: String
 
@@ -314,13 +315,15 @@ Errors: [`APIError`](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
 * votes - an array of up to 10 votes to be validated with the wallet user, and if valid, signed.
 
-IF the wallet user declines ANY of the votes, a `DataSignError` should be raised, but with the optional
+IF the wallet user declines SOME of the votes, a [`TxSignError`](#extended-txsignerror) should be raised with `code` set to `VoteRejected` and the optional `rejectedVotes` array specifying the votes rejected.
+
+However, if the wallet user declines the entire set of votes, the wallet should raise a [`TxSignError`](#extended-txsignerror) with the `code` set to `UserDeclined`.
 
 ### Returns
 
 `Bytes[]` - An array of the hex-encoded string of the fully encoded and signed vote transaction.  The dApp will submit this vote to the Catalyst Governance Subchain Bridge on behalf of the wallet.
 
-## api.getVotingKeys**(): Promise<cbor<PublicKey\>[]>
+## api.getVotingKeys(): Promise<cbor<PublicKey\>[]>
 
 Should return a list of all the voting keys for the current wallet.
 
