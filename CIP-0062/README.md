@@ -234,6 +234,10 @@ All TxSignErrors defined in [CIP-30](https://cips.cardano.org/cips/cip30/#txsign
 
 ## Governance Extension
 
+### cardano.{walletName}.governance.apiVersion: String
+
+The version number of the Governance Extension API that the wallet supports.
+
 ### cardano.{walletName}.governance.enable(purpose: VotingPurpose[]): Promise\<API>
 
 Errors: [`APIError`](#extended-apierror)
