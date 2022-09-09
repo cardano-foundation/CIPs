@@ -61,6 +61,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 54 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 55 | [Babbage Era's coinsPerUTxOByte](./CIP-0055) | Proposed |
 | 59 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
+| 60 | [Music Token Metadata](./CIP-0060) | Proposed |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
@@ -92,7 +93,6 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 57? | [On-Chain Script Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) |
 | 58? | [Plutus Bitwise Primitives](https://github.com/cardano-foundation/CIPs/pull/268) |
-| 60? | [Music Token Metadata](https://github.com/cardano-foundation/CIPs/pull/307) |
 | 61? | [Stake-based Protocol Governance Restrictions](https://github.com/cardano-foundation/CIPs/pull/284)
 | 62? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 63? | [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276) | 
