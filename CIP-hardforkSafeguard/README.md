@@ -10,8 +10,11 @@ License: CC-BY-4.0
 
 ## Simple Summary / Abstract
 
-This CIP replaces a manual safety check regarding the readiness of the network
-for a hardfork with an automatic check.
+This CIP proposes lifting a specific, manual safety check to the protocol.
+In particular, a new on-chain mechanism will replace the step in the off-chain
+hardfork procedure where the governance body gathers information about which
+stake pool operators have upgraded to the version of the software which
+supports an upcoming hardfork.
 
 Ever since the Shelley ledger era, block headers have included a protocol
 version indicating the maximum supported protocol version that the block
@@ -31,14 +34,14 @@ broadcasting their readiness for a hardfork,
 we know that it is safe to propose an update to the major protocol version
 which triggers a hardfork.
 
-This CIP proposes automating this process,
-and making the protocol version in the header semantically meaningful.
+This CIP proposes automating this specific check,
+making the protocol version in the header semantically meaningful.
 The ledger state will determine the stake
 (represented as the proportion of the active stake) of all the block producers
 whose last block contained the next major protocol version.
-Moreover, a new protocol parameter `hardforkThreshold` will be used to reject any
-protocol parameter update that proposes to change the major protocol version
-but does not have enough backing stake.
+Moreover, a new protocol parameter `hardforkThreshold` will be used to reject
+any protocol parameter update that proposes to change the major protocol
+version but does not have enough backing stake.
 
 ## Motivation / History
 
@@ -78,9 +81,18 @@ is not ready for any hardfork.
 When a new release is introduced which can handle an upcoming hardfork,
 the node will be configured to use the next major protocol version in the
 block header.
-Note also that there is no ambiguity regarding what the endorsement in the
+
+Note that there is no ambiguity regarding what the endorsement in the
 block header is referring to, since the major protocol version is only allowed
 to increase by one.
+Moreover, regardless of what update proposals the governance keys have
+proposed, each block header indicates that the corresponding block producer is
+either prepared for the major protocol version to increase, or that it is not
+prepared for it to increase.
+This CIP does not address the problems that arise from multiple versions of
+the software (potentially with different semantics) broadcasting the same
+major protocol version. These problems will have to be addressed as progress
+is made towards a full decentralized governance.
 
 Whenever the major protocol version is updated, the set of endorsements is
 reset to the empty set.
@@ -203,4 +215,4 @@ hardfork is immanent.
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
