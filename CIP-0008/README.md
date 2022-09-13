@@ -121,8 +121,8 @@ Other blockchains have existing specifications for message signing, but they mos
 
 Cardano already allows message signing within the WASM bindings. Notably,
 
-1) [sign](https://github.com/Emurgo/cardano-serialization-lib/blob/master/rust/src/crypto.rs#L260)
-2) [verify](https://github.com/Emurgo/cardano-serialization-lib/blob/master/rust/src/crypto.rs#L303)
+1) [sign](https://github.com/Emurgo/cardano-serialization-lib/blob/4792b1b121e728a51686d5fcbffd33489d65c903/rust/src/crypto.rs#L279)
+2) [verify](https://github.com/Emurgo/cardano-serialization-lib/blob/4792b1b121e728a51686d5fcbffd33489d65c903/rust/src/crypto.rs#L322)
 
 You can see an example of these two functions [here](https://repl.it/repls/FlusteredSimpleFunction)
 

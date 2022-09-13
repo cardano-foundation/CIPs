@@ -187,14 +187,13 @@ CIPs may include auxiliary files such as diagrams. Auxiliary files should be inc
 CIP editors serve as stewards of the Cardano ecosystem, here to support and progress CIPs in their various stages within the community and protocol. If you have questions regarding the CIP process, they can point you in the right direction. They provide support for users trying to create a CIP, monitor that the CIP process is fair, formalized, objective, and to facilitate knowledge transfer through the CIPs themselves.
 
 
-Frederic Johnson - @crptmppt 
+| Frederic Johnson <br/> [@crptmppt][] | Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] |
+| ---                                  | ---                               | ---                                           | ---                            |
 
-Matthias Benkort - @KtoZ 
-
-Sebastien Guillemot - @SebastienGllmt
-
-Duncan Coutts - @dcoutts 
-
+[@crptmppt]: https://github.com/crptmppt
+[@KtorZ]: https://github.com/KtorZ
+[@SebastienGllmt]: https://github.com/SebastienGllmt
+[@rphair]: https://github.com/rphair
 
 CIP editors should strive to keep up to date with general technical conversations and Cardano proposals. For each new draft proposal submitted in <https://forum.cardano.org/c/developers/cips/122>, an editor might review it as follows:
 
