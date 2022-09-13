@@ -302,40 +302,6 @@ In either case, where the user declines to sign at least 1 of the votes, no sign
 
 `Bytes[]` - An array of the hex-encoded strings of the fully encoded and signed vote transactions.  The dApp will submit these votes on behalf of the wallet.
 
-## api.getVotingKeys(): Promise<cbor<PublicKey\>[]>
-
-Should return a list of all the voting keys for the current wallet.
-
-### Returns
-
-An array with the cbor hex encoded public keys.
-
-## api.rotateVotingKey(): Promise<cbor<PublicKey\>>
-
-This call should explicitly rotate the current in-use voting key. Given the current `address_index` in the derivation path defined in [CIP-36](https://cips.cardano.org/cips/cip36/), it should be incremented by 1.
-
-The key should be derived from the following path.
-
-```text
-m / 1694' / 1815' / account' / role' / address_index'
-```
-
-`1694` (year Voltaire was born) Sets a dedicated `purpose` in the derivation path for the voting profile.
-
-`address_index` - index of the key to use.
-
-### Returns
-
-cbor hex encoded representation of the [public key](#publickey).
-
-## api.getCurrentVotingKey(): Promise\<cbor<PublicKey\>>
-
-Should return the current in-use voting [public key](#publickey). The wallet should maintain a reference to the current `address_index` counter and return the public key for that index.  This call does NOT rotate the `address_index`.
-
-### Returns
-
-cbor hex encoded representation of the public key.
-
 ## api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>
 
 Errors: [`APIError`](#extended-apierror),
