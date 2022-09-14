@@ -411,22 +411,20 @@ Counts the final sequence of 0 bits in the argument (that is, starting from the
 
 We define $\mathbb{N}^{+} = \\{ x \in \mathbb{N} \mid x \neq 0 \\}$. We assume
 that `BuiltinInteger` is a faithful representation of $\mathbb{Z}$, and will
-refer to them (and their elements) interchangeably. A *byte* is some $x \in
-\\{0,1,\ldots,255\\}$.
+refer to them (and their elements) interchangeably. A *byte* is some 
+$x \in \\{ 0,1,\ldots,255 \\}$.
 
-We observe that, given some *base* $b \in \mathbb{N}^{+}$, any $n \in
-\mathbb{N}$ can be viewed as a sequence of values in $\\{0,1,\ldots, b - 1\\}$.
+We observe that, given some *base* $b \in \mathbb{N}^{+}$, any 
+$n \in \mathbb{N}$ can be viewed as a sequence of values in $\\{0,1,\ldots, b - 1\\}$.
 We refer to any such sequence as a *base $b$ sequence*. In such a 'view', given 
 a base $b$ sequence $S = s_0 s_1 \ldots s_k$, we can compute its corresponding 
 $m \in \mathbb{N}^+$ as 
 
-\[
-\sum_{i \in \\{0,1,\ldots,k\\}} b^{k - i} * s_i
-\]
+$$\sum_{i \in \\{0,1,\ldots,k\\}} b^{k - i} \cdot s_i$$
 
 If $b > 1$ and $Z$ is a base $b$ sequence consisting only of zeroes, we observe 
 that for any other base $b$ sequence $S$, $Z \cdot S$ and $S$ correspond to the 
-same number.
+same number, where $\cdot$ is sequence concatenation.
 
 We use *bit sequence* to refer to a base 2 sequence, and *byte sequence* to
 refer to a base 256 sequence. For a bit sequence $S = b_0 b_1 \ldots b_n$, we
@@ -441,16 +439,14 @@ respectively.
 We describe a 'view' of bytes as bit sequences. Let $y$ be a byte; its
 corresponding bit sequence is $S_y = y_0 y_1 y_2 y_3 y_4 y_5 y_6 y_7$ such that
 
-\[
-\sum_{i \in \\{0,1,\ldots,7\\}} 2^{7 - i} * y_i = y
-\]
+$$\sum_{i \in \\{0,1,\ldots,7\\}} 2^{7 - i} \cdot y_i = y$$
 
 For example, the byte $55$ has the corresponding byte sequence $00110111$. For
 any byte, its corresponding byte sequence is unique. We use this to extend our
-'view' to byte sequences as bit sequences. Specifically, let $T = y_0 y_1 \ldots
-y_m$ be a byte sequence. Its corresponding bit sequence $S = b_0b_1 \ldots b_m
-b_{m + 1} \ldots b_{8(m + 1) - 1}$ such that for any valid bit index $j$ of $S$,
-$b_j = 1$ if and only if $T[j / 8][j `mod` 8] = 1$, and is $0$ otherwise. 
+'view' to byte sequences as bit sequences. Specifically, let 
+$T = y_0 y_1 \ldots y_m$ be a byte sequence. Its corresponding bit sequence 
+$S = b_0b_1 \ldots b_m b_{m + 1} \ldots b_{8(m + 1) - 1}$ such that for any valid bit index $j$ of $S$,
+$b_j = 1$ if and only if $T[j / 8][j \mod 8] = 1$, and is $0$ otherwise. 
 
 Based on the above, we observe that any `BuiltinByteString` can be a bit
 sequence or a byte sequence. Furthermore, we assume that `indexByteString` and 
@@ -474,7 +470,7 @@ the following:
 Otherwise, we produce the `BuiltinByteString` corresponding to the base 256
 sequence which represents $i$.
 
-We now describe the reverse operation, implemented as the 'byteStringToInteger`
+We now describe the reverse operation, implemented as the `byteStringToInteger`
 primitive. This treats its argument `BuiltinByteString` as a base 256 sequence,
 and produces its corresponding number as a `BuiltinInteger`. We note that this
 is necessarily non-negative.
@@ -510,9 +506,9 @@ the following information:
 - The reason (mismatched lengths); and
 - The byte lengths of the arguments.
 
-If $n = m$, the result of each of these operations is the bit sequence $U = u_0
-u_1 \ldots u_{n^{\prime}}$, such that for all $i \in \\{0, 1, \ldots, n^{\prime}\\}$,
-$U[i]$ is $1$ under the following conditions:
+If $n = m$, the result of each of these operations is the bit sequence 
+$U = u_0u_1 \ldots u_{n^{\prime}}$, such that for all $i \in \\{0, 1, \ldots, n^{\prime}\\}$,
+$U[i] = 1$ under the following conditions:
 
 - For `andByteString`, when $S^{\prime}[i] = T^{\prime}[i] = 1$;
 - For `iorByteString`, when at least one of $S^{\prime}[i], T^{\prime}[i]$ is
@@ -575,9 +571,9 @@ and `rotateByteString`:
 
 We describe the semantics of `shiftByteString` precisely. Given arguments $S$
 and some $i \in \mathbb{Z}$, the result is the bit sequence 
-$U = u_0 u_1 \ldots u_{n^{\prime}} such that for all $j \in \\{0, 1, \ldots,
-n^{\prime}\\}$, we have $U[j] = S^{\prime}[j - i]$ if $j - i$ is a valid bit
-index for $S^{\prime}$ and $0$ otherwise.
+$U = u_0 u_1 \ldots u_{n^{\prime}}$ such that for all 
+$j \in \\{0, 1, \ldots, n^{\prime}\\}$, we have $U[j] = S^{\prime}[j - i]$ if 
+$j - i$ is a valid bit index for $S^{\prime}$ and $0$ otherwise.
 
 Let $k, \ell \in \mathbb{Z}$ 
 such that either 
@@ -591,9 +587,9 @@ shiftByteString (shiftBytestring bs k) l = shiftByteString bs (k + l)
 ```
 
 We now describe the semantics of `rotateByteString` precisely; we assume the
-same arguments as for `shiftByteString` above. The result is the bit sequence $U
-= u_0 u_1 \ldots u_{n^{\prime}}$ such that for all $j \in \\{0, 1, \ldots,
-n^{\prime}\\}$, we have $U[j] = S^{\prime}[n^{\prime} + j - i \mod n^{\prime}]$.
+same arguments as for `shiftByteString` above. The result is the bit sequence 
+$U = u_0 u_1 \ldots u_{n^{\prime}}$ such that for all 
+$j \in \\{0, 1, \ldots, n^{\prime}\\}$, we have $U[j] = S^{\prime}[n^{\prime} + j - i \mod n^{\prime}]$.
 
 We observe that for any $k, \ell$, and any
 `bs`, we have
@@ -616,7 +612,7 @@ rotateByteString bs k = rotateByteString bs (k `remInteger` (lengthByteString bs
 
 For `popCountByteString` with argument $S$, the result is 
 
-$$\sum_{j \in \\{0, 1, \ldots, n^{\prime}\\} S^{\prime}[j]$$
+$$\sum_{j \in \\{0, 1, \ldots, n^{\prime}\\}} S^{\prime}[j]$$
 
 Informally, this is just the total count of $1$ bits. We observe that 
 for any `bs` and `bs'`, we have
@@ -635,14 +631,14 @@ message must contain at least the following information:
 - The valid range of indexes.
 
 For `testBitByteString` with arguments $S$ and some $i \in \mathbb{Z}$, if $i$
-is a valid bit index of $S^{\prime}$, the result is `True` if $S^{\prime}[i] =
-1$, and `False` if $S^{\prime}[i] = 0$. If $i$ is not a valid bit index of
-$S^{\prime}$, the result is an out-of-bounds error.
+is a valid bit index of $S^{\prime}$, the result is `True` if 
+$S^{\prime}[i] = 1$, and `False` if $S^{\prime}[i] = 0$. If $i$ is not a valid 
+bit index of $S^{\prime}$, the result is an out-of-bounds error.
 
 For `writeBitByteString` with arguments $S$, some $i \in \mathbb{Z}$ and some
 `BuiltinBool` $b$, if $i$ is not a valid bit index for $S^{\prime}$, the result
-is an out-of-bounds error. Otherwise, the result is the bit sequence $U = u_0
-u_1 \ldots u_{n^{\prime}}$ such that for all $j \in \\{0, 1, \ldots, n\\}$, we
+is an out-of-bounds error. Otherwise, the result is the bit sequence 
+$U = u_0 u_1 \ldots u_{n^{\prime}}$ such that for all $j \in \\{0, 1, \ldots, n\\}$, we
 have:
 
 - $U[j] = 1$ when $i = j$ and $b$ is `True`;
@@ -650,7 +646,7 @@ have:
 - $U[j] = S^{\prime}[j]$ otherwise.
 
 Lastly, we describe the semantics of `countLeadingZeroesByteString` and
-`countTrailingZeroesByteString. Given the argument $S$,
+`countTrailingZeroesByteString`. Given the argument $S$,
 `countLeadingZeroesByteString` gives the result $k$ such that all of the
 following hold:
 
