@@ -39,6 +39,39 @@ We provide a range of applications that could be useful or beneficial on-chain,
 but are difficult or impossible to implement without some, or all, of the
 primitives we propose.
 
+### Finite field arithmetic
+
+[Finite field arithmetic](https://en.wikipedia.org/wiki/Finite_field_arithmetic)
+is an area with many applications, ranging from [linear block
+codes](https://en.wikipedia.org/wiki/Block_code) to [zero-knowledge
+proofs](https://en.wikipedia.org/wiki/Zero-knowledge_proof) to scheduling and
+experimental design. Having such capabilities on-chain is useful in for a wide
+range of applications. 
+
+A good example is multiplication over the [Goldilocks
+field](https://blog.polygon.technology/introducing-plonky2) (with characteristic
+$2^64 - 2^32 + 1$). To perform this operation requires 'slicing' the
+representation being worked with into 32-bit chunks. As finite field
+reprentations are some kind of unsigned integer in every implementation, in
+Plutus, this would correspond to `Integer`s, but currently, there is no way to
+perform this kind of 'slicing' on an `Integer` on-chain.
+
+Furthermore, finite field arithmetic can gain significant performance
+optimizations with the use of bitwise primitive operations. Two good examples
+are power-of-two division and computing inverses. The first of these (useful
+even in `Integer` arithmetic) replaces a division by a power of 2 with a shift;
+the second uses a count trailing zeroes operation to compute a multiplicative
+finite field inverse. While some of these operations could theoretically be done
+by other means, their performance is far from guaranteed. For example, GHC does
+not convert a power-of-two division or multiplication to a shift, even if the
+divisor or multiplier is statically-known. Given the restrictions on computation
+resources on-chain, any gains are significant.
+
+Having bitwise primitives, as well as the ability to convert `Integer`s into a
+form amenable to this kind of work, would allow efficient finite field
+arithmetic on-chain. This could enable a range of new uses without being
+inefficient or difficult to port.
+
 ### Succinct data structures
 
 Due to the on-chain size limit, many data structures become impractical or
@@ -88,7 +121,8 @@ can have terrifyingly efficient implementations: the
 algorithm (the current state of the art) can process four kilobytes per loop
 iteration, which amounts to over four thousand potential stored integers.
 - Insertion or removal is a bit set or bit clear respectively.
-- Finding the smallest element is a find-first-one.
+- Finding the smallest element uses a count leading zeroes.
+- Finding the last element uses a count trailing zeroes.
 - Testing for membership is a check to see if the bit is set.
 - Set intersection is bitwise and.
 - Set union is bitwise inclusive or.
@@ -272,13 +306,16 @@ inter-conversion between  `BuiltinByteString` and `BuiltinInteger`:
 ```haskell
 integerToByteString :: BuiltinInteger -> BuiltinByteString
 ```
-Convert a number to its bitwise representation.
+
+Convert a non-negative number to its bitwise representation, erroring if given a
+negative number.
 
 ---
 ```haskell
 byteStringToInteger :: BuiltinByteString -> BuiltinInteger
 ```
-Reinterpret a bitwise representation to the corresponding number.
+
+Reinterpret a bitwise representation to its corresponding non-negative number.
 
 ---
 We also propose several logical operations on `BuiltinByteString`s:
@@ -354,10 +391,19 @@ third argument is `True`, and $0$ otherwise.
 
 ---
 ```haskell
-findFirstSetByteString :: BuiltinByteString -> BuiltinInteger
+countLeadingZeroesByteString :: BuiltinByteString -> BuiltinInteger
 ```
-Return the lowest index such that `testBitByteString` with the first argument 
-and that index would be `True`. If no such index exists, return $-1$ instead.
+
+Counts the initial sequence of 0 bits in the argument (that is, starting from
+index 0). If the argument is empty, this returns 0.
+
+---
+```haskell
+countTrailingZeroesByteString :: BuiltinByteString -> BuiltinInteger
+```
+
+Counts the final sequence of 0 bits in the argument (that is, starting from the
+1 bit with the highest index). If the argument is empty, this returns 0.
 
 ## Semantics
 
@@ -652,6 +698,22 @@ for all $j \in \{0, 1, \ldots, n\}$, we have:
 
 For either `testBitByteString` or `writeBitByteString`, if $i < 0$ or $i > n$, 
 the result is an out-of-bounds error.
+
+Lastly, we describe the semantics of `countLeadingZeroesByteString` and
+`countTrailingZeroesByteString. Given the argument $s$,
+`countLeadingZeroesByteString` produces the answer $\ell$ such that all of the
+following hold:
+
+- $0 \leq \ell < n$;
+- For all $0 \leq i < \ell$, $s_i = 0$; and
+- If $s$ is not empty, $s_{\ell} = 1$.
+
+`countTrailingZeroesByteString` instead produces the answer $\ell$ such that all
+of the following hold:
+
+- $0 \leq \ell < n$;
+- For all $\ell \leq i < n$, $s_i = 0$; and
+- If $s$ is not empty, $s_{\ell} = 1$.
 
 Lastly, we describe the semantics of `findFirstSetByteString`. Given the
 argument $s$, if for all $j \in \\{0, 1, \ldots, n \\}$, $s_j = 0$, the result 
