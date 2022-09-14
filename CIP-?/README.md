@@ -148,7 +148,7 @@ Furthermore, succinct data structures are not limited to sets of integers, but
 
 ### Binary representations and encodings
 
-On-chain, space is at a premium. One way that space can be saved is with binary
+On-chain, space comes at a premium. One way that space can be saved is with binary
 representations, which can potentially represent something much closer to the
 entropy limit, especially if the structure or value being represented has
 significant redundant structure. While some possibilities for a more efficient
@@ -410,150 +410,134 @@ Counts the final sequence of 0 bits in the argument (that is, starting from the
 ### Preliminaries
 
 We define $\mathbb{N}^{+} = \\{ x \in \mathbb{N} \mid x \neq 0 \\}$. We assume
-that `BuiltinInteger` is a faithful representation of $\mathbb{Z}$. A
-*bit sequence* $s = s_n s_{n-1} \ldots s_0$ is a sequence such that for
-all $i \in \\{ 0,1,\ldots,n \\}$, $s_i \in \\{ 0, 1 \\}$. A bit sequence 
-$s = s_n s_{n-1} \ldots s_0$ is a *byte sequence* if:
+that `BuiltinInteger` is a faithful representation of $\mathbb{Z}$, and will
+refer to them (and their elements) interchangeably. A *byte* is some $x \in
+\\{0,1,\ldots,255\\}$.
 
-- Either $s$ is empty (that is, contains no bits); or
-- $n = 8k - 1$ for some $k \in \mathbb{N}^{+}$. 
+We observe that, given some *base* $b \in \mathbb{N}^{+}$, any $n \in
+\mathbb{N}$ can be viewed as a sequence of values in $\\{0,1,\ldots, b - 1\\}$.
+We refer to any such sequence as a *base $b$ sequence*. In such a 'view', given 
+a base $b$ sequence $S = s_0 s_1 \ldots s_k$, we can compute its corresponding 
+$m \in \mathbb{N}^+$ as 
 
-We assume that `BuiltinByteString`s represent byte sequences, such that the
-lowest bit indexes are at the end of the representation; that is, bit $0$ is the
-least-significant bit in the highest-index byte.
+\[
+\sum_{i \in \\{0,1,\ldots,k\\}} b^{k - i} * s_i
+\]
 
-Let $i \in \mathbb{N}^{+}$. 
-We define the sequence $\texttt{binary}(i) = (d_0, m_0), (d_1, m_1), \ldots$ as 
+If $b > 1$ and $Z$ is a base $b$ sequence consisting only of zeroes, we observe 
+that for any other base $b$ sequence $S$, $Z \cdot S$ and $S$ correspond to the 
+same number.
 
-- $m_0 = i \mod 2$, 
-  $d_0 = \frac{i}{2}$ if $i$ is even, 
-  and $\frac{i - 1}{2}$ otherwise.
-- $m_j = d_{j - 1} \mod 2$, 
-  $d_j = \frac{d_{j-1}}{2}$ if $d_j$ is even,
-  and $\frac{d_{j-1} - 1}{2}$ if it is odd.
+We use *bit sequence* to refer to a base 2 sequence, and *byte sequence* to
+refer to a base 256 sequence. For a bit sequence $S = b_0 b_1 \ldots b_n$, we
+refer to $\\{0,1,\ldots,n \\}$ as the *valid bit indices* of $S$; analogously,
+for a byte sequence $T = y_0 y_1 \ldots y_m$, we refer to $\\{0,1,\ldots,m\\}$
+as the *valid byte indices* of $T$. We observe that the length of $S$ is $n + 1$
+and the length of $T$ is $m + 1$; we refer to these as the *bit length* of $S$
+and the *byte length* of $T$ for clarity. We write $S[i]$ and $T[j]$ to
+represent $b_i$ and $y_j$ for valid bit index $i$ and valid byte index $j$
+respectively.
 
-Some examples follow.
+We describe a 'view' of bytes as bit sequences. Let $y$ be a byte; its
+corresponding bit sequence is $S_y = y_0 y_1 y_2 y_3 y_4 y_5 y_6 y_7$ such that
 
-- $\texttt{binary}(4) = (2, 0), (1, 0), (0, 1), (0, 0), (0, 0), \ldots$
-- $\texttt{binary}(17) = (8, 1), (4, 0), (2, 0), (1, 0), (0, 1), (0, 0), (0, 0), \ldots$
-- $\texttt{binary}(553) = (276, 1), (138, 0), (69, 0), (34, 1), (17, 0), (8, 1), (4, 0), (2, 0), (1, 0), (0, 1), (0, 0), (0, 0), \ldots$
+\[
+\sum_{i \in \\{0,1,\ldots,7\\}} 2^{7 - i} * y_i = y
+\]
+
+For example, the byte $55$ has the corresponding byte sequence $00110111$. For
+any byte, its corresponding byte sequence is unique. We use this to extend our
+'view' to byte sequences as bit sequences. Specifically, let $T = y_0 y_1 \ldots
+y_m$ be a byte sequence. Its corresponding bit sequence $S = b_0b_1 \ldots b_m
+b_{m + 1} \ldots b_{8(m + 1) - 1}$ such that for any valid bit index $j$ of $S$,
+$b_j = 1$ if and only if $T[j / 8][j `mod` 8] = 1$, and is $0$ otherwise. 
+
+Based on the above, we observe that any `BuiltinByteString` can be a bit
+sequence or a byte sequence. Furthermore, we assume that `indexByteString` and 
+`sliceByteString` 'agree' with valid byte indices. More precisely, suppose 
+`bs` represents a byte sequence $T$; then `indexByteString bs i` is seen as 
+equivalent to $T[\mathtt{i}]$; we extend this notion to `sliceByteString` 
+analogously. Throughout, we will refer to `BuiltinByteString`s and their 'views'
+as bit or byte sequences interchangeably.
 
 ### Representation of `BuiltinInteger` as `BuiltinByteString` and conversions
 
 We describe the translation of `BuiltinInteger` into `BuiltinByteString`, which
-is implemented as the `integerToByteString` primitive. Informally, we represent
-`BuiltinInteger`s as [little
-endian](https://en.wikipedia.org/wiki/Endianness#Little), with the least
-significant bit at bit index $0$, using a [two's-complement](https://en.wikipedia.org/wiki/Two%27s_complement) 
-representation. More precisely, let $i \in \mathbb{N}^{+}$. We represent $i$ as the bit sequence 
-$s = s_n s_{n-1} \ldots s_0$, such that:
+is implemented as the `integerToByteString` primitive. Let $i$ be the argument
+`BuiltinInteger`; if this is negative, we produce an error, specifying at least
+the following:
 
-- $\sum_{j \in \\{0, 1, \ldots, n\\}} s_j \cdot 2^j = i$; and
-- $s_n = 0$.
-- Let $\mathtt{binary}(i) = (d_0, m_0), (d_1, m_1), \ldots$. 
-  For any $j \in \\{0, 1, \ldots, n - 1\\}$, $s_j = m_j$; and
-- $n + 1 = 8k$ for the smallest $k \in \mathbb{N}^{+}$ consistent with the 
-  previous requirements.
+- The fact that specifically the `integerToByteString` operation failed;
+- The reason (given a negative number); and 
+- What exact number was given as an argument.
 
-For $0$, we represent it as the sequence `00000000` (one zero byte). We
-represent any $i \in \\{ x \in \mathbb{Z} \mid x < 0 \\}$ as the 
-[two's-complement](https://en.wikipedia.org/wiki/Two%27s_complement) of 
-the representation of its additive inverse. We observe that any such 
-sequence is by definition a byte sequence.
+Otherwise, we produce the `BuiltinByteString` corresponding to the base 256
+sequence which represents $i$.
 
-For example, consider the representation of $23$. We note that
+We now describe the reverse operation, implemented as the 'byteStringToInteger`
+primitive. This treats its argument `BuiltinByteString` as a base 256 sequence,
+and produces its corresponding number as a `BuiltinInteger`. We note that this
+is necessarily non-negative.
 
-$$
-\texttt{binary}(23) = (11, 1), (5, 1), (2, 1), (1, 0), (0, 1), (0, 0), (0, 0),
-(0, 0), \ldots
-$$
-
-The representation of $23$ as a byte sequence is
-
-$$
-s = s7s6s5s4s3s2s1s0
-  = 00010111
-$$
-
-If we instead consider $-23$, its representation would instead be
-
-$$
-t = t7t6t5t4t3t2t1t0
-  = 11101001
-$$
-
-To interpret a byte sequence $s = s_n s_{n - 1} \ldots s_0$ as a
-`BuiltinInteger`, we use the following process:
-
-- If $s_n = 1$, let $s^{\prime}$ be the two's-complement of $s$. Then the result
-  is the additive inverse of the result of interpreting $s^{\prime}$.
-- Otherwise, the result is $\sum_{i \in \\{0, 1, \ldots, n\\}} s_i \cdot 2^i$.
-
-Going by our previous example, for the sequence $s = 00010111$ as above, as 
-$s_7 = 0$, we have
-
-$$
-\sum_{i \in \\{0, 1, \ldots, 7\\}} s_i \cdot 2^i = 
-2^4 + 2^2 + 2^1 + 2^0 = 
-16 + 4 + 2 + 1 = 
-23
-$$
-
-We implement the above as the `byteStringToInteger` primitive. We observe that
-`integerToByteString` and `byteStringToInteger` round-trip; mor especifically,
-we have:
+We observe that `byteStringToInteger` 'undoes' `integerToByteString`:
 
 ```haskell
 byteStringToInteger . integerToByteString = id
 ```
 
-The other direction does not necessarily hold: informally, this is due to
-'trailing zeroes' not contributing to a numerical value. More precisely,
-consider the `BuiltinByteString` consisting of two zero bytes. If we convert
-this `BuiltinByteString` to a `BuiltinInteger` using `byteStringToInteger`, we
-would get $0$; however, if we convert $0$ to a `BuiltinByteString`, it would
-consist of _one_ zero byte.
+The other direction does not necessarily hold: if the argument to
+`byteStringToInteger` contains a prefix consisting only of zeroes, and we
+convert the resulting `BuiltinInteger` `i` back to a `BuiltinByteString` using
+`integerToByteString`, that prefix will be lost.
 
 ### Bitwise logical operations on `BuiltinByteString`
 
-Throughout, let $s = s_n s_{n-1} \ldots s_0$ and 
-$t = t_m t_{m - 1} \ldots t_0$ be two byte sequences. Whenever we specify a 
-*mismatched length error* result, its error message must contain at least the 
-following information:
+Throughout, let $S = s_0 s_1 \ldots s_n$ and $T = t_0 t_1 \ldots t_n$ be byte 
+sequences, and let $S^{\prime}$ and $T^{\prime}$ be their corresponding bit
+sequences, with bit lengths $n^{\prime} + 1$ and $m^{\prime} + 1$ respectively.
+Whenever we specify a *mismatched length error* result, its error message 
+must contain at least the following information:
 
 - The name of the failed operation;
 - The reason (mismatched lengths); and
-- The lengths of the arguments.
+- The byte lengths of the arguments.
 
-We describe the semantics of `andByteString`. For inputs $s$ and $t$, if
-$n \neq m$, the result is a mismatched length error. Otherwise, the result is 
-the byte sequence $u = u_n u_{n - 1} \ldots, u_0$ such that for all 
-$i \in \\{0, 1, \ldots, n\\}$ we have $u_i = 1$ if $s_i = t_i = 1$, and $0$
-otherwise.
+For any of `andByteString`, `iorByteString` and `xorByteString`, given inputs
+$S$ and $T$, if $n \neq m$, the result is an error which must contain at least
+the following information:
 
-For `iorByteString`, for inputs $s$ and $t$, if $n \neq m$, the result is a 
-mismatched length error. Otherwise, the result is the byte sequence 
-$u = u_n u_{n - 1} \ldots u_0$ such that for all $i \in \\{0, 1, \ldots, n\\}$ 
-we have $u_i = 1$ if at least one of $s_i, t_i$ is $1$, and $0$ otherwise.
+- The name of the failed operation;
+- The reason (mismatched lengths); and
+- The byte lengths of the arguments.
 
-For `xorByteString`, for inputs $s$ and $t$, if $n \neq m$, the result is a 
-mismatched length error. Otherwise, the result is the byte sequence 
-$u = u_n u_{n-1} \ldots u_0$ such that for all $i \in \\{0, 1, \ldots, n\\}$ 
-we have $u_i = 0$ if $s_i = t_i$, and $1$ otherwise.
+If $n = m$, the result of each of these operations is the bit sequence $U = u_0
+u_1 \ldots u_{n^{\prime}}$, such that for all $i \in \\{0, 1, \ldots, n^{\prime}\\}$,
+$U[i]$ is $1$ under the following conditions:
 
-We observe that, for length-matched arguments, each of `andByteString`,
-`iorByteString` and `xorByteString` describes a commutative and associative 
-operation. Furthermore, for any given length $k$, each of these operations has 
-an identity element: for `iorByteString`, this is the bit sequence of length 
-$k$ where each element is $0$, and for `andByteString` and `xorByteString`, 
-this is the bit sequence of length $k$ where each element is $1$. Lastly, for 
-any length $k$, the bit sequence of length $k$ where each element is $0$ is an 
-absorbing element for `andByteString`, and the bit sequence of length $k$ 
-where each element is $1$ is an absorbing element for `iorByteString`.
+- For `andByteString`, when $S^{\prime}[i] = T^{\prime}[i] = 1$;
+- For `iorByteString`, when at least one of $S^{\prime}[i], T^{\prime}[i]$ is
+  $1$;
+- For `xorByteString`, when $S^{\prime}[i] \neq T^{\prime}[i]$.
 
-We now describe the semantics of `complementByteString`. For input $s$,
-the result is the byte sequence $u = u_n u_{n - 1} \ldots u_0$ such that for all
-$i \in \{0, 1, \ldots, n\}$ we have $u_i = 0$ if $s_i = 1$, and $1$ otherwise.
+Otherwise, $U[i] = 0$.
+
+We observe that, for length-matched arguments, each of these operations
+describes a commutative and associative operation. Furthermore, for any given
+byte length $k$, each of these operations has an identity element:
+
+- For `andByteString` and `xorByteString`, the byte sequence of length $k$ where
+  each element is zero; and
+- For `iorByteString`, the byte sequence of length $k$ where each element is
+  255.
+
+Lastly, `andByteString` and `iorByteString` have an absorbing element for each
+byte length $k$, which is the byte sequence of length $k$ where each element is
+zero and 255 respectively.
+
+We now describe the semantics of `complementByteString`. For input $S$, the
+result is the bit sequence $U = u_0 u_1 \ldots u_{n^{\prime}}$ such that for all
+$i \in \{0, 1, \ldots, n^{\prime}\}$, we have $U[i] = 0$ if $S^{\prime}[i] = 1$ 
+and $1$ otherwise.
 
 We observe that `complementByteString` is self-inverting. We also note
 the following equivalences hold assuming `b` and `b'` have the
@@ -570,46 +554,30 @@ complementByteString (iorByteString b b') = andByteString (complementByteString 
 
 ### Mixed operations
 
-Throughout this section, let $s = s_n s_{n-1} \ldots s_0$ be a byte sequence, 
-and let $i \in \mathbb{Z}$.
+Throughout, let $S = s_0 s_1 \ldots s_n$ be a byte sequence, and let 
+$S^{\prime}$ be its corresponding bit sequence with bit length $n^{\prime} + 1$.
 
 We describe the semantics of `shiftByteString` and `rotateByteString`.
-Informally, both of these are 'index modifiers' for bit sequences: given a
-positive $i$, the index of a bit in $s$ 'increases' in the result; given a
-negative $i$, the index of a bit in $s$ 'decreases' in the result. This can mean
-that for some indexes in the result, there are no corresponding bits in $s$ by
-the previous definition: we term these *missing indexes*. Additionally, by such
-calculations, bits at some indexes in $s$ may be projected to negative indexes,
-or indexes over $n$, in the result; we term these *out-of-bounds indexes*. How
-we handle missing and out-of-bounds indexes is what distinguishes
-`shiftByteString` and `rotateByteString`:
+Informally, bot hof these are 'bit index modifiers': given a positive $i$, the
+index of a bit in the result 'increases' relative the argument, and given a
+negative $i$, the index of a bit in the result 'decreases' relative the
+argument. This can mean that for some bit indexes in the result, there is no
+corresponding bit in the argument: we term these *missing indexes*.
+Additionally, by such calculations, a bit index in the argument may be projected
+to a negative index in the result: we term these *out-of-bounds indexes*. How we
+handle missing and out-of-bounds indexes is what distinguishes `shiftByteString`
+and `rotateByteString`:
 
 * `shiftByteString` sets any missing index to $0$ and ignores any data at
   out-of-bounds indexes.
 * `rotateByteString` uses out-of-bounds indexes as sources for missing indexes
   by 'wraparound'.
 
-We describe the semantics of `shiftByteString` precisely. Given arguments $s$
-and $i$, the result of `shiftByteString` is the byte sequence 
-$u = u_n u_{n - 1} \ldots u_0$, such that for all $j \in \\{0, 1, \ldots, n \\}$, we have 
-$u_j = s_{j - i}$ if $j - i \in \\{0, 1, \ldots, n \\}$, and $0$ otherwise. For
-example, let $t = 01011110$ and $k = 2$. If we perform `shiftByteString` with
-$t$ and $k$ as arguments, the result will be
-
-$$
-u = t_{(7 - 2)}t_{(6 - 2)}t_{(5 - 2)}t_{(4 - 2)}t_{(3 - 2)}t_{(2 - 2)}00
-  = t_5t_4t_3t_2t_1t_000
-  = 01111000
-$$
-
-If instead we perform `shiftByteString` with $t$ and 
-$-k$ as arguments, the result will be
-
-$$
-u = 00t_{(5 + 2)}t_{(4 + 2)}t_{(3 + 2)}t_{(2 + 2)}t_{(1 + 2)}t_{(0 + 2)}
-  = 00t_7t_6t_5t_4t_3t_2
-  = 00010111
-$$
+We describe the semantics of `shiftByteString` precisely. Given arguments $S$
+and some $i \in \mathbb{Z}$, the result is the bit sequence 
+$U = u_0 u_1 \ldots u_{n^{\prime}} such that for all $j \in \\{0, 1, \ldots,
+n^{\prime}\\}$, we have $U[j] = S^{\prime}[j - i]$ if $j - i$ is a valid bit
+index for $S^{\prime}$ and $0$ otherwise.
 
 Let $k, \ell \in \mathbb{Z}$ 
 such that either 
@@ -623,28 +591,9 @@ shiftByteString (shiftBytestring bs k) l = shiftByteString bs (k + l)
 ```
 
 We now describe the semantics of `rotateByteString` precisely; we assume the
-same arguments as for `shiftByteString` above. The result of `rotateByteString`
-is the byte sequence $u = u_n u_{n + 1} \ldots u_0$ such that for all 
-$j \in \\{0, 1, \ldots, n\\}$, we have $u_j = s_{n + 1 + j - i \mod (n + 1)}$. For
-example, let $t = 01011110$ and $k = 2$. If we perform `rotateByteString` with
-$t$ and $k$ as arguments, the result will be
-
-$$
-u = t_{(13 \mod 8)}t_{(12 \mod 8)}t_{(11 \mod 8)}t_{(10 \mod 8)}t_{(9 \mod 8)}t_{(8 \mod 8)}t_{(7 \mod 8)}t_{(6
-\mod 8)}
-  = t_5t_4t_3t_2t_1t_0t_7t_6
-  = 01111001
-$$
-
-If instead we perform `rotateByteString` with $t$ and 
-$-k$ as arguments, the result will be
-
-$$
-u = t_{(17 \mod 8)}t_{(16 \mod 8)}t_{(15 \mod 8)}t_{(14 \mod 8)}t_{(13 \mod 8)}t_{(12 \mod 8)}t_{(11 \mod 8)}t_{(10
-\mod 8)}
-  = t_1t_0t_7t_6t_5t_4t_3t_2
-  = 10010111
-$$
+same arguments as for `shiftByteString` above. The result is the bit sequence $U
+= u_0 u_1 \ldots u_{n^{\prime}}$ such that for all $j \in \\{0, 1, \ldots,
+n^{\prime}\\}$, we have $U[j] = S^{\prime}[n^{\prime} + j - i \mod n^{\prime}]$.
 
 We observe that for any $k, \ell$, and any
 `bs`, we have
@@ -665,9 +614,9 @@ Lastly, we note that
 rotateByteString bs k = rotateByteString bs (k `remInteger` (lengthByteString bs * 8))
 ```
 
-For `popCountByteString` with argument $s$, the result is
+For `popCountByteString` with argument $S$, the result is 
 
-$$\sum_{j \in \\{0, 1, \ldots, n\\}} s_j$$
+$$\sum_{j \in \\{0, 1, \ldots, n^{\prime}\\} S^{\prime}[j]$$
 
 Informally, this is just the total count of $1$ bits. We observe that 
 for any `bs` and `bs'`, we have
@@ -685,43 +634,56 @@ message must contain at least the following information:
 - What index was accessed out-of-bounds; and
 - The valid range of indexes.
 
-For `testBitByteString` with arguments $s$ and $i$, if $0 \leq i \leq n$, then 
-the result is `True` if $s_i = 1$, and `False` if $s_i = 0$; otherwise, the 
-result is an out-of-bounds error. Let `b :: BuiltinBool`; for 
-`writeBitByteString` with arguments $s$, $i$ and `b`, if $0 \leq i \leq n$, 
-then the result is the byte sequence $u = u_n u_{n - 1} \ldots u_0$ such that 
-for all $j \in \{0, 1, \ldots, n\}$, we have:
+For `testBitByteString` with arguments $S$ and some $i \in \mathbb{Z}$, if $i$
+is a valid bit index of $S^{\prime}$, the result is `True` if $S^{\prime}[i] =
+1$, and `False` if $S^{\prime}[i] = 0$. If $i$ is not a valid bit index of
+$S^{\prime}$, the result is an out-of-bounds error.
 
-- $u_j = 1$ when $i = j$ and `b == True`;
-- $u_j = 0$ when $i = j$ and `b == False`;
-- $u_j = s_j$ otherwise.
+For `writeBitByteString` with arguments $S$, some $i \in \mathbb{Z}$ and some
+`BuiltinBool` $b$, if $i$ is not a valid bit index for $S^{\prime}$, the result
+is an out-of-bounds error. Otherwise, the result is the bit sequence $U = u_0
+u_1 \ldots u_{n^{\prime}}$ such that for all $j \in \\{0, 1, \ldots, n\\}$, we
+have:
 
-For either `testBitByteString` or `writeBitByteString`, if $i < 0$ or $i > n$, 
-the result is an out-of-bounds error.
+- $U[j] = 1$ when $i = j$ and $b$ is `True`;
+- $U[j] = 0$ when $i = j$ and $b$ is `False`;
+- $U[j] = S^{\prime}[j]$ otherwise.
 
 Lastly, we describe the semantics of `countLeadingZeroesByteString` and
-`countTrailingZeroesByteString. Given the argument $s$,
-`countLeadingZeroesByteString` produces the answer $\ell$ such that all of the
+`countTrailingZeroesByteString. Given the argument $S$,
+`countLeadingZeroesByteString` gives the result $k$ such that all of the
 following hold:
 
-- $0 \leq \ell < n$;
-- For all $0 \leq i < \ell$, $s_i = 0$; and
-- If $s$ is not empty, $s_{\ell} = 1$.
+- $0 \leq k < n^{\prime} + 1$;
+- For all $0 \leq i < k$, $S^{\prime}[i] = 0$; and
+- If $n^{\prime} \neq 0$, then $S^{\prime}[k] = 1$.
 
-`countTrailingZeroesByteString` instead produces the answer $\ell$ such that all
-of the following hold:
+Given the same argument, `countTrailingZeroesByteString` instead gives the
+result $k$ such that all of the following hold:
 
-- $0 \leq \ell < n$;
-- For all $\ell \leq i < n$, $s_i = 0$; and
-- If $s$ is not empty, $s_{\ell} = 1$.
+- $0 \leq k < n^{\prime} + 1$;
+- For all $k \leq i < n^{\prime}$, $S^{\prime}[i] = 0$; and
+- If $k /neq n^{\prime} + 1$, then $S^{\prime}[n^{prime} - k] = 1$.
 
-Lastly, we describe the semantics of `findFirstSetByteString`. Given the
-argument $s$, if for all $j \in \\{0, 1, \ldots, n \\}$, $s_j = 0$, the result 
-is $-1$; otherwise, the result is $k$ such that all of the following hold:
+Let `zeroes` be a `BuiltinByteString` consisting only of zero bytes of length
+`len`. We observe that
 
-- $k \in \\{0, 1, \ldots, n\\}$;
-- $s_k = 1$; and
-- For all $0 \leq k^{\prime} < k$, $s_{k^{\prime}} = 0$.
+```haskell
+countTrailingZeroesByteString zeroes = countLeadingZeroesByteString zeroes = len
+* 8
+```
+
+Furthermore, for two `BuiltinByteString`s `bs` and `bs'`, we have
+
+```haskell
+countLeadingZeroesByteString (iorByteString bs bs') = 
+  min (countLeadingZeroesByteString bs) (countLeadingZeroesByteString bs')
+
+countTrailingZeroesByteString (iorByteString bs bs') = 
+  min (countTrailingZeroesByteString bs) (countTrailingZeroesByteString bs')
+```
+
+where `min` is the minimum value function.
 
 ### Costing
 
@@ -741,18 +703,19 @@ Primitive | Linear in
 `popCountByteString` | Argument (only one)
 `testBitByteString` | `BuiltinByteString` argument
 `writeBitByteString` | `BuiltinByteString` argument
-`findFirstSetByteString` | Argument (only one)
+`countLeadingZeroesByteString` | Argument (only one)
+`countTrailingZeroesByteString` | Argument (only one)
 
 # Rationale
 
 ## Why these operations?
 
-There needs to be a well-defined interface between the 'world' of 
-`BuiltinInteger` and `BuiltinByteString`. To provide this, we require
-`integerToByteString` and `byteStringToInteger`; we require that
-`integerToByteString` and `byteStringToInteger` roundtrip. Furthermore, 
-by spelling out a precise description of the conversions, we make this 
-predictable and portable.
+For work in finite field arithmetic (and the areas it enables), we frequently
+need to move between the 'worlds' of `BuiltinInteger` and `BuiltinByteString`.
+This needs to be consistent, and allow round-trips. We simplify this by only
+requiring conversions work on non-negative integers: this means that the
+translations can be simpler and more efficient, and also avoids representational
+questions for negative numbers.
 
 Our choice of logical AND, IOR, XOR and complement as the primary logical 
 operations is driven by a mixture of prior art, utility and convenience. These
@@ -837,18 +800,17 @@ specifying, and verifying, that other bitwise operations, both primitive and
 non-primitive, are behaving correctly. They are also particularly essential for
 binary encodings.
 
-`findFirstSetByteString` is an essential primitive for several succinct
-data structures: both Roaring Bitmaps and rank-select dictionaries rely on it
-being efficient for much of their usefulness. Furthermore, this operation is
-provided in hardware by several instruction sets: on x86, there exist (at least)
-`BSF`, `BSR`, `LZCNT` and `TZCNT`, which allow finding both the first *and* 
-last set bits, while on ARM, there exists `CLZ`, which can be used to simulate 
-finding the first set bit. The instruction also exists in higher-level 
+`countLeadingZeroesByteString` and `countTrailingZeroesByteString` is an
+essential primitive for several succinct data structures: both Roaring Bitmaps
+and rank-select dictionaries rely on them for much of their usefulness. For
+finite field arithmetic, these instructions are also beneficial to have
+available as efficiently as possible. Furthermore, this operation is provided 
+in hardware by several instruction sets: 
+on x86, there exist (at least) `BSF`, `BSR`, `LZCNT` and `TZCNT`, while on ARM, 
+we have `CLZ` for counting leading zeroes. These instructions also exist in higher-level 
 languages: for example, GHC's `FiniteBits` type class has `countTrailingZeros` 
-and `countLeadingZeros`. The main reason we propose taking 
-'finding the first set bit' as primitive, rather than 'counting leading 
-zeroes' or 'counting trailing zeroes' is that finding the first set bit is 
-required specifically for several succinct data structures.
+and `countLeadingZeros`. Lastly, while they can be emulated by
+`testBitByteString`, this is tedious, error-prone and extremely slow.
 
 # Backwards compatibility 
 
