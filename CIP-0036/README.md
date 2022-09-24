@@ -71,6 +71,8 @@ Recall: Cardano uses the UTXO model so to completely associate a wallet's balanc
 
 Given the above, we choose to associate staking credentials with voting keys. At the moment, the only supported staking credential is a staking key. Since most Cardano wallets only use base addresses for Shelley wallet types, in most cases this should perfectly match the user's wallet.
 
+No duplicated voting key entries are allowed in the voting key delegegation array, to remove weighting confusion and to support hw-wallet handling. HW-Wallets with there limited mem space, have to display the proper weight values for a voting key entry. Registration metadata containing duplicated voting key entries should be handled as invalid.
+
 The voting power that is associated with each delegated voting key is derived from the user's total voting power
 as follows.
 
@@ -79,6 +81,7 @@ as follows.
 3. The voting power associated with each voting key in the delegation array is calculated as the weighted fraction of the
    total voting power (rounded down);
 4. Any remaining voting power is assigned to the last voting key in the delegation array.
+
 
 This ensures that the voter's total voting power is never accidentally reduced through poor choices of weights,
 and that all voting powers are exact ADA.
@@ -113,6 +116,7 @@ considered valid if the following conditions hold:
 - The reward address is a Shelley address discriminated for the same network
   this transaction is submitted to.
 - The delegation array is not empty
+- The delegation array does not contain multiples of the same public voting key
 - The weights in the delegation array are not all zero
 
 
