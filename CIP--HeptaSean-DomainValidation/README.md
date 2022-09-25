@@ -62,9 +62,20 @@ combination of policy ID and asset name must be considered, so that it can
 be overwritten by newer minting transactions – even without sending the
 token to the target address(es).
 
-If however, `Domain` tokens with different policy IDs are found at an
-address, the union of the metadata found for all of them, must be taken
-into account.
+If, however, `Domain` tokens with different policy IDs are found at an
+address, the metadata found for all of them, must be taken into account.
+
+The domain tokens are only used as containers for or pointers to data – the
+domain names – in this CIP.
+They do not convey ownership of the domain and anyone can mint a token
+claiming a connection to any domain.
+It is the purpose of the validation in later sections to ensure the truth
+of these claims.
+
+This also means that it doesn't necessarily make sense to use time-locked
+or even Plutus policies for them.
+A policy with only constraints on the public key hash(es) is probably
+enough, but this CIP does not prohibit more complicated policies.
 
 ### Domain Token Metadata
 The `transaction_metadatum_label` for the DNS domains recorded in the
