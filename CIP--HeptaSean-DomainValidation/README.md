@@ -86,14 +86,21 @@ number of DNS):
 | --------------------------- | ------------ |
 | 53                          | DNS Domain   |
 
-The metadatum at this label is a single UTF-8 string – the domain that is
-represented by this token, in JSON representation:
+The metadatum at this label is the domain that is represented by this
+token – either as a single UTF-8 string or as an array of strings, in JSON
+representation:
 ```json
 { "53": "example.org" }
 ```
+or
+```json
+{ "53": [ "very.long.subdomain.for.",
+          "example.org" ] }
+```
 
 Since strings in the metadata of Cardano transactions are restricted to 64
-bytes, this domain is also restricted to 64 bytes.
+bytes, the domain has to be split into such an array of strings if it is
+longer than 64 bytes.
 
 The domain must be a DNS domain name as specified in
 [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) and following.

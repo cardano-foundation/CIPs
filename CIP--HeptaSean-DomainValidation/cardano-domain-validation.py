@@ -154,10 +154,20 @@ def query_address(address: str) -> List[str]:
                 asset_info = json.loads(json_body)
                 for asset_object in asset_info:
                     for metadatum in asset_object['minting_tx_metadata']:
-                        if (metadatum['key'] == '53' and
-                                isinstance(metadatum['json'], str) and
-                                is_domain(metadatum['json'])):
-                            result.add(metadatum['json'])
+                        if metadatum['key'] == '53':
+                            if (isinstance(metadatum['json'], str) and
+                                    is_domain(metadatum['json'])):
+                                result.add(metadatum['json'])
+                            elif isinstance(metadatum['json'], list):
+                                domain = ''
+                                for part in metadatum['json']:
+                                    if isinstance(part, str):
+                                        domain += part
+                                    else:
+                                        domain = ''
+                                        break
+                                if domain and is_domain(domain):
+                                    result.add(domain)
     return sorted(result)
 
 
