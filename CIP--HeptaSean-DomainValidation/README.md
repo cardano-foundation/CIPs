@@ -469,17 +469,24 @@ When executing the reference implementation on our example domains, we get:
 ```console
 $ python3 cardano-domain-validation.py bbraatz.eu
 ★★★ addr1q8fgal6mmwdllxdvft28xy6x3wjgc3v6nj450smmhtdama6wlu8vnqcstwtxa4l3yuckm8gttva66skvfzrmruead0ysjatmn5
+```
+For the first domain – `bbraatz.eu` – it gives us the only configured
+address – `addr1…jatmn5` – with a rating of 3/3, since both DNS and HTTPS
+are used to validate.
+The addresses only present in one of the methods are ignored just as the
+non-address contents are.
+```console
 $ python3 cardano-domain-validation.py heptasean.de
 ★★☆ addr1q8fgal6mmwdllxdvft28xy6x3wjgc3v6nj450smmhtdama6wlu8vnqcstwtxa4l3yuckm8gttva66skvfzrmruead0ysjatmn5
     Comment: Main Wallet
 ★★☆ addr1qyh72hvvrurjvddx4gq37jd2fzyef8scz9cwcyc90dffq0xxllh3nc5r82ujj36fy9zh0gryqvqy7r3ejd2h2kgsvryswhjr9q
     Comment: Token Trading
 ```
-For the first domain – `bbraatz.eu` – it gives us the only configured
-address – `addr1…jatmn5` – with a rating of 3/3.
 For the second domain – `heptasean.de` – it gives us both configured
 addresses with the additional comments given as metdata for them and a
 rating of 2/3, since we have not used DNS validation for these.
+The third address in the JSON file is ignored, because no domain token is
+found at it.
 
 Vice versa, when executing the implementation for our example addresses, we
 get:
@@ -487,16 +494,20 @@ get:
 $ python3 cardano-domain-validation.py addr1qyh72hvvrurjvddx4gq37jd2fzyef8scz9cwcyc90dffq0xxllh3nc5r82ujj36fy9zh0gryqvqy7r3ejd2h2kgsvryswhjr9q
 ★★☆ heptasean.de
     Comment: Token Trading
+```
+For the first address – `addr1…whjr9q` – we only get the second domain
+linked to it with its comment and rating.
+```console
 $ python3 cardano-domain-validation.py addr1q8fgal6mmwdllxdvft28xy6x3wjgc3v6nj450smmhtdama6wlu8vnqcstwtxa4l3yuckm8gttva66skvfzrmruead0ysjatmn5
 ★★★ bbraatz.eu
 ★★☆ heptasean.de
     Comment: Main Wallet
 ```
-For the first address – `addr1…whjr9q` – we only get the second domain
-linked to it with its comment and rating.
 For the second address – `addr1…jatmn5` – it gives us both domains with
 their different ratings and the additional comment metadata for the second
 one.
+The third token found at that address is ignored, because neither DNS nor
+HTTP(S) method find any data pointing back at `example.com`.
 
 ## Path to Active
 
