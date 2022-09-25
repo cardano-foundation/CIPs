@@ -188,10 +188,15 @@ For a DNS domain, all related addresses are found by:
   `/.well-known/cardano/addresses.json` at the given domain.
   If a JSON file is obtained, all addresses given in this JSON file are
   considered HTTP(S)-related addresses.
-* If both, HTTP(S)-related addresses and DNS-related addresses are found,
-  only their intersection is the set of related addresses.
-  If one of the sets is found, it is the set of related addresses.
-  If none is found, the set of related addresses is empty.
+* If both methods are used, the intersection of HTTP(S)-related addresses
+  and DNS-related addresses is the set of related addresses.
+  If only one method is used, its result is the set of related addresses.
+  If none of the methods is used, the set of related addresses is empty.
+
+Observe that if at least one TXT record for the DNS method or a JSON file
+for the HTTP(S) method is found, the method is considered to be used even
+if the content of the TXT record is not a valid address or the JSON file is
+malformed.
 
 If the relation is established in both directions, applications can give a
 rating to the verification, for example, one star for DNS, one for HTTP,

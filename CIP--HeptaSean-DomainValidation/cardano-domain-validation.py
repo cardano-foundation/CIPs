@@ -175,10 +175,12 @@ def query_domain(domain: str) -> Tuple[Dict[str, Dict[str, Any]], int]:
     """Query DNS and HTTP(S) for Cardano addresses and combine results.
 
     From CIP:
-    * If both, HTTP(S)-related addresses and DNS-related addresses are
-      found, only their intersection is the set of related addresses.
-      If one of the sets is found, it is the set of related addresses.
-      If none is found, the set of related addresses is empty.
+    * If both methods are used, the intersection of HTTP(S)-related
+      addresses and DNS-related addresses is the set of related addresses.
+      If only one method is used, its result is the set of related
+      addresses.
+      If none of the methods is used, the set of related addresses is
+      empty.
 
     Returns a pair consisting of
     * a dictionary from addresses to dictionaries of additional metadata
