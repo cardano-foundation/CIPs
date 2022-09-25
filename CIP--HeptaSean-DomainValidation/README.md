@@ -209,6 +209,10 @@ between them where appropriate.
 Applications can display additional metadata given in the JSON files
 obtained by the HTTP(S) validation method.
 
+In order to avoid stalling the application when many domain tokens are
+found at an address, implementations should do the queries asynchronously
+or concurrently if possible.
+
 ## Rationale
 
 ### Simplicity
@@ -300,6 +304,12 @@ sensible attack vector.
 A small risk remains that the receiver of the token may be defamed by the
 attacker's domain appearing next to the receiver's legitimate domains, when
 an application shows all validated domains for an address.
+
+Moreover, the attacker's servers could deliberately stall answers to the
+DNS and especially HTTP(S) queries done for the validation.
+This problem can to a large extent be attacked by implementations that do
+the queries asynchronously or concurrently as already advised in [Discovery
+and Verification of Relations](#discovery-and-verification-of-relations).
 
 Address owners should monitor such unsolicited transactions and send such
 tokens to unused addresses or back to the sender.
