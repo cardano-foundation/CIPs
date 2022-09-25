@@ -116,6 +116,7 @@ considered valid if the following conditions hold:
   this transaction is submitted to.
 - The delegation array is not empty
 - The delegation array does not contain multiples of the same public voting key
+- The stake public key is different from all public voting keys in the delegation array (derived from a different path)
 - The weights in the delegation array are not all zero
 
 
