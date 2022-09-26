@@ -1,6 +1,6 @@
 ---
 CIP: 28
-Title: Protocol Parameters (Alonzo)
+Title: Protocol Parameters (Alonzo/Babbage)
 Authors: Kevin Hammond <kevin.hammond@iohk.io>
 Status: Active
 Type: Informational
@@ -11,7 +11,7 @@ Requires: CIP-0009
 
 ## Simple Summary/Abstract
 
-This CIP extends CIP-0009 to include the new protocol parameters that have been introduced for Alonzo, specifically those relating to the costing of Plutus scripts.  It describes the initial settings for those parameters.
+This CIP extends CIP-0009 to include the new protocol parameters that have been introduced for Alonzo and Babbage, specifically those relating to the costing of Plutus scripts.  It describes the initial settings for those parameters.
 
 ## Motivation
 
@@ -243,6 +243,8 @@ Each version of the Plutus interpreter may use different cost model parameters a
 they are likely to be changed only when introducing new Plutus interpreter versions at a "hard fork".
 For simplicity, the details of the parameter settings is omitted here.
 
+Babbage introduces the PlutusV2 cost mode
+
 ### Obsoleted Updatable Protocol Parameters
 
 ``minUTxOValue`` is no longer used.  It is replaced by ``lovelacePerUTxOWord``.
@@ -278,7 +280,29 @@ script failure if the collateral was not available).
 
 ## Change Log
 
-There have been no changes to the updatable parameters since the Alonzo hard fork.
+Plutus language version 2 (``PlutusV2``) was introduced with the Vasil Hard Fork (Babbage Ledger era).
+It adds a new cost model which inherits the ``PlutusV1``` cost model parameters and adds the following additional parameters and initial settings.
+
+
+```
+    "costModels": {
+        ...
+        "PlutusV2": {
+           ...
+		    "cekBuiltinCost-exBudgetCPU": 23000,
+		    "cekBuiltinCost-exBudgetMemory": 100,
+		    "verifyEcdsaSecp256k1Signature-cpu-arguments": 2000000000,
+		    "verifyEcdsaSecp256k1Signature-memory-arguments": 2000000000,
+		    "verifyEd25519Signature-cpu-arguments-intercept": 9462713,
+		    "verifyEd25519Signature-cpu-arguments-slope": 1021,
+		    "verifyEd25519Signature-memory-arguments": 10,
+		    "verifySchnorrSecp256k1Signature-cpu-arguments-intercept": 2000000000,
+		    "verifySchnorrSecp256k1Signature-cpu-arguments-slope": 2000000000,
+		    "verifySchnorrSecp256k1Signature-memory-arguments": 2000000000
+		  }
+```
+
+The settings for the ``PlutusV1`` cost model were changed at the same time
 
 ## Test Cases
 
