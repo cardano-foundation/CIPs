@@ -49,15 +49,15 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Active |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Active |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
-| 31 | [Reference Inputs](./CIP-0031/) | Draft |
-| 32 | [Inline Datums](./CIP-0032/) | Draft |
-| 33 | [Reference Scripts](./CIP-0033/) | Draft |
+| 31 | [Reference Inputs](./CIP-0031/) | Active |
+| 32 | [Inline Datums](./CIP-0032/) | Active |
+| 33 | [Reference Scripts](./CIP-0033/) | Active |
 | 34 | [Chain ID Registry](./CIP-0034/) | Draft |
 | 35 | [Plutus Core Evolution](./CIP-0035) | Active |
 | 36 | [Catalyst/Voltaire Registration Transaction Metadata Format](./CIP-0036) | Proposed |
 | 37 | [Dynamic Saturation Based on Pledge](./CIP-0037) | Proposed |
-| 40 | [Collateral Output](./CIP-0040) | Proposed |
-| 42 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Proposed |
+| 40 | [Collateral Output](./CIP-0040) | Active |
+| 42 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
 | 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 54 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 55 | [Babbage Era's coinsPerUTxOByte](./CIP-0055) | Proposed |
