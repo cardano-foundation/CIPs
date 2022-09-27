@@ -302,6 +302,12 @@ In either case, where the user declines to sign at least 1 of the votes, no sign
 
 `Bytes[]` - An array of the hex-encoded strings of the fully encoded and signed vote transactions.  The dApp will submit these votes on behalf of the wallet.
 
+## api.getVotingKey(): Promise\<cbor<PublicKey\>\>
+
+Should return the voting [public key](#publickey). The wallet should use `address_index`= 0 and return the public key for that index.
+### Returns
+cbor hex encoded representation of the public key.
+
 ## api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>
 
 Errors: [`APIError`](#extended-apierror),
