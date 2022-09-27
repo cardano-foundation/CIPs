@@ -2,7 +2,7 @@
 CIP: 40
 Title: Explicit Collateral Output
 Authors: Sebastien Guillemot <seba@dcspark.io>, Jared Corduan <jared.corduan@iohk.io>, Andre Knispel <andre.knispel@iohk.io>
-Status: Proposed
+Status: Active
 Type: Standards
 Created: 2022-02-10
 License: CC-BY-4.0
@@ -28,7 +28,7 @@ Additionally, there cannot be more than *maxColInputs* (protocol parameter) inpu
 
 However,
 
-- Restriction #1 is problematic because hardcore dApp users rarely have UTXO entries that do not contain any tokens. To combat this, wallets have created a special wallet-dependent "collateral" UTXO to reserve for usage of collateral for dApps which is not a great UX. 
+- Restriction #1 is problematic because hardcore dApp users rarely have UTXO entries that do not contain any tokens. To combat this, wallets have created a special wallet-dependent "collateral" UTXO to reserve for usage of collateral for dApps which is not a great UX.
 - Restriction #6 is problematic because wallets want to protect users from signing transactions with large collateral as they cannot verify whether or not the transaction will fail when submitted (especially true for hardware wallets)
 
 # Specification
