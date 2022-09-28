@@ -1,9 +1,9 @@
 ---
-CIP:
+CIP: 68
 Title: Datum Metadata Standard
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Comments-URI:
-Status: Draft
+Status: Proposed
 Type: Informational
 Created: 2022-07-13
 Post-History:
@@ -221,7 +221,7 @@ The security for the link is derived from the minting policy itself, so it's imp
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
 
 
-## Path to active
+## Path to Active
 
 - Agree on a binary encoding for asset name labels in [CIP-0067](https://github.com/cardano-foundation/CIPs/pull/298).
 - Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
