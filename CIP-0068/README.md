@@ -89,7 +89,7 @@ The `user token` represents an NFT (non-fungible token).
 
 ### Pattern
 
-The `user token` and `reference NFT` **must** have an identical name, followed by the `asset_name_label` prefix.
+The `user token` and `reference NFT` **must** have an identical name, preceded by the `asset_name_label` prefix.
 
 Example:\
 `user token`: `(222)Test123`\
@@ -158,7 +158,7 @@ The `user token` is an FT (fungible token).
 
 ### Pattern
 
-The `user token` and `reference NFT` **must** have an identical name, followed by the `asset_name_label` prefix.
+The `user token` and `reference NFT` **must** have an identical name, preceded by the `asset_name_label` prefix.
 
 Example:\
 `user token`: `(333)Test123`\
@@ -225,7 +225,9 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 
 - Agree on a binary encoding for asset name labels in [CIP-0067](https://github.com/cardano-foundation/CIPs/pull/298).
 - Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
-- Open-source practical implementations/projects making use of this CIP.
+- Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain):
+[Implementation](./ref_impl/)
+- Open-source more practical implementations/projects which make use of this CIP.
 
 
 ## References
