@@ -103,7 +103,7 @@ This is a low-level representation of the metadata, following closely the struct
 ```
 files_details = 
   {
-    name : bounded_bytes, ; UTF-8
+    ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
     src : bounded_bytes ; UTF-8
   }
@@ -219,6 +219,14 @@ The security for the link is derived from the minting policy itself, so it's imp
 ## Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
+
+
+## Path to active
+
+- Agree on a binary encoding for asset name labels in [CIP-0067](https://github.com/cardano-foundation/CIPs/pull/298).
+- Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
+- Open-source practical implementations/projects making use of this CIP.
+
 
 ## References
 
