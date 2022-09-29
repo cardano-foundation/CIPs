@@ -54,7 +54,7 @@ These are the reserved `asset_name_label` values
 ----------------------------  | -----------------------
 0 - 15                        | private use
 
-### Adding and entry to the registry
+### Adding an entry to the registry
 
 To propose an addition to the registry edit the [registry.json](./registry.json) with your details, open a pull request against the CIPs repository and give a brief description of your project and how you intend to use the label for assets.
 
