@@ -1,5 +1,5 @@
 ---
-CIP: ?0043 
+CIP: 49 
 Title: ECDSA and Schnorr signatures in Plutus Core  
 Authors: Koz Ross (koz@mlabs.city), 
          Michael Peyton-Jones (michael.peyton-jones@iohk.io), 
@@ -88,7 +88,9 @@ these schemes; we describe these below.
 For the [ECDSA signature
 scheme](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
 the requirements are as follows. Note that these differ from the serialization
-used by Bitcoin.
+used by Bitcoin, as the serialisation of signatures uses DER-encoding, which 
+result in variable size signatures up to 72 bytes (instead of the 64 byte encoding
+we describe in this document).
 
 * The verification key must correspond to the _(x, y)_ coordinates of a point 
   on the SECP256k1 curve, where _x, y_ are unsigned integers in big-endian form.
@@ -114,7 +116,12 @@ used by Bitcoin.
     * The signature is 64 bytes long.
     * The first 32 bytes are the bytes of _r_.
     * The last 32 bytes are the bytes of _s_.
-
+  ``` 
+      ┏━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓
+      ┃ r <32 bytes> │ s <32 bytes>  ┃
+      ┗━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛
+      <--------- signature ---------->
+  ```
 For the Schnorr signature scheme, we have the following requirements, as
 described in the requirements for [BIP-340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki):
 
@@ -135,18 +142,18 @@ described in the requirements for [BIP-340](https://github.com/bitcoin/bips/blob
     * The first 32 bytes are the bytes of the _x_ coordinate of _R_, as a 
       big-endian unsigned integer.
     * The last 32 bytes are the bytes of `s`.
+  ``` 
+      ┏━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓
+      ┃ R <32 bytes> │ s <32 bytes>  ┃
+      ┗━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛
+      <--------- signature ---------->
+  ```
 
 The builtin operations will error with a descriptive message if given inputs
 that don't correspond to the constraints above, return `False` if the signature
 fails to verify the input given the key, and `True` otherwise.
 
 ## Rationale
-
-Implementing these functions as direct builtins in Plutus Core permits a
-workflow involving interoperability services like Wanchain and Renbridge. An
-example of such a workflow would be: given some Cardano assets, their Bitcoin
-equivalent could be minted, but only if the correct Schnorr signature can be
-provided. 
 
 We consider the implementation trustworthy: `secp256k1` is the reference
 implementation for both signature schemes, and is already being used in
