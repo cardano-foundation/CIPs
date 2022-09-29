@@ -42,7 +42,7 @@ We have the following asset name: `0x000de140`
 
 1. Slice off the first 4 bytes of the asset name => `0x000de140`
 2. Check if first 4 bits and last 4 bits are `0000` (`0x0`)
-3. Slice of the 2 `label_num` bits and apply them to the CRC-8 algorithm. If the result matches with the `checksum` bit a `valid` label was found and it can be returned. => `0x00de`
+3. Slice of the 2 `label_num` bytes and apply them to the CRC-8 algorithm. If the result matches with the `checksum` byte a `valid` label was found and it can be returned. => `0x00de`
 4. Convert to decimal => `222`
 
 
