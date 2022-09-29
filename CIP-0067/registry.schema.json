@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-?",
+  "$id": "https://cips.cardano.org/cips/cip67/registry.schema.json",
   "type": "array",
   "title": "Asset Name Label Registry",
   "description": "JSON schema for asset name label registry",
@@ -8,9 +8,9 @@
   "examples": [
     [
       {
-        "asset_name_label": 721,
+        "asset_name_label": 222,
         "class": "NFT",
-        "description": "CIP-0025 - NFT Metadata Standard"
+        "description": "CIP-0068 - NFT Metadata Standard (222 sub standard)"
       }
     ]
   ],
@@ -26,9 +26,9 @@
         "default": {},
         "examples": [
           {
-            "asset_name_label": 721,
+            "asset_name_label": 222,
             "class": "NFT",
-            "description": "CIP-0025 - NFT Metadata Standard"
+            "description": "CIP-0068 - NFT Metadata Standard (222 sub standard)"
           }
         ],
         "required": ["asset_name_label", "class", "description"],
@@ -38,24 +38,24 @@
             "type": "integer",
             "title": "The asset_name_label number",
             "default": 0,
-            "examples": [1967]
+            "examples": [222]
           },
           "class": {
             "$id": "#/items/anyOf/0/properties/class",
             "type": "string",
             "title": "The asset class",
             "default": "",
-            "examples": ["NFT", "FT"]
+            "examples": ["NFT", "FT", "SFT"]
           },
           "description": {
             "$id": "#/items/anyOf/0/properties/description",
             "type": "string",
             "title": "The asset name label description",
             "default": "",
-            "examples": ["CIP-0025 - NFT Metadata Standard"]
+            "examples": ["CIP-0068 - NFT Metadata Standard (222 sub standard)"]
           }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       }
     ]
   }
