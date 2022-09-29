@@ -37,7 +37,7 @@ We want to use the decimal label `222` for an asset name:
 2. Calculate CRC-8 checksum => `0x14`
 3. Add brackes and combine label => `0x000de140`
 
-#### Verfify a label
+#### Verify a label
 We have the following asset name: `0x000de140`
 
 1. Slice off the first 4 bytes of the asset name => `0x000de140`
