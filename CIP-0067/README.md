@@ -50,9 +50,9 @@ We have the following asset name: `0x000de140`
 
 These are the reserved `asset_name_label` values
 
-`asset_name_label`            | description
-----------------------------  | -----------------------
-0 - 15                        | private use
+`asset_name_label`            | class | description              |
+----------------------------  | ----- |  ----------------------- |
+0 - 15                        | -     |  private use             |
 
 ### Adding an entry to the registry
 
