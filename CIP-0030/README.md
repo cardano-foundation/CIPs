@@ -30,7 +30,7 @@ The API specified in this document will count as version 0.1.0 for version-check
 
 ### Address
 
-A string represnting an address in either bech32 format, or hex-encoded bytes. All return types containing `Address` must return the bech32 format, but must accept either format for inputs.
+A string representing an address in either bech32 format, or hex-encoded bytes. All return types containing `Address` must return the bech32 format, but must accept either format for inputs.
 
 ### Bytes
 
