@@ -2,7 +2,7 @@
 CIP: 49?
 Title: 721 Metatdatum extenstion tag
 Authors: Jack ([9000] pool, https://forum.cardano.org/u/jack7e/, @ada9000_ twitter)
-Comments-URI: https://forum.cardano.org/t/cip-extended-721/
+Comments-URI: https://github.com/cardano-foundation/CIPs/pull/249
 Status: Draft
 Type: Informational
 Created: 2022-09-28
