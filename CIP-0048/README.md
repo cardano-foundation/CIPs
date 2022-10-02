@@ -38,7 +38,7 @@ This CIP mentions the `ext` json key defined by [CIP49](https://github.com/carda
 
 Contains the `name`, `mediaType`, `src` tags (and the optional `type` tag)
 
-- `name` (string) is the references name (similar usage to the current `files` tag)
+- `name` (string) is the references name (similar usage to name in the current `files` tag)
 - `mediaType` (string) defines the mime type for the data referenced in `src`
   - is a string
 - `src` (string array) is an **ordered** array of references.
@@ -46,11 +46,9 @@ Contains the `name`, `mediaType`, `src` tags (and the optional `type` tag)
 
 ### **Optional rtype tag**
 
-The default CIP-48 behavior will assume all payloads can be found within all the mint transactions made by the parent `<policy_id>`.
+The default CIP-48 behavior is to assume the assets parent `<policy_id>` contains all the payloads.
 
-However optional behavior maybe desired. Insider the `refs` tag we therefore use the `type` tag.
-
-In CIP49 we shall define two types.
+Optionally we define `type` and two options `policy` and `txhash`. To allow for non-default behavior
 
 - `policy`
   - Defines an external policy (instead of the default behavior of using the parent policy)
@@ -101,26 +99,28 @@ In CIP49 we shall define two types.
 
 ```json
 {
-   "721":{
-      "<policy_id>":{
-         "ext":["cip48"] // required
-         "<asset_name>":{
-            "project":"<string>",
-            "name":"<string>",
-            // references
-            "refs":[{
-               "name":"<string>",
-               "mediaType":"text/plain",
-               "src":"<array>" // array of required payload ids
-            }]
-         },
-         // payload
-         "p":{
-            "<string>":["<string>", "..."], // payload 0
-            "<string>":["<string>"], // payload 1... etc
-         },
+  "721": {
+    "ext": ["cip48"], // tells 'user' cip48 is in use within the metadata
+    "<policy_id>": {
+      "<asset_name>": {
+        "project": "<string>",
+        "name": "<string>",
+        // references
+        "refs": [
+          {
+            "name": "<string>",
+            "mediaType": "text/plain",
+            "src": "<array>" // array of required payload ids
+          }
+        ]
+      },
+      // payload
+      "p": {
+        "<string>": ["<string>", "..."], // payload 0
+        "<string>": ["<string>"] // payload 1... etc
       }
-   }
+    }
+  }
 }
 ```
 
@@ -130,28 +130,28 @@ Mint transaction 1
 
 ```json
 {
-   "721":{
-      "0000000000000000000000000000000000000000000000000000000A":{
-         "ext":["cip48"] // required
-         "NFT0":{
-            "project":"CIP48 Example",
-            "name":"NFT0",
-            // references
-            "refs":[{
-               "name":"<string>",
-               "mediaType":"text/plain",
-               "src":[
-                  "0",
-                  "2"
-               ]
-            }]
-         },
-         // payload
-         "p":{
-            "0":["Hello"],"1":["Goodbye"]
-         },
+  "721": {
+    "ext": ["cip48"],
+    "0000000000000000000000000000000000000000000000000000000A": {
+      "NFT0": {
+        "project": "CIP48 Example",
+        "name": "NFT0",
+        // references
+        "refs": [
+          {
+            "name": "<string>",
+            "mediaType": "text/plain",
+            "src": ["0", "2"]
+          }
+        ]
+      },
+      // payload
+      "p": {
+        "0": ["Hello"],
+        "1": ["Goodbye"]
       }
-   }
+    }
+  }
 }
 ```
 
@@ -159,30 +159,29 @@ Mint transaction 2
 
 ```json
 {
-   "721":{
-      "0000000000000000000000000000000000000000000000000000000A":{
-         "ext":["cip48"] // required
-         "NFT1":{
-            "project":"CIP48 Example",
-            "name":"NFT1",
-            // references
-            "refs":[{
-               "name":"<string>",
-               "mediaType":"text/plain",
-               "src":[
-                  "0",
-                  "3"
-               ]
-            }]
-         },
-         // payload
-         "p":{
-            "2":["World"],"3":["Moon"]
-         },
+  "721": {
+    "ext": ["cip48"],
+    "0000000000000000000000000000000000000000000000000000000A": {
+      "NFT1": {
+        "project": "CIP48 Example",
+        "name": "NFT1",
+        // references
+        "refs": [
+          {
+            "name": "<string>",
+            "mediaType": "text/plain",
+            "src": ["0", "3"]
+          }
+        ]
+      },
+      // payload
+      "p": {
+        "2": ["World"],
+        "3": ["Moon"]
       }
-   }
+    }
+  }
 }
-
 ```
 
 ## Example pseudo code walk through (using default behavior)
