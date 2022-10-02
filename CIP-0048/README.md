@@ -143,7 +143,8 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
     }
     ```
   - The `image` tag can still be used as a thumbnail if required.
-  - Not all NFT's require an image (CIP 25 is confusing called the `NFT metadata standard?`) TODO: review
+- Not all NFT's require an image (CIP 25 is confusing called the `NFT metadata standard?`) TODO: review
+- If there are multiple `refs` defined the references that are _NOT_ defined in the `image` tag have the same behavior as the `files` tag currently defined in CIP25
 
 # Example
 
