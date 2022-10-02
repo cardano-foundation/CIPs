@@ -207,8 +207,6 @@ Mint transaction 2
      nft0_data = "HelloWorld";
      ```
 
-```
-
 # Backwards compatibility
 
 Handled via the use of the `"ext"` tag defined in CIP-48.
@@ -222,4 +220,7 @@ Handled via the use of the `"ext"` tag defined in CIP-48.
 ### Duplicate data
 
 There could be issues with duplicate payloads. To solve the payload defined in the most recently minted tx takes priority.
+
+```
+
 ```
