@@ -10,37 +10,41 @@ Created: 2022-04-22 (updated 2022-09-22)
 
 ## Important note
 
-This CIP depends on [CIP49](https://github.com/cardano-foundation/CIPs/pull/343/files)
+This CIP mentions the `ext` json key defined by [CIP49](https://github.com/cardano-foundation/CIPs/pull/343/files) which is an outcome of work on CIP48.
 
 # Abstract
 
-This standard proposes a fully on chain method to store and access metadata.
-This would allow users of 721 to increase or reduce the amount of data stored on chain.
+- This standard proposes a method to allow NFT assets to reference other onchain data.
+- This would allow users of 721 metadata to increase or reduce the amount of data an NFT asset uses.
 
 # Motivation
 
 - Large token mints that duplicated data could be dramatically reduced in size by pointing to one transaction payload that contains a ‘boilerplate’ structure.
-
 - 16kB is the upper limit of data in each transaction but If a user wanted more there is no alternative than to store that data off-chain using an external service such as ipfs.
-
-- This CIP aims to describe is a standard so that if a user does want to reduce or increase there metadata size it can be queried by 3rd parties that look for the version 2 tag attached within the 721 metadatum transaction label
-
-Specifically, this proposal aims to solve for the following:
-
-- Provide a mechanism to reduce duplicated metadata into one or multiple transactions that can be referenced
-- Provide a mechanism that allows on chain data to be referenced
-- Provide a mechanism to reference on chain data in a set order
-- Provide a mechanism to reference on chain data stored in a different policy
+- There is no current mechanism to reduce duplicated metadata
+- NFT assets are restricted by there own scope, optional references would prevent this restriction
+- There is currently no way to reference on chain data stored in a different policy
 
 # Specification
 
-**Inside the 721 metadata JSON**
-|reserved |description | scope |
-|---|---|---|
-|refs | references tag, defines where to find the onchain data | Inside `<asset_name>` tag |
-|p | contains raw data (on chain data). | Inside `<policy_id>` tag |
+### **Inside the 721 metadata JSON**
 
-**Optional rtype tag**
+| reserved | description                                            | scope                     |
+| -------- | ------------------------------------------------------ | ------------------------- |
+| refs     | references tag, defines where to find the onchain data | Inside `<asset_name>` tag |
+| p        | contains raw data (on chain data).                     | Inside `<policy_id>` tag  |
+
+### **The `refs` tag**
+
+Contains the `name`, `mediaType`, `src` tags (and the optional `type` tag)
+
+- `name` (string) is the references name (similar usage to the current `files` tag)
+- `mediaType` (string) defines the mime type for the data referenced in `src`
+  - is a string
+- `src` (string array) is an **ordered** array of references.
+  - The order is that of which the data will be parsed. For example `["1","3","2"]` will result in payload `"1"` being the start of the data, followed by payload `"3"` and ending with payload `"2"`.
+
+### **Optional rtype tag**
 
 The default CIP-48 behavior will assume all payloads can be found within all the mint transactions made by the parent `<policy_id>`.
 
@@ -79,6 +83,20 @@ In CIP49 we shall define two types.
   - `txhash` is faster than parsing all transactions in a given policy.
   - `txhash` can dramatically reduce onchain data usage if duplicated data is referenced here _(however, the bytes required to define the reference would have to be less than the reference data itself)_
 
+### **The `p` tag**
+
+- Defined within the `<policy_id>` scope
+- contains payload reference names followed by a string array of payload data
+- example
+  ```json
+    "p":
+      {
+        "1": ["1 is a valid payload"],
+        "payloadA": ["a...64","b...64"], //a string has a max length of 64 characters
+        "payloadB": ["I'm found by referencing payloadB"],
+      }
+  ```
+
 ## General structure
 
 ```json
@@ -98,8 +116,8 @@ In CIP49 we shall define two types.
          },
          // payload
          "p":{
-            "<string>":"<array>", // payload 0
-            "<string>":"<array>", // payload 1... etc
+            "<string>":["<string>", "..."], // payload 0
+            "<string>":["<string>"], // payload 1... etc
          },
       }
    }
