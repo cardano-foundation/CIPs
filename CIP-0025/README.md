@@ -42,7 +42,7 @@ This is the registered `transaction_metadatum_label` value
 
 The structure allows for multiple token mints, also with different policies, in a single transaction.
 
-```
+```json
 {
   "721": {
     "<policy_id>": {
@@ -61,10 +61,11 @@ The structure allows for multiple token mints, also with different policies, in 
           <other_properties>
         }],
 
-        <other properties>
+        <other properties> // overwritten by "ext" if defined
       }
     },
     "version": <version_id>
+    "ext": <array>
   }
 }
 ```
@@ -84,9 +85,11 @@ The structure allows for multiple token mints, also with different policies, in 
 
 - The **`mediaType`** and **`files`** properties are optional.<br /> **`mediaType`** is however required inside **`files`**. The **`src`** property inside **`files`** is an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image, like the on in the **`image`** property, but in an higher resolution.
 
-- The **`version`** property is also optional. If not specified the version is `1`. It will become mandatory in future versions if needed.
+- The **`ext`** property is optional. It is used to extend known metadata properties.
 
-- This structure really just defines the basis. New properties and standards can be defined later on for varies uses cases. That's why there is an "other properties" tag.
+- The **`version`** property is optional. If not specified the version is `1`. It will become mandatory in future versions if needed.
+
+- This structure really just defines the basis. New properties and standards can be defined later on for varies uses cases. That's why there is an "other properties" tag. Note "other properties" are always overwritten by properties defined by "ext".
 
 - The retrieval of the metadata should be the same for all however.
 
@@ -94,7 +97,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
 
 #### Version 1
 
-```
+```json
 {
   "721": {
     "<policy_id>": {
@@ -109,7 +112,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
 
 #### Version 2
 
-```
+```json
 {
   "721": {
     "<policy_id>": {
@@ -139,7 +142,7 @@ Using the latest mint transaction with the label 721 as valid metadata for a tok
 
 ## Backward Compatibility
 
-To keep NFT metadata compatible with changes coming up in the future, we use the **`version`** property.
+To keep NFT metadata compatible with changes coming up in the future, we use the **`version`** and **`ext`** properties.
 A future version will introduce [schema.org](https://schema.org).
 
 ## References
