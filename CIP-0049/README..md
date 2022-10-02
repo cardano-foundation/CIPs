@@ -10,7 +10,7 @@ Created: 2022-09-28
 
 # Abstract
 
-This standard proposes a method to extend the 721 metadatum standard bypassing the restrictions created by the version tag.
+This standard proposes a method to define optional extensions the 721 metadatum standard. Allowing users to know what to expect in the metadata.
 
 # Motivation
 
@@ -19,10 +19,6 @@ This standard proposes a method to extend the 721 metadatum standard bypassing t
 
 # Specification
 
-- The version tag is **deprecated** by the `ext` keyword.
-  - To use the version 1 tag I suggest `"ext":["v1"]`
-  - To use the version 2 tag I suggest `"ext":["v2"]`
-  - This might seem odd at first but going forward instead of adding version 3 we just define the CIP as an optional `ext` array element. For example CIPX with version 2 would be `"ext":["v2","cipx"]`
 - The `ext` tag is added within the `"721"` metadatum tag
 - The `ext` tag should be lowercase. When parsing nft metadata the developer will use a to lowercase function on all elements in the `ext` array
 
