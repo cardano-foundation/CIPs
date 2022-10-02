@@ -110,14 +110,14 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
           {
             "name": "<string>",
             "mediaType": "text/plain",
-            "src": "<array>" // array of required payload ids
+            "src": ["<payload_id>", "<payload_id>"] // array of required payload ids (ordered)
           }
         ]
       },
       // payload
       "p": {
-        "<string>": ["<string>", "..."], // payload 0
-        "<string>": ["<string>"] // payload 1... etc
+        "<payload_id>": ["<data>", "<data>"], // payload0
+        "<payload_id>": ["<data>"] // payload1
       }
     }
   }
@@ -188,23 +188,25 @@ Mint transaction 2
 
 1. Find all transactions for the given policy
 
-`found 2 mint transcations`
+   - `found 2 mint transcations`
 
 2. Check the **ext** tag for **cip48**
 
-`found cip48`
+   - `found cip48` we now know the metadata contains references and payloads
 
-3. If a payload is found append that to an map or some data structure
+3. Iterate over each transaction. If a payload is found append that to an map or some data structure
 
-```js
-payloads = { 0: "Hello", 1: "Goodbye", 2: "World", 3: "Moon" };
-```
+   - ```js
+     payloads = { 0: "Hello", 1: "Goodbye", 2: "World", 3: "Moon" };
+     ```
 
-4. Find all `refs` references for NFT0
+4. Find all `refs` (references) for the `<asset_name>` NFT0. Then build the data in the order defined by the `src` array.
 
-```js
-nft0_refs = ["0", "2"];
-nft0_data = "HelloWorld";
+   - ```js
+     nft0_refs = ["0", "2"];
+     nft0_data = "HelloWorld";
+     ```
+
 ```
 
 # Backwards compatibility
@@ -220,3 +222,4 @@ Handled via the use of the `"ext"` tag defined in CIP-48.
 ### Duplicate data
 
 There could be issues with duplicate payloads. To solve the payload defined in the most recently minted tx takes priority.
+```
