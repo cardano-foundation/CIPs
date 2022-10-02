@@ -22,7 +22,7 @@ This CIP mentions the `ext` json key defined by [CIP49](https://github.com/carda
 - Large token mints that duplicated data could be dramatically reduced in size by pointing to one transaction payload that contains a ‘boilerplate’ structure.
 - 16kB is the upper limit of data in each transaction but If a user wanted more there is no alternative than to store that data off-chain using an external service such as ipfs.
 - There is no current mechanism to reduce duplicated metadata
-- NFT assets are restricted by there own scope, optional references would prevent this restriction
+- NFT assets are restricted by there own scope metadata scope, optional references would prevent this restriction
 - There is currently no way to reference on chain data stored in a different policy
 
 # Specification
@@ -44,7 +44,7 @@ Contains the `name`, `mediaType`, `src` tags (and the optional `type` tag)
 - `src` (string array) is an **ordered** array of references.
   - The order is that of which the data will be parsed. For example `["1","3","2"]` will result in payload `"1"` being the start of the data, followed by payload `"3"` and ending with payload `"2"`.
 
-### **Optional rtype tag**
+### **Optional `type` tag for `refs`**
 
 The default CIP-48 behavior is to assume the assets parent `<policy_id>` contains all the payloads.
 
@@ -81,7 +81,7 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
   - `txhash` is faster than parsing all transactions in a given policy.
   - `txhash` can dramatically reduce onchain data usage if duplicated data is referenced here _(however, the bytes required to define the reference would have to be less than the reference data itself)_
 
-### **The `p` tag**
+### **The payload `p` tag**
 
 - Defined within the `<policy_id>` scope
 - contains payload reference names followed by a string array of payload data
