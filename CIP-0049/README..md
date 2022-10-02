@@ -14,16 +14,15 @@ This standard proposes a method to extend the 721 metadatum standard bypassing t
 
 # Motivation
 
-- NFT's on Cardano are static and rely on a version tag change to implement new features.
-- The version tag is not very modular and restricts innovation.
+- Cardano NFT Metadata parsing is becoming complex due to optional metadata json tags.
+- If Cardano NFT's want to develop we need to define what's inside the metadata to avoid conflicts with custom optional tags and tags defined in new CIPs.
 
 # Specification
 
-- The standard 721 metadatum tag is used.
-- The version tag is **deprecated** at it's current `version:2` by the `ext` keyword.
+- The version tag is **deprecated** by the `ext` keyword.
   - To use the version 1 tag I suggest `"ext":["v1"]`
   - To use the version 2 tag I suggest `"ext":["v2"]`
-  - This might seem odd at first but going foward instead of adding version 3 we just define the CIP as an optional `ext` array element. For example CIPX with version 2 would be `"ext":["v2","cipx"]`
+  - This might seem odd at first but going forward instead of adding version 3 we just define the CIP as an optional `ext` array element. For example CIPX with version 2 would be `"ext":["v2","cipx"]`
 - The `ext` tag is added within the `"721"` metadatum tag
 - The `ext` tag should be lowercase. When parsing nft metadata the developer will use a to lowercase function on all elements in the `ext` array
 
