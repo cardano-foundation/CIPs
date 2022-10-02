@@ -139,7 +139,7 @@ Mint transaction 1
         // references
         "refs": [
           {
-            "name": "<string>",
+            "name": "NFT0",
             "mediaType": "text/plain",
             "src": ["0", "2"]
           }
@@ -168,7 +168,7 @@ Mint transaction 2
         // references
         "refs": [
           {
-            "name": "<string>",
+            "name": "NFT1",
             "mediaType": "text/plain",
             "src": ["0", "3"]
           }
@@ -184,9 +184,9 @@ Mint transaction 2
 }
 ```
 
-## Example pseudo code walk through (using default behavior)
+### Pseudo code walk through using the above example (using default behavior)
 
-1. Find all transactions for the given policy
+1. Find all transactions for the given `<policy_id>`
 
    - `found 2 mint transcations`
 
@@ -196,16 +196,22 @@ Mint transaction 2
 
 3. Iterate over each transaction. If a payload is found append that to an map or some data structure
 
+   - found 4 payloads
    - ```js
      payloads = { 0: "Hello", 1: "Goodbye", 2: "World", 3: "Moon" };
      ```
 
-4. Find all `refs` (references) for the `<asset_name>` NFT0. Then build the data in the order defined by the `src` array.
+4. Find all `refs` (references) for the `<asset_name>` we use NFT0. Then build the data in the order defined by the `src` array.
 
+   - found 2 references
    - ```js
      nft0_refs = ["0", "2"];
      nft0_data = "HelloWorld";
      ```
+
+5. use the mediaType (mimetype) to determine the data.
+   - mediaType = "test/plain"
+   - NFT0 contains text "HelloWorld"
 
 # Backwards compatibility
 
