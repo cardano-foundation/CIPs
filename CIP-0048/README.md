@@ -142,7 +142,6 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
       ]
     }
     ```
-  - The `files` tag can still be used to describe higher resolution files images, though it should also adopt the same usage of `<ref_name>` described for `image` tag in the aforementioned note
   - The `image` tag can still be used as a thumbnail if required.
   - Not all NFT's require an image (CIP 25 is confusing called the `NFT metadata standard?`) TODO: review
 
