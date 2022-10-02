@@ -105,10 +105,11 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
       "<asset_name>": {
         "project": "<string>",
         "name": "<string>",
+        "image": "<ref_name | uri | array>" // image is defined by refs or a uri
         // references
         "refs": [
           {
-            "name": "<string>",
+            "name": "<ref_name>",
             "mediaType": "text/plain",
             "src": ["<payload_id>", "<payload_id>"] // array of required payload ids (ordered)
           }
@@ -123,6 +124,26 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
   }
 }
 ```
+
+## Notes
+
+- CIP25 currently defines a 'required' image tag.
+  - Not all NFT's require an image.
+  - CIP48 alters the use of image. Requiring the 'user' to first check if the image string matches any reference names. Then to fallback on the default behavior.
+    - example, in which the image is found by referring to payloads.
+    ```json
+    {
+      "image":"myImageNFT"
+      "refs":[
+        {
+          "name": "myImageNFT"
+          "mediaType":"image/svg+xml;utf8"
+          "src": ["refToPayloadA", "refToPayloadB"]
+        }
+      ]
+    }
+    ```
+  - The image tag can still be used as a thumbnail if required.
 
 # Example
 
