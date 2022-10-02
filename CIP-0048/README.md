@@ -110,14 +110,14 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
           {
             "name": "<string>",
             "mediaType": "text/plain",
-            "src": "<array>" // array of required payload ids
+            "src": ["<payload_id>", "<payload_id>"] // array of required payload ids (ordered)
           }
         ]
       },
       // payload
       "p": {
-        "<string>": ["<string>", "..."], // payload 0
-        "<string>": ["<string>"] // payload 1... etc
+        "<payload_id>": ["<data>", "<data>"], // payload0
+        "<payload_id>": ["<data>"] // payload1
       }
     }
   }
