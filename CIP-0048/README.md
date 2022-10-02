@@ -22,7 +22,7 @@ This CIP mentions the `ext` json key defined by [CIP49](https://github.com/carda
 - Large token mints that duplicated data could be dramatically reduced in size by pointing to one transaction payload that contains a ‘boilerplate’ structure.
 - 16kB is the upper limit of data in each transaction but If a user wanted more there is no alternative than to store that data off-chain using an external service such as ipfs.
 - There is no current mechanism to reduce duplicated metadata
-- NFT assets are restricted by there own scope metadata scope, optional references would prevent this restriction
+- NFT assets are restricted by there own metadata scope, optional references would prevent this restriction
 - There is currently no way to reference on chain data stored in a different policy
 
 # Specification
