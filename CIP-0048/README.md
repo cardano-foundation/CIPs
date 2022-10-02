@@ -1,7 +1,7 @@
 ---
 CIP: 48?
-Title: Extended 721 metadata
-Authors: Jack (Pixel pool, https://forum.cardano.org/u/jack7e/, @pixel_pool twitter)
+Title: 721 References and Payloads
+Authors: Jack (ada9000, https://forum.cardano.org/u/jack7e/, @ada9000_ twitter)
 Comments-URI: https://forum.cardano.org/t/cip-extended-721/
 Status: Draft
 Type: Informational
