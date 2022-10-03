@@ -65,7 +65,7 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
       ]
     ```
 - `txhash`
-  - Defines a specific transaction hash (instead of the default behavior of using the parent policy)
+  - Defines an array of transaction hashes (instead of the default behavior of using the parent policy)
   - example
     ```json
       "refs": [
@@ -73,7 +73,7 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
           "name": "...",
           "mediaType": "...",
           "type": {
-            "txhash": "<some_mint_txhash>"
+            "txhash": ["<mint_txhash>", "<mint_txhash>"]
           }
         }
       ]
@@ -143,7 +143,6 @@ Optionally we define `type` and two options `policy` and `txhash`. To allow for 
     }
     ```
   - The `image` tag can still be used as a thumbnail if required.
-- Not all NFT's require an image (CIP 25 is confusing called the `NFT metadata standard?`) TODO: review
 - If there are multiple `refs` defined the references that are _NOT_ defined in the `image` tag have the same behavior as the `files` tag currently defined in CIP25
 
 # Example
