@@ -1,4 +1,3 @@
-
 ---
 CIP: 25
 Title: NFT Metadata Standard
