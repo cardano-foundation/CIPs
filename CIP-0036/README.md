@@ -42,8 +42,8 @@ A registration transaction is a regular Cardano transaction with a specific tran
 
 Notably, there should be five entries inside the metadata map:
  - A non-empty array of delegations, as described below;
- - A stake address for the network that this transaction is submitted to (to point to the Ada that is being delegated);
- - A Shelley address discriminated for the same network  this transaction is submitted to to receive rewards.
+ - A stake public key for the network that this transaction is submitted to (to point to the Ada that is being delegated); Public key of the stake signing key;
+ - A Shelley rewards (base) address discriminated for the same network  this transaction is submitted to to receive rewards.
  - A nonce that identifies that most recent delegation
  - A non-negative integer that indicates the purpose of the vote. This is an optional field to allow for compatibility with CIP-15. For now, we define 0 as the value to use for Catalyst, and leave others for future use. A new registration should not invalidate a previous one with a different voting purpose value.
 
@@ -83,7 +83,7 @@ as follows.
 This ensures that the voter's total voting power is never accidentally reduced through poor choices of weights,
 and that all voting powers are exact ADA.
 
-### Example 
+### Example - Registration
 
 Voting registration example:
 ```
@@ -113,7 +113,7 @@ considered valid if the following conditions hold:
 - The reward address is a Shelley address discriminated for the same network
   this transaction is submitted to.
 - The delegation array is not empty
-- The weights in the delegation array are not all zero
+- The weights in the delegation array are not all zero (total voting weight is not zero)
 
 
 Delegation to the voting key `0xa6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663` will have relative weight 1 and delegation to the voting key `0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee` relative weight 3 (for a total weight of 4).
@@ -137,9 +137,51 @@ Witness example:
 }
 ```
 
+### Deregistration metadata format
+
+A deregistration transaction is a regular Cardano transaction with a specific transaction metadata associated with it.
+A deregistration removes all the voting power for the provided stake public key and its associated stake amount.
+
+Notably, there should be five entries inside the metadata map:
+ - An empty array of delegations, example below.
+ - The public key of the stake signing key
+ - Optionally a stake rewards address for the network that this transaction is submitted to. Not needed in case of a deregistration.
+ - A nonce that identifies that most recent deregistration
+ - A non-negative integer that indicates the purpose of the vote. This is an optional field to allow for compatibility with CIP-15. For now, we define 0 as the value to use for Catalyst, and leave others for future use. A new registration should not invalidate a previous one with a different voting purpose value.
+
+### Example - Deregistration
+
+```
+{
+  61284: {
+    //empty delegation array
+    1: [],
+    // stake_pub - CBOR byte array
+    2: "0x57758911253f6b31df2a87c10eb08a2c9b8450768cb8dd0d378d93f7c2e220f0",
+    // rewards_address - CBOR byte array, or empty byte array with length 0
+    3: "0x",
+    // nonce
+    4: 73412400,
+    // voting_purpose: 0 = Catalyst
+    5: 0
+  },
+  61285: {
+    // witness - ED25119 signature CBOR byte array
+    1: "0x6dc255aa3d418e1b52306573ad0b9fd65ab96f538af52568fa07e37cd83f3dd31e714516e66c8cf8744467ab61735ac14bcd36cbb6c541fc7797000200f9d306"
+  }
+}
+```
+CBOR-Hex:
+`A219EF64A5018002582057758911253F6B31DF2A87C10EB08A2C9B8450768CB8DD0D378D93F7C2E220F00340041A04602F30050019EF65A10158406DC255AA3D418E1B52306573AD0B9FD65AB96F538AF52568FA07E37CD83F3DD31E714516E66C8CF8744467AB61735AC14BCD36CBB6C541FC7797000200F9D306`
+
 ### Metadata schema
 
 See the [schema file](./schema.cddl)
+
+
+
+
+
 
 # Test vector
 
@@ -170,6 +212,9 @@ Fund 8:
  - renamed the `voting_key` field to `delegations` and add support for splitting voting power across multiple vote keys.
  - added the `voting_purpose` field to limit the scope of the delegations.
  - rename the `staking_pub_key` field to `stake_credential` and `registration_signature` to `registration_witness` to allow for future credentials additions.
+
+Fund 10:
+ - added the `deregistration` functionality
 
 ## Copyright
 
