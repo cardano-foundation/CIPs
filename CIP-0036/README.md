@@ -139,8 +139,10 @@ Witness example:
 
 ### Deregistration metadata format
 
-A deregistration transaction is a regular Cardano transaction with a specific transaction metadata associated with it.
-A deregistration removes all the voting power for the provided stake public key and its associated stake amount.
+Definition:
+- A deregistration removes all the voting power for the provided stake public key and its associated stake amount.
+- A deregistration transaction is a regular Cardano transaction with a specific transaction metadata associated with it.
+- An invalid [registration/delegation](#registration-metadata-format) also results in a deregistration.
 
 Notably, there should be five entries inside the metadata map:
  - An empty array of delegations, example below.
