@@ -43,7 +43,7 @@ A registration transaction is a regular Cardano transaction with a specific tran
 Notably, there should be five entries inside the metadata map:
  - A non-empty array of delegations, as described below;
  - A stake public key for the network that this transaction is submitted to (to point to the Ada that is being delegated); Public key of the stake signing key;
- - A Shelley rewards (base) address discriminated for the same network  this transaction is submitted to to receive rewards.
+ - A Shelley rewards (base) address discriminated for the same network  this transaction is submitted to receive rewards.
  - A nonce that identifies that most recent delegation
  - A non-negative integer that indicates the purpose of the vote. This is an optional field to allow for compatibility with CIP-15. For now, we define 0 as the value to use for Catalyst, and leave others for future use. A new registration should not invalidate a previous one with a different voting purpose value.
 
