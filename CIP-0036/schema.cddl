@@ -46,7 +46,7 @@ deregistration_cbor = {
 key_deregistration = {
   1 : $stake_credential,
   2 : $nonce,
-  3 : $voting_purpose .default 0
+  ? 3 : $voting_purpose .default 0
 }
 
 deregistration_witness = {
