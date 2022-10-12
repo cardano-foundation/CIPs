@@ -21,21 +21,16 @@ As more assets are minted and different standards emerge to query data for these
 
 To classify assets the `asset_name` needs to be prefixed the following `4 bytes` binary encoding:
 ```
-[ 0000 | 2 bytes label_num | 1 byte checksum | 0000 ]
+[ 0000 | 16 bits label_num | 8 bits checksum | 0000 ]
 ```
 - The leading and ending four 0s are brackets
 - `label_num` has a fixed size of 2 bytes (`Label range in decimal: [0, 65535]`). 
-If `label_num` < 2 bytes the remaining bits need to be padded with 0s.
+If `label_num` < 2 bytes the remaining bits need to be left-padded with 0s.
 - `checksum` has a fixed size of 1 byte. The checksum is calculated by applying the [CRC-8](#CRC-8) algorithm on the `label_num (including the padded 0s)`. 
 
 ### CRC-8
 
-- Check: `0xF4`
-- Poly: `0x07`
-- Init: `0x00`
-- RefIn: `false`
-- RefOut: `false`
-- XorOut: `0x00`
+- Polynomial: `0x07`
 - Lookup table:
 ```
 [
@@ -97,12 +92,12 @@ To propose an addition to the registry edit the [registry.json](./registry.json)
 
 Asset name labels make it easy to classify assets. It's important to understand that an oblivious token issuer might use the prefix X for all kinds of things, leading to misinterpretation by clients that follow this standard. We can minimize this attack vector by making the label format obscure. Brackets, checksum and fixed size binary encoding make it unlikely someone follows this standard by accident.
 
-## Reference Implementation(s)
+### Reference Implementation(s)
 
 - [Lucid TypeScript implementation of toLabel/fromLabel](https://github.com/spacebudz/lucid/blob/39cd2129101bd11b03b624f80bb5fe3da2537fec/src/utils/utils.ts#L500-L522)
 - [Lucid TypeScript implementation of CRC-8](https://github.com/spacebudz/lucid/blob/main/src/misc/crc8.ts)
 
-## Test Vectors
+### Test Vectors
 
 Keys represent labels in `decimal` numbers. Values represent the entire label including brackets and checksum in `hex`:
 
