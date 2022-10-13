@@ -4,7 +4,7 @@ Title: Non-Fungible Token (NFT) Proxy Voting Standard
 Authors: Thaddeus Diamond <support@wildtangz.com>
 Comments-URI:
 Status: Proposed
-Type: Informational
+Type: Process
 Created: 2022-10-11
 Post-History:
 License: CC-BY-4.0
@@ -107,8 +107,9 @@ Essentially, the "ballot box" is a smart contract with arbitrary logic decided u
 
 1. A ballot box that can be redeemed at any time by a tx signed by the authorized vote counter
 2. A ballot box that can be redeemed only after polls close
-2. A ballot box that can be redeemed once a majority of voters have sent in a ballot
-3. A ballot box that can be redeemed only by the specific wallet specified in the `voter` datum of each UTxO
+3. A ballot box that can be redeemed once a majority of voters have sent in a ballot
+4. A ballot box that can be redeemed only by the specific wallet specified in the `voter` datum of each UTxO
+5. A ballot box that can be redeemed only after polls close, has to burn the ballots it redeems, and has to send the minUTxO back to the voter address
 
 Because the ballot creation and vote casting process has already occurred on-chain we want to provide the maximum flexibility in the protocol here so that each project can decide what is best for their own community.  Helios code for the simple case enumerated as #1 above would be:
 
@@ -210,7 +211,7 @@ During the construction of the ballot NFTs we allow the user to specify their vo
 There are several potential disadvantages to this proposal that may be avoided by the use of a native token or other voting mechanism.  We enumerate some here explicitly so projects can understand where this protocol may or may not be appropriate to use:
 
 - Projects concerned with token proliferation and confusing their user base with the creation of multiple new assets might want to avoid this standard as it requires one new token policy per vote/initiative
-- Projects wishing to create a "secret ballot" that will not be revealed until after polls close should use this because the datum votes appear on-chain (and typically inline)
+- Projects wishing to create a "secret ballot" that will not be revealed until after polls close should not use this because the datum votes appear on-chain (and typically inline)
   - Performing an encrypted vote on-chain with verifiable post-vote results is an exercise left to the standard's implementer
 - Projects wishing for anonymity in their votes should not use this standard as each vote can be traced to a reference asset
 
