@@ -1,6 +1,6 @@
 ---
-CIP: 49?
-Title: 721 Metatdatum extenstion tag
+CIP: To be confirmed?
+Title: 721 Metatdatum extension property
 Authors: Jack ([9000] pool, https://forum.cardano.org/u/jack7e/, @ada9000_ twitter)
 Comments-URI: https://github.com/cardano-foundation/CIPs/pull/249
 Status: Draft
