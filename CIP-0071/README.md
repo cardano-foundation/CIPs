@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines a standard mechanism for performing verifiable on-chain voting in NFT projects that do not have a governance token by using datums, plutus minting policies, and smart contracts.
+This proposal uses plutus minting policies to create valid "ballots" that are sent alongside datum "votes" to a centralized smart contract "ballot box" in order to perform verifiable on-chain voting in NFT projects that do not have a governance token.
 
 ## Motivation
 
@@ -23,7 +23,13 @@ This proposal is intended to provide a standard mechanism for non-fungible token
 
 This standard provides a simple solution for this by using the underlying NFT to mint a one-time "ballot" token that can be used only for a specific voting topic. Projects that adopt this standard will be able to integrate with web viewers that track projects' governance votes and will also receive the benefits of verifiable on-chain voting without requiring issuance of a new native token.
 
-It is not intended for complex voting applications or for governance against fungible tokens that cannot be labeled individually.
+We anticipate some potential use cases:
+- Enforcing an exact 1:1 vote based on a user's existing NFT project holdings
+- Enforcing vote validity by rejecting invalid vote options (e.g., disallowing write-ins)
+- Creating "super-votes" based on an NFT serial number (e.g., rare NFTs in the 9,000-10,000 serial range get 2x votes)
+
+> **Warning**
+> This specification is not intended for for governance against fungible tokens that cannot be labeled individually.
 
 ## Specification
 
@@ -41,12 +47,13 @@ The basic analogy here is that of a traditional state or federal vote.  Imagine 
 This specification follows the same process, but using tokens:
 1. A holder of a project validates their NFT by sending it to self
 2. The holder signs a Plutus minting policy to create a "ballot" NFT linked to their unique NFT
-3. The holder marks their desired vote selections off-chain
+3. The holder marks their desired vote selections on the ballot
 4. The holder signs a tx that sends the "ballot" NFT to a "ballot box" (smart contract) with their "vote" (datum)
 5. Authorized vote counting wallets process UTxOs and their datums in the "ballot box" smart contract after polls close
 6. Authorized vote counters report the results in a human-readable off-chain format to holders
 
-Because of the efficient UTxO model Cardano employs, steps #1, #2, and #4 can occur in a single transaction.
+> **Note**
+> Because of the efficient UTxO model Cardano employs, steps #1 through #4 occur in a single transaction.
 
 ### The Vote Casting Process
 
@@ -64,7 +71,7 @@ type BallotMintingPolicy = {
 
 This Plutus minting policy will perform the following checks:
 1. Polls are still open during the Tx validFrom/validTo interval
-2. The reference NFT assets were spent (typically, sent-to-self) for each ballot being minted
+2. The ballot NFTs were validly minted (at the least, the user sent-to-self the reference assets and the vote weight/choices are correct)
 3. The minted assets are sent directly to the ballot box smart contract in the minting transaction (see [the potential attack below](#Creation-of-Ballot-Without-Casting-a-Vote))
 
 For the voter, each vote they wish to cast will require creating a separate "ballot" NFT.  In the process, their reference NFT never leaves the original wallet.  Sample [Helios language](https://github.com/Hyperion-BT/Helios) pseudocode (functions elided for space) is as follows:
@@ -76,13 +83,16 @@ func main(redeemer: Redeemer, ctx: ScriptContext) -> Bool {
   redeemer.switch {
     Mint => {
       polls_are_still_open(tx.time_range)
-        && assets_were_spent(tx.minted, minted_policy, tx.outputs)
-        && assets_locked_in_script(tx, tx.minted)
+        && ballots_are_validly_minted(tx.minted, minted_policy, tx.outputs)
+        && assets_locked_in_ballot_box(tx, tx.minted)
     },
     // Burn code elided for space...
   }
 }
 ```
+
+> **Note**
+> `ballots_are_validly_minted()` includes all required and custom checks (e.g., the holder has sent the reference NFT to themselves in `tx.outputs`) to validate newly minted ballots
 
 #### "Vote" -> eUTxO Datum
 
@@ -188,21 +198,31 @@ func main(redeemer: Redeemer, ctx: ScriptContext) -> Bool {
 
 The Helios code above simply checks that during a burn (as indicated by the Plutus minting policy's `redeemer`), the user is not attempting to mint a positive number of any assets.  With this code, *any Cardano wallet* can burn *any ballot* minted as part of this protocol.  Why so permissive? We want to ensure that each vote is bringing the minimal costs possible to the user.  In providing this native burning mechanism we can free up the minUTxO that had been locked with the ballot, and enable the user to potentially participate in more votes they might not have otherwise.  In addition, users who really do not like the specific commemorative NFTs or projects that choose to skip the "commemorative" aspect of ballot creation now have an easy way to dispose of "junk" assets.
 
-## Potential Attacks and Mitigations
+## Rationale
 
-### Creation of Ballot Without Casting a Vote
+### Using Inline Datums (On-Chain) Instead of Metadata (Off-Chain)
+
+There are several existing open-source protocols (e.g., [VoteAire](https://github.com/voteaire/voteaire-onchain-spec)) that use metadata to record votes in Cardano transactions without requiring any additional minting or smart contracts.  However, since the vote counting occurs off-chain by validating metadata the vote counter is the ultimate arbiter of what is a "valid" vote.  In this specification, the validity of the vote is ensured in the Ballot creation process, so that any vote in the ballot box is guaranteed to be valid.  We strongly believe that moving the entire process into flexible on-chain logic will improve the transparency of the voting process and meet the needs of the use cases discussed in ["Motivation"](#Motivation) and ["Ballot Box"](#Ballot-Box---Smart-Contract).
+
+### Commemorative NFTs with Optional Token Burning
+
+There is a question as to whether we should enforce the requirement that votes be burned when they are counted by the vote counter.  However, we do not want that to be a standard as many users of NFT communities have expressed an interest in receiving commemorative NFTs (similar to an "I Voted" sticker).  Instead, we propose that the ballot Plutus minting policy be burn-able by anyone who holds the NFT in their wallet.  This way, locked ADA can be reclaimed if the user has no further use for the commemorative NFT (see an example of this in the [Implementation](./example/)).
+
+### Potential Attacks and Mitigations
+
+#### Creation of Ballot Without Casting a Vote
 
 Imagine a user who decides to create ballots for the current vote, but not actually cast the vote by sending it to the ballot box.  According to checks #1 and #2 in [the Plutus Minting Policy](#Ballot---Plutus-Minting-Policy), this would be possible.  After the ballot was created, the user could sell the reference NFT and wait until just before the polls close to surreptitiously cast a vote over the wishes of the new project owner.  Check #3 in the minting policy during the mint transaction itself prevents this attack.
 
-### Double Voting in Multiple Transactions
+#### Double Voting in Multiple Transactions
 
 A user could wait until their first vote casting transaction completes, then create more ballots and resubmit to the ballot box.  The result would be the creation of more assets that count toward the ultimate vote.  However, Cardano helps us here by identifying tokens based on the concatenation of policy ID and asset identifier.  So long as the mapping function in the [Plutus minting policy for ballots](#Ballot---Plutus-Minting-Policy) is idempotent, each subsequent time the user votes the policy will create an additional fungible token with the same asset identifier.  Then, the ballot counter can ignore any prior votes based on each unique asset identifier to avoid duplicate votes (see ["'Ballot Counter' -> Authorized Wallet"](#Ballot-Counter---Authorized-Wallet)).
 
-### Double Creation of the Same Ballot
+#### Double Creation of the Same Ballot
 
 A user could attempt to create multiple ballots of the same name for a given reference NFT.  If the reference NFT is actually a fungible token and not an NFT, then our assumptions will have been broken and this is an unsupported use case.  But if our assumption that this is an NFT project are correct, then simply checking that the quantity minted is equal to the quantity spent inside of the Plutus minting policy will prevent this.  The [example code](./example/voting.js) attached does just that.
 
-### Returning the "Ballot" NFTs to the Wrong User
+#### Returning the "Ballot" NFTs to the Wrong User
 
 During the construction of the ballot NFTs we allow the user to specify their vote alongside a `voter` field indicating where their "ballot" NFT should be returned to once the vote is fully counted.  Unfortunately, this is not strictly checked inside the Plutus minting policy's code (largely due to CPU/memory constraints).  So, we rely on the user to provide an accurate return address, which means that there is the potential for someone who has not actually voted to receive a commemorative NFT.  This does not impact the protocol though, as the "ballot" NFT was legally minted, just returned to the incorrect location.  That user actually received a gift, as they can now burn the ballot and receive some small amount of dust.
 
@@ -241,6 +261,7 @@ Due to the nature of Plutus minting policies and smart contracts, which derive p
 - [CIP-0068](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068): Datum Metadata Standard
 - [Helios Language](https://github.com/Hyperion-BT/Helios): On-Chain Cardano Smart Contract language used in example code
 - [Lucid](https://github.com/spacebudz/lucid): Transaction construction library used in code samples and pseudocode
+- [VoteAire Specification](https://github.com/voteaire/voteaire-onchain-spec): Open-source voting specification using metadata off-chain
 
 ## Copyright
 
