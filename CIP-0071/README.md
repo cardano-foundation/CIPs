@@ -126,7 +126,7 @@ func main(ctx: ScriptContext) -> Bool {
 
 #### "Ballot Counter" -> Authorized Wallet
 
-Given the flexible nature of the ["ballot box" smart contract](#"Ballot-Box"-->-Smart-Contract) enumerated above, we propose a simple algorithm for counting votes and returning the ballots to the user:
+Given the flexible nature of the ["ballot box" smart contract](#Ballot-Box---Smart-Contract) enumerated above, we propose a simple algorithm for counting votes and returning the ballots to the user:
 
 1. Ensure the polls are closed (can be either on or off-chain)
 2. Iterate through all UTxOs in forward-time-order locked in the "ballot box" and for each
@@ -193,13 +193,13 @@ The Helios code above simply checks that during a burn (as indicated by the Plut
 
 ### Creation of Ballot Without Casting a Vote
 
-Imagine a user who decides to create ballots for the current vote, but not actually cast the vote by sending it to the ballot box.  According to checks #1 and #2 in [the Plutus Minting Policy](#"Ballot"-->-Plutus-Minting-Policy), this would be possible.  After the ballot was created, the user could sell the reference NFT and wait until just before the polls close to surreptitiously cast a vote over the wishes of the new project owner.  Check #3 in the minting policy during the mint transaction itself prevents this attack.
+Imagine a user who decides to create ballots for the current vote, but not actually cast the vote by sending it to the ballot box.  According to checks #1 and #2 in [the Plutus Minting Policy](#Ballot---Plutus-Minting-Policy), this would be possible.  After the ballot was created, the user could sell the reference NFT and wait until just before the polls close to surreptitiously cast a vote over the wishes of the new project owner.  Check #3 in the minting policy during the mint transaction itself prevents this attack.
 
 ### Double Voting
 
 There are two potential ways that a user could double vote in this standard.
 
-First, the user could wait until their first vote casting transaction completes, then create more ballots and resubmit to the ballot box.  The result would be the creation of more assets that count toward the ultimate vote.  However, Cardano helps us here by referencing token supply based on the concatenation of policy ID and asset identifier.  So long as the mapping function in the [Plutus minting policy for ballots](#"Ballot"-->-Plutus-Minting-Policy) is idempotent, each subsequent time the user votes the policy will create an additional fungible token with the same asset identifier.  Then, the ballot counter can ignore any prior votes based on each unique asset identifier to avoid duplicate votes (see ["'Ballot Counter' -> Authorized Wallet"](#"Ballot-Counter"-->-Authorized-Wallet)).
+First, the user could wait until their first vote casting transaction completes, then create more ballots and resubmit to the ballot box.  The result would be the creation of more assets that count toward the ultimate vote.  However, Cardano helps us here by referencing token supply based on the concatenation of policy ID and asset identifier.  So long as the mapping function in the [Plutus minting policy for ballots](#Ballot---Plutus-Minting-Policy) is idempotent, each subsequent time the user votes the policy will create an additional fungible token with the same asset identifier.  Then, the ballot counter can ignore any prior votes based on each unique asset identifier to avoid duplicate votes (see ["'Ballot Counter' -> Authorized Wallet"](#Ballot-Counter---Authorized-Wallet)).
 
 Secondly, the user could attempt to create multiple ballots of the same name for a given reference NFT.  If the reference NFT is actually a fungible token and not an NFT, then our assumptions will have been broken and this is an unsupported use case.  But if our assumption that this is an NFT project are correct, then simply checking that the quantity minted is equal to the quantity spent inside of the Plutus minting policy will prevent this.  The [example code](./example/voting.js) attached does just that.
 
@@ -220,7 +220,7 @@ There are several potential disadvantages to this proposal that may be avoided b
 
 In no particular order, we recommend the following implementation details that do not impact the protocol, but may impact user experience:
 
-- The mapping function described in the [Plutus minting policy for ballots](#"Ballot"-->-Plutus-Minting-Policy) should likely be some sort of prefixing or suffixing (e.g., "Ballot #1 - <REFERENCE NFT>"), and NOT the identity function.  Although the asset will be different than the reference NFT due to its differing policy ID, users are likely to be confused when viewing these assets in a token viewer.
+- The mapping function described in the [Plutus minting policy for ballots](#Ballot---Plutus-Minting-Policy) should likely be some sort of prefixing or suffixing (e.g., "Ballot #1 - <REFERENCE NFT>"), and NOT the identity function.  Although the asset will be different than the reference NFT due to its differing policy ID, users are likely to be confused when viewing these assets in a token viewer.
 - The "ballot NFT" should have some sort of unique metadata (if using [CIP-25](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025)), datum (if using [CIP-68](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068)) or other identification so that the users can engage with the ballot in a fun, exciting way and to ensure there is no confusion with the reference NFT.
 - The "vote" represented by a datum will be easier to debug and analyze in real-time if it uses the new "inline datum" feature from Vasil, but the protocol will still work on Alonzo era transactions.
 - The "ballot box" smart contract should likely encode that the datum's "voter" field is respected when returning the ballots to users after voting has ended to provide greater transparency and trust for project participants (though it will not impact the protocol).
