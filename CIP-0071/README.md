@@ -52,7 +52,7 @@ Because of the efficient UTxO model Cardano employs, steps #1, #2, and #4 can oc
 
 #### "Ballot" -> Plutus Minting Policy
 
-Every holder that participates in the vote will have their project NFT in a wallet that can be spent from (either hardware or software, and typically via [CIP-30](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)).  To create a ballot, the voting authority will create a Plutus minting policy with a specific combination of:
+Every holder that participates in the vote will have their project NFT in a wallet that can be spent from (either hardware or software, typically accessed via [CIP-30](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)).  To create a ballot, the voting authority will create a Plutus minting policy with a specific combination of:
 
 ```ts
 type BallotMintingPolicy = {
@@ -84,8 +84,6 @@ func main(redeemer: Redeemer, ctx: ScriptContext) -> Bool {
 }
 ```
 
-Note the open burning policy (see ["Reclaiming ADA Locked by the Ballot NFTs"](#Reclaiming-ADA-Locked-by-the-Ballot-NFTs) for more details).
-
 #### "Vote" -> eUTxO Datum
 
 To cast the vote, the user sends the ballot NFT just created to a "ballot box".  Note that for reasons specified in [the "attacks" section below](#Creation-of-Ballot-Without-Casting-a-Vote) this needs to occur during the same transaction that the ballot was minted in.
@@ -105,17 +103,17 @@ Note that we are trying to avoid being overly prescriptive here with the specifi
 
 #### "Ballot Box" -> Smart Contract
 
-Essentially, the "ballot box" is a smart contract with arbitrary logic decided upon by the authorized vote counter.  Some samples include:
+Essentially, the "ballot box" is a smart contract with arbitrary logic decided upon by the authorized vote counter.  Some examples include:
 
 1. A ballot box that can be redeemed at any time by a tx signed by the authorized vote counter
 2. A ballot box that can be redeemed only after polls close
-2. A ballot box that can be redeemed once a majority of voters have sent in a ballot (using datums)
+2. A ballot box that can be redeemed once a majority of voters have sent in a ballot
 3. A ballot box that can be redeemed only by the specific wallet specified in the `voter` datum of each UTxO
 
 Because the ballot creation and vote casting process has already occurred on-chain we want to provide the maximum flexibility in the protocol here so that each project can decide what is best for their own community.  Helios code for the simple case enumerated as #1 above would be:
 
 ```ts
-const EXPECTED_SIGNER: PubKeyHash = PubKeyHash::new(#${pubKeyHash})
+const EXPECTED_SIGNER: PubKeyHash = PubKeyHash::new(#0123456789abcdef)
 
 func main(ctx: ScriptContext) -> Bool {
   ctx.tx.is_signed_by(EXPECTED_SIGNER)
@@ -129,7 +127,7 @@ func main(ctx: ScriptContext) -> Bool {
 Given the flexible nature of the ["ballot box" smart contract](#Ballot-Box---Smart-Contract) enumerated above, we propose a simple algorithm for counting votes and returning the ballots to the user:
 
 1. Ensure the polls are closed (can be either on or off-chain)
-2. Iterate through all UTxOs in forward-time-order locked in the "ballot box" and for each
+2. Iterate through all UTxOs in forward-time-order locked in the "ballot box" and for each:
 	* Determine which assets are inside of that UTxO
 	* Mark their most recent vote to match the `vote` object in the UTxOs datum
 3. Ensure any required quorums or thresholds were reached
@@ -195,17 +193,17 @@ The Helios code above simply checks that during a burn (as indicated by the Plut
 
 Imagine a user who decides to create ballots for the current vote, but not actually cast the vote by sending it to the ballot box.  According to checks #1 and #2 in [the Plutus Minting Policy](#Ballot---Plutus-Minting-Policy), this would be possible.  After the ballot was created, the user could sell the reference NFT and wait until just before the polls close to surreptitiously cast a vote over the wishes of the new project owner.  Check #3 in the minting policy during the mint transaction itself prevents this attack.
 
-### Double Voting
+### Double Voting in Multiple Transactions
 
-There are two potential ways that a user could double vote in this standard.
+A user could wait until their first vote casting transaction completes, then create more ballots and resubmit to the ballot box.  The result would be the creation of more assets that count toward the ultimate vote.  However, Cardano helps us here by identifying tokens based on the concatenation of policy ID and asset identifier.  So long as the mapping function in the [Plutus minting policy for ballots](#Ballot---Plutus-Minting-Policy) is idempotent, each subsequent time the user votes the policy will create an additional fungible token with the same asset identifier.  Then, the ballot counter can ignore any prior votes based on each unique asset identifier to avoid duplicate votes (see ["'Ballot Counter' -> Authorized Wallet"](#Ballot-Counter---Authorized-Wallet)).
 
-First, the user could wait until their first vote casting transaction completes, then create more ballots and resubmit to the ballot box.  The result would be the creation of more assets that count toward the ultimate vote.  However, Cardano helps us here by referencing token supply based on the concatenation of policy ID and asset identifier.  So long as the mapping function in the [Plutus minting policy for ballots](#Ballot---Plutus-Minting-Policy) is idempotent, each subsequent time the user votes the policy will create an additional fungible token with the same asset identifier.  Then, the ballot counter can ignore any prior votes based on each unique asset identifier to avoid duplicate votes (see ["'Ballot Counter' -> Authorized Wallet"](#Ballot-Counter---Authorized-Wallet)).
+### Double Creation of the Same Ballot
 
-Secondly, the user could attempt to create multiple ballots of the same name for a given reference NFT.  If the reference NFT is actually a fungible token and not an NFT, then our assumptions will have been broken and this is an unsupported use case.  But if our assumption that this is an NFT project are correct, then simply checking that the quantity minted is equal to the quantity spent inside of the Plutus minting policy will prevent this.  The [example code](./example/voting.js) attached does just that.
+A user could attempt to create multiple ballots of the same name for a given reference NFT.  If the reference NFT is actually a fungible token and not an NFT, then our assumptions will have been broken and this is an unsupported use case.  But if our assumption that this is an NFT project are correct, then simply checking that the quantity minted is equal to the quantity spent inside of the Plutus minting policy will prevent this.  The [example code](./example/voting.js) attached does just that.
 
 ### Returning the "Ballot" NFTs to the Wrong User
 
-During the construction of the ballot NFTs we allow the user to specify their vote alongside a `voter` field indicating where their "ballot" NFT should be returned to once the vote is fully counted.  Unfortunately, this is not enforced inside the Plutus minting policy's code (largely due to CPU/memory constraints).  So, we rely on the user to provide an accurate return address, which means that there is the potential for someone who has not actually voted to receive a commemorative NFT.  This does not impact the protocol though, as the "ballot" NFT was legally minted, just returned to the incorrect location.  That user actually received a gift, as they can now burn the ballot and receive some small amount of dust.
+During the construction of the ballot NFTs we allow the user to specify their vote alongside a `voter` field indicating where their "ballot" NFT should be returned to once the vote is fully counted.  Unfortunately, this is not strictly checked inside the Plutus minting policy's code (largely due to CPU/memory constraints).  So, we rely on the user to provide an accurate return address, which means that there is the potential for someone who has not actually voted to receive a commemorative NFT.  This does not impact the protocol though, as the "ballot" NFT was legally minted, just returned to the incorrect location.  That user actually received a gift, as they can now burn the ballot and receive some small amount of dust.
 
 ## Potential Disadvantages
 
@@ -221,9 +219,9 @@ There are several potential disadvantages to this proposal that may be avoided b
 In no particular order, we recommend the following implementation details that do not impact the protocol, but may impact user experience:
 
 - The mapping function described in the [Plutus minting policy for ballots](#Ballot---Plutus-Minting-Policy) should likely be some sort of prefixing or suffixing (e.g., "Ballot #1 - <REFERENCE NFT>"), and NOT the identity function.  Although the asset will be different than the reference NFT due to its differing policy ID, users are likely to be confused when viewing these assets in a token viewer.
-- The "ballot NFT" should have some sort of unique metadata (if using [CIP-25](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025)), datum (if using [CIP-68](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068)) or other identification so that the users can engage with the ballot in a fun, exciting way and to ensure there is no confusion with the reference NFT.
+- The "ballot" NFT should have some sort of unique metadata (if using [CIP-25](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025)), datum (if using [CIP-68](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068)) or other identification so that the users can engage with the ballot in a fun, exciting way and to ensure there is no confusion with the reference NFT.
 - The "vote" represented by a datum will be easier to debug and analyze in real-time if it uses the new "inline datum" feature from Vasil, but the protocol will still work on Alonzo era transactions.
-- The "ballot box" smart contract should likely encode that the datum's "voter" field is respected when returning the ballots to users after voting has ended to provide greater transparency and trust for project participants (though it will not impact the protocol).
+- The "ballot box" smart contract should likely enforce that the datum's "voter" field is respected when returning the ballots to users after voting has ended to provide greater transparency and trust for project participants.
 
 ## Backward Compatibility
 
@@ -241,6 +239,7 @@ Due to the nature of Plutus minting policies and smart contracts, which derive p
 - [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030): Cardano dApp-Wallet Web Bridge
 - [CIP-0068](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068): Datum Metadata Standard
 - [Helios Language](https://github.com/Hyperion-BT/Helios): On-Chain Cardano Smart Contract language used in example code
+- [Lucid](https://github.com/spacebudz/lucid): Transaction construction library used in code samples and pseudocode
 
 ## Copyright
 
