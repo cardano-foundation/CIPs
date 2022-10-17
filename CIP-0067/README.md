@@ -10,22 +10,21 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines a standard to classify Cardano native assets by the asset name.
+This proposal defines a standard to identify Cardano native assets by the asset name to put them in an asset class, as intended by their issuer.
 
 ## Motivation
 
-As more assets are minted and different standards emerge to query data for these assets, it's getting harder for 3rd parties to determine the asset type and how to proceed with it. This standard is similar to [CIP-0010](../CIP-0010), but focuses on the asset name of an asset.
-
+As more assets are minted and different standards emerge to query data for these assets, it's getting harder for 3rd parties to determine the asset class and associated extra assumptions that may arise from this identification. For example, if an asset is identified as a non-fungible token, a third party is interested in its onchain associated metadata. This standard is similar to [CIP-0010](../CIP-0010), but focuses on the asset name of a native asset.
 
 ## Specification
 
-To classify assets the `asset_name` needs to be prefixed the following `4 bytes` binary encoding:
+To give issuers, the option to classify assets the `asset_name` needs to be prefixed the following `4 bytes` binary encoding:
 ```
-[ 0000 | 16 bits label_num | 8 bits checksum | 0000 ]
+[ 0000 | 16 bits label_num | 8 bits checksum | 0000 ]
 ```
 - The leading and ending four 0s are brackets
 - `label_num` has a fixed size of 2 bytes (`Label range in decimal: [0, 65535]`). 
-If `label_num` < 2 bytes the remaining bits need to be left-padded with 0s.
+If `label_num` < 2 bytes, the remaining bits need to be left-padded with 0s.
 - `checksum` has a fixed size of 1 byte. The checksum is calculated by applying the [CRC-8](#CRC-8) algorithm on the `label_num (including the padded 0s)`. 
 
 ### CRC-8
@@ -65,14 +64,14 @@ We want to use the decimal label `222` for an asset name:
 
 1. Convert to hex and pad with missing 0s => `0x00de`
 2. Calculate CRC-8 checksum => `0x14`
-3. Add brackes and combine label => `0x000de140`
+3. Add brackets and combine label => `0x000de140`
 
 #### Verify a label
 We have the following asset name: `0x000de140`
 
 1. Slice off the first 4 bytes of the asset name => `0x000de140`
 2. Check if first 4 bits and last 4 bits are `0b0000` (`0x0`)
-3. Slice of the 2 `label_num` bytes and apply them to the CRC-8 algorithm. If the result matches with the `checksum` byte a `valid` label was found and it can be returned. => `0x00de`
+3. Slice off the 2 `label_num` bytes and apply them to the CRC-8 algorithm. If the result matches with the `checksum` byte, a `valid` label was found and it can be returned. => `0x00de`
 4. Convert to decimal => `222`
 
 
@@ -86,11 +85,22 @@ These are the reserved `asset_name_label` values
 
 ### Adding an entry to the registry
 
-To propose an addition to the registry edit the [registry.json](./registry.json) with your details, open a pull request against the CIPs repository and give a brief description of your project and how you intend to use the label for assets.
+To propose an addition to the registry, edit the [registry.json](./registry.json) with your details, open a pull request against the CIPs repository and give a brief description of your project and how you intend to use the label for assets.
 
 ## Rationale
 
-Asset name labels make it easy to classify assets. It's important to understand that an oblivious token issuer might use the prefix X for all kinds of things, leading to misinterpretation by clients that follow this standard. We can minimize this attack vector by making the label format obscure. Brackets, checksum and fixed size binary encoding make it unlikely someone follows this standard by accident.
+Asset name labels make it easy to identify native assets and classify them in their asset class intended by the issuer. Since the identification of these native assets is done by third parties, the design is focused on the usability for them.
+
+First, The label should be quickly parsable with a first check. That is, an initial check on an asset name that is easy and will exclude a big subset of the available token names that do not follow standard. This is why the label starts and ends with `0000` in bits. Additionally, in its hex notation, this is differentiable by a human in its readable form, a more common representation.
+
+Secondly, the remaining verification on whether a certain `asset_name_label` standard is followed should be a one shot calculation. Here we mean that the calculation of the check should be straightforward, the label should not be fitted via brute force by a third party. That's why the label contains the bit representation of the integer label it tries to follow.
+
+Another thing that is important to understand is that an oblivious token issuer might not be aware of this standard. This could lead to the unintentional misinterpretation by third parties and injection attacks. We can minimize this attack vector by making the label format obscure. That is why the label also contains a checksum derived from the `asset_name_label` to add characters that are deterministically derived but look like nonsense. Together with the above zero "brackets", and the fixed size binary encoding, it make it unlikely someone follows this standard accidentally. The CRC-8 checksum is chosen for it low-impact on resources and its readily available implementations in multiple languages.
+
+## Path to Active
+
+- Get support for this CIP by wallets, explorers, minting platforms and other 3rd parties.
+- Get support by tools/libraries like Lucid, PlutusTx, cardano-cli, etc. to generate/verify labels.
 
 ### Reference Implementation(s)
 
@@ -99,7 +109,7 @@ Asset name labels make it easy to classify assets. It's important to understand 
 
 ### Test Vectors
 
-Keys represent labels in `decimal` numbers. Values represent the entire label including brackets and checksum in `hex`:
+Keys represent labels in `decimal` numbers. Values represent the entire label, including brackets and checksum in `hex`:
 
 ```yaml
 0     : 00000000
