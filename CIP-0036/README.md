@@ -140,6 +140,7 @@ Witness example:
 ### Deregistration metadata format (Catalyst)
 
 This deregistration format is currently only specified for Catalyst (vote_purpose=0), other voting chain purposes may handle a deregistration in a different way.
+There was a discussion before if an empty delegation array could also be used to fulfil a deregistration. This idea was cancelled, because it would currently require additional resources in the Hardware-Wallets state machine to do additional checks about an empty array. So the decision was made to leave the registration part untouched and only add the deregistration via the unused key 61286. Wallets/Tools are not forced to support this deregistration method.
 
 Definition:
 - A deregistration removes all the voting power (associated stake amount) for the provided stake credential from the delegated vote-public-keys.
@@ -229,7 +230,7 @@ Fund 8:
  - added the `voting_purpose` field to limit the scope of the delegations.
  - rename the `staking_pub_key` field to `stake_credential` and `registration_signature` to `registration_witness` to allow for future credentials additions.
 
-Fund 10:
+Fund 11:
  - added the `deregistration` metadata format.
 
 ## Copyright
