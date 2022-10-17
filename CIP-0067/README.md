@@ -2,7 +2,7 @@
 CIP: 67
 Title: Asset Name Label Registry
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Thomas Vellekoop <thomas.vellekoop@iohk.io>
-Status: Draft
+Status: Proposed
 Type: Informational
 Created: 2022-07-13
 License: CC-BY-4.0
