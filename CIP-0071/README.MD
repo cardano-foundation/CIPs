@@ -51,27 +51,38 @@ The only important thing to note is that inside the DID document the payload wil
 ```
 #### 3. Extendet Pool Metadata
 
-This token can be created under a seperate policy ID, so that it can be used for multiple collections at once.
-The policy can also be left unlocked in case the identity information requires changes at some later date. 
+This token can be linked in Extendet Pool metadata JSON
 
 ```
 {
-  "725": {
-    "<policy_id>": {
-        "<collection_name>": {
-            "@context": <uri | array>,
-            "type": <string>,
-            "files": [{
-                "name": <string>,
-                "mediaType": <mime_type>,
-                "src": <uri | array>,
-                <other_properties>
-            }],
-            <other properties>
-        }
+  "extended": "https://iamx.id/iamx_extended.json",
+  "info": {
+    "url_png_icon_64x64": "https://iamx.id/logoSmall_64x64.png",
+    "url_png_logo": "https://iamx.id/logoBig.png",
+    "location": "Zug,Swiss",
+    "social": {
+      "twitter_handle": "@iam_x_identity",
+      "instagramm_handle": "@iam_x",
+      "github_handle": "IAMXID"
     },
-    "version": <version_id>
-  }
+    "company": {
+      "name": "IAMX AG"
+    },
+    "about": {
+      "me": "IAMX AG was founded by three friends from Germany who shares ideas for making the world a little bit better: Jochen, Tim & Tim.",
+      "server": "Dedicated Servers hosted in a professional Swiss server center."
+    },
+    "@context": "https://github.com/IAMXID/did-method-iamx",    
+    "files": [
+      {
+        "mediaType": "application/ld+json",
+        "name": "vPOOL",
+        "src": "ipfs://QmVPtEVqDAzhWYVKZPvAtCxHLHRQ11WZK6szSGfQFfrqQa"
+      }
+    ],
+    "type": "Ed25519VerificationKey2020"
+  },
+  "my-pool-ids": {}
 }
 ```
 
