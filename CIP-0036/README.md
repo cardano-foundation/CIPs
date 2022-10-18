@@ -83,7 +83,7 @@ as follows.
 This ensures that the voter's total voting power is never accidentally reduced through poor choices of weights,
 and that all voting powers are exact ADA.
 
-### Example 
+### Example - Registration
 
 Voting registration example:
 ```
@@ -137,6 +137,65 @@ Witness example:
 }
 ```
 
+### Deregistration metadata format (Catalyst)
+
+This deregistration format is currently only specified for Catalyst (vote_purpose=0), other voting chain purposes may handle a deregistration in a different way.
+There was a discussion before if an empty delegation array could also be used to fulfil a deregistration. This idea was cancelled, because it would currently require additional resources in the Hardware-Wallets state machine to do additional checks about an empty array. So the decision was made to leave the registration part untouched and only add the deregistration via the unused key 61286. Wallets/Tools are not forced to support this deregistration method.
+
+Definition:
+- A deregistration removes all the voting power (associated stake amount) for the provided stake credential from the delegated vote-public-keys.
+- A deregistration resets the state of the stake credential on the voting chain like they were never registered before.
+- A deregistration transaction is a regular Cardano transaction with a specific transaction metadata associated with it.
+
+Notably, there should be three entries inside the metadata map (key 61286):
+ - The public key of the stake signing key
+ - A nonce that identifies that most recent deregistration.
+ - A non-negative integer that indicates the purpose of the vote. For now, we define 0 as the value to use for Catalyst, and leave others for future use.
+
+Be aware, the deregistration metadata key is 61286, and not 61284 like it is used for a registration! The registraton metadata format and specification is independent from the deregistration one, and may not be supported by all wallets/tools.
+ 
+### Example - Deregistration (Catalyst)
+
+```
+{
+  61286: {
+    // stake_pub - CBOR byte array
+    1: "0x57758911253f6b31df2a87c10eb08a2c9b8450768cb8dd0d378d93f7c2e220f0",
+    // nonce
+    2: 74412400,
+    // voting_purpose: 0 = Catalyst
+    3: 0
+  },
+  61285: {
+    // witness - ED25119 signature CBOR byte array
+    1: "0xadb7c90955c348e432545276798478f02ee7c2be61fd44d22f9de22131d9bcf0b23eb413766b74b9e7ba740e71266467a5d35363411346972db9e7b710b00603"
+  }
+}
+```
+CBOR-Hex:
+`A219EF66A301582057758911253F6B31DF2A87C10EB08A2C9B8450768CB8DD0D378D93F7C2E220F0021A046F7170030019EF65A1015840ADB7C90955C348E432545276798478F02EE7C2BE61FD44D22F9DE22131D9BCF0B23EB413766B74B9E7BA740E71266467A5D35363411346972DB9E7B710B00603`
+
+The entries under keys 1, 2 and 3 represent the staking credential on the Cardano network, a nonce, and a voting purpose, respectively.
+A deregistration with these metadata will be considered valid if the following conditions hold:
+
+- The stake credentials is a stake public-key byte array (of CBOR major type 2)
+- The nonce is an unsigned integer (of CBOR major type 0) that should be 
+  monotonically rising across all transactions with the same staking key.
+  The advised way to construct a nonce is to use the current slot number.
+  This is a simple way to keep the nonce increasing without having to access
+  the previous transaction data.
+- The voting_purpose is an unsigned integer (of CBOR major type 0)
+
+To produce the witness field in case of a staking public key, the CBOR representation of a map containing
+a single entry with key 61286 and the deregistration metadata map in the
+format above is formed, designated here as `sign_data`.
+This data is signed with the staking key as follows: first, the
+blake2b-256 hash of `sign_data` is obtained. This hash is then signed
+using the Ed25519 signature algorithm. The witness metadata entry is
+added to the transaction under key 61285 as a CBOR map with a single entry
+that consists of the integer key 1 and signature as obtained above as the byte array value.
+
+
 ### Metadata schema
 
 See the [schema file](./schema.cddl)
@@ -170,6 +229,9 @@ Fund 8:
  - renamed the `voting_key` field to `delegations` and add support for splitting voting power across multiple vote keys.
  - added the `voting_purpose` field to limit the scope of the delegations.
  - rename the `staking_pub_key` field to `stake_credential` and `registration_signature` to `registration_witness` to allow for future credentials additions.
+
+Fund 11:
+ - added the `deregistration` metadata format.
 
 ## Copyright
 
