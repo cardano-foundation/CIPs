@@ -32,10 +32,10 @@ The operator (holder) can choose which identity data points he wants to connect 
 
 There are three different key components to this structure.
 
-| Component                    | Description                                                                                                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| DID                          | The actual Decentralized Identity Document, where the information about the connected identity data points is stored.             |
-| Extended Stake-Pool Metadata | This metadata segment is placed in the Extended Stake-Pool Metadata and defines the connection to the DID or the Identity Token. |
+| Component                    | Description                                                                                                           |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| DID                          | The actual Decentralized Identity Document, where the information about the connected identity data points is stored. |
+| Extended Stake-Pool Metadata | This metadata segment is placed in the Extended Stake-Pool Metadata and defines the connection to the DID.            |
 
 #### 1. DID
 
