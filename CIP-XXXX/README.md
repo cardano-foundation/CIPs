@@ -35,7 +35,6 @@ Such a standard should accomplish a number of somewhat contradictory objectives
 * The standard should be flexible enough to capture the majority of use-cases, even those that may not yet be conceived of at the writing of this document
 * The standard should provide room for individual data providers to add their own data fields to a feed, without interfering with the common standard
 
-
 ### Data Format
 
 The basis for this standard is the Concise Binary Object Representation (CBOR) data format, for which more information can be found here: [https://www.rfc-editor.org/rfc/rfc8949.html](https://www.rfc-editor.org/rfc/rfc8949.html) 
@@ -69,9 +68,7 @@ Data stored in this tag is considered to be auxiliary or supportive of the rest 
 
 Data inside this tag is stored as a CBOR Mapping, the keys defined as positive integers and the values being defined on a per-case basis. The keys are defined here as enums, to give users of the standard a common understanding of what data is stored where. Each field in the mapping is optional.
 
-
 *Keys-value mappings*
-
 
 <table>
   <tr>
@@ -100,8 +97,6 @@ Data inside this tag is stored as a CBOR Mapping, the keys defined as positive i
   </tr>
 </table>
 
-
-
 ### ExtendedData(Tag +1)
 
 This tag is intended to store data provider specific data, where each data provider can define their own fields with a minimum of interference. Serves a similar purpose to SharedData, but is used for “global” data that isn’t considered broad enough in use to be defined in SharedData but still is considered valuable by a data provider.
@@ -112,9 +107,7 @@ Key indices 0-100 are considered to be reserved for data entries defined by this
 
 Data inside this tag is stored as a CBOR Mapping, the keys defined as positive integers and the values being defined on a per-case basis. The keys are defined here as enums, to give users of the standard a common understanding of what data is stored where. Each field in the mapping is optional.
 
-
 *Keys-value mappings*
-
 
 <table>
   <tr>
@@ -158,8 +151,6 @@ Data inside this tag is stored as a CBOR Mapping, the keys defined as positive i
    </td>
   </tr>
 </table>
-
-
 
 ### PriceMap(Tag +2)
 
