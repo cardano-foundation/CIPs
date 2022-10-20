@@ -1,6 +1,6 @@
 ---
 CIP: 0071
-Title: Pool Identity
+Title: Verified Pool Identity
 Authors: Dennis Mittmann <dennis@iamx.id>
 Status: Active
 Type: Process
@@ -10,7 +10,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP defines a standard to verify Staking Pools using Decentralized Identifiers.
+This CIP defines a standard to verify Staking Pools using Decentralized Identifiers (DID)
 
 ## Motivation
 
@@ -18,13 +18,13 @@ The verification process of the authenticity of Staking Pools is currently a cen
 
 ## High-Level Overview
 
-By connecting a Stake-Pool metadata to one or multiple Digital Identifiers, the pool operator has the option to attach verification data points to the pool.
+By connecting Stake-Pool metadata to one or multiple Digital Identifiers, the pool operator has the option to attach verification data points to the pool.
 
-Each of these data points stores information about a direct connection between the Stake-Pool operator and some sort of identity medium. This identity medium could be a social account, a KYC process, a phone number or anything else where an identity is directly linked to an account or something similar.
+Each of these data points stores information about a direct connection between the Stake-Pool operator and some sort of identity medium. This identity medium could be a social account, a Know-Your-Customer (KYC), Know-Your-Business (KYB) or anything else where an identity is directly linked to an account or something similar.
 
 The data points connected to the Stake-Pool are publicly visible and can be audited by anyone. Either manually or programmatically.
 
-The creator can choose which identity data points he wants to connect to the collection, and the auditor can then choose if he trusts these data points enough to interact with the collection or not.
+The operator (holder) can choose which identity data points he wants to connect to the pool, and the delegator (verifier) can then choose if he trusts those data points (verifiable credentials) to stake with the pool or not.
 
 ## Specification
 
@@ -171,7 +171,7 @@ This token can be linked in extended Stake-Pool metadata JSON
       "name": "IAMX AG"
     },
     "about": {
-      "me": "IAMX AG was founded by three friends from Germany who shares ideas for making the world a little bit better: Jochen, Tim & Tim.",
+      "me": "The era of your identity serving as the product, controlled and capitalized by corporates is coming to an end.",
       "server": "Dedicated Servers hosted in a professional Swiss server center."
     },
     "@context": "https://github.com/IAMXID/did-method-iamx",    
