@@ -16,7 +16,7 @@ This CIP defines a standard to verify Staking Pools using Decentralized Identifi
 
 The verification process of the authenticity of Staking Pools is currently a centralized effort. 
 
-## High Level Overview
+## High-Level Overview
 
 By connecting a Stake-Pool metadata to one or multiple Digital Identifiers, the pool operator has the option to attach verification data points to the pool.
 
@@ -32,10 +32,10 @@ The creator can choose which identity data points he wants to connect to the col
 
 There are three different key components to this structure.
 
-| Component                    | description                                                                                                                     |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| DID                          | The actual Decentralized Identity Document where the information about the connected identity data points is stored.            |
-| Extended Stake-Pool Metadata | This metadata segment is placed in the Extended Stake-Pool Metadata and defines the connecton to the DID or the Identity Token. |
+| Component                    | Description                                                                                                                      |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| DID                          | The actual Decentralized Identity Document, where the information about the connected identity data points is stored.             |
+| Extended Stake-Pool Metadata | This metadata segment is placed in the Extended Stake-Pool Metadata and defines the connection to the DID or the Identity Token. |
 
 #### 1. DID
 
