@@ -171,8 +171,7 @@ This is a low-level representation of the metadata, following closely the struct
 
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
-; NOTE: logo is an exception and is not a PNG bytestring, but a URI, so that links and data uris with all image types are possible (see below)
-
+; NOTE: 'logo' is an exception and is not a PNG bytestring, but a URI, so that links and data uris with all image types are possible (see below)
 
 metadata = 
   {
