@@ -1,5 +1,5 @@
 ---
-CIP: 066
+CIP: 0071
 Title: Pool Identity
 Authors: Dennis Mittmann <dennis@iamx.id>
 Status: Active
