@@ -1,6 +1,6 @@
 ---
 CIP: <?>  
-Title: <Parameterized Reference Scripts>  
+Title: <Oracle Datum Standard>  
 Authors: Cardano DeFi Alliance <info@cardanodefialliance.org>, Cody Butz <cbutz@indigo-labs.io>, Jonas Lindgren <jonas@charli3.io>
 Comments-Summary: <No comments>  
 Comments-URI: <>  
