@@ -43,7 +43,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 22 | [Pool operator verification](./CIP-0022/) | Active |
 | 23 | [Fair Min Fees](./CIP-0023/) | Draft |
 | 24 | [Non-Centralizing Rankings](./CIP-0024/) | Draft |
-| 25 | [NFT Metadata Standard](./CIP-0025/) | Active |
+| 25 | [Media NFT Metadata Standard](./CIP-0025/) | Active |
 | 26 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
 | 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Active |
