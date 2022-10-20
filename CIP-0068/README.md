@@ -171,6 +171,8 @@ This is a low-level representation of the metadata, following closely the struct
 
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
+; NOTE: logo is an exception and is not a PNG bytestring, but a URI, so that links and data uris with all image types are possible (see below)
+
 
 metadata = 
   {
@@ -178,8 +180,8 @@ metadata =
     description : bounded_bytes, ; UTF-8
     ? ticker: bounded_bytes, ; UTF-8
     ? url: bounded_bytes, ; UTF-8
-    ? logo: bounded_bytes, ; UTF-8
-    ? decimals: big_int
+    ? logo: bounded_bytes, ; UTF-8, URI (not a PNG bytestring like in the explanation. Valid formats: ("https://...", "ipfs://...", "data:...", etc.))
+    ? decimals: int
   }
   
 datum = #6.121([metadata, 1]) ; version 1
