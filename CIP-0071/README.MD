@@ -18,17 +18,30 @@ The verification process of the authenticity of Staking Pools is currently a cen
 
 ## High Level Overview
 
-## Practical Example
+By connecting a Stake-Pool metadata to one or multiple Digital Identifiers, the pool operator has the option to attach verification data points to the pool.
+
+Each of these data points stores information about a direct connection between the Stake-Pool operator and some sort of identity medium. This identity medium could be a social account, a KYC process, a phone number or anything else where an identity is directly linked to an account or something similar.
+
+The data points connected to the Stake-Pool are publicly visible and can be audited by anyone. Either manually or programmatically.
+
+The creator can choose which identity data points he wants to connect to the collection, and the auditor can then choose if he trusts these data points enough to interact with the collection or not.
 
 ## Specification
 
 ### Structure
 
+There are three different key components to this structure.
+
+| Component                    | description                                                                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| DID                          | The actual Decentralized Identity Document where the information about the connected identity data points is stored.            |
+| Extended Stake-Pool Metadata | This metadata segment is placed in the Extended Stake-Pool Metadata and defines the connecton to the DID or the Identity Token. |
+
 #### 1. DID
 
 This is an example DID taken from the official [W3C specification](https://www.w3.org/TR/did-core/#did-syntaxg).
-To keep the scope reasonable, this CIP will not explain the DID specification deeper. Please refer to the W3C specifation as linked above.
-The only important thing to note is that inside the DID document the payload will contain the different social accounts that were linked to the DID document.
+To keep the scope reasonable, this CIP will not explain the DID specification deeper. Please refer to the W3C speciation as linked above.
+The only important thing to note is that inside the DID document, the payload will contain KYC/KYB imprint Data that were linked to the DID document.
 
 ```
 {
@@ -137,9 +150,10 @@ The only important thing to note is that inside the DID document the payload wil
    ]
 }
 ```
-#### 3. Extendet Pool Metadata
 
-This token can be linked in Extendet Pool metadata JSON
+#### 3. Extended Stake-Pool metadata
+
+This token can be linked in extended Stake-Pool metadata JSON
 
 ```
 {
@@ -169,6 +183,7 @@ This token can be linked in Extendet Pool metadata JSON
       }
     ],
     "type": "Ed25519VerificationKey2020"
+    "version" : "1.00",
   },
   "my-pool-ids": {}
 }
@@ -176,23 +191,23 @@ This token can be linked in Extendet Pool metadata JSON
 
 ## Cross-Chain Compatibility
 
-To make this standard cross-chain compatible it is possible to set the value of the src parameter under files to a unique identifier on another blockchain, where the DID might be located.
+To make this standard cross-chain compatible, it is possible to set the value of the src parameter under files to a unique identifier on another blockchain, where the DID might be located.
 
 ## Backwards Compatibility
 
 To keep metadata compatible with changes coming up in the future, we use the **`version`** property.
 
 ## Rationale
-The focus of this standard is on ease-of-use & flexibility. Using this standard it is possible to reference DIDs not only on Cardano but at any arbitrary location, even cross-chain. It is also relatively simple to understand and implement because it borrows heavily from pre-existing metadata standards.
+The focus of this standard is on ease-of-use & flexibility. Using this standard, it is possible to reference DIDs not only on Cardano but at any arbitrary location, even cross-chain. It is also relatively simple to understand and implement because it borrows heavily from pre-existing metadata standards.
 
 ## Path to Active
 
-By displaying this solution at the Catalyst Guild Hall we hope to reach more creators that are willing to integrate this solution.
+By displaying this solution at the Catalyst Guild Hall, we hope to reach more creators that are willing to integrate this solution.
 
 ## References
 
 - W3C DID Specification: https://www.w3.org/TR/did-core/#did-syntaxg
-- CIP-0066
+- CIP-0066 NFT-Identity
 
 ## Copyright
 
