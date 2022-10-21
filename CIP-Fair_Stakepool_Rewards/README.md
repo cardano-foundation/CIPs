@@ -151,7 +151,7 @@ Current stakepool viability point: ~625,000 ADA
 
 Current stakepool competitive point: ~19,000,000 ADA
 
-Proposal stakepool viability point: 0 ADA
+Proposal stakepool viability point: 1 ADA
 
 Proposal stakepool competitive point: 1 ADA
 
