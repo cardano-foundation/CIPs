@@ -182,7 +182,7 @@ metadata =
     description : long_bytes, ; UTF-8
     ? ticker: bounded_bytes, ; UTF-8
     ? url: long_bytes, ; UTF-8
-    ? logo: uri
+    ? logo: uri,
     ? decimals: int
   }
 
