@@ -1,6 +1,6 @@
 ---
 CIP: 25
-Title: NFT Metadata Standard
+Title: Media NFT Metadata Standard
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Smaug <smaug@pool.pm>
 Comments-URI:
 Status: Active
@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines an NFT Metadata Standard for Native Tokens.
+This proposal defines an Media NFT Metadata Standard for Native Tokens.
 
 ## Motivation
 
