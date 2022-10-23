@@ -101,21 +101,19 @@ Example:\
 This is a low-level representation of the metadata, following closely the structure of CIP-0025. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
 ```
-long_bytes = bounded_bytes / [ * bounded_bytes ]
-
 files_details = 
   {
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
-    src : long_bytes ; UTF-8
+    src : bounded_bytes ; UTF-8
   }
 
 metadata = 
   {
     name : bounded_bytes, ; UTF-8
-    image : long_bytes, ; UTF-8
+    image : bounded_bytes, ; UTF-8
     ? mediaType : bounded_bytes, ; UTF-8
-    ? description : long_bytes, ; UTF-8
+    ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
   }
   
@@ -174,14 +172,12 @@ This is a low-level representation of the metadata, following closely the struct
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
 
-long_bytes = bounded_bytes / [ * bounded_bytes ]
-
 metadata = 
   {
     name : bounded_bytes, ; UTF-8
-    description : long_bytes, ; UTF-8
+    description : bounded_bytes, ; UTF-8
     ? ticker: bounded_bytes, ; UTF-8
-    ? url: long_bytes, ; UTF-8
+    ? url: bounded_bytes, ; UTF-8
     ? logo: uri,
     ? decimals: int
   }
@@ -191,7 +187,7 @@ metadata =
 ; Do not encode plain file payloads as URI.
 ; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
 ; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
-uri = long_bytes 
+uri = bounded_bytes 
   
 datum = #6.121([metadata, 1]) ; version 1
 ```
