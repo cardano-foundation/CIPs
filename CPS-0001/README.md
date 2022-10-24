@@ -26,7 +26,7 @@ This document attempts to describe the problem in the Cardano ecocystem where th
 - Find scripts used by a dApp
 - Discover general information of a dApp (i.e name, description, icons, etc)
 - Find the different metadata claims associated with a subject
-- Associate some form of identity to a metadata claim owner that can be verified cryptographically
+- Associate some form of identity to a claim's owner so that it can be verified cryptographically
 - Offer mechanism to attest for the correctness of a given metadata object that can be fetched by wallets and applications from off-chain sources (i.e CIP-26 complaint servers)
 - Discover datum schemas used by a script in a specific context or dApp use cases
 
