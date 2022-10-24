@@ -1,26 +1,34 @@
 ---
 CPS: 1
-Title: DApps Metadata Registration, Discovery and Trust
+Title: Metadata Discoverability and Trust
 Authors: Bruno Martins <bruno.martins@iohk.io>
 Status: Proposed
 Type: Standards
 Category: Wallets | Metadata | Plutus
 Proposed Solutions: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0026,
-https://github.com/cardano-foundation/CIPs/pull/355
+https://github.com/cardano-foundation/CIPs/pull/355,
+https://github.com/cardano-foundation/CIPs/pull/85,
+https://github.com/cardano-foundation/CIPs/pull/112,
+https://github.com/cardano-foundation/CIPs/pull/137,
+https://github.com/cardano-foundation/CIPs/pull/299
 Created: 2022-19-10
 ---
 
 ## **Abstract**
-This document attempts to describe the problem in the cardano ecocystem where there are many different types of applications being developed and there's a need to associate metadata with them. This metadata can be used to describe the application, its purpose, its version, its author, which scripts it uses, certifications and information about it's developer or publisher. This metadata can be used to provide information to the user about the application and its trustworthiness. This metadata can also be used to provide information to the wallet about the application and how to interact with it.
+This document attempts to describe the problem in the Cardano ecocystem where there are many different types **subjects** or *chain entities* and there's a need to associate metadata with them. This metadata can be used to describe an script, stake pools, script hashes, token policies and applications. This metadata can be used to provide information to the user on it's applications, it's trustworthiness and how to interact with it.
 
 ## **Goals**
-- Uncensorable and decentralized metadata registration
-- Define how metadata can be associated with the a subject (i.e dapp)
-- Define how a DApp metadata can be registered in the ecosystem for the purpose of discovery (i.e dapp stores)
-- Associate some form of identity to the metadata claim
-- Provide standard for certification of the dapp metadata claim, scripts and code
-- Offer a trust model for the wallets to make an informed decision wheter to trust a dapp or not
-- Standard to find metadata for a given subject (dapp, script, etc)
+- Define how metadata can be associated with the a subject (i.e dapp, stake pool, token policy, etc)
+- Metadata should be discoverable by wallets and applications
+- Associate some form of identity to a metadata claim
+
+## **Use Cases**
+- Find scripts used by a dApp
+- Discover general information of a dApp (i.e name, description, icons, etc)
+- Find the different metadata claims associated with a subject
+- Associate some form of identity to a metadata claim owner that can be verified cryptographically
+- Offer mechanism to attest for the correctness of a given metadata object that can be fetched by wallets and applications from off-chain sources (i.e CIP-26 complaint servers)
+- Discover datum schemas used by a script in a specific context or dApp use cases
 
 ## **Problem**
 **`Dapp Discovery`**: There's no standard way to discover dapps in the ecosystem. A Dapp being a collection of scripts and metadata, a dapp store for instance has no defined mechanism to index a "dapp publication" claim. This claim can be made by the dapp developer or by a third party. The dapp store can then use this claim to index the dapp and make it available for the user to browse. 
