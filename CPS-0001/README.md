@@ -29,19 +29,19 @@ This document attempts to describe the problem in the Cardano ecocystem where th
 - Associate some form of identity to a claim's owner so that it can be verified cryptographically
 - Offer mechanism to attest for the correctness of a given metadata object that can be fetched by wallets and applications from off-chain sources (i.e CIP-26 complaint servers)
 - Discover datum schemas used by a script in a specific context or dApp use cases
+- An wallet receiving a request to connect to a dApp, it can verify the authenticity of the dApp and the metadata associated with it.
 
 ## **Problem**
-**`Dapp Discovery`**: There's no standard way to discover dapps in the ecosystem. A Dapp being a collection of scripts and metadata, a dapp store for instance has no defined mechanism to index a "dapp publication" claim. This claim can be made by the dapp developer or by a third party. The dapp store can then use this claim to index the dapp and make it available for the user to browse. 
+**`Discoverability`**: Means to discover the different metadata claims associated with a subject. Discoverability is important for wallets, applications (i.e dapps, stores, etc) and users to be able to find the different metadata claims associated with a subject. This is important for the user to be able to make an informed decision on how to interact with a subject.
 
-**`Certification`**: Any actor of the ecosystem may see other actors as more trustworthy than others. Metadata certification can be used to provide a way for the user to make an informed decision about the trustworthiness of the dapp and it's provided information.  This claim can be made by a third party, such as a dapp store, a auditor, a known  developer, a community member, etc. The certification claim can be used to provide a trust model for the wallet to make an informed decision about the trustworthiness of the dapp. 
+**`Correctness`**: Lack of mechanism to assert that a given metadata claim is correct. Anybody and any service can provide metadata structures, but it's necessary to attest for the correctness of this metadata so that the user (or applications) are be able to make an informed decision in accepting, rejecting or how to interact with a subject.
 
-**`Identity`**: In order to anchor some form of trust to the dapp metadata claim, there's a need to associate some form of identity to it's publisher. This should be cryptographically verifiable.
-
-**`Verify correctness of metadata`**: For a given metadata structure we need to be able to verify that the metadata is correct in it's structure and that the data is correct. Given the uncensorable nature and goal for a healthy ecosystem, there can be multiple claims against the same subject and the concept of "correct" is therefore subjective and should be attached in some way to the *identity* of the publisher.
-
-**`Metadata discovery`**: When provided with specific pieces of information such as script addresses, we need to be able to find the metadata associated with it. This is useful for the wallet to be able to provide the user with information about the dapp, other related scripts and potential certifications or identity information about parties that made claims about that subject.
+**`Trust`**: There's no standard mechanism to assert that the metadata is coming from a legitimate source. This is important for the user to be able to make an informed decision on how to interact with a subject. This is also important for applications to be able to provide a better user experience. 
 
 ## **Open Questions**
 - Is this a combination of problems and should be split into multiple CPS?
-- Does this englobes all the problems related to dapp metadata?
-- Is this just a problem for dapps or should this be more generic? 
+- Does this englobes all the problems related to metadata?
+- Trust can be anchored to the owner's metadata or also third-parties that attest for the correctness of the metadata. How to handle this?
+- How to associate identity to a metadata claim?
+- How to handle the case where a subject has multiple metadata claims associated with it?
+- How to handle the case where a subject has multiple metadata claims associated with it and the user wants to select a specific one?
