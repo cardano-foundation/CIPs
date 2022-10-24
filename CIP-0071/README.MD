@@ -18,13 +18,37 @@ The verification process of the authenticity of Staking Pools is currently a cen
 
 ## High-Level Overview
 
-By connecting Stake-Pool metadata to one or multiple Digital Identifiers, the pool operator has the option to attach verification data points to the pool.
+1. Topic: Verification Validators Proof-of-Stake
 
-Each of these data points stores information about a direct connection between the Stake-Pool operator and some sort of identity medium. This identity medium could be a social account, a Know-Your-Customer (KYC), Know-Your-Business (KYB) or anything else where an identity is directly linked to an account or something similar.
+2. Background: Legal / Compliance
 
-The data points connected to the Stake-Pool are publicly visible and can be audited by anyone. Either manually or programmatically.
+3. Process Summary Pool Verification per identity source
 
-The operator (holder) can choose which identity data points he wants to connect to the pool, and the delegator (verifier) can then choose if he trusts those data points (verifiable credentials) to stake with the pool or not.
+   - a) Pool Owner / Holder: Option to attach verification data points to the pool
+   
+   - b) How: Connect Stake-Pool metadata to one or more Digital Identifiers (DIDs)
+   
+   - c) Data Points: Each of these data points stores information about a direct connection between the Stake-Pool operator and some sort of > identity source.
+   
+   - d) This > identity source could be a
+     - d1) social account, examples: Twitter, Facebook, Discord, GitHub, Apple, LinkedIn, Twitch, Google, more;
+     - d2) Know-Your-Customer (KYC), Know-Your-Business (KYB); Level: identity checks in up to 20 modules per jurisdiction and industry sector incl. financial transactions,
+     - d3) any other source where an identity is directly linked to an account or something similar
+     
+   - e) Visibility and Audit: The data points connected to the Stake-Pool are publicly visible and can be audited by anyone. Either manually or programmatically.
+   
+   - f) Operator: The operator (HOLDER) can choose which identity data points he wants to connect to the pool,
+   
+   - g) Delegator: The delegator (VERIFIER) can then choose if he trusts those data points (verifiable credentials) to stake with the pool or not.
+   
+   - h) Product: The verified POOL owns a verifiable imprint with sources social media, KYC, KYB, other sources of reusable identity verification
+   
+
+### Glossary
+
+Know-Your-Customer (KYC)
+
+Know-Your-Business (KYB)
 
 ## Specification
 
