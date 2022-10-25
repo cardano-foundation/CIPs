@@ -1,6 +1,6 @@
 ---
 CIP: 25
-Title: NFT Metadata Standard
+Title: Media NFT Metadata Standard
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Smaug <smaug@pool.pm>
 Comments-URI:
 Status: Active
@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines an NFT Metadata Standard for Native Tokens.
+This proposal defines an Media NFT Metadata Standard for Native Tokens.
 
 ## Motivation
 
@@ -78,7 +78,19 @@ The structure allows for multiple token mints, also with different policies, in 
 
 - In version `1` the **`policy_id`** must be in text format for the key in the metadata map. In version `2` the the raw bytes of the **`policy_id`** are used.
 
-- The **`image`** and **`name`** property are marked as required. **`image`** should be an URI pointing to a resource with mime type `image/*` used as thumbnail or as actual link if the NFT is an image (ideally <= 1MB).
+- The  **`name`** property is marked as required.
+- The **`image`** property is required and must be a valid [Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986) pointing to a resource with mime type `image/*`.  Note that this resource is used as thumbnail or the actual link if the NFT is an image (ideally <= 1MB). If the string representing the resource location is >64 characters, an array may be used in place of a simple JSON string type, which viewers will automatically concatenate to create a single URI.
+	- Please note that if distributed storage systems like IPFS or Arweave are used it is required to use a URI containing the respective scheme (e.g., `ipfs://` or `ar://`) and not merely the content identifier (CID) as NFT viewers may not be able to locate the file.
+		- Valid identifiers would include:
+			- `"https://cardano.org/favicon-32x32.png"`
+			- `"ipfs://QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"`
+			- `["ipfs://", "QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"]`
+		- Invalid identifiers would include:
+			- `"cardano.org/favicon-32x32.png"`
+			- `"QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"`
+			- `["Qm", "bQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"]`
+	-  If an inline base64-encoded image will be used, the data must be prepended with a valid `data:<mime_type>;base64` prefix as specified by the [data URL scheme standard](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs) to indicate the image is an inline data object
+	- See [the OpenSea "IPFS and Arweave URIs" section in their reference guide](https://docs.opensea.io/docs/metadata-standards#ipfs-and-arweave-uris) for more helpful information on the topic.
 
 - The **`description`** property is optional.
 

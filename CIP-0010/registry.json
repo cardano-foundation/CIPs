@@ -8,6 +8,10 @@
     "description": "milkomeda.com - the destination address in the sidechain"
   },
   {
+    "transaction_metadatum_label": 123,
+    "description": "shareslake.com - Bridge routing information"
+  },
+  {
     "transaction_metadatum_label": 309,
     "description": "Proof of Existence record"
   },
@@ -22,6 +26,10 @@
   {
     "transaction_metadatum_label": 777,
     "description": "CIP-0027 - Royalties Standard"
+  },
+  {
+    "transaction_metadatum_label": 888,
+    "description": "finitum.io token bridge transactions metadata"
   },
   {
     "transaction_metadatum_label": 1188,
@@ -65,10 +73,10 @@
   },
   {
     "transaction_metadatum_label": 61285,
-    "description": "CIP-0015 - Catalyst registration"
+    "description": "CIP-0015 - Catalyst witness"
   },
   {
     "transaction_metadatum_label": 61286,
-    "description": "CIP-0015 - Catalyst registration"
+    "description": "CIP-0015 - Catalyst deregistration"
   }
 ]

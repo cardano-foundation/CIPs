@@ -6,10 +6,10 @@ registration_cbor = {
 $voting_pub_key /= bytes .size 32
 $reward_address /= bytes
 $nonce /= uint
-$proportion /= uint .size 4
+$weight /= uint .size 4
 $voting_purpose /= uint
 legacy_key_registration = $voting_pub_key
-delegation = ($voting_pub_key, $proportion)
+delegation = ($voting_pub_key, $weight)
 
 ; May support other stake credentials in the future.
 ; Such additional credentials should be tagged at the CDDL/CBOR level
@@ -34,5 +34,21 @@ key_registration = {
 
 
 registration_witness = {
+  1 : $stake_witness
+}
+
+
+deregistration_cbor = {
+  61286: key_deregistration,
+  61285: deregistration_witness
+}
+
+key_deregistration = {
+  1 : $stake_credential,
+  2 : $nonce,
+  ? 3 : $voting_purpose .default 0
+}
+
+deregistration_witness = {
   1 : $stake_witness
 }
