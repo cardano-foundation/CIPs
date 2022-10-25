@@ -62,6 +62,8 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 55 | [Babbage Era's coinsPerUTxOByte](./CIP-0055) | Proposed |
 | 59 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 60 | [Music Token Metadata](./CIP-0060) | Proposed |
+| 67 | [Asset Name Label Registry](./CIP-0067) | Proposed |
+| 68 | [Datum Metadata Standard](./CIP-0068) | Proposed |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
@@ -97,8 +99,6 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 62? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 63? | [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276) | 
 | 66? | [NFT Identity / W3C DID on Cardano](https://github.com/cardano-foundation/CIPs/pull/294) | 
-| 67? | [Asset Name Label Registry](https://github.com/cardano-foundation/CIPs/pull/298) |
-| 68? | [Datum Metadata Standard](https://github.com/cardano-foundation/CIPs/pull/299) |
 | 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
 | 2551? | [Ed25519 Elliptic Curve Group Primitives in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/308) |
 
