@@ -58,6 +58,7 @@ The entire process is described in greater detail in [CIP1 - "CIP Process"](./CI
 | 37 | [Dynamic Saturation Based on Pledge](./CIP-0037) | Proposed |
 | 40 | [Collateral Output](./CIP-0040) | Active |
 | 42 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
+| 49 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Proposed |
 | 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 54 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 55 | [Babbage Era's coinsPerUTxOByte](./CIP-0055) | Proposed |
@@ -89,12 +90,11 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 | 46? | [Prepay Min Fixed Fee](https://github.com/cardano-foundation/CIPs/pull/190) |
 | 47? | [Hardfork Safety Mechanism](https://github.com/cardano-foundation/CIPs/pull/318) |
 | 48? | [Extended NFT metadata](https://github.com/cardano-foundation/CIPs/pull/249) |
-| 49? | [ECDSA and Schnorr signatures in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/250) |
 | 50? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 51? | [Preserve Submitter's Ordering of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/231) |
 | 53? | [Multi-Script Hashes](https://github.com/cardano-foundation/CIPs/pull/322) |
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
-| 57? | [On-Chain Script Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) |
+| 57? | [Plutus Smart-Contract Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) |
 | 58? | [Plutus Bitwise Primitives](https://github.com/cardano-foundation/CIPs/pull/268) |
 | 62? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 63? | [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276) |
@@ -111,7 +111,6 @@ Below are listed tentative CIPs still under discussion with the community. Discu
 
 The following list contains proposals that have been under review and for which actions are now awaiting updates of their original authors. Proposals that have been stalled for several months without any updates from their authors will be eventually closed. Authors are invited to re-open pull requests or open new ones should they want to bring back the discussion to life.
 
-- [Smart Contract Software Licenses](https://github.com/cardano-foundation/CIPs/pull/185)
 - [collateral rewards](https://github.com/cardano-foundation/cips/pull/217)
 - [Deep-Link to Desktop Wallet App](https://github.com/cardano-foundation/CIPs/pull/234)
 
