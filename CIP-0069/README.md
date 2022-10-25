@@ -16,11 +16,9 @@ For a while now every builder, myself included have struggled with the mutual de
 
 The exact change would be to have every validator take as argument the redeemer and then the script context. Datums, only relevant to locking validators would be able to be provided by either looking them up in the ScriptContext or by extending the `Spending` constructor of `TxInfo` to carry `(TxOutRef, Datum)`. 
 
-If this CIP were to be accepted and implemented, we'd be able to resolve a mutual dependency by merging two scripts into one, that can act as both say minting and spending depending on the purpose given. 
-
 ## Motivation / History
 
-As it stands the scripts being made on cardano often suffer this problem, and the tokens usually are made to be able to be minted at any time. This leads to further checks being made on the frontend and further fragilitiy of the systems we create.
+As it stands the scripts being made on cardano often suffer this problem, and the tokens usually are made to be able to be minted at any time. This leads to further checks being made on the frontend and further fragilitiy of the systems we create. When a mutual dependency arises we are forced to choose which script gets to statically know what's the hash of the other, and which has to be provided 'during runtime'.
 
 Use Case 1: Minting validator checks datum given to spending validator. The spending validator requires the token be present as witness of the datum's correctness.
 
@@ -28,16 +26,24 @@ Use Case 2 (taken from Optim's Liquidity Bonds): Unique NFT is minted to give a 
 
 Use Case 3 (taken from Minswap's Dex V1): NFT is minted for the same reason as above. It allows a minting policy to later mint LP tokens with that unique id token name.
 
-We see a similar pattern repeating over and over again as witnessed by dapp developers and auditors alike. By allowing the multi-purpose policies (spending and any other) we increase the security of Cardano by giving us more confidence and allowing to design protocols that have their architecture driven by Cardano's features, not limited by Cardano's language. 
+We see a similar pattern repeating over and over again as witnessed by dapp developers and auditors alike. By allowing the multi-purpose policies (spending and any other) we increase the security of Cardano by giving us more confidence and allowing to design protocols that have their architecture driven by Cardano's features, not limited by Cardano's language.
+
+This primarily manifests in the ability to use a single validator for both minting and spending but the proposed solution makes it possible to use one validator for any and all purposes at once.
 
 ## Specification
 
 ### Removing the datum argument
 
-All the sctipt purposes have a form of `Redeemer -> ScriptContext -> exists a. a` except the `Spending` one.
-It has form of `Datum -> Redeemer -> ScriptContext -> exists a. a`. This is enforced by the Cardano node. 
+All the script purposes have a form of `Redeemer -> ScriptContext -> exists a. a` except the `Spending` one.
+It has the following form: `Datum -> Redeemer -> ScriptContext -> exists a. a`. This is enforced by the Cardano ledger. 
 
-We make it conform to the general pattern by having it also have a type of `Redeemer -> ScriptContext -> ()`
+We modify the general signature to be `ScriptArgs -> ScriptContext -> exists a. a`.
+
+```hs
+data ScriptArgs =
+    RedeemerOnly Redeemer
+  | RedeemerAndDatum Redeemer Datum
+```
 
 ## Rationale
 
