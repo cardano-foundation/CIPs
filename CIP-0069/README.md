@@ -28,49 +28,21 @@ Use Case 2 (taken from Optim's Liquidity Bonds): Unique NFT is minted to give a 
 
 Use Case 3 (taken from Minswap's Dex V1): NFT is minted for the same reason as above. It allows a minting policy to later mint LP tokens with that unique id token name.
 
-We see a similar pattern repeating over and over again, as I bid you, the developer reading this to provide witness. By allowing the multi-purpose policies (spending and any other) we increase the security of Cardano by giving us more confidence and allowing to design protocols that have their design driven by cardano's features, not limited by cardano's language. 
+We see a similar pattern repeating over and over again as witnessed by dapp developers and auditors alike. By allowing the multi-purpose policies (spending and any other) we increase the security of Cardano by giving us more confidence and allowing to design protocols that have their architecture driven by Cardano's features, not limited by Cardano's language. 
 
 ## Specification
 
 ### Removing the datum argument
 
-All the sctipt purposes have a form of `Redeemer -> ScriptContext -> ()` except the `Spending` one.
-It has form of `Datum -> Redeemer -> ScriptContext -> ()`. This is enforced by the cardano node. 
+All the sctipt purposes have a form of `Redeemer -> ScriptContext -> exists a. a` except the `Spending` one.
+It has form of `Datum -> Redeemer -> ScriptContext -> exists a. a`. This is enforced by the Cardano node. 
 
-We make it conform to the general pattern by having it also have a 'signature' of `Redeemer -> ScriptContext -> ()`
-
-### (Optional) Providing the Datum in ScriptPurpose
-
-The datatype in question defined as
-
-```
-data ScriptPurpose
-  = Minting CurrencySymbol
-  | Spending TxOutRef
-  | Rewarding StakingCredential
-  | Certifying DCert
-```
-
-to be redefined to
-
-```
-data ScriptPurpose
-  = Minting CurrencySymbol
-  | Spending TxOutRef Datum
-  | Rewarding StakingCredential
-  | Certifying DCert
-```
-
-which will allow a script to easily match on its purpose and pick the datum out as it would do so normally.
-
-If this change is to not be added, the Datum can be picked out of `ScriptConext`. Adding unnecessary boilerplate and clock cycles. 
-
-Cardano node would naturally verify that the correct `Datum` is given, as it does currently. 
+We make it conform to the general pattern by having it also have a type of `Redeemer -> ScriptContext -> ()`
 
 ## Rationale
 
 Unifying of the script signature is a very elegant solution to the problem, streamlining the experience of developing on cardano.
-Given that accessing the datum is almost always made by a spending script, it makes sense to intdoduce that argument back to the `ScriptPurpose` that now plays a more important role.
+Given that accessing the datum is almost always made by a spending script, it makes sense to introduce that argument back to the `ScriptPurpose` that now plays a more important role.
 It begs the question if it should be added as an argument to all validators, to further emphasize that fact. 
 
 ## Backwards compatibility
