@@ -1,0 +1,17 @@
+[
+  {
+    "asset_name_label": 100,
+    "class": "NFT",
+    "description": "CIP-0068 - Datum Metadata Standard (Reference NFT)"
+  },
+  {
+    "asset_name_label": 222,
+    "class": "NFT",
+    "description": "CIP-0068 - Datum Metadata Standard (222 sub standard)"
+  },
+  {
+    "asset_name_label": 333,
+    "class": "FT",
+    "description": "CIP-0068 - Datum Metadata Standard (333 sub standard)"
+  }
+]
