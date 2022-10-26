@@ -1,20 +1,28 @@
-# Cardano Improvement Proposals (CIPs)
+## Cardano Improvement Proposals (CIPs)
 
-Cardano Improvement Proposals (CIPs) describe standards, processes; or provide general guidelines or information to the Cardano Community. It is a formal, technical communication process that exists off-chain. CIPs do **not** represent a commitment of any form towards existing projects. Rather, they are a collection of sensible and sound solutions to common problems within the Cardano ecosystem. CIPs evolves across  different statuses, driven by one or more authors:
+A [Cardano Improvement Proposal (CIP)](./CIP-0001) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP  provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
 
-Status   | Description
----      | ---
-Draft    | An implicit status given to newly proposed CIPs that haven't yet been validated or reviewed. Historically, some CIPs have been merged as 'Draft'.
-Proposed | Any proposal which is not yet active but that has been reviewed, accepted and is now working towards acceptance. A 'Proposed' CIP must have a clear path to 'Active' defined and approved which defines the criteria it must meet in order to become 'Active'.
-Active   | The proposal has completed all steps needed for its activation. Said differently, it means observable metrics showing its adoption in the ecosystem.
-Obsolete | A retired CIP or one made obsolete by a newer CIP.
-Rejected | A proposal rejected for various reasons, but kept nonetheless for the record. It may also indicate ideas that were considered but deemed invalid, as a way to inform future authors.
+The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-It is therefore quite common for proposals and implementations to be worked on concomitantly. Even more so that a working implementation (when relevant) is a mandatory condition for reaching an `Active` status.
+> **Note** For new CIP, a reference template is available in [.github/CIP-TEMPLATE.md](.github/CIP-TEMPLATE.md)
 
-The entire process is described in greater detail in [CIP-0001 - "CIP Process"](./CIP-0001).
+## Cardano Problem Statements (CPS)
 
-### Reviewed Proposals
+A [Cardano Problem Statement (CPS)](./CIP-9999) is a formalised document for the Cardano ecosystem and the name of the process by which such documents are produced and listed. CPSs are meant to complement CIPs and live side-by-side in the CIP repository as first-class citizens.
+
+> **Note** For new CPS, a reference template is available in [.github/CPS-TEMPLATE.md](.github/CPS-TEMPLATE.md)
+
+## Communication Channels
+
+Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in `#developers` in Cardano Ambassadors Slack.
+
+CIP editors will review discussions and progress in bi-weekly meetings held [on Discord](https://discord.gg/Jy9YM69Ezf), then transcribe and summarise them [in the BikweeklyMeetings folder](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings).
+
+CIP Editors meetings are public, recorded, and [published on Youtube](https://www.youtube.com/playlist?list=PL831pmH4tfw1YkMK4FhBzoHyuSaadjdxn): do join and participate in discussions/PRs of significance to you.
+
+> **Note** To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
+
+## Reviewed Proposals
 
 | # | Title | Status |
 | --- | --- | --- |
@@ -75,9 +83,9 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 
 > 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
 
-### Proposals Under Review
+## Proposals Under Review
 
-Below are listed tentative CIPs still under discussion with the community. They are listed below for easing navigation and also tentatively allocating numbers to avoid clashes later on.
+Below are listed tentative CIPs still under discussion with the community. They are listed below for easing navigation and tentatively allocating numbers to avoid later clashes.
 
 | **#** | **Title** |
 | --- | --- |
@@ -106,26 +114,16 @@ Below are listed tentative CIPs still under discussion with the community. They 
 
 <p align="right"><i>Last updated on 2022-10-26</i></p>
 
-### Stalled / Waiting For Authors
+## Stalled / Waiting For Authors
 
-The following list contains proposals that have been under review and for which actions are now awaiting updates of their original authors. Proposals that have been stalled for several months without any updates from their authors will be eventually closed. Authors are invited to re-open pull requests or open new ones should they want to bring back the discussion to life.
+The following list contains proposals that have been under review and for which actions are now awaiting updates from their original authors. Proposals stalled for several months without any updates from their authors and will eventually be closed. However, authors are invited to re-open pull requests or open new ones should they want to bring the discussion back to life.
 
 - [collateral rewards](https://github.com/cardano-foundation/cips/pull/217)
 - [Deep-Link to Desktop Wallet App](https://github.com/cardano-foundation/CIPs/pull/234)
 
 <p align="right"><i>Last updated on 2022-10-26</i></p>
 
-### Communication Channels
-
-Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in `#developers` in Cardano Ambassadors Slack.
-
-Discussions and progress will be reviewed by CIP editors in bi-weekly meetings held [on Discord](https://discord.gg/Jy9YM69Ezf), then transcribed and summarized [in the BikweeklyMeetings folder](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings).
-
-CIP Editors meetings are public, recorded and [published on Youtube](https://www.youtube.com/playlist?list=PL831pmH4tfw1YkMK4FhBzoHyuSaadjdxn): do join and participate for discussions/PRs of significance to you.
-
-> To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
-
-### Current Editors
+## Editors
 
 | Frederic Johnson <br/> [@crptmppt][] | Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] |
 | ---                                  | ---                               | ---                                           | ---                            |
@@ -134,3 +132,4 @@ CIP Editors meetings are public, recorded and [published on Youtube](https://www
 [@KtorZ]: https://github.com/KtorZ
 [@SebastienGllmt]: https://github.com/SebastienGllmt
 [@rphair]: https://github.com/rphair
+
