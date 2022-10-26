@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 Hashing data on-chain is quite expensive from a computational perspective. Currently, however, we are forced to use the `serializeData` primitive combined with a hashing function of our choice. It would be computationally beneficial to let the node hash the data before running the smart contracts, giving us only a guarantee that this mapping is correct, just as we do with Datums presently.
 
-Therefore we propose extending the ScriptContext from just a mapping between DatumHash and Datum to a more universal mapping between BuiltinByteString and BuiltinData.
+Therefore we propose extending the ScriptContext's txInfoData from just a mapping between DatumHash and Datum to a more universal mapping between BuiltinByteString and BuiltinData.
 
 ## Motivation / History
 
@@ -34,7 +34,7 @@ Just as we use nodes to be the source of truth on hash equality for datums we sh
 
 ## Backwards compatibility
 
-The change can be made to the node without a creating a new language version as it does not affect the past transactions.
+The change needs a new language version to function safely
 
 ## Path to Active
 
