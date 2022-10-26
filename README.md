@@ -63,6 +63,7 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 | 55 | [Babbage Era's coinsPerUTxOByte](./CIP-0055) | Proposed |
 | 59 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 60 | [Music Token Metadata](./CIP-0060) | Proposed |
+| 67 | [Asset Name Label Registry](./CIP-0067) | Proposed |
 | 68 | [Datum Metadata Standard](./CIP-0068) | Proposed |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -70,7 +71,7 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 
-<p align="right"><i>Last updated on 2022-10-11</i></p>
+<p align="right"><i>Last updated on 2022-10-26</i></p>
 
 > 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -98,13 +99,12 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 62? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 63? | [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276) |
 | 66? | [NFT Identity / W3C DID on Cardano](https://github.com/cardano-foundation/CIPs/pull/294) |
-| 67? | [Asset Name Label Registry](https://github.com/cardano-foundation/CIPs/pull/298) |
 | 69? | [Plutus Script Type Uniformization](https://github.com/cardano-foundation/CIPs/pull/321/) |
 | 70? | [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336) |
 | 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
 | 2551? | [Ed25519 Elliptic Curve Group Primitives in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/308) |
 
-<p align="right"><i>Last updated on 2022-10-11</i></p>
+<p align="right"><i>Last updated on 2022-10-26</i></p>
 
 ### Stalled / Waiting For Authors
 
@@ -113,7 +113,7 @@ The following list contains proposals that have been under review and for which 
 - [collateral rewards](https://github.com/cardano-foundation/cips/pull/217)
 - [Deep-Link to Desktop Wallet App](https://github.com/cardano-foundation/CIPs/pull/234)
 
-<p align="right"><i>Last updated on 2022-10-11</i></p>
+<p align="right"><i>Last updated on 2022-10-26</i></p>
 
 ### Communication Channels
 
