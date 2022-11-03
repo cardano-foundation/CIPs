@@ -1,11 +1,11 @@
 ---
-CIP 69?
-Set minPoolCost to 0
-Robin of Loxley <adarobinhood@tutanota.com>
-https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309Draft
-Standards
-2022-10-17
-CC-BY-4.0
+CIP: ?
+Title: Set minPoolCost to 0
+Author: Robin of Loxley <adarobinhood@tutanota.com>
+Comments-URI: https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309Draft
+Type: Standards
+Created: 2022-10-17
+License: CC-BY-4.0
 ---
 
 ## Abstract
