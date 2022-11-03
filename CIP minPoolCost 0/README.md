@@ -2,7 +2,8 @@
 CIP: ?
 Title: Set minPoolCost to 0
 Author: Robin of Loxley <adarobinhood@tutanota.com>
-Comments-URI: https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309Draft
+Comments-URI: https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309
+Status: Draft
 Type: Standards
 Created: 2022-10-17
 License: CC-BY-4.0
