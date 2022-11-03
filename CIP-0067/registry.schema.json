@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://cips.cardano.org/cips/cip67/registry.schema.json",
+  "type": "array",
+  "title": "Asset Name Label Registry",
+  "description": "JSON schema for asset name label registry",
+  "default": [],
+  "examples": [
+    [
+      {
+        "asset_name_label": 222,
+        "class": "NFT",
+        "description": "CIP-0068 - NFT Metadata Standard (222 sub standard)"
+      }
+    ]
+  ],
+  "additionalItems": false,
+  "items": {
+    "$id": "#/items",
+    "anyOf": [
+      {
+        "$id": "#/items/anyOf/0",
+        "type": "object",
+        "title": "The first anyOf schema",
+        "description": "An entry in the asset name label registry",
+        "default": {},
+        "examples": [
+          {
+            "asset_name_label": 222,
+            "class": "NFT",
+            "description": "CIP-0068 - NFT Metadata Standard (222 sub standard)"
+          }
+        ],
+        "required": ["asset_name_label", "class", "description"],
+        "properties": {
+          "asset_name_label": {
+            "$id": "#/items/anyOf/0/properties/asset_name_label",
+            "type": "integer",
+            "title": "The asset_name_label number",
+            "default": 0,
+            "examples": [222]
+          },
+          "class": {
+            "$id": "#/items/anyOf/0/properties/class",
+            "type": "string",
+            "title": "The asset class",
+            "default": "",
+            "examples": ["NFT", "FT", "SFT"]
+          },
+          "description": {
+            "$id": "#/items/anyOf/0/properties/description",
+            "type": "string",
+            "title": "The asset name label description",
+            "default": "",
+            "examples": ["CIP-0068 - NFT Metadata Standard (222 sub standard)"]
+          }
+        },
+        "additionalProperties": false
+      }
+    ]
+  }
+}
