@@ -83,15 +83,17 @@ interface BlockDate {
 
 ```js
 interface Proposal {
-  votePlanId: number
+  votePlanId: string
   voteOptions: number[]
+  votePublic: boolean
 }
 ```
 
 Proposal information.
 
-* votePlanId - The unique ID of this proposal in the vote plan.  This will be the same as anchored on voting chain, and is managed by the dApp.
+* votePlanId - Hex encoded string to represent vote plan unique identifier. This will be the same as anchored on voting chain, and is managed by the dApp.
 * voteOptions - List of possible "choices" which can be made for this proposal.
+* votePublic - Boolean indicating whether the vote is public or private.
 
 ### Vote
 
