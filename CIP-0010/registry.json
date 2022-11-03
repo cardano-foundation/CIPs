@@ -56,12 +56,28 @@
     "description": "nut.link metadata oracles data points"
   },
   {
+    "transaction_metadatum_label": 1969,
+    "description": "cardanohosts.com index tokens"
+  },
+  {
+    "transaction_metadatum_label": 1983,
+    "description": "cardanohosts.com ownership tokens"
+  },
+  {
     "transaction_metadatum_label": 1988,
     "description": "cardahub.io marketplace metadata"
   },
   {
     "transaction_metadatum_label": 1989,
     "description": "cardahub.io services metadata"
+  },
+  {
+    "transaction_metadatum_label": 1992,
+    "description": "cardanohosts.com media tokens"
+  },
+  {
+    "transaction_metadatum_label": 1993,
+    "description": "cardanohosts.com page tokens"
   },
   {
     "transaction_metadatum_label": 6770,
