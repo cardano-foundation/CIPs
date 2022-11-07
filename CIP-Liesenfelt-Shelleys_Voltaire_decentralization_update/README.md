@@ -77,7 +77,7 @@ $K$ and $a0$ are input parameters to the reward formulation designed to promote 
 
 However, the input parameters have not achieved these goals. Currently there are single entities that run 5,10,20 or even 50 separate pools. It is proposed that the “average resulting decentralization” should be measured based on the stake held by entire entities/groups, rather than a count of individual pools. “K-effective” is hereby used to measure the “average resulting decentralization” and is computed using Equation 1. The Nakamoto Coefficient is approximately half of k-effective rounded up to the nearest integer. K-effective provides a higher resolution quantification of network decentralization compared to the Nakamoto Coefficient.
 
-The Cardano network currently produces ~21,600 blocks per epoch with ~2400 groups producing between 0 and ~3600 blocks per group. If averaged, approximately 41 equal sized groups would each be creating ~527 blocks per epoch. The historical decentralization of the network shown in Figure 1 has improved from 30.0 in epoch 245 to between 39.0 and 43.0 after epoch 260. This “effective decentralization” or “k-effective” is not even close to the 500 figure targeted by the current k=500 parameter. A partial example of the table used to compute k-effective is shown in Figure 2.
+The Cardano network currently produces ~21,600 blocks per epoch with ~2400 groups producing between 0 and ~3600 blocks per group. If averaged, approximately 40 equal sized groups would each be creating ~527 blocks per epoch. The historical decentralization of the network shown in Figure 1 has improved from 30.0 in epoch 245 to between 35.0 and 43.0 after epoch 260. This “effective decentralization” or “k-effective” is not even close to the 500 figure targeted by the current k=500 parameter. A partial example of the table used to compute k-effective is shown in Figure 2.
 
 (1) https://iohk.io/en/blog/posts/2020/11/05/parameters-and-decentralization-the-way-ahead/
 
@@ -179,9 +179,9 @@ The $a0$ parameter represents the fraction of the rewards $(R/(1+a0))$ which are
 
 ## The Reality of (a0,k)
 
-The intent of parameters $(a0, k)$ has not been realized. The graph of k-effective shows that increasing $k$ from 150 to 500 did not result in a proportional increase to decentralization. The k parameter is currently $500 / 41 = 12.2$ times larger than the effective decentralization k-effective. In epoch 333  46% of all stake was controlled by non-exchange multi-pool operators. 
+The intent of parameters $(a0, k)$ has not been realized. The graph of k-effective shows that increasing $k$ from 150 to 500 did not result in a proportional increase to decentralization. The k parameter is currently $500 / 35 = 14.29$ times larger than the effective decentralization k-effective.
 
-Another important determinant of the ability for small pools to compete with larger pools is the mandatory minimum fee (minFee parameter) which is currently 340₳. This minimum fee is a higher percentage of the total rewards for a small pool compared to a larger pool. It means that delegator yields for a small pool will not exceed 4.0% until the pool has at least 10.0% saturation (currently ~6.8M₳). This is a significant barrier to entry for small pools.
+Another important determinant of the ability for small pools to compete with larger pools is the mandatory minimum fee (minFee parameter) which is currently 340₳. This minimum fee is a higher percentage of the total rewards for a small pool compared to a larger pool. It means that delegator yields will not exceed 95% of a saturated pool delegator yields until the pool has at least 15.0% saturation. This is a significant barrier to entry for small pools.
 
 Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Stake) vs log(Leverage) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2200 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22.
 
@@ -262,10 +262,6 @@ The new equation is purposefully designed so that stakeholders of dramatically d
 
 With the minFee < 30 once a pool grows to >0.5% of saturation the intermittent rewards will, on average, provide a competitive yield for delegators at >5.0%. At $k=500$ and $L=100$ this corresponds to a pool size 500k₳ with a minimum pledge of only 5k₳. The yield ceiling is also compatible with a potential future implementation of the Conclave collective stake pool concept. Because of the yield ceiling large collective stake pools will only provide more predictable returns, not a materially larger yield which would compete with smaller independent pools.
 
-## A small pool advantage
-
-The winners of block forks and slot battles are determined by which pool has a lower VRF score. If multi-pool operators consolidate to improve network efficiency and reduce operating costs a slight advantage will be in favor of all smaller pools. Smaller pools will also have a slight advantage against future collective stake pools. This advantage is not well known but it does slightly bias in favor of smaller pools.
-
 ## Leverage-based Pool Ranking Recommendation
 
 Pool ranking scores in wallet browsers have a significant and powerful game theory impact on delegator pool choices, yet it is often overlooked and not transparent in wallets.
@@ -344,7 +340,7 @@ This design decision aligns the interest of the largest stakeholders with the in
 
 ## Methods and paradigms for equation validation
 
-To validate any reward equation simulations must consider that an entity can choose to delegate to another entity, operate one stake pool, or operate many stake pools. Any new equation should be compared to the current equation with $a0=0.3$ and the current equation with minFee=0, $a0=0.0$. A large number of entities (>100000) should be simulated for each trial of each equation. Additionally, during each epoch of each simulation for each equation block production should be sampled from a discrete binomial or skellam distribution. Block production and rewards have statistical uncertainty.
+To validate any reward equation simulations must consider that an entity can choose to delegate to another entity, operate one stake pool, or operate many stake pools. Any new equation should be compared to the current equation with $a0=0.3$ and the current equation with minFee=0, $a0=0.0$. A large and increasing number of entities (1k - 1B) should be simulated for each trial of each equation. Additionally, during each epoch of each simulation for each equation block production should be sampled VRF-style from a discrete binomial or skellam distribution. Block production and rewards have statistical uncertainty.
 
 ```
 Each equation:
@@ -360,19 +356,15 @@ For each equation in consideration the average (and variation) of the nakamoto c
 
 ## Alternate Equation Forms and Parameter Variations
 
+Parameter Ranges:
+$k = [100 - 2000]$
+$L = [10 - 10000]$
+$a0 = [0.0 - 10.0]$
+$bias = [0.00 - 0.95]$
+
 ### Proposed Unbiased Egalitarian Leverage Limiting Equation:
 
 <img src="images/equation4-newRewardsEq.png" width="300">
-
-- with $k = 150$ and $L = 50$
-- with $k = 150$ and $L = 100$
-- with $k = 150$ and $L = 1000$
-- with $k = 500$ and $L = 50$
-- with $k = 500$ and $L = 100$
-- with $k = 500$ and $L = 1000$
-- with $k = 1000$ and $L = 50$
-- with $k = 1000$ and $L = 100$
-- with $k = 1000$ and $L = 1000$
 
 <img src="images/chart constant leverage L 100 minfee 0.png">
 
@@ -380,15 +372,6 @@ For each equation in consideration the average (and variation) of the nakamoto c
 
 <img src="images/equation4-currentEq.png" width="400">
 
-- with $k = 150$ and $a0 = 0.0$
-- with $k = 500$ and $a0 = 0.0$
-- with $k = 1000$ and $a0 = 0.0$
-- with $k = 150$ and $a0 = 0.3$
-- with $k = 500$ and $a0 = 0.3$
-- with $k = 1000$ and $a0 = 0.3$
-- with $k = 150$ and $a0 = 0.6$
-- with $k = 500$ and $a0 = 0.6$
-- with $k = 1000$ and $a0 = 0.6$
 
 ### CIP-7 Equation Form
 
@@ -406,15 +389,6 @@ And the recommended testing permutations are:
 
     For crossover in crossover_factor range [10,20,50]:
       For n in curved_root range [2,3,4]:
-        - with $k = 150$ and $a0 = 0.0$
-        - with $k = 500$ and $a0 = 0.0$
-        - with $k = 1000$ and $a0 = 0.0$
-        - with $k = 150$ and $a0 = 0.3$
-        - with $k = 500$ and $a0 = 0.3$
-        - with $k = 1000$ and $a0 = 0.3$
-        - with $k = 150$ and $a0 = 0.6$
-        - with $k = 500$ and $a0 = 0.6$
-        - with $k = 1000$ and $a0 = 0.6$
 
 ### Linearly Biased Variation with a Leverage Limit:
 
@@ -436,15 +410,6 @@ And the recommended testing permutations are:
 
 (incomplete)
 
-- with $k = 150$, $bias=0.05$, and $L = 50$
-- with $k = 150$, $bias=0.05$, and $L = 100$
-- with $k = 150$, $bias=0.05$, and $L = 1000$
-- with $k = 500$, $bias=0.05$, and $L = 50$
-- with $k = 500$, $bias=0.05$, and $L = 100$
-- with $k = 500$, $bias=0.05$, and $L = 1000$
-- with $k = 1000$, $bias=0.05$, and $L = 50$
-- with $k = 1000$, $bias=0.05$, and $L = 100$
-- with $k = 1000$, $bias=0.05$, and $L = 1000$
 
 ### Mahmoud Nimer Ada Link Pool Pledge to Network Pledge Reward Equation
 
@@ -456,19 +421,6 @@ Where:
 * Eq (1) The Nimer Rewards Equation
 * Eq (2) s_hat_primt: The pledge saturation equation
 * Eq (3) s_hat: Pool pledge / Total Network Pool Pledge
-
-And the recommended testing permutations are:
-
-- with $k = 150$ and $a0 = 0.0$
-- with $k = 500$ and $a0 = 0.0$
-- with $k = 1000$ and $a0 = 0.0$
-- with $k = 150$ and $a0 = 0.3$
-- with $k = 500$ and $a0 = 0.3$
-- with $k = 1000$ and $a0 = 0.3$
-- with $k = 150$ and $a0 = 0.6$
-- with $k = 500$ and $a0 = 0.6$
-- with $k = 1000$ and $a0 = 0.6$
-
 
 # Backwards compatibility
 
@@ -510,4 +462,4 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 
 # Conflict of Interest Declaration 
 
-The author is employed full time as a Research Assistant Professor in Nuclear Engineering at the University of Tennessee. The author earns no revenue from the Cardano ecosystem, does not operate a stake pool, is not seeking Cardano Foundation stakepool delegation support, is not seeking Catalyst funding support, and owns 23k ADA delegated to the THOR stake pool.
+The author is employed full time as a Research Assistant Professor in Nuclear Engineering at the University of Tennessee. The author earns no revenue from the Cardano ecosystem, does not operate a stake pool, is not seeking Cardano Foundation stakepool delegation support, is not seeking Catalyst funding support, and owns 24k ADA delegated to the THOR stake pool.
