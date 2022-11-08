@@ -41,19 +41,19 @@ We have a large body of research accompanied by simulations showing that removin
 A minPoolCost is not in Cardano's design specification. ALL published research is in favor of setting minPoolCost to 0.
 
 
-## Effects:
+### Effects:
 
 Stake pool desirability will become a function of pledge, performance, cost, and margin instead of only popularity. Operators will need to consolidate and grow pledge while moderating fees to remain competitive with other pools on the market.
 
 SPOs define their cost as an absolute value when submitting their registration.cert. They do not reference minPoolCost. Changing minPoolCost will not change any predefined costs. Pools that wish to leave their cost as-is can do so without any input. Pools that wish to lower their cost below 340 ADA/epoch will have to submit an updated registration.cert.
 
 
-## Backwards Compatibility:
+### Backwards Compatibility:
 
 This proposed change is fully backwards compatible and will not require a hard-fork. Adjusting parameters is 'easy' and will require no code rewrites. This change can be implemented immediately.
 
 
-## Research and References
+### Research and References
 
 Engineering Design Specification for Delegation and Incentives in Cardano–Shelley
 https://hydra.iohk.io/build/790053/download/1/delegation_design_spec.pdf
@@ -71,4 +71,13 @@ Incentive Paper Lecture Series (Parts 1-7)
 https://www.youtube.com/playlist?list=PLFLTrdAG7xRbAqhF3Tg8BeAea7Ard-ttn
 
 The general perspective on staking in Cardano
-https://iohk.io/en/blog/posts/2020/11/13/the-general-perspective-on-staking-in-cardano/
+
+## Path to Active
+
+- [ ] Reach out to IOG's core engineering and research teams for feedback regarding the feasibility and soundness of this proposal. 
+
+- [ ] Create a protocol parameter update
+    - [ ] Build the raw transaction
+    - [ ] Have genesis delegates (IOG, CF & Emurgo) sign the update 
+    - [ ] Submit it to the network
+    - [ ] Confirm the update is eventually live and adopted by the network 
