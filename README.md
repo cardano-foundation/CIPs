@@ -71,7 +71,7 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 
-<p align="right"><i>Last updated on 2022-10-26</i></p>
+<p align="right"><i>Last updated on 2022-11-08</i></p>
 
 > 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -101,10 +101,16 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 66? | [NFT Identity / W3C DID on Cardano](https://github.com/cardano-foundation/CIPs/pull/294) |
 | 69? | [Plutus Script Type Uniformization](https://github.com/cardano-foundation/CIPs/pull/321/) |
 | 70? | [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336) |
+| 72? | [DApp Registration](https://github.com/cardano-foundation/CIPs/pull/355) |
+| 73? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
+| 74? | [Set min-pool-cost to 0](https://github.com/cardano-foundation/CIPs/pull/358) |
+| 75? | [Fair Stakepool Rewards](https://github.com/cardano-foundation/CIPs/pull/360) |
+| 76? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
+| 77? | [Verified Stake-Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
 | 2551? | [Ed25519 Elliptic Curve Group Primitives in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/308) |
 
-<p align="right"><i>Last updated on 2022-10-26</i></p>
+<p align="right"><i>Last updated on 2022-11-08</i></p>
 
 ### Stalled / Waiting For Authors
 
@@ -113,7 +119,7 @@ The following list contains proposals that have been under review and for which 
 - [collateral rewards](https://github.com/cardano-foundation/cips/pull/217)
 - [Deep-Link to Desktop Wallet App](https://github.com/cardano-foundation/CIPs/pull/234)
 
-<p align="right"><i>Last updated on 2022-10-26</i></p>
+<p align="right"><i>Last updated on 2022-11-08</i></p>
 
 ### Communication Channels
 
