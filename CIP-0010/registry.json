@@ -60,6 +60,10 @@
     "description": "nut.link metadata oracles data points"
   },
   {
+    "transaction_metadatum_label": 1983,
+    "description": "cardanohosts.com hosting metadata"
+  },
+  {
     "transaction_metadatum_label": 1988,
     "description": "cardahub.io marketplace metadata"
   },
