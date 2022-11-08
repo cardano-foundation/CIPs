@@ -62,7 +62,7 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 | 54 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 55 | [Babbage Era's coinsPerUTxOByte](./CIP-0055) | Proposed |
 | 59 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
-| 60 | [Music Token Metadata](./CIP-0060) | Proposed |
+| 60 | [Music Token Metadata](./CIP-0060) | Active |
 | 67 | [Asset Name Label Registry](./CIP-0067) | Proposed |
 | 68 | [Datum Metadata Standard](./CIP-0068) | Proposed |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
