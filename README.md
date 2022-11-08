@@ -26,7 +26,7 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 | 6 | [Stake Pool Extended Metadata](./CIP-0006/) | Draft |
 | 7 | [Curve Pledge Benefit](./CIP-0007/) | Proposed |
 | 8 | [Message Signing](./CIP-0008/) | Draft |
-| 9 | [Protocol Parameters](./CIP-0009/) | Active |
+| 9 | [Protocol Parameters (Shelley Era)](./CIP-0009/) | Active |
 | 10 | [Transaction Metadata Label Registry](./CIP-0010/) | Active |
 | 11 | [Staking key chain for HD wallets](./CIP-0011/) | Active |
 | 12 | [On-chain stake pool operator to delegates communication](./CIP-0012/) | Draft |
@@ -45,7 +45,7 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 | 25 | [Media NFT Metadata Standard](./CIP-0025/) | Active |
 | 26 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
-| 28 | [Protocol Parameters (Alonzo)](./CIP-0028/) | Active |
+| 28 | [Protocol Parameters (Alonzo Era)](./CIP-0028/) | Active |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Active |
 | 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
 | 31 | [Reference Inputs](./CIP-0031/) | Active |
@@ -60,7 +60,7 @@ The entire process is described in greater detail in [CIP-0001 - "CIP Process"](
 | 49 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Proposed |
 | 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 54 | [Cardano Smart NFTs](./CIP-0054) | Draft |
-| 55 | [Babbage Era's coinsPerUTxOByte](./CIP-0055) | Proposed |
+| 55 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
 | 59 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 60 | [Music Token Metadata](./CIP-0060) | Active |
 | 67 | [Asset Name Label Registry](./CIP-0067) | Proposed |
