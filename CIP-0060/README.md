@@ -3,7 +3,7 @@ CIP: 60
 Title: Music Token Metadata
 Authors: Andrew Westberg <awestberg@projectnewm.io>, Ryan Jones <rjones@projectnewm.io>, Justin Morgan <jusemorgan@gmail.com>, Ian Singer <tcl@fre5hmusic.com>, Anthony Eizmendiz <aeizmendiz@icloud.com>, Session Cruz <session@demu.pro>, Jimmy Londo <SickCityCleveland@gmail.com>, Gudbrand Tokerud <Gudbrand.tokerud@gmail.com>, Kevin St.Clair <kos1777@gmail.com>
 Comments-URI: no comments yet
-Status: Proposed
+Status: Active
 Type: Process
 Created: 2022-07-26
 License: CC-BY-4.0
@@ -29,7 +29,7 @@ This CIP divides the additional metadata parameters into two categories of `Requ
 | artists     | Array\<Artist\>     | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | |
 | album_title| String | "album_title": "Mr. Bad Guy" | |
 | track_number | Integer | "track_number": 1 | |
-| song_title | String \| Array<\String\> | "song_title": "Let's Turn it On" | |
+| song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
 | song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format |
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. |
 | copyright | String | "copyright": "℗ 1985 Sony Records" | |
@@ -63,6 +63,10 @@ This CIP divides the additional metadata parameters into two categories of `Requ
 | parental_advisory | String | "parental_advisory": "Explicit" | Explicit/Censored/Non-Explicit
 | explicit | Boolean | "explicit": true | |
 | isrc | String | "isrc": "US-SKG-22-12345" | |
+| iswc | String | "iswc": "T-123456789-Z" | |
+| ipi | Array\<String\> | "ipi": ["595014347","342287075","550983139"] | |
+| ipn | Array\<String\> | "ipn": ["38474593","2734040"] | |
+| isni | Array\<String\> | "isni": ["000000038578365X","0000000037234532X"] | |
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
@@ -329,6 +333,14 @@ This CIP divides the additional metadata parameters into two categories of `Requ
 Implementing this simplifies and commonizes the process for creating music tokens on Cardano. It greatly simplifies the work that apps have to make when consuming such tokens.
 
 This CIP is the result of several online meetings between many different companies building music-related projects on top of Cardano. These meetings were organized as many in the community started to see fragmentation in the way music NFTs were being minted on Cardano. These meetings gave the opportunity for a bit of a reset and will allow a much brighter future for music on Cardano. As long as all projects agree on some of these basic fields, there is great flexibility in this CIP to do application-specific unique things on top of the music NFT itself. The CIP is intentionally open-ended and can be updated in future versions if there are additional fields that the wider group could benefit from.
+
+## Path to Active
+
+This proposal is now considered in an Active state and has been implemented by a number of parties.
+
+- [x] SickCityNFT - sickcity.xyz
+- [x] NEWM - newm.io
+- [x] SoundRig - soundrig.io
 
 # Copyright
 
