@@ -106,7 +106,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 74? | [Set min-pool-cost to 0](https://github.com/cardano-foundation/CIPs/pull/358) |
 | 75? | [Fair Stakepool Rewards](https://github.com/cardano-foundation/CIPs/pull/360) |
 | 76? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
-| 77? | [Verified Stake-Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
+| 77? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 989? | [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241) |
 | 2551? | [Ed25519 Elliptic Curve Group Primitives in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/308) |
 
