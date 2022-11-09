@@ -17,7 +17,7 @@ This proposal uses plutus minting policies to create valid "ballots" that are se
 ## Motivation
 
 This proposal is intended to provide a standard mechanism for non-fungible token (NFT) projects to perform on-chain verifiable votes using only their NFT assets. There are several proposed solutions for governance that involve using either a service provider (e.g., Summon) with native assets or the issuance of proprietary native assets.  However, there are several issues with these approaches:
-- Airdrops of governance tokens require minUTxO ADA attached, costing the NFT project ADA out of pocket
+- Airdrops of governance tokens require minUTxO ada attached, costing the NFT project ada out of pocket
 - Fungible tokens do not have a 1:1 mechanism for tracking votes against specific assets with voting power
 - Sale of the underlying NFT is not tied to sale of the governance token, creating separate asset classes and leaving voting power potentially with those who are no longer holders of the NFT
 
@@ -170,9 +170,9 @@ function countVotes(ballotPolicyId, ballotBox) {
 
 There is no requirement that the "ballot counter" redeem all "ballots" from the "ballot box" and send them back to the respective voters, but we anticipate that this is what will happen in practice.  We encourage further open-sourced code versions that enforce this requirement at the smart contract level.
 
-### Reclaiming ADA Locked by the Ballot NFTs
+### Reclaiming Ada Locked by the Ballot NFTs
 
-Even if the ballot NFT is returned to the user, this will leave users with ADA locked alongside these newly created assets, which can impose a financial hardship for certain project users.
+Even if the ballot NFT is returned to the user, this will leave users with ada locked alongside these newly created assets, which can impose a financial hardship for certain project users.
 
 We can add burn-specific code to our Plutus minting policy so that ballot creation does not impose a major financial burden on users:
 
@@ -206,7 +206,7 @@ There are several existing open-source protocols (e.g., [VoteAire](https://githu
 
 ### Commemorative NFTs with Optional Token Burning
 
-There is a question as to whether we should enforce the requirement that votes be burned when they are counted by the vote counter.  However, we do not want that to be a standard as many users of NFT communities have expressed an interest in receiving commemorative NFTs (similar to an "I Voted" sticker).  Instead, we propose that the ballot Plutus minting policy be burn-able by anyone who holds the NFT in their wallet.  This way, locked ADA can be reclaimed if the user has no further use for the commemorative NFT (see an example of this in the [Implementation](./example/)).
+There is a question as to whether we should enforce the requirement that votes be burned when they are counted by the vote counter.  However, we do not want that to be a standard as many users of NFT communities have expressed an interest in receiving commemorative NFTs (similar to an "I Voted" sticker).  Instead, we propose that the ballot Plutus minting policy be burn-able by anyone who holds the NFT in their wallet.  This way, locked ada can be reclaimed if the user has no further use for the commemorative NFT (see an example of this in the [Implementation](./example/)).
 
 ### Potential Attacks and Mitigations
 
