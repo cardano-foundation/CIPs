@@ -26,7 +26,7 @@ We therefore need a registration transaction that serves three purposes:
 
 1. Registers a "voting key" to be included in the sidechain and/or delegates to existing "voting key"s
 2. Associates mainnet ADA to this voting key(s)
-3. Declares an address to receive Catalyst rewards
+3. Declares an payment address to receive Catalyst rewards
 
 
 Note: This schema does not attempt to differentiate delegations from direct registrations, as the two options have exactly the same format.  It also does not distinguish between delegations that are made as "private" arrangements (proxy votes)
@@ -43,9 +43,11 @@ A registration transaction is a regular Cardano transaction with a specific tran
 Notably, there should be five entries inside the metadata map:
  - A non-empty array of delegations, as described below;
  - A stake address for the network that this transaction is submitted to (to point to the Ada that is being delegated);
- - A Shelley address discriminated for the same network  this transaction is submitted to to receive rewards.
+ - A Shelley payment address discriminated for the same network  this transaction is submitted to to receive rewards.
  - A nonce that identifies that most recent delegation
  - A non-negative integer that indicates the purpose of the vote. This is an optional field to allow for compatibility with CIP-15. For now, we define 0 as the value to use for Catalyst, and leave others for future use. A new registration should not invalidate a previous one with a different voting purpose value.
+
+**Note:** The rewards address supplied must be a valid Shelley payment address (see [CIP-0019](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0019)), this should not be confused with Stake address which can also be known as reward addresses. Suppling the incorrect type of reward address could result in reward payments being lost.
 
 ### Delegation format
 
@@ -110,7 +112,7 @@ considered valid if the following conditions hold:
   The advised way to construct a nonce is to use the current slot number.
   This is a simple way to keep the nonce increasing without having to access
   the previous transaction data.
-- The reward address is a Shelley address discriminated for the same network
+- The reward address is a Shelley payment address discriminated for the same network
   this transaction is submitted to.
 - The delegation array is not empty
 - The weights in the delegation array are not all zero
@@ -229,6 +231,9 @@ Fund 8:
  - renamed the `voting_key` field to `delegations` and add support for splitting voting power across multiple vote keys.
  - added the `voting_purpose` field to limit the scope of the delegations.
  - rename the `staking_pub_key` field to `stake_credential` and `registration_signature` to `registration_witness` to allow for future credentials additions.
+
+Fund 10:
+- stipulated that `reward_address` must be a Shelley payment address, otherwise voting reward payments will not be recieved.
 
 Fund 11:
  - added the `deregistration` metadata format.
