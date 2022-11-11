@@ -43,11 +43,9 @@ A registration transaction is a regular Cardano transaction with a specific tran
 Notably, there should be five entries inside the metadata map:
  - A non-empty array of delegations, as described below;
  - A stake address for the network that this transaction is submitted to (to point to the Ada that is being delegated);
- - A Shelley payment address discriminated for the same network  this transaction is submitted to to receive rewards.
+ - A Shelley payment address (see [CIP-0019](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0019)) discriminated for the same network  this transaction is submitted to to receive rewards.
  - A nonce that identifies that most recent delegation
  - A non-negative integer that indicates the purpose of the vote. This is an optional field to allow for compatibility with CIP-15. For now, we define 0 as the value to use for Catalyst, and leave others for future use. A new registration should not invalidate a previous one with a different voting purpose value.
-
-**Note:** The rewards address supplied must be a valid Shelley payment address (see [CIP-0019](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0019)), this should not be confused with Stake address which can also be known as reward addresses. Suppling the incorrect type of reward address could result in reward payments being lost.
 
 ### Delegation format
 
@@ -233,7 +231,8 @@ Fund 8:
  - rename the `staking_pub_key` field to `stake_credential` and `registration_signature` to `registration_witness` to allow for future credentials additions.
 
 Fund 10:
-- stipulated that `reward_address` must be a Shelley payment address, otherwise voting reward payments will not be recieved.
+- stipulated that `reward_address` must be a Shelley payment address, otherwise voting reward payments will not be recieved. 
+  - **Note:** up to Fund 9 `reward_address` was a Shelley rewards address; from Fund 10 onwards, it will be a normal payment address.  This will allow rewards to be paid directly from the designated Catalyst pot rather than requiring MIR transfers.
 
 Fund 11:
  - added the `deregistration` metadata format.
