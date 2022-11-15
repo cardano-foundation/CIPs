@@ -57,7 +57,10 @@ Some remarks about the above,
 1. The `user token` and `reference NFT` do not need to be minted in the same transaction. The order of minting is also not important.
 2. It may be the case that there can be multiple `user tokens` (multiple asset names or quantity greater than 1) referencing the same `reference NFT`.
 
-The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor:
+The version 1 datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor.
+
+From version 2 onwards the versioning is handled instead by the datum constructor index. Enforcing that every single reference token has to be on a separate UTxO might cause unnecessarily large ADA locking. Especially, when considering NFTs and sending the reference tokens to an unspendable address with `> 1 ADA`.
+
 ```
 big_int = int / big_uint / big_nint
 big_uint = #6.2(bounded_bytes)
@@ -71,8 +74,16 @@ metadata =
   
 version = int
 
+; version 1
 datum = #6.121([metadata, version])
+
+; version 2
+; in version1 the version parameter is replaced by versioning through the cbor constructor
+; this is more in-line with how contracts would interact and promotes pattern matching.
+datum = #6.122(multiasset<metadata>)
 ```
+
+Similar to version 1, version 2 does not constain if the reference datum should be inlined or not. In case the reference token is often interacting with smart contracts, it's recommended to have the data inlined. On the other hand (e.g. NFT series), it might more economic to only use the hash and provide the datum in the minting transaction. This would reduce the utxo size and hence the minADA that would need to be locked.
 
 ## 222 NFT Standard
 
@@ -100,6 +111,8 @@ Example:\
 
 This is a low-level representation of the metadata, following closely the structure of CIP-0025. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
+From version 2 allowing multiasset support would allow storing the reference NFTs for one series on a single UTxO, which should be in theory much cheaper than storing each reference NFT separately.
+
 ```
 files_details = 
   {
@@ -116,10 +129,13 @@ metadata =
     ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
   }
-  
+
 datum = #6.121([metadata, 1]) ; version 1
+
+; version 2
+datum = #6.122(multiasset<metadata>)
 ```
-Example datum as JSON:
+Example of a version 1 datum as JSON:
 ```json
 {"constructor" : 0, "fields": [{"map": [{"k": "6E616D65", "v": "5370616365427564"}, {"k": "696D616765", "v": "697066733A2F2F74657374"}]}, {"int": 1}]}
 ```
@@ -130,7 +146,9 @@ A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5c
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
-3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
+3. Get the datum from the output and lookup metadata by 
+   - version 1 - going into the first field of constructor 0
+   - version 2 - finding the token metadata through the `multiasset` map
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
 ### Retrieve metadata from a Plutus validator
@@ -169,6 +187,8 @@ Example:\
 
 This is a low-level representation of the metadata, following closely the structure of the Cardano foundation off-chain metadata registry. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
+Although version 2 can be added for compatibility reasons to the FT standard as well, it is expected to have much smaller impact than with NFTs.
+
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
 
@@ -188,8 +208,11 @@ metadata =
 ; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
 ; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
 uri = bounded_bytes 
-  
+
 datum = #6.121([metadata, 1]) ; version 1
+
+; version 2
+datum = #6.122(multiasset<metadata>) 
 ```
 Example datum as JSON:
 ```json
@@ -202,7 +225,9 @@ A third party has the following FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cb
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
-3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
+3. Get the datum from the output and lookup metadata by 
+    - version 1 - going into the first field of constructor 0.
+    - version 2 - finding the token metadata through the `multiasset` map
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
 ### Retrieve metadata from a Plutus validator
@@ -226,6 +251,7 @@ The security for the link is derived from the minting policy itself, so it's imp
 ## Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
+From version 2 onwards this is handled on the datum constructor level.
 
 
 ## Path to Active
