@@ -1,17 +1,20 @@
 ---
 CIP: 28
 Title: Protocol Parameters (Alonzo/Babbage)
-Authors: Kevin Hammond <kevin.hammond@iohk.io>
+Authors: Kevin Hammond <kevin.hammond@iohk.io> and Jared Corduan <jared.corduan@iohk.io>
 Status: Active
 Type: Informational
 Created: 2021-10-14
 License: CC-BY-4.0
 Requires: CIP-0009
+Obsoletes: CIP-0055
 ---
 
 ## Simple Summary/Abstract
 
-This CIP extends CIP-0009 to include the new protocol parameters that have been introduced for Alonzo and Babbage, specifically those relating to the costing of Plutus scripts.  It describes the initial settings for those parameters.
+This CIP extends CIP-0009 to include the new protocol parameters that have been introduced for Alonzo and Babbage, specifically those relating to the costing of Plutus scripts.  It describes the initial settings for those parameters and the changes that have taken place since
+the Alonzo hard fork.
+It also incorporates the discussion of the `lovelacePerUTxOWord` parameter that formerly appeared in CIP-0055.
 
 ## Motivation
 
@@ -22,6 +25,7 @@ We need to document the chain of changes to the protocol parameters.  This docum
 
 ### New Updatable Protocol Parameters
 
+The Alonzo era was introduced in epoch 290 on 2021-09-12.
 The new **updatable** protocol parameter values for Alonzo are given below (in JSON format).  Any of these parameters may be changed by submitting
 a parameter update proposal to the chain, and without triggering a "hard fork".  Note that these parameters are given using the names used
 in the genesis file.  Be aware that some parameters are shown differently using ``cardano-cli query protocol-parameters`` -- this has been raised
@@ -243,11 +247,15 @@ Each version of the Plutus interpreter may use different cost model parameters a
 they are likely to be changed only when introducing new Plutus interpreter versions at a "hard fork".
 For simplicity, the details of the parameter settings is omitted here.
 
-Babbage introduces the PlutusV2 cost mode
+As described below, the Babbage era introduces the PlutusV2 cost model.
 
 ### Obsoleted Updatable Protocol Parameters
 
-``minUTxOValue`` is no longer used.  It is replaced by ``lovelacePerUTxOWord``.
+Starting with the Alonzo era, ``minUTxOValue`` is no longer used.  It is replaced by ``lovelacePerUTxOWord``.
+Starting with the Babbage era, this value is then translated into a cost per byte as described below.
+Starting with the Babbage era, the ``extraEntropy`` and ``decentralisationParam`` parameters are ignored, as
+described below.
+
 
 ### Non-Updatable Parameters
 
@@ -280,7 +288,22 @@ script failure if the collateral was not available).
 
 ## Change Log
 
-Plutus language version 2 (``PlutusV2``) was introduced with the Vasil Hard Fork (Babbage Ledger era).
+
+A number of changes have been made to increase the capacity of the Cardano blockchain for transactions and Plutus scripts.
+
+| Epoch |  Date       | Block Size | Per-tx Mem Units | Per-block Mem Units |
+| ----- |  ---------- | ---------------- | ---- | ---- |
+| 290 | 2021-09-12 | 65536 | 10000000 | 50000000 |
+| 306 | 2021-12-01 | 73728 | 11250000 | -        |
+| 317 | 2022-01-25 | -     | 12500000 | -        |
+| 319 | 2022-02-04 | 81920 | 14000000 | -        |
+| 321 | 2022-02-14 | -     | -        | 56000000 |
+| 328 | 2022-03-21 | -     | -        | 62000000 |
+| 335 | 2022-04-25 | 90112 | -        | -        |
+
+### Plutus v2 Changes (Babbage)
+
+Plutus language version 2 (``PlutusV2``) was introduced with the Vasil Hard Fork (Babbage Ledger era) in epoch 365 on 2022-09-22.
 It adds a new cost model which inherits the ``PlutusV1``` cost model parameters and adds the following additional parameters and initial settings.
 
 
@@ -302,7 +325,117 @@ It adds a new cost model which inherits the ``PlutusV1``` cost model parameters 
 		  }
 ```
 
-The settings for the ``PlutusV1`` cost model were changed at the same time
+
+The settings for the ``PlutusV1`` cost model were changed at the same time.
+
+
+### Transitional Praos (Babbage)
+
+Two Alonzo era protocol parameters need to be removed for the Babbage era, since they relate to `TPraos`.
+Transitional Praos (named `TPraos` in the code base) is the addition of two features to
+[Praos](https://iohk.io/en/research/library/papers/ouroboros-praosan-adaptively-securesemi-synchronous-proof-of-stake-protocol/),
+which were added to provide a smooth transition from
+[Ouroboros-BFT](https://iohk.io/en/research/library/papers/ouroboros-bfta-simple-byzantine-fault-tolerant-consensus-protocol).
+In particular, Transitional Praos included an overlay schedule which could be tuned by the `d` parameter
+(`d == 1` means that all the blocks are produced by the BFT nodes, `d == 0` means that none of them are).
+It also included a way of injecting extra entropy into the epoch nonce.
+The extra entropy feature was used precisely once, and was
+[explained wonderfully](https://iohk.io/en/blog/posts/2021/03/29/the-secure-transition-to-decentralization)
+by one of the original authors of the Praos paper.
+
+The Babbage era removes both of the "transitional" features of TPraos, rendering the decentralization parameter
+and the extra entropy parameter useless.  These parameters are therefore set to ``null`` in Babbage.
+
+```
+    "decentralization": null,
+    "extraPraosEntropy": null,
+```
+
+These two protocol parameters can no longer be used in protocol parameter updates.
+
+
+### Lovelace Per UTxO Word changes to Lovelace per UTxO Byte (Babbage)
+
+Since the Shelley era, there has been an minimum number of lovelace requirement for every unspent transaction output.
+This requirement acts like a deposit, guarding the network from dust (the proliferation of small-valued unspent transaction outputs).
+Initially it was a constant value, since the Shelley era UTxO were simple and quite uniform.
+Starting in the Mary era, however, the constant value was replaced with a
+[formula](https://cardano-ledger.readthedocs.io/en/latest/explanations/min-utxo-mary.html)
+to account for the variability in outputs that contained multi-assets.
+The formula was [changed again](https://cardano-ledger.readthedocs.io/en/latest/explanations/min-utxo-alonzo.html)
+in the Alonzo era.
+Both the Mary and the Alonzo era formulas provide an upper bound on the size in memory of an unspent transaction output in the Haskell implementation.
+As described below, we have simplified the formula to instead count the number of bytes in the CBOR serialization.
+
+#### Rename `coinsPerUTxOWord` to `coinsPerUTxOByte`
+
+The name of the protocol parameter is actually `coinsPerUTxOWord` in the Haskell implementation.
+It has been renamed to `coinsPerUTxOByte` starting with the Babbage era.
+
+#### Translation from the Alonzo era to the Babbage era
+
+At the moment that the hard fork combinator translates the Alonzo era ledger state to the Babbage era,
+the current value of `coinsPerUTxOWord` will be converted to
+
+```
+⌊ coinsPerUTxOWord / 8 ⌋
+```
+
+#### The new minimum lovelace calculation
+
+We would like the formula for the minimum lovelace in a unspent transaction output
+to be simpler and easier to reason about by all users of the Cardano network, while at
+the same time accounting for the size of the output.
+
+In the Babbage era, unspent transaction outputs will therefore be required to contain _at least_
+
+```
+(160 + |serialized_output|) * coinsPerUTxOByte
+```
+
+many lovelace. The constant overhead of 160 bytes accounts for the transaction input
+and the entry in the UTxO map data structure (20 words * 8 bytes).
+
+
+#### Backwards compatibility
+
+The [translation](#translation-from-the-alonzo-era-to-the-babbage-era) section
+explains how we will transition from the `coinsPerUTxOWord` parameter to the `coinsPerUTxOByte` parameter.
+Starting in the Babbage era, update proposals that want to modify `coinsPerUTxOByte` must bear in mind
+that the measurement is now in bytes, rather than words as before.
+
+
+### Protocol version 8
+
+Protocol version 8 will enable the Plutus SECP256K1 primitives in Plutus v2 scripts.
+The following changes will be made to the Plutus v2 cost model.
+
+```
+      "verifyEcdsaSecp256k1Signature-cpu-arguments": 35892428,
+      "verifyEcdsaSecp256k1Signature-memory-arguments": 10,
+      "verifySchnorrSecp256k1Signature-cpu-arguments-intercept": 38887044,
+      "verifySchnorrSecp256k1Signature-cpu-arguments-slope": 32947,
+      "verifySchnorrSecp256k1Signature-memory-arguments": 10
+```
+
+## Current Parameter Settings
+
+The current mainnet protocol parameter settings can be obtained at any time via the Cardano CLI.
+This requires a fully synchronised node.
+
+```
+cardano-cli query tip --mainnet
+{
+    ...
+    "syncProgress": "100.00"
+}
+```
+
+The CLI command to obtain the current parameter settings is:
+
+```
+cardano-cli query protocol-parameters --mainnet
+```
 
 ## Test Cases
 
