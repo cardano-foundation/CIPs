@@ -92,8 +92,19 @@ Assigning a single tier type to each IB at a random and verifiable way through t
 
 ### Acceptance Criteria <!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 
+* Tiered Pricing is available on Cardano mainnet
 
 ### Implementation Plan <!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
+
+While crucially important to support Ouroboros Leios as the latter will generate much more traffic on the network and is more likely to induce congestion, Cardano running Ouroboros Praos protocol could still benefit from it at times when the network gets congested. A Tiered Pricing implementation should thuse be relatively agnostic of the actual protocol run.
+
+Should this CIP be accepted, the high-level implementation plan would be:
+1. Publish a detailed pricing algorithm
+2. Prototype executable implementation suitable for running simulations and formal analysis
+3. Simulate the impact of Tiered Pricing on Cardano. This simulation should be able to demonstrate how this proposal impacts the distribution of fees under various conditions of the system, possibly using historical data
+4. Implement and deploy on top of Ouroboros Praos (or whatever version of consensus is current on Cardano at that time)
+   **NOTE**: From this point on, the proposal will be _Active_
+5. Adapt as part of Ouroboros Leios deployment
 
 ## Copyright
 
