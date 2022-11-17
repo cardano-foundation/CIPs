@@ -2,6 +2,8 @@
 
 ## Keys
 
+**Note:** Not all keys are required for certificate recreation.
+
 Payment **private** signing key:
 ```
 {
@@ -37,10 +39,22 @@ Staking **public** verification key:
     "cborHex": "5820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369"
 }
 ```
-
-Catalyst **private** signing key hex:
+Governance (Catalyst) **public** verification key:
 ```
-4820f7ce221e177c8eae2b2ee5c1f1581a0d88ca5c14329d8f2389e77a465655c27662621bfb99cb9445bf8114cc2a630afd2dd53bc88c08c5f2aed8e9c7cb89
+{
+  "type": "PaymentVerificationKeyShelley_ed25519",
+  "description": "Governance Verification Key",
+  "cborHex": "58200036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0"
+}
+```
+
+Governance (Catalyst) **private** signing key:
+```
+{
+  "type": "PaymentSigningKeyShelley_ed25519",
+  "description": "Governance Signing Key",
+  "cborHex": "4820f7ce221e177c8eae2b2ee5c1f1581a0d88ca5c14329d8f2389e77a465655c27662621bfb99cb9445bf8114cc2a630afd2dd53bc88c08c5f2aed8e9c7cb89"
+}
 ```
 
 ## Addresses
@@ -48,14 +62,14 @@ Catalyst **private** signing key hex:
 
 Payment Address:
 ```
-bench32: "addr_test1qprhw4s70k0vzyhvxp6h97hvrtlkrlcvlmtgmaxdtjz87xrjkctk27ypuv9dzlzxusqse89naweygpjn5dxnygvus05sdq9h07"
+bech32: "addr_test1qprhw4s70k0vzyhvxp6h97hvrtlkrlcvlmtgmaxdtjz87xrjkctk27ypuv9dzlzxusqse89naweygpjn5dxnygvus05sdq9h07"
 
 hex-encoded: "004777561e7d9ec112ec307572faec1aff61ff0cfed68df4cd5c847f1872b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9"
 ````
 
 Staking Address:
 ```
-bench32: "stake_test1upetv9m90zq7xzk303rwgqgvnje7hvjyqef6xnfjyxwg86gzpmj80"
+bech32: "stake_test1upetv9m90zq7xzk303rwgqgvnje7hvjyqef6xnfjyxwg86gzpmj80"
 
 hex-encoded: "e072b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9"
 ```
@@ -70,7 +84,7 @@ Legacy CIP-15 version:
 ```javascript
 "61284": {
   "1": "0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0",
-  "2": "0x5820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+  "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
   "3": "0xe072b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
   "4": 1234
 }
@@ -80,7 +94,7 @@ CIP-36 version:
 ```javascript
 "61284": {
   "1": [["0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0", 1]],
-  "2": "0x5820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+  "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
   "3": "0x004777561e7d9ec112ec307572faec1aff61ff0cfed68df4cd5c847f1872b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
   "4": 1234,
   "5": 0
@@ -118,7 +132,7 @@ Legacy CIP-15 version:
 {
   "61284": {
     "1": "0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0",
-    "2": "0x5820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+    "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
     "3": "0xe072b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
     "4": 1234
   }
@@ -133,7 +147,7 @@ CIP-36 version:
 {
   "61284": {
     "1": [["0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0", 1]],
-    "2": "0x5820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+    "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
     "3": "0x004777561e7d9ec112ec307572faec1aff61ff0cfed68df4cd5c847f1872b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
     "4": 1234,
     "5": 0
