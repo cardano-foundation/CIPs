@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: Increase Cardano service diversity by implementing Tiered Pricing
+Title: Dealing with traffic congestion by implementing Tiered Pricing
 Status: Draft
 Category: Fees
 Authors:
@@ -14,18 +14,18 @@ License: CC-BY-4.0
 ---
 
 # Abstract <!-- A short (~200 word) description of the technical issue being addressed and the proposed solution -->
-As Cardano adoption widens, the system is bound to face congestion issues. Tiered Pricing deals with this issue by offering users a multitude of service options to select from when the system is under congestion. Each choice consists of a price/delay trade-off, covering a wide spectum of use-cases ranging from DeFi to low urgency transactions. The mechanism is described as an extension of the recently introduced Ouroboros Leios proposal.  
+As Cardano adoption widens the system is bound to face traffic congestion issues. Tiered Pricing deals with this issue by offering users a multitude of service options to select from when the system is under congestion. Each choice consists of a price/delay trade-off, covering a wide spectum of use-cases ranging from DeFi to low-urgency transactions. The exact mechanism is described as an extension of the recently introduced Ouroboros Leios proposal.  
 
 
 # Motivation  <!-- A clear and short explanation introducing the reason behind a proposal. When changing an established design, it must outlines issues in the design that motivates a rework. -->
 		
-Due to the introduction of smart contracts and the general increase in traffic in Cardano, the system is bound to face congestion issues at some point. 
-Fees are currently fixed and transactions are included in blocks in a FIFO order. 
-Unfortunately such an approach is ill-suited to handle congestion, as it does not provide any means for users to signify their urgency and accommodate them based on their needs. Even with the introduction of Ouroboros Leios which will substantially increase throughput, the system needs a better way of prioritizing transaction inclusion in the face of congestion.
+Due to the introduction of smart contracts and the general increase in traffic, Cardano is expected to face traffic congestion issues. 
+Fees in the current system are fixed and transactions are included in blocks in a FIFO order. 
+Unfortunately such an approach is ill-suited to handle congestion, as it does not provide any means for users to signify their urgency and accommodate them based on their needs. Even with the introduction of Ouroboros Leios which is expected to substantially increase throughput, the system needs a better way of prioritizing transaction inclusion in the face of congestion.
 
-Ideally, we would like the system to offer a multitude of options, and have users decide how much they want to pay based on their urgency. 
-The system should offer options ranging from fast service with high fees to slower service with lower fees.
-The current fee system cannot provide such flexibility as it does not allow users to signify their urgency, and thus changes are required.
+Ideally, we would like the system to offer a multitude of options, and have users decide the price/delay trafe-off that suits them.
+The system should offer options ranging from fast service/high fees to slower service/lower fees.
+The current fee system cannot provide such flexibility as it does not allow users to signify their urgency. Thus, changes are required.
  
 
 # Specification <!-- The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations. -->
