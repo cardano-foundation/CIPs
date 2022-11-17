@@ -107,5 +107,7 @@ Should this CIP be accepted, the high-level implementation plan would be:
 5. Adapt as part of Ouroboros Leios deployment
 
 ## Copyright
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
