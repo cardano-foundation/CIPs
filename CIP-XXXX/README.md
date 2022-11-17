@@ -31,7 +31,6 @@ The current fee system cannot provide such flexibility as it does not allow user
 # Specification <!-- The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations. -->
 
 ## Tiered Pricing
-
 Tiered pricing works by dynamically separating available throughput to multiple tiers that offer different price/delay tradeoffs. Users are given the choice of selecting which tier better accommodates their needs. 
 
 In more detail, the price and delay associated with each tier as well as the number and size of different tiers are determined dynamically, based on the demand observed in the ledger; the fuller the space allocated to a certain tier looks, the higher the demand. When the system is not congested, a single high speed/low price/small size tier remains available, with the system optimizing its resource use and behaving more or less as having fixed low fees and no extra delays.  On the other hand, when congestion is detected, tier parameters are selected in such a way that a multitude of price/delay options become available to users. 
@@ -46,7 +45,6 @@ Transactions are allowed to specify higher fees than those determined by the tie
 
 
 ## Integration with Ouroboros Leios  
-
 Tiered pricing naturally integrates with Ouroboros Leios by associating each input block (IB) with a single tier type, and restricting its contents to transactions of this type. The VRF output used to determine whether an SPO is eligible to create a new IB is also used to determine its tier type. The rate at which IBs of a certain type are produced is determined by the tier's size.
 
 Demand for different tiers is tracked by observing the level of fullness of IBs that were recently added to the main chain in a large enough interval. As specified earlier, tier parameters are adjusted based on the observed demand. IBs are expected to uphold the relevant parameters derived by the ranking block (RB) they reference. 
@@ -61,20 +59,20 @@ IBs are prioritized for inclusion in the main chain based on their respective ti
 The key idea of this proposal is that the fee system should be able to target multiple use cases at once, whenever this is possible. This is done through the use of tiers with varying delays and cannot be achieved by different prices alone. If a tier offers a specific quality of service, its price cannot be reduced to capture every user because costs can be misreported and off-chain agreements can override the prescribed transaction order. By ensuring that the delay of every tier must be waited out, each tier is only useful to certain users. 
 
 ## Are we departing from a low-cost system?
-
 While this proposal departs from the low fixed fees approach, for reasons explained earlier, by appropriately setting the relevant parameters it can be guaranteed that a relatively low-fees service option will always be available. 
-This option may come with a high expected delay when the system is congested. However, this is also the case in the current system. 
+This option may come with a high expected delay when the system is congested. However, this is also the case in the current system. Moreover, tiered pricing clearly improves in that it offers users a clear view of the delay expected from each tier, compared to the current system when the expected delayed can only be estimated by off-chain channels.
+
 <!-- a numerical example may help here -->
-Moreover, tiered pricing clearly improves in that it offers users a clear view of the delay expected from each tier, compared to the current system when the expected delayed can only be estimated by off-chain channels.
 
 ## Why not EIP-1559?
+While our approach bares similarities with that of EIP-1559 on the way prices are updated, our design is a lot more diverse in that it allows different types of use-cases to be served by the system in a satisfactory manner. We highlight this point further through simulation.
 
-While our approach bares similarities with that of EIP-1559 on the way prices are updated, our design is a lot more diverse in that it allows for different types of users to be served by the system in a satisfactory manner.
+In the following figures we present the evolution of the price, delay and size of each tier of a simplified blockchain with three tiers of equal size. The demand starts low, then changes to 3 clusters with different urgency, then uniform urgency and finally becomes lower than the available throughput. During the low-demand periods, only tier 1 is available and its price and delay are minimal. Moreover, the size of tier 1 periodically fluctuates, in an effort to detect if there exists increased traffic. Next, in the 3 cluster period, all 3 tiers become available as the system detects increased traffic. Note, that the delays of Tiers 2 and 3 increase to maintain the price invariant; here the price of subsequent tiers must be at least half of the previous one. Finally, during the uniform urgency segment, the delays of Tiers 2 and 3 again adjust to maintain the price invariant.
 
-<!-- add simulations here -->
+In the last figure we show how the Ethereum transaction fee mechanism would have fared against the same traffic. Notice that in periods of low congestion the result is similar, however during high congestion the Ethereum price is slightly lower than our Tier 1 price. This effect would diminish with higher demand. However, Ethereum is priced in such a way that only transactions with the highest value can make it through. In our proposal, the increased delays of different tiers could make them unattractive for certain applications (such as DeFi), reducing their prices and allowing a more diverse set of users to participate.
+
 
 ## Fee overshooting 
-
 Allowing users to offer higher funds for fee payment serves as a way of reducing the risk of price fluctuations. This comes without additional costs to users, as change comes back to them in the form of reward.
 
 ## Demand tracking
