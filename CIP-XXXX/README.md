@@ -56,24 +56,30 @@ IBs are prioritized for inclusion in the main chain based on their respective ti
 
 
 
-
-
-
-
-
-
 # Rationale  <!-- The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work. The rationale should provide evidence of consensus within the community and discuss important objections or concerns raised during discussion. When applicable, it must also explain how the proposal affects backward-compatibility of existing solutions. -->
 
-The key idea of this proposal is that the fee system should be able to target multiple use cases at once, whenever this is possible. 
-This is done through the use of tiers with varying delays and cannot be achieved by different prices alone. If a tier offers a specific quality of service, its price cannot be reduced to capture every user because costs can be misreported and off-chain agreements can override the prescribed transaction order. By ensuring that the delay of every tier must be waited out, each tier is only useful to certain users. 
+The key idea of this proposal is that the fee system should be able to target multiple use cases at once, whenever this is possible. This is done through the use of tiers with varying delays and cannot be achieved by different prices alone. If a tier offers a specific quality of service, its price cannot be reduced to capture every user because costs can be misreported and off-chain agreements can override the prescribed transaction order. By ensuring that the delay of every tier must be waited out, each tier is only useful to certain users. 
 
-By appropriately setting the relevant parameters it can be guaranteed that a low cost service option always remains available.
+## Are we departing from a low-cost system?
+
+While this proposal departs from the low fixed fees approach, for reasons explained earlier, by appropriately setting the relevant parameters it can be guaranteed that a relatively low-fees service option will always be available. 
+This option may come with a high expected delay when the system is congested. However, this is also the case in the current system. 
+<!-- a numerical example may help here -->
+Moreover, tiered pricing clearly improves in that it offers users a clear view of the delay expected from each tier, compared to the current system when the expected delayed can only be estimated by off-chain channels.
+
+## Why not EIP-1559?
+
+While our approach bares similarities with that of EIP-1559 on the way prices are updated, our design is a lot more diverse in that it allows for different types of users to be served by the system in a satisfactory manner.
+
+<!-- add simulations here -->
+
+## Fee overshooting 
 
 parameters in order to reduce the risk of not having enough funds to pay for a transaction targeting a specific tier due to price fluctuations.
 
 To avoid attackers interfering with the tier selection process
 
-Tracking demand is necessary to properly adjust prices. We   capture changes in demand by observing how full IBs included in the main chain are. Given that malicious parties may try to artificially adjust prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and thus make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier. 
+Tracking demand is necessary to properly adjust prices. We  capture changes in demand by observing how full IBs included in the main chain are. Given that malicious parties may try to artificially adjust prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and thus make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier. 
 
 
 # Path to Active
