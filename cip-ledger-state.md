@@ -45,7 +45,7 @@ Cardano node also maintains ledger state which includes:
 * Current protocol parameters.
 
 The first of these ledger state components is by far the largest component and is probably not
-needed outside the node (and definitely not needed by db-sync. However the others are needed and
+needed outside the node (and definitely not needed by db-sync). However the others are needed and
 stored by `cardano-db-sync` which gets these data sets by maintaining its own copy of ledger state
 and periodically extracting the parts required.
 
