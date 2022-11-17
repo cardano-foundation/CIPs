@@ -71,7 +71,7 @@ In the following figures we present the evolution of the price, delay and size o
 
 In the last figure we show how the Ethereum transaction fee mechanism would have fared against the same traffic. Notice that in periods of low congestion the results are similar, while during high congestion the Ethereum price is slightly lower than our Tier 1 price. However, Ethereum is priced in such a way that only transactions with the highest value can make it through. In our proposal, the increased delays of different tiers could make them unattractive for certain applications (such as DeFi), reducing their prices and allowing a more diverse set of users to participate.
 
-![alt text](https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/priceOurs.jpg?raw=true)
+![alt text](https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/image1.png?raw=true)
 
 
 ## Fee overshooting 
