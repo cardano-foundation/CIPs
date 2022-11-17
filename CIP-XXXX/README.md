@@ -14,7 +14,7 @@ License: CC-BY-4.0
 ---
 
 # Abstract <!-- A short (~200 word) description of the technical issue being addressed and the proposed solution -->
-
+As Cardano adoption widens, the system is bound to face congestion issues. Tiered Pricing deals with this issue by offering users a multitude of service options to select from when the system is under congestion. Each choice consists of a price/delay trade-off, covering a wide spectum of use-cases ranging from DeFi to low urgency transactions. The mechanism is described as an extension of the recently introduced Ouroboros Leios proposal.  
 
 
 # Motivation  <!-- A clear and short explanation introducing the reason behind a proposal. When changing an established design, it must outlines issues in the design that motivates a rework. -->
