@@ -89,6 +89,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
+| 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
 <p align="right"><i>Last updated on 2023-06-09</i></p>
@@ -124,7 +125,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 95? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
 | 96? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 97? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
 <p align="right"><i>Last updated on 2023-06-09</i></p>
 
