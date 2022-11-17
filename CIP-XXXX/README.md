@@ -49,9 +49,9 @@ Transactions are allowed to specify higher fees than those determined by the tie
 
 Tiered pricing naturally integrates with Ouroboros Leios by associating each input block (IB) with a single tier type, and restricting its contents to transactions of this type. The VRF output used to determine whether an SPO is eligible to create a new IB is also used to determine its tier type. The rate at which IBs of a certain type are produced is determined by the tier's size.
 
-Demand for different tiers is tracked by observing the level of fullness of IBs that were recently added to the main chain in a large enough interval. As specified earlier, tier parameters are adjusted based on the observed demand. IBs are expected to uphold the relevant parameters derived by the rankinkg block (RB) they reference. 
+Demand for different tiers is tracked by observing the level of fullness of IBs that were recently added to the main chain in a large enough interval. As specified earlier, tier parameters are adjusted based on the observed demand. IBs are expected to uphold the relevant parameters derived by the ranking block (RB) they reference. 
 
-IBs are prioritized for inclusion in the main chain based on their respective tier delay; IBs are only included in an endorsment block (EB) after time proportional to their tier delay has passed.
+IBs are prioritized for inclusion in the main chain based on their respective tier delay; IBs are only included in an endorsement block (EB) after time proportional to their tier delay has passed.
 
 
 
@@ -75,12 +75,13 @@ While our approach bares similarities with that of EIP-1559 on the way prices ar
 
 ## Fee overshooting 
 
-parameters in order to reduce the risk of not having enough funds to pay for a transaction targeting a specific tier due to price fluctuations.
+Allowing users to offer higher funds for fee payment serves as a way of reducing the risk of price fluctuations. This comes without additional costs to users, as change comes back to them in the form of reward.
 
-To avoid attackers interfering with the tier selection process
+## Demand tracking
+Tracking demand is necessary to properly adjust prices. Given that malicious parties may try to artificially inflate or deflate prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier. 
 
-Tracking demand is necessary to properly adjust prices. We  capture changes in demand by observing how full IBs included in the main chain are. Given that malicious parties may try to artificially adjust prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and thus make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier. 
-
+## IB-Tier correspondence
+Assigning a single tier type to each IB at a random and verifiable way through the VRF mechanism, is an efficient way of avoiding meddling of malicious actors in the tier selection process. It also easily allows us to regulate the expected rate at which IBs of a certain tier type are produced.
 
 # Path to Active
 
