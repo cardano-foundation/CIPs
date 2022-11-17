@@ -96,7 +96,7 @@ Assigning a single tier type to each IB at a random and verifiable way through t
 
 ### Implementation Plan <!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
 
-While the current proposal extends Ouroboros Leios, Cardano running Ouroboros Praos could still benefit from it at times when the network gets congested. A Tiered Pricing implementation should thus be as much as possible agnostic of the actual protocol run.
+While Tiered Pricing will have a deeper impact when deployed on top of Ouroboros Leios, due to the high level of throughput that can be directed to different use-cases, Cardano running Ouroboros Praos could still benefit from it during high congestion periods. A Tiered Pricing implementation should thus be as much as possible agnostic of the actual protocol run.
 
 Should this CIP be accepted, the high-level implementation plan would be:
 1. Publish a detailed pricing algorithm
