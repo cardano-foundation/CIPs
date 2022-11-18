@@ -30,7 +30,7 @@ Ideally, we would like the system to offer a multitude of options, and have user
 ## Specification <!-- The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations. -->
 
 ### Tiered Pricing
-Tiered pricing works by dynamically separating available throughput to multiple tiers that offer different price/delay trade-offs. Users are given the choice of selecting which tier better accommodates their needs.
+Tiered pricing works by dynamically separating available throughput into multiple tiers that offer different price/delay trade-offs. Users are given the choice of selecting which tier better accommodates their needs.
 
 In more detail, the price and delay associated with each tier as well as the number and size of different tiers are determined dynamically based on the demand observed in the ledger; the fuller the space allocated to a certain tier looks, the higher the demand. When the system is not congested, a single high speed/low price/small size tier remains available, with the system optimizing its resource use and behaving more or less as having fixed low fees and no extra delays.  On the other hand, when congestion is detected, tier parameters are selected in such a way that a multitude of price/delay options become available to users.
 
