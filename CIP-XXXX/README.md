@@ -16,7 +16,7 @@ License: CC-BY-4.0
 # Dealing with traffic congestion by implementing Tiered Pricing
 
 ## Abstract <!-- A short (~200 word) description of the technical issue being addressed and the proposed solution -->
-As Cardano adoption widens the system is bound to face traffic congestion. During such a situation the system should have predictable behavior, handling gracefully the unavoidable delays users are going to experiene. Tiered Pricing deals with this issue by offering users a number of service options to select from when the system is under congestion. Each possible choice consists of a price/delay trade-off, covering a wide spectum of use-cases. The exact mechanism is described as an extension of the recently introduced Ouroboros Leios proposal.
+As Cardano adoption widens the system is bound to face traffic congestion. During such a situation the system should have predictable behavior, handling gracefully the unavoidable delays users are going to experiene. Tiered Pricing deals with this issue by offering users a number of service options to select from when the system is under congestion. Each possible choice consists of a price/delay trade-off, covering a wide spectum of use-cases. The exact mechanism is described as an extension of the recently introduced [Ouroboros Leios](https://iohk.io/en/research/library/papers/ouroboros-leios-design-goals-and-concepts/) proposal.
 
 
 ## Motivation  <!-- A clear and short explanation introducing the reason behind a proposal. When changing an established design, it must outlines issues in the design that motivates a rework. -->
@@ -30,14 +30,14 @@ Ideally, we would like the system to offer a multitude of options, and have user
 ## Specification <!-- The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations. -->
 
 ### Tiered Pricing
-Tiered pricing works by dynamically separating available throughput to multiple tiers that offer different price/delay tradeoffs. Users are given the choice of selecting which tier better accommodates their needs.
+Tiered pricing works by dynamically separating available throughput to multiple tiers that offer different price/delay trade-offs. Users are given the choice of selecting which tier better accommodates their needs.
 
 In more detail, the price and delay associated with each tier as well as the number and size of different tiers are determined dynamically, based on the demand observed in the ledger; the fuller the space allocated to a certain tier looks, the higher the demand. When the system is not congested, a single high speed/low price/small size tier remains available, with the system optimizing its resource use and behaving more or less as having fixed low fees and no extra delays.  On the other hand, when congestion is detected, tier parameters are selected in such a way that a multitude of price/delay options become available to users.
 
 More specifically, tiers are introduced and modified to achieve at minimum a target ratio between consecutive prices and waiting times; moving from tier `i` to tier `i+1` both the price must be substantially lower and the waiting time higher than that of the previous tier. The first tier is always available and its delay is set to the minimum level.
 Additional tiers are introduced, if the demand on the last (slowest) tier increases, i.e., its price becomes high enough. Similarly, if the demand of the last tier falls below a certain level, the tier gets deleted and other tiers are resized accordingly, to avoid leaving the allocated space unused.
 
-The price of each tier is updated in similar fashion to EIP-1559, disregarding other tier prices.
+The price of each tier is updated in similar fashion to [EIP-1559](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md), disregarding other tier prices.
 On the other hand, delays are updated much less frequently than prices and depend on them. In particular, delays observe the average prices between each update and adjust up or down in small steps accordingly, to ensure that prices of consequent tiers are separated enough. Finally, tier additions and deletions happen even less frequently.
 
 Transactions are allowed to specify higher fees than those determined by the tier selected. In the end, they are only going to pay the actual tier price, and get back the change as a reward at the end of the epoch. The reward mechanism should be adjusted accordingly.
