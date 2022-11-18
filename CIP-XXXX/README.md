@@ -46,7 +46,7 @@ Transactions are allowed to specify higher fees than those determined by the tie
 ### Integration with Ouroboros Leios
 Tiered pricing naturally integrates with Ouroboros Leios by assigning to each input block (IB) a single tier type, and restricting its contents to only transactions of this type. The VRF output used to determine whether an SPO is eligible to create a new IB is also used to determine its tier type. The rate at which IBs of a certain type are produced is determined by the tier's size, and possibly changes dynamically.
 
-Demand for different tiers is tracked by observing the level of fullness of the IBs that were recently added to the main chain in a large enough interval. As specified earlier, tier parameters are adjusted based on the observed demand. IBs are expected to uphold the relevant parameters derived by the ranking block (RB) they reference, otherwise they are deemed invalid. 
+Demand for different tiers is tracked by observing the level of fullness of the IBs that were recently added to the main chain in a large enough interval. As specified earlier, tier parameters are adjusted based on the observed demand. IBs are expected to uphold the relevant parameters derived by the ranking block (RB) they reference, otherwise they are deemed invalid.
 
 IBs are prioritized for inclusion in the main chain based on their respective tier delay; IBs are only included in an endorsement block (EB) after time proportional to their tier delay has passed.
 
@@ -55,7 +55,7 @@ IBs are prioritized for inclusion in the main chain based on their respective ti
 
 ## Rationale  <!-- The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work. The rationale should provide evidence of consensus within the community and discuss important objections or concerns raised during discussion. When applicable, it must also explain how the proposal affects backward-compatibility of existing solutions. -->
 
-The key idea of this proposal is that the fee system should be able to target multiple use cases at once, whenever this is possible. This is done through the use of tiers with varying delays and cannot be achieved by different prices alone. If a tier offers a specific quality of service, its price cannot be reduced to capture every user because costs can be misreported and off-chain agreements can override the prescribed transaction order. By ensuring that the delay of every tier must be waited out, each tier is only useful to certain users, resulting in lower prices. 
+The key idea of this proposal is that the fee system should be able to target multiple use cases at once, whenever this is possible. This is done through the use of tiers with varying delays and cannot be achieved by different prices alone. If a tier offers a specific quality of service, its price cannot be reduced to capture every user because costs can be misreported and off-chain agreements can override the prescribed transaction order. By ensuring that the delay of every tier must be waited out, each tier is only useful to certain users, resulting in lower prices.
 
 
 ### Are we departing from a low-cost system?
@@ -83,7 +83,7 @@ In the last figure we show how the Ethereum transaction fee mechanism would have
 Allowing users to allocate more funds than the observed tier price for fee payment serves as a way of reducing the risk of price fluctuations. This comes without additional costs to users, as change will come back to them in the form of reward at the end of the epoch.
 
 ### Demand tracking
-Tracking demand is necessary to properly adjust prices. Given that malicious parties may try to artificially inflate or deflate prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier. 
+Tracking demand is necessary to properly adjust prices. Given that malicious parties may try to artificially inflate or deflate prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier.
 
 ### IB-Tier correspondence
 Assigning a single tier type to each IB at a random and verifiable way through the VRF mechanism, is an efficient way of avoiding meddling of malicious actors in the tier selection process. It also easily allows us to regulate the expected rate at which IBs of a certain tier type are produced by adjusting the relevant target threshold.
@@ -100,6 +100,7 @@ While Tiered Pricing will have a deeper impact when deployed on top of Ouroboros
 
 Should this CIP be accepted, the high-level implementation plan would be:
 1. Publish a detailed pricing algorithm
+   **NOTE**: This includes fees calculation and distribution
 2. Prototype executable implementation suitable for running simulations and formal analysis
 3. Simulate the impact of Tiered Pricing on Cardano. This simulation should be able to demonstrate how this proposal impacts the distribution of fees under various conditions of the system, possibly using historical data
 4. Implement and deploy on top of Ouroboros Praos (or whatever version of consensus is current on Cardano at that time)
@@ -107,7 +108,5 @@ Should this CIP be accepted, the high-level implementation plan would be:
 5. Adapt as part of Ouroboros Leios deployment
 
 ## Copyright
+
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
-
-
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
