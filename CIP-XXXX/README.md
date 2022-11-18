@@ -22,15 +22,15 @@ As Cardano adoption widens the system is bound to face traffic congestion. Durin
 ## Motivation  <!-- A clear and short explanation introducing the reason behind a proposal. When changing an established design, it must outlines issues in the design that motivates a rework. -->
 
 Fees in the current system are fixed and transactions are included in blocks in a FIFO order.
-Unfortunately such an approach is ill-suited to handle traffic congestion, as it does not provide any means for users to signify their urgency and accommodate them based on their needs. Throughput scaling solutions, e.g., Ouroboros Leios, may only temporarily solve the problem, until peak traffic grows larger than available throughput. Traffic congestion is also a possible attack vector that malicious actors may try to exploit to increase the average delay of the system at a moderate cost. Thus, Cardano needs a better way to handle traffic congestion.
+Unfortunately such an approach is ill-suited to handle traffic congestion, as it does not provide any means for users to signify their urgency and accommodate them based on their needs. Throughput scaling solutions, e.g., Ouroboros Leios, may only temporarily solve the problem, until peak traffic grows larger than the available throughput. Traffic congestion is also a possible attack vector that malicious actors may try to exploit to increase the average delay of the system at a moderate cost. Thus, Cardano needs a better way to handle traffic congestion.
 
-Ideally, we would like the system to offer a multitude of options, and have users decide the price/delay trafe-off that suits them. These options should change dynamically to reflect current traffic levels. We would like to have a mechanism that informs users of the current congestion status, and takes in account their preferences in prioritizing transactions.
+Ideally, we would like the system to offer a multitude of options, and have users decide the price/delay trafe-off that suits them. These options should change dynamically to reflect current traffic levels. We would like to have a mechanism that informs users of the current congestion status, and takes into account their preferences in prioritizing transactions.
 
 
 ## Specification <!-- The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations. -->
 
 ### Tiered Pricing
-Tiered pricing works by dynamically separating available throughput into multiple tiers that offer different price/delay trade-offs. Users are given the choice of selecting which tier better accommodates their needs.
+Tiered pricing works by dynamically separating the available throughput into multiple tiers that offer different price/delay trade-offs. Users are given the choice of selecting which tier better accommodates their needs.
 
 In more detail, the price and delay associated with each tier as well as the number and size of different tiers are determined dynamically based on the demand observed in the ledger; the fuller the space allocated to a certain tier looks, the higher the demand. When the system is not congested, a single high speed/low price/small size tier remains available, with the system optimizing its resource use and behaving more or less as having fixed low fees and no extra delays.  On the other hand, when congestion is detected, tier parameters are selected in such a way that a multitude of price/delay options become available to users.
 
@@ -65,7 +65,7 @@ This option may come with a high expected delay when the system is congested. No
 
 
 ### Why not EIP-1559?
-While our approach bares similarities to that of EIP-1559 on the way prices are updated, our design is a lot more diverse in that it allows different types of use-cases to be served by the system in a satisfactory manner. We highlight this point further through simulation.
+While our approach bares similarities to that of EIP-1559 regarding the way prices are updated, our design is a lot more diverse in that it allows different types of use-cases to be served by the system in a satisfactory manner. We highlight this point further through simulation.
 
 In the following figures we present the evolution of the price, delay and size of each tier of a simplified blockchain with three tiers of equal size. The demand starts low, then changes to 3 clusters with different levels of urgency, then uniform urgency and finally becomes lower than the available throughput. During the low-demand periods, only tier 1 is available and its price and delay are minimal. Moreover, the size of tier 1 periodically fluctuates, in an effort to detect increased traffic. Next, in the 3 cluster period, all 3 tiers become available as the system detects increased traffic. Note, that the delays of Tiers 2 and 3 increase to maintain the price invariant; here the price of subsequent tiers must be at least half of the previous ones. Finally, during the uniform urgency segment, the delays of Tiers 2 and 3 again adjust to maintain the price invariant, as the price of Tier 1 decreases.
 
