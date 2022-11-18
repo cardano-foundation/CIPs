@@ -96,7 +96,7 @@ In the last figure we show how the Ethereum transaction fee mechanism would have
 Allowing users to allocate more funds than the observed tier price for fee payment serves as a way of reducing the risk of price fluctuations. This comes without additional costs to users, as change will come back to them in the form of reward at the end of the epoch.
 
 ### Tracking demand 
-Tracking demand is necessary to properly adjust prices. Given that malicious parties may try to artificially inflate or deflate prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier.
+Tracking demand is necessary to properly adjust prices (and consequently delays and tiers). Given that malicious parties may try to artificially inflate or deflate prices by creating IBs that do not reflect the actual demand, we take advantage of the fact that IBs are created at a high rate, and make use of a “large” enough sample from which we can robustly deduce the actual demand for each tier.
 
 ### IB-Tier correspondence
 Assigning a single tier type to each IB at a random and verifiable way through the VRF mechanism, is an efficient way of avoiding meddling of malicious actors in the tier selection process. It also easily allows us to regulate the expected rate at which IBs of a certain tier type are produced by adjusting the relevant target threshold.
