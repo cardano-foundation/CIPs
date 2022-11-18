@@ -69,13 +69,28 @@ While our approach bares similarities to that of EIP-1559 on the way prices are 
 
 In the following figures we present the evolution of the price, delay and size of each tier of a simplified blockchain with three tiers of equal size. The demand starts low, then changes to 3 clusters with different levels of urgency, then uniform urgency and finally becomes lower than the available throughput. During the low-demand periods, only tier 1 is available and its price and delay are minimal. Moreover, the size of tier 1 periodically fluctuates, in an effort to detect increased traffic. Next, in the 3 cluster period, all 3 tiers become available as the system detects increased traffic. Note, that the delays of Tiers 2 and 3 increase to maintain the price invariant; here the price of subsequent tiers must be at least half of the previous ones. Finally, during the uniform urgency segment, the delays of Tiers 2 and 3 again adjust to maintain the price invariant, as the price of Tier 1 decreases.
 
+
+<p float="left">
+<img src="https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image2.png" alt="Tiered pricing - prices" width="33%"> 
+<img src="https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image4.png" alt="Tiered pricing - delays" width="33%"> 
+<img src="https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image1.png" alt="Tiered pricing - sizes" width="33%">
+</p>
+
+
 In the last figure we show how the Ethereum transaction fee mechanism would have fared against the same traffic. Notice that in periods of low demand the results are similar, while during high congestion the Ethereum price is slightly lower than our Tier 1 price. However, Ethereum is priced in such a way that only transactions with the highest value can make it through. In our proposal, the increased delays of different tiers could make them unattractive for certain applications (such as DeFi), reducing their prices and allowing a more diverse set of users to participate.
 
+
+<p float="left">
+<img src="https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image3.png" alt="Ethereum - prices" width="33%">
+</p>
+
+
+<!--
 ![Tiered pricing - prices](https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image2.png)
 ![Tiered pricing - delays](https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image4.png)
 ![Tiered pricing - sizes](https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image1.png)
 ![Ethereuem - prices](https://github.com/abailly-iohk/CIPs/blob/tiered-pricing-protocol/CIP-XXXX/blob/image3.png)
-
+-->
 
 ### Fee overshooting
 Allowing users to allocate more funds than the observed tier price for fee payment serves as a way of reducing the risk of price fluctuations. This comes without additional costs to users, as change will come back to them in the form of reward at the end of the epoch.
