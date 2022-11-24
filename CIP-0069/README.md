@@ -2,7 +2,7 @@
 CIP: 69
 Title: Script Signature Unification 
 Authors: Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>
-Status: Draft
+Status: Proposed
 Type: Standards Track
 Created: 2022-08-23
 License: CC-BY-4.0
