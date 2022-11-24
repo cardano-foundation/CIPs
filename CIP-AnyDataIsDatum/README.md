@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 76
 Title: Hash-Checked Data
 Author: Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>
 Status: Draft
