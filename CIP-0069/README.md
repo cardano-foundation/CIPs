@@ -1,5 +1,5 @@
 ---
-CIP: 0069
+CIP: 69
 Title: Script Signature Unification 
 Authors: Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>
 Status: Draft
