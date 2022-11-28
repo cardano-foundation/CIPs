@@ -4,9 +4,11 @@ Title: Cardano Improvement Proposals
 Status: Active
 Category: Meta
 Authors:
+    - Frederic Johnson <frederic@advanceweb3.com>
+    - Sebastien Guillemot <sebastien@dcspark.io>
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
+    - Duncan Coutts <duncan.coutts@iohk.io>
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-    - Frederic Johnson <frederic.johnson@cardanofoundation.org>
 Implementors: N/A
 Discussions:
     - https://github.com/cardano-foundation/cips/pull/366
