@@ -31,7 +31,7 @@ Current Tools/Sites/Explorers that have implemented it already or have plans to 
 * [CardanoWall](https://cardanowall.com)
 * [CNFT](https://cnft.io)
 
-# Specification - Original - Non encrypted message
+# Specification
 
 The specification for the individual strings follow the general design specification for JSON metadata, which is already implemented and in operation on the cardano blockchain.
 The used metadatum label is **`"674":`**, this number was choosen because it is the T9 encoding of the string "msg".
@@ -78,6 +78,8 @@ The number of theses **message-strings** must be at least one for a single messa
          }
 }
 ```
+
+&nbsp;<p>
 
 # Specification - Encrypted message
 
@@ -131,7 +133,7 @@ The part that is encrypted/decrypted is the value of the **msg** key from a norm
 
 Example implementations for node.js, PHP, etc. can be found in the [codesamples](codesamples/) folder.
 
-### Encryption/Decryption example on the console - basic
+### Encryption/Decryption example on the console - basic mode
 
 First, generate a normal metadata transaction message. There is no difference yet.
 
@@ -149,7 +151,7 @@ Encrypt the message via openssl and the default passprase **cardano**:
 openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
 ```
 
-Result is the base64 encoded encrypted text:
+Result are the base64 encoded strings:
 ```
 U2FsdGVkX1/5Y0A7l8xK686rvLsmPviTlna2n3P/ADNm89Ynr1UPZ/Q6bynbe28Y
 /zWYOB9PAGt+bq1L0z/W2LNHe92HTN/Fwz16aHa98TOsgM3q8tAR4NSqrLZVu1H7
@@ -177,7 +179,17 @@ Console one-liner:
 jq ".\"674\".msg = [ $(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
 ``` 
 
+---
+  
+A **decryption** can be done in a similar way:
+``` console
+jq -crM ".\"674\".msg[]" encrypted-message-metadata.json | openssl enc -d -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano"
+```
 
+Which results in the original content of the **msg** key:
+`["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
+
+&nbsp;<p>
 
 # Some Integration examples
 
@@ -198,7 +210,6 @@ jq ".\"674\".msg = [ $(jq -crM .\"674\".msg normal-message-metadata.json | opens
 
 **CNTools**:<br>
 ![image](https://user-images.githubusercontent.com/47434720/130353491-fc0f3a69-1937-4e72-b680-c04cc069b5c4.png)
-
 
 # Rationale
 
