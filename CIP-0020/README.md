@@ -211,6 +211,8 @@ Which results in the original content of the **msg** key:
 **CNTools**:<br>
 ![image](https://user-images.githubusercontent.com/47434720/130353491-fc0f3a69-1937-4e72-b680-c04cc069b5c4.png)
 
+# Integration examples for encrypted messages
+
 **Cexplorer.io**: With the implementation of the **encrypted message decoding**.
 ![image](https://user-images.githubusercontent.com/47434720/204560392-f45bbe4f-7f78-48fa-9e47-4d3b104685bf.png)
 
