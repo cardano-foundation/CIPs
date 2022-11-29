@@ -149,7 +149,7 @@ First, generate a normal metadata transaction message. There is no difference ye
 }
 ```
 
-Encrypt the message via openssl and the default passprase **cardano**:
+Encrypt the message (value of the `msg:` key) via openssl and the default passprase **cardano**:
 ``` console
 openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
 ```
