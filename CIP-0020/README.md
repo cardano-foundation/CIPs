@@ -211,6 +211,10 @@ Which results in the original content of the **msg** key:
 **CNTools**:<br>
 ![image](https://user-images.githubusercontent.com/47434720/130353491-fc0f3a69-1937-4e72-b680-c04cc069b5c4.png)
 
+**Cexplorer.io**: With the implementation of the **encrypted message decoding**.
+![image](https://user-images.githubusercontent.com/47434720/204560392-f45bbe4f-7f78-48fa-9e47-4d3b104685bf.png)
+
+  
 # Rationale
 
 This design is simple, so many tools on the cardano blockchain can implement it easily. The array type was choosen to have consistency, no need to switch between a string or
