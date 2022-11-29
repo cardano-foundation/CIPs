@@ -30,6 +30,7 @@ Current Tools/Sites/Explorers that have implemented it already or have plans to 
 * [CardanoCommunityWallet](https://ccwallet.io)
 * [CardanoWall](https://cardanowall.com)
 * [CNFT](https://cnft.io)
+* [Cardano Explorer](https://cexplorer.io)
 
 # Specification
 
