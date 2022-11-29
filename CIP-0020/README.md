@@ -131,8 +131,8 @@ The encryption is based on a given passphrase, which can be choosen by the user.
 
 The part that is encrypted/decrypted is the value of the **msg** key from a normal transaction metadata json, the array with the message(s) string(s).
 
-Example implementations for node.js, PHP, etc. can be found in the [codesamples](codesamples/) folder.
-
+:warning: Example implementations for node.js, PHP, etc. can be found in the [codesamples](codesamples/) folder. **Message decryption should be done on the user frontend if possible.**
+ 
 ### Encryption/Decryption example on the console - basic mode
 
 First, generate a normal metadata transaction message. There is no difference yet.
