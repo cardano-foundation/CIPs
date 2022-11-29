@@ -13,8 +13,8 @@ License: <CC-BY-4.0>
 Currently, the hash of a script is simply the hash of its [serialisation](
 https://github.com/input-output-hk/plutus/blob/a645d1ee0dd5efcd7a7da24678461e07396ad26e/plutus-ledger-api/src/PlutusLedgerApi/Common/SerialisedScript.hs#L88).
 This CIP proposes changing this such that the hash of a script (term)
-is a function of the its immediate children's hashes, forming a Merkle Tree from the AST.
-This allows one to shallowly verify a script's hash, and is very powerful on Cardano,
+is a function of its immediate children's hashes, forming a Merkle Tree from the AST.
+This allows one to shallowly verify a script's hash, and is useful on Cardano,
 because it allows scripts to **check that a script hash is an instantiation of a parameterised script**.
 
 In addition, a `blake2b_224` built-in function must be added.
