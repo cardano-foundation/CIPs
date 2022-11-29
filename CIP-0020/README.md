@@ -21,7 +21,7 @@ We have the utilities on the cardano blockchain now since the introduction of th
 So the CIP authors came together to form a first implementation of this. It is straight and simple, additional keys and content can be added later.
 The IOG main wallet `Daedalus` can now also directly show attached metadata information in the transaction details view. This CIP is the missing link to bring it together.
 
-Current Tools/Sites/Explorers that have implemented it already:
+Some of the current Tools/Sites/Explorers that have implemented it already:
 * [CNTools](https://cardano-community.github.io/guild-operators/#/Scripts/cntools)
 * [JorManager](https://bitbucket.org/muamw10/jormanager/)
 * [StakePoolOperator Scripts](https://github.com/gitmachtl/scripts)
@@ -29,6 +29,7 @@ Current Tools/Sites/Explorers that have implemented it already:
 * [AdaStat.net](https://adastat.net)
 * [Eternl Wallet](https://eternl.io)
 * [CardanoWall](https://cardanowall.com)
+* [Nami Wallet](https://namiwallet.io)
 * [CNFT](https://cnft.io)
 * [Cardano Explorer](https://cexplorer.io)
 * [SundaeSwap](https://https://sundaeswap.finance/)
@@ -36,6 +37,7 @@ Current Tools/Sites/Explorers that have implemented it already:
 * [MuesliSwap](https://muesliswap.com/)
 * [DripDropz.io](https://dripdropz.io/)
 * [Typhon Wallet](https://typhonwallet.io/)
+* [Ledger Live](https://www.ledger.com/)
 
 # Specification
 
@@ -224,6 +226,9 @@ Which results in the original content of the **msg** key:
 &nbsp;<p>
 
 ## Some Integration examples (standard/unencrypted)
+
+**Ledger Live** is offering a memo field
+![image](https://user-images.githubusercontent.com/47434720/204649383-c34ae733-e136-41b8-8fa8-619dde978621.png)
 
 **Daedalus** shows the metadata text (could be improved if CIP is implemented):
 ![image](https://user-images.githubusercontent.com/47434720/121822100-85b38a80-cc9d-11eb-9d13-1869746a69b2.png)
