@@ -98,7 +98,7 @@ The specification update for encrypted messages takes advantage of the simple or
            "enc": "<encryptionmode>",
            "msg": 
                   [ 
-                    "encrypted-string 1" //Optional: ,"encrypted-string 2","encyrpted-string 3" ...
+                    "base64-string 1", "base64-string 2", "base64-string 3" ...
                   ]
          }
 }
