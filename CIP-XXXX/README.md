@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Merkelised Plutus Scripts
-Authors: Las Safin <me@las.rs>
+Authors: Las Safin <las@mlabs.city>
 Status: Draft
 Type: Standards
 Created: 2022-11-29
