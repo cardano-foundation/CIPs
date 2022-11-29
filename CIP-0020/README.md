@@ -6,6 +6,7 @@ Comments-URI: no comments yet
 Status: Active
 Type: Informational
 Created: 2021-06-13
+Updated: 2022-11-29
 License: CC-BY-4.0
 ---
 
@@ -30,18 +31,19 @@ Current Tools/Sites/Explorers that have implemented it already or have plans to 
 * [CardanoWall](https://cardanowall.com)
 * [CNFT](https://cnft.io)
 
-# Specification
+# Specification - Original - Non encrypted message
 
 The specification for the individual strings follow the general design specification for JSON metadata, which is already implemented and in operation on the cardano blockchain.
 The used metadatum label is **`"674":`**, this number was choosen because it is the T9 encoding of the string "msg".
 The message content has the key **`"msg":`** and consists of an **array** of individual **message-strings**. 
 The number of theses **message-strings** must be at least one for a single message, more for multiple messages/lines. Each of theses individual **message-strings** array entries must be at most 64 bytes when UTF-8 encoded.
 
-Format:
+### Format:
 ``` 
 { 
   "674":
-         { "msg": 
+         { 
+           "msg": 
                   [ 
                     "message-string 1" //Optional: ,"message-string 2","message-string 3" ...
                   ]
@@ -49,13 +51,12 @@ Format:
 }
 ```
 
-
-
-Example for a single message/comment/memo:
+### Example for a single message/comment/memo:
 ``` json
 { 
   "674":
-         { "msg": 
+         { 
+           "msg": 
                   [ 
                     "This is a comment for the transaction xyz, thank you very much!"
                   ]
@@ -63,11 +64,12 @@ Example for a single message/comment/memo:
 }
 ```
 
-Example for multiple messages/comments/memos:
+### Example for multiple messages/comments/memos:
 ``` json
 { 
   "674":
-         { "msg": 
+         { 
+           "msg": 
                   [ 
                     "Invoice-No: 1234567890",
                     "Customer-No: 555-1234",
@@ -76,10 +78,111 @@ Example for multiple messages/comments/memos:
          }
 }
 ```
-Example above in **Daedalus** currently (could be improved if CIP is implemented):
-![image](https://user-images.githubusercontent.com/47434720/121822100-85b38a80-cc9d-11eb-9d13-1869746a69b2.png)
 
-## Some Integration examples
+# Specification - Encrypted message
+
+This is an addition to the original CIP-0020, which is active since mid 2021 and widely used across many entities. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets. 
+
+Why do we need this? Metadata is sent unencrypted and in plaintext over the networks, a 3rd-party or man-in-the-middle can easily collect data such as bank-account-numbers, email-addresses, etc. out of such messages. With even a simple encryption of such a message - and publicly known passphrasw - it is much more complicated for the man-in-the-middle listener to collect data on the fly.
+
+The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown istead of an maybe autodecrypted one. More on the autodecryption later. 
+
+### Format:
+``` 
+{ 
+  "674":
+         { 
+           "enc": "<encryptionmode>",
+           "msg": 
+                  [ 
+                    "encrypted-string 1" //Optional: ,"encrypted-string 2","encyrpted-string 3" ...
+                  ]
+         }
+}
+```
+The format is identical to the normal one, with a simple addition of the `enc` (encryptionmode) entry.
+
+The value given in the `enc` field references an entry in the [Encryption Mode Json](cip0020-encryption-modes.json) file, which collects different encryption methods and there parameters. Starting with a simple implementation named `basic`. This reference file is just a collection and should be seen as a look-up-file about the methods. This file can also be updated and extended with new encryption methods - like with public/private key encryption - easily in future updates.
+
+### Encryption modes:
+
+* **plain** - no encryption at all
+
+This is not really an encryption mode, but included as a backwards compatible entry to signal this message as an unencrypted one. The entry is not needed and fully optional for unencrypted messages.
+
+* **basic** - aes-256-cbc based salted symmetric encryption via passpharse (+default passphrase)
+
+Lets list the entry from the [Encryption Mode Json](cip0020-encryption-modes.json) file first for the basic method:
+``` json
+   "basic": {
+      "desc": "symmetrical encryption via openssl and a passphrase (default=cardano)",
+      "type": "openssl",
+      "cipher": "aes-256-cbc",
+      "digest": "pdkdf2",
+      "iter": 10000,
+      "encode": "base64" }
+```
+
+OpenSSL was choosen, because its fast and widely available also for all kind of different platforms, web frontends, etc. Encryption algo is AES-256-CBC (salted) using `pdkdf2` to derive the key from the given passphrase. 10000 Iterations is the default value for this encryption method. The format of the encoded output is base64 format.
+
+The encryption is based on a given passphrase, which can be choosen by the user. However, a default-passphrase "cardano" should be used to encrypt/decrypt if no other passphrase is provided or known. Why a default passphrase? As pointed out above, its way harder for man-in-the-middle listeners, to decrypt every single message on the fly. So by using a default passphrase, tools can encrypt messages and explorers/wallets can autodecrypt such messages trying to use the default passphrase. In that way, the displayed message is automatically readable to the user. If a more protected communication is needed, the sender can choose a custom passphrase and communicate that to the receiver as a preshared passphrase.
+
+The part that is encrypted/decrypted is the value of the **msg** key from a normal transaction metadata json, the array with the message(s) string(s).
+
+Example implementations for node.js, PHP, etc. can be found in the [codesamples](codesamples/) folder.
+
+### Encryption/Decryption example on the console - basic
+
+First, generate a normal metadata transaction message. There is no difference yet.
+
+**normal-message-metadata.json**:
+``` json
+{
+  "674": {
+    "msg": ["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]
+  }
+}
+```
+
+Encrypt the message via openssl and the default passprase **cardano**:
+``` console
+openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
+```
+
+Result is the base64 encoded encrypted text:
+```
+U2FsdGVkX1/5Y0A7l8xK686rvLsmPviTlna2n3P/ADNm89Ynr1UPZ/Q6bynbe28Y
+/zWYOB9PAGt+bq1L0z/W2LNHe92HTN/Fwz16aHa98TOsgM3q8tAR4NSqrLZVu1H7
+```
+
+Compose the JSON by using the base64 encoded encrypted strings now for the `msg:` part. Also add the value `basic` for the `enc:` key.
+
+**encrypted-message-metadata.json**:
+``` json
+{ 
+  "674":
+         { 
+           "enc": "basic",
+           "msg": 
+                 [ 
+                   "U2FsdGVkX1/5Y0A7l8xK686rvLsmPviTlna2n3P/ADNm89Ynr1UPZ/Q6bynbe28Y",
+                   "/zWYOB9PAGt+bq1L0z/W2LNHe92HTN/Fwz16aHa98TOsgM3q8tAR4NSqrLZVu1H7"
+                 ]
+         }
+}
+```
+
+Console one-liner:
+``` console
+jq ".\"674\".msg = [ $(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
+``` 
+
+
+
+# Some Integration examples
+
+**Daedalus** shows the metadata text (could be improved if CIP is implemented):
+![image](https://user-images.githubusercontent.com/47434720/121822100-85b38a80-cc9d-11eb-9d13-1869746a69b2.png)
 
 **Cardanoscan.io**, **Adastat.net** and other tools implemented it already, to show messages along transactions:
 ![image](https://user-images.githubusercontent.com/47434720/124379245-1f2af680-dcb6-11eb-97b7-10f70d840e88.png)
