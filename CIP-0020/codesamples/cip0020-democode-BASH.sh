@@ -4,6 +4,9 @@
 # Demonstration implementation of CIP-0020 Transaction Messages Encryption/Decryption via BASH
 # --------------------------------------------------------------------------------------------
 
+#Setting default passphrase
+passphrase="cardano"
+
 
 #Unencrypted Metadata JSON
 echo "Normal unencrpted messages metadata JSON:"
@@ -12,7 +15,7 @@ echo
 
 
 #Encrypt the msg array from the JSON
-encrText=$(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano")
+encrText=$(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "${passphrase}")
 echo "Encrypted Strings (base64 format):"
 echo "${encrText}"
 echo
@@ -35,7 +38,7 @@ echo
 
 
 #Decrypt the msg array from the JSON
-decrText=$(jq -crM ".\"674\".msg[]" encrypted-message-metadata.json | openssl enc -d -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano")
+decrText=$(jq -crM ".\"674\".msg[]" encrypted-message-metadata.json | openssl enc -d -aes-256-cbc -pbkdf2 -iter 10000 -a -k "${passphrase}")
 echo "Decrypted Content:"
 echo "${decrText}"
 echo
