@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------
-// Demonstation implementation of CIP-0020 Transaction Messages Encryption/Decryption via NODE.JS
+// Demonstration implementation of CIP-0020 Transaction Messages Encryption/Decryption via NODE.JS
 // ----------------------------------------------------------------------------------------------
 
 const crypto = require('crypto');
