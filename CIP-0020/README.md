@@ -86,9 +86,9 @@ The number of theses **message-strings** must be at least one for a single messa
 
 This is an addition to the original CIP-0020, which is active since mid 2021 and widely used across many entities. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets. 
 
-Why do we need this? Metadata is sent unencrypted and in plaintext over the networks, a 3rd-party or man-in-the-middle can easily collect data such as bank-account-numbers, email-addresses, etc. out of such messages. With even a simple encryption of such a message - and publicly known passphrasw - it is much more complicated for the man-in-the-middle listener to collect data on the fly.
+Why do we need this? Metadata is sent unencrypted and in plaintext over the networks, a 3rd-party or man-in-the-middle can easily collect data such as bank-account-numbers, email-addresses, etc. out of such messages. With even a simple encryption of such a message - and publicly known passphrase - it is much more complicated for the man-in-the-middle listener to collect data on the fly.
 
-The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown istead of an maybe autodecrypted one. More on the autodecryption later. 
+The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown instead of an maybe autodecrypted one. But even the encrypted base64 strings fit into the max. 64char long string restriction. So it does not break any tools. More on the autodecryption later. 
 
 ### Format:
 ``` 
