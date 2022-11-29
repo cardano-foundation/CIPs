@@ -117,12 +117,15 @@ The value given in the `enc` field references an entry in the [Encryption Mode J
 ### Encryption modes:
 
 * **plain** - no encryption at all
-
+``` json
+   "plain": {
+      "desc": "plaintext, no encryption" }
+```
 This is not really an encryption mode, but included as a backwards compatible entry to signal this message as an unencrypted one. The entry is not needed and fully optional for unencrypted messages.
 
-* **basic** - aes-256-cbc based salted symmetric encryption via passpharse (+default passphrase)
+* **basic** - aes-256-cbc salted symmetric encryption via passpharse (+default passphrase)
 
-Lets list the entry from the [Encryption Mode Json](cip0020-encryption-modes.json) file first for the basic method:
+Lets list the entry from the [Encryption Mode Json](cip0020-encryption-modes.json) file first for the `basic` method:
 ``` json
    "basic": {
       "desc": "symmetrical encryption via openssl and a passphrase (default=cardano)",
@@ -133,13 +136,21 @@ Lets list the entry from the [Encryption Mode Json](cip0020-encryption-modes.jso
       "encode": "base64" }
 ```
 
-OpenSSL was choosen, because its fast and widely available also for all kind of different platforms, web frontends, etc. Encryption algo is AES-256-CBC (salted) using `pdkdf2` to derive the key from the given passphrase. 10000 Iterations is the default value for this encryption method. The format of the encoded output is base64 format.
+OpenSSL was choosen, because its fast and widely available also for all kind of different platforms, web frontends, etc. Encryption algo is **AES-256-CBC** (salted) using `pdkdf2` to derive the key from the given passphrase. 10000 Iterations is the default value for this encryption method. The format of the encoded output is base64 format.
 
-The encryption is based on a given passphrase, which can be choosen by the user. However, a default-passphrase "cardano" should be used to encrypt/decrypt if no other passphrase is provided or known. Why a default passphrase? As pointed out above, its way harder for man-in-the-middle listeners, to decrypt every single message on the fly. So by using a default passphrase, tools can encrypt messages and explorers/wallets can autodecrypt such messages trying to use the default passphrase. In that way, the displayed message is automatically readable to the user. If a more protected communication is needed, the sender can choose a custom passphrase and communicate that to the receiver as a preshared passphrase.
+The encryption is based on a given passphrase, which can be choosen by the user. However, a default-passphrase "cardano" should be used to encrypt/decrypt if no other passphrase is provided or known.
+  
+Why a default passphrase?
+  
+As pointed out above, its way harder for man-in-the-middle listeners, to decrypt every single message on the fly. So by using a default passphrase, tools can encrypt messages and explorers/wallets can autodecrypt such messages trying to use the default passphrase. In that way, the displayed message is automatically readable to the user. If a more protected communication is needed, the sender can choose a custom passphrase and communicate that to the receiver as a preshared passphrase.
 
-The part that is encrypted/decrypted is the value of the **msg** key from a normal transaction metadata json, the array with the message(s) string(s).
+What part is uses for the encryption?
+  
+The **whole content** of the unencrypted normal transaction **metadata `msg:` key is used**, thats the array with the message string(s). (Example below)
 
-Example implementations for node.js, PHP, bash, etc. can be found in the [codesamples](codesamples/) folder.
+Is there sample code?  
+  
+Yes, example implementations for node.js, PHP, bash, etc. can be found in the [codesamples](codesamples/) folder. They are showing how to encrypt/decrypt text with the right parameters set for this basic mode.
   
 :warning: **Message decryption should be done on the user frontend if possible, not via server callbacks.**
 
