@@ -1,7 +1,7 @@
 ---
 CIP: 20
 Title: Transaction message/comment metadata
-Authors: Martin Lang <martin@martinlang.at>, Ola Ahlman <ola@ahlnet.nu>, Andrew Westberg <andrewwestberg@gmail.com>
+Authors: Martin Lang <martin@martinlang.at>, Ola Ahlman <ola@ahlnet.nu>, Andrew Westberg <andrewwestberg@gmail.com>, Adam Dean <adam@crypto2099.io>
 Comments-URI: no comments yet
 Status: Active
 Type: Informational
@@ -21,16 +21,21 @@ We have the utilities on the cardano blockchain now since the introduction of th
 So the CIP authors came together to form a first implementation of this. It is straight and simple, additional keys and content can be added later.
 The IOG main wallet `Daedalus` can now also directly show attached metadata information in the transaction details view. This CIP is the missing link to bring it together.
 
-Current Tools/Sites/Explorers that have implemented it already or have plans to implement it:
+Current Tools/Sites/Explorers that have implemented it already:
 * [CNTools](https://cardano-community.github.io/guild-operators/#/Scripts/cntools)
 * [JorManager](https://bitbucket.org/muamw10/jormanager/)
 * [StakePoolOperator Scripts](https://github.com/gitmachtl/scripts)
 * [Cardanoscan.io](https://cardanoscan.io)
 * [AdaStat.net](https://adastat.net)
-* [CardanoCommunityWallet](https://ccwallet.io)
+* [Eternl Wallet](https://eternl.io)
 * [CardanoWall](https://cardanowall.com)
 * [CNFT](https://cnft.io)
 * [Cardano Explorer](https://cexplorer.io)
+* [SundaeSwap](https://https://sundaeswap.finance/)
+* [Minswap](https://minswap.org/)
+* [MuesliSwap](https://muesliswap.com/)
+* [DripDropz.io](https://dripdropz.io/)
+* [Typhon Wallet](https://typhonwallet.io/)
 
 # Specification
 
@@ -107,6 +112,8 @@ The format is identical to the normal one, with a simple addition of the `enc` (
 
 The value given in the `enc` field references an entry in the [Encryption Mode Json](cip0020-encryption-modes.json) file, which collects different encryption methods and there parameters. Starting with a simple implementation named `basic`. This reference file is just a collection and should be seen as a look-up-file about the methods. This file can also be updated and extended with new encryption methods - like with public/private key encryption - easily in future updates.
 
+  &nbsp;<p>
+  
 ### Encryption modes:
 
 * **plain** - no encryption at all
@@ -135,10 +142,12 @@ The part that is encrypted/decrypted is the value of the **msg** key from a norm
 Example implementations for node.js, PHP, bash, etc. can be found in the [codesamples](codesamples/) folder.
   
 :warning: **Message decryption should be done on the user frontend if possible, not via server callbacks.**
- 
+
+  &nbsp;<p>
+  
 ### Encryption/Decryption example on the console - basic mode
 
-First, generate a normal metadata transaction message. There is no difference yet.
+First, generate a normal metadata transaction message. 
 
 **normal-message-metadata.json**:
 ``` json
@@ -149,18 +158,26 @@ First, generate a normal metadata transaction message. There is no difference ye
 }
 ```
 
-Encrypt the message (value of the `msg:` key) via openssl and the default passprase **cardano**:
+The **encryption** is done on the **whole content of the `msg:` key**, so this is
+  
+`["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
+ 
+in our example.
+  
+**Encrypt** this content via openssl, the default passprase **cardano**, iteration set to 10000 and key-derivation via pbkdf2:
 ``` console
 openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
 ```
 
-Result are the base64 encoded strings:
+The encrypted result are the **base64 encoded strings**:
 ```
 U2FsdGVkX1/5Y0A7l8xK686rvLsmPviTlna2n3P/ADNm89Ynr1UPZ/Q6bynbe28Y
 /zWYOB9PAGt+bq1L0z/W2LNHe92HTN/Fwz16aHa98TOsgM3q8tAR4NSqrLZVu1H7
 ```
 
-Compose the JSON by using the base64 encoded encrypted strings now for the `msg:` part. Also add the value `basic` for the `enc:` key.
+Compose the JSON by **using the base64 encoded encrypted strings now for the `msg:` part**.
+                                                                
+Also add the value `basic` for the `enc:` key, to mark this transaction message as encrypted with basic mode. 
 
 **encrypted-message-metadata.json**:
 ``` json
@@ -190,23 +207,23 @@ jq -crM ".\"674\".msg[]" encrypted-message-metadata.json | openssl enc -d -aes-2
 ```
 
 Which results in the original content of the **msg** key:
+  
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
 
 &nbsp;<p>
 
-# Some Integration examples
+## Some Integration examples (standard/unencrypted)
 
 **Daedalus** shows the metadata text (could be improved if CIP is implemented):
 ![image](https://user-images.githubusercontent.com/47434720/121822100-85b38a80-cc9d-11eb-9d13-1869746a69b2.png)
 
 **Cardanoscan.io**, **Adastat.net** and other tools implemented it already, to show messages along transactions:
-![image](https://user-images.githubusercontent.com/47434720/124379245-1f2af680-dcb6-11eb-97b7-10f70d840e88.png)
-![image](https://user-images.githubusercontent.com/47434720/124381343-3ff94900-dcc2-11eb-8d03-8fbacd3322b0.png)
+![image](https://user-images.githubusercontent.com/47434720/204633595-d865c7ee-0c30-4af1-bb55-3c0ad323b58c.png)
+![image](https://user-images.githubusercontent.com/47434720/204634111-256c6c18-974a-41f5-a6e4-b9edee8f9d62.png)
 
-**ccwallet.io** has added it with a message field on the sending-page, and shows it also on the transactions-page:
-![image](https://user-images.githubusercontent.com/47434720/127367420-b360972d-c6e0-4002-865e-df070904bd30.png)
-![image](https://user-images.githubusercontent.com/47434720/127367228-339ac059-007a-40fd-a6c0-97f890e93964.png)
-![image](https://user-images.githubusercontent.com/47434720/127368912-c85dc9f0-6ee3-4cc1-a24b-9716a20f27d3.png)
+**eternl.io** has added it with a message field on the sending-page, and shows it also on the transactions-page:
+![image](https://user-images.githubusercontent.com/47434720/204632224-5be33098-00f6-41da-a2f0-7c138b28354f.png)
+![image](https://user-images.githubusercontent.com/47434720/204632802-33f1afa5-d9b2-494f-84fe-d7f0594a7f1b.png)
 
 **StakePool Operator Tools**: It works on the commandline like any other script of the collection by just adding the "msg: ..." parameter to a transaction. This automatically generates the needed metadata.json structure and attaches it to the transaction itself.
 ![image](https://user-images.githubusercontent.com/47434720/129110626-6bc5b3c3-102d-4793-b508-7d4190b31cf7.png)
@@ -214,7 +231,7 @@ Which results in the original content of the **msg** key:
 **CNTools**:<br>
 ![image](https://user-images.githubusercontent.com/47434720/130353491-fc0f3a69-1937-4e72-b680-c04cc069b5c4.png)
 
-# Integration examples for encrypted messages
+## Integration examples for encrypted messages
 
 **Cexplorer.io**: With the implementation of the **encrypted message decoding**.
 ![image](https://user-images.githubusercontent.com/47434720/204560392-f45bbe4f-7f78-48fa-9e47-4d3b104685bf.png)
@@ -223,11 +240,13 @@ Which results in the original content of the **msg** key:
 # Rationale
 
 This design is simple, so many tools on the cardano blockchain can implement it easily. The array type was choosen to have consistency, no need to switch between a string or
-an array format, or testing against a string or array format. Updates in the future are possible, like adding a versioning key `"ver":`, adding a key `"utxo":` to provide specific data for every tx-out#idx in the transaction, making subarrays in the message-strings, etc. But for now, we need a common agreement to provide general messages/comments/memos with this CIP. The starting design war choosen as simple as possible to keep the additional transaction fees as low as possible.
+an array format, or testing against a string or array format. Updates in the future are possible, like adding a versioning key `"ver":`, adding a key `"utxo":` to provide specific data for every tx-out#idx in the transaction, adding the `"enc":` key like for encrypted messages, making subarrays in the message-strings, etc. But for now, we need a common agreement to provide general messages/comments/memos with this CIP. The starting design war choosen as simple as possible to keep the additional transaction fees as low as possible.
 
 ## Wallet Implementation
 
 Would be a good idea to hide the message/comment/note behind a "show unmoderated content" button/drop-down. Like the Metadata display on the Cardano Explorer. Also, it should be displayed as plain-text non-clickable. To enhance security further, URLs could be automatically deleted or hidden from such comments, to not welcome bad actors with phishing attempts. Another solution to start with would be to really limit the character space for display in Wallets, like limiting it to `a-zA-z0-9` and a handful of special chars like `+-_#()[]:` without a `.<>"/\` chars, so a domain or html code would not work. Last points are worth for discussions of course, because it would also filter out unicode.
+  
+> Additionally for encrypted messages: Wallets/Tools can implement an autodecryption attempt with the default passphrase on such messages, to give the user a more streamlined experience. Or they can prompt for an input and decrypt it once the user has requested it for further security.
 
 ## Handling ill-formed 674 metadata ##
 
