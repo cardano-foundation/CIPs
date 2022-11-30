@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://chr15m.github.io/bugout/bugout.min.js"></script>
+    <script>
+        var bugout = new Bugout({ 
+            seed: localStorage["bugout-demo-server-seed"],
+            announce: [
+                'udp://tracker.opentrackr.org:1337/announce', 
+                'udp://open.tracker.cl:1337/announce', 
+                'udp://opentracker.i2p.rocks:6969/announce', 
+                'https://opentracker.i2p.rocks:443/announce',
+                'wss://tracker.files.fm:7073/announce',
+                'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
+                'ws://tracker.files.fm:7072/announce'
+            ]
+         });
+        localStorage["bugout-demo-server-seed"] = bugout.seed;
+
+        var connected = false;
+        bugout.on("connections", function (clients) {
+            if (clients == 0 && connected == false) {
+                connected = true;
+                console.log("[info]: server ready");
+            }
+            console.log(`[info]: ${clients} clients connected`);
+        });
+
+        bugout.register("api", function (address, args, callback) {
+            const api = { version: args.api.version, address: address }
+
+            for (method of args.api.methods) {
+                api[method] = () => new Promise((resolve, reject) => {
+                    bugout.rpc(address, method, {}, (result) => resolve(result));
+                });
+            }
+
+            window.cardano = window.cardano || {};
+            window.cardano[args.api.name] = api;
+            console.log(`[info]: injected api of ${args.api.name} into window.cardano`);
+        });
+    </script>
+    <title>DApp</title>
+</head>
+<body>
+    <h1>Simple Example Dapp</h1>
+</body>
+</html>
