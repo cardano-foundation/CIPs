@@ -100,7 +100,7 @@ This proposed change is fully backwards compatible and will not require a hard-f
 All graphs were generated using data through epoch 353.
 ___
 **{fig.1}** Definitions
-{fig.1} Definitions.png
+<img src="{fig.1} Definitions.png">
 ___
 **{fig.2}** Currently unfair pledge gap & poor effectiveness
 
