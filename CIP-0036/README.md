@@ -26,7 +26,7 @@ We therefore need a registration transaction that serves three purposes:
 
 1. Registers a "voting key" to be included in the sidechain and/or delegates to existing "voting key"s
 2. Associates mainnet ADA to this voting key(s)
-3. Declares an payment address to receive Catalyst rewards
+3. Declares a payment address to receive Catalyst rewards
 
 
 Note: This schema does not attempt to differentiate delegations from direct registrations, as the two options have exactly the same format.  It also does not distinguish between delegations that are made as "private" arrangements (proxy votes)
