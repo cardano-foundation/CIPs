@@ -23,6 +23,15 @@ splitting or combining of private votes,
 the use of different voting keys or delegations
 for different purposes (Catalyst etc).
 
+## Rationale
+To provide governance specific functionality to wallet's and expose such API to the dApps (i.e Voting Centers). 
+
+This also addresses some short-comings of [CIP-30](https://cips.cardano.org/cips/cip30/); which signData can only be done by known an address; This signature is not relevant to a specific address, nor the dApp will know an address attached to the voting key. The voting key derivation is defined in [CIP-36](https://cips.cardano.org/cips/cip36/). 
+
+Perhaps [CIP-30](https://cips.cardano.org/cips/cip30/) could be expanded to also know how to perform `signData` from a given public key from a specific derivation path; instead of doing so only by known address.
+
+The other reason for this specification is to have a specific, but optional, namespace for governance specific wallet functionality. As such, wallet providers might choose not to implement this specification on top of [CIP-30](https://cips.cardano.org/cips/cip30/).
+
 # Specification
 
 ## Version
@@ -37,9 +46,9 @@ TODO: Define this.
 
 ### GovernanceKey
 
-```js
+```ts
 type GovernanceKey = {
-  votingKey: string,
+  votingKey: string
   weight: number
 }
 ```
@@ -50,7 +59,7 @@ type GovernanceKey = {
 
 ### Voting Purpose
 
-```js
+```ts
 type enum VotingPurpose = {
   CATALYST = 0
 }
@@ -69,7 +78,7 @@ future CIP listing currently allocated Voting Purposes.
 
 ### BlockDate
 
-```js
+```ts
 interface BlockDate {
   epoch: number
   slot: number
@@ -81,11 +90,12 @@ interface BlockDate {
 
 #### Proposal
 
-```js
+```ts
 interface Proposal {
   votePlanId: string
   voteOptions: number[]
   votePublic: boolean
+  proposalIndex: number
 }
 ```
 
@@ -97,12 +107,12 @@ Proposal information.
 
 ### Vote
 
-```js
+```ts
 interface Vote {
-  proposal: Proposal,
-  choice: number,
+  proposal: Proposal
+  choice: number
   expiration: BlockDate
-  purpose: VotingPurpose,
+  purpose: VotingPurpose
   spendingCounter: number
 }
 ```
@@ -119,9 +129,9 @@ It is required to attach it to the vote according to [Jormungandr Voting] (<http
 
 ## Delegation
 
-```js
+```ts
 interface Delegation {
-    delegations: GovernanceKey[],
+    delegations: GovernanceKey[]
     purpose: VotingPurpose
 }
 ```
@@ -133,12 +143,12 @@ The record of a voters delegation.
 
 ## DelegatedCertificate
 
-```js
+```ts
 interface DelegatedCertificate {
-  delegations: GovernanceKey[],
-  stakingPub: string,
-  rewardAddress: string,
-  nonce: number,
+  delegations: GovernanceKey[]
+  stakingPub: string
+  rewardAddress: string
+  nonce: number
   purpose: VotingPurpose
 }
 ```
@@ -147,10 +157,10 @@ See [CIP-36](https://cips.cardano.org/cips/cip36/) for an explanation of these f
 
 ## SignedDelegationMetadata
 
-```js
+```ts
 interface SignedDelegationMetadata {
-  certificate: DelegatedCertificate,
-  signature: string,
+  certificate: DelegatedCertificate
+  signature: string
   txHash: string
 }
 ```
@@ -163,17 +173,17 @@ interface SignedDelegationMetadata {
 
 ### Extended APIError
 
-```js
-APIErrorCode {
-  UnsupportedVotingPurpose: -100,
-  InvalidArgumentError: -101
-  UnknownChoiceError: -102
-  InvalidBlockDateError: -103
-  InvalidVotePlanError: -104
-  InvalidVoteOptionError: -105
+```ts
+type enum APIErrorCode {
+  UnsupportedVotingPurpose = -100
+  InvalidArgumentError = -101
+  UnknownChoiceError = -102
+  InvalidBlockDateError = -103
+  InvalidVotePlanError = -104
+  InvalidVoteOptionError = -105
 }
 
-APIError {
+interface APIError {
   code: APIErrorCode,
   info: string
   votingPurpose: Purpose[]
@@ -214,16 +224,16 @@ API Error Codes, which are continue to be valid for this API Extension.
 
 ### Extended TxSignError
 
-```js
-TxSignErrorCode {
-  ProofGeneration: 1,
-  UserDeclined: 2,
-  VoteRejected: 3,
+```ts
+type enum TxSignErrorCode {
+  ProofGeneration = 1,
+  UserDeclined = 2,
+  VoteRejected = 3,
 }
 ```
 
-```js
-type TxSignError = {
+```ts
+interface TxSignError = {
   code: TxSignErrorCode,
   info: String,
   rejectedVotes: number[]
@@ -354,7 +364,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ### *** keys ***
 
 `payment verification key`:
-```
+```json
 {
     "type": "PaymentVerificationKeyShelley_ed25519",
     "description": "Payment Verification Key",
@@ -364,7 +374,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ``` 
 
 `payment secret key`: 
-```
+```json
 {
     "type": "PaymentSigningKeyShelley_ed25519",
     "description": "Payment Signing Key",
@@ -373,7 +383,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ```
 
 `staking verification key`:
-```
+```json
 {
     "type": "StakeVerificationKeyShelley_ed25519",
     "description": "Stake Verification Key",
@@ -382,7 +392,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ```
 
 `staking secret key`:
-```
+```json
 {
     "type": "StakeSigningKeyShelley_ed25519",
     "description": "Stake Signing Key",
@@ -393,7 +403,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ### *** Delegation Certificate ***
 
 `Delegation certificate sample`:
-```
+```json
 {
   "1":[["1788b78997774daae45ae42ce01cf59aec6ae2acee7f7cf5f76abfdd505ebed3",1],["b48b946052e07a95d5a85443c821bd68a4eed40931b66bd30f9456af8c092dfa",3]],
   "2":"93bf1450ec2a3b18eebc7acfd311e695e12232efdf9ce4ac21e8b536dfacc70f",
@@ -405,7 +415,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ```
 
 `Delegation certificate after signature`:
-```
+```json
 {
   "61284":{
     "1":[["1788b78997774daae45ae42ce01cf59aec6ae2acee7f7cf5f76abfdd505ebed3",1],["b48b946052e07a95d5a85443c821bd68a4eed40931b66bd30f9456af8c092dfa",3]],
