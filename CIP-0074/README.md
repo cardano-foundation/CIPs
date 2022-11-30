@@ -71,6 +71,7 @@ Incentive Paper Lecture Series (Parts 1-7)
 https://www.youtube.com/playlist?list=PLFLTrdAG7xRbAqhF3Tg8BeAea7Ard-ttn
 
 The general perspective on staking in Cardano
+https://iohk.io/en/blog/posts/2020/11/13/the-general-perspective-on-staking-in-cardano/
 
 ## Path to Active
 
