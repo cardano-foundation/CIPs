@@ -1,7 +1,8 @@
 ---
 CPS: 1
 Title: Metadata Discoverability and Trust
-Authors: Bruno Martins <bruno.martins@iohk.io>
+Authors: 
+    - Bruno Martins <bruno.martins@iohk.io>
 Status: Open
 Category:  Metadata
 ProposedSolutions: 
