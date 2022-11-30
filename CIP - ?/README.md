@@ -24,7 +24,7 @@ The current parameters overvalue the disincentive (minPoolCost), which in turn d
 
 **danger_zone:** The danger_zone is the part of the plotted reward function who's tangent slope is less than 2.5x10^-10. Danger_zone represents the total pool stake the minPoolCost disincentivizes against by offering relatively low rewards. The danger_zone is shown in red and more favorable rewards are in black {fig.1}.
 
-**real set of pools:** These are pools that actually exist on-chain. The real set of public pledge values are between 0 and 10M with no public pledge between 10M and saturation. Only 3 public pools' pledge exceed the tipping_point.
+**real set of pools:** These are pools that actually exist on-chain. The real set of public pledge values are between 0 and 10M with no public pledge between 10M and saturation. Only 1 public pools' pledge matches the tipping_point.
 
 **sybille attack** - an attacker with low stake tries to gain a majority of stake by creating lots of pools with low cost.
 
@@ -103,13 +103,13 @@ ___
 <img src="{fig.1} Definitions.png">
 ___
 **{fig.2}** Currently unfair pledge gap & poor effectiveness
-
+<img src="{fig.2} Currently unfair.png">
 ___
 **{fig.3}** Proposed
-
+<img src="{fig.3}Proposed more fair.png">
 ___
 **{fig.4}** Compare Danger Zones
-
+<img src="{fig.4}Compare danger zones.png">
 
 ## References:
 
