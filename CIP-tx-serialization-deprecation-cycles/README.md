@@ -1,5 +1,5 @@
 ---
-CIP: $\pi$
+CIP: 80
 Title: Transaction Serialization Deprecation Cycle
 Authors: Jared Corduan <jared.corduan@iohk.io>
 Status: Proposed
