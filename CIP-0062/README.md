@@ -348,7 +348,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 
 ## Delegation Cert process
 
-1. **`Get Voting Key`** - dApp call the method [**api.getCurrentVotingKey**](#apigetcurrentvotingkey-promisecborpublickey) to return a ed25519 32 bytes public key (x value of the point on the curve).
+1. **`Get Voting Key`** - dApp call the method [**api.getVotingKey**](#apigetvotingkey-promise-cborpublickey) to get the voting public key.
 
 2. **`Collect Voting Keys`** - The dApp Collects the dRep keys to delegate voting power to from the Catalyst Voting Center backend, and the user selects the required delegation.
 
