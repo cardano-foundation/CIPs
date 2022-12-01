@@ -23,7 +23,7 @@ We want to introduce a decentralized communication method between dApps and wall
 
 ## Motivation
 
-In a decentralized ecosystem a communication between wallet apps and dApps is still challanging. The inter-app communication on mobile devices does not directly allow remote procedure calls and is mostly resticed to Universal Links (iOS) or Deeplinks (Android). State-of-the-art solutions like WalletConnect tackle these problems using WebRTC communication which also works across devices, but requires a central signaling server (STUN or TURN server) to estalblish a WebRTC connection. In this CIP we want to introduce an architecture which uses WebTorrent trackers for peer discovery to remove the need of this central component. 
+In a decentralized ecosystem a communication between wallet apps and dApps is still challanging. The inter-app communication on mobile devices does not directly allow remote procedure calls and is mostly restricted to Universal Links (iOS) or Deeplinks (Android). State-of-the-art solutions like WalletConnect tackle these problems using WebRTC communication which also works across devices, but requires a central signaling server (STUN or TURN server) to estalblish a WebRTC connection. In this CIP we want to introduce an architecture which uses WebTorrent trackers for peer discovery to remove the need of this central component. 
 
 ## Specification
 
@@ -211,10 +211,10 @@ sequenceDiagram
 
 ### Security Aspects
 
-We decided to spwan the server within the dApp to force the user to manually scan a QR code (using a wallet app) or accept an "Open with <WalletAppName>" ui dialog (in case of Universal Links or Deeplinks). This prevents the user from connecting the wallet to an unwanted dApp. Additionally we need to add  a few security checks to prevent a missusage of these method.
+We decided to spwan the server within the dApp to force the user to manually scan a QR code (using a wallet app) or accept an "Open with `<WalletAppName>`" ui dialog (in case of Universal Links or Deeplinks). This prevents the user from connecting the wallet to an unwanted dApp. Additionally we need to add  a few security checks to prevent a misusage of this method.
 
 - The wallet app needs to verifiy the origin (address) of the RPC call
-- dApps should ask the user for the permission to injected the wallet names into the window.cardano object to prevent XSS attack (Maybe using a graphical representation of the wallet app address e.g. blockies)
+- dApps should ask the user for permission to inject the wallet names into the window.cardano object to prevent XSS attack (Maybe using a graphical representation of the wallet app address e.g. blockies)
 
 ## Rationale
 
