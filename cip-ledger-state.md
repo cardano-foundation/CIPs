@@ -30,7 +30,7 @@ growing. In situations where the node and any such application run on the same m
 ends up with twice the resource usage. The following proposal hopes to reduce resource usage and
 complexity for chain following applications like db-sync.
 
-# Current Situation
+### Current Situation
 
 Currently there is a local chain sync protocol which is really just the peer-to-peer protocol
 using a local domain socket rather than the TCP/IP socket normally used for P2P transport.
