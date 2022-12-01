@@ -77,8 +77,8 @@ proposed Scientia program (which as far as I am aware has been dropped).
 
 The ledger state data that would provided over the extended chain sync protocol is limited to:
 
-* Per epoch stake distribution (tickle fed in a deterministic manner).
-* Per epoch rewards (tickle fed in a deterministic manner).
+* Per epoch stake distribution (trickle fed in a deterministic manner).
+* Per epoch rewards (trickle fed in a deterministic manner).
 * Per epoch protocol parameters (tiny so provide in a single event)
 * Per epoch reaped pool list (single event).
 * Per epoch MIR distribution (single event).
