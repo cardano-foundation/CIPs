@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 78
 Title: Extended Local Chain Sync Protocol
 Authors: Erik de Castro Lopo <erikd@mega-nerd.com>
 Discussions-To: Erik de Castro Lopo <erikd@mega-nerd.com>
