@@ -227,7 +227,7 @@ The purpose of this CIP mainly consists of two parts. It addresses the current l
 - [ ] A library should be build to make it easy from dAPP and wallet side to implement the proposed communication method
 - [ ] The library target should be browser to avoid the need of manual polyfills
 - [ ] Mobile testing on different devices and operating systems needs to be done with a special focus to the wallet app running in background mode
-- [ ] Potential security issues and attack vectors need to be discussed in detail
+- [ ] Potential security issues and attack vectors need to be discussed in detail
 - [ ] A full reference implementation is needed to test if the entire user flow and at the same time provide this as a how-to for developers
 
 ### Implementation Plan
