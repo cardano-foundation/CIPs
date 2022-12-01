@@ -1,9 +1,9 @@
 ---
-CIP: 75?
+CIP: 75
 Title: Fair Stakepool Rewards 
 Author: Tobias Fancee <tobiasfancee@gmail.com>
 Comments-URI:
-Status: Draft
+Status: Proposed
 Type: Standards
 Created: 2022-10-21
 License: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
@@ -170,6 +170,16 @@ Implementation can be staged to reduce shock to the network:
 1.	Decrease minPoolCost from 340 ADA to 100 ADA and increase k from 500 to 750.
 2.	Increase k from 750 to 1000, decrease minPoolCost from 100 ADA to 0 ADA, and decrease a0 from 0.3 to 0.2.
 3.	Remove minPoolCost from the protocol and implement the new rewards calculation equation.
+
+Each stage will be an individual protocol update. The first two updates will be protocol parameter updates. The third and final update will require a hardfork.
+
+Before implementation, IOG's engineering and research teams must review the feasibility and potential consequences of the proposal. IOG will create the implementation for each update and decide on the time between each update. After approval by IOG, the following will occur for each protocol update:
+
+1. The protocol update is created, including all necessary changes.
+2. The raw transaction for the protocol update is built.
+3. Genesis delegates IOG, CF, and Emurgo sign the transaction.
+4. Transaction is submitted.
+5. Protocol update is confirmed.
 
 ## Copyright
 
