@@ -1,20 +1,25 @@
 ---
-CIP: 78
-Title: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Trackers for Peer Discovery
-Authors: Fabian Bormann <fabian.bormann@cardanofoundation.org>, Jaime Caso <jaime.caso@cardanofoundation.org>
-Comments-Summary: No comments yet
-Comments-URI: https://github.com/CardanoFoundation/CIPs/pulls/
-Status: Draft
-Type: Standards
+CIP: ?
+Title: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
+Status: Proposed
+Category: Wallets
+Authors: 
+    - Fabian Bormann <fabian.bormann@cardanofoundation.org>
+    - Jaime Caso <jaime.caso@cardanofoundation.org>
+Implementors:
+    - Fabian Bormann <fabian.bormann@cardanofoundation.org>
+    - Jaime Caso <jaime.caso@cardanofoundation.org>
+Discussions: 
+    - https://github.com/cardano-foundation/CIPs/pull/395
 Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
-# CIP-0078: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Trackers for Peer Discovery
+# CIP-????: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
 
 ## Abstract
 
-We want to introduce a decentralized communication method between dApps and wallets based on WebTorrent trackers and WebRTC. This CIP also contains a proof of concept implementation injecting the wallet rpc methods into the dApps global window object similar to [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030). The goal is not to replace existing solutions, but to discuss a more decentralized alternative.
+We want to introduce a decentralized communication method between dApps and wallets based on WebTorrent trackers and WebRTC. This CIP also contains a proof of concept implementation injecting the wallet rpc methods into the dApps global window object similar to [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030).
 
 ## Motivation
 
@@ -215,15 +220,27 @@ We decided to spwan the server within the dApp to force the user to manually sca
 
 The purpose of this CIP mainly consists of two parts. It addresses the current lack of dApp mobile support, but at the same time provides an even more decentralized alternative to state-of-the-art communication methods. To archive this goal we have introduced a WebTorrent and WebRTC based architecture. To demonstrate a viable implementation, we have implemented a proof of concept which also shows how a rpc method injection like CIP-0030 might look like.
 
-## Implementation Plan
+## Path to Active
+
+### Acceptance Criteria
+
+- [ ] A library should be build to make it easy from dAPP and wallet side to implement the proposed communication method
+- [ ] The library target should be browser to avoid the need of manual polyfills
+- [ ] Mobile testing on different devices and operating systems needs to be done with a special focus to the wallet app running in background mode
+- [ ] Potential security issues and attack vectors need to be discussed in detail
+- [ ] A full reference implementation is needed to test if the entire user flow and at the same time provide this as a how-to for developers
+
+### Implementation Plan
 
 - [ ] Fork/Extend bugout to add webpack 5 and typescript support
-- [ ] Identify potential security issues and attack vectors
-- [ ] Check if the wallet app also reacts to rpc calls in background mode on iOS
 - [ ] Povide a general intermediate cardano-connect typescript library to provide 
     1. A check for mobile/desktop environment
-    2. Depending on the environment provide interfaces for CIP 30 / and / or CIP 78
-    3. Add an improved version of the server/client side code above to define a communication standard
+    2. Depending on the environment provide interfaces for CIP-0030 / and / or CIP-?
+    3. Add a full implementation of the server/client side code above to define a communication standard similar to CIP-0030 (getRewardAddresses, signData, signTx, ...)
+- [ ] Start discussions about security gaps within the proposed method with various developers and also look for research papers
+- [x] Check if the wallet app also reacts to rpc calls in background mode on Android
+- [ ] Check if the wallet app also reacts to rpc calls in background mode on iOS
+- [ ] Implement the library within an example dApp and [boost wallet](https://github.com/boost-pool/boost-wallet)
 
 ## Copyright
 
