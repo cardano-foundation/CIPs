@@ -1,5 +1,5 @@
 ---
-CIP: TBD
+CIP: 79
 Title: Implement Ouroboros Leios to increase Cardano throughput
 Authors: Duncan Coutts <duncan.coutts@iohk.io>
 Status: Draft
