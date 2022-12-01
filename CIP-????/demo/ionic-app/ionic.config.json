@@ -1,7 +1,0 @@
-{
-  "name": "WalletApp",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "react"
-}

@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
+Title: Decentralized WebRTC dApp-Wallet Communication
 Status: Proposed
 Category: Wallets
 Authors: 
@@ -15,7 +15,7 @@ Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
-# CIP-????: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
+# CIP-????: Decentralized WebRTC dApp-Wallet Communication
 
 ## Abstract
 
@@ -101,7 +101,7 @@ For this proof of concept we wrote two small pieces of software:
 - A html page aka the dApp
 - An ionic react app (to target mutliple devices) aka the wallet app
 
-The whole code is provided within this [demo folder](demo) that also contains a [step-by-step guide](demo/README.md).
+The whole code is provided within this [demo implementation](https://github.com/fabianbormann/WebRTC-WebTorrent-tracker-communication-demo) that also contains a step-by-step guide.
 
 #### dApp
 
