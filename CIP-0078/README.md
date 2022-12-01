@@ -1,9 +1,7 @@
 ---
 CIP: 78
-Title: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
-Authors: 
-    - Fabian Bormann <fabian.bormann@cardanofoundation.org>
-    - Jaime Caso <jaime.caso@cardanofoundation.org>
+Title: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Trackers for Peer Discovery
+Authors: Fabian Bormann <fabian.bormann@cardanofoundation.org>, Jaime Caso <jaime.caso@cardanofoundation.org>
 Comments-Summary: No comments yet
 Comments-URI: https://github.com/CardanoFoundation/CIPs/pulls/
 Status: Draft
@@ -12,11 +10,11 @@ Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
-# CIP-0078: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
+# CIP-0078: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Trackers for Peer Discovery
 
 ## Abstract
 
-We want to introduce a decentralized communication method between dApps and wallets based on WebTorrent trackers and WebRTC. This CIP also contains a proof of concept implementation injecting the wallet rpc methods into the dApps global window object similar to [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030).
+We want to introduce a decentralized communication method between dApps and wallets based on WebTorrent trackers and WebRTC. This CIP also contains a proof of concept implementation injecting the wallet rpc methods into the dApps global window object similar to [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030). The goal is not to replace existing solutions, but to discuss a more decentralized alternative.
 
 ## Motivation
 
@@ -220,12 +218,12 @@ The purpose of this CIP mainly consists of two parts. It addresses the current l
 ## Implementation Plan
 
 - [ ] Fork/Extend bugout to add webpack 5 and typescript support
+- [ ] Identify potential security issues and attack vectors
+- [ ] Check if the wallet app also reacts to rpc calls in background mode on iOS
 - [ ] Povide a general intermediate cardano-connect typescript library to provide 
     1. A check for mobile/desktop environment
     2. Depending on the environment provide interfaces for CIP 30 / and / or CIP 78
     3. Add an improved version of the server/client side code above to define a communication standard
-- [ ] Identify potential security issues and attack vectors
-- [ ] Check if the wallet app also reacts to rpc calls in background mode on iOS
 
 ## Copyright
 
