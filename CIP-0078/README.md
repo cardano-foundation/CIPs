@@ -1,7 +1,9 @@
 ---
 CIP: 78
 Title: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
-Authors: Fabian Bormann <fabian.bormann@cardanofoundation.org>, Jaime Caso <jaime.caso@cardanofoundation.org>
+Authors: 
+    - Fabian Bormann <fabian.bormann@cardanofoundation.org>
+    - Jaime Caso <jaime.caso@cardanofoundation.org>
 Comments-Summary: No comments yet
 Comments-URI: https://github.com/CardanoFoundation/CIPs/pulls/
 Status: Draft
@@ -10,13 +12,19 @@ Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
-# Abstract
+# CIP-0078: Decentralized WebRTC dApp/Wallet Communication Using WebTorrent Tracker for Peer Discovery
+
+## Abstract
+
+We want to introduce a decentralized communication method between dApps and wallets based on WebTorrent trackers and WebRTC. This CIP also contains a proof of concept implementation injecting the wallet rpc methods into the dApps global window object similar to [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030).
+
+## Motivation
 
 In a decentralized ecosystem a communication between wallet apps and dApps is still challanging. The inter-app communication on mobile devices does not directly allow remote procedure calls and is mostly resticed to Universal Links (iOS) or Deeplinks (Android). State-of-the-art solutions like WalletConnect tackle these problems using WebRTC communication which also works across devices, but requires a central signaling server (STUN or TURN server) to estalblish a WebRTC connection. In this CIP we want to introduce an architecture which uses WebTorrent trackers for peer discovery to remove the need of this central component. 
 
-# Architecture
+## Specification
 
-## Establish a WebRTC Connection Using a STUN/TURN Server
+### Establish a WebRTC Connection Using a STUN/TURN Server (State-of-the-art approach)
 
 ```mermaid
 sequenceDiagram
@@ -30,7 +38,7 @@ sequenceDiagram
 
 The data will be send peer to peer via a WebRTC data channel once the ip discovery has been finished. E.g. WalletConnect expects/provides a relay server URL to initialize the connection. While this method allows dApps to communitcate peer-to-peer with wallets it also leads to a [possible SPOF](https://twitter.com/walletconnect/status/1407279853943001088?lang=en).
 
-## Establish a WebRTC Connection Using WebTorrent Tracker
+### Establish a WebRTC Connection Using WebTorrent Tracker (Our approach)
 
 ```mermaid
 flowchart LR
@@ -77,7 +85,7 @@ flowchart LR
     Wallet<--Establish WebRTC data channel\n for peer to peer communication-->dApp
 ```
 
-## Proof of Concept 
+### Proof of Concept 
 
 The idea of using WebTorrent trackers instead of STUN/TURN servers for peer discovery was already mentioned in [Aug 2018 by Chris McCormick](https://mccormick.cx/news/entries/on-self-hosting-and-decentralized-software):
  "I've also been tinkering with WebTorrent. [...]
@@ -90,7 +98,9 @@ For this proof of concept we wrote two small pieces of software:
 - A html page aka the dApp
 - An ionic react app (to target mutliple devices) aka the wallet app
 
-### dApp
+The whole code is provided within this [demo folder](demo) that also contains a [step-by-step guide](demo/README.md).
+
+#### dApp
 
 The dApp consists of a standard HTML5 template including the following lines of code:
 
@@ -137,7 +147,7 @@ The dApp consists of a standard HTML5 template including the following lines of 
 </script>
 ```
 
-### Wallet App
+#### Wallet App
 
 The wallet app is a standard ionic react app built by the ionic cli:
 
@@ -183,7 +193,7 @@ This example has a few restrictions:
 
 2. bugout does not directly provide type declarations. There are some declarations within a [PR](https://github.com/chr15m/bugout/pull/45), but they need to be adjusted (a few parameters are not mandatory) and added to a bugout.d.ts file.
  
-# User Flow
+### User Flow
 
 ```mermaid
 sequenceDiagram
@@ -196,23 +206,27 @@ sequenceDiagram
     Wallet-->>dApp: Send response
 ```
 
-# Security Aspects
+### Security Aspects
 
 We decided to spwan the server within the dApp to force the user to manually scan a QR code (using a wallet app) or accept an "Open with <WalletAppName>" ui dialog (in case of Universal Links or Deeplinks). This prevents the user from connecting the wallet to an unwanted dApp. Additionally we need to add  a few security checks to prevent a missusage of these method.
 
 - The wallet app needs to verifiy the origin (address) of the RPC call
 - dApps should ask the user for the permission to injected the wallet names into the window.cardano object to prevent XSS attack (Maybe using a graphical representation of the wallet app address e.g. blockies)
 
-# Discussion/Open Points
+## Rationale
 
-- Fork/Extend bugout to add webpack 5 and typescript support
-- Maybe we should provide a general intermediate cardano-connect typescript library to provide 
+The purpose of this CIP mainly consists of two parts. It addresses the current lack of dApp mobile support, but at the same time provides an even more decentralized alternative to state-of-the-art communication methods. To archive this goal we have introduced a WebTorrent and WebRTC based architecture. To demonstrate a viable implementation, we have implemented a proof of concept which also shows how a rpc method injection like CIP-0030 might look like.
+
+## Implementation Plan
+
+- [ ] Fork/Extend bugout to add webpack 5 and typescript support
+- [ ] Povide a general intermediate cardano-connect typescript library to provide 
     1. A check for mobile/desktop environment
     2. Depending on the environment provide interfaces for CIP 30 / and / or CIP 78
     3. Add an improved version of the server/client side code above to define a communication standard
-- Identify potential security issues and attack vectors
-- Check if the wallet app also reacts to rpc calls in background mode on iOS
+- [ ] Identify potential security issues and attack vectors
+- [ ] Check if the wallet app also reacts to rpc calls in background mode on iOS
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)

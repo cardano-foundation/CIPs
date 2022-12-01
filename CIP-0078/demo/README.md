@@ -24,5 +24,17 @@ npm start
 
 ## Testing (PoC)
 
-Once you have the server and client running you should see something like `[info]: injected api of boostwallet into window.cardano` in your dApp logs. Now you can issue a `window.cardano.boostwallet.getRewardAddresses().then(result => console.log(result))` to execute the remote call and get the reward address from your Wallet App.
+Once you have the server and client running you should see something like 
+
+```js
+"[info]: injected api of boostwallet into window.cardano"
+```
+
+in your dApp logs. Now you can issue
+
+```js
+window.cardano.boostwallet.getRewardAddresses().then(result => console.log(result))
+```
+
+to execute the remote call and get the reward address from your Wallet App.
 
