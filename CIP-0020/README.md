@@ -241,7 +241,7 @@ Which results in the original content of the **msg** key:
 ![image](https://user-images.githubusercontent.com/47434720/204632224-5be33098-00f6-41da-a2f0-7c138b28354f.png)
 ![image](https://user-images.githubusercontent.com/47434720/204632802-33f1afa5-d9b2-494f-84fe-d7f0594a7f1b.png)
 
-**StakePool Operator Tools**: It works on the commandline like any other script of the collection by just adding the "msg: ..." parameter to a transaction. This automatically generates the needed metadata.json structure and attaches it to the transaction itself.
+**StakePool Operator Scripts**: It works on the commandline like any other script of the collection by just adding the "msg: ..." parameter to a transaction. This automatically generates the needed metadata.json structure and attaches it to the transaction itself.
 ![image](https://user-images.githubusercontent.com/47434720/129110626-6bc5b3c3-102d-4793-b508-7d4190b31cf7.png)
 
 **CNTools**:<br>
@@ -252,6 +252,8 @@ Which results in the original content of the **msg** key:
 **Cexplorer.io**: With the implementation of the **encrypted message decoding**.
 ![image](https://user-images.githubusercontent.com/47434720/204560392-f45bbe4f-7f78-48fa-9e47-4d3b104685bf.png)
 
+**StakePool Operator Scripts**: It works on the commandline like any other script of the collection by just adding the `"enc: basic"` parameter, you can provide an individual passphrase by using the `"pass:<passphrase>"` parameter. This automatically generates the needed metadata.json structure with the encrypted message in it and attaches it to the transaction itself.
+![image](https://user-images.githubusercontent.com/47434720/205442737-748a7fb0-90fc-4cc3-898c-98b06894a900.png)
   
 # Rationale
 
