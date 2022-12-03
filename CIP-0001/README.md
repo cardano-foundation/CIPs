@@ -201,24 +201,24 @@ CIPs are classified into distinct categories that help organise (and thus, find)
 
 At present, we consider the following list of initial categories:
 
-Category              | Description
----                   | ---
-Meta                  | Designates meta-CIPs, such as this one, which typically serves another category or group of categories.
-Reward-Sharing Scheme | For CIPs discussing the reward & incentive mechanisms of the protocol.
-Ledger                | For proposals regarding the Cardano ledger.
-Wallets               | For standardisation across wallets (hardware, full-node or light).
-Catalyst              | For proposals affecting Project Catalyst or the Jörmungandr project.
-Tokens                | About tokens (fungible or non-fungible) and minting policies in general.
-Metadata              | For proposals around metadata (on-chain or off-chain).
-Tools                 | A broad category for ecosystem tools not falling into any other category.
+Category               | Description
+---                    | ---
+Meta                   | Designates meta-CIPs, such as this one, which typically serves another category or group of categories.
+Reward-Sharing Schemes | For CIPs discussing the reward & incentive mechanisms of the protocol.
+Wallets                | For standardisation across wallets (hardware, full-node or light).
+Tokens                 | About tokens (fungible or non-fungible) and minting policies in general.
+Metadata               | For proposals around metadata (on-chain or off-chain).
+Tools                  | A broad category for ecosystem tools not falling into any other category.
 
 Additionally, projects of the ecosystem may explicitly enlist as new categories. The following section describes how projects can engage with the CIP process.
 
 Registered categories for explicitly enlisted projects are otherwise listed below.
 
-Category   | Description
----        | ---
-Plutus     | Changes or additions to Plutus, following the process described in [CIP-0035][]
+Category | Description
+---      | ---
+Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
+Ledger   | For proposals regarding the Cardano ledger, following the process described in ?
+Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
 
 #### Project Enlisting
 

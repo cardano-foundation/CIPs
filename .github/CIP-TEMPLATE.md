@@ -12,6 +12,23 @@ Created: YYYY-MM-DD
 License: CC-BY-4.0
 ---
 
+<!-- Existing categories:
+
+- Meta                   | For meta-CIPs which typically serves another category or group of categories.
+- Reward-Sharing Schemes | For CIPs discussing the reward & incentive mechanisms of the protocol.
+- Wallets                | For standardisation across wallets (hardware, full-node or light).
+- Tokens                 | About tokens (fungible or non-fungible) and minting policies in general.
+- Metadata               | For proposals around metadata (on-chain or off-chain).
+- Tools                  | A broad category for ecosystem tools not falling into any other category.
+- Plutus                 | Changes or additions to Plutus
+- Ledger                 | For proposals regarding the Cardano ledger
+- Catalyst               | For proposals affecting Project Catalyst / the Jörmungandr project
+
+-->
+
+# CIP-XXXX: Title
+<!-- A reminder of the document's number & title, for readability. -->
+
 ## Abstract
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 
