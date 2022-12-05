@@ -1,9 +1,16 @@
 ---
 CIP: 73
 Title: Oracle Datum Standard
-Authors: Cardano DeFi Alliance <info@cardanodefialliance.org>, Cody Butz <cbutz@indigo-labs.io>, Jonas Lindgren <jonas@charli3.io>
 Status: Proposed
-Type: Standards
+Category: Tools
+Authors:
+    - Jonas Lindgren <jonas@charli3.io>
+    - Cody Butz <cbutz@indigo-labs.io>
+    - Cardano DeFi Alliance <info@cardanodefialliance.org>
+Implementors:
+    - Charli3 Oracles <https://charli3.io>
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/357
 Created: 2022-10-20
 License: CC-BY-4.0
 ---
