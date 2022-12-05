@@ -305,7 +305,11 @@ whitelisted               = uint
 
 ## Rationale
 
-This CIP is ready to be made active; since it is a process standard, it requires no implementation.
+This CIP is ready to be made active.
+
+Having a CIP to rely on would help oracle consuming projects as well as oracle providing projects exchange data in a common format. Many oracle data consumers and providers are working on competing, application-specific data formats that will divide and isolate projects. This CIP will help unify the community and allow for more interoperability within the Cardano developer community.
+
+The oracle provider Charli3 has committed to implementing this standard for their free-to-use Catalyst-funded oracle feeds, and will be the first to do so. Charli3 has further committed to making their libraries for interacting with oracle data according to this CIP standard available under an open source license.
 
 ## Copyright
 
