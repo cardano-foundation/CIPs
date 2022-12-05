@@ -232,7 +232,7 @@ Fund 8:
 
 Fund 10:
 - stipulated that `reward_address` must be a Shelley payment address, otherwise voting reward payments will not be recieved. 
-  - **Note:** up to Fund 9 `reward_address` was a Shelley rewards address; from Fund 10 onwards, it will be a normal payment address.  This will allow rewards to be paid directly from the designated Catalyst pot rather than requiring MIR transfers.
+  - **Note:** up to Fund 9 `reward_address` was a Shelley reward address (a.k.a. stake address); from Fund 10 onwards, it will be a normal payment address.  This will allow rewards to be paid directly from the designated Catalyst pot rather than requiring MIR transfers.
 
 Fund 11:
  - added the `deregistration` metadata format.
