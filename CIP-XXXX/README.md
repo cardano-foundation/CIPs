@@ -1,13 +1,11 @@
 ---
-CIP: <?>  
-Title: <Oracle Datum Standard>  
+CIP: 73
+Title: Oracle Datum Standard
 Authors: Cardano DeFi Alliance <info@cardanodefialliance.org>, Cody Butz <cbutz@indigo-labs.io>, Jonas Lindgren <jonas@charli3.io>
-Comments-Summary: <No comments>  
-Comments-URI: <>  
-Status: <Draft>  
-Type: <Standards>  
-Created: <2022-10-20>  
-License: <CC-BY-4.0>
+Status: Proposed
+Type: Standards
+Created: 2022-10-20
+License: CC-BY-4.0
 ---
 
 ## Abstract
