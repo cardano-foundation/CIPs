@@ -216,13 +216,13 @@ DApps are used by *DApp users*, and built by *DApp developers*. Audit is perform
 
 ### 3. Cardano auditors
 
-| Audit company   | URL                                     | Contact email      |
-| -----------     | -----------                             | -----------        |
-| FYEO Inc.       | https://gofyeo.com/blockchain-security  | sales@gofyeo.com  |
-| Hachi           | https://hachi.one                       | team@hachi.one        |
-| MLabs           | https://mlabs.city                      | info@mlabs.city      |
-| Runtime Verification           | https://www.runtimeverification.com | contact@runtimeverification.com  |
-| Tweag                | https://www.tweag.io                  | sales@tweag.io                  |
+| Audit company   | URL                                     | Contact email      | Public key      |
+| -----------     | -----------                             | -----------        | -----------        |
+| FYEO Inc.       | https://gofyeo.com/blockchain-security  | sales@gofyeo.com  | |
+| Hachi           | https://hachi.one                       | team@hachi.one        | |
+| MLabs           | https://mlabs.city                      | info@mlabs.city      | |
+| Runtime Verification           | https://www.runtimeverification.com | contact@runtimeverification.com  | |
+| Tweag                | https://www.tweag.io                  | sales@tweag.io                  | |
 
 ### 4. A sample audit report
 
