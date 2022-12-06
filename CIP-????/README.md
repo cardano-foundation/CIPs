@@ -211,7 +211,7 @@ sequenceDiagram
 
 ### Security Aspects
 
-We decided to spwan the server within the dApp to force the user to manually scan a QR code (using a wallet app) or accept an "Open with `<WalletAppName>`" ui dialog (in case of Universal Links or Deeplinks). This prevents the user from connecting the wallet to an unwanted dApp. Additionally we need to add  a few security checks to prevent a misusage of this method.
+We decided to spawn the server within the dApp to force the user to manually scan a QR code (using a wallet app) or accept an "Open with `<WalletAppName>`" ui dialog (in case of Universal Links or Deeplinks). This prevents the user from connecting the wallet to an unwanted dApp. Additionally we need to add  a few security checks to prevent a misusage of this method.
 
 - The wallet app needs to verifiy the origin (address) of the RPC call
 - dApps should ask the user for permission to inject the wallet names into the window.cardano object to prevent XSS attack (Maybe using a graphical representation of the wallet app address e.g. blockies)
