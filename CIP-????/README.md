@@ -43,8 +43,8 @@ Theses and many other usecases are actively happening on the blockchain right no
 ## What is the issue with the current implementation?
 
 Metadata is attached as a CBOR bytearray in the auxiliary dataset of a transaction. So the encoding is just done from UTF8-Text to Hex-Code/Bytes and after that it is sent in plaintext over the network/blockchain.
-To seek further adoption of blockchain usage, privacy features are a must in the future. Having cleartext information in a TCP packet might not be an issue for many thing, but it is an issue if you wanna confince 
-users to use the blockchain and there transaction feature like users using it now with bank transfers.
+To seek further adoption of blockchain usage, privacy features are a must in the future. Having cleartext information in a TCP packet might not be an issue for many things, but it is an issue if you wanna convince 
+users to use the blockchain and their transaction feature like users using it now with bank transfers.
 
 It is easy for 3rd-party entities like Internet Service Providers, Datacenters or basically any Man-In-The-Middle to collect data that is sent in cleartext. 
 Data such as bank-account-numbers, email-addresses, telephone numbers, etc. which are parts of transaction messages.
@@ -57,7 +57,7 @@ Even with a simple encryption of such messages - and publicly known passphrase -
 
 **Targeted benefits:**
    - By using a default passphrase, Man-In-The-Middle "sniffer" cannot extract/parse data like email-addresses, invoice-numbers on the fly that easily. They would need to search for a cardano-node transmission and decrypt each message. Public explorers like Cexplorer.io, Cardanoscan, etc. can still show the decrypted message content via there https connection to the user. So no cleartext transmission at all.
-   - Different users can transfer funds with encrypted messages attached between each other, using a preshared passphrase. Only theses users need to know the content. Example: A user buys goods from an online-store, the store provides a preshared-passphrase to the user on there website or via email, the user sends the payment with payment-information encrypted with this passphrase to the store.
+   - Different users can transfer funds with encrypted messages attached between each other, using a preshared passphrase. Only theses users need to know the content. Example: A user buys goods from an online-store, the store provides a preshared-passphrase to the user on their website or via email, the user sends the payment with payment-information encrypted with this passphrase to the store.
    - Keeping the usecase of a transaction private does not only belong to different entities, but to a single user too. Example: If a user sends funds to a Dex or wants to lend some fund to a friend, he just can add information like 'Sent xxx ADA to bob for xxx' to the outgoing transaction as a documentation using an own choosen private passphrase. This information is stored on the chain and so in the wallet, only the user itself can review the use case of these transactions.
    - Backwards compatible with CIP-0020
    - Easy implementation by using well known tools like OpenSSL
