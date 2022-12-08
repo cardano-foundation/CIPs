@@ -213,7 +213,8 @@ Which results in the original content of the **msg** key:
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
 The original CIP-0020 design allowed the addition of new entries like the `"enc":` key for encrypted messages in this CIP.
-  
+There is also for example [CIP-8](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008), but CIP-8 doesn't really fulfill the simplicity of just providing encrypted messages. CIP-8 is focused on Signing, which is not needed for encryption. There is no need that everything on Cardano must be difficult. Also using such CBOR encoded structures would break all currently implemented transaction message solutions. This CIP uses openssl and base64 encoding, and enduser could even copy&paste such text into other tools, etc.
+
 ## Implementation suggestions
  
 Wallets/Tools can implement an autodecryption attempt with the default passphrase on such messages, to give the user a more streamlined experience. The communication should be done via https or similar to make sure the message cleartext is not exposed again during the transmission.
