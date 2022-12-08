@@ -24,7 +24,7 @@ License: CC-BY-4.0
 
 # Abstract
 
-This CIP is a first addition to the original [CIP-0020](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0020), which is active since mid 2021 and widely used across many entities.
+This CIP is an addendum to the original [CIP-0020](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0020), which is active since mid 2021 and widely used across many entities.
 It describes the JSON schema to add encrypted messages/comments/memos as transaction metadata. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets. 
 Tools/Wallets that do not have an implementation to decrypt this format will just show the encrypted base64 as the message, but it will not break any existing processes.
 
