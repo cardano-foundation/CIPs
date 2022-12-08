@@ -9,13 +9,14 @@ Authors:
     - Andrew Westberg <andrewwestberg@gmail.com>
     - Adam Dean <adam@crypto2099.io>
 Implementors:
-    - [Cardano Explorer](https://cexplorer.io)
-    - [Eternl Wallet](https://eternl.io)
-    - [StakePoolOperator Scripts](https://github.com/gitmachtl/scripts)
-    - [CNTools](https://cardano-community.github.io/guild-operators/#/Scripts/cntools)
-    - [JorManager](https://bitbucket.org/muamw10/jormanager/)
-    - [Cardanoscan.io](https://cardanoscan.io)
-Discussions: N/A
+    - Cardano Explorer <https://cexplorer.io>
+    - Eternl Wallet <https://eternl.io>
+    - StakePoolOperator Scripts <https://github.com/gitmachtl/scripts>
+    - CNTools <https://cardano-community.github.io/guild-operators/#/Scripts/cntools>
+    - JorManager <https://bitbucket.org/muamw10/jormanager/>
+    - Cardanoscan.io <https://cardanoscan.io>
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/394
 Created: 2022-12-08
 License: CC-BY-4.0
 ---
