@@ -10,8 +10,9 @@ Authors:
     - Adam Dean <adam@crypto2099.io>
 Implementors:
     - Cardano Explorer <https://cexplorer.io>
-    - Eternl Wallet <https://eternl.io>
     - StakePoolOperator Scripts <https://github.com/gitmachtl/scripts>
+    - AdaStat.net <https://adastat.net>
+    - Eternl Wallet <https://eternl.io>
     - CNTools <https://cardano-community.github.io/guild-operators/#/Scripts/cntools>
     - JorManager <https://bitbucket.org/muamw10/jormanager/>
     - Cardanoscan.io <https://cardanoscan.io>
@@ -112,7 +113,10 @@ The value given in the `enc` field references the type of encryption is used. St
   | type | openssl |
   | cipher | aes-256-cbc (salted) |
   | digest | pdkdf2 |
-  | iterations | 10000 (default)
+  | iterations | 10000 (default) |
+  | key + iv | 32 bytes key + 16 bytes iv |
+  | salt | 8 bytes |
+  | prefix | `Salted__` |
   | encoding | base64|
 
 OpenSSL was choosen, because its fast and widely available also for all kind of different platforms, web frontends, etc. Encryption algo is **AES-256-CBC** (salted) using `pdkdf2` to derive the key from the given passphrase. 10000 Iterations is the default value for this encryption method. The format of the encoded output is base64 format.
@@ -209,7 +213,14 @@ Which results in the original content of the **msg** key:
 
 **StakePool Operator Scripts**: It works on the commandline like any other script of the collection by just adding the `"enc: basic"` parameter, you can provide an individual passphrase by using the `"pass:<passphrase>"` parameter. This automatically generates the needed metadata.json structure with the encrypted message in it and attaches it to the transaction itself.
 ![image](https://user-images.githubusercontent.com/47434720/205442737-748a7fb0-90fc-4cc3-898c-98b06894a900.png)
-  
+
+**AdaStat.io**: With the implementation of the **encrypted message decoding**.
+![image](https://user-images.githubusercontent.com/47434720/206544529-2e43947a-d437-4856-813d-bc6a9c98109d.png)
+![image](https://user-images.githubusercontent.com/47434720/206544575-d5f9da07-8a17-4f2b-8739-6a2be1bb290b.png)
+
+
+&nbsp;<p>
+
 # Rationale
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
@@ -240,6 +251,31 @@ An encrypted transaction message should be considered valid if the following app
 If any of the above is not met, ignore the metadata as an encrypted transaction message. Can still be displayed as general metadata to the transaction.
 
 The implementation format in this CIP should be the ground base for encrypted transaction messages/comments/memos and should be respected by creator-/sender-implementations as well as in wallet-/receiver-/display-implementations.
+
+# Path to Active
+
+## Acceptance Criteria
+
+The acceptance criteria to be `Active` should already have been met, because the following Implementors using this CIP on the Cardano Blockchain:
+
+* Cardano Explorer (https://cexplorer.io)
+* StakePoolOperator Scripts (https://github.com/gitmachtl/scripts)
+* AdaStat.net (https://adastat.net)
+
+## Implementation Plan
+
+The following Projects have committed to also implement it:
+
+* Eternl Wallet (https://eternl.io)
+* CNTools (https://cardano-community.github.io/guild-operators/#/Scripts/cntools)
+* JorManager (https://bitbucket.org/muamw10/jormanager/)
+* Cardanoscan.io (https://cardanoscan.io)
+
+The plan is to reach out to other projects - which already supporting the normal transaction messages - too. And of course also to new ones.
+
+There are various **code samples available** in the [**codesamples**](codesamples/) folder to make it as easy as possible for integrators to implement it.
+
+&nbsp;<p>
 
 # Copyright
 
