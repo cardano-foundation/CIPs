@@ -214,7 +214,7 @@ Which results in the original content of the **msg** key:
 **StakePool Operator Scripts**: It works on the commandline like any other script of the collection by just adding the `"enc: basic"` parameter, you can provide an individual passphrase by using the `"pass:<passphrase>"` parameter. This automatically generates the needed metadata.json structure with the encrypted message in it and attaches it to the transaction itself.
 ![image](https://user-images.githubusercontent.com/47434720/205442737-748a7fb0-90fc-4cc3-898c-98b06894a900.png)
 
-**AdaStat.io**: With the implementation of the **encrypted message decoding** using a pure **frontend solution**.
+**AdaStat.net**: With the implementation of the **encrypted message decoding** using a pure **frontend solution**.
 ![image](https://user-images.githubusercontent.com/47434720/206574191-22aa490a-5870-4853-906b-443284458987.png)
 ![image](https://user-images.githubusercontent.com/47434720/206574354-5dd81551-efc6-4f69-a2aa-282bb40e5084.png)
 
