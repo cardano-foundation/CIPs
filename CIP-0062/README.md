@@ -24,9 +24,10 @@ the use of different voting keys or delegations
 for different purposes (Catalyst etc).
 
 ## Rationale
-To provide governance specific functionality to wallet's and expose such API to the dApps (i.e Voting Centers). 
 
-This also addresses some short-comings of [CIP-30](https://cips.cardano.org/cips/cip30/); which signData can only be done by known an address; This signature is not relevant to a specific address, nor the dApp will know an address attached to the voting key. The voting key derivation is defined in [CIP-36](https://cips.cardano.org/cips/cip36/). 
+To provide governance specific functionality to wallet's and expose such API to the dApps (i.e Voting Centers).
+
+This also addresses some short-comings of [CIP-30](https://cips.cardano.org/cips/cip30/); which signData can only be done by known an address; This signature is not relevant to a specific address, nor the dApp will know an address attached to the voting key. The voting key derivation is defined in [CIP-36](https://cips.cardano.org/cips/cip36/).
 
 Perhaps [CIP-30](https://cips.cardano.org/cips/cip30/) could be expanded to also know how to perform `signData` from a given public key from a specific derivation path; instead of doing so only by known address.
 
@@ -317,7 +318,9 @@ In either case, where the user declines to sign at least 1 of the votes, no sign
 ## api.getVotingKey(): Promise\<cbor<PublicKey\>\>
 
 Should return the voting [public key](#publickey). The wallet should use `address_index`= 0 and return the public key for that index.
+
 ### Returns
+
 cbor hex encoded representation of the public key.
 
 ## api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>
@@ -361,19 +364,21 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 
 ## **Test Vectors**
 
-### *** keys ***
+### ***keys***
 
 `payment verification key`:
+
 ```json
 {
     "type": "PaymentVerificationKeyShelley_ed25519",
     "description": "Payment Verification Key",
     "cborHex": "58203bc3383b1b88a628e6fa55dbca446972d5b0cd71bcd8c133b2fa9cd3afbd1d48"
 }
-   
-``` 
 
-`payment secret key`: 
+```
+
+`payment secret key`:
+
 ```json
 {
     "type": "PaymentSigningKeyShelley_ed25519",
@@ -383,6 +388,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ```
 
 `staking verification key`:
+
 ```json
 {
     "type": "StakeVerificationKeyShelley_ed25519",
@@ -392,6 +398,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ```
 
 `staking secret key`:
+
 ```json
 {
     "type": "StakeSigningKeyShelley_ed25519",
@@ -400,14 +407,15 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 }
 ```
 
-### *** Delegation Certificate ***
+### ***Delegation Certificate***
 
 `Delegation certificate sample`:
+
 ```json
 {
   "1":[["1788b78997774daae45ae42ce01cf59aec6ae2acee7f7cf5f76abfdd505ebed3",1],["b48b946052e07a95d5a85443c821bd68a4eed40931b66bd30f9456af8c092dfa",3]],
   "2":"93bf1450ec2a3b18eebc7acfd311e695e12232efdf9ce4ac21e8b536dfacc70f",
-  
+
   "3":"e1160a9d8f375f8e72b4bdbfa4867ca341a5aa6f17fde654c1a7d3254e",
   "4":5479467,
   "5":0
@@ -415,6 +423,7 @@ The [Signed Delegation Metadata](#signeddelegationmetadata) of the voter registr
 ```
 
 `Delegation certificate after signature`:
+
 ```json
 {
   "61284":{
