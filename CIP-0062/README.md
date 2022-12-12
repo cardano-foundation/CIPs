@@ -110,11 +110,12 @@ Proposal information.
 
 ```ts
 interface Vote {
-  proposal: Proposal
-  choice: number
-  expiration: BlockDate
-  purpose: VotingPurpose
-  spendingCounter: number
+  proposal: Proposal;
+  choice: number;
+  expiration: BlockDate;
+  purpose: VotingPurpose;
+  spendingCounter?: number;
+  spendingCounterLane?: number;
 }
 ```
 
@@ -124,9 +125,10 @@ An individual raw Unsigned Vote record.
 * choice - This value MUST match one of the available `voteOptions` in the `proposal` element. An `UnknownChoiceError` should be thrown if the value is not one of the valid `voteOptions` of the `proposal`.
 * expiration - Voting Chain epoch \& slot for when the vote will expire. This value is supplied and maintained by the dApp, and forms a necessary component of a [Vote](#vote)
 * purpose - The [voting purpose](#voting-purpose) being voted on. (Currently always 0).
-* spendingCounter - The spending counter is used to prevent double voting. The spending counter for the vote transaction will be supplied and maintained by the dApp. The dApp will manage supplying this in the correct order, and this should not be enforced by the Wallet.
+* spendingCounter - Optional, but if present, the spending counter is used to prevent double voting. The spending counter for the vote transaction will be supplied and maintained by the dApp. The dApp will manage supplying this in the correct order, and this should not be enforced by the Wallet.
+* spendingCounterLane - Optional, if not present but required defaults to 0.  The spending counter may be spread across multiple lanes, this field defines which lane the spending counter relates to.
 
-It is required to attach it to the vote according to [Jormungandr Voting] (<https://input-output-hk.github.io/jormungandr/jcli/vote.html#voting>).
+Note: `spendingCounter` and `spendingCounterLane` are fully managed by the voting dApp and if present are used to create the vote fragment for proper submission to the voting system.  The wallet should simply use the values defined, and does not need to track them.
 
 ## Delegation
 
@@ -230,6 +232,7 @@ type enum TxSignErrorCode {
   ProofGeneration = 1,
   UserDeclined = 2,
   VoteRejected = 3,
+  UnsupportedVoteFormat = 4,
 }
 ```
 
@@ -295,21 +298,39 @@ The remaining methods
 must request the user's consent in an informative way for each and every API
 call in order to maintain security.
 
-The API chosen here is for the mini mum API necessary for dApp <-> Wallet
+The API chosen here is for the minimum API necessary for dApp <-> Wallet
 interactions without convenience functions that don't strictly need the wallet's
 state to work.
 
-## api.signVotes(votes: Vote[]): Promise\<Bytes>[]
+## api.signVotes(votes: Vote[], settings: string): Promise\<Bytes>[]
 
 Errors: [`APIError`](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
-* votes - an array of up to 10 votes to be validated with the wallet user, and if valid, signed.
+* `votes` - an array of up to 10 votes to be validated with the wallet user and, if valid, signed.
+* `settings` - *Optional*. Settings which are universally applicable to all `votes` being signed.  This is a json string.  The fields within the settings json string depend on the format of the vote record.  The wallet does not need to interpret this field and should pass it unchanged to the logic used to format the vote transaction.  However, to support multiple future vote transaction formats, the `settings` must contain at least:
+  `'{"purpose":<number>,"ver":<number>,...}'`
+
+  * `"purpose"` is the purpose of the vote transaction, which defines its format. It is a number and matches the defined [voting purposes](#voting-purpose).
+  * `"ver"` is the version of the vote transaction, which also defines its format. It is a number.
+  * `...` Variable fields defined by the vote transaction type being formatted and signed.
+
+    These two fields allow the transaction format to be changed to accommodate future voting systems using this CIP standard.  The wallet can inspect these two fields to ensure the correct vote format is being signed.  It is legal for voting purposes to reuse or share vote formats.
+
+    Vote transaction formats are defined by the [voting purposes](#voting-purpose), and are not documented in this CIP.
+
+### List of known vote transaction formats
+
+| `"purpose"` | `"ver"` | Vote Format | Specification |
+| --- | --- | --- | --- |
+| 0 | 0 | Project Catalyst vote: V0 | [Catalyst Core Specifications](https://input-output-hk.github.io/catalyst-core/) |
 
 IF the wallet user declines SOME of the votes, a [`TxSignError`](#extended-txsignerror) should be raised with `code` set to `VoteRejected` and the optional `rejectedVotes` array specifying the votes rejected.
 
 However, if the wallet user declines the entire set of votes, the wallet should raise a [`TxSignError`](#extended-txsignerror) with the `code` set to `UserDeclined`.
 
-In either case, where the user declines to sign at least 1 of the votes, no signed votes are returned.
+If the `purpose` and `ver` of the vote transaction format as defined by the `settings` field is unknown to the wallet, a [`TxSignError`](#extended-txsignerror) should be raised with the `code` set to `UnsupportedVoteFormat`.
+
+In all cases, where an error occurs, no signed votes are returned.
 
 ### Returns
 
