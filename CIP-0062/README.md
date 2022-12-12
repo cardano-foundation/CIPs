@@ -93,18 +93,19 @@ interface BlockDate {
 
 ```ts
 interface Proposal {
-  votePlanId: string
-  voteOptions: number[]
-  votePublic: boolean
-  proposalIndex: number
+  votePlanId: string;
+  proposalIndex: number;
+  voteOptions?: number;
+  voteEncKey?: string;
 }
 ```
 
 Proposal information.
 
 * votePlanId - Hex encoded string to represent vote plan unique identifier. This will be the same as anchored on voting chain, and is managed by the dApp.
-* voteOptions - List of possible "choices" which can be made for this proposal.
-* votePublic - Boolean indicating whether the vote is public or private.
+* proposalIndex  - The index of the proposal within the vote plan.
+* voteOptions - *Optional*. Total number of vote options.  Only present in a private/encrypted vote.
+* voteEncKey - *Optional*. If this vote is Private, this field is present and contains the key used to encrypt the vote.  When the vote is public, this key is absent from the proposal.
 
 ### Vote
 
