@@ -321,9 +321,9 @@ Errors: [`APIError`](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
 ### List of known vote transaction formats
 
-| `"purpose"` | `"ver"` | Vote Format | Specification |
-| --- | --- | --- | --- |
-| 0 | 0 | Project Catalyst vote: V0 | [Catalyst Core Specifications](https://input-output-hk.github.io/catalyst-core/) |
+| `"purpose"` | `"ver"` | Vote Format | Specification | Example Settings String |
+| --- | --- | --- | --- | --- |
+| 0 | 0 | Project Catalyst vote: V0 | [Catalyst Core Specifications](https://input-output-hk.github.io/catalyst-core/) | `{"purpose":0,"ver":0,"fees":{"constant":10,"coefficient":2,"certificate":100},"discrimination":"production","block0_initial_hash":{"hash":"baf6b54817cf2a3e865f432c3922d28ac5be641e66662c66d445f141e409183e"},"block0_date":1586637936,"slot_duration":20,"time_era":{"epoch_start":0,"slot_start":0,"slots_per_epoch":180},"transaction_max_expiry_epochs":1}` |
 
 IF the wallet user declines SOME of the votes, a [`TxSignError`](#extended-txsignerror) should be raised with `code` set to `VoteRejected` and the optional `rejectedVotes` array specifying the votes rejected.
 
