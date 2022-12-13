@@ -50,6 +50,78 @@ Demand for different tiers is tracked by observing the level of fullness of the 
 
 IBs are prioritized for inclusion in the main chain based on their respective tier delay; IBs are only allowed to be included in an endorsement block (EB), and subsequently to the main chain, after time proportional to their tier delay has passed.
 
+### Pseudocode
+
+We provide pseudocode outlining how the new prices, delays and tiers are determined given the previous parameters and the observed on-chain load. Notice the invariant that we trying to maintain: consecutive tiers should have a substantial difference in price and delay, whenever possible. The following parameters are needed to tune these updates.
+
+#### Parameters
+* minPriceRatio: target price ratio between consecutive tiers
+* minDelayRatio: target delay ratio between consecutive tiers
+* addTierPrice: price to create a new tier
+* removeTierPrice: price to collapse the last tier
+* minPrice: minimum price
+* k_tiers: maximum number of tiers
+* k_update: number of ranking blocks between price updates 
+* k_delay_update: number of ranking blocks between delay updates
+* targetLoad: desired 'fullness' of blocks
+* newTierDelayFactor: new tier delay coefficient
+* priceUpdateFactor: how quickly the price changes
+* delayUpdateFactor: how quickly delay changes
+* delaySearch: probability to reduce delay
+* delayUpdateFreq: how often to update delays
+* tierUpdateFreq: how often to update tiers
+* tierSize: array with possible tier sizes, as fractions of the total throughput. The first value has the increments of the first tier in low congestion and must divide 1, while every other value is the size of that tier. The sum of all tier sizes should be 1.
+
+Before defining the function **updateTierParameters**, we briefly explain the role of the most important variables involved.
+
+#### Tier Parameters:
+* numberOfTiers: number of active tiers
+* size[k_tiers]: array of tier sizes, as a percentage to the total input production rate. Their sum should be smaller or equal to 1.
+* price[k_tiers]: array of tier prices
+* delay[k_tiers]: array of tier delays
+
+#### Arguments:
+* par: current tier parameters
+* (f)_i array indicating each tier's ‘fullness’, as a fraction of its maximum capacity
+* updatesNum: total number of updates performed (e.g. at every ranking block)
+
+
+**updateTierParameters(par, (f)_i, updatesNum ):**
+* //* update prices *//
+* price := par.price
+* for i=1 to par.numberOfTiers:
+  - price’[i] := max(minPrice, price[i] * 2 ^ (priceUpdateFactor * (f_i - targetLoad) / targetLoad))
+* //* update delay *//
+* delay := par.delay
+* if updatesNum % delayUpdateFreq = 0 then:
+  - for i=2 to par.numberOfTiers:
+    + priceDiff := (price’[i-1]) - price’[i]) / price’[i-1]
+    + if priceDiff < minPriceRatio:
+      * delay’[i] := delay[i] + 1
+    + else with probability delaySearch do:
+      * delay’[i] := delay[i] - 1
+    + delay’[i] := max(delay’[i], minDelayRatio * delay’[i-1])
+* //* adjust tiers *//
+* //* Either adjust the size of the first tier, or add/remove new tiers *//
+* size’ = par.size
+* if updatesNum % updateTierFreq = 0:
+  - if par.numberOfTiers > 1 and price’[par.numberOfTiers] < removeTierPrice:
+    + if sum(par.size) < 1 and par.size[1] > tierSize[1] :
+      * size’[1] := sum(par.size) - tierSize[1]
+    + else:
+      * numberOfTiers’ := par.numberOfTiers - 1
+      * size’[par.numberOfTiers] := 0
+      * size’[1] := par.size[1] + tierSize[par.numberOfTiers]
+  - else if par.numberOfTiers < k_tiers and price’[par.numberOfTiers] > addTierPrice:
+    + if sum(par.size) = 1:
+      * numberOfTiers’ := par.numberOfTiers + 1
+      * size’[numberOfTiers’] := tierSize[numberOfTiers’]
+      * size’[1] := par.size[1] - tierSize[numberOfTiers’]
+      * price’[numberOfTiers’] := newTierPrice
+      * delay’[numberOfTiers’] := delay[numberOfTiers’ -1] * newTierDelayFactor
+  - else:
+      * size’[1] := par.size[1] + tierSize[1]
+* return (numberOfTiers’, size’, price’, delay’)
 
 
 
@@ -67,7 +139,7 @@ This option may come with a high expected delay when the system is congested. No
 ### Why not EIP-1559?
 While our approach bares similarities to that of EIP-1559 regarding the way prices are updated, our design is a lot more diverse in that it allows different types of use-cases to be served by the system in a satisfactory manner. We highlight this point further through simulation.
 
-In the following figures we present the evolution of the price, delay and size of each tier of a simplified blockchain with three tiers of equal size. The demand starts low, then changes to 3 clusters with different levels of urgency, then uniform urgency and finally becomes lower than the available throughput. During the low-demand periods, only tier 1 is available and its price and delay are minimal. Moreover, the size of tier 1 periodically fluctuates, in an effort to detect increased traffic. Next, in the 3 cluster period, all 3 tiers become available as the system detects increased traffic. Note, that the delays of Tiers 2 and 3 increase to maintain the price invariant; here the price of subsequent tiers must be at least half of the previous ones. Finally, during the uniform urgency segment, the delays of Tiers 2 and 3 again adjust to maintain the price invariant, as the price of Tier 1 decreases.
+In the following figures we present the evolution of the price, delay and size of each tier of a simplified blockchain with three tiers of equal size. The urgency of each user is mathematically formalized by having the value they get from their transaction decrease exponentially with time. The highest the exponent, the more urgent the transaction becomes. The demand starts low, then changes to 3 clusters with different levels of urgency, then uniform urgency and finally becomes lower than the available throughput. During the low-demand periods, only tier 1 is available and its price and delay are minimal. Moreover, the size of tier 1 periodically fluctuates, in an effort to detect increased traffic. Next, in the 3 cluster period, all 3 tiers become available as the system detects increased traffic. Note, that the delays of Tiers 2 and 3 increase to maintain the price invariant; here the price of subsequent tiers must be at least half of the previous ones. Finally, during the uniform urgency segment, the delays of Tiers 2 and 3 again adjust to maintain the price invariant, as the price of Tier 1 decreases.
 
 
 <p float="left">
