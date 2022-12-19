@@ -1,6 +1,6 @@
 ---
 CIP: 72
-Title: Cardano DApp Registration
+Title: Cardano DApp Registration & Certification
 Authors: Bruno Martins <bruno.martins@iohk.io>
 Status: Draft
 Type: Standards
@@ -117,3 +117,10 @@ The format of the metadata tree object is described in the [CIP-26](https://gith
   ]
 }
 ```
+
+## Metadata Label
+
+When submitting the transaction metadata picks one of the following values for `transaction_metadatum_label`:
+
+- `666`: DApp Registration
+- `667`: DApp Certification
