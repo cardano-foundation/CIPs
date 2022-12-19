@@ -284,7 +284,7 @@ returned to the dApp with the following methods.
 
 ## Governance API
 
-All methods (all but the signing functionality) should not require any user
+Except `signVotes`, no other method should require any user
 interaction as the user has already consented to the dApp reading information
 about the wallet's governance state when they agreed to
 [`cardano.{walletName}.governance.enable()`](#cardanowalletnamegovernanceenablepurpose-votingpurpose-promiseapi).
