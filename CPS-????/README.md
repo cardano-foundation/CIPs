@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Spending Scripts can't actualize the full potential of eUTxO
+Title: Spending Scripts Can't Actualize the Full Potential of eUTxO
 Status: Open
 Category: Smart Contracts
 Authors: 
