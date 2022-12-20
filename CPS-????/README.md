@@ -2,7 +2,7 @@
 CPS: ?
 Title: Spending Scripts Can't Actualize the Full Potential of eUTxO
 Status: Open
-Category: Smart Contracts
+Category: Plutus
 Authors: 
   - fallen-icarus <modern.daidalos@gmail.com>
 Proposed Solutions: []
