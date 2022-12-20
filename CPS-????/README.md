@@ -46,7 +46,7 @@ Being that my script checks all the inputs and outputs in the transaction to det
 ``` Txt
 tx fee = # ref script executions * ( 0.3 ADA + 0.02 ADA * ( # input utxos + # output utxos ) )
 ``` 
-The transaction fee increases linearly for every utxo (inputs + outputs) in the transaction, then quadratically the reference script needs to be executed more than once.
+The transaction fee increases linearly for every utxo (inputs + outputs) in the transaction, then quadratically if the reference script needs to be executed more than once.
 
 ## Use Cases
 Any time a script's result depends on the entire transaction. The use cases I have personally encountered are:
