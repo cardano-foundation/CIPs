@@ -220,7 +220,7 @@ DApps are used by *DApp users*, and built by *DApp developers*. Audit is perform
 | -----------     | -----------                             | -----------        | -----------        |
 | FYEO Inc.       | https://gofyeo.com/blockchain-security  | sales@gofyeo.com  | |
 | Hachi           | https://hachi.one                       | team@hachi.one        | |
-| MLabs           | https://mlabs.city                      | info@mlabs.city      | |
+| MLabs           | https://mlabs.city                      | info@mlabs.city      | 64BC640B5454215D12165EEAEEFF303D2643ABA2 (PGP, ed25519) |
 | Runtime Verification           | https://www.runtimeverification.com | contact@runtimeverification.com  | |
 | Tweag                | https://www.tweag.io                  | sales@tweag.io                  | |
 
