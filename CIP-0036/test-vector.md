@@ -4,57 +4,33 @@
 
 **Note:** Not all keys are required for certificate recreation.
 
-Payment **private** signing key:
+Payment **private** signing key cborHex:
 ```
-{
-    "type": "PaymentSigningKeyShelley_ed25519",
-    "description": "Payment Signing Key",
-    "cborHex": "5820614fdfe13d403bee2014570b190d81851f17d8daca0b6dd1ce33014403191003"
-}
+5820614fdfe13d403bee2014570b190d81851f17d8daca0b6dd1ce33014403191003
 ```
 
-Payment **public** verification key:
+Payment **public** verification cborHex:
 ```
-{
-    "type": "PaymentVerificationKeyShelley_ed25519",
-    "description": "Payment Verification Key",
-    "cborHex": "58207a24dd8e692cec94b612c2ec81f508aada96557c2052a447b9d197b006fa7d2a"
-}
+58207a24dd8e692cec94b612c2ec81f508aada96557c2052a447b9d197b006fa7d2a
 ```
 
-Staking **private** signing key:
+Staking **private** signing key cborHex:
 ```
-{
-    "type": "StakeSigningKeyShelley_ed25519",
-    "description": "Stake Signing Key",
-    "cborHex": "5820852fa5d17df3efdfdcd6dac53ec9fe5593f3c0bd7cadb3c2af76c7e15dfa8a5c"
-}
+5820852fa5d17df3efdfdcd6dac53ec9fe5593f3c0bd7cadb3c2af76c7e15dfa8a5c
 ```
 
-Staking **public** verification key:
+Staking **public** verification key cborHex:
 ```
-{
-    "type": "StakeVerificationKeyShelley_ed25519",
-    "description": "Stake Verification Key",
-    "cborHex": "5820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369"
-}
+5820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369
 ```
-Governance (Catalyst) **public** verification key:
+Governance (Catalyst) **public** verification key cborHex:
 ```
-{
-  "type": "PaymentVerificationKeyShelley_ed25519",
-  "description": "Governance Verification Key",
-  "cborHex": "58200036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0"
-}
+58200036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0
 ```
 
-Governance (Catalyst) **private** signing key:
+Governance (Catalyst) **private** signing key cborHex:
 ```
-{
-  "type": "PaymentSigningKeyShelley_ed25519",
-  "description": "Governance Signing Key",
-  "cborHex": "4820f7ce221e177c8eae2b2ee5c1f1581a0d88ca5c14329d8f2389e77a465655c27662621bfb99cb9445bf8114cc2a630afd2dd53bc88c08c5f2aed8e9c7cb89"
-}
+4820f7ce221e177c8eae2b2ee5c1f1581a0d88ca5c14329d8f2389e77a465655c27662621bfb99cb9445bf8114cc2a630afd2dd53bc88c08c5f2aed8e9c7cb89
 ```
 
 ## Addresses
