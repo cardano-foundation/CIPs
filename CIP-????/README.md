@@ -214,6 +214,9 @@ Which results in the original content of the **msg** key:
 **StakePool Operator Scripts**: It works on the commandline like any other script of the collection by just adding the `"enc: basic"` parameter, you can provide an individual passphrase by using the `"pass:<passphrase>"` parameter. This automatically generates the needed metadata.json structure with the encrypted message in it and attaches it to the transaction itself.
 ![image](https://user-images.githubusercontent.com/47434720/205442737-748a7fb0-90fc-4cc3-898c-98b06894a900.png)
 
+**Eternl.io**:
+![image](https://user-images.githubusercontent.com/47434720/210166917-8af475fe-5cda-46f5-bd8d-3fc4c2c12482.png)
+    
 **AdaStat.net**: With the implementation of the **encrypted message decoding** using a pure **frontend solution**.
 ![image](https://user-images.githubusercontent.com/47434720/206574191-22aa490a-5870-4853-906b-443284458987.png)
 ![image](https://user-images.githubusercontent.com/47434720/206574354-5dd81551-efc6-4f69-a2aa-282bb40e5084.png)
@@ -261,12 +264,12 @@ The acceptance criteria to be `Active` should already have been met, because the
 * Cardano Explorer (https://cexplorer.io)
 * StakePoolOperator Scripts (https://github.com/gitmachtl/scripts)
 * AdaStat.net (https://adastat.net)
+* Eternl Wallet (https://eternl.io)
 
 ## Implementation Plan
 
 The following Projects have committed to also implement it:
 
-* Eternl Wallet (https://eternl.io)
 * CNTools (https://cardano-community.github.io/guild-operators/#/Scripts/cntools)
 * JorManager (https://bitbucket.org/muamw10/jormanager/)
 * Cardanoscan.io (https://cardanoscan.io)
