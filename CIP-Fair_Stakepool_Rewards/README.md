@@ -1,13 +1,18 @@
 ---
 CIP: 75
-Title: Fair Stakepool Rewards 
-Author: Tobias Fancee <tobiasfancee@gmail.com>
-Comments-URI:
+Title: Fair Stakepool Rewards
 Status: Proposed
-Type: Standards
+Category: Reward-Sharing Scheme
+Authors:
+    - Tobias Fancee <tobiasfancee@gmail.com>
+Implementors:
+    - Input Output Global
+    - Cardano Foundation
+    - Emurgo
+Discussions:
+    - https://forum.cardano.org/t/cip-fair-stakepool-rewards/109368
 Created: 2022-10-21
-License: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
-Post-History: https://forum.cardano.org/t/cip-fair-stakepool-rewards/109368
+License: CC-BY-4.0
 ---
 
 # Abstract
@@ -163,13 +168,9 @@ This proposal includes parameter changes, one parameter removal, and a change to
 
 # Path to Active
 
+## Acceptance Criteria
+
 This proposal must be approved by both IOG as well as the community before implementation. Community consensus should be a high priority for proposals that modify staking rewards.
-
-Implementation can be staged to reduce shock to the network:
-
-1.	Decrease minPoolCost from 340 ADA to 100 ADA and increase k from 500 to 750.
-2.	Increase k from 750 to 1000, decrease minPoolCost from 100 ADA to 0 ADA, and decrease a0 from 0.3 to 0.2.
-3.	Remove minPoolCost from the protocol and implement the new rewards calculation equation.
 
 Each stage will be an individual protocol update. The first two updates will be protocol parameter updates. The third and final update will require a hardfork.
 
@@ -180,6 +181,14 @@ Before implementation, IOG's engineering and research teams must review the feas
 3. Genesis delegates IOG, CF, and Emurgo sign the transaction.
 4. Transaction is submitted.
 5. Protocol update is confirmed.
+
+## Implementation Plan
+
+Implementation can be staged to reduce shock to the network:
+
+1.	Decrease minPoolCost from 340 ADA to 100 ADA and increase k from 500 to 750.
+2.	Increase k from 750 to 1000, decrease minPoolCost from 100 ADA to 0 ADA, and decrease a0 from 0.3 to 0.2.
+3.	Remove minPoolCost from the protocol and implement the new rewards calculation equation.
 
 ## Copyright
 
