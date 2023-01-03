@@ -1,0 +1,149 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/cardano-dapp-js@1.0.5/dist/cardano-wallet-picker.css" rel="stylesheet" integrity="sha384-jeqm08LTVeNbS97UWy4EXaCioonM70aAFwSpoQITuPKgc53EI0+XfxoG+0hwMLqj" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet" integrity="sha384-1txFwJFikBxvmOF4oqBQdSBJQzEUrMDB2MMmedDaFGsjXYStJKO7JkwyAWPDXlkk" crossorigin="anonymous">
+
+    <script type="text/javascript" src="voting.js"></script>
+    <link rel="stylesheet" href="voting.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="wallet-container"></div>
+
+      <div id="wallet-voting-power">
+        <h4>Connect your wallet to display eligible votes...</h4>
+      </div>
+
+      <div id="vote-ballot">
+        <form id="vote-ballot-form" class="bordered">
+          <legend>Please vote on the question posed below (1 answer only)</legend>
+          <p><em>If you were to choose only one letter from the first 5 in the alphabet, what would it be?</em></p>
+
+          <div>
+            <input type="radio" id="vote-ballot-choice-a" name="vote-ballot-choice" value="A" disabled />
+            <label for="vote-ballot-choice-a">A</label>
+          </div>
+
+          <div>
+            <input type="radio" id="vote-ballot-choice-b" name="vote-ballot-choice" value="B" disabled />
+            <label for="vote-ballot-choice-b">B</label>
+          </div>
+
+          <div>
+            <input type="radio" id="vote-ballot-choice-c" name="vote-ballot-choice" value="C" disabled />
+            <label for="vote-ballot-choice-c">C</label>
+          </div>
+
+          <div>
+            <input type="radio" id="vote-ballot-choice-d" name="vote-ballot-choice" value="D" disabled />
+            <label for="vote-ballot-choice-d">D</label>
+          </div>
+
+          <div>
+            <input type="radio" id="vote-ballot-choice-e" name="vote-ballot-choice" value="E" disabled />
+            <label for="vote-ballot-choice-e">E</label>
+          </div>
+        </form>
+      </div>
+
+      <div id="vote-container" class="row padded">
+          <div class="col-12 centered">
+            <input id="vote-now" type="submit" value="VOTE NOW!" />
+          </div>
+      </div>
+
+      <div id="vote-count-container" class="row padded">
+          <div class="col-12 centered">
+            <h4>Administrative Use Only</h4>
+            <input id="vote-count" type="submit" value="COUNT VOTES!" />
+            <input id="vote-redeemer" type="submit" value="REDEEM BALLOTS!" disabled />
+          </div>
+      </div>
+
+      <div id="vote-count-output" class="row padded">
+          Vote results will appear here...
+      </div>
+
+      <div id="vote-burn-container" class="row padded">
+          <div class="col-12 centered">
+            <h4>Done With Your Ballots? Want to Reclaim Your Ada?</h4>
+            <input id="vote-burn" type="submit" value="BURN YOUR COUNTED VOTES!" />
+          </div>
+      </div>
+    </div>
+  </body>
+
+  <script type="module">
+    NftToolkit.then(NftToolkit => {
+      NftToolkit.CardanoDAppJs.initializeCardanoDApp('wallet-container');
+
+      const blockfrostKey = "<A VALID BLOCKFROST KEY GOES HERE>";
+      const policyId = "<THE POLICY ID OF THE PROJECT'S NFT GOES HERE>";
+      const pollsClose = -1; // THE UNIX TIMESTAMP (MS) POLLS CLOSE GOES HERE
+      const ballotPrefix = '<THE BALLOT LABEL PREFIX GOES HERE>';
+      const pubKeyHash = '<THE PUBLIC KEY HASH OF THE VOTE COUNTER GOES HERE>';
+      const ballotMetadata = {
+        "image": "ipfs://",
+        "mediaType": "image/png",
+        "description": [
+          "Commemorative NFT for on-chain vote ",
+          "(Metadata for convenience, final votes recorded using datums)"
+        ],
+        "project": "Sample Ballot - NFT Project"
+      }
+
+      const ballotDomName = 'vote-ballot-choice';
+      const voteOutputDom = 'vote-count-output';
+
+      document.getElementById("vote-ballot-form").addEventListener('submit', e => false);
+
+      document.getElementById('vote-now').addEventListener('click', async e => {
+        e && e.preventDefault();
+        await NftToolkit.Voting.mintBallot(blockfrostKey, pubKeyHash, policyId, pollsClose, ballotDomName, ballotPrefix, ballotMetadata);
+      });
+
+      document.getElementById('vote-count').addEventListener('click', async e => {
+        e && e.preventDefault();
+        const ballots = await NftToolkit.Voting.countBallots(blockfrostKey, pubKeyHash, policyId, pollsClose, voteOutputDom, ballotPrefix);
+        if (ballots) {
+          window.open(`data:application/txt,${encodeURIComponent(ballots)}`);
+          document.getElementById('vote-redeemer').disabled = false;
+        }
+      });
+
+      document.getElementById('vote-redeemer').addEventListener('click', async e => {
+        e && e.preventDefault();
+        const ballots = await NftToolkit.Voting.redeemBallots(blockfrostKey, pubKeyHash, policyId, pollsClose, voteOutputDom, ballotPrefix);
+      });
+
+      document.getElementById('vote-burn').addEventListener('click', async e => {
+        e && e.preventDefault();
+        await NftToolkit.Voting.burnBallots(blockfrostKey, pubKeyHash, policyId, pollsClose, ballotPrefix);
+      });
+
+      window.addEventListener("message", async (event) => {
+        // We only accept messages from ourselves
+        if (event.source != window || !event.data.type) {
+          return;
+        }
+        switch (event.data.type) {
+          case "CARDANO_DAPP_JS_CONNECT":
+            document.getElementById("wallet-voting-power").innerHTML = 'Loading voting power from your wallet, please wait...';
+            const votingPower = await NftToolkit.Voting.votingAssetsAvailable(blockfrostKey, [policyId], []);
+            const votingMsg = (votingPower < 0) ? 'Could not calculate voting power due to wallet error.' : `Your ballot choice below will have ${votingPower} votes' power`;
+            document.getElementById("wallet-voting-power").innerHTML = `<h4>${votingMsg}</h4>`;
+            document.querySelectorAll("input").forEach(input => { input.disabled = false});
+            break;
+          default:
+            // Unknown message, return
+            break;
+        }
+      }, false);
+    })
+  </script>
+
+</html>

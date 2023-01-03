@@ -178,9 +178,16 @@ metadata =
     description : bounded_bytes, ; UTF-8
     ? ticker: bounded_bytes, ; UTF-8
     ? url: bounded_bytes, ; UTF-8
-    ? logo: bounded_bytes, ; UTF-8
-    ? decimals: big_int
+    ? logo: uri,
+    ? decimals: int
   }
+
+; A URI as a UTF-8 encoded bytestring.
+; The URI scheme must be one of `https`, `ipfs` or `data`
+; Do not encode plain file payloads as URI.
+; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
+; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
+uri = bounded_bytes 
   
 datum = #6.121([metadata, 1]) ; version 1
 ```

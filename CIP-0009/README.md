@@ -1,6 +1,6 @@
 ---
 CIP: 9
-Title: Protocol Parameters
+Title: Protocol Parameters (Shelley Era)
 Authors: Kevin Hammond <kevin.hammond@iohk.io>
 Status: Active
 Type: Informational
@@ -8,10 +8,10 @@ Created: 2021-01-29
 License: CC-BY-4.0
 ---
 
-## Simple Summary/Abstract
+## Abstract
 
 This CIP is an informational CIP that describes the initial protocol parameter settings for the Shelley era of the Cardano blockchain, plus the changes that have been made.
-It is intended to serve as a historic record, allowing protocol parameter changes to be tracked back to the original settings.  
+It is intended to serve as a historic record, allowing protocol parameter changes to be tracked back to the original settings.
 
 ## Motivation
 
@@ -128,7 +128,7 @@ The initial non-updatable protocol parameters are given below (in JSON format):
 
 The meaning of the fields is:
 
-| Field                 	| Initial Value                                                          	| Description                                                                                                              
+| Field                 	| Initial Value                                                          	| Description
 |-----------------------	|------------------------------------------------------------------------	|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
 | activeSlotsCoeff                  	| 0.05                                                                     	| The fraction of the total number of slots that will, on average, be selected to include a block in the chain.  Smaller numbers increase security, but reduce efficiency.                                                                                                                 	|
 | genDelegs                  	| ...                                                                     	| Details of the public keys that have been selected by each of the genesis keys to act as a delegate for signing protocol updates etc. |
@@ -178,7 +178,7 @@ of the chain can be verified, but they can no longer be altered.
 ```
 
 
-## Rationale for Parameter Choices
+## Rationale
 
 The initial parameter settings were chosen based on information from the Incentivised Testnet, the Haskell Testnet, Stake Pool Operators plus benchmarking and security concerns.  This parameter choice was deliberately conservative,
 in order to avoid throttling rewards in the initial stages of the Cardano mainnet, and to support a wide range of possible stake pool operator (professional, amateur, self, etc.).
@@ -254,10 +254,13 @@ Once a change has been submitted and endorsed by a sufficient quorum of keyholde
 Once a protocol parameter change has been announced, it can only be overridden through the voting process (CIP, Voltaire etc.).  Any vote must be
 completed before the start of the epoch in which the change is to be submitted.
 
+## Path to Active
 
-## Change Log
+- [x] The Cardano Shelley era is activated.
 
-### Changes to the Updatable Parameters since the Shelley Hard Fork Event
+### Change Log
+
+#### Changes to the Updatable Parameters since the Shelley Hard Fork Event
 
 Following the Shelley hard fork event, the ``decentralisationParam`` parameter has been gradually decreased from ``1.0`` to ``0.3``, with the goal of ultimately decreasing it to ``0`` (at which point
 it can be removed entirely as an updatable parameter).  This has gradually reduced the impact of the federated block producing nodes, so ensuring that the network moves to become a distributed collection of increasingly decentralised stake pools.
@@ -285,7 +288,7 @@ The parameter was frozen at ``0.32`` between epochs 234 and 240.   The ``nOpt`` 
 | ... | ...	   |	... |	...|
 
 
-### The Allegra Hard Fork Event
+#### The Allegra Hard Fork Event
 
 The Allegra Hard Fork Event on 2020-12-16 (epoch 236) introduced token locking capabilities plus some other small changes to the protocol.  No parameters were
 added or removed.
@@ -317,7 +320,7 @@ added or removed.
 }
 ```
 
-### The Mary Hard Fork Event
+#### The Mary Hard Fork Event
 
 The Mary Hard Fork Event will introduce multi-asset token capability.  It is not expected that any parameter will be added or removed.
 
@@ -348,13 +351,9 @@ The Mary Hard Fork Event will introduce multi-asset token capability.  It is not
 }
 ```
 
-## Test Cases
+#### The Alonzo Hard Fork Event
 
-Not Applicable.
-
-## Implementations
-
-Not applicable.
+See [CIP-0028: Protocol Parameters (Alonzo Era)](../CIP-0028).
 
 ## Copyright
 
