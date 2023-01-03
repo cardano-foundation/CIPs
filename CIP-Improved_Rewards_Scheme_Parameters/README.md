@@ -133,6 +133,7 @@ Below are test cases for the current rewards scheme and each stage of this propo
 ### Current Rewards Scheme
 
 Stakepool Viability Point: ~670,000 ADA
+
 Stakepool Competitive Point: ~20,000,000 ADA
 
 | Pool Type | Pool Stake        | Pool Pledge      | Pool Epoch Revenue | Delegator ROS         |
@@ -145,6 +146,7 @@ Stakepool Competitive Point: ~20,000,000 ADA
 ### Proposed - Stage 1
 
 Stakepool Viability Point: ~335,000 ADA
+
 Stakepool Competitive Point: ~16,500,000 ADA
 
 | Pool Type | Pool Stake        | Pool Pledge      | Pool Epoch Revenue | Delegator ROS         |
@@ -157,6 +159,7 @@ Stakepool Competitive Point: ~16,500,000 ADA
 ### Proposed - Stage 2
 
 Stakepool Viability Point: 1 ADA
+
 Stakepool Competitive Point: 1 ADA
 
 | Pool Type | Pool Stake        | Pool Pledge      | Pool Epoch Revenue | Delegator ROS |
@@ -169,6 +172,7 @@ Stakepool Competitive Point: 1 ADA
 ### Proposed - Stage 3
 
 Stakepool Viability Point: 1 ADA
+
 Stakepool Competitive Point: 1 ADA
 
 | Pool Type | Pool Stake        | Pool Pledge      | Pool Epoch Revenue | Delegator ROS |
@@ -181,6 +185,7 @@ Stakepool Competitive Point: 1 ADA
 ### Proposed - Stage 4
 
 Stakepool Viability Point: 1 ADA
+
 Stakepool Competitive Point: 1 ADA
 
 | Pool Type | Pool Stake        | Pool Pledge      | Pool Epoch Revenue | Delegator ROS |
