@@ -20,7 +20,9 @@ The current reward sharing scheme of Cardano is unfair and anticompetitive. As a
 
 This proposal retains most of the original reward sharing scheme, but makes changes to ensure fairness, increase decentralization, and reduce the viability of Goldfinger attacks. By removing the minimum fixed fee, adjusting the pledge benefit, increasing k, and reducing a0, a more egalitarian network can be achieved.
 
-# Definitions
+# Motivation
+
+## Definitions
 
 **Minimum Fixed Fee**
 - Protocol parameter minPoolCost.
@@ -66,8 +68,6 @@ This proposal retains most of the original reward sharing scheme, but makes chan
 
 **Sybil Attack**
 - An attack on an online system where an entity tries to take over the network by creating many identities or nodes.
-
-# Motivation
 
 ## The Current Rewards Equation
 
@@ -162,7 +162,7 @@ Proposal stakepool competitive point: 1 ADA
 
 See FairStakepoolRewards.xlxs to compare stakepool ROS between the current and proposed scheme.
 
-# Backwards Compatibility
+## Backward Compatibility
 
 This proposal includes parameter changes, one parameter removal, and a change to the rewards calculation. Because of the parameter removal and changes to the rewards calculation, a hardfork will be necessary for implementation.
 
