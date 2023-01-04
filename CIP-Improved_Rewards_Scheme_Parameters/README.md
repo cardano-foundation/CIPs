@@ -111,7 +111,7 @@ $$poolRateEff = max(poolRate, minPoolRate)$$
 
 ## Explanation
 
-### Stage 1: minPoolCost is decreased to 170 ADA
+#### Stage 1: minPoolCost is decreased to 170 ADA
 
 Stage 1 reduces minPoolCost from 340 ADA to 170 ADA. 170 ADA is proposed because it is half of the current minPoolCost and is close to what the USD value of minPoolCost was during the launch of Shelley. This value is more than sufficient to allow established community pools to stay profitable while enabling smaller pools to be more competitive. This value also maintains sybil attack resistance.
 
