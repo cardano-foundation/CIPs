@@ -22,7 +22,7 @@ The current parameter settings of Cardano's rewards sharing scheme leave much to
 
 The parameter changes in this proposal are an optimization of the current settings and are meant to improve the fairness and decentralization of Cardano. Furthermore, all changes suggested in this proposal have been specifically voiced by the Cardano community.
 
-# Motivation
+## Motivation
 
 ### Definitions
 
@@ -50,33 +50,33 @@ The parameter changes in this proposal are an optimization of the current settin
 **Sybil Attack**
 - An attack on an online system where an entity tries to take over the network by creating many identities or nodes.
 
-## Cardano’s Declining MAV
+### Cardano’s Declining MAV
 
 Cardano’s declining MAV is a real problem as the network matures and gains more users. Ideally MAV should increase or stay consistent over time. However, this is currently not the case. This trend points to potential problems with the parameters set in the rewards sharing scheme. Now that staking on the network has matured, it is time to re-examine the rewards sharing scheme parameters and seek optimization. This proposal suggests changes that aim to increase the fairness and decentralization of the Cardano network.
 
-## minPoolCost
+### minPoolCost
 
 minPoolCost sets a minimum fixed fee that a stakepool must collect from an epoch’s rewards before distributing to delegators. This parameter was added to the rewards sharing scheme to provide additional sybil attack protection. While this parameter has been successful at deterring sybil attacks on the Cardano network, it has been at the expense of fairness and decentralization. minPoolCost imposes a proportionally greater staking fee on small stakepools in contrast to larger pools. This discrepancy results in many small pools being unviable and the network centralizing around established pools. It is not uncommon for small stakepools with higher pledge to offer inferior rewards to that of large stakepools with much lower pledge. In this way, minPoolCost reduces the effectiveness of pledge in the rewards scheme. In order to create a level playing field for stakepools and increase the effectiveness of pledge, minPoolCost must be removed from the protocol.
 
-## minPoolRate
+### minPoolRate
 
 The current pledge benefit favors established pools close to saturation as a means of sybil attack protection. Specifically, this property combats high pledge sybil pools (~1 mil ADA pledge) that could be set up by large entities such as centralized exchanges. In contrast to minPoolCost, the pledge benefit’s built-in sybil attack protection is significantly less aggressive and does not affect the viability of stakepools. In this way, it is a useful mechanism to combat sybil pools. However, the pledge benefit on its own has no means to combat zero fee sybil pools. Without minPoolCost, zero fee sybil pools could offer greater rewards than that of established stakepools that must set fees to pay for continued operation. In order to combat zero fee sybil pools without minPoolCost, minPoolRate must be added to the protocol. minPoolRate will set a minimum margin or percentage fee that operators can extract from an epoch’s staking rewards. This new parameter will protect established stakepools by ensuring that they collect sufficient revenue from operation while offering a competitive ROS. Additionally, minPoolRate can be updated to reflect current economic conditions. As minPoolRate enforces a proportional minimum fee, it does not affect the viability of stakepools. Unlike minPoolCost, minPoolRate will be able to provide sufficient sybil attack protection with the pledge benefit while maintaining a level playing field for stakepools. minPoolRate was originally proposed in CIP-0023.
 
-## k, the optimal number of stakepools
+### k, the optimal number of stakepools
 
 k represents the optimal number of stakepools that the Cardano network can support. This is achieved through a saturation mechanism where after exceeding a saturation point a stakepool will earn no additional rewards. A stakepool larger than the saturation point will offer lower rewards than a stakepool at the saturation point. The parameter k is used to tune the saturation point. In addition to tuning the saturation point, k also affects the pledge benefit. The maximum pledge benefit exists when a pool is fully saturated. Therefore, increasing k will increase the number of optimal stakepools, decrease the saturation point, and make it easier for stakepools to achieve the maximum pledge benefit. Increasing the effect of the pledge benefit on rewards is imperative, as pledge currently has little effect on rewards allowing low pledge pools to proliferate through marketing alone. Furthermore, increasing k can be used to get stale delegations moving. This is especially useful in the case of saturated multipools, where delegators would have to reconsider their delegation potentially assisting small and medium sized pools. Any delegation flow from multipools to single pool operators will increase the decentralization of Cardano.
 
-# Specification
+## Specification
 
 This CIP proposes several parameter changes. In order to give SPOs and delegators enough time to react to the changes, this CIP is divided into 4 stages. The proposed time interval between stages is 3 epochs or 15 days. However, it is up to the implementors to determine the best time interval between stages. Parameters are changed in the following stages:
 
-## Stage 1: minPoolCost decreased to 170 ADA
+### Stage 1: minPoolCost decreased to 170 ADA
 
 | Name of the Parameter | New Parameter (Y/N) | Deleted Parameter (Y/N) | Proposed Value | Summary Rationale for Change |
 |-----------------------|---------------------|-------------------------|----------------|------------------------------|
 | minPoolCost           | N                   | N                       | 170000000      | See Rationale Section.       |
 
-## Stage 2: minPoolCost deleted, minPoolRate of 3% implemented (requires hardfork)
+### Stage 2: minPoolCost deleted, minPoolRate of 3% implemented (requires hardfork)
 
 | Name of the Parameter | New Parameter (Y/N) | Deleted Parameter (Y/N) | Proposed Value | Summary Rationale for Change |
 |-----------------------|---------------------|-------------------------|----------------|------------------------------|
@@ -87,21 +87,21 @@ In order to ensure the compatibility of existing stakepool registration certific
 
 $$poolRateEff = max(poolRate, minPoolRate)$$
 
-## Stage 3: k increased to 750
+### Stage 3: k increased to 750
 
 | Name of the Parameter | New Parameter (Y/N) | Deleted Parameter (Y/N) | Proposed Value | Summary Rationale for Change |
 |-----------------------|---------------------|-------------------------|----------------|------------------------------|
 | stakePoolTargetNum    | N                   | N                       | 750            | See Rationale Section.       |
 
-## Stage 4: k increased to 1000
+### Stage 4: k increased to 1000
 
 | Name of the Parameter | New Parameter (Y/N) | Deleted Parameter (Y/N) | Proposed Value | Summary Rationale for Change |
 |-----------------------|---------------------|-------------------------|----------------|------------------------------|
 | stakePoolTargetNum    | N                   | N                       | 1000           | See Rationale Section.       |
 
-# Rationale
+## Rationale
 
-## Principles
+### Principles
 
 1.	Propose changes voiced by the community.
 2.	Make Cardano staking fairer by eliminating aggressive anticompetitive features.
@@ -109,29 +109,29 @@ $$poolRateEff = max(poolRate, minPoolRate)$$
 4.	Get stale delegations moving and allow users to reconsider their delegation.
 5.	Maintain sufficient sybil attack protection.
 
-## Explanation
+### Explanation
 
 #### Stage 1: minPoolCost is decreased to 170 ADA
 
 Stage 1 reduces minPoolCost from 340 ADA to 170 ADA. 170 ADA is proposed because it is half of the current minPoolCost and is close to what the USD value of minPoolCost was during the launch of Shelley. This value is more than sufficient to allow established community pools to stay profitable while enabling smaller pools to be more competitive. This value also maintains sybil attack resistance.
 
-### Stage 2: minPoolCost is deleted, minPoolRate of 3% is implemented (requires hardfork)
+#### Stage 2: minPoolCost is deleted, minPoolRate of 3% is implemented (requires hardfork)
 
 Stage 2 introduces the largest change to the network by deleting minPoolCost from the protocol in favor of a minPoolRate of 3%. 3% is proposed, as it allows established community pools to stay profitable when competing against minimum fee pools. This in combination with the pledge benefit provide sufficient sybil attack resistance while leveling the playing field for all stakepools. As pool size is significantly less important following this stage, pledge becomes a more important factor in choice of delegation. In contrast, Lido, Ethereum’s most popular liquid staking DApp, applies a 10% fee on participants' staking rewards.
 
-### Stage 3: k is increased to 750
+#### Stage 3: k is increased to 750
 
 Stage 3 increases k from 500 to 750. The purpose of stage 3 and stage 4 is two-fold. Firstly, increasing k increases the pledge benefit. The more effective the pledge benefit, the greater Cardano’s sybil attack resistance. Secondly, increasing k may get stale delegations moving again by oversaturating large pools. This will cause many delegators to reconsider their delegation, potentially helping smaller community pools find delegations. Increasing k is split into two stages to give SPOs sufficient time to react to the change. Furthermore, it is imperative that k is increased after stage 2, as small stakepools will only be competitive after minPoolCost has been removed.
 
-### Stage 4: k is increased to 1000
+#### Stage 4: k is increased to 1000
 
 Stage 4 increases k from 750 to 1000. Stage 4 will further improve the pledge benefit and get more delegations moving. This is the final stage of this proposal.
 
-## Test Cases and Sybil Attack Resistance
+### Test Cases and Sybil Attack Resistance
 
 Below are test cases for the current rewards scheme and each stage of this proposal. The calculated values assume all pools are operating with minimum fees. Sybil pools are assumed to be small pools with no delegations. Community pools are assumed to be pools with significant delegation. As demonstrated below, this proposal allows community pools to have sufficient revenue (higher than the USD value of minPoolCost at the launch of Shelley) while creating a level playing field for all stakepools. Sybil attack resistance is maintained at every stage, as community pool ROS remains higher than sybil pool ROS. Data used for calculations was approximated from epoch 385. See ImprovedRewardsSchemeParameters.xlxs for more test cases.
 
-### Current Rewards Scheme
+#### Current Rewards Scheme
 
 Stakepool Viability Point: ~670,000 ADA
 
@@ -144,7 +144,7 @@ Stakepool Competitive Point: ~20,000,000 ADA
 | Community | 10,000,000.00 ADA | 100,000.00 ADA   | 340 ADA            | 3.5213%               |
 | Community | Saturated         | 1,000,000.00 ADA | 340 ADA            | 3.7567%               |
 
-### Proposed - Stage 1
+#### Proposed - Stage 1
 
 Stakepool Viability Point: ~335,000 ADA
 
@@ -157,7 +157,7 @@ Stakepool Competitive Point: ~16,500,000 ADA
 | Community | 10,000,000.00 ADA | 100,000.00 ADA   | 170 ADA            | 3.6498%               |
 | Community | Saturated         | 1,000,000.00 ADA | 170 ADA            | 3.7749%               |
 
-### Proposed - Stage 2
+#### Proposed - Stage 2
 
 Stakepool Viability Point: 1 ADA
 
@@ -170,7 +170,7 @@ Stakepool Competitive Point: 1 ADA
 | Community | 10,000,000.00 ADA | 100,000.00 ADA   | 152.42 ADA         | 3.6631%       |
 | Community | Saturated         | 1,000,000.00 ADA | 1081.06 ADA        | 3.6773%       |
 
-### Proposed - Stage 3
+#### Proposed - Stage 3
 
 Stakepool Viability Point: 1 ADA
 
@@ -183,7 +183,7 @@ Stakepool Competitive Point: 1 ADA
 | Community | 10,000,000.00 ADA | 100,000.00 ADA   | 152.49 ADA         | 3.6639%       |
 | Community | Saturated         | 1,000,000.00 ADA | 720.44 ADA         | 3.6853%       |
 
-### Proposed - Stage 4
+#### Proposed - Stage 4
 
 Stakepool Viability Point: 1 ADA
 
@@ -196,22 +196,22 @@ Stakepool Competitive Point: 1 ADA
 | Community | 10,000,000.00 ADA | 100,000.00 ADA   | 152.52 ADA         | 3.6646%       |
 | Community | Saturated         | 1,000,000.00 ADA | 542.82 ADA         | 3.6932%       |
 
-## Backward Compatibility
+### Backward Compatibility
 
 This proposal includes several parameter changes and changes to ledger rules. Specifically, stage 2 of this proposal will require a hardfork to introduce a new parameter, delete a parameter, and modify the stakepool fee calculation equation. As mentioned in the specification section, the stakepool fee calculation equation must be modified in order to ensure current stakepool registration certificates are compatible with this CIP.
 
-# Path to Active
+## Path to Active
 
-## Acceptance Criteria
+### Acceptance Criteria
 
-### For Stages 1, 3, and 4
+#### For Stages 1, 3, and 4
 1. The raw transaction for the parameter update is built.
 2. Genesis delegates IOG, CF, and Emurgo sign the transaction.
 3. Transaction is submitted.
 4. Parameter update is accepted by majority of the network.
 5. Parameter update is confirmed.
 
-### For Stage 2
+#### For Stage 2
 
 1. IOG completes necessary research and develops the changes to the ledger rules.
 2. IOG releases a new version of cardano-node supporting the changes to the ledger rules.
@@ -221,7 +221,7 @@ This proposal includes several parameter changes and changes to ledger rules. Sp
 5. Hardfork is accepted by majority of the network.
 6. Hardfork and changes to ledger rules are confirmed.
 
-## Implementation Plan
+### Implementation Plan
 
 Implementors include IOG, CF, and Emurgo. All three entities must approve the changes to the network. Each stage will be an individual update. Stages 1, 3, and 4 will be parameter updates. Stage 2 will require a hardfork.
 
@@ -234,6 +234,6 @@ As previously mentioned, implementation will occur in the following stages:
 3. k is increased to 750
 4. k is increased to 1000
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
