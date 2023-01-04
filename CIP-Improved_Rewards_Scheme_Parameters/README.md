@@ -24,7 +24,7 @@ The parameter changes in this proposal are an optimization of the current settin
 
 # Motivation
 
-## Definitions
+### Definitions
 
 **Stakepool Operator (SPO)**
 - The operator of a stakepool, can be a single person or an entity.
