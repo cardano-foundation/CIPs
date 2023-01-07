@@ -196,6 +196,7 @@ mkValidator Nothing r ctx = {- do what I want -}
 I don't see why not. The node is capable of detecting if all relevant scripts are present in the transaction. The transaction would only be valid if all necessary scripts succeed.
 
 ### How would the `Maybe Datum` be represented at a low-level?
+(I do not know much about the low-level design of plutus so I could be way off with this part.)
 
 Perhap it can be represented with a constructor value of (-1) like:
 
@@ -203,4 +204,4 @@ Perhap it can be represented with a constructor value of (-1) like:
 {"constructor":-1,"fields":[]}
 ```
 
-`unStableMakeIsData` uses positive constructor numbers and `makeIsDataStable` can enforce the use of positive constructor numbers. This way the (-1) constructor is reserved for this purpose.
+`unStableMakeIsData` uses positive constructor numbers and `makeIsDataStable` can enforce the use of positive constructor numbers. This way the (-1) constructor is reserved for this purpose. The idea would be to have something that is guaranteed to fail on-chain whenever it is used just like the `undefined` in Haskell. While technically this would mean it is still possible to lock a UTxO at a script address forever, a user would have to go out of his/her way to make this happen. The default behavior would be the proper usage.
