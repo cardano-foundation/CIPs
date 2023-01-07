@@ -193,4 +193,14 @@ mkValidator Nothing r ctx = {- do what I want -}
 ```
 
 ### Can multiple transaction level scripts be used in one transaction?
-I don't see why not. The node is capable of detecting if all relevant scripts are present in the transaction. The transaction would only be valid if all necessary scripts succeed. 
+I don't see why not. The node is capable of detecting if all relevant scripts are present in the transaction. The transaction would only be valid if all necessary scripts succeed.
+
+### How would the `Maybe Datum` be represented at a low-level?
+
+Perhap it can be represented with a constructor value of (-1) like:
+
+``` JSON
+{"constructor":-1,"fields":[]}
+```
+
+`unStableMakeIsData` uses positive constructor numbers and `makeIsDataStable` can enforce the use of positive constructor numbers. This way the (-1) constructor is reserved for this purpose.
