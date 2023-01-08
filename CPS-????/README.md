@@ -206,7 +206,7 @@ Perhaps the `Nothing` can be represented with an invalid de bruijn constructor v
 
 All de bruijn indexes are supposed to be natural numbers so the (-1) is guaranteed to not be used for real datums. The idea is similar to using `undefined` in Haskell where it points to a thunk that is guaranteed to raise an exception when used outside of just being a place holder for undefined functions. This invalid representation for `BuiltinData` would need to be hard-coded into plutus.
 
-According to the haddock documentation for `BuiltinData`, the constructor seems to be of the type `BuiltinInteger` which is just a type synonym for `Integer`. Futher, `mkConstr` has the type signature
+According to the haddock documentation for `BuiltinData`, the constructor seems to be of the type `BuiltinInteger` which is just a type synonym for `Integer`. Further, `mkConstr` has the type signature
 
 ``` Haskell
 mkConstr :: BuiltinInteger -> BuiltinList BuiltinData -> BuiltinData
