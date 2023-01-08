@@ -204,4 +204,4 @@ I do not know if it is possible but perhaps the `Nothing` can be represented wit
 {"constructor":-1,"fields":[]}
 ```
 
-All de bruijn indexes are supposed to be natural numbers so the (-1) is guaranteed to not be used for real datums. The idea is similar to using `undefined` in Haskell where it points to a thunk that is guaranteed to raise an exception.
+All de bruijn indexes are supposed to be natural numbers so the (-1) is guaranteed to not be used for real datums. The idea is similar to using `undefined` in Haskell where it points to a thunk that is guaranteed to raise an exception. This invalid representation for `BuiltinData` would need to be hard-coded into plutus.
