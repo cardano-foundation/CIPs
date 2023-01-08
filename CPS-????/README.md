@@ -198,10 +198,18 @@ I don't see why not. The node is capable of detecting if all relevant scripts ar
 ### How would the `Maybe Datum` be represented at a low-level?
 (I do not know much about the low-level design of plutus so I could be way off with this part.)
 
-I do not know if it is possible but perhaps the `Nothing` can be represented with an invalid de bruijn constructor value of (-1) like:
+Perhaps the `Nothing` can be represented with an invalid de bruijn constructor value of (-1) like:
 
 ``` JSON
 {"constructor":-1,"fields":[]}
 ```
 
-All de bruijn indexes are supposed to be natural numbers so the (-1) is guaranteed to not be used for real datums. The idea is similar to using `undefined` in Haskell where it points to a thunk that is guaranteed to raise an exception. This invalid representation for `BuiltinData` would need to be hard-coded into plutus.
+All de bruijn indexes are supposed to be natural numbers so the (-1) is guaranteed to not be used for real datums. The idea is similar to using `undefined` in Haskell where it points to a thunk that is guaranteed to raise an exception when used outside of just being a place holder. This invalid representation for `BuiltinData` would need to be hard-coded into plutus.
+
+According to the haddock documentation for `BuiltinData`, the constructor seems to be of the type `BuiltinInteger` which is just a type synonym for `Integer`. `mkConstr` has the type signature
+
+``` Haskell
+mkConstr :: BuiltinInteger -> BuiltinList BuiltinData -> BuiltinData
+```
+
+Therefore it seems like this negative constructor can be used without changing the underlying representation for `BuiltinData`. Again this negative constructor is not meant to be used as an actual `Datum` so any attempt to parse the this `BuiltinData` representation for `Nothing` should fail.
