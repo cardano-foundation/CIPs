@@ -42,18 +42,18 @@ The API Extension specified in this document will count as version 0.2.0 for ver
 
 ### PublicKey
 
-A string representing a 32 byte Ed25519 public key, Bech32 encoded with appropriate prefixes from [CIP-0005](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005).
+A hex string representing a 32 byte Ed25519 public key.
 
 ### GovernanceKey
 
 ```ts
 type GovernanceKey = {
-  votingKey: cbor<PublicKey>
+  votingKey: PublicKey
   weight: number
 }
 ```
 
-* `votingKey` - A cbor encoded `PublicKey` used to represent the target of the delegation.
+* `votingKey` - A voting `PublicKey` used to represent the target of the delegation.
 * `weight` - Used to calculate the actual voting power using the rules described
   in [CIP-36](https://cips.cardano.org/cips/cip36/).
 
@@ -83,7 +83,7 @@ interface VotingCredentials {
   stakingCredential: PublicKey
 }
 ```
-Information used to identify a wallet's voting credentials.
+Information used to represent a wallet's voting credentials.
 
 * votingKey - Derivation as described within [CIP-0036](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036), wallets should use `address_index`= 0.
 * stakingCredential - At the moment, the only supported staking credential is a public staking key. This is used to represent the wallet's staked ADA.
@@ -332,7 +332,7 @@ Should return the in use voting credentials of the wallet.
 
 ### Returns
 
-The [VotingCredentials](#votingcredentials) of the wallet, which contain it's voting key and associated staking credential used for governance.
+The [VotingCredentials](#votingcredentials) of the wallet, which contain it's voting key and associated staking credential used for [CIP-36](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036) style governance.
 
 ## api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>
 
