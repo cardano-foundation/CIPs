@@ -42,18 +42,18 @@ The API Extension specified in this document will count as version 0.2.0 for ver
 
 ### PublicKey
 
-TODO: Define this.
+A hex string representing a 32 byte Ed25519 public key.
 
 ### GovernanceKey
 
 ```ts
 type GovernanceKey = {
-  votingKey: string
+  votingKey: PublicKey
   weight: number
 }
 ```
 
-* `votingKey` - Ed25519 pubkey 32 bytes HEX string
+* `votingKey` - A voting `PublicKey` used to represent the target of the delegation.
 * `weight` - Used to calculate the actual voting power using the rules described
   in [CIP-36](https://cips.cardano.org/cips/cip36/).
 
@@ -75,6 +75,18 @@ is defined, and it is for Catalyst events.
 authoritative list of known purposes, subject to future amendment. Other voting
 purposes will be defined as required, by either an update to this CIP or a
 future CIP listing currently allocated Voting Purposes.
+
+### VotingCredentials
+```ts
+interface VotingCredentials {
+  votingKey: PublicKey
+  stakingCredential: PublicKey
+}
+```
+Information used to represent a wallet's voting credentials.
+
+* votingKey - Derivation as described within [CIP-0036](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036), wallets should use `address_index`= 0.
+* stakingCredential - At the moment, the only supported staking credential is a public staking key. This is used to represent the wallet's staked ADA.
 
 ### BlockDate
 
@@ -314,11 +326,13 @@ In either case, where the user declines to sign at least 1 of the votes, no sign
 
 `Bytes[]` - An array of the hex-encoded strings of the fully encoded and signed vote transactions.  The dApp will submit these votes on behalf of the wallet.
 
-## api.getVotingKey(): Promise\<cbor<PublicKey\>\>
+## api.getVotingCredentials(): Promise\<VotingCredentials\>
 
-Should return the voting [public key](#publickey). The wallet should use `address_index`= 0 and return the public key for that index.
+Should return the in use voting credentials of the wallet.
+
 ### Returns
-cbor hex encoded representation of the public key.
+
+The [VotingCredentials](#votingcredentials) of the wallet, which contain it's voting key and associated staking credential used for [CIP-36](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036) style governance.
 
 ## api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>
 
