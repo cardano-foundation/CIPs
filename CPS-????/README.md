@@ -117,8 +117,8 @@ Any time a spending script's result depends on the entire transaction and not on
 2. Would this require a new version of plutus?
 
 ---
-## Possible High-Level Solution
-What follows is my high-level suggestion for how to solve this issue. As a bonus based on the way my solution would work, it would also become possible to spend script UTxOs that having missing/incorrect datums. To the best of my knowledge, this solution would not require a hardfork but would require a new version of plutus.
+## Possible Solution
+What follows is my suggestion for how to solve this issue. As a bonus based on the way my solution would work, it would also become possible to spend script UTxOs that having missing/incorrect datums. To the best of my knowledge, this solution would not require a hardfork but would require a new version of plutus.
 
 *Scripts whose validation depends on the transaction as a whole will be referred to as **tx-level scripts** while scripts whose validation depends on an individual utxo will be referred to as **utxo-level scripts**.*
 
