@@ -198,18 +198,37 @@ I don't see why not. The node is capable of detecting if all relevant scripts ar
 ### How would the `Maybe Datum` be represented at a low-level?
 (I do not know much about the low-level design of plutus so I could be way off with this part.)
 
-Perhaps the `Nothing` can be represented with an invalid de bruijn constructor value of (-1) like:
+The idea is to add an outer de bruijn layer around the `BuiltinData` before passing it to a script and then have the script immediately unwrap this extra layer.
+
+An example will help explain it. Imagine you have the low level encoding for the unit datum:
 
 ``` JSON
-{"constructor":-1,"fields":[]}
+{"constructor":0,"fields":[]}
 ```
 
-All de bruijn indexes are supposed to be natural numbers so the (-1) is guaranteed to not be used for real datums. The idea is similar to using `undefined` in Haskell where it points to a thunk that is guaranteed to raise an exception when used outside of just being a place holder for undefined functions. This invalid representation for `BuiltinData` would need to be hard-coded into plutus.
+If you want to pass this into a script as `Just ()`, you would add an outer de bruijn level BEFORE passing it to the script like this:
 
-According to the haddock documentation for `BuiltinData`, the constructor seems to be of the type `BuiltinInteger` which is just a type synonym for `Integer`. Further, `mkConstr` has the type signature
+``` JSON
+{"constructor":1,"fields":[{"constructor":0,"fields":[]}]}
+```
+
+The unit datum is now inside `"fields"`. The script will immediately remove this outer layer by pattern matching like:
 
 ``` Haskell
-mkConstr :: BuiltinInteger -> BuiltinList BuiltinData -> BuiltinData
+mkSpendingScript :: Maybe Datum -> Redeemer -> ScriptContext -> Bool
+mkSpendingScript (Just ()) r ctx = ...
 ```
 
-Therefore it seems like this negative constructor can be used without changing the underlying representation for `BuiltinData`. Again this negative constructor is not meant to be used with an actual `Datum` so any attempt to parse the this `BuiltinData` representation for `Nothing` should fail.
+If you would like to pass in `Nothing` instead, you would use:
+
+``` JSON
+{"constructor":0,"fields":[]}
+```
+
+**Notice how it looks exactly like the unit datum encoding. However, since this is a DIFFERENT de bruijn level, they are functionally different.**
+
+This extra layer would only be used at script exection time. All on-chain datums will not have this extra layer. All of the datums inside `ScriptContext` would also be left untouched.
+
+**Because this uses a different de bruijn level, this method does not use a default datum. All datums are left available for developers.**
+
+The use of this extra layer should be abstracted away so that users and developers don't even know it is being used.
