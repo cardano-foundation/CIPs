@@ -232,3 +232,11 @@ This extra layer would only be used at script exection time. All on-chain datums
 **Because this uses a different de bruijn level, this method does not use a default datum. All datums are left available for developers.**
 
 The use of this extra layer should be abstracted away so that users and developers don't even know it is being used.
+
+Some comments mention the specification being in terms of `Data` so here they are:
+``` Haskell
+Nothing = Constr 0 []
+Just datum = Constr 1 [dataOfDatum]
+```
+
+Again, since this is a different de bruijn level, this is not the same thing as using a default datum value.
