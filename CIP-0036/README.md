@@ -55,11 +55,27 @@ Each delegation therefore contains:
   - a voting key: simply an ED25519 public key. This is the spending credential in the sidechain that will receive voting power from this delegation. For direct voting it's necessary to have the corresponding private key to cast votes in the sidechain. How this key is created is up to the wallet.
   - the weight that is associated with this key: this is a 4-byte unsigned integer (CBOR major type 0, The weight may range from 0 to 2^32-1) that represents the relative weight of this delegation over the total weight of all delegations in the same registration transaction.
 
-### Voting key derivation path
+### Voting key 
+
+The terms voting keys and vote keys should be used interchangeably to indicate the keys described in this specification. The term governance should not be associated with these keys.
+
+#### Derivation path
 
 To avoid linking voting keys directly with Cardano spending keys, the voting key derivation path must start with a specific segment:
 
 `m / 1694' / 1815' / account' / chain / address_index`
+
+We recommend that implementors only use `address_index`=0 to avoid the need for voting key discovery.
+
+#### Tooling
+
+Supporting tooling should clearly define and differentiate this as a unique key type. Using the `vote_sk` and `vote_vk` Bech32 prefixes when encoding, as described in [CIP-05](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005).
+
+Examples of acceptable `keyType` naming for supporting tools:
+- `VotingSigningKey_ed25519`
+- `VotingVerificationKey_ed25519`
+- `VoteSigningKey_ed25519`
+- `VoteVerificationKey_ed25519`
 
 ### Associating voting power with a voting key
 
