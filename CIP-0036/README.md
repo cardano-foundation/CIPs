@@ -57,7 +57,9 @@ Each delegation therefore contains:
 
 ### Voting key 
 
-The terms voting keys and vote keys should be used interchangeably to indicate the keys described in this specification. The term governance should not be associated with these keys.
+The terms voting keys and vote keys should be used interchangeably to indicate the keys described in this specification. But it should be made clear that implementations should favour the term "vote" and that the association of both terms aims to reduce the possibility of confusion.
+
+The term governance should not be associated with these keys.
 
 #### Derivation path
 
@@ -69,11 +71,9 @@ We recommend that implementors only use `address_index`=0 to avoid the need for 
 
 #### Tooling
 
-Supporting tooling should clearly define and differentiate this as a unique key type. Using the `vote_sk` and `vote_vk` Bech32 prefixes when encoding, as described in [CIP-05](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005).
+Supporting tooling should clearly define and differentiate this as a unique key type, describing such keys as "vote" keys. Using the `vote_sk` and `vote_vk` Bech32 prefixes when encoding, as described in [CIP-05](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005).
 
 Examples of acceptable `keyType` naming for supporting tools:
-- `VotingSigningKey_ed25519`
-- `VotingVerificationKey_ed25519`
 - `VoteSigningKey_ed25519`
 - `VoteVerificationKey_ed25519`
 
