@@ -38,7 +38,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 10 | [Transaction Metadata Label Registry](./CIP-0010/) | Active |
 | 11 | [Staking key chain for HD wallets](./CIP-0011/) | Active |
 | 12 | [On-chain stake pool operator to delegates communication](./CIP-0012/) | Draft |
-| 13 | [Cardano URI Scheme](./CIP-0013/) | Draft |
+| 13 | [Cardano URI Scheme](./CIP-0013/) | Proposed |
 | 14 | [User-Facing Asset Fingerprint](./CIP-0014/) | Active |
 | 15 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/) | Active |
 | 16 | [Cryptographic Key Serialisation Formats](./CIP-0016/) | Active |

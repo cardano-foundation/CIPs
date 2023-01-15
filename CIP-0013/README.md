@@ -19,6 +19,8 @@ Created: 2020-09-22
 License: CC-BY-4.0
 ---
 
+# CIP-0013: Cardano URI Scheme
+
 ## Abstract
 
 This proposal describes a basic URI scheme to handle Ada transfers and links to single stake pools or weighted lists of multiple pools.
