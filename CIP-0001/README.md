@@ -46,9 +46,9 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
     - [Repository Organization](#repository-organization)
     - [Licensing](#licensing)
   - [Statuses](#statuses)
-    - [Status: Proposed](#status-proposed)
-    - [Status: Active](#status-active)
-    - [Status: Inactive](#status-inactive)
+    - [Status: Proposed](#statuses-proposed)
+    - [Status: Active](#statuses-active)
+    - [Status: Inactive](#statuses-inactive)
   - [Categories](#categories)
   - [Project Enlisting](#project-enlisting)
 - [Process](#process)
@@ -92,7 +92,7 @@ Field          | Description
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
 `Title`        | A succinct and descriptive title
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
-`Category`     | One of the registered [categories](#categories) covering one area of the ecosystem.
+`Category`     | One of the registered categories covering one area of the ecosystem.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
 `Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. `N/A` when not applicable and `[]` when there's currently no implementor.
 `Discussions`  | A list of links where major technical discussions regarding this CIP happened. Links should include any discussion before submission, and _must_ include a link to the pull request that created the CIP and any pull request that modifies it.
