@@ -151,7 +151,7 @@ URIs facilitate the "social element" of delegated staking and pool promotion thr
 
 The processing of a JSON file delivered by a web server will depend highly on a user's platform and might not even be seen by the wallet application at all.  With a properly associated `web+cardano:` protocol, developers and users have another option available in case JSON files are not delivered properly to the wallet application.
 
-For a CIP based on this principle, see [CIP-0017](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0017].
+For a CIP based on this principle, see [CIP-0017](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0017).
 
 ## Path to Active
 
@@ -160,7 +160,7 @@ For a CIP based on this principle, see [CIP-0017](https://github.com/cardano-fou
 - [x] There exist one or more wallets supporting Payment URIs.
   - [x] Yoroi
 - [x] There exist one or more wallets supporting Stake Pool URIs.
-  - [ ]
+  - [ ] TBD
 
 ### Implementation Plan
 
