@@ -27,7 +27,6 @@ The Plutus Core language, its builtins, and its interface to the ledger are all 
 - We may wish to remove elements which have been deprecated due to the addition of improved versions.
 - … and more
 
-At the moment there is no process for making such changes other than the discretion of the core developers. 
 This CIP gives a taxonomy of changes, explains how such changes might be implemented in Cardano, and prescribes processes for proposing such changes.
 
 ## Background
@@ -36,11 +35,13 @@ This CIP assumes general familiarity with Plutus Core and the Cardano ledger, bu
 
 ### Plutus Core
 
-_Plutus Core_ is a script language used in the Cardano ledger. For the purposes of this document, Plutus Core consists of various _language constructs_, and also _builtin types and functions_.
+_Plutus Core_ is a script language used in the Cardano ledger. 
+For the purposes of this document, Plutus Core consists of various _language constructs_, and also _builtin types and functions_.
 
 Plutus Core has a number of builtin types, such as integers, and builtin functions, such as integer addition. 
-Builtin functions provide access to functionality that would be difficult or expensive to implement in Plutus Core code. 
-Builtin functions can operate only over builtin types. Builtin types come with a _size metric_ which is used by costing functions. 
+Builtin functions provide access to functionality that would be difficult or expensive to implement using the basic constructs of Plutus Core, which is otherwise little more than the untyped lambda calculus.
+Builtin functions can operate only over builtin types or arbitrary Plutus Core terms treated opaquely. 
+  * [ ] Builtin types come with a _size metric_ which is used by costing functions. 
 For example, the size metric for integers returns the bit-size of the integer.
 
 The performance of Plutus Core scripts has two components: how expensive the script actually is to run (_real performance_) and how expensive we say it is to run in the ledger (_model performance_). 
@@ -189,13 +190,17 @@ In order to move to Proposed status, it MUST include:
     - For new builtin functions: a costing function for the builtin function.
 - In the Rationale:
     - An argument for the utility of the new builtins.
-    - If an external implementation is provided: an argument that it is trustworthy.
+    - If an external implementation is provided: an argument that it satisfies the following non-exhaustive list of criteria:
+        - It is trustworthy 
+        - It always terminates
+        - It (or its Haskell bindings) never throw any exceptions
+        - Its behaviour is predictable (e.g. does not have worst-case behaviour with much worse performance)
     - Discussion of how any measures and costing functions were determined.
 
 It SHOULD also include:
 - In the Rationale
     - Examples of real-world use cases where the new additions would be useful.
-    - A comparison with an implementation using the existing features, and an argument why the builtin is preferable (e.g. better performance).
+    - If feasible, a comparison with an implementation using the existing features, and an argument why the builtin is preferable (e.g. better performance).
 
 In order to move to Active status, the following must be true:
 - The external implementations MUST be available.
@@ -232,7 +237,7 @@ For example, if a bug fix changes behaviour, it will have to wait for a new Plut
 ### Implementing and releasing changes
 
 This CIP does not cover the process of implementing changes.
-As usual, the CIP process covers the design phase, and it is up to the implementor to ensure that their proposal is implemented, which may require additional work to meet the requirements of the maintainers of the Cardano code repositories (testing, implementation quality, approach), and so on.
+As usual, the CIP process covers the design phase, and it is up to the implementer to ensure that their proposal is implemented, which may require additional work to meet the requirements of the maintainers of the Cardano code repositories (testing, implementation quality, approach), and so on.
 
 Changes can be released after their CIPs have reached Active status. 
 Different changes will require different releases as described in "Types of release".
@@ -268,8 +273,11 @@ For example, it means that we cannot just fix bugs in the semantics: we must rem
 
 It is tempting to think that if we can show that a particular behaviour has never been used in the history of the chain, then changing it is backwards-compatible, since it won’t change the validation of any of the actual chain. 
 However, this is sadly untrue. 
-The behaviour could be triggered (potentially deliberately) in the interval between the update proposal being accepted and it being implemented, which is extremely dangerous. 
-So even if a bug is obscure, we cannot just fix it.
+
+1. The behaviour could be triggered (potentially deliberately) in the interval between the update proposal being accepted and it being implemented. This is extremely dangerous and could lead to an un-managed hard fork.
+2. The behaviour could be triggered in a script which has not yet been executed on the chain, but whose hash is used to lock an output. This could lead to that output being unexpectedly un-spendable, or some other change in behaviour. Moreover, since we only have the hash of the script, we have no way of telling whether this is the case.
+
+So even if a behaviour is obscure, we cannot just change it.
 
 ### Are backwards-compatible binary format changes really safe?
 
