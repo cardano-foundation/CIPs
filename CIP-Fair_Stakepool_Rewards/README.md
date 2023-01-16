@@ -1,6 +1,6 @@
 ---
 CIP: 75
-Title: Fair Stakepool Rewards
+Title: Fair Stake Pool Rewards
 Status: Proposed
 Category: Reward-Sharing Scheme
 Authors:
