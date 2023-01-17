@@ -12,10 +12,10 @@ Created: 2022-12-20
 ---
 
 ## Abstract
-Spendings scripts are currently executed once for every UTxO being consumed from a script address. However, there are use cases where the validity of the transaction depends on the transaction as a whole and not on any individual UTxO. The eUTxO architecture allows a spending script to see the entire transaction context which means it is already possible to create scripts that validate based on the transaction as a whole. As of now, spending scripts that do this are forced to be executed once per UTxO even if these extra executions are completely redundant. Not only does this waste computational resources, but it can also result in the transaction fee growing quickly based on the number ot UTxOs being consumed from the relevant script address. There is a technique that can be used to minimize this limitation but it has its own drawbacks. 
+Spendings scripts are currently executed once for every UTxO being consumed from a script address. However, there are use cases where the validity of the transaction depends on the transaction as a whole and not on any individual UTxO. The eUTxO architecture allows a spending script to see the entire transaction context which means it is already possible to create scripts that validate based on the transaction as a whole. As of now, spending scripts that do this are forced to be executed once per UTxO even if these extra executions are completely redundant. Not only does this waste computational resources, but it can also result in the transaction fee growing quickly based on the number of UTxOs being consumed from the relevant script address. There is a technique that can be used to minimize this limitation but it has its own drawbacks. 
 
 ## Problem
-Currently, all scripts require some variation of the following for every utxo being consumed from the script address:
+Currently, all scripts require some variation of the following for every UTxO being consumed from the script address:
 
 ``` Bash
   --tx-in <script_utxo_to_be_spent> \
@@ -24,7 +24,7 @@ Currently, all scripts require some variation of the following for every utxo be
   --spending-reference-tx-in-inline-datum-present \
   --spending-reference-tx-in-redeemer-file <script_redeemer> \
 ```
-If three utxos were to be spent from this script address, then you would need three of these:
+If three UTxOs were to be spent from this script address, then you would need three of these:
 
 ``` Bash
   --tx-in <first_script_utxo_to_be_spent> \
@@ -44,7 +44,7 @@ If three utxos were to be spent from this script address, then you would need th
   --spending-reference-tx-in-redeemer-file <script_redeemer> \
 ```
 
-What this translates to is that this script will be executed three times (once for each grouping). But what if the script validates based off of the transaction context as a whole and not any individual UTxO? How can we use this "transaction level" script so that it is only executed once? There is no need to execute it more than once because the transaction context will be exactly the same for each execution. Another way to look at it is that we want a script to be able act like a payment skey where only one signature is needed no matter how many UTxOs are spent from the corresponding address.
+What this translates to is that this script will be executed three times (once for each grouping). But what if the script validates based off of the transaction context as a whole and not on any individual UTxO? How can we use this "transaction level" script so that it is only executed once? There is no need to execute it more than once because the transaction context will be exactly the same for each execution. Another way to look at it is that we want a script to be able to act like a payment skey where only one signature is needed no matter how many UTxOs are spent from the corresponding address.
 
 This brings us to the problem: **The current design does not allow for a spending script to be executed only once no matter how many UTxOs are spent from the corresponding script address.** This is unfortunate since the eUTxO architecture allows writing such scripts. As a result, any time a developer writes a "transaction level" script, the script will be redundantly executed for each additional UTxO being spent from the script's address. These redundant executions are a waste of scarce resources and result in much higher fees for end users. **The current design prevents developers from using the full potential of the eUTxO.** 
 
@@ -76,7 +76,7 @@ In a nut shell, you use a staking script **AS** a spending script. Here is how t
   --withdrawal-redeemer-file <staking_redeemer>
 ```
 
-There are three new `--withdrawal` lines at the end. The transaction level logic is in the staking script. Meanwhile, the spending script just checks that the required staking script is executed AND 0 ADA is withdrawn from the rewards address in the transaction.
+There are three new `--withdrawal` lines at the end. The transaction level logic is in the staking script. Meanwhile, the spending script just checks that the required staking script is executed AND 0 ADA is withdrawn from the rewards address in the transaction. The withdrawal of the 0 ADA is necessary to force the staking script to be executed.
 
 The only requirement to use this trick is that the script address must have been created using the `s'` spending script and the `s''` staking script. The staking address DOES NOT need to actually have rewards or even be delegated for this trick to work.
 
@@ -92,7 +92,7 @@ With this method, the main computation is only executed once no matter how many 
 Any time a spending script's result depends on the entire transaction and not on any particular UTxO.
 
 1. P2P Atomic Swaps - within one transaction, the value entering the script address must be some proportion of the value leaving the script address
-2. P2P Lending - within one transaction, the amount borrowed must be some proportion of the amount posted as collateral. Likewise, the amount of collateral reclaimed depends on how much of the loan has been repaid.
+2. P2P Lending - within one transaction, the amount borrowed must be some proportion of the amount posted as collateral. Likewise, the amount of collateral reclaimed depends on how much of the loan is being repaid.
 3. DAOs
 4. Multisig applications that require more complex logic than what is possible with native scripts
 
