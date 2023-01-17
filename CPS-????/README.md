@@ -44,9 +44,9 @@ If three utxos were to be spent from this script address, then you would need th
   --spending-reference-tx-in-redeemer-file <script_redeemer> \
 ```
 
-What this translates to is that this script will be executed three times (once for each grouping). But what if the script validates based off of the transaction context as a whole and not any individual utxo? How can we use this "transaction level" script so that it is only executed once? There is no need to execute it more than once because the transaction context will be exactly the same for each execution. Another way to look at it is that we want a script to be able act like a payment skey where only one signature is needed no matter how many utxos are spent from the corresponding address.
+What this translates to is that this script will be executed three times (once for each grouping). But what if the script validates based off of the transaction context as a whole and not any individual UTxO? How can we use this "transaction level" script so that it is only executed once? There is no need to execute it more than once because the transaction context will be exactly the same for each execution. Another way to look at it is that we want a script to be able act like a payment skey where only one signature is needed no matter how many UTxOs are spent from the corresponding address.
 
-This brings us to the problem: **The current design does not allow for a spending script to be executed only once no matter how many utxos are spent from the corresponding script address.** This is unfortunate since the eUTxO architecture allows writing such scripts. As a result, any time a developer writes a "transaction level" script, the script will be redundantly executed for each additional utxo being spent from the script's address. These redundant executions are a waste of scarce resources and result in much higher fees for end users. **The current design prevents developers from using the full potential of the eUTxO.** 
+This brings us to the problem: **The current design does not allow for a spending script to be executed only once no matter how many UTxOs are spent from the corresponding script address.** This is unfortunate since the eUTxO architecture allows writing such scripts. As a result, any time a developer writes a "transaction level" script, the script will be redundantly executed for each additional UTxO being spent from the script's address. These redundant executions are a waste of scarce resources and result in much higher fees for end users. **The current design prevents developers from using the full potential of the eUTxO.** 
 
 ### The Current Alternative
 The alternative involves taking advantage of the fact that staking scripts do not suffer from the same limitation as spending scripts.
@@ -76,11 +76,11 @@ In a nut shell, you use a staking script **AS** a spending script. Here is how t
   --withdrawal-redeemer-file <staking_redeemer>
 ```
 
-There are three new `--withdrawal` lines at the end. The transaction level logic is in the staking script. Meanwhile the spending script just checks that the required staking script is executed AND 0 ADA is withdrawn from the rewards address in the transaction.
+There are three new `--withdrawal` lines at the end. The transaction level logic is in the staking script. Meanwhile, the spending script just checks that the required staking script is executed AND 0 ADA is withdrawn from the rewards address in the transaction.
 
 The only requirement to use this trick is that the script address must have been created using the `s'` spending script and the `s''` staking script. The staking address DOES NOT need to actually have rewards or even be delegated for this trick to work.
 
-With this method, the main computation is only executed once no matter how many utxos are spent from the script address.
+With this method, the main computation is only executed once no matter how many UTxOs are spent from the script address.
 
 #### The Drawbacks
 
