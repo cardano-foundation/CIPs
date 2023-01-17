@@ -14,12 +14,16 @@ handlebars.registerHelper('dateFormat', (d, f) => {
   return moment(d).format(f);
 });
 
-handlebars.registerHelper('getAuthors', function (Authors) {
+handlebars.registerHelper('getAuthors', function (data) {
+  if (data.Authors == undefined) {
+    throw new Error(`No authors: ${JSON.stringify(data)}`);
+  }
 
-  // Temporary fallback for CI to not fail
-  if(!Authors) return '';
+  const authors = Array.isArray(data.Authors)
+    ? data.Authors
+    : data.Authors.split(',');
 
-  return Authors.split(',').map(author => {
+  return authors.map(author => {
     const [_, name, link] = author.trim().match(/^([^<]+)<?([^>]+)?>?$/) || []
     let type = 'url'
     if (link === undefined) {
@@ -99,7 +103,7 @@ function renderHTML(uriPath, template, data) {
   fs.writeFileSync(path.join(publicPath, uriPath, 'index.html'), hbTemplate(data), { encoding: 'utf8' })
 }
 
-const types = { All: [] }
+const categories = { All: [] }
 
 function slugify(string) {
   return string.toLowerCase().replace(/\s/g, '-')
@@ -117,9 +121,10 @@ function build() {
       if (asset === 'README.md') {
         const cip = loadFrontmatter(assetPath)
         cip.tableOfContents = getTableOfContents(cip.content.split('\n'))
-        types[cip.data.Type] = types[cip.data.Type] || []
-        types[cip.data.Type].push(cip)
-        types.All.push(cip)
+        const category = cip.data.Category || "Unclassified";
+        categories[category] = categories[category] || []
+        categories[category].push(cip)
+        categories.All.push(cip)
       } else {
         const name = item.toLowerCase().replace(/cip-0*([1-9][0-9]*)/g, 'cip$1')
         const title = `${name.replace(/cip/g, 'CIP ')} - Annexe`;
@@ -143,20 +148,23 @@ function build() {
 
   const headerData = []
 
-  Object.keys(types).forEach(type => {
-    headerData.push({ label: type, path: `/${slugify(type)}/` })
+  Object.keys(categories).sort((a, b) => {
+    if ([a,b].includes("All")) { return a === "All" ? -1 : 1 }
+    if ([a,b].includes("Unclassified")) { return a === "Unclassified" ? 1 : -1 }
+    return a > b ? 1 : -1;
+  }).forEach(category => {
+    headerData.push({ label: category, path: `/${slugify(category)}/` })
   })
 
-  Object.keys(types).forEach(type => {
+  Object.keys(categories).forEach(category => {
 
-    renderHTML(`/${slugify(type)}/`, 'cips', {
+    renderHTML(`/${slugify(category)}/`, 'cips', {
       headerData,
-      cips: types[type],
-      type,
-      title: type
+      cips: categories[category],
+      category
     })
 
-    types[type].forEach(cip => {
+    categories[category].forEach(cip => {
       renderHTML(`/cips/cip${cip.data.CIP}/`, 'cip', {
         headerData,
         cip,
