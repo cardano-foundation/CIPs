@@ -2,10 +2,13 @@
 CIP: 31
 Title: Reference inputs
 Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Comments-Summary: No comments
-Comments-URI:
+Implementors: 
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Jared Corduan <jared.corduan@iohk.io>
 Status: Active
-Type: Standards Track
+Categories: 
+    - Plutus
+    - Ledger
 Created: 2021-11-29
 License: CC-BY-4.0
 ---
