@@ -73,12 +73,15 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 60 | [Music Token Metadata](./CIP-0060) | Active |
 | 67 | [Asset Name Label Registry](./CIP-0067) | Proposed |
 | 68 | [Datum Metadata Standard](./CIP-0068) | Proposed |
+| 71 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
 | 74 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
+| 83 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
+| 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
 <p align="right"><i>Last updated on 2022-11-30</i></p>
 
@@ -92,6 +95,8 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | --- | --- |
 | 38? | [Arbitrary Script as Native Script Spending Conditions](https://github.com/cardano-foundation/CIPs/pull/309)
 | 39? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
+| 45? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
+| 46? | [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385/files) |
 | 48? | [Extended NFT metadata](https://github.com/cardano-foundation/CIPs/pull/249) |
 | 50? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
@@ -108,6 +113,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 79? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
 | 80? | [Transaction Serialization Deprecation Cycle](https://github.com/cardano-foundation/CIPs/pull/372) |
 | 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
+| 82? | [Improved Rewards Scheme Parameters](https://github.com/cardano-foundation/CIPs/pull/422) |
 | 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
 ### Proposals Under Review (CPS)
@@ -129,14 +135,7 @@ The following list contains proposals that have been under review and for which 
 - [UPLC Serialization Optimizations](https://github.com/cardano-foundation/CIPs/pull/314)
 - [Address Resolution Through DNS](https://github.com/cardano-foundation/CIPs/pull/319)
 - [Additional Factors For NFT Market Verification](https://github.com/cardano-foundation/CIPs/pull/226)
-- [Decentralization: Using Pledge as a Bidding Param](https://github.com/cardano-foundation/CIPs/pull/229)
-- [Prepay Min Fixed Fee](https://github.com/cardano-foundation/CIPs/pull/190)
-- [Preserve Submitter's Ordering of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/231)
 - [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276)
-- [NFT Identity / W3C DID on Cardano](https://github.com/cardano-foundation/CIPs/pull/294)
-- [Fair Stakepool Rewards](https://github.com/cardano-foundation/CIPs/pull/360)
-- [ISPO KYC_CDD](https://github.com/cardano-foundation/CIPs/pull/241)
-- [Ed25519 Elliptic Curve Group Primitives in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/308)
 
 <p align="right"><i>Last updated on 2022-11-30</i></p>
 
