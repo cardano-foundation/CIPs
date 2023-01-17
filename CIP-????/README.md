@@ -23,15 +23,15 @@ License: CC-BY-4.0
 ---
 
 
-# Abstract
+## Abstract
 
 This CIP is an addendum to the original [CIP-0020](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0020), which is active since mid 2021 and widely used across many entities.
 It describes the JSON schema to add encrypted messages/comments/memos as transaction metadata. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets. 
 Tools/Wallets that do not have an implementation to decrypt this format will just show the encrypted base64 as the message, but it will not break any existing processes.
 
-# Motivation
+## Motivation
 
-## Current state of transaction messages
+### Current state of transaction messages
 
 Transaction messages/comments/memos via CIP-0020 are widely used across the Cardano Blockchain. For example DEXs are using it to comment there payouts to the customers.
 Individual users are using it to send funds across the network to other users with attached information about it. Users are buying goods and pay directly in ADA, attaching payment informations
@@ -39,7 +39,7 @@ via an added message.
 
 Theses and many other usecases are actively happening on the blockchain right now and are a valuable addition to the core functions.
 
-## What is the issue with the current implementation?
+### What is the issue with the current implementation?
 
 Metadata is attached as a CBOR bytearray in the auxiliary dataset of a transaction. So the encoding is just done from UTF8-Text to Hex-Code/Bytes and after that it is sent in plaintext over the network/blockchain.
 To seek further adoption of blockchain usage, privacy features are a must in the future. Having cleartext information in a TCP packet might not be an issue for many things, but it is an issue if you wanna convince 
@@ -48,7 +48,7 @@ users to use the blockchain and their transaction feature like users using it no
 It is easy for 3rd-party entities like Internet Service Providers, Datacenters or basically any Man-In-The-Middle to collect data that is sent in cleartext. 
 Data such as bank-account-numbers, email-addresses, telephone numbers, etc. which are parts of transaction messages.
 
-## What benefits/features would this CIP have on transaction messages?
+### What benefits/features would this CIP have on transaction messages?
 
 As pointed out above, everyone that is having access to the datastream and of course the publicly distributed ledger can extract the cleartext data of the transaction messages.
 Because there must not even be a specific approach to get such transaction message data out of a TCP stream, just a simple filter for email addresses (example) is enough. 
@@ -61,18 +61,16 @@ Even with a simple encryption of such messages - and publicly known passphrase -
    - Backwards compatible with CIP-0020
    - Easy implementation by using well known tools like OpenSSL
 
-## What this CIP is not trying to do
+### What this CIP is not trying to do
 
 This addition to the original CIP-0020 should not be seen as the end-all-be-all security solution for privacy on the blockchain. There's better options and upcoming Midnight for that. The transaction messages are also not intended to act like chat messages on the chain.
-
-&nbsp;<p>
 
 # Specification - Encrypted message
 
 The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown instead of an maybe autodecrypted one. But even the encrypted base64 strings fit into the max. 64char long string restriction. So it does not break any tools. More on the autodecryption later. 
 
-## Format:
-``` 
+### Format:
+``` json
 { 
   "674":
          { 
@@ -88,11 +86,10 @@ The format is identical to the original one, with a simple addition of the `enc`
 
 The value given in the `enc` field references the type of encryption is used. Starting with a simple implementation named `basic`. There is room to add additional encryption method in the future like using ChaCha20/Poly1305 or using public/private key encryption. Also there is the possibility to not encode the metadata in the standard JSON format, but using CBOR encoding instead.
 
-&nbsp;<p>
   
-## Encryption methods:
+### Encryption methods:
 
-### **plain** - no encryption at all
+#### **plain** - no encryption at all
   
   | Parameter | Value |
   | :--- | :--- |
@@ -101,7 +98,7 @@ The value given in the `enc` field references the type of encryption is used. St
 
   This is not really an encryption mode, but included as a backwards compatible entry to signal this message as an unencrypted one. The entry is not needed and fully optional for unencrypted messages.
 
-### **basic** - aes-256-cbc salted symmetric encryption via passpharse (+default passphrase)
+#### **basic** - aes-256-cbc salted symmetric encryption via passpharse (+default passphrase)
 
   | Parameter | Value |
   | :--- | :--- |
@@ -135,9 +132,7 @@ Yes, example implementations for node.js, PHP, bash, etc. can be found in the [c
   
 :warning: **Message decryption should be done on the user frontend if possible, not via server callbacks.**
 
-&nbsp;<p>
-  
-### Encryption/Decryption example on the console - basic mode
+#### Encryption/Decryption example on the console - basic mode
 
 First, generate a normal metadata transaction message. 
 
@@ -202,9 +197,7 @@ Which results in the original content of the **msg** key:
   
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
 
-&nbsp;<p>
-
-## Integration examples for encrypted messages
+### Integration examples for encrypted messages
 
 **Cexplorer.io**: With the implementation of the **encrypted message decoding**.
 ![image](https://user-images.githubusercontent.com/47434720/204560392-f45bbe4f-7f78-48fa-9e47-4d3b104685bf.png)
@@ -220,24 +213,22 @@ Which results in the original content of the **msg** key:
 ![image](https://user-images.githubusercontent.com/47434720/206574354-5dd81551-efc6-4f69-a2aa-282bb40e5084.png)
 
 
-&nbsp;<p>
-
-# Rationale
+## Rationale
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
 The original CIP-0020 design allowed the addition of new entries like the `"enc":` key for encrypted messages in this CIP.
 There is also for example [CIP-8](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008), but CIP-8 doesn't really fulfill the simplicity of just providing encrypted messages. CIP-8 is focused on Signing, which is not needed for encryption. The method to generate encrypted messages here is not intended to verify the owner of a message via signing. There is no need that everything on Cardano must be difficult. Also using such CBOR encoded structures would break all currently implemented transaction message solutions. This CIP uses openssl and base64 encoding, and endusers could even copy&paste such text into other tools, etc. 
 
-## Implementation suggestions
+### Implementation suggestions
  
 Wallets/Tools can implement an autodecryption attempt with the default passphrase on such messages, to give the user a more streamlined experience. The communication should be done via https or similar to make sure the message cleartext is not exposed again during the transmission.
 Additionally the Tools can prompt for an input and decrypt the message once the user has requested it, this decryption should be done on the user frontend for further security.
 
-## Handling ill-formed 674 metadata ##
+### Handling ill-formed 674 metadata ##
 
 Like with CIP-0020, it is up to the wallet-/display-/receiver-implementor to parse and check the provided metadata. As for the current state, its not possible to have the same label "674" more than once in a cardano transaction. So a check about that can be ignored at the moment. This CIP provides the correct implementation format, the parsing should search for the "674" metadata label, the "msg" and the "enc" key underneath it. There should also be a check, that the provided data within that "msg" key is an array. All other implementations like a missing "msg" key, or a single string instead of an array, should be marked by the display-implementor as "invalid". Additional keys within the "674" label should not affect the parsing of the "msg" and the "enc" key. As written above, we will likely see more entries here in the future like a "version" key for example, so additional keys should not harm the parsing of the "msg" and "enc" key. 
 
-## Implementation conclusion ##
+### Implementation conclusion ##
 
 An encrypted transaction message should be considered valid if the following apply:
 
@@ -253,9 +244,9 @@ If any of the above is not met, ignore the metadata as an encrypted transaction 
 
 The implementation format in this CIP should be the ground base for encrypted transaction messages/comments/memos and should be respected by creator-/sender-implementations as well as in wallet-/receiver-/display-implementations.
 
-# Path to Active
+## Path to Active
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 The acceptance criteria to be `Active` should already have been met, because the following Implementors using this CIP on the Cardano Blockchain:
 
@@ -264,7 +255,7 @@ The acceptance criteria to be `Active` should already have been met, because the
 * AdaStat.net (https://adastat.net)
 * Eternl Wallet (https://eternl.io)
 
-## Implementation Plan
+### Implementation Plan
 
 The following Projects have committed to also implement it:
 
@@ -276,8 +267,6 @@ The plan is to reach out to other projects - which already supporting the normal
 
 There are various **code samples available** in the [**codesamples**](codesamples/) folder to make it as easy as possible for integrators to implement it.
 
-&nbsp;<p>
-
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
