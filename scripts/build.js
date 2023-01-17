@@ -14,12 +14,16 @@ handlebars.registerHelper('dateFormat', (d, f) => {
   return moment(d).format(f);
 });
 
-handlebars.registerHelper('getAuthors', function (Authors) {
+handlebars.registerHelper('getAuthors', function (data) {
+  if (data.Authors == undefined) {
+    throw new Error(`No authors: ${JSON.stringify(data)}`);
+  }
 
-  // Temporary fallback for CI to not fail
-  if(!Authors) return '';
+  const authors = Array.isArray(data.Authors)
+    ? data.Authors
+    : data.Authors.split(',');
 
-  return Authors.split(',').map(author => {
+  return authors.map(author => {
     const [_, name, link] = author.trim().match(/^([^<]+)<?([^>]+)?>?$/) || []
     let type = 'url'
     if (link === undefined) {
