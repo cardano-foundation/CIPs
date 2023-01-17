@@ -1,7 +1,7 @@
 ---
 CIP: ????
 Title: Encrypted Transaction message/comment metadata (Addendum to CIP-0020)
-Status: Proposed
+Status: Active
 Category: Metadata
 Authors:
     - Martin Lang <martin@martinlang.at>
