@@ -96,7 +96,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 38? | [Arbitrary Script as Native Script Spending Conditions](https://github.com/cardano-foundation/CIPs/pull/309)
 | 39? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
 | 45? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
-| 46? | [Merklised Plutus Script](shttps://github.com/cardano-foundation/CIPs/pull/385/files) |
+| 46? | [Merklised Plutus Script](https://github.com/cardano-foundation/CIPs/pull/385/files) |
 | 48? | [Extended NFT metadata](https://github.com/cardano-foundation/CIPs/pull/249) |
 | 50? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
