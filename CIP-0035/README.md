@@ -27,7 +27,6 @@ The Plutus Core language, its builtins, and its interface to the ledger are all 
 - We may wish to remove elements which have been deprecated due to the addition of improved versions.
 - … and more
 
-At the moment there is no process for making such changes other than the discretion of the core developers. 
 This CIP gives a taxonomy of changes, explains how such changes might be implemented in Cardano, and prescribes processes for proposing such changes.
 
 ## Background
@@ -36,11 +35,13 @@ This CIP assumes general familiarity with Plutus Core and the Cardano ledger, bu
 
 ### Plutus Core
 
-_Plutus Core_ is a script language used in the Cardano ledger. For the purposes of this document, Plutus Core consists of various _language constructs_, and also _builtin types and functions_.
+_Plutus Core_ is a script language used in the Cardano ledger. 
+For the purposes of this document, Plutus Core consists of various _language constructs_, and also _builtin types and functions_.
 
 Plutus Core has a number of builtin types, such as integers, and builtin functions, such as integer addition. 
-Builtin functions provide access to functionality that would be difficult or expensive to implement in Plutus Core code. 
-Builtin functions can operate only over builtin types. Builtin types come with a _size metric_ which is used by costing functions. 
+Builtin functions provide access to functionality that would be difficult or expensive to implement using the basic constructs of Plutus Core, which is otherwise little more than the untyped lambda calculus.
+Builtin functions can operate only over builtin types or arbitrary Plutus Core terms treated opaquely. 
+  * [ ] Builtin types come with a _size metric_ which is used by costing functions. 
 For example, the size metric for integers returns the bit-size of the integer.
 
 The performance of Plutus Core scripts has two components: how expensive the script actually is to run (_real performance_) and how expensive we say it is to run in the ledger (_model performance_). 
@@ -52,31 +53,61 @@ For example, the costing function for addition says that the CPU and memory cost
 
 Determining costing functions is done empirically, by running the function in question against a large number of inputs and choosing a costing function that fits the data well.
 
+Plutus Core has a _language version_ (LV).
+This is the version of the Plutus Core programming language itself, and it controls e.g. which constructs are available in the language.
+Changing any of the features which are guarded by the language version requires a new language version to be supported by the chain.
+Note that changing the set of builtin types or functions does _not_ require a new language version; any individual Plutus Core language version is compatible with any set of builtin types and functions.
+
+Depending on the type of change, a major or minor bump to the language version may be required.
+The following table shows typical examples.
+
+| Change                                                | Type  | Notes                     |
+|-------------------------------------------------------|-------|---------------------------|
+| Adding a construct to the language                    | Minor | Backwards-compatible.     |
+| Removing a construct from the language                | Major | Not backwards-compatible. |
+| Changing the behaviour of a construct in the language | Major | Not backwards-compatible. |
+| Changing the binary format of the language in a backwards-compatible way | Minor | Safe even if it makes previously non-deserializable scripts deserializable.[^backwards-safe] |
+| Changing the binary format of the language            | Major | Not backwards-compatible. |
+
+[^backwards-safe]: See "Are backwards-compatible binary format changes really safe?".
+
+Since we always need a new Plutus Core langauge version for any change to the language, in the rest of this document we will focus on the introduction of a new langauge version as the proxy for changes to the language.
+
 ### Scripts in the Cardano ledger
 
-The Cardano ledger recognizes various kinds of _scripts_ identified by _language_. 
-This language tag is the only way that the ledger has to distinguish between different types of script. 
+The Cardano ledger recognizes various kinds of _scripts_ identified by _language_.
+This language tag is the only way that the ledger has to distinguish between different types of script.
 Hence if we require different behaviour, we need a new language.
-
-We omit this distinction when talking about Plutus Core: we refer instead to Plutus Core _language versions_, which are actually entirely distinct _languages_ from the perspective of the ledger.
-All Plutus Core language versions which are used in the ledger must be supported forever, in order to be able to validate the history of the chain.
+We refer to these languages as _ledger languages_ (LLs).
 
 Part of the specification of a language in the ledger is how scripts of that language are run, what arguments they are passed, how those arguments are structured, etc. 
 We refer to this as the _ledger-script interface_.
 
-Languages also have an associated subset of _protocol parameters_ which provide the ability to control some aspects of evaluation without a software update. 
+Because we want to occasionally change e.g. the ledger-script interface for Plutus Core scripts, this means we need several ledger languages which all run scripts written in Plutus Core.[^ledger-language-versions]
+All Plutus Core ledger languages which are used in the ledger must be supported forever, in order to be able to validate the history of the chain.
+
+[^ledger-language-versions]: The Plutus Core family of ledger languages are sometimes referred to as the Plutus Core _ledger language versions_, and named as such ("PlutusV1", "PlutusV2" etc.) although they actually entirely distinct _languages_ from the perspective of the ledger. In this document we will use the more precise language and refer to them just as distinct ledger languages.
+
+Ledger languages also have an associated subset of the _protocol parameters_. 
+These parameters provide the ability to control some aspects of evaluation without a software update. 
 The most notable example is a set of parameters which parameterize the costing of program execution.
+Hence, a different Plutus Core ledger language can have a different set of costing protocol parameters.
+
+We can change the behaviour of ledger languages in a backwards compatible way with new protocol versions.
+This ensures that the new behaviour only becomes available at a particular time in the history of the chain.
+
+Overall the combination of ledger language and protocol version controls:
+- The protocol parameters which are available
+- The ledger-script interface
+- The Plutus Core language versions that are available
+- The set of builtin types and values that are available
 
 ### Types of change
 
 This document considers the following types of change:
 
 1. The Plutus Core language
-    1. Adding a construct to the language
-    2. Removing a construct from the language
-    3. Changing the behaviour of a construct in the language
-    4. Changing the binary format of the language in a backwards-compatible way
-    5. Changing the binary format of the language in a backwards-incompatible way
+    1. Adding a new Plutus Core language version 
 2. The Plutus Core builtin functions and types
     1. Adding a new builtin function or type
     2. Removing a builtin function or type
@@ -99,37 +130,32 @@ Changes to Plutus Core can be released onto Cardano in four ways, with ascending
 1. A _protocol parameter_ change (PP), taking effect as soon as the new parameters are accepted (in a new epoch).
 2. A _software update_ (SU) to the node, taking effect when nodes upgrade.
 3. A _hard fork_ (HF) (accompanied by a software update), requiring a software update for the new protocol version, and taking effect after the hard fork.
-4. A new Plutus Core _language version_ (LV), introduced in a hard fork, and taking effect for scripts that use the new version, but not for those that use the old version.
+4. A new Plutus Core _ledger language_ (LL), introduced in a hard fork, and taking effect for scripts that use the new language, but not for those that use the old language.
 
 Intuitively, these correspond to how _compatible_ the change is.
 - A backwards- and forwards-compatible change can be deployed with a software update, as nobody can perceive the difference.
 - A backwards-compatible (but not forwards-compatible) change must be deployed in a hard fork, since it makes more blocks acceptable than before.
-- A backwards-incompatible change requires a new Plutus Core language version, so that the ledger can distinguish them, and maintain the old behaviour for old scripts.
+- A backwards-incompatible change requires a new Plutus Core ledger language, so that the ledger can distinguish them, and maintain the old behaviour for old scripts.
 
 The following table lists, for each type of change in "Types of change", what kind of release it requires.
 
 | Change                                                                     | Release            | Notes                                                                                               |
 |----------------------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------------------------------|
-| Adding a language construct                                                | HF                 | Backwards-compatible.                                                                               |
-| Removing a language construct                                              | LV                 | This will cause scripts which use this construct to be rejected, so is not backwards compatible.    |
-| Changing the behaviour of a construct in the language                      | LV                 | This changes the behaviour of existing scripts, so is not backwards compatible.                     |
-| Changing the binary format of the language in a backwards-compatible way   | HF                 | Safe even if it makes previously non-deserializable scripts deserializable.[^1]                     |
-| Changing the binary format of the language in a backwards-incompatible way | LV                 |                                                                                                     |
-| Adding a new builtin function or type                                      | HF (rarely LV[^2]) | Backwards-compatible. Requires a binary format change.                                              |
-| Removing a builtin function or type                                        | LV                 | This will cause scripts which use this builtin to be rejected, so is not backwards compatible.      |
-| Changing the behaviour of a builtin function or type                       | LV                 | This changes the behaviour of existing scripts, so is not backwards compatible.                     |
-| Changing the interface between the ledger and the interpreter              | LV                 | The ledger must provide scripts with exactly the right interface. New interface means new language. |
-| Improving model performance                                                | PP                 | _Must_ strictly follow an improvement in real performance.[^3]                                      |
+| Adding a new Plutus Core language version                                 | HF                 | Backwards-compatible since the new behaviour is guarded by the new LV. |
+| Adding a new builtin function or type                                      | HF (rarely LL[^binary-backwards]) | Backwards-compatible. Requires a binary format change.                                              |
+| Removing a builtin function or type                                        | LL                 | This will cause scripts which use this builtin to be rejected, so is not backwards compatible.      |
+| Changing the behaviour of a builtin function or type                       | LL                 | This changes the behaviour of existing scripts, so is not backwards compatible.                     |
+| Changing the interface between the ledger and the interpreter              | LL                 | The ledger must provide scripts with exactly the right interface. New interface means new language. |
+| Improving model performance                                                | PP                 | _Must_ strictly follow an improvement in real performance.[^why-perf-1]                                      |
 | Regressing model performance                                               | PP                 |                                                                                                     |
 | Adding cost model parameters                                               | HF                 | All nodes must recognize the new parameter.                                                         |
-| Removing cost model parameters                                             | LV                 | Old scripts will require all the old parameters.                                                    |
+| Removing cost model parameters                                             | LL                 | Old scripts will require all the old parameters.                                                    |
 | Improving real performance                                                 | SU                 |                                                                                                     |
-| Regressing real performance                                                | SU                 | _Must_ strictly follow a regression in model performance.[^4]                                       |
+| Regressing real performance                                                | SU                 | _Must_ strictly follow a regression in model performance.[^why-perf-2]                                       |
 
-[^1]: See "Are backwards-compatible binary format changes really safe?".
-[^2]: The binary format change is backwards compatible unless it breaches the limit of how many builtin functions or types can be encoded, in which case that must be changed, forcing a new LV.
-[^3]: See "Why do performance changes require extra steps?".
-[^4]: See "Why do performance changes require extra steps?".
+[^binary-backwards]: The binary format change is backwards compatible unless it breaches the limit of how many builtin functions or types can be encoded, in which case that must be changed, forcing a new LL.
+[^why-perf-1]: See "Why do performance changes require extra steps?".
+[^why-perf-2]: See "Why do performance changes require extra steps?".
 
 ## Specification
 
@@ -156,25 +182,25 @@ So, for example, a single CIP could propose multiple new builtin functions, or a
 
 Proposals for additions to the set of Plutus Core builtins SHOULD be proposed in a CIP and SHOULD adhere to the following additional process.
 
-In order to move to Draft status, it MUST include:
+In order to move to Proposed status, it MUST include:
 - In the Specification:
     - Names and types/kinds for the new functions or types.
     - A source for the implementation (e.g. a library which can be linked against); or a generic description of the functionality which is implementable in any programming language.
-    - In the Rationale:
+    - For new types: a precise description of the measure used for the size of a value of that type.
+    - For new builtin functions: a costing function for the builtin function.
+- In the Rationale:
     - An argument for the utility of the new builtins.
+    - If an external implementation is provided: an argument that it satisfies the following non-exhaustive list of criteria:
+        - It is trustworthy 
+        - It always terminates
+        - It (or its Haskell bindings) never throw any exceptions
+        - Its behaviour is predictable (e.g. does not have worst-case behaviour with much worse performance)
+    - Discussion of how any measures and costing functions were determined.
 
 It SHOULD also include:
 - In the Rationale
     - Examples of real-world use cases where the new additions would be useful.
-    - A comparison with an implementation using the existing features, and an argument why the builtin is preferable (e.g. better performance).
-
-In order to move to Proposed status, it MUST include:
-- In the Specification:
-    - For new types: a precise description of the measure used for the size of a value of that type.
-    - For new builtin functions: a costing function for the builtin function.
-- In the Rationale:
-    - If an external implementation is provided: an argument that it is trustworthy.
-    - Discussion of how any measures and costing functions were determined.
+    - If feasible, a comparison with an implementation using the existing features, and an argument why the builtin is preferable (e.g. better performance).
 
 In order to move to Active status, the following must be true:
 - The external implementations MUST be available.
@@ -206,12 +232,12 @@ A "bug fix" is a change to behaviour where:
 
 In this case the fix may be submitted directly to the `plutus` repository and is NOT required to go through the CIP process. 
 It must still be released as appropriate. 
-For example, if a bug fix changes behaviour, it will have to wait for a new Plutus Core language version.
+For example, if a bug fix changes behaviour, it will have to wait for a new Plutus Core ledger language.
 
 ### Implementing and releasing changes
 
 This CIP does not cover the process of implementing changes.
-As usual, the CIP process covers the design phase, and it is up to the implementor to ensure that their proposal is implemented, which may require additional work to meet the requirements of the maintainers of the Cardano code repositories (testing, implementation quality, approach), and so on.
+As usual, the CIP process covers the design phase, and it is up to the implementer to ensure that their proposal is implemented, which may require additional work to meet the requirements of the maintainers of the Cardano code repositories (testing, implementation quality, approach), and so on.
 
 Changes can be released after their CIPs have reached Active status. 
 Different changes will require different releases as described in "Types of release".
@@ -224,9 +250,9 @@ Any CIP which proposes a type of change listed in "Types of change" MUST also ad
 
 | #  | Title             | Type of change          | Status |
 |----|-------------------|-------------------------|--------|
-| 31 | Reference inputs  | Ledger-script interface | Draft  |
-| 32 | Inline datums     | Ledger-script interface | Draft  |
-| 33 | Reference scripts | Ledger-script interface | Draft  |
+| 31 | Reference inputs  | Ledger-script interface | Active |
+| 32 | Inline datums     | Ledger-script interface | Active |
+| 33 | Reference scripts | Ledger-script interface | Active |
 
 ## Rationale
 
@@ -240,15 +266,18 @@ However, this becomes less so as the platform starts to mature and is neither su
 Furthermore, while many changes to Cardano are obscure or not of interest to many community members, there is a much larger community who have a keen interest in changes to Plutus Core: dApp developers. 
 Hence it is especially important to have a clear way for this community to be able to propose changes and see how they are progressing.
 
-### Do removals and changes really need a new language version?
+### Do removals and changes really need a new ledger language?
 
-Not being able to make removals or changes to behaviour without a LV is quite painful. 
-For example, it means that we cannot just fix bugs in the semantics: we must remain bug-for-bug compatible with any given LV.
+Not being able to make removals or changes to behaviour without a LL is quite painful. 
+For example, it means that we cannot just fix bugs in the semantics: we must remain bug-for-bug compatible with any given LL.
 
 It is tempting to think that if we can show that a particular behaviour has never been used in the history of the chain, then changing it is backwards-compatible, since it won’t change the validation of any of the actual chain. 
 However, this is sadly untrue. 
-The behaviour could be triggered (potentially deliberately) in the interval between the update proposal being accepted and it being implemented, which is extremely dangerous. 
-So even if a bug is obscure, we cannot just fix it.
+
+1. The behaviour could be triggered (potentially deliberately) in the interval between the update proposal being accepted and it being implemented. This is extremely dangerous and could lead to an un-managed hard fork.
+2. The behaviour could be triggered in a script which has not yet been executed on the chain, but whose hash is used to lock an output. This could lead to that output being unexpectedly un-spendable, or some other change in behaviour. Moreover, since we only have the hash of the script, we have no way of telling whether this is the case.
+
+So even if a behaviour is obscure, we cannot just change it.
 
 ### Are backwards-compatible binary format changes really safe?
 
@@ -295,13 +324,13 @@ Surfacing these difficulties quickly is a key goal of this process.
 Finally, builtins are a comparatively structured extension point for the language. 
 In comparison, proposals for changes to Plutus Core itself are likely to be much more heterogeneous.
 
-### Why are we reluctant to release new language versions?
+### Why are we reluctant to release new ledger language?
 
-Language versions (or more properly, languages from the ledger’s perspective) incur a large maintenance cost. 
+Ledger languages incur a large maintenance cost. 
 Each one must continue to work, perfectly, in perpetuity. Furthermore, they may need their own, independent set of cost model protocol parameters, etc.
 
-So it is very desirable to keep the number of language versions down. 
-The simplest way to do this is to batch changes, and only release a new language version occasionally.
+So it is very desirable to keep the number of ledger languages down. 
+The simplest way to do this is to batch changes, and only release a new ledger language occasionally.
 
 ### Why include a CIP registry?
 
