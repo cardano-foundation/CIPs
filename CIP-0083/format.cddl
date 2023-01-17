@@ -1,0 +1,14 @@
+string = text .size (0..64) ; utf-8
+
+message_details = 
+  {
+    msg : [* string], 
+    ? enc : string
+  }
+
+; msg = array of utf-8 encoded strings
+; enc = optional string with the encryption-method
+;       'plain' => no encryption (optional)
+;       'basic' => encryption-method basic
+
+messagedata = { 674 : uint => label_metadata }
