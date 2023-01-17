@@ -1,6 +1,6 @@
 ---
 CIP: 35
-Title: Plutus Core Evolution
+Title: Changes to Plutus Core
 Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Comments-Summary: No comments
 Comments-URI: 
@@ -10,11 +10,13 @@ Created: 2022-02-09
 License: CC-BY-4.0
 ---
 
-# Evolution of Plutus Core in the Cardano ledger
+# Changes to Plutus Core
 
 ## Abstract
 
-This CIP proposes a process for proposing changes to Plutus Core, its builtins, and its interface to the Cardano ledger.
+This CIP specifies a process for proposing changes to Plutus Core, its builtins, and its interface to the Cardano ledger.
+It gives a taxonomy of typical changes, and explains how these changes may be made, which in some cases requires a CIP.
+It introduces the 'Plutus' CIP category for tracking these.
 
 ## Motivation
 
@@ -41,7 +43,7 @@ For the purposes of this document, Plutus Core consists of various _language con
 Plutus Core has a number of builtin types, such as integers, and builtin functions, such as integer addition. 
 Builtin functions provide access to functionality that would be difficult or expensive to implement using the basic constructs of Plutus Core, which is otherwise little more than the untyped lambda calculus.
 Builtin functions can operate only over builtin types or arbitrary Plutus Core terms treated opaquely. 
-  * [ ] Builtin types come with a _size metric_ which is used by costing functions. 
+Builtin types come with a _size metric_ which is used by costing functions. 
 For example, the size metric for integers returns the bit-size of the integer.
 
 The performance of Plutus Core scripts has two components: how expensive the script actually is to run (_real performance_) and how expensive we say it is to run in the ledger (_model performance_). 
@@ -159,17 +161,31 @@ The following table lists, for each type of change in "Types of change", what ki
 
 ## Specification
 
-This proposal deals only with the types of change listed in "Types of change", all others are out of scope.
+### Scope
+
+This CIP deals with the types of change listed in "Types of change".
+That list aims to cover the most typical changes to Plutus Core, but it is not exhaustive.
+CIPs which do not propose changes in the list but whose authors believe they significantly affect Plutus Core should nonetheless be assigned to the Plutus category.
+
+Additionally, there is significant overlap with the Ledger category around the ledger-script interface and the protocol parameters.
+CIPs which touch on this area should assign themselves both categories and get reviews from both sets of maintainers.
+
+### The Plutus reviewers
+
+The following table gives the current set of reviewers for Plutus CIPs.
+
+| Name                 | Email                        | GitHub username |
+|----------------------|------------------------------|-----------------|
+| Michael Peyton Jones | michael.peyton-jones@iohk.io | michaelpj       |
 
 ### Changes that require a CIP
 
-This proposal recommends that some of the changes listed in "Types of change" (specified below) should:
+This proposal requires that some of the changes listed in "Types of change" (specified below) should:
 
 1. Be proposed in a CIP.
 2. Go through additional process in addition to the [usual CIP process](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/README.md).
 
 The additional process mostly takes the form of additional information that should be present in the CIP before it moves to particular stages.
-As such, it is up to the CIP Editors to enforce this.
 
 The requirement to propose a change via a CIP is, as all CIPs are, advisory. 
 In exceptional circumstances or where swift action is required, we expect that changes may still be made without following this process. 
@@ -178,51 +194,55 @@ In such circumstances, a retrospective CIP SHOULD be made after the fact to reco
 Changes that require a CIP do not have to each be in an individual CIP, they can be included in batches or in other CIPs. 
 So, for example, a single CIP could propose multiple new builtin functions, or a CIP proposing a change to the ledger could also propose a change to the ledger-script interface.
 
+### Processes
+
+All changes that require a CIP SHOULD adhere to the following generic process.
+
+In order to move to Proposed status:
+- The Specification MUST include:
+    - The type of change that is being proposed.
+    - For changes to Plutus Core itself, a formal specification of the changes which is precise enough to update the Plutus Core specification from.
+- The Acceptance Criteria MUST include:
+    - The external implementations are available.
+    - The `plutus` repository is updated with the specification of the proposal.
+    - The `plutus` repository is updated with an implementation of the proposal.
+- The Implementation Plan MUST include:
+    - The type of release that the change requires.
+
 #### Additions to the Plutus Core Builtins
 
 Proposals for additions to the set of Plutus Core builtins SHOULD be proposed in a CIP and SHOULD adhere to the following additional process.
 
-In order to move to Proposed status, it MUST include:
-- In the Specification:
+In order to move to Proposed status:
+- The Specification MUST include:
     - Names and types/kinds for the new functions or types.
     - A source for the implementation (e.g. a library which can be linked against); or a generic description of the functionality which is implementable in any programming language.
     - For new types: a precise description of the measure used for the size of a value of that type.
     - For new builtin functions: a costing function for the builtin function.
-- In the Rationale:
-    - An argument for the utility of the new builtins.
+- The Rationale MUST include:
     - If an external implementation is provided: an argument that it satisfies the following non-exhaustive list of criteria:
         - It is trustworthy 
         - It always terminates
         - It (or its Haskell bindings) never throw any exceptions
         - Its behaviour is predictable (e.g. does not have worst-case behaviour with much worse performance)
     - Discussion of how any measures and costing functions were determined.
+- The Acceptance Criteria MUST include:
+    - The ledger is updated to include new protocol parameters to control costing of the new builtins.
+        
+The Rationale of a CIP should always be a clear argument for why the CIP should be adopted.
+In this case we recommend including:
+- An argument for the utility of the new builtins.
+- Examples of real-world use cases where the new additions would be useful.
+- If feasible, a comparison with an implementation using the existing features, and an argument why the builtin is preferable (e.g. better performance).
 
-It SHOULD also include:
-- In the Rationale
-    - Examples of real-world use cases where the new additions would be useful.
-    - If feasible, a comparison with an implementation using the existing features, and an argument why the builtin is preferable (e.g. better performance).
+#### Protocol parameter updates
 
-In order to move to Active status, the following must be true:
-- The external implementations MUST be available.
-- The `plutus` repository MUST be updated with an implementation including costing.
-- The Plutus Core specification MUST be updated to include the new builtins.
-- The ledger MUST be updated to include new protocol parameters to control costing of the new builtins.
-- The completion of these steps MUST be tracked in the Path to Active section.
+Protocol parameter updates that affect Plutus Core should be proposed as usual following the process for the Ledger category.
+The only additional process required is the addition of the Plutus category and review by the Plutus reviewers.
 
-#### Other changes
+#### Performance changes 
 
-Proposals for other additions, removals, or changes to behaviour of any part of Plutus Core or its builtins SHOULD be proposed in a CIP and SHOULD adhere to the following additional process.
-
-In order to move to Active status, the following must be true:
-- The `plutus` repository MUST be updated with an implementation of the proposal.
-- For changes to Plutus Core itself, there MUST be a formal specification of the changes, either a sufficiently formal presentation in the CIP or a pull request to the Plutus Core specification.
-- The completion of these steps MUST be tracked in the Path to Active section.
-
-### Changes that do NOT require a CIP
-
-#### Performance changes and protocol parameter updates
-
-This CIP does not propose any process for proposing these changes. 
+This CIP does not require any process for proposing these changes. 
 
 #### Bug fixes
 
@@ -234,37 +254,11 @@ In this case the fix may be submitted directly to the `plutus` repository and is
 It must still be released as appropriate. 
 For example, if a bug fix changes behaviour, it will have to wait for a new Plutus Core ledger language.
 
-### Implementing and releasing changes
+#### Other changes
 
-This CIP does not cover the process of implementing changes.
-As usual, the CIP process covers the design phase, and it is up to the implementer to ensure that their proposal is implemented, which may require additional work to meet the requirements of the maintainers of the Cardano code repositories (testing, implementation quality, approach), and so on.
-
-Changes can be released after their CIPs have reached Active status. 
-Different changes will require different releases as described in "Types of release".
-This CIP does not cover the process by which changes are actually incorporated into releases after having been implemented.
-In particular, there is NO assumption that a feature which requires a particular release will be included in the next such release, even after it has been implemented.
-
-### Plutus Core CIP registry
-
-Any CIP which proposes a type of change listed in "Types of change" MUST also add itself to this registry (in addition to the main registry).
-
-| #  | Title             | Type of change          | Status |
-|----|-------------------|-------------------------|--------|
-| 31 | Reference inputs  | Ledger-script interface | Active |
-| 32 | Inline datums     | Ledger-script interface | Active |
-| 33 | Reference scripts | Ledger-script interface | Active |
+Proposals for other additions, removals, or changes to behaviour of any part of Plutus Core or its builtins SHOULD be proposed in a CIP.
 
 ## Rationale
-
-### Why have a public process for changes?
-
-Cardano is continuing to move towards decentralized governance within the Voltaire phase of development. 
-Historically, key development and implementation decisions have been made by the core development team. 
-This was important in the earliest stages of the platform’s evolution. 
-However, this becomes less so as the platform starts to mature and is neither sustainable nor desirable in the long term.
-
-Furthermore, while many changes to Cardano are obscure or not of interest to many community members, there is a much larger community who have a keen interest in changes to Plutus Core: dApp developers. 
-Hence it is especially important to have a clear way for this community to be able to propose changes and see how they are progressing.
 
 ### Do removals and changes really need a new ledger language?
 
@@ -331,9 +325,3 @@ Each one must continue to work, perfectly, in perpetuity. Furthermore, they may 
 
 So it is very desirable to keep the number of ledger languages down. 
 The simplest way to do this is to batch changes, and only release a new ledger language occasionally.
-
-### Why include a CIP registry?
-
-This is just to make it easy for those considering proposing a CIP following this process to see which CIPs have already been submitted. 
-An alternative would be a standard title for CIPs, or perhaps some kind of CIP metadata to indicate that it follows the process in this CIP.
-
