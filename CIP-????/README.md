@@ -197,22 +197,6 @@ Which results in the original content of the **msg** key:
   
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
 
-### Integration examples for encrypted messages
-
-**Cexplorer.io**: With the implementation of the **encrypted message decoding**.
-![image](https://user-images.githubusercontent.com/47434720/204560392-f45bbe4f-7f78-48fa-9e47-4d3b104685bf.png)
-
-**StakePool Operator Scripts**: It works on the commandline like any other script of the collection by just adding the `"enc: basic"` parameter, you can provide an individual passphrase by using the `"pass:<passphrase>"` parameter. This automatically generates the needed metadata.json structure with the encrypted message in it and attaches it to the transaction itself.
-![image](https://user-images.githubusercontent.com/47434720/205442737-748a7fb0-90fc-4cc3-898c-98b06894a900.png)
-
-**Eternl.io**:
-![image](https://user-images.githubusercontent.com/47434720/210166917-8af475fe-5cda-46f5-bd8d-3fc4c2c12482.png)
-    
-**AdaStat.net**: With the implementation of the **encrypted message decoding** using a pure **frontend solution**.
-![image](https://user-images.githubusercontent.com/47434720/206574191-22aa490a-5870-4853-906b-443284458987.png)
-![image](https://user-images.githubusercontent.com/47434720/206574354-5dd81551-efc6-4f69-a2aa-282bb40e5084.png)
-
-
 ## Rationale
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
@@ -254,6 +238,22 @@ The acceptance criteria to be `Active` should already have been met, because the
 * StakePoolOperator Scripts (https://github.com/gitmachtl/scripts)
 * AdaStat.net (https://adastat.net)
 * Eternl Wallet (https://eternl.io)
+
+#### Integration examples for encrypted messages
+
+**Cexplorer.io**: With the implementation of the **encrypted message decoding**.
+![image](https://user-images.githubusercontent.com/47434720/204560392-f45bbe4f-7f78-48fa-9e47-4d3b104685bf.png)
+
+**StakePool Operator Scripts**: It works on the commandline like any other script of the collection by just adding the `"enc: basic"` parameter, you can provide an individual passphrase by using the `"pass:<passphrase>"` parameter. This automatically generates the needed metadata.json structure with the encrypted message in it and attaches it to the transaction itself.
+![image](https://user-images.githubusercontent.com/47434720/205442737-748a7fb0-90fc-4cc3-898c-98b06894a900.png)
+
+**Eternl.io**:
+![image](https://user-images.githubusercontent.com/47434720/210166917-8af475fe-5cda-46f5-bd8d-3fc4c2c12482.png)
+    
+**AdaStat.net**: With the implementation of the **encrypted message decoding** using a pure **frontend solution**.
+![image](https://user-images.githubusercontent.com/47434720/206574191-22aa490a-5870-4853-906b-443284458987.png)
+![image](https://user-images.githubusercontent.com/47434720/206574354-5dd81551-efc6-4f69-a2aa-282bb40e5084.png)
+
 
 ### Implementation Plan
 
