@@ -118,7 +118,7 @@ OpenSSL was choosen, because its fast and widely available also for all kind of 
 
 The encryption is based on a given passphrase, which can be choosen by the user. However, a default-passphrase "cardano" should be used to encrypt/decrypt if no other passphrase is provided or known.
   
-Why a default passphrase?
+##### Why a default passphrase?
   
 As pointed out above, its way harder for man-in-the-middle listeners, to decrypt every single message on the fly. So by using a default passphrase, tools can encrypt messages and explorers/wallets can autodecrypt such messages trying to use the default passphrase. In that way, the displayed message is automatically readable to the user. If a more protected communication is needed, the sender can choose a custom passphrase and communicate that to the receiver as a preshared passphrase.
 
@@ -126,11 +126,13 @@ What part is uses for the encryption?
   
 The **whole content** of the unencrypted normal transaction **metadata `msg:` key is used**, thats the array with the message string(s). (Example below)
 
-Is there sample code?  
+##### Is there sample code?  
   
-Yes, example implementations for node.js, PHP, bash, etc. can be found in the [codesamples](codesamples/) folder. They are showing how to encrypt/decrypt text with the right parameters set for this basic mode.
+Yes, example implementations for node.js, PHP, bash, etc. can be found in the [codesamples](./codesamples/) folder. They are showing how to encrypt/decrypt text with the right parameters set for this basic mode.
   
-:warning: **Message decryption should be done on the user frontend if possible, not via server callbacks.**
+**warning**
+
+Message decryption should be done on the user frontend if possible, not via server callbacks.**
 
 #### Encryption/Decryption example on the console - basic mode
 
@@ -201,7 +203,7 @@ Which results in the original content of the **msg** key:
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
 The original CIP-0020 design allowed the addition of new entries like the `"enc":` key for encrypted messages in this CIP.
-There is also for example [CIP-8](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008), but CIP-8 doesn't really fulfill the simplicity of just providing encrypted messages. CIP-8 is focused on Signing, which is not needed for encryption. The method to generate encrypted messages here is not intended to verify the owner of a message via signing. There is no need that everything on Cardano must be difficult. Also using such CBOR encoded structures would break all currently implemented transaction message solutions. This CIP uses openssl and base64 encoding, and endusers could even copy&paste such text into other tools, etc. 
+There is also for example [CIP-8](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008), but CIP-8 doesn't really fulfill the simplicity of just providing encrypted messages. CIP-8 is focused on Signing, which is not needed for encryption. The method to generate encrypted messages here is not intended to verify the owner of a message via signing. There is no need that everything on Cardano must be difficult. Also using such CBOR encoded structures would break all currently implemented transaction message solutions. This CIP uses openssl and base64 encoding, and endusers could even copy&paste such text into other tools, etc. Future updates may include the option to mix encrypted and unencrypted messages by adding another key like `msgclear` to support such a mixed message style format.
 
 ### Implementation suggestions
  
