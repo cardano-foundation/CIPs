@@ -29,8 +29,8 @@ If Bob wants to swap his DUST for Alice's ADA, he will need to satisfy Alice's a
 But what if he wants to swap his DUST for 25 ADA? That would require using at least two of Alice's UTxOs. Doing this is trivial for the atomic swap contract because it validates based off of the transaction as a whole: 
 
 ``` Txt
-The value being deposited to the script address must be <= 
-  the value withdrawn from the script address * 
+The value being deposited to the swap address must be >= 
+  the value withdrawn from the swap address * 
   the weighted average asking price of all UTxOs being spent from the swap address.
 ```
 
