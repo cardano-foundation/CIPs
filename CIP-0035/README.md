@@ -2,10 +2,8 @@
 CIP: 35
 Title: Changes to Plutus Core
 Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Comments-Summary: No comments
-Comments-URI: 
 Status: Active
-Type: Process
+Category: Meta
 Created: 2022-02-09
 License: CC-BY-4.0
 ---
@@ -18,7 +16,7 @@ This CIP specifies a process for proposing changes to Plutus Core, its builtins,
 It gives a taxonomy of typical changes, and explains how these changes may be made, which in some cases requires a CIP.
 It introduces the 'Plutus' CIP category for tracking these.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 The Plutus Core language, its builtins, and its interface to the ledger are all likely to evolve significantly over time. There are many reasons for this:
 - We may be able to increase performance, improve safety, or reduce script sizes by changing the language.
@@ -168,7 +166,7 @@ That list aims to cover the most typical changes to Plutus Core, but it is not e
 CIPs which do not propose changes in the list but whose authors believe they significantly affect Plutus Core should nonetheless be assigned to the Plutus category.
 
 Additionally, there is significant overlap with the Ledger category around the ledger-script interface and the protocol parameters.
-CIPs which touch on this area should assign themselves both categories and get reviews from both sets of maintainers.
+CIPs which change these parts of Cardano should generally use the Plutus category and not the Ledger category, although the Editors may ask the Ledger reviewers to comment.
 
 ### The Plutus reviewers
 
@@ -237,12 +235,12 @@ In this case we recommend including:
 
 #### Protocol parameter updates
 
-Protocol parameter updates that affect Plutus Core should be proposed as usual following the process for the Ledger category.
-The only additional process required is the addition of the Plutus category and review by the Plutus reviewers.
+Protocol parameter updates that affect Plutus Core should be proposed in the Ledger category and following its processes.
+The only additional process required is review by the Plutus reviewers.
 
 #### Performance changes 
 
-This CIP does not require any process for proposing these changes. 
+This CIP does not require any process for proposing performance changes. 
 
 #### Bug fixes
 
@@ -258,7 +256,7 @@ For example, if a bug fix changes behaviour, it will have to wait for a new Plut
 
 Proposals for other additions, removals, or changes to behaviour of any part of Plutus Core or its builtins SHOULD be proposed in a CIP.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 ### Do removals and changes really need a new ledger language?
 
@@ -325,3 +323,19 @@ Each one must continue to work, perfectly, in perpetuity. Furthermore, they may 
 
 So it is very desirable to keep the number of ledger languages down. 
 The simplest way to do this is to batch changes, and only release a new ledger language occasionally.
+
+## Path to Active
+
+### Acceptance Criteria
+
+This CIP requires the acceptance of the Plutus team, which it has in virtue of its authorship.
+
+### Implementation Plan
+
+No implementation is required.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0][].
+
+[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
