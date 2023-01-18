@@ -59,7 +59,7 @@ Any time a spending script's validation depends on the entire transaction and no
 1. P2P Atomic Swaps - within one transaction, the value entering the swap address must be some proportion of the value leaving the swap address
 2. P2P Lending - within one transaction, the amount borrowed must be some proportion of the amount posted as collateral. Likewise, the amount of collateral reclaimed depends on how much of the loan is repaid.
 3. DAOs
-4. Multisig applications that require more complex logic than what is possible with native scripts
+4. Multisig - within one transaction, the multisig threshold must be met
 
 ## Goals
 1. Stop redundantly executing transaction level spending scripts.
