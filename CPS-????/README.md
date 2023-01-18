@@ -29,10 +29,12 @@ If Bob wants to swap his DUST for Alice's ADA, he will need to satisfy Alice's a
 But what if he wants to swap his DUST for 25 ADA? That would require using at least two of Alice's UTxOs. Doing this is trivial for the atomic swap contract because it validates based off of the transaction as a whole: 
 
 ``` Txt
-The value being deposited to the script address must be <= the value withdrawn from the script address * the weighted average asking price of all UTxOs being swapped.
+The value being deposited to the script address must be <= 
+  the value withdrawn from the script address * 
+  the weighted average asking price of all UTxOs being spent from the swap address.
 ```
 
-This brings us to the problem: **there is currently no way to efficiently use a script that validates based off of the transaction as a whole**. (These scripts will be called "transaction level spending scripts" for the rest of this CPS). With the current design of Cardano, if Bob consumed UTxO 2 and UTxO 3 in the same transaction to satisfy his desire for 25 ADA, the atomic swap contract will be executed twice. Since the transaction context doesn't change between executions, the second execution is completely redundant.
+This brings us to the problem: **there is currently no way to efficiently use a spending script that validates based off of the transaction as a whole**. (These scripts will be called "transaction level spending scripts" for the rest of this CPS). With the current design of Cardano, if Bob consumed UTxO 2 and UTxO 3 in the same transaction to satisfy his desire for 25 ADA, the atomic swap contract will be executed twice. Since the transaction context doesn't change between executions, the second execution is completely redundant.
 
 Any time a developer creates a transaction level spending script, it will be redundantly executed for every additional UTxO consumed from the corresponding script address. These redundant executions are a waste of scarce resources and result in much higher fees for end users. Not only that, but the inability to efficiently use these transaction level spending scripts significantly handicaps the use of the eUTxO model. The eUTxO model already allows for creating such spending scripts; developers are just unable to properly use them.
 
