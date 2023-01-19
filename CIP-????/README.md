@@ -5,7 +5,7 @@ Category: Plutus
 Authors:
   - Michał J. Gajda (mjgajda@migamake.com)
 Implementors: []
-Discussions-To: https://github.com/cardano-foundation/cips/pulls/?
+Discussions-To: https://github.com/cardano-foundation/cips/pulls/441
 Comments-Summary: 
 Comments-URI:  
 Status: Proposed
