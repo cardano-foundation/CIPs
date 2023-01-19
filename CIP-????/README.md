@@ -15,13 +15,15 @@ License: CC-BY-4.0
 # CIP-XXXX: Maybe Datum
 
 ## Abstract
-Currently all plutus spending scripts take a datum directly from the UTxO being spent. While this allows for creating a very simple ledger-script interface, there are a number of use cases where this feature is not just undesired but can also be an obstical to Dapp developement. I propose changing plutus scripts so that they optionally take the datum directly from the UTxO being spent. This single change would solve a number of issues currently motivating different CIPs/CPSs. 
+Currently all plutus spending scripts take a datum directly from the UTxO being spent. While this allows for creating a very simple ledger-script interface, there are a number of use cases where this feature is not just undesired but can also be an obstacle to Dapp developement. I propose changing all plutus scripts so that they optionally take the datum directly from the UTxO being spent. This single change would solve a number of issues currently motivating different CIPs/CPSs. 
 
 ## Motivation: why is this CIP necessary?
 As of now, plutus spending scripts take the datum directly from the UTxO being spent. While it allows the ledger-script interface to be very simple, it causes three major problems.
 
 ### Problem 1: Spending Script Redundant Executions
 Using the eUTxO model, it is currently possible to create spending scripts that validate based off of the transaction as a whole instead of any individual UTxO. Imagine if three UTxOs were spent from such a script's address within the same transaction. Which datum should be passed to the spending script? Currently, the ledger-script interface passes each UTxO's datum to the script individually and executes this "transaction level" spending script three times. Since the transaction context does not change between executions, these additional executions are completely redundant. There is currently no way to use a transaction level spending script so that these redundant executions do not happen. This limitation significantly handicaps Cardano's usage of the eUTxO model. While there is a potential workaround, the workaround has its own major drawbacks. You can read more about it in the related CPS [here](https://github.com/fallen-icarus/CIPs/tree/full-eUTxO-potential/CPS-%3F%3F%3F%3F#readme).
+
+Note: While Cardano simple scripts do not use a datum, they may also suffer from this limitation.
 
 ### Problem 2: Wrong/Missing Datums Result in Permanently Locked Script UTxOs
 When a script's UTxO is missing a datum or has the wrong datum, the plutus spending script is unable to parse the datum attached to the UTxO and is therefore guaranteed to fail. This results in permanently locked UTxOs at the script's address. In order to help prevent accidental locking of script UTxOs, proxies are generally used. The idea is for users to send their funds to this proxy first. The proxy then attaches the required datum for the users and pass the funds onto the desired script address. However, it is very difficult to use such proxies in a decentralized way. In short, by being forced to use proxies, the Dapp loses some of its decentralization.
@@ -95,11 +97,14 @@ Since there is no need to parse the datums attached to each UTxO, the datum flag
 
 Users **MUST** explicitly state which level to use. Building a transaction should fail if the level is not explicitly stated.
 
+#### Simple Scripts
+Given that Cardano simple scripts are only for multisig and time locking, and both scenarios are ones that validate based off of the transaction as a whole, simple scripts are only usable as transaction level scripts. If the simple scripts language is going to be extended in the future, perhaps it would "future proof" the ledger-script interface to still have the option for using simple scripts at the UTxO level even though there are no use cases right now.
+
 #### Ensuring All Script Witnesses Are Present
 The node is already capable of detecting if all required witnesses are present. This tooling will just need to be adapted to allow transaction level scripts to witness all UTxOs while being executed only once. The idea is similar to only one pubkey signature being required no matter how many UTxO are being spent from the corresponding address.
 
 #### Does This Require A Hardfork?
-According to [CIP-0035](https://github.com/michaelpj/CIPs/blob/8e296066c0afc7d2ed46db88eca43f409830e011/CIP-0035/README.md#scripts-in-the-cardano-ledger), what is being suggested here is a change to the ledger-script interface. This means a new Plutus Core ledger language (LL) is required. The CIP states that this requires a hardfork.
+According to [CIP-0035](https://github.com/michaelpj/CIPs/blob/8e296066c0afc7d2ed46db88eca43f409830e011/CIP-0035/README.md#scripts-in-the-cardano-ledger), what is being suggested here is a change to the ledger-script interface. This means a new Plutus Core ledger language (LL) is required. The CIP states that this requires a hardfork. However, being that the way things are stored on-chain will not change, this should be a smaller hardfork than the past few.
 
 ## Rationale: how does this CIP achieve its goals?
 The key idea of this CIP is to address multiple developer concerns as simply as possible. There have been (at least) 6 proposals created so far whose motivations can all be addressed by the `Maybe Datum` ([#364](https://github.com/cardano-foundation/CIPs/pull/364),[#423](https://github.com/cardano-foundation/CIPs/issues/423),[#309](https://github.com/cardano-foundation/CIPs/pull/309),[#418](https://github.com/cardano-foundation/CIPs/pull/418),[#310](https://github.com/cardano-foundation/CIPs/pull/310),[#321](https://github.com/cardano-foundation/CIPs/pull/321)). 
