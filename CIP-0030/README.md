@@ -95,11 +95,23 @@ type Paginate = {|
   limit: number,
 |};
 ```
+
 Used to specify optional pagination for some API calls. Limits results to {limit} each page, and uses a 0-indexing {page} to refer to which of those pages of {limit} items each. dApps should be aware that if a wallet is modified between paginated calls that this will change the pagination, e.g. some results skipped or showing up multiple times but otherwise the wallet must respect the pagination order.
 
 #### Extension
 
 An extension is an object with a single field `"cip"` that describe a CIP number extending the API (as a plain integer, without padding). For example:
+
+### TransactionSignatureRequest
+
+```
+type = TransactionSignatureRequest {|
+  cbor: cbor\<transaction>,
+  partialSign: bool = false,
+|};
+```
+
+Used to represent a single transaction awaiting a user's signature. More details on {partialSign} can be found in `api.signTx()`.
 
 ```
 { "cip": 30 }
@@ -122,10 +134,10 @@ APIError {
 }
 ```
 
-* InvalidRequest - Inputs do not conform to this spec or are otherwise invalid.
-* InternalError - An error occurred during execution of this API call.
-* Refused - The request was refused due to lack of access - e.g. wallet disconnects.
-* AccountChange - The account has changed. The dApp should call `wallet.enable()` to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
+- InvalidRequest - Inputs do not conform to this spec or are otherwise invalid.
+- InternalError - An error occurred during execution of this API call.
+- Refused - The request was refused due to lack of access - e.g. wallet disconnects.
+- AccountChange - The account has changed. The dApp should call `wallet.enable()` to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
 
 #### DataSignError
 
@@ -141,9 +153,9 @@ type DataSignError = {
 }
 ```
 
-* ProofGeneration - Wallet could not sign the data (e.g. does not have the secret key associated with the address)
-* AddressNotPK - Address was not a P2PK address and thus had no SK associated with it.
-* UserDeclined - User declined to sign the data
+- ProofGeneration - Wallet could not sign the data (e.g. does not have the secret key associated with the address)
+- AddressNotPK - Address was not a P2PK address and thus had no SK associated with it.
+- UserDeclined - User declined to sign the data
 
 #### PaginateError
 
@@ -152,6 +164,7 @@ type PaginateError = {|
     maxSize: number,
 |};
 ```
+
 {maxSize} is the maximum size for pagination and if the dApp tries to request pages outside of this boundary this error is thrown.
 
 #### TxSendError
@@ -167,8 +180,8 @@ type TxSendError = {
 }
 ```
 
-* Refused - Wallet refuses to send the tx (could be rate limiting)
-* Failure - Wallet could not send the tx
+- Refused - Wallet refuses to send the tx (could be rate limiting)
+- Failure - Wallet could not send the tx
 
 #### TxSignError
 
@@ -183,8 +196,8 @@ type TxSignError = {
 }
 ```
 
-* ProofGeneration - User has accepted the transaction sign, but the wallet was unable to sign the transaction (e.g. not having some of the private keys)
-* UserDeclined - User declined to sign the transaction
+- ProofGeneration - User has accepted the transaction sign, but the wallet was unable to sign the transaction (e.g. not having some of the private keys)
+- UserDeclined - User declined to sign the transaction
 
 ### Initial API
 
@@ -215,7 +228,6 @@ Yes. Extensions may introduce new endpoints or error codes, and modify existing 
 ##### Are wallet expected to implement all extensions?
 
 No. It's up to wallet providers to decide which extensions they ought to support.
-
 
 #### cardano.{walletName}.isEnabled(): Promise\<bool>
 
@@ -266,6 +278,7 @@ If `amount` is `undefined`, this shall return a list of all UTXOs (unspent trans
 Errors: `APIError`
 
 The function takes a required object with parameters. With a single **required** parameter for now: `amount`. (**NOTE:** some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the `amount` parameter is required:
+
 1. Dapps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
 2. Depending on the specific wallet implementation, requesting more collateral than necessarily might worsen the user experience with that dapp, requiring the wallet to make explicit wallet reorganisation when it is not necessary and can be avoided.
 3. If dapps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
@@ -314,25 +327,33 @@ Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
-#### api.signData(addr: Address, payload: Bytes): Promise\<DataSignature>
+### api.signTxs(txs: TransactionSignatureRequest[]): Promise\<cbor\<transaction_witness_set>[]>
+
+Errors: `APIError`, `TxSignError`
+
+Performs the same operation as `api.signTx()`, but supports mulitple transactions. This is a shortcut to sign multiple transactions at the same time. The returned witness set array values correspond directly with the elements in the `txs` parameter, meaning that the witness set at index 0 corresponds to the transaction at index 0, and so on.
+
+**Note:** There are some security concerns regarding malicious dApps possibly including a problematic transaction within the array. Moreover, signing a transaction does not guarantee a blockchain submission. It is the wallet's responsibility to take these scenarios into account and build a comprehensive UI to mitigate them (e.g via a whitelist system).
+
+### api.signData(addr: Address, payload: Bytes): Promise\<DataSignature>
 
 Errors: `APIError`, `DataSignError`
 
 This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
-* `alg` (1) - must be set to `EdDSA` (-8)
-* `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
-* `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
+- `alg` (1) - must be set to `EdDSA` (-8)
+- `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
+- `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
 
 The payload is not hashed and no `external_aad` is used.
 
 If the payment key for `addr` is not a P2Pk address then `DataSignError` will be returned with code `AddressNotPK`. `ProofGeneration` shall be returned if the wallet cannot generate a signature (i.e. the wallet does not own the requested payment private key), and `UserDeclined` will be returned if the user refuses the request. The return shall be a `DataSignature` with `signature` set to the hex-encoded CBOR bytes of the `COSE_Sign1` object specified above and `key` shall be the hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 
-* `kty` (1) - must be set to `OKP` (1)
-* `kid` (2) - Optional, if present must be set to the same value as in the `COSE_Sign1` specified above.
-* `alg` (3) - must be set to `EdDSA` (-8)
-* `crv` (-1) - must be set to `Ed25519` (6)
-* `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
+- `kty` (1) - must be set to `OKP` (1)
+- `kid` (2) - Optional, if present must be set to the same value as in the `COSE_Sign1` specified above.
+- `alg` (3) - must be set to `EdDSA` (-8)
+- `crv` (-1) - must be set to `Ed25519` (6)
+- `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
 #### api.submitTx(tx: cbor\<transaction>): Promise\<hash32>
 
@@ -343,10 +364,12 @@ As wallets should already have this ability, we allow dApps to request that a tr
 ### Experimental API
 
 Multiple experimental namespaces are used:
+
 - under `api` (ex: `api.experimental.myFunctionality`).
 - under `cardano.{walletName}` (ex: `window.cardano.{walletName}.experimental.myFunctionality`)
 
 The benefits of this are:
+
 1. Wallets can add non-standardized features while still following the CIP30 structure
 1. dApp developers can use these functions explicitly knowing they are experimental (not stable or standardized)
 1. New features can be added to CIP30 as experimental features and only moved to non-experimental once multiple wallets implement it
@@ -383,6 +406,7 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 ### Implementation Plan
 
 - [x] Provide some reference implementation of wallet providers
+
   - [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
   - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
 
