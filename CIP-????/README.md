@@ -62,7 +62,7 @@ Additional fields MAY be included in the payload. Depending on the process, it c
 
 ### Wallet specification
 
-The wallets can improve the overall security implementing the folliwing guidelines. We RECOMMEND to show in a structured way the payload information for shake of clarity. This information should be well understanded by the users before the payload is singed.  
+The wallets can improve the overall security implementing the following guidelines. We RECOMMEND to show in a structured way the payload information for shake of clarity. This information should be well understanded by the users before the payload is signed.  
 
 The ```url``` field provides information about the hostname of the application. This hostname MUST be included in the wallet allow list. If a known domain A tries to sign a payload for an unknown domain B, you will be prompted with permission popup making more obvious the cross-domain interaction. When possible, the wallet SHOULD warn the user if a payload is for a different domain.
 
