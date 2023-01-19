@@ -163,7 +163,7 @@ The record of a voters delegation.
 interface DelegatedCertificate {
   delegations: GovernanceKey[]
   stakingPub: string
-  rewardAddress: string
+  paymentAddress: string
   nonce: number
   purpose: VotingPurpose
 }
