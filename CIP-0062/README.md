@@ -95,7 +95,7 @@ interface BlockDate {
 interface Proposal {
   votePlanId: string;
   proposalIndex: number;
-  voteOptions?: number;
+  voteOptions?: number[];
   voteEncKey?: string;
 }
 ```
