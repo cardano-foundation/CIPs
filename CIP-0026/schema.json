@@ -92,28 +92,33 @@
     , "minimum": 0
     }
   , "signatures":
-    { "type": "object"
-    , "additionalProperties": false
-    , "required":
-      [ "publicKey"
-      , "signature"
-      ]
-    , "properties":
-      { "publicKey":
-        { "type": "string"
-        , "description": "An Ed25519 Public key, verifying the companion signature."
-        , "encoding": "base16"
-        , "minLength": 64
-        , "maxLength": 64
+    { "type": "array"
+    , "items":
+      { "type": "object"
+      , "additionalProperties": false
+      , "required":
+        [ "publicKey"
+        , "signature"
+        ]
+      , "properties":
+        { "publicKey":
+          { "type": "string"
+          , "description": "An Ed25519 Public key, verifying the companion signature."
+          , "encoding": "base16"
+          , "minLength": 64
+          , "maxLength": 64
+          }
+        , "signature":
+          { "type": "string"
+          , "description": "A signed attestation."
+          , "encoding": "base16"
+          , "minLength": 128
+          , "maxLength": 128
+          }
         }
-      , "signature":
-        { "type": "string"
-        , "description": "A signed attestation."
-        , "encoding": "base16"
-        , "minLength": 128
-        , "maxLength": 128
-        }
-      }
+    }
     }
   }
 }
+
+

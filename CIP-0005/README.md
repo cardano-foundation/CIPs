@@ -45,6 +45,8 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_shared_xvk`  | CIP-1854's address extended verification key       | Ed25519 public key with chain code |
 | `gov_sk`           | Governance vote signing key                        | Ed25519 private key                |
 | `gov_vk`           | Governance vote verification key                   | Ed25519 public key                 |
+| `cvote_sk`         | CIP-36's vote signing key                          | Ed25519 private key                |
+| `cvote_vk`         | CIP-36's vote verification key                     | Ed25519 public key                 |
 | `kes_sk`           | KES signing key                                    | KES signing key                    |
 | `kes_vk`           | KES verification key                               | KES verification key               |
 | `policy_sk`        | CIP-1855's policy private key                      | Ed25519 private key                |

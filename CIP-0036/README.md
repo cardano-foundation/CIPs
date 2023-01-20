@@ -55,11 +55,40 @@ Each delegation therefore contains:
   - a voting key: simply an ED25519 public key. This is the spending credential in the sidechain that will receive voting power from this delegation. For direct voting it's necessary to have the corresponding private key to cast votes in the sidechain. How this key is created is up to the wallet.
   - the weight that is associated with this key: this is a 4-byte unsigned integer (CBOR major type 0, The weight may range from 0 to 2^32-1) that represents the relative weight of this delegation over the total weight of all delegations in the same registration transaction.
 
-### Voting key derivation path
+### Voting key 
+
+The terms "(CIP-36) voting keys" and "(CIP-36) vote keys" should be used interchangeably to indicate the keys described in this specification. But it should be made clear that implementations should favour the term "(CIP-36) vote" and that the association of both terms aims to reduce the possibility of confusion.
+
+The term governance should not be associated with these keys nor should these keys be associated with other vote or voting keys used in the ecosystem. When discussing these keys in a wider context they should be specified by such terminology as "CIP-36 vote keys" or "CIP-36 style vote keys".
+
+#### Derivation path
 
 To avoid linking voting keys directly with Cardano spending keys, the voting key derivation path must start with a specific segment:
 
 `m / 1694' / 1815' / account' / chain / address_index`
+
+We recommend that implementors only use `address_index`=0 to avoid the need for voting key discovery.
+
+#### Tooling
+
+Supporting tooling should clearly define and differentiate this as a unique key type, describing such keys as "CIP-36 vote keys". When utilizing Bech32 encoding the appropriate `cvote_sk` and `cvote_vk` prefixes should be used as described in [CIP-05](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005)
+
+Examples of acceptable `keyType`s for supporting tools:
+
+| `keyType` | Description |
+| --------- | ----------- |
+| `CIP36VoteSigningKey_ed25519` | Catalyst Vote Signing Key |
+| `CIP36VoteExtendedSigningKey_ed25519` | Catalyst Vote Signing Key |
+| `CIP36VoteVerificationKey_ed25519` | Catalyst Vote Verification Key |
+| `CIP36VoteExtendedVerificationKey_ed25519` | Catalyst Vote Verification Key |
+
+For hardware implementations:
+| `keyType` | Description |
+| --------- | ----------- |
+| `CIP36VoteVerificationKey_ed25519` | Hardware Catalyst Vote Verification Key |
+| `CIP36VoteHWSigningFile_ed25519` | Hardware Catalyst Vote Signing File |
+
+The intention with this design is that if projects beyond Catalyst implement this specification they are able to add to themselves `keyType` **Description**s.
 
 ### Associating voting power with a voting key
 
