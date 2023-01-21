@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 82
 Title: Improved Rewards Scheme Parameters
 Status: Proposed
 Category: Reward-Sharing Scheme
