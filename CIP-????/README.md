@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Maybe Datum
-Category: Plutus, Ledger
+Category: Plutus
 Status: Proposed
 Authors:
     - fallen-icarus <modern.daidalos@gmail.com>
