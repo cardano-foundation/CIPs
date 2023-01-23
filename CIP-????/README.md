@@ -93,15 +93,60 @@ Example transaction level spending script flag usage:
   --tx-level-spending-reference-tx-in-redeemer-file <script_redeemer> \
 ```
 
-Since there is no need to parse the datums attached to each UTxO, the datum flags are not needed. Any datums present will still appear in the `ScriptContext` that gets passed to the plutus script. All UTxOs being spent are assumed to be using the same redeemer which is why it is okay to place the redeemer flag at the end.
+Since there is no need to parse the datums attached to each UTxO, the datum flags are not needed. Any datums present will still appear in the `ScriptContext` that gets passed to the plutus script. All UTxOs being validated by the transaction level script are assumed to be using the same redeemer which is why it is okay to place the redeemer flag at the end.
 
-Users **MUST** explicitly state which level to use. Building a transaction should fail if the level is not explicitly stated.
+Users **MUST** explicitly state which level to use. Building a transaction should fail if the level is not explicitly stated or if both levels are specified for the same UTxO.
+
+#### Script Context
+Currenty, the `ScriptPurpose` part of `ScriptContext` is defined like this:
+
+``` Haskell
+-- | Purpose of the script that is currently running
+data ScriptPurpose
+    = Minting CurrencySymbol
+    | Spending TxOutRef
+    | Rewarding StakingCredential
+    | Certifying DCert
+```
+
+When the script is a spending script, the `TxOutRef` of the UTxO being validated is used. This setup does not allow for transaction level scripts: if there are three UTxOs being validated, which `TxOutRef` should be used?
+
+To expand the `ScriptPurpose` to also enable transaction level spending scripts, I propose introducing this new sum type:
+``` Haskell
+-- | Spending script validation level
+data SpendingLevel
+    = UTxOLevel TxOutRef
+    | TxLevel ValidatorHash
+```
+
+Then the `ScriptPurpose` definition will be changed to use this new sum type:
+``` Haskell
+-- | Purpose of the script that is currently running
+data ScriptPurpose
+    = Minting CurrencySymbol
+    | Spending SpendingLevel  -- ^ Uses new sum type
+    | Rewarding StakingCredential
+    | Certifying DCert
+```
+
+`DCert` is also a sum type so the precedence has already been established for this usage. For the `Data` specification of `SpendingLevel`, I propose:
+
+``` Haskell
+UTxOLevel txOutRef = Constr 0 [txOutRefAsData]
+TxLevel validatorHash = Constr 1 [validatorHashAsData]
+```
+
+Whenever the `--tx-level` flags are used for spending scripts, the `TxLevel` constructor will be used in the `ScriptPurpose`. Conversely, whenever the `--utxo-level` flags are used, the `UTxOLevel` constructor will be used.
+
+Several functions use the `ScriptPurpose` in order to get certain information in on-chain code. An example is the `ownHash` function that uses the `Spending TxOutRef` to get the hash of the current validator. New plutus v3 versions of these functions will be needed to use the new `ScriptPurpose`.
 
 #### Simple Scripts
 Given that Cardano simple scripts are only for multisig and time locking, and both scenarios are ones that validate based off of the transaction as a whole, simple scripts are only usable as transaction level scripts. If the simple scripts language is going to be extended in the future, perhaps it would "future proof" the ledger-script interface to still have the option for using simple scripts at the UTxO level even though there are no use cases right now.
 
 #### Ensuring All Script Witnesses Are Present
 The node is already capable of detecting if all required witnesses are present. This tooling will just need to be adapted to allow transaction level scripts to witness all UTxOs while being executed only once. The idea is similar to only one pubkey signature being required no matter how many UTxO are being spent from the corresponding address.
+
+The node is also capable of detecting if extraneous witnesses are present. This can be leveraged to make sure only one spending level is used for each UTxO being validated.
 
 #### Does This Require A Hardfork?
 According to [CIP-0035](https://github.com/michaelpj/CIPs/blob/8e296066c0afc7d2ed46db88eca43f409830e011/CIP-0035/README.md#scripts-in-the-cardano-ledger), what is being suggested here is a change to the ledger-script interface. This means a new Plutus Core ledger language (LL) is required. The CIP states that this requires a hardfork. However, being that the way things are stored on-chain will not change, this should be a smaller hardfork than the past few.
@@ -112,10 +157,10 @@ The key idea of this CIP is to address multiple developer concerns as simply as 
 By allowing for transaction level spending scripts, redundant executions are eliminated. By not always forcing the parsing of datums attached to script UTxOs, the accidental locking is stopped. And by allowing a plutus script to be used as all three types (spending, minting, and staking), more secure-by-default Dapps can be written.
 
 ### `ScriptArgs` Alternative
-The `ScriptArgs` proposal ([here](https://github.com/cardano-foundation/CIPs/pull/321)) could also address all three issues motivating this CIP. However, the `ScriptArgs` approach would be much more complicated to implement since passing the arguments as a sum type would be a major divergence from the way things are currently implemented. For this reason, I believe the `Maybe Datum` would be a better approach.
+The `ScriptArgs` proposal ([here](https://github.com/cardano-foundation/CIPs/pull/321)) could also address all three issues motivating this CIP. However, the `ScriptArgs` approach would be much more complicated to implement since passing the arguments to the scripts as a sum type would be a major divergence from the way things are currently implemented. For this reason, I believe the `Maybe Datum` would be a better approach.
 
 ### Backwards Compatibility
-Only plutus scripts that use the `plutus-script-v3` flag will have their datums handled in this way. All other plutus version will retain their usage. This flag will be exclusively used with the new universal plutus script.
+Only plutus scripts that use the `plutus-script-v3` flag will have their datums and `ScriptPurpose` handled in this way. All other plutus version will retain their usage. This flag will be exclusively used with the new universal plutus script.
 
 ## Copyright
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
