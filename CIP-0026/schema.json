@@ -20,7 +20,7 @@
     }
   , "preimage":
     { "type": "object"
-    , "description": "A hashing algorithm identifier and a base16-enocoded bytestring, such that the bytestring is the preimage of the metadata subject under that hash function."
+    , "description": "A hashing algorithm identifier and a base16-encoded bytestring, such that the bytestring is the preimage of the metadata subject under that hash function."
     , "requiredProperties": [ "alg", "msg" ]
     , "properties":
       { "alg":
@@ -32,7 +32,8 @@
       , "msg":
         { "type": "string"
         , "description": "The actual preimage."
-        , "encoding": "base16"
+        , "
+         ding": "base16"
         }
       }
     }
