@@ -73,7 +73,7 @@ Even better, since users will have their own smart contract instances, the user'
 ### Does the reliance on off-chain apis create more centralization?
 The short answer is no.
 
-When user assets are pooled together, batchers are needed since there aren't enough pools for each user. These batchers are another centralizing factor of any DEX that pools user assets together. When user assets are segregated into separate addresses, the number of UTxOs available grows with the number of users of the Dapp. In other words, Dapps that pool assets have their maximum concurrency "hardcoded" by the number of pools available to interact with while Dapps that segregate user assets have their maximum concurrency expand or contract with the demand on the Dapp. Queues only form when the concurrency is not enough for the demand; batchers are only required in this situation.
+When user assets are pooled together, batchers are needed since there aren't enough pools for each user. These batchers are another centralizing factor of any Dapp that pools user assets together. When user assets are segregated into separate addresses, the number of UTxOs available grows with the number of users of the Dapp. In other words, Dapps that pool assets have their maximum concurrency "hardcoded" by the number of pools available to interact with while Dapps that segregate user assets have their maximum concurrency expand or contract with the demand on the Dapp. Queues only form when the concurrency is not enough for the demand; batchers are only required in this situation.
 
 It is important to look at what the limiting centralization factors are for any design:
 
