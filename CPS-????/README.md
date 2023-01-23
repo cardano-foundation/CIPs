@@ -56,7 +56,7 @@ With this method, the main computation is only executed once no matter how many 
 3. This is not the intended use for staking scripts.
 
 ### Simple Scripts
-I tried to test Cardano simple scripts to determine if this problem also impacts them. However, given that simple scripts are so small, it was hard to tell from just looking at the transaction fee. Since the interface for using Cardano simple scripts is the same as for using plutus scripts,I have to assume that this problem also impacts simple scripts. 
+I tried to test Cardano simple scripts to determine if this problem also impacts them. However, given that simple scripts are so small, it was hard to tell from just looking at the transaction fee. Since the interface for using Cardano simple scripts is the same as for using plutus scripts, I have to assume that this problem also impacts simple scripts. 
 
 If simple scripts are indeed impacted by this problem, the above technique would not work for them. The technique only works for plutus scripts.
 
