@@ -136,7 +136,7 @@ UTxOLevel txOutRef = Constr 0 [txOutRefAsData]
 TxLevel validatorHash = Constr 1 [validatorHashAsData]
 ```
 
-Whenever the `--tx-level` flags are used for spending scripts, the `TxLevel` constructor will be used in the `ScriptPurpose`. To make it easy to get the `ValidatorHash` of the transaction level script, a `--tx-level-spending-hash` can also be required when building the transaction. Conversely, whenever the `--utxo-level` flags are used, the `UTxOLevel` constructor will be used.
+Whenever the `--tx-level` flags are used for spending scripts, the `TxLevel` constructor will be used in the `ScriptPurpose`. To make it easy to get the `ValidatorHash` of the transaction level script, a `--tx-level-spending-hash` flag can also be required when building the transaction. Conversely, whenever the `--utxo-level` flags are used, the `UTxOLevel` constructor will be used.
 
 Several functions use the `ScriptPurpose` in order to get certain information in on-chain code. An example is the `ownHash` function that uses the `Spending TxOutRef` to get the hash of the current validator. New plutus v3 versions of these functions will be needed to use the new `ScriptPurpose`.
 
