@@ -18,7 +18,32 @@ DApps can express a plethora of information. Some of this information could be c
 
 Also having this formalisation facilitates any actor in the ecosystem to index and query this data, and provide a better user experience when it comes to dApp discovery and usage.
 
+## **Definitions**
+- **anchor** - A hash written on-chain that can be used to verify the integrity (by way of a cryptographic hash) of the data that is found off-chain.
+- **dApp** - A decentralised application that is described by the combination of metadata, certificate and a set of used scripts.
+
 ## **Specification**
+
+### **Developers / Publishers**
+Developers and publishers of dApps can register their dApps by submitting a transaction on-chain that can be indexed and verifier by stores, auditors and other actors. 
+
+### **Stores / Auditors**
+Store and auditors should be able to follow the chain and find when a new dApp registration is **anchored** on-chain. They should then perform *integrity* and *trust* validations on the dApp's certificate and metadata. 
+
+#### **Off-chain Location Adversitment**
+Each store and auditor should make public the location of their off-chain sources where they will look for the dApp's metadata based on certificates found on-chain. These can be advertised through their own API or publically available on a website.
+
+Sample off-chain sources could be for example :
+- [CIP-26](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0026) compliant servers
+- IPFS
+
+##### **Targetted Releases**
+Each developer and publisher can choose to where to write metadata based on the information available from known stores & auditors. This gives **developers** and **publishers** the ability to perform targeted releases. (i.e to which stores and auditors)
+
+#### **Suggested Validations**
+
+- **`integrity`**: The dapp's metadata off-chain should match the metadata anchored on-chain.
+- **`trust`**: The dApp's certificate should be signed by a trusted entity. It's up to the store/auditor to decide which entities are trusted and they should maintain their own list of trusted entities. Although this entities might be well known, it's not the responsibility of this CIP to maintain this list.
 
 ### **On-chain dApp Registration certificate**
 
@@ -26,36 +51,100 @@ Also having this formalisation facilitates any actor in the ecosystem to index a
 {
 	"subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
 	"rootHash": "8c4e9eec512f5f277ab811ba75c991d51600c80003e892e601c6b6c19aaf8a33",
-  "type": "REGISTER",
-  "cip26": ["http://somelocation.io/", "http://somelocation2.io/"],
-	"did": "did:ada:f2019bd31a8530fb67c6d81da758dfa9a65be09d835cf2cd361d595a8858301d",
+  "schema_version": "0.0.1",
+  "type": { 
+    "action": "REGISTER",
+    "releaseNumber": "1.0.0",
+    "releaseName": "My First Release",
+  },
 	"signature": {
 		"r": "5114674f1ce8a2615f2b15138944e5c58511804d72a96260ce8c587e7220daa90b9e65b450ff49563744d7633b43a78b8dc6ec3e3397b50080",
 		"s": "a15f06ce8005ad817a1681a4e96ee6b4831679ef448d7c283b188ed64d399d6bac420fadf33964b2f2e0f2d1abd401e8eb09ab29e3ff280600",
 		"algo": "Ed25519−EdDSA",
 		"pub": "b7a3c12dc0c8c748ab07525b701122b88bd78f600c76342d27f25e5f92444cde"
-	}
+	},
+  "permissionToAggregate": true
 }
 ```
 
 ### Properties
-*`subject`*: Identifier of the claim subject (i.e dapp). A UTF-8 encoded string. This uniquess of this property cannot be guaranteed by the protocol and multiple claims for the same subject may exist therefore it is required to exist some mechanism to assert trust in the *veracity* of this property. This can be done by knowning verifying the signature against a trusted / known public key or by using Decentralized Identifiers (DIDs) as described in the [DID Specification](https://www.w3.org/TR/did-core/).
+*`subject`*: Identifier of the claim subject (i.e dapp). A UTF-8 encoded string. This uniquess of this property cannot be guaranteed by the protocol and multiple claims for the same subject may exist therefore it is required to exist some mechanism to assert trust in the *veracity* of this property.
 
-*`type`*: The type of the claim. A UTF-8 encoded string. The value of this property can have the value `REGISTER` or `UPDATE`. The `REGISTER` type is used to register a new dApp. The `UPDATE` type is used to update the metadata of an existing dApp.
+*`type`*: The type of the claim. This is a JSON object that contains the following properties: 
+- *`action`*: The action that the certificate is asserting. It can take the following values: 
+  - *`REGISTER`*: The certificate is asserting that the dApp is being registered for the first time. 
+  - *`UPDATE`*: The certificate is asserting that the dApp is being updated.
 
 *`rootHash`*: The hash of the metadata entire tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
 
-This hash is calculated by taking the entire metadata tree object, ordering the keys in the object alphanumerically, and then hashing the resulting JSON string using the blake2b hashing algorithm. The hash is encoded as a hex string.
+This hash is calculated by taking the entire metadata tree object, ordering the keys in the object alphanumerically, and then hashing the resulting JSON string using the blake2b-256 hashing algorithm. The hash is encoded as a hex string.
 
-*`cip26`*: An array of URLs that point to the location of the dApp's metadata. The client should try to fetch the metadata from the first URL in the array. If the client fails to fetch the metadata from the first URL, it should try the second URL, and so on. If the client fails to fetch the metadata from all URLs, it should consider the metadata to be invalid.
-
-The format of the metadata tree object is described in the [CIP-26](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0026) specification.
-
-*`did`*(optional): The DID of the dApp's developer. The DID is used to verify the authenticity of the certificate. The client should use the DID to fetch the developer's public key from the Cardano blockchain. The client should then use the public key to verify the signature of the certificate. This field is *optional* and can be used by identity centric dApps to verify the authenticity of the developer.
-
-*`signature`*: The signature of the certificate. The signature is done over the blake2b hash of the certificate. The client should use the public key to verify the signature of the certificate. If a DID is provided, the client should use the DID to fetch the developer's public from the DID Document. If a DID is not provided, the client should use the public key provided in the signature object or from a already known public key.
+*`signature`*: The signature of the certificate. The signature is done over the blake2b hash of the certificate. The client should use the public key to verify the signature of the certificate. 
 
 ## Certificate JSON Schema
+```json
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "https://example.com/person.schema.json",
+    "title": "Person",
+    "type": "object",
+    "properties": {
+      "subject": {
+        "type": "string",
+        "description": "Can be anything. Description of the registration",
+      },
+      "type": {
+        "type": "object",
+        "description": "Describes the releases, if they are new or an updates. Also states the versioning of such releases",
+        "properties": {
+          "action": {
+          	"type": "string",
+            "description": "Describes the action this certificate is claiming. I.e 'REGISTER', for a new dapp; or 'UPDATE' for a new release"
+          },
+          "releaseNumber": {
+          	"type": "string",
+            "description": "offical version of the release"
+          },
+          "releaseName": {
+          	"type": "string",
+            "description": "Dapp release name"
+          }
+		}
+      },  
+      "rootHash": {
+        "type": "string",
+        "description": "blake2b hash of the metadata describing the dApp"
+      },
+      "signature": {
+        "description": "Age in years which must be equal to or greater than zero.",
+        "type": "object",
+        "properties": {
+			"r": {
+				"type": "string",
+				"description": "hex representation of the R component of the signature"
+			},
+            "s": {
+				"type": "string",
+				"description": "hex representation of the S component of the signature"
+			},
+              
+		},
+		"required": ["r", "s", "algo", "pub"]
+      }
+    },
+    "required": ["subject", "rootHash","type", "signature"]
+}
+```
+
+## Metadata Label
+
+When submitting the transaction metadata pick the following value for `transaction_metadatum_label`:
+
+- `1667`: DApp Registration
+
+## Offchain Metadata Format
+The Dapp Registration certificate itself doesn't enforce a particular structure to the metadata you might fetch off-chain. However, we recommend that you use the following structure:
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -64,63 +153,255 @@ The format of the metadata tree object is described in the [CIP-26](https://gith
     "subject": {
       "type": "string"
     },
-    "type": {
-      "type": "string",
-      "enum": [
-        "REGISTER",
-        "UPDATE"
-      ]
-    },
-    "rootHash": {
+    "projectName": {
       "type": "string"
     },
-    "cip26": {
-      "type": "array",
-      "items": [
-        {
-          "type": "string"
-        }
-      ]
-    },
-    "did": {
+    "link": {
       "type": "string"
     },
-    "signature": {
+    "twitter": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "subCategory": {
+      "type": "string"
+    },
+    "description": {
       "type": "object",
       "properties": {
-        "r": {
-          "type": "string"
-        },
-        "s": {
-          "type": "string"
-        },
-        "algo": {
-          "type": "string"
-        },
-        "pub": {
+        "short": {
           "type": "string"
         }
       },
       "required": [
-        "r",
-        "s",
-        "algo",
-        "pub"
+        "short"
+      ]
+    },
+    "releases": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "releaseNumber": {
+              "type": "integer"
+            },
+            "releaseName": {
+              "type": "string"
+            },
+            "auditId": {
+              "type": "string"
+            },
+            "scripts": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "version"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "releaseNumber",
+            "releaseName",
+            "auditId",
+            "scripts"
+          ]
+        }
+      ]
+    },
+    "scripts": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "purpose": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "versions": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "integer"
+                    },
+                    "plutusVersion": {
+                      "type": "integer"
+                    },
+                    "fullScriptHash": {
+                      "type": "string"
+                    },
+                    "scriptHash": {
+                      "type": "string"
+                    },
+                    "contractAddress": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "version",
+                    "plutusVersion",
+                    "fullScriptHash",
+                    "scriptHash",
+                    "contractAddress"
+                  ]
+                }
+              ]
+            },
+            "audits": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "auditId": {
+                      "type": "string"
+                    },
+                    "auditor": {
+                      "type": "string"
+                    },
+                    "auditLink": {
+                      "type": "string"
+                    },
+                    "auditType": {
+                      "type": "string"
+                    },
+                    "signature": {
+                      "type": "string"
+                    },
+                    "publicKey": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "auditId",
+                    "auditor",
+                    "auditLink",
+                    "auditType",
+                    "signature",
+                    "publicKey"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "purpose",
+            "type",
+            "versions",
+            "audits"
+          ]
+        }
       ]
     }
   },
   "required": [
     "subject",
-    "rootHash",
-    "cip26",
-    "signature"
+    "projectName",
+    "link",
+    "twitter",
+    "category",
+    "subCategory",
+    "description",
+    "releases",
+    "scripts"
   ]
 }
 ```
 
-## Metadata Label
+## Example
 
-When submitting the transaction metadata picks one of the following values for `transaction_metadatum_label`:
+```json
+{
+    "subject": "9SYAJPNN",
+    "projectName": "My Project",
+    "link": "https://myProject.app",
+    "twitter": "https://twitter.com/MyProject",
+    "category": "GAMING",
+    "subCategory": "RPG",
+    "description": {
+                   "short": "A story rich game where choices matter"
+    },	
 
-- `666`: DApp Registration
-- `667`: DApp Certification
+    "releases": [
+        {
+            "releaseNumber": 1,
+            "releaseName": "V1",
+            "auditId": "z5L90f",
+            "scripts": [
+                {
+                    "id": "PmNd6w",
+                    "version": 1
+                }
+            ]
+        }
+    ],
+    "scripts": [
+        {
+            "id": "PmNd6w",
+	    "name": "Marketplace",
+            "purpose": "SPEND",
+	    "type": "PLUTUS",		
+            "versions": [
+                {
+                    "version": 1,
+		    "plutusVersion": 1, 
+	            "fullScriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",                     
+                    "scriptHash": "1dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
+                    "contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
+                }    
+            ],
+          "audits": [
+              {
+                "auditId": "z5L90f",
+                "auditor": "Canonical LLC.",
+                "auditLink": "https://github.com/somlinkToAessment",
+                "auditType": "MANUAL",
+                "signature": "0x1234567890abcdef",
+                "publicKey": "0x1234567890abcdef"
+              }
+          ]
+        }
+    ]
+}
+```
+
+### **Scripts Audits**
+As part of the metadata we will be including a list of audits for each script. This will be a list of audits that have been performed on the script. The audits will be performed by a third party auditor and will be signed by the auditor. 
+
+Some of the properties included in the audit are:
+
+- **auditType** property will be included that can take one of the following values: MANUAL, AUTOMATED, or MIXED.
+- **auditId** property will be included that will be a unique identifier for the audit.
+- **auditLink** property will be included that will be a link to the audit report.
+- **signature** property will be included that will be a signature of the audit report.
+- **publicKey** property will be included that will be the public key of the auditor.
+
