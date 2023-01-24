@@ -26,7 +26,7 @@ Using the eUTxO model, it is currently possible to create spending scripts that 
 Note: While Cardano simple scripts do not use a datum, they may also suffer from this limitation.
 
 ### Problem 2: Wrong/Missing Datums Result in Permanently Locked Script UTxOs
-When a script's UTxO is missing a datum or has the wrong datum, the plutus spending script is unable to parse the datum attached to the UTxO and is therefore guaranteed to fail. This results in permanently locked UTxOs at the script's address. In order to help prevent accidental locking of script UTxOs, proxies are generally used. The idea is for users to send their funds to this proxy first. The proxy then attaches the required datum for the users and pass the funds onto the desired script address. However, it is very difficult to use such proxies in a decentralized way. In short, by being forced to use proxies, the Dapp loses some of its decentralization.
+When a script's UTxO is missing a datum or has the wrong datum, the plutus spending script is unable to parse the datum attached to the UTxO and is therefore guaranteed to fail. This results in permanently locked UTxOs at the script's address. In order to help prevent accidental locking of script UTxOs, proxies are generally used. The idea is for users to send their funds to this proxy first. The proxy then attaches the required datum for the users and passes the funds onto the desired script address. However, it is very difficult to use such proxies in a decentralized way. In short, by being forced to use proxies, the Dapp loses some of its decentralization.
 
 Further, there are a number of use cases where a datum is not needed for the Dapp to function. In these situations, a dummy datum is still required just to prevent locking.
 
@@ -35,7 +35,7 @@ As an addition point, regulators are not going to like any application where it 
 ### Problem 3: No Universal Plutus Script
 Since plutus spending scripts take a datum while plutus minting and staking scripts do not, it is currently not possible to create a universal plutus script (one that can do all three). There are use cases where the Dapp would be more secure if the same script could be used for both spending and minting. An example is to only mint a token if a deposit is made to the relevant script address. 
 
-Right now, if a developer wanted to do this, he/she would need to hardcode the spending script hash into the minting policy AND the minting policy id needs to be passed to the spending script as a datum. If a universal script could be used, the spending script hash would be the same as the minting policy id. In the former case, the security of this process depends on how well the datum usage can be guarded. In the latter case, the process is secure by default since the hash cannot be faked/wrong.
+Right now, if a developer wanted to do this, he/she would need to hardcode the spending script hash into the minting policy AND the minting policy id would need to be passed to the spending script as a datum. If a universal script could be used, the spending script hash would be the same as the minting policy id. In the former case, the security of this process depends on how well the datum usage can be guarded. In the latter case, the process is secure by default since the hash cannot be faked/wrong.
 
 ## Specification
 ### `Data` Specification for `Maybe Datum`
@@ -93,7 +93,7 @@ Example transaction level spending script flag usage:
   --tx-level-spending-reference-tx-in-redeemer-file <script_redeemer> \
 ```
 
-Since there is no need to parse the datums attached to each UTxO, the datum flags are not needed. Any datums present will still appear in the `ScriptContext` that gets passed to the plutus script. All UTxOs being validated by the transaction level script are assumed to be using the same redeemer which is why it is okay to place the redeemer flag at the end.
+For transaction level scripts, since there is no need to parse the datums attached to each UTxO, the datum flags are not needed. Any datums present will still appear in the `ScriptContext` that gets passed to the plutus script. All UTxOs being validated by the transaction level script are assumed to be using the same redeemer which is why it is okay to place the redeemer flag at the end.
 
 Users **MUST** explicitly state which level to use. Building a transaction should fail if the level is not explicitly stated or if both levels are specified for the same UTxO.
 
@@ -129,7 +129,7 @@ data ScriptPurpose
     | Certifying DCert
 ```
 
-`DCert` is also a sum type so the precedence has already been established for this usage. For the `Data` specification of `SpendingLevel`, I propose:
+For the `Data` specification of `SpendingLevel`, I propose:
 
 ``` Haskell
 UTxOLevel txOutRef = Constr 0 [txOutRefAsData]
