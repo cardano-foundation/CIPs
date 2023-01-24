@@ -1,8 +1,9 @@
 ; "????" to be replaced by the CIP number, as a `uint`.
-metadata = { ???? : uint => label_metadata }
+metadata = { ???? => action }
 
 ; =========================================================================
 ; CIP-???? actions
+
 action =
   {
     ? assign_metadata_oracle : action_oracle,
@@ -25,18 +26,19 @@ action_regex = { * policy_id => { * asset_regex => metadata_details } }
 
 action_tabular = { * policy_id => csv_update_opaque }
 
-; Either fixed-sized text (CIP-25v1) or fixed-sized bytes (CIP-25v2)
-; The CIP-???? indexer should normalize all labels to bytes internally.
-; It can also provide an API option to format labels as text in its
-; response to a client request for current token metadata, if possible.
-policy_id = label_64
-asset_name = label_64
-asset_regex = regex_64
+; Technically, both policy IDs and asset names should be 32 bytes long.
+; However, this isn't enforced for asset names, and CIP-25 already treats
+; these as `text_64`, so we don't enforce the more narrow `bytes_32` type
+; here.
+policy_id = text_64
+asset_name = text_64
+
+asset_regex = text_regex_extendable
 
 ; =========================================================================
 ; Backwards compatibility with CIP-25 (simple and regex metadata updates)
 ; Definitions for the following fields in `metadata_details` should follow
-; the same schema as in CIP-25.
+; the same schema as in CIP-25, except that `name` and `image` are optional.
 ; Other fields can have arbitrary `transaction_metadatum` values.
 metadata_details =
   {
@@ -66,16 +68,15 @@ files_details =
 csv_update_opaque = text_extendable
 
 ; Informally, if we concatenate the `csv_update_opaque` value to a single long
-; text, and then split it on unescaped newline characters,
-; then it should comply with the following cddl schema.
+; text, and then split it on unescaped newline characters, then it should comply
+; with the following cddl schema.
 ; (Newline characters inside of a double-quoted field value are considered
 ; escaped, which means that they do no indicate the start of a new record.)
-;
-; csv_update = [header, * record]
-; header = ["tokenName", * header_field]
-; record = [text_64, * record_field]
-; header_field = text
-; record_field = text
+csv_update = [header, * record]
+header = ["tokenName", * header_field]
+record = [text_64, * record_field]
+header_field = text
+record_field = text
 
 ; For a given `policy_id`, a `csv_update` value can be transformed into a
 ; `metadata_details` value as follows:
@@ -85,15 +86,16 @@ csv_update_opaque = text_extendable
 ;    splitting it on the '.' character.
 ; 3. For each pair of `record_field` and `[header_field_part]` values, construct
 ;    the following nested object:
-;      csv_nested_object = { header_field_part[0] =>
-;        { header_field_part[1] =>
-;          { header_field_part[2] =>
-;            ...
-;                      { header_field_part[N] => `record_field` }
-;            ...
+;      csv_nested_object = 
+;        { header_field_part[0] =>
+;          { header_field_part[1] =>
+;            { header_field_part[2] =>
+;              ...
+;                        { header_field_part[N] => `record_field` }
+;              ...
+;            }
 ;          }
 ;        }
-;      }
 ; 4. For each record, combine and normalize its record fields' constructed
 ;    nested objects into a single unified object for that record. Nest the
 ;    unified object under the record's "tokenName" value:
@@ -107,7 +109,7 @@ csv_update_opaque = text_extendable
 ;
 ; The effect of a `csv_update_opaque` on the token metadata state in the
 ; CIP-???? indexer must be the same as the effect of the corresponding
-; `csv_update_simple`.
+; `csv_update_simple` (applied as a simple update action).
 
 ; =========================================================================
 ; Imported from cardano-ledger/.../babbage.cddl
@@ -123,14 +125,29 @@ address = bytes
 ; =========================================================================
 ; Convenient type aliases
 
-regex_64 = bytes_64 .regexp
-
 ; Fixed-size text and bytes
-label_64 = bytes_64 / text_64
+label_32 = bytes_32 / text_32
+bytes_32 = bytes .size (0..32)
+text_32 = bytes .size (0..32)
 
+label_64 = bytes_64 / text_64
 bytes_64 = bytes .size (0..64)
 text_64 = text .size (0..64)
 
+; Extendable text and bytes
 text_extendable = text_64 / [ * text_64 ]
 bytes_extendable = bytes_64 / [ * bytes 64]
 
+; Regex (fixed-size)
+; Tag 35 is for regular expressions in Perl Compatible Regular
+; Expressions (PCRE) / JavaScript syntax [ECMA262].
+; https://www.rfc-editor.org/rfc/rfc7049#section-2.4.4.3
+; https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
+text_regex = #6.35(text_64)
+
+; Regex (extendable size)
+; Technically, CBOR maps can have arrays as keys. This prevents them from being
+; directly convertable to JSON, but we can recover JSON-convertability by
+; concatenating the array-valued key into a single UTF-8 text.
+; The resulting concatenated text should be interpreted as `#6.35(text)`.
+text_regex_extendable = text_extendable
