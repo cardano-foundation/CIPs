@@ -8,19 +8,20 @@ Authors:
     - George Flerovsky <george@mlabs.city>
     - Samuel Williams <samuel@mlabs.city>
 Implementors:
-    - Equine <[https://www.equine.gg/](https://www.equine.gg/)>
-    - MLabs <[https://mlabs.city/](https://mlabs.city/)>
+    - Equine <https://www.equine.gg/>
+    - MLabs <https://mlabs.city/>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/430
 Created: 2022-11-01
 License: CC-BY-4.0
 ---
+# CIP-????: NFT Metadata Update Oracles
 
-# Abstract
+## Abstract
 
 This proposal extends the CIP-25 standard for defining and updating token metadata via transaction metadata, by providing a new mechanism to update token metadata without having to mint or burn tokens, while maintaining full backward compatibility with CIP-25. The new mechanism is capable of expressing metadata updates more efficiently than CIP-25 updates.
 
-# Motivation
+## Motivation
 
 On Cardano’s eUTxO ledger, native tokens exist without any inherently attached metadata. The ledger does not provide a direct method for preserving any information associated with an asset class of native tokens, as transactions move the tokens from one UTxO to another.
 
@@ -42,7 +43,7 @@ Our NFT gaming application is leveraging the Cardano immutable ledger, rather th
 
 We expect that this proposal will be useful to many other applications that need to track dynamic on-chain metadata for large NFT collections, particularly in the growing NFT gaming sector. It may also be useful for artists to update on-chain metadata about their art NFTs (e.g. royalty payment receiving address) without having to burn or mint anything.
 
-# Specification
+## Specification
 
 Our proposal extends CIP-25 with a new update mechanism:
 
@@ -59,7 +60,7 @@ However, we recommend that CIP-???? adopters use the new metadata update mechani
 
 Our proposal only affects the `????` top-level CBOR tag of the metadata field in Cardano transactions. (Note: we’re using `????` as a stand-in for the CIP number that will eventually be assigned to this proposal.)
 
-## Assigning a metadata oracle for a token policy ID
+### Assigning a metadata oracle for a token policy ID
 
 A token metadata oracle is defined via two addresses:
 
@@ -83,7 +84,7 @@ A metadata oracle can be explicitly assigned to a policy ID by setting the follo
 
 While a metadata oracle is not explicitly assigned to a native-script-based policy ID, the policy ID is implicitly assigned a metadata oracle with both addresses set to an address derived from the native script. Specifically, they are both set to an Enterprise address constructed by setting the payment key to the verification key from the native script and keeping the staking key empty.
 
-## Updating an oracle assignment
+### Updating an oracle assignment
 
 The metadata oracle assignment for a policy ID can be updated via a transaction signed by the oracle main address key. The transaction must only send ADA from the oracle main address to itself and must not mint any tokens, but it may contain any number of inputs and outputs. Otherwise, the transaction is ignored for the purposes of metadata oracle assignment.
 
@@ -106,7 +107,7 @@ The `main_address` or the `update_address` fields for a `<policyID>` can be omit
 
 If a metadata oracle was implicitly assigned to a policy ID before the assignment update, then the implicit assignment is replaced by the new explicit assignment.
 
-## Simple metadata updates
+### Simple metadata updates
 
 A simple metadata update transaction must only send ADA from the oracle update address to itself and must not mint any tokens, but it may contain any number of inputs and outputs. Otherwise, the transaction is ignored for the purposes of token metadata.
 
@@ -128,7 +129,7 @@ The schema for simple metadata updates in CIP-???? is similar to the CIP-25 sche
 
 To remove a metadata field, set its value explicitly to `null` in the metadata update.
 
-## Regex metadata updates
+### Regex metadata updates
 
 The schema for regex metadata updates is as follows:
 
@@ -170,7 +171,7 @@ The regular expression pattern in `<tokenNameRegex>` is defined according to the
 
 -   European Computer Manufacturers Association, "ECMAScript Language Specification 5.1 Edition", ECMA Standard ECMA-262, June 2011. Section 15.10. [https://www.ecma-international.org/wp-content/uploads/ECMA-262_5.1_edition_june_2011.pdf](https://www.ecma-international.org/wp-content/uploads/ECMA-262_5.1_edition_june_2011.pdf)
 
-## Tabular metadata updates
+### Tabular metadata updates
 
 Tabular metadata updates use a condensed rectangular format to specify new values for a fixed set of fields for a large number of assets. Specifically, we use the comma-separated values (CSV) format:
 
@@ -179,6 +180,7 @@ Tabular metadata updates use a condensed rectangular format to specify new value
   "????": {
 	  "tabular_metadata_update": {
 	    "<policyId>": "<CsvValue>"
+    }
   }
 }
 ```
@@ -271,7 +273,7 @@ The CSV format is defined by the following standard:
 
 -   Internet Engineering Task Force, “Common Format and MIME Type for Comma-Separated Values (CSV) Files", Request for Comments 4180, October 2005. [https://www.ietf.org/rfc/rfc4180.txt](https://www.ietf.org/rfc/rfc4180.txt)
 
-## Order of application for updates
+### Order of application for updates
 
 Up to network consensus, the Cardano blockchain imposes a total ordering on transactions added to the chain — each transaction can be indexed by the slot number of the block that added it to the chain, and the transaction’s index within that block. Network nodes may disagree about which blocks have been added most recently to the blockchain; however, the disagreement about whether a particular transaction was added at a particular position in the total order decreases exponentially as more and more blocks are added to the chain.
 
@@ -290,7 +292,7 @@ A transaction can contain CIP-???? token metadata updates of different types, pl
 
 We recommend that token metadata oracle operators not mix multiple update types in the same transaction, unless they have a clear understanding of the outcome of applying the updates in the above sequence.
 
-## Token metadata indexer
+### Token metadata indexer
 
 The CIP-???? token metadata indexer begins with a configuration of the policy IDs for which it will be tracking metadata. Optionally, it can be configured to track metadata for all tokens on Cardano.
 
@@ -300,7 +302,7 @@ The indexer continues to monitor minting transactions for the policy IDs that it
 
 For each oracle main address currently assigned to a policy ID, the indexer monitors the blockchain for non-minting transactions that only send ADA from the oracle main address to itself and contain oracle assignment updates in their metadata. The indexer updates its database to reflect these explicit oracle assignments and removes any implicit assignments that were replaced by explicit assignments.
 
-For each oracle update address currently assigned to a policy ID, the indexer monitors the blockchain for non-minting transactions that only send ADA from the oracle update address to itself and contain CIP-???? token metadata updates. The indexer applies these metadata updates in the order defined in [Order of application for updates](https://www.notion.so/Order-of-application-for-updates-07b8a74001c9484698f400f9c5e1c7c8). CIP-???? metadata updates are applied to the asset classes and metadata fields that they target, while keeping all other fields the same.
+For each oracle update address currently assigned to a policy ID, the indexer monitors the blockchain for non-minting transactions that only send ADA from the oracle update address to itself and contain CIP-???? token metadata updates. The indexer applies these metadata updates in the order defined in [Order of application for updates](#order-of-application-for-updates). CIP-???? metadata updates are applied to the asset classes and metadata fields that they target, while keeping all other fields the same.
 
 For tabular metadata updates, the bytestring CSV value may get broken up into an array of bytestring chunks in the CBOR representation. When this happens, the indexer recombines the chunks into the whole CSV table before applying the tabular metadata update.
 
@@ -308,7 +310,7 @@ To be able to handle blockchain rollbacks, the indexer keeps track of past metad
 
 For compatibility with existing applications that are already relying on CIP-25 metadata indexers, the CIP-???? indexer provides a similar API so that those applications can get and display the current CIP-???? token metadata in the same way that they have been for CIP-25 metadata. The indexer indicates that it is following the CIP-???? standard.
 
-# Rationale
+## Rationale
 
 We pursued the following design goals in our solution:
 
@@ -321,7 +323,7 @@ We pursued the following design goals in our solution:
 7. Minimize the time and resource usage required for an indexer to apply CIP-25 and CIP-???? updates for an asset class and then serve the resulting token metadata to applications.
 8. Gracefully handle blockchain rollbacks that modify the sequence of CIP-25 and CIP-???? metadata updates for an asset class.
 
-## Backward compatibility
+### Backward compatibility
 
 We maintain full backward compatibility with CIP-25:
 
@@ -329,13 +331,13 @@ We maintain full backward compatibility with CIP-25:
 -   CIP-???? updates are namespaced under a different top-level CBOR tag than CIP-25, in order to prevent any clashes between field names, policy IDs, and token names.
 -   The CIP-???? indexer provides the accumulated CIP-25 and CIP-???? metadata via the same API as the CIP-25 indexer.
 
-## Using an assigned oracle for token metadata updates
+### Using an assigned oracle for token metadata updates
 
 We recognize CIP-???? updates only if they are issued by an oracle currently assigned for the corresponding policy IDs. This assignment is either directly authorized by the token issuer (explicitly or implicitly) or else indirectly authorized by the token issuer via the delegated authority that the token issuer placed in the originally assigned oracle to transfer the assignment to other oracles. Therefore, all authority to post valid CIP-???? updates about a token originates from the token issuer.
 
 An alternative design could have oracles that declare themselves as sources of metadata for tokens, without authorization from anyone, and then users could voluntarily subscribe to the metadata oracles that they wish to follow. However, such an approach would make it very difficult for the Cardano ecosystem to converge on a single objective metadata state for a token, as each user would have his own subjective view of token metadata based on his oracles subscriptions. This alternative approach could be interesting to allow secondary/auxiliary metadata to be defined for tokens, but it is unsuitable for the primary metadata that CIP-25 and CIP-???? seek to manage.
 
-## Identifying oracles by addresses
+### Identifying oracles by addresses
 
 We use two addresses to identify an oracle when assigning it to a policy ID. It would be simpler to use a single oracle address, but we chose to separate the main address (authorized to reassign the oracle) from the update address (authorized to post updates) for an oracle. We did this to mitigate the risk of using the update address in an automated process on a network machine, and to allow the update address to be safely rotated via a transaction that can only be signed on a cold storage or hardware wallet device using the main address.
 
@@ -343,43 +345,43 @@ Instead of using addresses to identify oracles, we could have identified oracles
 
 This minting-policy-based alternative for identifying oracles may be more advantageous for more flexibly managing oracle authorization (including rate-limiting, time-boxing, etc.) and proving data provenance to on-chain scripts. These advantages are relevant for oracles that provide information in utxo datums meant for use in smart contracts, but they are not as relevant for this CIP, where we seek to provide a method to provide updateable token metadata via transaction metadata (as a direct extension of CIP-25). Furthermore, it is easier to track transactions originating from a given address in an indexer than to keep track of all the people who control various authorization tokens, at a given time.
 
-## Restricting CIP-???? update transactions
+### Restricting CIP-???? update transactions
 
 We prohibit CIP-???? oracle assignment updates and metadata updates from occurring in transactions that mint tokens, in order to avoid awkward clashes with CIP-25 metadata transactions. Also, it does not make sense conceptually for CIP-25 metadata transactions to coincide with CIP-???? updates. CIP-25 should be used to define the initial metadata for an asset class, and then CIP-???? updates should be used for any subsequent changes to that metadata.
 
 We require CIP-???? updates to occur in transactions that only send ADA from an oracle address (main or update, as appropriate), to prevent unforeseen interactions with other mechanisms that may have negative consequences. CIP-???? update transactions should have the singular purpose of interacting with the CIP-???? update mechanism.
 
-## Implicit oracle assignment
+### Implicit oracle assignment
 
 The implicit method of assigning a metadata oracle is needed to allow existing token issuers to opt into the CIP-???? update mechanism. Their minting policies may no longer allow any more token minting or burning, which would prevent the token issuers from being able to explicitly assign an oracle via a CIP-25 update for those policies. The implicit assignment method bootstraps the CIP-???? update mechanism for these policies.
 
 The implicit address is of the Enterprise address type, to avoid having to deal with staking keys. If needed, the metadata oracle operator can send ADA to the Enterprise address, and then spend it if the operator still controls the payment key of that Enterprise address.
 
-## Opting out of CIP-????
+### Opting out of CIP-????
 
 Opting out of the CIP-???? update mechanism can be done by explicitly assigning an oracle with addresses from which ADA cannot be spent (e.g. Plutus AlwaysFails). If the minting policy does not allow any more minting or burning, then this is an irreversible opt-out.
 
-## Regex metadata updates
+### Regex metadata updates
 
 When managing large collections of thousands of NFTs, one often needs to set a given field to the same value for many NFTs. Doing this individually for each NFT via CIP-25 updates or CIP-???? simple updates is inefficient, so we have proposed the regex metadata update as a succinct way to specify a mapping from multiple token names to a single metadata update.
 
-## Tabular metadata updates
+### Tabular metadata updates
 
 Another common use case for dynamic token metadata involves having a set of volatile fields that should receive relatively frequent updates, but where those updates should be different for each NFT. Labeling each field value update with its field name for each NFT is very verbose, especially if the field is deeply nested within the metadata schema for the NFT. For this use case, we have proposed the tabular metadata update format as a way to avoid this repetition — field names/paths are defined once in the column names of a rectangular table and applied consistently for each row of updated metadata field values.
 
 Rectangular tables are a standard format used in the data analytics field for these situations, and the CSV format is the most widely used and interoperable rectangular data format.
 
-# Path to Active
+## Path to Active
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 This proposal may be considered active if:
 
-1. The solution meets the design goals listed in the [Rationale](https://www.notion.so/Rationale-4c5ae115646841539e734672fd67ba22) section to a satisfactory degree.
-2. The indexer and simple tools to construct CIP-???? update transactions (as described in the [Specification](https://www.notion.so/Specification-2cdbc357edda4b08b581b25d63968e3c) section) are fully implemented and provided in an open-source (Apache 2.0 licensed) repository with sufficient documentation.
+1. The solution meets the design goals listed in the [Rationale](#rationale) section to a satisfactory degree.
+2. The indexer and simple tools to construct CIP-???? update transactions (as described in the [Specification](#specification) section) are fully implemented and provided in an open-source (Apache 2.0 licensed) repository with sufficient documentation.
 3. The CIP-???? metadata format, indexer, and/or indexer API are used by several stakeholders in the Cardano ecosystem, including dApps, blockchain explorers, analytics platforms, etc.
 
-## Implementation Plan
+### Implementation Plan
 
 Equine and MLabs are collaborating on developing the indexer described in this CIP and the Equine NFT gaming application will be using CIP-???? updates to manage metadata updates for its large collection of thousands of NFTs under multiple minting policies.
 
@@ -387,7 +389,7 @@ We will include detailed documentation, example configurations, and tutorials on
 
 We are actively engaged in discussions with other stakeholders in the Cardano ecosystem that are interested in adopting this CIP to their projects, platforms, and tools.
 
-# Copyright
+## Copyright
 
 This CIP is licensed under the Creative Commons Attribution 4.0 International Public License ([CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)).
 
