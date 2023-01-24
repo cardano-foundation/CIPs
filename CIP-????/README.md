@@ -8,8 +8,8 @@ Authors:
     - George Flerovsky <george@mlabs.city>
     - Samuel Williams <samuel@mlabs.city>
 Implementors:
-    - Equine <[https://www.equine.gg/](https://www.equine.gg/)>
-    - MLabs <[https://mlabs.city/](https://mlabs.city/)>
+    - Equine <https://www.equine.gg/>
+    - MLabs <https://mlabs.city/>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/430
 Created: 2022-11-01
@@ -180,6 +180,7 @@ Tabular metadata updates use a condensed rectangular format to specify new value
   "????": {
 	  "tabular_metadata_update": {
 	    "<policyId>": "<CsvValue>"
+    }
   }
 }
 ```
