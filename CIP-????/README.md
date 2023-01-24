@@ -11,7 +11,7 @@ Implementors:
     - Equine <[https://www.equine.gg/](https://www.equine.gg/)>
     - MLabs <[https://mlabs.city/](https://mlabs.city/)>
 Discussions:
-    - [CIP GH PR link]
+    - https://github.com/cardano-foundation/CIPs/pull/430
 Created: 2022-11-01
 License: CC-BY-4.0
 ---
