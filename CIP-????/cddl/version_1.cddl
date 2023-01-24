@@ -27,7 +27,7 @@ action_regex = { * policy_id => { * asset_regex => metadata_details } }
 action_tabular = { * policy_id => csv_update_opaque }
 
 ; Technically, both policy IDs and asset names should be 32 bytes long.
-; However, this isn't enforced for asset names, and CIP-25 already treats
+; However, this isn't enforced for asset names, and CIP-25v1 already treats
 ; these as `text_64`, so we don't enforce the more narrow `bytes_32` type
 ; here.
 policy_id = text_64
@@ -47,7 +47,7 @@ metadata_details =
     ? mediaType : text_64,
     ? description : text_extendable,
     ? files : [* files_details],
-    * (label_64 => transaction_metadatum)
+    * ( label_64 => transaction_metadatum )
   }
 
 files_details =
@@ -72,9 +72,9 @@ csv_update_opaque = text_extendable
 ; with the following cddl schema.
 ; (Newline characters inside of a double-quoted field value are considered
 ; escaped, which means that they do no indicate the start of a new record.)
-csv_update = [header, * record]
-header = ["tokenName", * header_field]
-record = [text_64, * record_field]
+csv_update = [ header, * record ]
+header = [ "tokenName", * header_field ]
+record = [ text_64, * record_field ]
 header_field = text
 record_field = text
 
@@ -136,7 +136,7 @@ text_64 = text .size (0..64)
 
 ; Extendable text and bytes
 text_extendable = text_64 / [ * text_64 ]
-bytes_extendable = bytes_64 / [ * bytes 64]
+bytes_extendable = bytes_64 / [ * bytes 64 ]
 
 ; Regex (fixed-size)
 ; Tag 35 is for regular expressions in Perl Compatible Regular
