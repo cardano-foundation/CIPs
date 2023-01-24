@@ -35,7 +35,9 @@ As an addition point, regulators are not going to like any application where it 
 ### Problem 3: No Universal Plutus Script
 Since plutus spending scripts take a datum while plutus minting and staking scripts do not, it is currently not possible to create a universal plutus script (one that can do all three). There are use cases where the Dapp would be more secure if the same script could be used for both spending and minting. An example is to only mint a token if a deposit is made to the relevant script address. 
 
-Right now, if a developer wanted to do this, he/she would need to hardcode the spending script hash into the minting policy AND the minting policy id would need to be passed to the spending script as a datum. If a universal script could be used, the spending script hash would be the same as the minting policy id. In the former case, the security of this process depends on how well the datum usage can be guarded. In the latter case, the process is secure by default since the hash cannot be faked/wrong.
+The `eopsin` pythonic smart contract tooling has implemented a workaround for this, however, it requires an "ugly hack" that some developers may not be comfortable using. You can read more about it [here](https://github.com/ImperatorLang/eopsin/blob/master/ARCHITECTURE.md#minting-policy---spending-validator-double-function).
+
+Right now, if a developer wanted to implement the above example without using the "ugly hack", he/she would need to hardcode the spending script hash into the minting policy AND the minting policy id would need to be passed to the spending script as a datum. If a universal script could be used, the spending script hash would be the same as the minting policy id. In the former case, the security of this process depends on how well the datum usage can be guarded. In the latter case, the process is secure by default since the hash cannot be faked/wrong.
 
 ## Specification
 ### `Data` Specification for `Maybe Datum`
