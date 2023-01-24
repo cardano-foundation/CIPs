@@ -409,3 +409,5 @@ Some of the properties included in the audit are:
 - **signature** property will be included that will be a signature of the audit report.
 - **publicKey** property will be included that will be the public key of the auditor.
 
+### **Stores Custom fields**
+Each store might have their own requirements for the metadata. For example, some stores might require a field for logo, or screenshots links. The store's should adviertise what fields they require in their documentation so that developers are aware and they can include them in the metadata. 
