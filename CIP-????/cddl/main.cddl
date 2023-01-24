@@ -1,0 +1,136 @@
+; "????" to be replaced by the CIP number, as a `uint`.
+metadata = { ???? : uint => label_metadata }
+
+; =========================================================================
+; CIP-???? actions
+action =
+  {
+    ? assign_metadata_oracle : action_oracle,
+    ? simple_metadata_update : action_simple,
+    ? regex_metadata_update : action_regex,
+    ? tabular_metadata_update : action_tabular
+  }
+
+action_oracle = { * policy_id => oracle_assignment }
+
+oracle_assignment =
+  {
+    ? main_address : address,
+    ? update_address : address
+  }
+
+action_simple = { * policy_id => { * asset_name => metadata_details } }
+
+action_regex = { * policy_id => { * asset_regex => metadata_details } }
+
+action_tabular = { * policy_id => csv_update_opaque }
+
+; Either fixed-sized text (CIP-25v1) or fixed-sized bytes (CIP-25v2)
+; The CIP-???? indexer should normalize all labels to bytes internally.
+; It can also provide an API option to format labels as text in its
+; response to a client request for current token metadata, if possible.
+policy_id = label_64
+asset_name = label_64
+asset_regex = regex_64
+
+; =========================================================================
+; Backwards compatibility with CIP-25 (simple and regex metadata updates)
+; Definitions for the following fields in `metadata_details` should follow
+; the same schema as in CIP-25.
+; Other fields can have arbitrary `transaction_metadatum` values.
+metadata_details =
+  {
+    ? name : text_64,
+    ? image : text_extendable,
+    ? mediaType : text_64,
+    ? description : text_extendable,
+    ? files : [* files_details],
+    * (label_64 => transaction_metadatum)
+  }
+
+files_details =
+  {
+    name : text_64,
+    mediaType : text_64,
+    src : text_extendable
+  }
+
+; =========================================================================
+; Tabular updates' CSV schema
+
+; Cardano ledger imposes a fixed size of 64 on text and bytestrings,
+; which prevents us from directly encoding a CSV table as a single long
+; text. This means that, formally, the CSV in a tabular update
+; is just an opaque extendable text (i.e. a fixed text or an array of fixed 
+; texts).
+csv_update_opaque = text_extendable
+
+; Informally, if we concatenate the `csv_update_opaque` value to a single long
+; text, and then split it on unescaped newline characters,
+; then it should comply with the following cddl schema.
+; (Newline characters inside of a double-quoted field value are considered
+; escaped, which means that they do no indicate the start of a new record.)
+;
+; csv_update = [header, * record]
+; header = ["tokenName", * header_field]
+; record = [text_64, * record_field]
+; header_field = text
+; record_field = text
+
+; For a given `policy_id`, a `csv_update` value can be transformed into a
+; `metadata_details` value as follows:
+; 1. Pair each `record_field` with its corresponding `header_field`
+;    (i.e. like zipping two lists).
+; 2. Transform each `header_field` into a `[header_field_part]` array, by
+;    splitting it on the '.' character.
+; 3. For each pair of `record_field` and `[header_field_part]` values, construct
+;    the following nested object:
+;      csv_nested_object = { header_field_part[0] =>
+;        { header_field_part[1] =>
+;          { header_field_part[2] =>
+;            ...
+;                      { header_field_part[N] => `record_field` }
+;            ...
+;          }
+;        }
+;      }
+; 4. For each record, combine and normalize its record fields' constructed
+;    nested objects into a single unified object for that record. Nest the
+;    unified object under the record's "tokenName" value:
+;      csv_record_object = { text_64 => Union([csv_nested_object]) }
+; 5. Unify the `record_object`s into a single object, and then nest it under
+;    the `policy_id`:
+;      csv_policy_object = { policy_id => Union([csv_record_object]) }
+; 6. Combine the `action_simple_single` values into a single `action_simple`
+;    value:
+;      csv_update_simple = Union([csv_policy_object])
+;
+; The effect of a `csv_update_opaque` on the token metadata state in the
+; CIP-???? indexer must be the same as the effect of the corresponding
+; `csv_update_simple`.
+
+; =========================================================================
+; Imported from cardano-ledger/.../babbage.cddl
+transaction_metadatum =
+    { * transaction_metadatum => transaction_metadatum }
+  / [ * transaction_metadatum ]
+  / int
+  / bytes_64
+  / text_64
+
+address = bytes
+
+; =========================================================================
+; Convenient type aliases
+
+regex_64 = bytes_64 .regexp
+
+; Fixed-size text and bytes
+label_64 = bytes_64 / text_64
+
+bytes_64 = bytes .size (0..64)
+text_64 = text .size (0..64)
+
+text_extendable = text_64 / [ * text_64 ]
+bytes_extendable = bytes_64 / [ * bytes 64]
+
