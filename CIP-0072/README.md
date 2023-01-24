@@ -1,6 +1,6 @@
 ---
 CIP: 72
-Title: Cardano DApp Registration & Certification
+Title: Cardano DApp Registration & Discovery
 Status: Draft
 Category: Metadata	
 Authors: 
@@ -11,7 +11,7 @@ Created: 2022-10-18
 License: CC-BY-4.0
 ---
 
-# CIP-0072: Cardano DApp Registration & Certification
+# CIP-0072: Cardano DApp Registration & Discovery
 
 ## **Abstract**
 DApp developers do not have a standardised method to record immutable, persistent claims about their dApp(s) that their users can verify. A dApp developers needs to "register" their dApp by providing a set of claims about their dApp(s) that can be verified by the user. This CIP describes a standardised method for dApp developers to register their dApp(s) and for users to verify the claims made by the dApp developer.
@@ -411,3 +411,87 @@ Some of the properties included in the audit are:
 
 ### **Stores Custom fields**
 Each store might have their own requirements for the metadata. For example, some stores might require a field for logo, or screenshots links. The store's should adviertise what fields they require in their documentation so that developers are aware and they can include them in the metadata. 
+
+### **Offchain Metadata Storage**
+
+There are multiple options to store metadata offchain. The most common options are:
+- IPFS
+- CIP-26 
+
+#### `CIP-26 Example`
+
+CIP-26 offers a API that stores properties regarding a particular subject. This isn't directly JSON compliant as it would only support writing flat JSON objects into a CIP-26 server. Although we can make use of encoding mechanisms to store nested JSON properties in a CIP-26 server.
+
+Sample JSON 
+```json
+  {
+  	"subject": "9SYAJPNN",
+  	"projectName": "My Project",
+  	"link": "https://myProject.app",
+  	"twitter": "https://twitter.com/MyProject",
+  	"category": "GAMING",
+  	"subCategory": "RPG",
+  	"description": {
+  		"short": "A story rich game where choices matter"
+  	},
+
+  	"releases": [{
+  		"releaseNumber": 1,
+  		"releaseName": "V1",
+  		"auditId": "z5L90f",
+  		"scripts": [{
+  			"id": "PmNd6w",
+  			"version": 1
+  		}]
+  	}],
+  	"scripts": [{
+  		"id": "PmNd6w",
+  		"name": "Marketplace",
+  		"purpose": "SPEND",
+  		"type": "PLUTUS",
+  		"versions": [{
+  			"version": 1,
+  			"plutusVersion": 1,
+  			"fullScriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
+  			"scriptHash": "1dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
+  			"contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
+  		}],
+  		"audits": [{
+  			"auditId": "z5L90f",
+  			"auditor": "Canonical LLC.",
+  			"auditLink": "https://github.com/somlinkToAessment",
+  			"auditType": "MANUAL",
+  			"signature": "0x1234567890abcdef",
+  			"publicKey": "0x1234567890abcdef"
+  		}]
+  	}]
+  }
+```
+
+Could be stored into CIP-26 by encoding the nested hierarchical objects. So the previous metadata object would look something like the following: 
+
+```json
+{
+	"subject": "9SYAJPNN",
+	"projectName": "My Project",
+	"link": "https://myProject.app",
+	"twitter": "https://twitter.com/MyProject",
+	"category": "GAMING",
+	"subCategory": "RPG",
+	"description": {
+		"short": "A story rich game where choices matter"
+	},
+	"releases": "AAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAABQAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAEAAAAA",
+	"scripts": "AAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAABwEBAAAABAAIAAAHAAAAAAADCAQAAAUDBwUGBgEAAAEAAAcEAAcAAAAAAAcDAAAAAgMGAAAGCAEJAgAAAAAAAAAAAAAAAAAAAAABAAAABAAIAAAHAAAAAAADCAQAAAUDBwUGBgEAAAEAAAcEAAcAAAAAAAcDAAAAAgMGAAAGCAEJAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAABQAGAAAAAAUAAAAAAAACAAAAAAgACAAAAAcAAAAAAAYDAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQIDBAUGBwgJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQIDBAUGBwgJAAAAAAAAAAAAAAAA"
+}
+```
+
+##### `CIP-26 submission`
+
+```bash
+curl -X 'POST' \
+  'https://somecip26server/metadata' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d `[ENCODED_JSON_GOES_HERE`
+```
