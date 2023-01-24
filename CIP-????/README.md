@@ -301,7 +301,7 @@ The indexer continues to monitor minting transactions for the policy IDs that it
 
 For each oracle main address currently assigned to a policy ID, the indexer monitors the blockchain for non-minting transactions that only send ADA from the oracle main address to itself and contain oracle assignment updates in their metadata. The indexer updates its database to reflect these explicit oracle assignments and removes any implicit assignments that were replaced by explicit assignments.
 
-For each oracle update address currently assigned to a policy ID, the indexer monitors the blockchain for non-minting transactions that only send ADA from the oracle update address to itself and contain CIP-???? token metadata updates. The indexer applies these metadata updates in the order defined in [Order of application for updates](https://www.notion.so/Order-of-application-for-updates-07b8a74001c9484698f400f9c5e1c7c8). CIP-???? metadata updates are applied to the asset classes and metadata fields that they target, while keeping all other fields the same.
+For each oracle update address currently assigned to a policy ID, the indexer monitors the blockchain for non-minting transactions that only send ADA from the oracle update address to itself and contain CIP-???? token metadata updates. The indexer applies these metadata updates in the order defined in [Order of application for updates](#order-of-application-for-updates). CIP-???? metadata updates are applied to the asset classes and metadata fields that they target, while keeping all other fields the same.
 
 For tabular metadata updates, the bytestring CSV value may get broken up into an array of bytestring chunks in the CBOR representation. When this happens, the indexer recombines the chunks into the whole CSV table before applying the tabular metadata update.
 
@@ -376,8 +376,8 @@ Rectangular tables are a standard format used in the data analytics field for th
 
 This proposal may be considered active if:
 
-1. The solution meets the design goals listed in the [Rationale](https://www.notion.so/Rationale-4c5ae115646841539e734672fd67ba22) section to a satisfactory degree.
-2. The indexer and simple tools to construct CIP-???? update transactions (as described in the [Specification](https://www.notion.so/Specification-2cdbc357edda4b08b581b25d63968e3c) section) are fully implemented and provided in an open-source (Apache 2.0 licensed) repository with sufficient documentation.
+1. The solution meets the design goals listed in the [Rationale](#rationale) section to a satisfactory degree.
+2. The indexer and simple tools to construct CIP-???? update transactions (as described in the [Specification](#specification) section) are fully implemented and provided in an open-source (Apache 2.0 licensed) repository with sufficient documentation.
 3. The CIP-???? metadata format, indexer, and/or indexer API are used by several stakeholders in the Cardano ecosystem, including dApps, blockchain explorers, analytics platforms, etc.
 
 ### Implementation Plan
