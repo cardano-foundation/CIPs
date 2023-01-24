@@ -1,12 +1,17 @@
 ---
 CIP: 72
 Title: Cardano DApp Registration & Certification
-Authors: Bruno Martins <bruno.martins@iohk.io>
 Status: Draft
-Type: Standards
+Category: Metadata	
+Authors: 
+  - Bruno Martins <bruno.martins@iohk.io>
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/355
 Created: 2022-10-18
 License: CC-BY-4.0
 ---
+
+# CIP-0072: Cardano DApp Registration & Certification
 
 ## **Abstract**
 DApp developers do not have a standardised method to record immutable, persistent claims about their dApp(s) that their users can verify. A dApp developers needs to "register" their dApp by providing a set of claims about their dApp(s) that can be verified by the user. This CIP describes a standardised method for dApp developers to register their dApp(s) and for users to verify the claims made by the dApp developer.
