@@ -88,10 +88,30 @@ Another important aspect for security is how wallets process the payload. They c
 
 Finally, it establishes the requirements and recommendations for server side processing. The server must also ensure the validity of the signature and the payload, as well as of its purpose in order to accomplish the authentication. 
 
-## Reference implementation
+
+### Reference implementation
 
 * [jmagan/passport-cardano-web3](https://github.com/jmagan/passport-cardano-web3)
 * [jmagan/cardano-express-web3-skeleton](https://github.com/jmagan/cardano-express-web3-skeleton)
+## Path to Active
+
+### Acceptance Criteria
+
+- [X] At least one library should implement this authentication method.
+- [ ] The 80% users should have wallets implementing the following requirements:
+    1. It MUST detect when the payload is formatted using this specification.
+    2. The information contained in the payload MUST be parsed and formatted in the signing pop-up.
+    3. The wallet SHOULD update the timestamp just before the payload is signed.
+    4. The wallet MUST detect if the URL is in the allow list.
+    5. The wallet SHOULD warn the user against cross-domain requests.
+- [ ] A detailed documentation about web3 standards should be published. This documentation will include this standard and further best practices for web3 technologies.
+
+### Implementation Plan
+
+- [X] Create a library for processing payload according to this specification.
+- [ ] Open a conversation about this specification and its possible improvements.
+- [ ] Talk about further web3 standards and new specifications. 
+- [ ] Write the documentation for web3 developers.
 
 ## Copyright
 
