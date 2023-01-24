@@ -67,8 +67,7 @@ Each developer and publisher can choose to where to write metadata based on the 
 		"s": "a15f06ce8005ad817a1681a4e96ee6b4831679ef448d7c283b188ed64d399d6bac420fadf33964b2f2e0f2d1abd401e8eb09ab29e3ff280600",
 		"algo": "Ed25519−EdDSA",
 		"pub": "b7a3c12dc0c8c748ab07525b701122b88bd78f600c76342d27f25e5f92444cde"
-	},
-  "permissionToAggregate": true
+	}
 }
 ```
 
