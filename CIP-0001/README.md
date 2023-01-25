@@ -202,7 +202,7 @@ This must be subdivided into two sub-sections:
 
     In particular, an implementation that requires a hard-fork should explicitly mention it in its _'Implementation Plan'_.
 
-> **Note** the statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may be helpful to still have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
+> **Note** the statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may still be helpful to have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
 
 #### Categories
 
