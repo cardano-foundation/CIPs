@@ -74,7 +74,7 @@ address = bytes
 ; Fixed-size text and bytes
 label_32 = bytes_32 / text_32
 bytes_32 = bytes .size (0..32)
-text_32 = bytes .size (0..32)
+text_32 = text .size (0..32)
 
 label_64 = bytes_64 / text_64
 bytes_64 = bytes .size (0..64)
