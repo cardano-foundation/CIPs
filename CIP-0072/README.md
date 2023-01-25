@@ -35,7 +35,7 @@ Developers and publishers of dApps can register their dApps by submitting a tran
 ### **Stores / Auditors**
 Store and auditors should be able to follow the chain and find when a new dApp registration is **anchored** on-chain. They should then perform *integrity* and *trust* validations on the dApp's certificate and metadata. 
 
-#### **Off-chain Location Adversitment**
+#### **Off-chain Location Advertisement**
 Each store and auditor should make public the location of their off-chain sources where they will look for the dApp's metadata based on certificates found on-chain. These can be advertised through their own API or publically available on a website.
 
 Sample off-chain sources could be for example :
