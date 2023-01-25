@@ -48,7 +48,7 @@ Each developer and publisher can choose to where to write metadata based on the 
 #### **Suggested Validations**
 
 - **`integrity`**: The dapp's metadata off-chain should match the metadata anchored on-chain.
-- **`trust`**: The dApp's certificate should be signed by a trusted entity. It's up to the store/auditor to decide which entities are trusted and they should maintain their own list of trusted entities. Although this entities might be well known, it's not the responsibility of this CIP to maintain this list.
+- **`trust`**: The dApp's certificate should be signed by a trusted entity. It's up to the store/auditor to decide which entities are trusted and they should maintain and publish their own list of trusted entities. Although this entities might be well known, it's not the responsibility of this CIP to maintain this list.
 
 ### **On-chain dApp Registration certificate**
 
