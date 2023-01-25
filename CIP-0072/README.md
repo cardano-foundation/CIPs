@@ -30,7 +30,7 @@ Also having this formalisation facilitates any actor in the ecosystem to index a
 ## **Specification**
 
 ### **Developers / Publishers**
-Developers and publishers of dApps can register their dApps by submitting a transaction on-chain that can be indexed and verifier by stores, auditors and other actors. 
+Developers and publishers of dApps can register their dApps by submitting a transaction on-chain that can be indexed and verified by stores, auditors and other actors. 
 
 ### **Stores / Auditors**
 Store and auditors should be able to follow the chain and find when a new dApp registration is **anchored** on-chain. They should then perform *integrity* and *trust* validations on the dApp's certificate and metadata. 
