@@ -80,8 +80,10 @@ Abstract                                        | A short (\~200 word) descripti
 Motivation: why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
 Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations.
 Rationale: how does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
-Path to Active                                  | Organised in two sub-sections:<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>A plan to meet those criteria. Or `N/A` if not applicable. See [Status: Proposed](#status-proposed) for detail.
+Path to Active                                  | Organised in two sub-sections (see [Path to Active](#path-to-active) for detail):<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>Either a plan to meet those criteria or `N/A` if not applicable.
 Copyright                                       | The CIP must be explicitly licensed under acceptable copyright terms ([see below](#licensing)).
+
+> **Note** Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
 
 ##### Header Preamble
 
@@ -165,7 +167,30 @@ A _'Proposed'_ CIP is any CIP that meets the essential CIP criteria but is not y
 - It must contain all the sections described in [Structure](#structure).
 - The quality of the content must be to the Editors’ satisfaction. That means it must be grammatically sound, well-articulated and demonstrates noticeable efforts in terms of completeness and level of detail.
 - Its technical soundness should have been established. Where necessary, this may require review by particular experts and addressing their concerns. Note that the requirement is that the proposal makes sense (i.e. be technically sound), yet no consulted experts need to think it is a good idea.
-- It must have a valid _'Path to Active'_. This particular section must be subdivided into two sub-sections:
+- It must have a valid [Path to Active](#path-to-active) as defined below.
+
+##### Status: Active
+
+An _'Active'_ CIP has taken effect according to the criteria defined in its _'Path to Active'_ section. Said differently, each CIP defines by which criteria it can become _'Active'_ and those criteria are included in the review process. Exact criteria thereby depends on the nature of the CIP, typically:
+
+- For CIPs that relate to particular projects or pieces of technology, it becomes _'Active'_ by being implemented and released;
+- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet;
+- For ecosystem standards, it means gaining sufficient and visible adoption in the community.
+- It must have a valid [Path to Active](#path-to-active) as defined below: even the CIP is already acknowledged as `Active` or being documented retroactively (after acceptance and implementation).
+
+A proposal that is _'Active'_ is considered complete and is synonymous with "production readiness" when it comes to the maturity of a solution. _'Active'_ CIPs will not be updated substantially (apart from minor edits, proofreading and added precisions). They can, nevertheless, be challenged through new proposals if need be.
+
+##### Status: Inactive
+
+An _'Inactive'_ CIP describes any proposal that does not fit into the other types. A CIP can therefore be _'Inactive'_ for various reasons (e.g. obsolete, superseded, abandoned). Hence the status must indicate a justification between parentheses; for example:
+
+```
+Status: Inactive (superseded by CIP-0001)
+```
+
+#### Path to Active
+
+This must be subdivided into two sub-sections:
 
   - _'Acceptance Criteria'_
 
@@ -177,23 +202,7 @@ A _'Proposed'_ CIP is any CIP that meets the essential CIP criteria but is not y
 
     In particular, an implementation that requires a hard-fork should explicitly mention it in its _'Implementation Plan'_.
 
-##### Status: Active
-
-An _'Active'_ CIP has taken effect according to the criteria defined in its _'Path to Active'_ section. Said differently, each CIP defines by which criteria it can become _'Active'_ and those criteria are included in the review process. Exact criteria thereby depends on the nature of the CIP, typically:
-
-- For CIPs that relate to particular projects or pieces of technology, it becomes _'Active'_ by being implemented and released;
-- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet;
-- For ecosystem standards, it means gaining sufficient and visible adoption in the community.
-
-A proposal that is _'Active'_ is considered complete and is synonymous with "production readiness" when it comes to the maturity of a solution. _'Active'_ CIPs will not be updated substantially (apart from minor edits, proofreading and added precisions). They can, nevertheless, be challenged through new proposals if need be.
-
-##### Status: Inactive
-
-An _'Inactive'_ CIP describes any proposal that does not fit into the other types. A CIP can therefore be _'Inactive'_ for various reasons (e.g. obsolete, superseded, abandoned). Hence the status must indicate a justification between parentheses; for example:
-
-```
-Status: Inactive (superseded by CIP-0001)
-```
+> **Note** the statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may be helpful to still have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
 
 #### Categories
 
@@ -248,6 +257,8 @@ Editors occasionally invite project maintainers to speak during review meetings 
 ##### 1.a. Authors open a pull request
 
 Proposals must be submitted to the [cardano-foundation/CIPs][Repository] repository as a pull request named after the proposal's title. The pull request title **should not** include a CIP number (and use `?` instead as number); the editors will assign one. Discussions may precede a proposal. Early reviews and discussions streamline the process down the line.
+
+> **Note** In the original comment for your pull request, please include a link to the `README.md` for the CIP in your working branch, so readers and reviewers can easily follow your work.  If this link changes (e.g. from the CIP directory being renamed), please keep this link updated.
 
 > **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
