@@ -31,8 +31,6 @@ Created: 2021-06-13
 License: CC-BY-4.0
 ---
 
-# CIP-0020: Transaction message/comment metadata
-
 ## Abstract
 
 This CIP describes a basic JSON schema to add messages/comments/memos as transaction metadata by using the metadatum label **674**.

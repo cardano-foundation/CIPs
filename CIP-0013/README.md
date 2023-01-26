@@ -19,21 +19,19 @@ Created: 2020-09-22
 License: CC-BY-4.0
 ---
 
-# CIP-0013: Cardano URI Scheme
-
 ## Abstract
 
 This proposal describes a basic URI scheme to handle Ada transfers and links to single stake pools or weighted lists of multiple pools.
 
 ## Motivation: why is this CIP necessary?
 
-### For payment URIs: 
+### For payment URIs:
 
 Users who create community content often want donations as a financial incentive. However, forcing users to open their wallet and copy-paste an address lowers the amount of people likely to send tokens (especially if they have to sync their wallet first).
 
 If donating was as simple as clicking a link that opens a light wallet with pre-populated fields, users may be more willing to send tokens. URI schemes would enable users to easily make payments by simply clicking links on webpages or scanning QR Codes.
 
-### For stake pool URIs: 
+### For stake pool URIs:
 
 Centralised sources of information have led a growing amount of stake to be disproportionately assigned to pools pushed near & beyond the saturation point.
 

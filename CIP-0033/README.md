@@ -1,8 +1,9 @@
 ---
 CIP: 33
 Title: Reference scripts
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Implementors: 
+Authors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Jared Corduan <jared.corduan@iohk.io>
 Status: Active
