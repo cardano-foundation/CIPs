@@ -49,6 +49,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
     - [Status: Proposed](#status-proposed)
     - [Status: Active](#status-active)
     - [Status: Inactive](#status-inactive)
+  - [Path to Active](#path-to-active)
   - [Categories](#categories)
   - [Project Enlisting](#project-enlisting)
 - [Process](#process)
