@@ -18,8 +18,6 @@ Created: 2020-03-21
 License: CC-BY-4.0
 ---
 
-# CIP-0001: Cardano Improvement Proposals
-
 ## Abstract
 
 A Cardano Improvement Proposal (CIP) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP  provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
