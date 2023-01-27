@@ -23,7 +23,7 @@ e.g
     - Whether to present as many 
 
 - https://github.com/cardano-foundation/CIPs/pull/88
-    - 'No collateral' warning should not be shown for a tx without smart contracts. Cc @Quantumplation "I deal with literally 4 or 5 support tickets a day where people see that and get scared"
+    - 'No collateral' warning should not be shown for a tx without smart contracts. @Quantumplation "I deal with literally 4 or 5 support tickets a day where people see that and get scared"
 
 
 ## Use cases
