@@ -20,7 +20,7 @@ Some Wallets have poor UX, causing headaches for users and developers. This CPS 
 e.g
 - https://github.com/cardano-foundation/CIPs/pull/443
     - Txs must not be folded together into one, as that presents an attack vector.
-    - Whether to present as many 
+    - Whether to present as many txs in a list, or sequentially, is a UX decision, affected by the number of txs and chaining.
 
 - https://github.com/cardano-foundation/CIPs/pull/88
     - 'No collateral' warning should not be shown for a tx without smart contracts. @Quantumplation "I deal with literally 4 or 5 support tickets a day where people see that and get scared"
