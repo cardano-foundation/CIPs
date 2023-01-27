@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: "????"
 Title: Wallet UX
 Status: Open
 Category: Wallets
