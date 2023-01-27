@@ -18,12 +18,12 @@ Some Wallets have poor UX, causing headaches for users and developers. This CPS 
 <!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
 
 e.g
-https://github.com/cardano-foundation/CIPs/pull/443
--> Txs must not be folded together into one, as that presents an attack vector.
--> Whether to present as many 
+- https://github.com/cardano-foundation/CIPs/pull/443
+    - Txs must not be folded together into one, as that presents an attack vector.
+    - Whether to present as many 
 
-https://github.com/cardano-foundation/CIPs/pull/88
--> 'No collateral' warning should not be shown for a tx without smart contracts. Cc @Quantumplation "I deal with literally 4 or 5 support tickets a day where people see that and get scared"
+- https://github.com/cardano-foundation/CIPs/pull/88
+    - 'No collateral' warning should not be shown for a tx without smart contracts. Cc @Quantumplation "I deal with literally 4 or 5 support tickets a day where people see that and get scared"
 
 
 ## Use cases
