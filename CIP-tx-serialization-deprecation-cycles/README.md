@@ -1,9 +1,10 @@
 ---
 CIP: 80
 Title: Transaction Serialization Deprecation Cycle
-Authors: Jared Corduan <jared.corduan@iohk.io>
 Status: Proposed
 Category: Ledger
+Authors: Jared Corduan <jared.corduan@iohk.io>
+Implementors: N/A
 Created: 2022-11-09
 License: CC-BY-4.0
 ---
@@ -49,17 +50,22 @@ and **the fix will occur at the next available hard fork**.
 ### Non-Serious Flaws
 
 A **non-serious flaw** in the serialization is an issue which is not safety critical,
-but is problematic enough to merit breaking backwards compatibility and requires a
-hard fork to fix.
+but is problematic enough to merit breaking backwards compatibility.
 This is again a human judgment.
 
 Backwards compatibility can be abandoned in the case of a non-serious flaw,
 but there must be a deprecation cycle:
-* A new format can be introduced at a hard fork, but the old format must be supported for at
-  least **six months**. After six months, the old format can be abandoned at the next possible
-  hard fork.
+* In the case of a **soft fork** (meaning that the change is backwards incompatible for
+  block producers but *not* block validators),
+  a new format can be introduced at the next major or minor protocol version,
+  at which time the old format can be abandoned.
+* In the case of a **hard fork** (meaning that the change is backwards incompatible for
+  both block producers and block validators),
+  a new format can be introduced at the next major protocol version,
+  but the old format must be supported for at least **six months**.
+  After six months, the old format can be abandoned at the next possible fork.
 
-#### Example
+#### Examples
 
 A good example of a non-serious flaw is the CDDL specification of the transaction output in the
 Alonzo ledger era:
@@ -87,6 +93,26 @@ babbage_transaction_output =
 In other words, a new format was created, but the legacy format was still supported.
 The new format, `babbage_transaction_output`, was introduced 2022-09-22 with the Vasil hard fork,
 The old format, `alonzo_transaction_output`, can be retired after 2023-03-22.
+
+Note that this example required a **hard fork**.
+
+A good example of a non-serious flaw requiring a **soft fork** is the removal
+of zero-valued multi-assets in the mint field of the transaction body.
+
+In the Babbage ledger era, a multi-asset value was defined as:
+
+```
+value = coin / [coin,multiasset<uint>]
+```
+
+Zero values can be confusing inside of things like explorers, so in the Conway era they are removed:
+
+```
+natNum = 1 .. 4294967295
+value = coin / [coin,multiasset<natNum>]
+```
+
+Notice that block validators will not notice this change, though block producers will notice it.
 
 ### Summary
 
