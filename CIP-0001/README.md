@@ -225,7 +225,7 @@ Registered categories for explicitly enlisted projects are otherwise listed belo
 Category | Description
 ---      | ---
 Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in ?
+Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-????][] TODO - fix when number is assigned
 Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
 
 #### Project Enlisting
