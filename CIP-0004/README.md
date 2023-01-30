@@ -16,8 +16,6 @@ Created: 2019-05-01
 License: Apache-2.0
 ---
 
-# CIP-0004: Wallet Checksums
-
 ## Abstract
 
 We introduce a checksum algorithm to help users verify they are restoring the right wallet before the restoration actually takes place.

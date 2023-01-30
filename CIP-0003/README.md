@@ -18,8 +18,6 @@ Created: 2020-05-07
 License: CC-BY-4.0
 ---
 
-# CIP-0003: Wallet Key Generation
-
 ## Abstract
 
 Many wallets utilize some way of mapping a sentence of words (easy to read and write for humans) uniquely back and forth to a sized binary data (harder to remember).

@@ -26,9 +26,6 @@ License: CC-BY-4.0
 
 -->
 
-# CIP-XXXX: Title
-<!-- A reminder of the document's number & title, for readability. -->
-
 ## Abstract
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 

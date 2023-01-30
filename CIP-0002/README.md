@@ -13,8 +13,6 @@ Created: 2020-05-04
 License: CC-BY-4.0
 ---
 
-# CIP-0002: Coin Selection Algorithms for Cardano
-
 ## Abstract
 
 This article describes, in _human-readable terms_, the coin selection
