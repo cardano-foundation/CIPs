@@ -2,13 +2,13 @@
 CIP: ????
 Title: Sums-of-products in Plutus Core
 Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Status: Proposed
 Category: Plutus
 Created: 2023-01-30
+Discussions: https://github.com/cardano-foundation/CIPs/pull/455
 License: CC-BY-4.0
 ---
-
-# CIP-XXX: Sums-of-products in Plutus Core
 
 ## Abstract
 
@@ -26,7 +26,7 @@ These changes will provide very substantial speed and size improvements to scrip
 The first designs of Plutus Core had native support for datatypes.
 In the interest of keeping the language as small and simple as possible, this was removed in favour of encoding datatype values using [Scott encoding][].
 
-Experiments at the time showed that the performance penalty of using Scott encoding over native datatypes was not too great.
+[Experiments](https://github.com/input-output-hk/plutus/blob/96fd25649107658fc911c53e347032bedce624e9/doc/notes/fomega/scott-encoding-benchmarks/results/test-results.md) at the time showed that the performance penalty of using Scott encoding over native datatypes was not too great.
 But we might expect that we should be able to do better with a native implementation, and indeed we can.
 
 #### 2. 'Lifting' and 'Unlifting'
@@ -111,7 +111,7 @@ The following new term constructors are added to the Plutus Core language:[^type
 The small-step reduction rules for these terms are:
 
 $$
-\mathrm{CONSTR\_SUB}\frac{t_i \rightarrow t'_i}{(\mathrm{constr}\ e\ t_1 \ldots t_n) \rightarrow (\mathrm{constr}\ e\ t'_1 \ldots t'_n)}
+\mathrm{CONSTR\_SUB}\frac{t_i \rightarrow t'_i}{(\mathrm{constr}\ e\ t_1 \ldots t_n) \rightarrow (\mathrm{constr}\ e\ t_1 \ldots t_i' \ldots t_n)}
 $$
 
 $$
@@ -130,6 +130,10 @@ Note that `CASE_SUB` does not reduce branches and `CASE_EVAL` preserves only the
 This means that only the chosen case branch is evaluated, and so `case` is _not_ strict in the other branches.[^strict]
 
 [^strict]: See 'Why is case not stict?' for more discussion.
+
+Also, note that case branches are arbitrary terms, and can be anything which can be applied.
+That means that, for example, it is legal to use a builtin as a case branch, or an expression which evaluates to a function.
+However, the most typical case will probably be a literal lambda.
 
 A new Plutus Core minor language version V is added to indicate support for these terms.
 They are illegal before that version.
@@ -157,7 +161,7 @@ The ledger-script interface changes in L as follows:
 
 The full specification of the new translation is to be determined in collaboration with the ledger team, but broadly:
 - Integers and bytestrings are translated to Plutus Core integers and bytestrings instead of using the `I` and `B` Data constructors.
-- Constructors are translated to Plutus Core `const` terms instead of using the Data `Constr` constructor.
+- Constructors are translated to Plutus Core `constr` terms instead of using the Data `Constr` constructor.
 - Uses of the `Map` and `List` Data constructors will need more specific handling but will be translated in line with their underlying dataype representation in Plutus Core.
 
 ## Rationale: how does this CIP achieve its goals?
@@ -469,3 +473,4 @@ This CIP is licensed under [CC-BY-4.0][].
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [Scott encoding]: https://en.wikipedia.org/wiki/Mogensen%E2%80%93Scott_encoding
+
