@@ -5,7 +5,7 @@ Authors:
     - Bruno Martins <bruno.martins@iohk.io>
 Status: Open
 Category:  Metadata
-ProposedSolutions: 
+Proposed Solutions: 
     - https://github.com/cardano-foundation/CIPs/tree/master/CIP-0026
     - https://github.com/cardano-foundation/CIPs/pull/355
     - https://github.com/cardano-foundation/CIPs/pull/85
