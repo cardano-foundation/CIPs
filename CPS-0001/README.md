@@ -32,7 +32,7 @@ This document attempts to describe the problem in the Cardano ecosystem where th
 - Associate some form of identity to a claim's owner so that it can be verified cryptographically
 - Offer mechanism to attest for the correctness of a given metadata object that can be fetched by wallets and applications from off-chain sources (i.e CIP-26 complaint servers)
 - Discover datum schemas used by a script in a specific context or dApp use cases
-- An wallet receiving a request to connect to a dApp, it can verify the authenticity of the dApp and the metadata associated with it.
+- A wallet receiving a request to connect to a dApp, it can verify the authenticity of the dApp and the metadata associated with it
 
 ## **Goals**
 - Define how metadata can be associated with a subject (i.e. dApp, stake pool, token policy, etc.)
