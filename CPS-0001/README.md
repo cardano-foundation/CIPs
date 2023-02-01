@@ -16,7 +16,7 @@ Created: 2022-19-10
 ---
 
 ## **Abstract**
-This document attempts to describe the problem in the Cardano ecocystem where there are many different types **subjects** or *chain entities* and there's a need to associate metadata with them. This metadata can be used to describe an script, stake pools, script hashes, token policies and applications. This metadata can be used to provide information to the user on it's applications, it's trustworthiness and how to interact with it.
+This document attempts to describe the problem in the Cardano ecosystem where there are many different types **subjects** or *chain entities* and there's a need to associate metadata with them. This metadata can be used to describe scripts, stake pools, script hashes, token policies and applications. This metadata can be used to provide information to the user on it's applications, it's trustworthiness and how to interact with it.
 
 ## **Problem**
 **`Discoverability`**: Means to discover the different metadata claims associated with a subject. Discoverability is important for wallets, applications (i.e dapps, stores, etc) and users to be able to find the different metadata claims associated with a subject. This is important for the user to be able to make an informed decision on how to interact with a subject.
