@@ -35,7 +35,7 @@ This document attempts to describe the problem in the Cardano ecosystem where th
 - An wallet receiving a request to connect to a dApp, it can verify the authenticity of the dApp and the metadata associated with it.
 
 ## **Goals**
-- Define how metadata can be associated with the a subject (i.e dapp, stake pool, token policy, etc)
+- Define how metadata can be associated with a subject (i.e. dApp, stake pool, token policy, etc.)
 - Metadata should be discoverable by wallets and applications
 - Associate some form of identity to a metadata claim
 
