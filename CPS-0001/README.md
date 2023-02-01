@@ -37,6 +37,7 @@ This document attempts to describe the problem in the Cardano ecosystem where th
 ## **Goals**
 - Define how metadata can be associated with a subject (i.e. dApp, stake pool, token policy, etc.)
 - Metadata should be discoverable by wallets and applications
+- Wallets and applications should be able to verify the correctness of metadata claims
 - Associate some form of identity to a metadata claim
 
 ## **Open Questions**
