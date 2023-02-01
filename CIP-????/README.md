@@ -99,37 +99,39 @@ This specification has two parts: firstly a change to Plutus Core, and secondly 
 
 The following new term constructors are added to the Plutus Core language:[^typed-plutus-core]
 ```
--- Packs the fields (ts) into a construtor value tagged with i
-(constr i ts)
+-- Packs the fields into a constructor value tagged with i
+(constr i t...)
 
 -- Inspects the tag on t and passes its fields to the corresponding case branch
-(case t cs)
+(case t c...)
 ```
+
+Tags start from 0, with 0 being the first case branch, and so on.
 
 [^typed-plutus-core]: See Appendix 1 for changes to Typed Plutus Core.
 
 The small-step reduction rules for these terms are:
 
 $$
-\mathrm{CONSTR\_SUB}\frac{t_i \rightarrow t'_i}{(\mathrm{constr}\ e\ t_1 \ldots t_n) \rightarrow (\mathrm{constr}\ e\ t_1 \ldots t_i' \ldots t_n)}
+\mathrm{CONSTR\_{SUB\_i}}\frac{i \in [0, n], t_i \rightarrow t'_i}{(\mathrm{constr}\ e\ t_0 \ldots t_n) \rightarrow (\mathrm{constr}\ e\ t_0 \ldots t_i' \ldots t_n)}
 $$
 
 $$
-\mathrm{CASE\_SUB}\frac{t \rightarrow t'}{(\mathrm{case}\ t\ c_1 \ldots c_m) \rightarrow (\mathrm{case}\ t'\ c_1 \ldots c_m)}
+\mathrm{CASE\_SUB}\frac{t \rightarrow t'}{(\mathrm{case}\ t\ c_0 \ldots c_m) \rightarrow (\mathrm{case}\ t'\ c_0 \ldots c_m)}
 $$
 
 $$
-\mathrm{CASE\_EVAL}\frac{e \leq m}{(\mathrm{case}\ (\mathrm{constr}\ e\ t_1 \ldots t_n)\ c_1 \ldots c_m) \rightarrow [c_e\ t_1 \ldots t_n]}
+\mathrm{CASE\_EVAL}\frac{e \in [0,m]}{(\mathrm{case}\ (\mathrm{constr}\ e\ t_0 \ldots t_n)\ c_0 \ldots c_m) \rightarrow [c_e\ t_0 \ldots t_n]}
 $$
 
 $$
-\mathrm{CASE\_ERR}\frac{e \gt m}{(\mathrm{case}\ (\mathrm{constr}\ e\ t_1 \ldots t_n)\ c_1 \ldots c_m) \rightarrow (\mathrm{error})}
+\mathrm{CASE\_NOBRANCH}\frac{e \notin [0,m]}{(\mathrm{case}\ (\mathrm{constr}\ e\ t_0 \ldots t_n)\ c_0 \ldots c_m) \rightarrow (\mathrm{error})}
 $$
 
 Note that `CASE_SUB` does not reduce branches and `CASE_EVAL` preserves only the selected case branch.
 This means that only the chosen case branch is evaluated, and so `case` is _not_ strict in the other branches.[^strict]
 
-[^strict]: See 'Why is case not stict?' for more discussion.
+[^strict]: See 'Why is case not strict?' for more discussion.
 
 Also, note that case branches are arbitrary terms, and can be anything which can be applied.
 That means that, for example, it is legal to use a builtin as a case branch, or an expression which evaluates to a function.
@@ -178,9 +180,12 @@ With the proposed ledger interface changes the script context is passed across _
 Most Plutus Core programs spend a significant amount of their time operating on datatypes, so we would expect that a performance improvement here would make a significant difference.
 
 Indeed, this seems to be true.
-Our benchmarks[^see-appendix-3] show that this CIP leads to 0-30% real-time speedups depending on the program (the 0% is a primality tester that is mostly doing arithmetic, the 30% is mostly doing datatype manipulation). This is a very significant improvement, and should result in a similar reduction in budget usage.
+Our benchmarks[^see-appendix-3] show that this CIP leads to 
 
-[^see-appendix-3]: See Appendix 3 for the table of results.
+1. A 0-30% real-time speedup in example programs that do not work with the script context (the 0% is a primality tester that is mostly doing arithmetic, the 30% is mostly doing datatype manipulation). 
+2. A complete removal of the significant cost of decoding the script context.
+
+[^see-appendix-3]: See Appendix 3 for the tables of results and more discussion.
 
 #### 3. Simple Lifting and Unlifting
 
@@ -231,6 +236,25 @@ Arguably that saps the motivation for this proposal.
 There are two responses to this:
 1. This proposal seems worth it on the basis of its other benefits (benefits 2 and 3).
 2. Removing the problems with decoding the script context may allow users to return to that approach, which can be more ergonomic (and potentially cheaper, since builtin calls are expensive).
+
+#### Why not also make datums and redeemers terms instead of `Data`?
+
+It is always nice to get rid of things, and this CIP does _not_ let us get rid of `Data`, because it is still used for redeemers and datums.
+That begs the question: could we also have redeemers and datums be Plutus Core terms instead of values of type `Data`?
+
+The problem is that, unlike the encoded script context, redeemers and datums are _user facing_.
+They appear in the block format, they can be supplied by users (e.g. directly at the CLI!), and they can be inspected in block explorers.
+There is therefore a significant benefit to having them in a simpler format that is easier to work with.
+If they were Plutus Core terms in generality, we could have all kinds of strange things like people embedding functions in them.
+
+So it still seems beneficial to have redeemers and datums being `Data`.
+
+#### What about users who rely on the script context being `Data`?
+
+The only use case we know of where it is actively desirable for the script context to be in the form of `Data` is the serialization/hashing use case described in the motivation for CIP-42.
+It's likely that this CIP will negatively affect that use case, since it would mean that to hash a part of the script context users would need to either:
+1. Write a hashing function that operates recursively on the script context object. This may be expensive because it will require lots of bytestring operations.
+2. Convert the script context back to `Data` in order to use `serialiseBuiltinData`.
 
 ### Alternatives
 
@@ -305,18 +329,16 @@ A prototype implementation already exists and is functional.
 While Typed Plutus Core is not part of the specification of Cardano, it is still interesting and informative to give the changes here.
 Plutus Core was originally conceived of as a typed language, and making sure that we can express the changes cleanly in a typed setting means that we ensure that the semantics make sense and that it will continue to be easy to compile to Plutus Core from typed languages.
 
-We add the following new type constructors to the type language of Typed Plutus Core:
+We add the following new type constructor to the type language of Typed Plutus Core:
 ```
-(sum tys)
-(prod tys)
+(sop tys...)
 ```
-These correspond to sum and product types.
-While we are not using sums-and-products at the term level, we can keep it at the type level since that does not affect evaluation.
+This corresponds to a sum-of-products type, and it has one list of types for each constructor, giving the argument types.
 
 We add the following new term constructors to the Typed Plutus Core language:
 ```
-(constr ty i ts)
-(case ty t cs)
+(constr ty i t...)
+(case ty t c...)
 ```
 
 These are identical to their untyped cousins, except that they include a type annotation for the type of the whole term. 
@@ -325,11 +347,11 @@ These make the typing rules much simpler, as otherwise we lack enough informatio
 The typing rules for the new terms are:
 
 $$
-\frac{\Gamma \vdash t_i : ty_i,\ rty = (\mathrm{sum\ s_1 \ldots s_e \ldots s_m}), s_e = (\mathrm{prod}\ ty_1 \ldots ty_n)}{\Gamma \vdash (\mathrm{constr}\ rty\ e\ t_1 \ldots t_n) : rty}
+\frac{\Gamma \vdash t_i : ty_i,\ rty = (\mathrm{sop}\ s_0 \ldots s_e \ldots s_m), s_e = [ty_0 \ldots ty_n]}{\Gamma \vdash (\mathrm{constr}\ rty\ e\ t_0 \ldots t_n) : rty}
 $$
 
 $$
-\frac{\Gamma \vdash t : tty,\ tty = (\mathrm{sum}\ s_1 \ldots s_n), s_i = (\mathrm{prod}\ p_{i_1} \ldots p_{i_m}),\ \Gamma \vdash c_i : p_{i_1} \rightarrow \ldots \rightarrow p_{i_m} \rightarrow rty}{\Gamma \vdash (\mathrm{case}\ rty\ t\ c_1 \ldots c_n) : rty}
+\frac{\Gamma \vdash t : tty,\ tty = (\mathrm{sop}\ s_0 \ldots s_n), s_i = [p_{i_0} \ldots p_{i_m}],\ \Gamma \vdash c_i : p_{i_0} \rightarrow \ldots \rightarrow p_{i_m} \rightarrow rty}{\Gamma \vdash (\mathrm{case}\ rty\ t\ c_0 \ldots c_n) : rty}
 $$
 
 The reduction rules are essentially the same since the types do not affect evaluation.
@@ -375,7 +397,7 @@ Let’s consider four programs, corresponding to creation and destruction of `da
 **P3: Explicit construction**
 
 ```
-constr 1 xx yy
+constr 0 xx yy
 ```
 
 **P4: Explicit matching**
@@ -435,7 +457,14 @@ Difference 2 does not seem to make as large a difference. If we did see a big di
 
 ### Appendix 3: Benchmark results
 
+Throughout, the following commits are referenced:
+- `master`: TODO
+- `sums-of-products`: TODO
+
 #### Nofib
+
+These are benchmarks taken from the `nofib` benchmark suite used by GHC.
+They are not totally comprehensive, but they represent a reasonable survey of programs that do various kinds of general computation.
 
 These benchmarks are re-compiled from Haskell each time, so the comparison does not represent faster evaluation of the same script, but rather than we can now compile datatype operations using the new terms, which are faster overall.
 
@@ -466,6 +495,50 @@ These benchmarks are re-compiled from Haskell each time, so the comparison does 
 | queens5x5/bjbt1    | 160.8 ms | 137.0 ms           | -14.8% |
 | queens5x5/bjbt2    | 167.4 ms | 145.6 ms           | -13.0% |
 | queens5x5/fc       | 398.8 ms | 351.5 ms           | -11.9% |
+
+The results indicate that the speedup is more associated with programs that do lots of datatype manipulation, rather than those that do a lot of numerical work (which in Plutus Core means calling lots of builtin functions).
+However, we don't see any regression even in the primality tester, which is very numerically heavy (the noise threshold for the benchmarks is ~1%).
+
+#### Script context processing
+
+These are synthetic benchmarks that aim to illustrate the difference between scripts that process script contexts encoded via `Data`, or passed directly as Plutus Core terms.
+They do this by generating medium-sized script context objects and then performing a few basic operations on them.
+They thus aim to show the potential savings for scripts from the new scheme.
+
+- `checkScriptContext1` decodes the script context from `Data`, and then does O(size of script context) work. This represents a somewhat realistic case where the script context is used to a modest degree.
+- `checkScriptContext2` decodes the script context from `Data`, and then does constant work. This represents the case where the script context decoding is pure overhead.
+- `checkScriptContext3` is the same as `checkScriptContext1`, but passing the script context as a term directly.
+- `checkScriptContext4` is the same as `checkScriptContext2`, but passing the script context as a term directly.
+
+The 4/20 variants indicate the size of the generated script context object.
+
+Since the difference here should be visible in how many machine steps are taken, we just give the budget numbers for the different scenarios.
+All these benchmarks are run on `sums-of-products`, since the difference lies in the construction of the script, not how it is evaluated.
+
+| Benchmark              | CPU budget usage | Memory budget usage |
+|:----------------------:|:----------------:|:-------------------:|
+| checkScriptContext1-4  | 137571245        | 447793             |
+| checkScriptContext1-20 | 483223997        | 1573169             |
+| checkScriptContext2-4  | 131415877        | 426584             |
+| checkScriptContext2-20 | 442300997        | 1415128            |
+| checkScriptContext3-4  | 12424957         | 47311              |
+| checkScriptContext3-20 | 50504589         | 198543             |
+| checkScriptContext4-4  | 2175589          | 8302               |
+| checkScriptContext4-20 | 6591589          | 27502              |
+
+In both scenarios the budget usage drops by an order of magnitude.
+This should not be taken as representative of typical savings for scripts, since these are very synthetic examples and the amount of work apart from decoding the script context is small.
+Still, it shows that we do successfully save ourselves from doing the work, and that the work saved is significant.
+
+#### Validation 
+
+These benchmarks are some real-world examples taken from `plutus-use-cases`.
+They thus represent real-world workloads.
+
+The validation benchmarks are _not_ recompiled, they are specific saved Plutus Core programs.
+These benchmarks thus only show changes in the performance of the Plutus Core evaluator itself.
+
+TODO: benchmark data
 
 ## Copyright 
 
