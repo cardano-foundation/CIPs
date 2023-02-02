@@ -312,20 +312,24 @@ We think that this is an acceptable cost for a simpler implementation.
 
 ### Acceptance Criteria
 
-- [ ] Implementation in `plutus`
-    - [ ] Production implementation
+- [ ] `plutus` changes
     - [ ] Specification 
+    - [ ] Production implementation
     - [ ] Costing of the new operations
+- [ ] `cardano-ledger` changes
+    - [ ] Specification, _including_ specification of the script context translation to a Plutus Core term
+    - [ ] Implementation of new ledger language, including new ledger-script interface
 - [ ] Further benchmarking 
     - [ ] Ensure that regressions on existing scripts do not occur 
     - [ ] Check additional real-world examples
-- [ ] `plutus` changes integrated into `cardano-ledger`, including specification
+- [ ] Release
+    - [ ] New Plutus language version supported in a released node version
+    - [ ] New ledger language supported in a released node version
 
 ### Implementation Plan
 
 This plan will be implemented by Michael Peyton Jones and the Plutus Core team with assistance from the Ledger team.
-
-A prototype implementation already exists and is functional.
+The changes will be in the "PlutusV3" ledger language at the earliest, and it is not clear which ledger era or hard fork this will arrive in.
 
 ## Appendices
 
