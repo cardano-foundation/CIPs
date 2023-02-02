@@ -312,8 +312,13 @@ We think that this is an acceptable cost for a simpler implementation.
 
 ### Acceptance Criteria
 
-- [ ] Implementation in `plutus`, including specification and costing of the new operations
-- [ ] Further benchmarking with additional real-world examples
+- [ ] Implementation in `plutus`
+    - [ ] Production implementation
+    - [ ] Specification 
+    - [ ] Costing of the new operations
+- [ ] Further benchmarking 
+    - [ ] Ensure that regressions on existing scripts do not occur 
+    - [ ] Check additional real-world examples
 - [ ] `plutus` changes integrated into `cardano-ledger`, including specification
 
 ### Implementation Plan
@@ -458,8 +463,12 @@ Difference 2 does not seem to make as large a difference. If we did see a big di
 ### Appendix 3: Benchmark results
 
 Throughout, the following commits are referenced:
-- `master`: TODO
-- `sums-of-products`: TODO
+- `master`: d123f85ca93de6974661e8b1e7bdf068dad2f57f
+- `sums-of-products`: e98b284204070053b2e64bb66c7aa0832520afec
+
+These represent somewhat arbitrary snapshots.
+The `sums-of-products` branch represents the current prototype, and `master` is it's merge-base with `plutus`'s `master` branch.
+These may be updated at a future date.
 
 #### Nofib
 
@@ -538,7 +547,89 @@ They thus represent real-world workloads.
 The validation benchmarks are _not_ recompiled, they are specific saved Plutus Core programs.
 These benchmarks thus only show changes in the performance of the Plutus Core evaluator itself.
 
-TODO: benchmark data
+| Script                                   |  ece3115   |  3fc07dc   |   Change   |
+| :------                                  |  :------:  |  :------:  |  :------:  |
+| auction_1-1                              |  149.5 μs  |  158.6 μs  |    +6.1%   |
+| auction_1-2                              |  648.6 μs  |  687.7 μs  |    +6.0%   |
+| auction_1-3                              |  632.7 μs  |  676.7 μs  |    +7.0%   |
+| auction_1-4                              |  194.7 μs  |  204.5 μs  |    +5.0%   |
+| auction_2-1                              |  153.4 μs  |  161.7 μs  |    +5.4%   |
+| auction_2-2                              |  649.0 μs  |  684.0 μs  |    +5.4%   |
+| auction_2-3                              |  852.3 μs  |  906.5 μs  |    +6.4%   |
+| auction_2-4                              |  639.7 μs  |  677.7 μs  |    +5.9%   |
+| auction_2-5                              |  194.6 μs  |  204.1 μs  |    +4.9%   |
+| crowdfunding-success-1                   |  180.7 μs  |  191.6 μs  |    +6.0%   |
+| crowdfunding-success-2                   |  181.6 μs  |  191.3 μs  |    +5.3%   |
+| crowdfunding-success-3                   |  181.5 μs  |  191.5 μs  |    +5.5%   |
+| currency-1                               |  236.4 μs  |  251.6 μs  |    +6.4%   |
+| escrow-redeem_1-1                        |  329.5 μs  |  348.3 μs  |    +5.7%   |
+| escrow-redeem_1-2                        |  328.8 μs  |  348.8 μs  |    +6.1%   |
+| escrow-redeem_2-1                        |  383.5 μs  |  406.0 μs  |    +5.9%   |
+| escrow-redeem_2-2                        |  382.5 μs  |  409.6 μs  |    +7.1%   |
+| escrow-redeem_2-3                        |  385.7 μs  |  409.2 μs  |    +6.1%   |
+| escrow-refund-1                          |  134.0 μs  |  141.9 μs  |    +5.9%   |
+| future-increase-margin-1                 |  236.4 μs  |  252.7 μs  |    +6.9%   |
+| future-increase-margin-2                 |  521.4 μs  |  549.5 μs  |    +5.4%   |
+| future-increase-margin-3                 |  519.4 μs  |  549.8 μs  |    +5.9%   |
+| future-increase-margin-4                 |  487.5 μs  |  513.7 μs  |    +5.4%   |
+| future-increase-margin-5                 |  853.6 μs  |  896.0 μs  |    +5.0%   |
+| future-pay-out-1                         |  235.6 μs  |  250.5 μs  |    +6.3%   |
+| future-pay-out-2                         |  524.3 μs  |  550.3 μs  |    +5.0%   |
+| future-pay-out-3                         |  518.3 μs  |  549.7 μs  |    +6.1%   |
+| future-pay-out-4                         |  851.0 μs  |  891.0 μs  |    +4.7%   |
+| future-settle-early-1                    |  236.1 μs  |  252.2 μs  |    +6.8%   |
+| future-settle-early-2                    |  518.4 μs  |  549.8 μs  |    +6.1%   |
+| future-settle-early-3                    |  520.8 μs  |  549.9 μs  |    +5.6%   |
+| future-settle-early-4                    |  636.2 μs  |  664.2 μs  |    +4.4%   |
+| game-sm-success_1-1                      |  375.4 μs  |  394.5 μs  |    +5.1%   |
+| game-sm-success_1-2                      |  164.9 μs  |  177.5 μs  |    +7.6%   |
+| game-sm-success_1-3                      |  637.2 μs  |  669.8 μs  |    +5.1%   |
+| game-sm-success_1-4                      |  193.0 μs  |  206.2 μs  |    +6.8%   |
+| game-sm-success_2-1                      |  376.9 μs  |  392.2 μs  |    +4.1%   |
+| game-sm-success_2-2                      |  165.5 μs  |  177.4 μs  |    +7.2%   |
+| game-sm-success_2-3                      |  636.9 μs  |  670.5 μs  |    +5.3%   |
+| game-sm-success_2-4                      |  192.7 μs  |  207.1 μs  |    +7.5%   |
+| game-sm-success_2-5                      |  644.0 μs  |  669.9 μs  |    +4.0%   |
+| game-sm-success_2-6                      |  192.6 μs  |  207.0 μs  |    +7.5%   |
+| multisig-sm-1                            |  390.6 μs  |  411.2 μs  |    +5.3%   |
+| multisig-sm-2                            |  382.1 μs  |  399.4 μs  |    +4.5%   |
+| multisig-sm-3                            |  383.4 μs  |  404.1 μs  |    +5.4%   |
+| multisig-sm-4                            |  385.3 μs  |  402.1 μs  |    +4.4%   |
+| multisig-sm-5                            |  563.5 μs  |  592.8 μs  |    +5.2%   |
+| multisig-sm-6                            |  389.0 μs  |  410.6 μs  |    +5.6%   |
+| multisig-sm-7                            |  380.8 μs  |  399.9 μs  |    +5.0%   |
+| multisig-sm-8                            |  383.2 μs  |  406.9 μs  |    +6.2%   |
+| multisig-sm-9                            |  386.2 μs  |  407.3 μs  |    +5.5%   |
+| multisig-sm-10                           |  564.4 μs  |  592.8 μs  |    +5.0%   |
+| ping-pong-1                              |  317.0 μs  |  338.1 μs  |    +6.7%   |
+| ping-pong-2                              |  319.1 μs  |  338.9 μs  |    +6.2%   |
+| ping-pong_2-1                            |  180.2 μs  |  193.6 μs  |    +7.4%   |
+| prism-1                                  |  138.5 μs  |  150.2 μs  |    +8.4%   |
+| prism-2                                  |  403.6 μs  |  419.1 μs  |    +3.8%   |
+| prism-3                                  |  336.7 μs  |  356.9 μs  |    +6.0%   |
+| pubkey-1                                 |  118.1 μs  |  126.8 μs  |    +7.4%   |
+| stablecoin_1-1                           |  953.0 μs  |  994.3 μs  |    +4.3%   |
+| stablecoin_1-2                           |  162.5 μs  |  174.7 μs  |    +7.5%   |
+| stablecoin_1-3                           |  1.092 ms  |  1.139 ms  |    +4.3%   |
+| stablecoin_1-4                           |  172.7 μs  |  185.1 μs  |    +7.2%   |
+| stablecoin_1-5                           |  1.376 ms  |  1.445 ms  |    +5.0%   |
+| stablecoin_1-6                           |  214.3 μs  |  228.4 μs  |    +6.6%   |
+| stablecoin_2-1                           |  952.0 μs  |  990.9 μs  |    +4.1%   |
+| stablecoin_2-2                           |  162.6 μs  |  174.8 μs  |    +7.5%   |
+| stablecoin_2-3                           |  1.090 ms  |  1.144 ms  |    +5.0%   |
+| stablecoin_2-4                           |  172.9 μs  |  185.5 μs  |    +7.3%   |
+| token-account-1                          |  173.6 μs  |  183.2 μs  |    +5.5%   |
+| token-account-2                          |  310.8 μs  |  332.8 μs  |    +7.1%   |
+| uniswap-1                                |  407.2 μs  |  430.7 μs  |    +5.8%   |
+| uniswap-2                                |  202.7 μs  |  214.1 μs  |    +5.6%   |
+| uniswap-3                                |  1.758 ms  |  1.839 ms  |    +4.6%   |
+| uniswap-4                                |  279.8 μs  |  296.1 μs  |    +5.8%   |
+| uniswap-5                                |  1.130 ms  |  1.188 ms  |    +5.1%   |
+| uniswap-6                                |  275.3 μs  |  289.7 μs  |    +5.2%   |
+| vesting-1                                |  334.8 μs  |  356.8 μs  |    +6.6%   |
+
+This is not good at all. We should not be having a negative impact on scripts that don't use the new constructs.
+This must be resolved in the production implementation before we merge it.
 
 ## Copyright 
 
