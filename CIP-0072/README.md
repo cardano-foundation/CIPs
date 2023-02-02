@@ -1,10 +1,11 @@
 ---
 CIP: 72
 Title: Cardano DApp Registration & Discovery
-Status: Draft
+Status: Proposed
 Category: Metadata	
 Authors: 
   - Bruno Martins <bruno.martins@iohk.io>
+Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/355
 Created: 2022-10-18
@@ -13,45 +14,48 @@ License: CC-BY-4.0
 
 # CIP-0072: Cardano DApp Registration & Discovery
 
-## **Abstract**
-DApp developers do not have a standardised method to record immutable, persistent claims about their dApp(s) that their users can verify. A dApp developers needs to "register" their dApp by providing a set of claims about their dApp(s) that can be verified by the user. This CIP describes a standardised method for dApp developers to register their dApp(s) and for users to verify the claims made by the dApp developer.
+## Abstract
+DApp developers do not have a standardised method to record immutable, persistent claims about their dApp(s) that their users can verify. A dApp developer needs to "register" their dApp by providing a set of claims about their dApp(s) that can be verified by the user. This CIP describes a standardised method for dApp developers to register their dApp(s) and for users to verify the claims made by dApp developers.
 
 This proposal aims to standardise the process of dApp registration and verification, and to provide a set of claims that dApp developers can use to register their dApp(s).
 
-## **Motivation**
-DApps can express a plethora of information. Some of this information could be claims about who the developer is, what is the dApp's associated metadata are, and more. This data lacks standarisation, persistence, and immutability. Data without these features, means that dApp users cannot verify if the dApp's expressed information is consistent across time. The goal of this CIP is to formalise how dApps register their information with a new transaction metadata format that can record the dApp's metadata, ownership, and potentially developer's identity. This formalisation means dApp users can verify if the data expressed by a dApp is consistent with what was registered on-chain.
+## Motivation
+DApps can express a plethora of information. Some of this information could be claims about who the developer is, what the dApp's associated metadata is, and more. This data lacks standardisation, persistence, and immutability. Data without these features, means that dApp users cannot verify if the dApp's expressed information is consistent across time. The goal of this CIP is to formalise how dApps register their information with a new transaction metadata format that can record the dApp's metadata, ownership, and potentially developer's identity. This formalisation means dApp users can verify if the data expressed by a dApp is consistent with what was registered on-chain.
 
-Also having this formalisation facilitates any actor in the ecosystem to index and query this data, and provide a better user experience when it comes to dApp discovery and usage.
+Also, having this formalisation facilitates any actor in the ecosystem to index and query this data, and provide a better user experience when it comes to dApp discovery and usage.
 
-## **Definitions**
+## Specification
+
+### **Definitions**
 - **anchor** - A hash written on-chain that can be used to verify the integrity (by way of a cryptographic hash) of the data that is found off-chain.
 - **dApp** - A decentralised application that is described by the combination of metadata, certificate and a set of used scripts.
-
-## **Specification**
+- **metadata claim** - Generically any attempt to map off-chain metadata to an on-chain subject. This specification looks at dApp specific metadata claims.
+- **client** - Any ecosystem participant which follows on-chain data to consume metadata claims (i.e. dApp stores, wallets, auditors, block explorers, etc.).
+- **dApp Store** - A dApp aggregator application which follows on-chain data looking for and verifying dApp metadata claims, serving their users linked dApp metadata.
+- **publishers** - Entities which publish metadata claims on-chain, in the case of dApps the publishers are likely the dApp developer(s).
+- **auditors** - These are clients which maintain lists of trusted entities and metadata servers, checking metadata claims against these. 
 
 ### **Developers / Publishers**
-Developers and publishers of dApps can register their dApps by submitting a transaction on-chain that can be indexed and verified by stores, auditors and other actors. 
+Developers and publishers of dApps can register their dApps by submitting a transaction on-chain that can be indexed and verified by stores, auditors and other ecosystem actors. 
 
 ### **Stores / Auditors**
-Store and auditors should be able to follow the chain and find when a new dApp registration is **anchored** on-chain. They should then perform *integrity* and *trust* validations on the dApp's certificate and metadata. 
+Stores and auditors should be able to follow the chain and find when a new dApp registration is **anchored** on-chain. They should then perform *integrity* and *trust* validations on the dApp's certificate and metadata. 
 
 #### **Off-chain Location Advertisement**
-Each store and auditor should make public the location of their off-chain sources where they will look for the dApp's metadata based on certificates found on-chain. These can be advertised through their own API or publically available on a website.
+Each store and auditor should make public the location of their off-chain sources where they will look for the dApp's metadata based on certificates found on-chain. These can be advertised through their own API or publicly available on a website.
 
-Sample off-chain sources could be for example :
+Sample off-chain sources could be for example:
 - [CIP-26](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0026) compliant servers
-- IPFS
+- [IPFS](https://ipfs.tech/)
 
 ##### **Targetted Releases**
-Each developer and publisher can choose to where to write metadata based on the information available from known stores & auditors. This gives **developers** and **publishers** the ability to perform targeted releases. (i.e to which stores and auditors)
+Each developer and publisher can choose where to write metadata based on the information available from known stores & auditors. This gives **developers** and **publishers** the ability to perform targeted releases. (i.e to which stores and auditors).
 
 #### **Suggested Validations**
+- **`integrity`**: The dApp's metadata off-chain should match the metadata **anchored** on-chain.
+- **`trust`**: The dApp's certificate should be signed by a trusted entity. It's up to the store/auditor to decide which entities are trusted and they should maintain and publish their own list of trusted entities. Although this entities might be well known, it's not the responsibility of this CIP to maintain this list. These entities could be directly associated with developer/publisher or not.
 
-- **`integrity`**: The dapp's metadata off-chain should match the metadata anchored on-chain.
-- **`trust`**: The dApp's certificate should be signed by a trusted entity. It's up to the store/auditor to decide which entities are trusted and they should maintain and publish their own list of trusted entities. Although this entities might be well known, it's not the responsibility of this CIP to maintain this list.
-
-### **On-chain dApp Registration certificate**
-
+### **On-chain dApp Registration Certificate**
 ```json
 {
 	"subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
@@ -77,7 +81,7 @@ Each developer and publisher can choose to where to write metadata based on the 
 ```
 
 ### Properties
-*`subject`*: Identifier of the claim subject (i.e dapp). A UTF-8 encoded string. This uniquess of this property cannot be guaranteed by the protocol and multiple claims for the same subject may exist therefore it is required to exist some mechanism to assert trust in the *veracity* of this property.
+*`subject`*: Identifier of the claim subject (i.e dApp). A UTF-8 encoded string. This uniqueness of this property cannot be guaranteed by the protocol and multiple claims for the same subject may exist therefore it is required to exist some mechanism to assert trust in the *veracity* of this property.
 
 *`type`*: The type of the claim. This is a JSON object that contains the following properties: 
 - *`action`*: The action that the certificate is asserting. It can take the following values: 
@@ -92,7 +96,7 @@ This hash is calculated by taking the entire metadata tree object, ordering the 
 
 *`signature`*: The signature of the certificate. The signature is done over the blake2b hash of the certificate. The client should use the public key to verify the signature of the certificate. 
 
-## Certificate JSON Schema
+### Certificate JSON Schema
 ```json
 {
 	"$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -114,7 +118,7 @@ This hash is calculated by taking the entire metadata tree object, ordering the 
           },
           "releaseNumber": {
           	"type": "string",
-            "description": "offical version of the release"
+            "description": "official version of the release"
           },
           "releaseName": {
           	"type": "string",
@@ -147,13 +151,12 @@ This hash is calculated by taking the entire metadata tree object, ordering the 
 }
 ```
 
-## Metadata Label
-
+### Metadata Label
 When submitting the transaction metadata pick the following value for `transaction_metadatum_label`:
 
 - `1667`: DApp Registration
 
-## Offchain Metadata Format
+### Off-chain Metadata Format
 The Dapp Registration certificate itself doesn't enforce a particular structure to the metadata you might fetch off-chain. However, we recommend that you use the following structure:
 
 ```json
@@ -309,7 +312,7 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
 }
 ```
 
-## Example
+### Example
 
 ```json
 {
