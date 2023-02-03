@@ -29,7 +29,7 @@ the proof-of-stake consensus mechanism used in Cardano.
 This CIP aims to give guidance for future CIPs related to the ledger,
 making it a registered category of the CIP process[^1].
 [^1]: See [CIP-1](https://github.com/cardano-foundation/CIPs/blob/cip-cps-rework/CIP-0001/README.md#categories).
-While nothing new is added to the usual CIP process (except for a ledger registry),
+While nothing new is added to the usual CIP process,
 expectations for ledger CIPs are made explicit and some background information is provided.
 
 Many thanks to Arnaud Bailly and Michael Peyton Jones for all their help reviewing and providing
@@ -157,19 +157,6 @@ but things like the ledger events are more open to debate.
 
 Changes to the protocol parameter values do not require a CIP since they are
 a governance issue (see [CIP-1694]).
-
-### Ledger Core CIP registry
-
-Any CIP which proposes a change to the ledger MUST be added to this table:
-
-| #    | Title                                       | Status   |
-|---   | ---                                         | ---      |
-|   31 | Reference inputs                            | Active   |
-|   32 | Inline datums                               | Active   |
-|   33 | Reference scripts                           | Active   |
-|   59 | Terminology Surrounding Core Features       | Active   |
-|   80 | Transaction Serialization Deprecation Cycle | Proposed |
-| 1694 | A proposal for entering the Voltaire phase  | Proposed |
 
 ### Expectations for ledger CIPs
 
