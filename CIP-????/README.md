@@ -26,7 +26,7 @@ These changes will provide very substantial speed and size improvements to scrip
 The first designs of Plutus Core had native support for datatypes.
 In the interest of keeping the language as small and simple as possible, this was removed in favour of encoding datatype values using [Scott encoding][].
 
-[Experiments](https://github.com/input-output-hk/plutus/blob/96fd25649107658fc911c53e347032bedce624e9/doc/notes/fomega/scott-encoding-benchmarks/results/test-results.md) at the time showed that the performance penalty of using Scott encoding over native datatypes was not too great.
+[Experiments](https://github.com/input-output-hk/plutus/blob/96fd25649107658fc911c53e347032bedce624e9/doc/notes/fomega/scott-encoding-benchmarks/results/test-results.md) at the time showed that the performance penalty of using Scott encoding over native datatypes was not too large, and so we could realistically use Scott encoding.
 But we might expect that we should be able to do better with a native implementation, and indeed we can.
 
 #### 2. 'Lifting' and 'Unlifting'
@@ -143,7 +143,8 @@ They are illegal before that version.
 #### Costing
 
 All steps in the CEK machine have costs, all of which are constant.
-This will be new costs for the steps for evaluating `constr` and `case`.
+There are cost model parameters which set the costs for each step.
+This will therefore be new cost model paramters governing the costs for the steps for evaluating `constr` and `case`.
 
 There is a potential problem because `constr` and `case` have a variable number of children, unlike all the existing constructs. The risk is that we could end up doing a linear amount of work but only paying a constant cost.
 
@@ -338,9 +339,12 @@ The changes will be in the "PlutusV3" ledger language at the earliest, and it is
 While Typed Plutus Core is not part of the specification of Cardano, it is still interesting and informative to give the changes here.
 Plutus Core was originally conceived of as a typed language, and making sure that we can express the changes cleanly in a typed setting means that we ensure that the semantics make sense and that it will continue to be easy to compile to Plutus Core from typed languages.
 
-We add the following new type constructor to the type language of Typed Plutus Core:
+We add one new type constructors and one auxiliary constructor to the type language of Typed Plutus Core:
 ```
-(sop tys...)
+-- List of types. This is an auxiliary constructor, not a type!
+[ty...]
+-- Sum-of-products type, has n children, each of which is a list of types
+(sop tyls...)
 ```
 This corresponds to a sum-of-products type, and it has one list of types for each constructor, giving the argument types.
 
@@ -356,11 +360,11 @@ These make the typing rules much simpler, as otherwise we lack enough informatio
 The typing rules for the new terms are:
 
 $$
-\frac{\Gamma \vdash t_i : ty_i,\ rty = (\mathrm{sop}\ s_0 \ldots s_e \ldots s_m), s_e = [ty_0 \ldots ty_n]}{\Gamma \vdash (\mathrm{constr}\ rty\ e\ t_0 \ldots t_n) : rty}
+\frac{\Gamma \vdash t_i : p_i,\ ty_{\mathrm{result}} = (\mathrm{sop}\ s_0 \ldots s_e \ldots s_m), s_e = [p_0 \ldots p_n]}{\Gamma \vdash (\mathrm{constr}\ ty_{\mathrm{result}}\ e\ t_0 \ldots t_n) : ty_{\mathrm{result}}}
 $$
 
 $$
-\frac{\Gamma \vdash t : tty,\ tty = (\mathrm{sop}\ s_0 \ldots s_n), s_i = [p_{i_0} \ldots p_{i_m}],\ \Gamma \vdash c_i : p_{i_0} \rightarrow \ldots \rightarrow p_{i_m} \rightarrow rty}{\Gamma \vdash (\mathrm{case}\ rty\ t\ c_0 \ldots c_n) : rty}
+\frac{\Gamma \vdash t : ty_{\mathrm{scrutinee}},\ ty_{\mathrm{scrutinee}} = (\mathrm{sop}\ s_0 \ldots s_n), s_i = [p_{i_0} \ldots p_{i_m}],\ \Gamma \vdash c_i : p_{i_0} \rightarrow \ldots \rightarrow p_{i_m} \rightarrow ty_{\mathrm{result}}}{\Gamma \vdash (\mathrm{case}\ ty_{\mathrm{result}}\ t\ c_0 \ldots c_n) : ty_{\mathrm{result}}}
 $$
 
 The reduction rules are essentially the same since the types do not affect evaluation.
