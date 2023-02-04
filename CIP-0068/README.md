@@ -57,7 +57,7 @@ Some remarks about the above,
 1. The `user token` and `reference NFT` do not need to be minted in the same transaction. The order of minting is also not important.
 2. It may be the case that there can be multiple `user tokens` (multiple asset names or quantity greater than 1) referencing the same `reference NFT`.
 
-The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor:
+The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor. The third field allows for arbitrary plutus data. This could be useful to forward relevant data to the plutus script:
 ```
 big_int = int / big_uint / big_nint
 big_uint = #6.2(bounded_bytes)
