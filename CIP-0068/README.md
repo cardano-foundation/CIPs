@@ -71,7 +71,12 @@ metadata =
   
 version = int
 
-datum = #6.121([metadata, version])
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, version, extra])
 ```
 
 ## 222 NFT Standard
