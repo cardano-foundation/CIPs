@@ -106,6 +106,7 @@ files_details =
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
     src : bounded_bytes ; UTF-8
+    ; ... Additional properties are allowed
   }
 
 metadata = 
@@ -115,9 +116,15 @@ metadata =
     ? mediaType : bounded_bytes, ; UTF-8
     ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
+    ; ... Additional properties are allowed
   }
   
-datum = #6.121([metadata, 1]) ; version 1
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
@@ -180,6 +187,7 @@ metadata =
     ? url: bounded_bytes, ; UTF-8
     ? logo: uri,
     ? decimals: int
+    ; ... Additional properties are allowed
   }
 
 ; A URI as a UTF-8 encoded bytestring.
@@ -187,9 +195,14 @@ metadata =
 ; Do not encode plain file payloads as URI.
 ; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
 ; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
-uri = bounded_bytes 
+uri = bounded_bytes
+
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
   
-datum = #6.121([metadata, 1]) ; version 1
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
