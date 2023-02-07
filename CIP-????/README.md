@@ -133,6 +133,11 @@ implementation detail (unlike the format of blocks).
 The ledger and Plutus scripts have a common interface, described in [CIP-35].
 CIPs relating to this inteface are relevant to both the ledger and to the Plutus CIP categories.
 
+Additionally, there is significant overlap with the Ledger category around the ledger-script
+interface and the protocol parameters.
+CIPs which change these parts of Cardano should generally use the Plutus category and not the
+Ledger category, although the Editors may ask the Ledger reviewers to comment.
+
 ## Specification
 
 ### What merits a ledger CIP?
@@ -186,7 +191,21 @@ to the many consumers of the ledger.
 It is better that the CIP process achieve consensus on all the details than for
 these decisions to be made during the implementation phase.
 
+## Path to Active
 
+### Acceptance Criteria
+
+This CIP requires the acceptance of the Ledger team, which it has in virtue of its authorship.
+
+### Implementation Plan
+
+No implementation is required.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0][].
+
+[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [CIP-35]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035
 [CIP-59]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0059
 [CIP-1694]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694
