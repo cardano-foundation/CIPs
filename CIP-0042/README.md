@@ -4,6 +4,7 @@ Title: New Plutus built-in serialiseData
 Authors: Matthias Benkort <matthias.benkort@iohk.io>, Sebastian Nagel <sebastian.nagel@iohk.io>
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/218
 Comments-URI: https://github.com/cardano-foundation/CIPs/pull/218
+Category: Plutus
 Status: Active
 Type: Standards Track
 Created: 2022-02-09
