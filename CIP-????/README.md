@@ -172,6 +172,15 @@ a governance issue (see [CIP-1694]).
   For example, changes to the incentives model (such as changing the reward calculation)
   should include a proper game theoretic analysis.
 
+### The Ledger reviewers
+
+The following table gives the current set of reviewers for Ledger CIPs.
+
+| Name          | Email                 | GitHub username |
+|---------------|-----------------------|-----------------|
+| Jared Corduan | jared.corduan@iohk.io | JaredCorduan    |
+| Andre Knispel | andre.knispel@iohk.io | WhatisRT        |
+
 ## Rationale
 
 ### There is only one implementation, why limit the scope of ledger CIPs in this way?
