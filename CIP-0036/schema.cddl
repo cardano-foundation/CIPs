@@ -3,13 +3,13 @@ registration_cbor = {
   61285: registration_witness
 }
 
-$voting_pub_key /= bytes .size 32
+$cip36_vote_pub_key /= bytes .size 32
 $payment_address /= bytes
 $nonce /= uint
 $weight /= uint .size 4
 $voting_purpose /= uint
-legacy_key_registration = $voting_pub_key
-delegation = [$voting_pub_key, $weight]
+legacy_key_registration = $cip36_vote_pub_key
+delegation = [$cip36_vote_pub_key, $weight]
 
 ; May support other stake credentials in the future.
 ; Such additional credentials should be tagged at the CDDL/CBOR level
