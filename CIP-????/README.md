@@ -256,12 +256,24 @@ If they were Plutus Core terms in generality, we could have all kinds of strange
 
 So it still seems beneficial to have redeemers and datums being `Data`.
 
+See "Alternatives: Convert Redeemers and Datums to Sums-of-Products Rather Than Builtin Data" for a variant.
+
 #### What about users who rely on the script context being `Data`?
 
 The only use case we know of where it is actively desirable for the script context to be in the form of `Data` is the serialization/hashing use case described in the motivation for CIP-42.
 It's likely that this CIP will negatively affect that use case, since it would mean that to hash a part of the script context users would need to either:
 1. Write a hashing function that operates recursively on the script context object. This may be expensive because it will require lots of bytestring operations.
 2. Convert the script context back to `Data` in order to use `serialiseBuiltinData`.
+
+#### Do we need an untyped way of interacting with sums-of-products objects?
+
+Today, for users operating in a typed setting, using the raw `Data` representation of the script context has an advantage apart from speed: it avoids needing all the type definitions for the many parts of the script context, instead using only the single builtin type `Data`.
+This can lead to lower script sizes, depending on the tooling being used.
+
+One response is to say that this is an optimization problem for said tooling: they should try harder to ensure that everything relating to type definitions gets optimized away in the end.
+But we might also want to think about ways to allow people to operate with objects encoded using sums-of-products in a similar untyped way to what they can do with `Data`.
+
+However, this is all a problem for tools that produce Plutus Core, and seems solvable, so we do not need to solve it in this CIP, and can leave it to the tooling authors to solve later.
 
 ### Alternatives
 
@@ -317,6 +329,27 @@ However, performance investigations showed that we can realize a significant amo
 We think that this is an acceptable cost for a simpler implementation.
 
 [^see-appendix-2]: See Appendix 2 for more details.
+
+#### 3. Convert Redeemers and Datums to Sums-of-Products Rather Than Builtin Data
+
+This proposal changes how the script context is passed to scripts, thus removing one use of the Plutus builtin type `Data`.
+However, we still use the builtin `Data` type for passing redeemers and datums, which continue to be `Data` objects in the transaction.[^why-redeemers-datums-data]
+
+[^why-redeemers-datums-data]: See "Why not also make datums and redeemers terms instead of `Data`?" for why we want to keep redeemers and datums as `Data` in transactions themselves.
+
+An alternative would be to encode the `Data` objects for redeemers and datums using sums-of-products instead of the builtin `Data` type.
+That would require us to define and specify a stable `dataToTerm :: Data -> Term` function that converts a `Data` object into a term using sums-of-products.
+This would be simple for some cases (e.g. `Constr`), but less simple for other cases (notably `Map` and `List`).
+
+This has some costs:
+1. We have an additional conversion function that we need to specify.
+2. The details of the conversion function would be relevant to script authors, since they would need to know how their `Data` object had been encoded in order to operate on it.
+3. The ledger-script interface becomes generally more complex, since instead of passing `Data` objects directly, we now need to encode them.
+
+However, it would have a significant advantage in that we would potentially be able to remove the builtin `Data` type and its associated builtins entirely.
+Of course, they would still have to be supported in old ledger languages, so the reduction in implementation complexity would be limited.
+
+Strictly, this could be implemented as a later change, but if we're going to change the ledger-script interface anyway, it would be nice to do it in one go.
 
 ## Path to Active
 
