@@ -94,7 +94,8 @@ APIError {
 * InvalidRequest - Arguments do not conform to this spec or are otherwise invalid - e.g. requested extension is not supported by the wallet
 
 * InternalError - An error occurred during execution of this API call.
-* Refused - The request was refused due to lack of access - e.g. wallet disconnects.
+* Refused - The request was refused due to lack of access - e.g. user rejected connection to this dApp.
+
 * AccountChange - The account has changed. The dApp should call `wallet.enable()` to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
 
 ### Initial API
