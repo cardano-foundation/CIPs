@@ -1,6 +1,6 @@
 ---
 CIP: 77
-Title: Verified Stake-Pool Identity
+Title: Verified Stake Pool Identity
 Authors: Dennis Mittmann <dennis@iamx.id>
 Status: Proposed
 Type: Process
@@ -10,11 +10,11 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP defines a standard to verify Staking Pools using Decentralized Identifiers (DID)
+This CIP defines a standard to verify Stake Pools using Decentralized Identifiers (DID)
 
 ## Motivation
 
-The verification process of the authenticity of Staking Pools is currently a centralized effort. 
+The verification process of the authenticity of Stake Pools is currently a centralized effort. 
 
 ## High-Level Overview
 
@@ -26,16 +26,16 @@ The verification process of the authenticity of Staking Pools is currently a cen
 
    - a) Pool Owner / Holder: Option to attach verification data points to the pool
    
-   - b) How: Connect Stake-Pool metadata to one or more Digital Identifiers (DIDs)
+   - b) How: Connect Stake Pool metadata to one or more Digital Identifiers (DIDs)
    
-   - c) Data Points: Each of these data points stores information about a direct connection between the Stake-Pool operator and some sort of > identity source.
+   - c) Data Points: Each of these data points stores information about a direct connection between the Stake Pool operator and some sort of > identity source.
    
    - d) This > identity source could be a
      - d1) social account, examples: Twitter, Facebook, Discord, GitHub, Apple, LinkedIn, Twitch, Google, more;
      - d2) Know-Your-Customer (KYC), Know-Your-Business (KYB); Level: identity checks in up to 20 modules per jurisdiction and industry sector incl. financial transactions,
      - d3) any other source where an identity is directly linked to an account or something similar
      
-   - e) Visibility and Audit: The data points connected to the Stake-Pool are publicly visible and can be audited by anyone. Either manually or programmatically.
+   - e) Visibility and Audit: The data points connected to the Stake Pool are publicly visible and can be audited by anyone. Either manually or programmatically.
    
    - f) Operator: The operator (HOLDER) can choose which identity data points he wants to connect to the pool,
    
@@ -59,7 +59,7 @@ There are three different key components to this structure.
 | Component                    | Description                                                                                                           |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | DID                          | The actual Decentralized Identity Document, where the information about the connected identity data points is stored. |
-| Extended Stake-Pool Metadata | This metadata segment is placed in the Extended Stake-Pool Metadata and defines the connection to the DID.            |
+| Extended Stake Pool Metadata | This metadata segment is placed in the Extended Stake Pool Metadata and defines the connection to the DID.            |
 
 #### 1. DID
 
@@ -175,9 +175,9 @@ The only important thing to note is that inside the DID document, the payload wi
 }
 ```
 
-#### 3. Extended Stake-Pool metadata
+#### 3. Extended Stake Pool metadata
 
-This token can be linked in extended Stake-Pool metadata JSON
+This token can be linked in extended Stake Pool metadata JSON
 
 ```
 {
