@@ -122,9 +122,12 @@ Errors: APIError
 
 Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.enable()` during the current session should succeed and return the `API` object.
 
-#### cardano.{walletName}.supportedExtensions: Extension[]
+#### cardano.{walletName}.supportedExtensions: Extension[] | undefined
 
 A list of extensions supported by the wallet. Extensions may be requested by dApps on initialization. Some extensions may be mutually conflicting and this list does not thereby reflect what extensions will be enabled by the wallet. Yet it informs on what extensions are known and can be requested by dApps if needed.
+
+`undefined` is equivalent to `{cip: 30}`.
+
 
 #### cardano.{walletName}.name: String
 
