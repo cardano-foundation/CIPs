@@ -7,6 +7,7 @@ Authors:
     - Ryan Williams <ryan.williams@iohk.io>
     - Martynas Kazlauskas <martynas.kazlauskas@iohk.io>
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
+    - rooooooooob
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/446
