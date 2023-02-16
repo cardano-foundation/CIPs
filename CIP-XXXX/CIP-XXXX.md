@@ -134,7 +134,8 @@ A URI image (e.g. data URI base64 or other) for img src for the wallet which can
 
 ### Full API
 
-Upon successful connection via `cardano.{walletName}.enable()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp with the following method.
+Upon successful connection via `cardano.{walletName}.enable()`, a javascript object we will refer to as `API` (type) / `api` (instance) is returned to the dApp. This type is defined by the extension CIP(s).
+
 
 This is where extensions are free to add functionality as they see fit. Furthermore extensions are free to include additional sections, naming their APIs as they see fit, an example could be an `Experimental API`.
 
