@@ -37,7 +37,8 @@ This proposal is intended for dApp creators and Cardano wallet providers, with b
 
 #### Extension
 
-An extension is an object with a single field `"cip"` that describe a CIP number extending the API (as a plain integer, without padding). For example:
+An extension is an object with a single required field `"cip"` that describe a CIP number extending the API (as a plain integer). For example:
+
 
 ```
 { "cip": 30 }
