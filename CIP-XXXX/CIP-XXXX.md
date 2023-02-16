@@ -11,8 +11,8 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/446
-    - https://github.com/cardano-foundation/cips/pulls/?
-Created: 2022-02-12
+    - https://github.com/cardano-foundation/CIPs/pull/462
+Created: 2023-02-12
 License: CC-BY-4.0
 ---
 
@@ -50,15 +50,15 @@ This should act as the definitive list of known and accepted extensions, all ext
 
 | CIP    | Scope                           |
 | ------ | ------------------------------- |
-| CIP-30 | Base interface                  |
+| CIP-30 | Generic interface               |
 
 ##### Can extensions add their own datatypes?
 
 Yes.
 
-##### Can extensions extend the initial API?
+##### Can extensions add to the `Initial API`?
 
-No. Only if this specification itself if replaced.
+No. Endpoints can only be added to the [`Full API`](#full-api).
 
 ##### Can extensions depend on other extensions?
 
@@ -68,9 +68,13 @@ Yes. Extensions may have other extensions as pre-requisite. Some newer extension
 
 Yes. They all are CIPs.
 
-##### Can extensions add their own endpoints and/or error codes?
+##### Can extensions add their own error types and codes?
 
-Yes. Extensions may introduce new endpoints or error codes, and modify existing ones. Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
+Yes. Extensions can define new error types, with their own error codes. But these cannot conflict with the Error Types defined in this document. 
+
+##### Can extensions add their own endpoints?
+
+Yes. Extensions may introduce new endpoints to the [`Full API`](#full-api). Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
 
 ##### Are wallet expected to implement all extensions?
 
@@ -78,17 +82,17 @@ No. It's up to wallet providers to decide which extensions they ought to support
 
 ### Error Types
 
-#### APIError
+#### ConnectorError
 
 ```
-APIErrorCode {
+ConnectorErrorCode {
 	InvalidRequest: -1,
 	InternalError: -2,
 	Refused: -3,
 	AccountChange: -4,
 }
-APIError {
-	code: APIErrorCode,
+ConnectorError {
+	code: ConnectorErrorCode,
 	info: string
 }
 ```
@@ -104,9 +108,9 @@ APIError {
 
 In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
 
-#### cardano.{walletName}.enable(extensions: Extension[] = []): Promise\<API>
+#### cardano.{walletName}.enable(extensions: Extension[] = [{ cip: 30 }]): Promise\<API>
 
-Errors: APIError
+Errors: ConnectorError
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the [Full API](#full-api) will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested. But this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
 
@@ -116,9 +120,9 @@ dApps are expected to use this endpoint to perform an initial handshake and ensu
 
 **Note**: In order to preserve backwards compatibility an empty `extensions` field should supply CIP-30 functionality, as if a CIP-30 `extension` object was provided.
 
-#### cardano.{walletName}.isEnabled(): Promise\<bool>
+#### cardano.{walletName}.isEnabled(extensions: Extension[] = [{ cip: 30 }]): Promise\<bool>
 
-Errors: APIError
+Errors: ConnectorError
 
 Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.enable()` during the current session should succeed and return the `API` object.
 
