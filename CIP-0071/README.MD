@@ -1,6 +1,6 @@
 ---
 CIP: 0071
-Title: Verified Pool Identity
+Title: Verified Stake-Pool Identity
 Authors: Dennis Mittmann <dennis@iamx.id>
 Status: Proposed
 Type: Process
