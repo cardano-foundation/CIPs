@@ -2,7 +2,7 @@
 CIP: 0071
 Title: Verified Pool Identity
 Authors: Dennis Mittmann <dennis@iamx.id>
-Status: Active
+Status: Proposed
 Type: Process
 Created: 2022-10-18
 License: CC-BY-4.0
