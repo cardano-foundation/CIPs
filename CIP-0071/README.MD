@@ -1,5 +1,5 @@
 ---
-CIP: 0071
+CIP: 77
 Title: Verified Stake-Pool Identity
 Authors: Dennis Mittmann <dennis@iamx.id>
 Status: Proposed
