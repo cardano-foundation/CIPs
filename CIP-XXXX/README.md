@@ -12,6 +12,7 @@ Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/446
     - https://github.com/cardano-foundation/CIPs/pull/462
+    - https://forum.cardano.org/t/cip-extendable-dapp-connector/114666
 Created: 2023-02-12
 License: CC-BY-4.0
 ---
