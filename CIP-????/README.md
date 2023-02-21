@@ -1,21 +1,23 @@
 ---
 CIP: ?
 Title: Cardano Ledger Evolution
-Status: Proposed
+Status: Active
 Category: Meta
-Authors: Jared Corduan <jared.corduan@iohk.io>
+Authors: 
+  - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A
 Created: 2023-01-30
+Discussions: 
+  - https://github.com/cardano-foundation/CIPs/pull/456
 License: CC-BY-4.0
 ---
 
-# Evolution of the Cardano ledger
 
 ## Abstract
 
 This CIP provides guidance for future CIPs concerning the Cardano ledger.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 The ledger is responsible for processing transactions and updating the shared state of the network.
 It also processes block headers and handles the state transformation from one epoch to the next
@@ -35,7 +37,7 @@ expectations for ledger CIPs are made explicit and some background information i
 Many thanks to Arnaud Bailly and Michael Peyton Jones for all their help reviewing and providing
 feedback on the first versions of this CIP.
 
-## Background
+## Specification
 
 ### Terminology
 
@@ -138,7 +140,6 @@ interface and the protocol parameters.
 CIPs which change these parts of Cardano should generally use the Plutus category and not the
 Ledger category, although the Editors may ask the Ledger reviewers to comment.
 
-## Specification
 
 ### What merits a ledger CIP?
 
@@ -178,10 +179,10 @@ The following table gives the current set of reviewers for Ledger CIPs.
 
 | Name          | Email                 | GitHub username |
 |---------------|-----------------------|-----------------|
-| Jared Corduan | jared.corduan@iohk.io | JaredCorduan    |
-| Andre Knispel | andre.knispel@iohk.io | WhatisRT        |
+| Jared Corduan | jared.corduan@iohk.io | @JaredCorduan  |
+| Andre Knispel | andre.knispel@iohk.io | @WhatisRT        |
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 ### There is only one implementation, why limit the scope of ledger CIPs in this way?
 
