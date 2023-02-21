@@ -310,7 +310,7 @@ To be able to handle blockchain rollbacks, the indexer keeps track of past metad
 
 For compatibility with existing applications that are already relying on CIP-25 metadata indexers, the CIP-???? indexer provides a similar API so that those applications can get and display the current CIP-???? token metadata in the same way that they have been for CIP-25 metadata. The indexer indicates that it is following the CIP-???? standard.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 We pursued the following design goals in our solution:
 
