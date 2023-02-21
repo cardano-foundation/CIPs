@@ -21,7 +21,7 @@ License: CC-BY-4.0
 
 This proposal extends the CIP-25 standard for defining and updating token metadata via transaction metadata, by providing a new mechanism to update token metadata without having to mint or burn tokens, while maintaining full backward compatibility with CIP-25. The new mechanism is capable of expressing metadata updates more efficiently than CIP-25 updates.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 On Cardano’s eUTxO ledger, native tokens exist without any inherently attached metadata. The ledger does not provide a direct method for preserving any information associated with an asset class of native tokens, as transactions move the tokens from one UTxO to another.
 
