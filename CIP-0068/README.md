@@ -57,7 +57,7 @@ Some remarks about the above,
 1. The `user token` and `reference NFT` do not need to be minted in the same transaction. The order of minting is also not important.
 2. It may be the case that there can be multiple `user tokens` (multiple asset names or quantity greater than 1) referencing the same `reference NFT`.
 
-The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor:
+The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor. The third field allows for arbitrary plutus data. This could be useful to forward relevant data to the plutus script:
 ```
 big_int = int / big_uint / big_nint
 big_uint = #6.2(bounded_bytes)
@@ -71,7 +71,12 @@ metadata =
   
 version = int
 
-datum = #6.121([metadata, version])
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, version, extra])
 ```
 
 ## 222 NFT Standard
@@ -106,6 +111,7 @@ files_details =
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
     src : bounded_bytes ; UTF-8
+    ; ... Additional properties are allowed
   }
 
 metadata = 
@@ -115,9 +121,15 @@ metadata =
     ? mediaType : bounded_bytes, ; UTF-8
     ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
+    ; ... Additional properties are allowed
   }
   
-datum = #6.121([metadata, 1]) ; version 1
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
@@ -180,6 +192,7 @@ metadata =
     ? url: bounded_bytes, ; UTF-8
     ? logo: uri,
     ? decimals: int
+    ; ... Additional properties are allowed
   }
 
 ; A URI as a UTF-8 encoded bytestring.
@@ -187,9 +200,14 @@ metadata =
 ; Do not encode plain file payloads as URI.
 ; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
 ; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
-uri = bounded_bytes 
+uri = bounded_bytes
+
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
   
-datum = #6.121([metadata, 1]) ; version 1
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
