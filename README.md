@@ -114,6 +114,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 80? | [Transaction Serialization Deprecation Cycle](https://github.com/cardano-foundation/CIPs/pull/372) |
 | 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 | 82? | [Improved Rewards Scheme Parameters](https://github.com/cardano-foundation/CIPs/pull/422) |
+| 84? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
+| 85? | [Sums-of-products in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/455) |
+| 86? | [NFT Metadata Update Oracles](https://github.com/cardano-foundation/CIPs/pull/430) |
+| 87? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
 | 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
 ### Proposals Under Review (CPS)
@@ -134,7 +138,6 @@ The following list contains proposals that have been under review and for which 
 
 - [UPLC Serialization Optimizations](https://github.com/cardano-foundation/CIPs/pull/314)
 - [Address Resolution Through DNS](https://github.com/cardano-foundation/CIPs/pull/319)
-- [Additional Factors For NFT Market Verification](https://github.com/cardano-foundation/CIPs/pull/226)
 - [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276)
 
 <p align="right"><i>Last updated on 2022-11-30</i></p>
