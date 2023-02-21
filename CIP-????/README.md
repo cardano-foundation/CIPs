@@ -12,7 +12,6 @@ Discussions:
 Created: 2023-01-18
 License: CC-BY-4.0
 ---
-# CIP-XXXX: Maybe Datum
 
 ## Abstract
 Currently all plutus spending scripts take a datum directly from the UTxO being spent. When a user/developer forgets to add a datum to a UTxO being sent to a plutus script's address, this results in the permanent locking of the UTxO. This CIP proposes changing the ledger-script interface so that all plutus scripts take an optional datum argument. Then, if the UTxO being spent is missing a datum or the plutus script is being used to mint/stake, the `Nothing` equivalent for the argument will be passed to the plutus script being executed. This latter part allows for universal plutus scripts.
