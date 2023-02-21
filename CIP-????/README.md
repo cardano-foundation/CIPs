@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 86
 Title: NFT Metadata Update Oracles
 Status: Proposed
 Category: Metadata
