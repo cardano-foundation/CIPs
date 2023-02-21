@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 87
 Title: Maybe Datum
 Category: Plutus
 Status: Proposed
