@@ -163,8 +163,6 @@ Here we attempt to mitigate the impact of succeeding CIP-30 as *the* Cardano wal
 
 Extensions provide an extensibility mechanism and a way to negotiate (possibly conflicting) functionality between a dApp and a wallet provider. There's rules enforced as for what extensions a wallet decide to support or enable.
 
-We use object as extensions for now to leave room for adding fields in the future without breaking all existing interfaces. At this point in time however, objects are expected to be singleton.
-
 Extensions can be seen as a smart versioning scheme. Except that, instead of being a monotonically increasing sequence of numbers, they are multi-dimensional feature set that can be toggled on and off at will. This is a versioning "à-la-carte" which is useful in a context where:
 
 1. There are multiple concurrent standardization efforts on different fronts to accommodate a rapidly evolving ecosystem;
