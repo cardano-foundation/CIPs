@@ -15,7 +15,6 @@ Discussions:
 Created: 2022-11-01
 License: CC-BY-4.0
 ---
-# CIP-????: NFT Metadata Update Oracles
 
 ## Abstract
 
