@@ -12,17 +12,17 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
-In the absence of atomic delegation, in order for Dapp users to maintain full delegation control of their assets, each user must have his/her own address while using the Dapp. However, this then creates another problem: if all users have their own addresses while using the Dapp, how can users find and interact with each other? This informational CIP explains the usage of Beacon Tokens to solve this "broadcasting" issue. Using beacon tokens, it is possible to create distributed Dapps (e.g., DEXs, p2p lending, etc) where users can not only maintain full delegation control of their assets while using the Dapp, but can also maintain full custody of their assets at all times. These beacon tokens can be generalized to other use cases such as creating an on-chain personal address book tied to - and fully recoverable by - a user's payment pubkey and trustlessly sharing reference scripts with other blockchain users.
+In the absence of atomic delegation, in order for layer 1 (L1) Dapp users to maintain full delegation control of their assets, each user must have his/her own address while using the Dapp. However, this then creates another problem: if all users have their own addresses while using the Dapp, how can users find and interact with each other? This informational CIP explains the usage of Beacon Tokens to solve this "broadcasting" issue. Using beacon tokens, it is possible to create distributed L1 Dapps (e.g., DEXs, p2p lending, etc) where users can not only maintain full delegation control of their assets while using the Dapp, but can also maintain full custody of their assets at all times. These beacon tokens can be generalized to other use cases such as creating an on-chain personal address book tied to - and fully recoverable by - a user's payment pubkey and trustlessly sharing reference scripts with other blockchain users.
 
 ## Motivation: why is this CIP necessary?
-To date, there has yet to be a Dapp where users maintain full delegation control of their assets while using it. Instead, Dapps usually end up pooling user assets together and therefore are forced to delegate the assets all together. On Proof-of-Stake (PoS) blockchains, this is an existential security issue. The more popular a Dapp becomes, the more centralized the underlying blockchain will be. Some Dapps try to address this concern by:
+To date, there has yet to be a L1 Dapp where users maintain full delegation control of their assets while using it. Instead, L1 Dapps usually end up pooling user assets together and therefore are forced to delegate the assets all together. On Proof-of-Stake (PoS) blockchains, this is an existential security issue. The more popular a L1 Dapp becomes, the more centralized the underlying blockchain will be. Some Dapps try to address this concern by:
 
 1. Fractionalizing the asset pools - instead of all assets being at one address and delegated to only one stake pool, the assets are split among several addresses and delegated to several separate stake pools.
 2. Issuing governance tokens - each user gets a vote on where the pooled assets will be delegated.
 
-This is a general pattern holds for all kinds of Dapps: DAOs, DEXs, p2p lending, etc. Unfortunately, the above mitigations do not fully solve the issue; the blockchain is still significantly more centralized than if full delegation control was used. 
+This is a general pattern holds for all kinds of L1 Dapps: DAOs, DEXs, p2p lending, etc. Unfortunately, the above mitigations do not fully solve the issue; the blockchain is still significantly more centralized than if full delegation control was used. 
 
-### Why are Dapps designed like this?
+### Why are L1 Dapps designed like this?
 Ask yourself the following question:
 ```
 If user assets are segregated into separate addresses, how do users find all of the relevant information (assets, transaction history, etc) for the Dapp?
@@ -34,7 +34,7 @@ When assets are pooled together, the above questions is not a concern:
 There is only one address to be concerned with and all of the relevant information is easily accessed by looking up the information for that central address.
 ```
 
-Some have assumed that the Cardano blockchain, as it is now, is unable to support a Dapp where users maintain full delegation control of their assets. This CIP shows that this assumption is wrong. Thanks to Cardano's native tokens, it is already possible to design all kinds of Dapps where users can maintain full delegation control of their assets, and by extension, can maintain full custody of their assets while using the Dapp.
+Some have assumed that the Cardano blockchain, as it is now, is unable to support a L1 Dapp where users maintain full delegation control of their assets. This CIP shows that this assumption is wrong. Thanks to Cardano's native tokens, it is already possible to design all kinds of L1 Dapps where users can maintain full delegation control of their assets, and by extension, can maintain full custody of their assets while using the Dapp.
 
 ## Specification
 
@@ -74,10 +74,10 @@ I have created a few basic reference implementations:
 
 - [Cardano-Reference-Scripts](https://github.com/fallen-icarus/cardano-reference-scripts) - trustless p2p sharing of Cardano reference scripts. It uses the UTxO info api to broadcast all of the UTxOs that contain each beacon. The beacon token name is the script hash of the reference script being shared. Minting the beacon requires that the beacon is stored with the reference script whose hash matches the beacons token name. This example also uses a helper plutus spending script to guarantee the burning of the beacon when a reference script UTxO is consumed. 
 
-### Distributed Dapps
-As already alluded to, a *distributed Dapp* is one where all users have their own personal address while using the Dapp. This is opposite to *concentrated Dapps* where all users share one or a few addresses while using the Dapp.
+### Distributed L1 Dapps
+As already alluded to, a *distributed L1 Dapp* is one where all users have their own personal address while using the Dapp. This is opposite to *concentrated L1 Dapps* where all users share one or a few addresses while using the Dapp.
 
-All distributed Dapps will use beacon tokens to aggregrate all of the necessary information for using the Dapps. Every distributed Dapp follows the same general design pattern.
+All distributed L1 Dapps will use beacon tokens to aggregrate all of the necessary information for using the Dapps. Every distributed L1 Dapp follows the same general design pattern.
 
 1. All user addresses use the same spending script for a given use case.
 2. All user addresses MUST have a staking credential.
@@ -94,13 +94,13 @@ Since each user has his/her own address for the Dapp, the following are now poss
 
 Further, the Dapp itself gains some nice features:
 
-1. Since there are at least as many UTxOs as there are users, the distributed Dapp is naturally concurrent and gets more concurrent as the number of users increases.
+1. Since there are at least as many UTxOs as there are users, the distributed L1 Dapp is naturally concurrent and gets more concurrent as the number of users increases.
 2. Upgradability can happen democratically - i.e., users can choose whether to move their assets to an address using a newer version of the Dapp's spending script.
 3. The Dapp is easily integratable into any frontend.
 4. Since the address itself can act as the User ID, in some cases, the Dapp's logic can be dramatically simplified.
 
-#### Cardano-Swaps: The First Ever Defi Application to Support Full Delegation Control
-I created a DEX proof-of-concept that uses the above design principles. The result is the `Cardano-Swaps` DEX; it is fully open-sourced and can be found [here](https://github.com/fallen-icarus/cardano-swaps). As the title of this section states, to the best of my knowledge, `Cardano-Swaps` is the first ever Defi application to support full delegation control for its users. It is fully operational and can be tested on either the PreProd Testnet or the mainnet. In addition to full delegation control, it has the following features:
+#### Cardano-Swaps: The First Ever L1 Defi Application to Support Full Delegation Control
+I created a L1 DEX proof-of-concept that uses the above design principles. The result is the `Cardano-Swaps` DEX; it is fully open-sourced and can be found [here](https://github.com/fallen-icarus/cardano-swaps). As the title of this section states, to the best of my knowledge, `Cardano-Swaps` is the first ever L1 Defi application to support full delegation control for its users. It is fully operational and can be tested on either the PreProd Testnet or the mainnet. In addition to full delegation control, it has the following features:
 
 1. Composable atomic swaps.
 2. Users maintain custody of their assets at all times.
@@ -119,27 +119,27 @@ The fact that beacon tokens are generalizable for aggregating any information on
 ### Does the reliance on off-chain apis create MORE centralization?
 The short answer is no. It is important to look at what the limiting centralization factors are for any design. 
 
-Concentrated Dapps Centralization Bottlenecks:
+Centralization Bottlenecks for Concentrated L1 Dapps:
 
 1. Full delegation control is not possible without atomic delegation. This is baked into the on-chain design of the Dapp. 
 
 2. Batchers are needed since there aren't enough UTxOs for each user. For most Dapps, it is not easy to become a batcher due to needing to be selected by some entity. Further, these batchers are effectively middlemen that can take advantage of their unique positions. While batcher protocols can be improved, this is a work in progress and is currently an off-chain centralization bottleneck for concentrated Dapps.
 
-Distributed Dapps Centralization Bottlenecks:
+Centralization Bottlenecks for Distributed L1 Dapps:
 
-1. Reliance on off-chain api services. This is the only centralization bottleneck for distributed Dapps. And similarly to batchers, new innovations are improving this. For example, Koios is more decentralized than Blockfrost.
+1. Reliance on off-chain api services. This is the only centralization bottleneck for distributed L1 Dapps. And similarly to batchers, new innovations are improving this. For example, Koios is more decentralized than Blockfrost.
 
 What should stand out to you is the following:
 ```
-Concentrated Dapps have centralization bottlenecks both in their on-chain design and their off-chain design.
+Concentrated L1 Dapps have centralization bottlenecks both in their on-chain design and their off-chain design.
 
-Distributed Dapps only have a centralization bottleneck in their off-chain design.
+Distributed L1 Dapps only have a centralization bottleneck in their off-chain design.
 ```
 
-This means that Distributed Dapps are better positioned to naturally grow more decentralized as the off-chain services become more decentralized.
+This means that Distributed L1 Dapps are better positioned to naturally grow more decentralized as the off-chain services become more decentralized.
 
 ## Path to Active
-It is already possible to create distributed Dapps. No updates to Cardano are necessary.
+It is already possible to create distributed L1 Dapps. No updates to Cardano are necessary.
 
 ## Copyright
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
