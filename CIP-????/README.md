@@ -117,9 +117,7 @@ By being able to easily broadcast the necessary information for a Dapp, user ass
 The fact that beacon tokens are generalizable for aggregating any information on the blockchain is just a bonus.
 
 ### Does the reliance on off-chain apis create MORE centralization?
-The short answer is no.
-
-It is important to look at what the limiting centralization factors are for any design. 
+The short answer is no. It is important to look at what the limiting centralization factors are for any design. 
 
 Concentrated Dapps Centralization Bottlenecks:
 
