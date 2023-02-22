@@ -1,9 +1,9 @@
 ---
-CIP: \?
+CIP: 58
 Title: Bitwise primitives
 Author:	Koz Ross <koz@mlabs.city>, Maximilian König <maximilian@mlabs.city>
 Comments-URI:	https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-\?
-Status:	Draft
+Status: Proposed
 Type:	Standards Track
 Created: 2022-05-27
 License: Apache-2.0
@@ -52,7 +52,7 @@ A good example is multiplication over the [Goldilocks
 field](https://blog.polygon.technology/introducing-plonky2) (with characteristic
 $2^64 - 2^32 + 1$). To perform this operation requires 'slicing' the
 representation being worked with into 32-bit chunks. As finite field
-reprentations are some kind of unsigned integer in every implementation, in
+representations are some kind of unsigned integer in every implementation, in
 Plutus, this would correspond to `Integer`s, but currently, there is no way to
 perform this kind of 'slicing' on an `Integer` on-chain.
 
@@ -416,7 +416,7 @@ $x \in \\{ 0,1,\ldots,255 \\}$.
 
 We observe that, given some *base* $b \in \mathbb{N}^{+}$, any 
 $n \in \mathbb{N}$ can be viewed as a sequence of values in $\\{0,1,\ldots, b - 1\\}$.
-We refer to any such sequence as a *base $b$ sequence*. In such a 'view', given 
+We refer to any such sequence as a *base* $b$ *sequence*. In such a 'view', given 
 a base $b$ sequence $S = s_0 s_1 \ldots s_k$, we can compute its corresponding 
 $m \in \mathbb{N}^+$ as 
 
@@ -554,9 +554,9 @@ Throughout, let $S = s_0 s_1 \ldots s_n$ be a byte sequence, and let
 $S^{\prime}$ be its corresponding bit sequence with bit length $n^{\prime} + 1$.
 
 We describe the semantics of `shiftByteString` and `rotateByteString`.
-Informally, bot hof these are 'bit index modifiers': given a positive $i$, the
-index of a bit in the result 'increases' relative the argument, and given a
-negative $i$, the index of a bit in the result 'decreases' relative the
+Informally, both of these are 'bit index modifiers': given a positive $i$, the
+index of a bit in the result 'increases' relative to the argument, and given a
+negative $i$, the index of a bit in the result 'decreases' relative to the
 argument. This can mean that for some bit indexes in the result, there is no
 corresponding bit in the argument: we term these *missing indexes*.
 Additionally, by such calculations, a bit index in the argument may be projected
