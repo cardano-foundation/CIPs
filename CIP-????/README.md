@@ -34,7 +34,7 @@ All native tokens on Cardano broadcast their current address and any transaction
 | Addresses with asset | [API](https://API.koios.rest/#get-/asset_address_list) | [API](https://docs.blockfrost.io/#tag/Cardano-Assets/paths/~1assets~1%7Basset%7D~1addresses/get) |
 | Txs including asset | [API](https://API.koios.rest/#get-/asset_txs) | [API](https://docs.blockfrost.io/#tag/Cardano-Assets/paths/~1assets~1%7Basset%7D~1transactions/get) |
 
-Knowing EXACTLY which addresses/transactions have the token, you can then use the same off-chain API services to take a closer look at the addresses/transactions:
+Knowing EXACTLY which addresses/transactions have the token, you can then use the same off-chain API services to take a closer look at those addresses/transactions:
 
 | Task | Koios API | Blockfrost API |
 |--|--|--|
