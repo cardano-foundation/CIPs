@@ -85,8 +85,8 @@ Furthermore, the Dapp itself gains some nice features:
 3. The Dapp is easily integratable into existing frontends (wallets).
 4. Since the address itself can act as the User ID, in some cases, the Dapp's logic can be dramatically simplified.
 
-#### Cardano-Swaps: The first ever L1 DEX to support full delegation control
-I created a L1 DEX proof-of-concept that uses the above design principles. The result is the `Cardano-Swaps` DEX; it is fully open-sourced and can be found [here](https://github.com/fallen-icarus/cardano-swaps). As the title of this section states, to the best of my knowledge, `Cardano-Swaps` is the first ever L1 DEX to support full delegation control for its users. It is fully operational and can be tested on either the PreProd Testnet or the mainnet. In addition to full delegation control, it has the following features:
+#### Cardano-Swaps: A L1 DEX with full delegation control
+I created a L1 DEX proof-of-concept that uses the above design principles. The result is the `Cardano-Swaps` DEX; it is fully open-sourced and can be found [here](https://github.com/fallen-icarus/cardano-swaps). It is fully operational and can be tested on either the PreProd Testnet or the mainnet. In addition to full delegation control, it has the following features:
 
 1. Composable atomic swaps.
 2. Users maintain custody of their assets at all times.
