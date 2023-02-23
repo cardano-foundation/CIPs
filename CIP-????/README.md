@@ -5,7 +5,7 @@ Category: Tools
 Status: Informational
 Authors:
     - fallen-icarus <modern.daidalos@gmail.com>
-    - zheckson1 <zheckson@nomadpool.io>
+    - zhekson1 <zhekson@nomadpool.io>
 Implementors: []
 Discussions:
 Created: 2023-02-21
@@ -13,7 +13,7 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
-In the absence of atomic delegation, in order for layer 1 (L1) Dapp users to maintain full delegation control of their assets, each user must have his/her own address while using the Dapp. This poses a challenge: if all users have their own addresses while using the Dapp, how can users find and interact with each other, without relying on a central order batcher? This informational CIP proposes an NFT standard, called "Beacon Tokens", to solve this broadcasting issue. Using beacon tokens, it is possible to create distributed L1 Dapps (eg, DEXs, p2p lending, etc) where users not only maintain full delegation control of their assets, but can also maintain full custody of their assets at all times. Beacon tokens can be generalized to other use cases, such as creating an on-chain personal address book tied to - and fully recoverable by - a user's payment pubkey, or trustlessly sharing reference scripts with other blockchain users.
+In the absence of atomic delegation, in order for layer 1 (L1) Dapp users to maintain full delegation control of their assets, each user must have his/her own address while using the Dapp. This poses a challenge: if all users have their own addresses while using the Dapp, how can users find and interact with each other, without relying on a central order batcher? This informational CIP proposes an NFT standard, called ***Beacon Tokens***, to solve this broadcasting issue. Using beacon tokens, it is possible to create distributed L1 Dapps (eg, DEXs, p2p lending, etc) where users not only maintain full delegation control of their assets, but can also maintain full custody of their assets at all times. Beacon tokens can be generalized to other use cases, such as creating an on-chain personal address book tied to - and fully recoverable by - a user's payment pubkey, or trustlessly sharing reference scripts with other blockchain users.
 
 ## Motivation: why is this CIP necessary?
 To date, there are very few L1 Dapps in which users maintain full delegation control of their assets. Those that do, tend to be closed source and, therefore, do not share how they have overcome the broadcasting issue associated with giving each user his/her own Dapp address. The rest of the L1 Dapps usually end up pooling user assets together and therefore are forced to delegate the assets all together. In Proof-of-Stake (PoS) blockchains, this is a significant security concern. The more popular a L1 Dapp becomes, the more centralized the underlying stake becomes. Some Dapps try to address this concern by:
@@ -55,7 +55,7 @@ These queries are possible for *all* Cardano native tokens. However, while all n
 #### Using Beacon Tokens
 Every native token has two configurable fields: the policy ID and the token name. The policy ID will be application specific while the token name can be data specific. To use a beacon token, simply create a native token that is unique to your application and if necessary, control how UTxOs with beacons can be spent.
 
-I've created a few basic reference implementations:
+Here are a few basic reference implementations:
 
 - [Cardano-Address-Book](https://github.com/fallen-icarus/cardano-address-book) - a personal payment address book on Cardano that is tied to a user's payment pubkey. It uses the Tx metadata API to broadcast all metadata attached to the transactions containing the beacon. The address book is the aggregation of all of the metadata. This application can be generalized to store *any* information in a way that is unique to, and protected by, the user's payment pubkey. The beacon token name is the user's payment pubkey hash. Minting the beacon requires the signature of the payment pubkey hash used for the token name. This guarantees that only Alice can mint Alice's personal beacon.
 
@@ -87,7 +87,7 @@ Furthermore, the Dapp itself gains some nice features:
 4. Since the address itself can act as the User ID, in some cases, the Dapp's logic can be dramatically simplified.
 
 #### Cardano-Swaps: A L1 DEX with full delegation control
-I created a L1 DEX proof-of-concept that uses the above design principles. The result is the `Cardano-Swaps` DEX; it is fully open-sourced and can be found [here](https://github.com/fallen-icarus/cardano-swaps). It is fully operational and can be tested on either the PreProd Testnet or the mainnet. In addition to full delegation control, it has the following features:
+Using these design principles, it was possible to create a L1 DEX proof-of-concept that uses the above design principles. The result is the `Cardano-Swaps` DEX; it is fully open-sourced and can be found [here](https://github.com/fallen-icarus/cardano-swaps). It is fully operational and can be tested on either the PreProd Testnet or the mainnet. In addition to full delegation control, it has the following features:
 
 1. Composable atomic swaps.
 2. Users maintain custody of their assets at all times.
