@@ -109,7 +109,7 @@ The short answer is no. It is important to look at what the limiting centralizat
 
 1. Full delegation control is not possible without atomic delegation. This is baked into the on-chain design of the Dapp. 
 
-2. Batchers are needed since there aren't enough UTxOs for each user. For most Dapps, it is not easy to become a batcher due to needing to be selected by some entity. Further, these batchers are effectively middlemen that can take advantage of their unique positions. While batcher protocols can be improved, this is a work in progress and is currently an off-chain centralization bottleneck for concentrated Dapps.
+2. Batchers are needed since there aren't enough UTxOs for each user. For most Dapps, it is not easy to become a batcher due to needing to be selected by some entity. Further, these batchers are effectively middlemen that can take advantage of their unique positions. While new innovations in batcher protocols are improving this situation ([spectrum-finance](https://docs.spectrum.fi/docs/protocol-overview/bots) batchers can be anyone), this is a work in progress and is currently an off-chain centralization bottleneck for concentrated Dapps.
 
 #### Centralization Bottlenecks for Distributed L1 Dapps:
 
