@@ -5,6 +5,7 @@ Category: Tools
 Status: Informational
 Authors:
     - fallen-icarus <modern.daidalos@gmail.com>
+    - zheckson1 <zheckson@nomadpool.io>
 Implementors: []
 Discussions:
 Created: 2023-02-21
@@ -63,20 +64,20 @@ I've created a few basic reference implementations:
 ### Distributed L1 Dapps
 As already alluded to, a *distributed L1 Dapp* is one where all users have their own personal address while using the Dapp. This is opposite to *concentrated L1 Dapps* where all users share one or a few addresses while using the Dapp.
 
-All distributed L1 Dapps will use beacon tokens to aggregrate all of the necessary information for using the Dapps. Every distributed L1 Dapp follows the same general design pattern.
+Distributed L1 Dapps can use beacon tokens to aggregrate all of the necessary information for using the Dapps. Such distributed L1 Dapp follow the same general design pattern:
 
 1. All user addresses use the same spending script for a given use case.
 2. All user addresses *must* have a staking credential.
 3. The spending script delegates the authorization of owner related actions to the address' staking credential - ie, the staking key must sign or the staking script must be successfully executed in the same transaction.
 4. The spending script's hash is hard-coded into the beacon minting policy and the minting policy enforces that the beacons can only be minted to an address of that spending script.
-5. The datums for the spending script must have the policy ID of the beacons so that it can force proper usage of the beacons (such as burning when necessary).
+5. The datums for the spending script must have the policy ID of the beacons so that the script can force proper usage of the beacons (such as burning when necessary).
 
 #### Advantages
 Since each user has his/her own address for the Dapp, the following are now possible:
 
 1. **Full delegation control**
-2. Users maintain full custody of their assets while using the Dapp thanks to the staking credential needing to approve owner related actions.
-2. The address itself can act as the User ID. There is no need to place this in a datum and guard its usage.
+2. Users maintain full custody of their assets while using the Dapp, since owner related actions must be approved by the staking credential.
+2. The address itself can act as the User ID. There is no need to place a User ID in a datum and guard its usage.
 
 Furthermore, the Dapp itself gains some nice features:
 
@@ -92,15 +93,16 @@ I created a L1 DEX proof-of-concept that uses the above design principles. The r
 2. Users maintain custody of their assets at all times.
 3. Naturally concurrent and gets more concurrent the more users there are. No batchers are required.
 4. Liquidity naturally spreads to all trading pairs instead of being siloed into specific trading pairs.
-5. Capital efficiency --> enough liquidity can turn the DEX into a price oracle.
-6. ADA is all you need to interact with the DEX.
-7. Upgradability can happen democratically.
-8. Easy to integrate into any frontend.
+5. Enough liquidity can turn the DEX into a price oracle.
+6. Capital efficient due to the nature of atomic swaps where users specify their prices.
+7. ADA is all you need to interact with the DEX.
+8. Upgradability can happen democratically.
+9. Easy to integrate into any frontend.
 
 ## Rationale: how does this CIP achieve its goals?
-By being able to easily broadcast the necessary information for a Dapp, user assets can be segregated into separate addresses and, therefore, enable full delegation control while using the Dapp. Thanks to the broadcasting, the segregated addresses can act as if all the assets were pooled together (checkout the `Cardano-Swaps` README to see how liquidity is achieved; it arises naturally).
+By being able to easily broadcast the necessary information for a Dapp, user assets can be segregated into separate addresses and, therefore, enable full delegation control while using the Dapp. Thanks to broadcasting, the segregated addresses can act as if all the assets were pooled together (checkout the `Cardano-Swaps` README to see how liquidity is achieved; it arises naturally).
 
-The fact that beacon tokens are generalizable for aggregating any information on the blockchain is just a bonus.
+The fact that beacon tokens are generalizable for aggregating any information on the blockchain is a bonus.
 
 ### Does the reliance on off-chain APIs create *more* centralization?
 The short answer is no. It is important to look at what the limiting centralization factors are for any design. 
@@ -116,16 +118,15 @@ The short answer is no. It is important to look at what the limiting centralizat
 1. Reliance on off-chain API services. This is the only centralization bottleneck for distributed L1 Dapps; similarly to batchers, new innovations are improving this. For example, Koios is more decentralized than Blockfrost.
 
 #### We can therefore extract the following conclusions:
-```
-Concentrated L1 Dapps have centralization bottlenecks both in their on-chain design and their off-chain design.
 
-Distributed L1 Dapps only have a centralization bottleneck in their off-chain design.
-```
+- Concentrated L1 Dapps have centralization bottlenecks both in their on-chain design and their off-chain design.
+
+- Distributed L1 Dapps only have a centralization bottleneck in their off-chain design.
 
 This means that distributed L1 Dapps are better positioned to naturally grow more decentralized as the off-chain services become more decentralized.
 
 ## Path to Active
-It is already possible to create distributed L1 Dapps. No updates to Cardano are necessary.
+It is already possible to use beacon tokens and create distributed L1 Dapps. No updates to Cardano are necessary.
 
 ## Copyright
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
