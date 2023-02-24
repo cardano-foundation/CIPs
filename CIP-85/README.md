@@ -1,12 +1,15 @@
 ---
-CIP: ????
+CIP: 85
 Title: Sums-of-products in Plutus Core
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Implementors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Authors: 
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors: 
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Status: Proposed
 Category: Plutus
 Created: 2023-01-30
-Discussions: https://github.com/cardano-foundation/CIPs/pull/455
+Discussions: 
+  - https://github.com/cardano-foundation/CIPs/pull/455
 License: CC-BY-4.0
 ---
 
