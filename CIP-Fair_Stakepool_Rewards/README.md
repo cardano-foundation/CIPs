@@ -170,8 +170,6 @@ This proposal includes parameter changes, one parameter removal, and a change to
 
 ### Acceptance Criteria
 
-This proposal must be approved by both IOG as well as the community before implementation. Community consensus should be a high priority for proposals that modify staking rewards.
-
 Each stage will be an individual protocol update. The first two updates will be protocol parameter updates. The third and final update will require a hardfork.
 
 Before implementation, engineering and research teams must review the feasibility and potential consequences of the proposal, create the implementation for each update, and decide on the time interval between updates.
