@@ -204,17 +204,17 @@ This proposal includes several parameter changes and changes to ledger rules. Sp
 
 #### For Stages 1, 3, and 4
 1. The raw transaction for the parameter update is built.
-2. Genesis delegates IOG, CF, and Emurgo sign the transaction.
+2. Transaction is signed.
 3. Transaction is submitted.
 4. Parameter update is accepted by majority of the network.
 5. Parameter update is confirmed.
 
 #### For Stage 2
 
-1. IOG completes necessary research and develops the changes to the ledger rules.
-2. IOG releases a new version of cardano-node supporting the changes to the ledger rules.
-2. The raw transaction signalling the hardfork is built.
-3. Genesis delegates IOG, CF, and Emurgo sign the transaction.
+1. Necessary research and development is completed for the changes to the ledger rules.
+2. New version of cardano-node supporting the changes to the ledger rules is released.
+2. Raw transaction signaling the hardfork is built.
+3. Transaction is signed.
 4. Transaction is submitted.
 5. Hardfork is accepted by majority of the network.
 6. Hardfork and changes to ledger rules are confirmed.
