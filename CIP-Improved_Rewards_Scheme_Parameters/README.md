@@ -223,9 +223,9 @@ This proposal includes several parameter changes and changes to ledger rules. Sp
 
 ### Implementation Plan
 
-Implementors include IOG, CF, and Emurgo. All three entities must approve the changes to the network. Each stage will be an individual update. Stages 1, 3, and 4 will be parameter updates. Stage 2 will require a hardfork.
+Each stage will be an individual update. Stages 1, 3, and 4 will be parameter updates. Stage 2 will require a hardfork.
 
-Before implementation, IOG's engineering and research teams must review the feasibility and potential consequences of the proposal. IOG will create the implementation for each update and decide on the time interval between updates.
+Before implementation, engineering and research teams must review the feasibility and potential consequences of the proposal, create the implementation for each update, and decide on the time interval between updates.
 
 As previously mentioned, implementation will occur in the following stages:
 
