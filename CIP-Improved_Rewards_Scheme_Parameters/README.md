@@ -6,9 +6,7 @@ Category: Reward-Sharing Scheme
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors:
-    - Input Output Global
-    - Cardano Foundation
-    - Emurgo
+    - TBD
 Discussions:
     - https://forum.cardano.org/t/cip-improved-rewards-scheme-parameters/112409
 Created: 2022-01-03
