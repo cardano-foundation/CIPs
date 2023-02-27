@@ -1,8 +1,7 @@
-; "????" to be replaced by the CIP number, as a `uint`.
-metadata = { ???? => action }
+metadata = { "86" => action }
 
 ; =========================================================================
-; CIP-???? actions
+; CIP-86 actions
 
 action =
   {
@@ -108,7 +107,7 @@ record_field = text
 ;      csv_update_simple = Union([csv_policy_object])
 ;
 ; The effect of a `csv_update_opaque` on the token metadata state in the
-; CIP-???? indexer must be the same as the effect of the corresponding
+; CIP-86 indexer must be the same as the effect of the corresponding
 ; `csv_update_simple` (applied as a simple update action).
 
 ; =========================================================================

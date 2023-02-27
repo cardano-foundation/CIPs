@@ -1,10 +1,9 @@
-; "????" to be replaced by the CIP number, as a `uint`.
-metadata = { ???? => action }
+metadata = { "86" => action }
 
 ; =========================================================================
-; CIP-???? actions
+; CIP-86 actions
 
-; When version 2 mode is enabled for a CIP-???? action, all `policy_id` and
+; When version 2 mode is enabled for a CIP-86 action, all `policy_id` and
 ; `asset_name` values are interpreted as `bytes_64`, similar to CIP-25v2.
 action =
   {

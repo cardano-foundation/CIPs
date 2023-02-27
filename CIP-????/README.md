@@ -116,32 +116,32 @@ Our proposal extends CIP-25 with a new update mechanism:
 
 -   A metadata oracle can be assigned for a given policy ID.
 -   For a policy with a metadata oracle assigned,
-the metadata oracle can post CIP-???? updates to add, remove, or modify
+the metadata oracle can post CIP-86 updates to add, remove, or modify
 any fields of the token’s CIP-25 metadata,
 without needing to mint or burn any tokens in the metadata update transactions.
 -   The current metadata for a token can be deterministically reconstructed
 by starting from the latest CIP-25 update to the token,
-and applying the subsequent CIP-???? metadata updates
+and applying the subsequent CIP-86 metadata updates
 in ascending blockchain transaction order.
 
-Both CIP-25 and CIP-???? updates affect the token metadata:
+Both CIP-25 and CIP-86 updates affect the token metadata:
 
 -   A CIP-25 update removes all fields in the current metadata state
 and replaces them with a new complete definition of the metadata state.
--   A CIP-???? update selectively adds, removes, or modifies fields
+-   A CIP-86 update selectively adds, removes, or modifies fields
 relative to the current metadata state.
 It does not apply to any asset class that has not had tokens previously minted
 or any asset class that has not had CIP-25 metadata previously defined,
-before the CIP-???? update.
+before the CIP-86 update.
 
-However, we recommend that CIP-???? adopters use
+However, we recommend that CIP-86 adopters use
 the new metadata update mechanism exclusively
 to manage all updates to their token metadata
 after the initial CIP-25 metadata is set.
 
-Our proposal only affects the `????` top-level CBOR tag
+Our proposal only affects the `86` top-level CBOR tag
 of the metadata field in Cardano transactions.
-(Note: we’re using `????` as a stand-in for the CIP number
+(Note: we’re using `86` as a stand-in for the CIP number
 that will eventually be assigned to this proposal.)
 
 ### Assigning a metadata oracle for a token policy ID
@@ -161,7 +161,7 @@ that mints or burns tokens for that policy:
 
 ```json
 {
-    "????": {
+    "86": {
         "assign_metadata_oracle": {
             "<policyId>": {
                 "main_address": "<Shelley_address>",
@@ -195,7 +195,7 @@ for the initial assignment in the minting transaction:
 
 ```json
 {
-    "????": {
+    "86": {
         "assign_metadata_oracle": {
             "<policyId>": {
                 "main_address": "<Shelley_address>",
@@ -223,14 +223,14 @@ and must not mint any tokens,
 but it may contain any number of inputs and outputs.
 Otherwise, the transaction is ignored for the purposes of token metadata.
 
-The schema for simple metadata updates in CIP-????
+The schema for simple metadata updates in CIP-86
 is similar to the CIP-25 schema,
-but it is nested under `"????".simple_metadata_update`
+but it is nested under `86.simple_metadata_update`
 in the transaction metadata object.
 
 ```json
 {
-    "????": {
+    "86": {
         "simple_metadata_update": {
             "<policyId>": {
                 "<tokenName>": {
@@ -251,7 +251,7 @@ The schema for regex metadata updates is as follows:
 
 ```json
 {
-    "????": {
+    "86": {
         "regex_metadata_update": {
             "<policyId>": {
                 "<tokenNameRegex>": {
@@ -280,7 +280,7 @@ between `EquinePioneerHorse05000` and `EquinePioneerHorse05999`:
 
 ```json
 {
-    "????": {
+    "86": {
         "regex_metadata_update": {
             "30ed3d95db1d6bb2c12fc5228a2986eab4553f192a12a4607780e15b": {
                 "^EquinePioneerHorse05\\d{3}$": {
@@ -308,7 +308,7 @@ Specifically, we use the comma-separated values (CSV) format:
 
 ```json
 {
-  "????": {
+  "86": {
 	  "tabular_metadata_update": {
 	    "<policyId>": "<CsvValue>"
     }
@@ -355,7 +355,7 @@ is equivalent to the following simple metadata update:
 
 ```json
 {
-    "????": {
+    "86": {
         "simple_metadata_update": {
             "<policyId>": {
                 "EquinePioneerHorse00000": {
@@ -436,7 +436,7 @@ decreases exponentially as more and more blocks are added to the chain.
 
 To reconstruct the metadata state for a given asset class,
 scan through the sequence of transactions in a Cardano node’s blockchain,
-applying the CIP-25 and CIP-???? updates
+applying the CIP-25 and CIP-86 updates
 in the order that they are encountered in this sequence.
 If the Cardano node rolls back some blocks from the chain tip,
 then roll back the updates from those blocks as well.
@@ -452,19 +452,19 @@ A transaction that contains a CIP-25 update may also
 contain an explicit oracle assignment,
 but these can be applied in parallel because they do not clash with each other.
 On the other hand, a CIP-25 update transaction
-cannot contain CIP-???? token metadata updates,
+cannot contain CIP-86 token metadata updates,
 because CIP-25 updates can only occur in minting transactions
-while CIP-???? token metadata transactions can
+while CIP-86 token metadata transactions can
 only occur in non-minting transactions.
 
-A transaction can contain CIP-???? token metadata updates of different types,
+A transaction can contain CIP-86 token metadata updates of different types,
 plus oracle assignment updates.
 In this case, apply the updates in the following sequence:
 
-1. Apply the CIP-???? regex update.
-2. Apply the CIP-???? tabular update.
-3. Apply the CIP-???? simple update.
-4. Apply the CIP-???? oracle assignment update.
+1. Apply the CIP-86 regex update.
+2. Apply the CIP-86 tabular update.
+3. Apply the CIP-86 simple update.
+4. Apply the CIP-86 oracle assignment update.
 
 We recommend that token metadata oracle operators not mix multiple update types
 in the same transaction, unless they have a clear understanding of
@@ -472,7 +472,7 @@ the outcome of applying the updates in the above sequence.
 
 ### Token metadata indexer
 
-The CIP-???? token metadata indexer begins with
+The CIP-86 token metadata indexer begins with
 a configuration of the policy IDs for which it will be tracking metadata.
 Optionally, it can be configured to track metadata for all tokens on Cardano.
 
@@ -502,10 +502,10 @@ and removes any implicit assignments that were replaced by explicit assignments.
 For each oracle update address currently assigned to a policy ID,
 the indexer monitors the blockchain for non-minting transactions
 that only send ADA from the oracle update address to itself
-and contain CIP-???? token metadata updates.
+and contain CIP-86 token metadata updates.
 The indexer applies these metadata updates in the order defined in
 [Order of application for updates](#order-of-application-for-updates).
-CIP-???? metadata updates are applied to the asset classes and metadata fields
+CIP-86 metadata updates are applied to the asset classes and metadata fields
 that they target, while keeping all other fields the same.
 
 For tabular metadata updates, the bytestring CSV value may get broken up
@@ -524,11 +524,11 @@ all the metadata updates in the rolled-back blocks were applied.
 
 For compatibility with existing applications
 that are already relying on CIP-25 metadata indexers,
-the CIP-???? indexer provides a similar API
+the CIP-86 indexer provides a similar API
 so that those applications can get and display
-the current CIP-???? token metadata
+the current CIP-86 token metadata
 in the same way that they have been for CIP-25 metadata.
-The indexer indicates that it is following the CIP-???? standard.
+The indexer indicates that it is following the CIP-86 standard.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -536,13 +536,13 @@ We pursued the following design goals in our solution:
 
 1. Maintain backward compatibility with CIP-25 —
 tokens that only use CIP-25 updates should have token metadata displayed
-identically by CIP-25 indexers and CIP-???? indexers.
+identically by CIP-25 indexers and CIP-86 indexers.
 2. Ensure that the current token metadata can be reconstructed
 by only looking at the blockchain, without accessing any external resources.
 3. Allow token metadata to be updated
 by designated authorities without minting or burning tokens.
 4. Allow existing token issuers to opt into and out of
-the CIP-???? update mechanism
+the CIP-86 update mechanism
 without having to remint all of their existing tokens.
 5. Allow designated authorities to securely rotate any keys that they use
 in their automated and networked processes
@@ -550,33 +550,33 @@ in their automated and networked processes
 6. Allow token metadata to be updated more efficiently than
 by a wholesale replacement of the entire metadata object for an asset class.
 7. Minimize the time and resource usage required
-for an indexer to apply CIP-25 and CIP-???? updates
+for an indexer to apply CIP-25 and CIP-86 updates
 for an asset class and then serve the resulting token metadata to applications.
 8. Gracefully handle blockchain rollbacks that modify
-the sequence of CIP-25 and CIP-???? metadata updates for an asset class.
+the sequence of CIP-25 and CIP-86 metadata updates for an asset class.
 
 ### Backward compatibility
 
 We maintain full backward compatibility with CIP-25:
 
 -   CIP-25 updates are respected and applied in the same way
-as before by the CIP-???? indexer.
--   CIP-???? updates are namespaced under a different top-level CBOR tag
+as before by the CIP-86 indexer.
+-   CIP-86 updates are namespaced under a different top-level CBOR tag
 than CIP-25, in order to prevent any clashes between
 field names, policy IDs, and token names.
--   The CIP-???? indexer provides the accumulated CIP-25
-and CIP-???? metadata via the same API as the CIP-25 indexer.
+-   The CIP-86 indexer provides the accumulated CIP-25
+and CIP-86 metadata via the same API as the CIP-25 indexer.
 
 ### Using an assigned oracle for token metadata updates
 
-We recognize CIP-???? updates only if they are issued
+We recognize CIP-86 updates only if they are issued
 by an oracle currently assigned for the corresponding policy IDs.
 This assignment is either directly authorized
 by the token issuer (explicitly or implicitly)
 or else indirectly authorized by the token issuer
 via the delegated authority that the token issuer placed
 in the originally assigned oracle to transfer the assignment to other oracles.
-Therefore, all authority to post valid CIP-???? updates about a token
+Therefore, all authority to post valid CIP-86 updates about a token
 originates from the token issuer.
 
 An alternative design could have oracles that declare themselves
@@ -590,7 +590,7 @@ based on his oracles subscriptions.
 This alternative approach could be interesting to allow
 secondary/auxiliary metadata to be defined for tokens,
 but it is unsuitable for the primary metadata
-that CIP-25 and CIP-???? seek to manage.
+that CIP-25 and CIP-86 seek to manage.
 
 ### Identifying oracles by addresses
 
@@ -609,7 +609,7 @@ we could have identified oracles by minting policies
 (not the minting policies to which oracles are assigned).
 In this alternative design, a minting policy `X` could have
 an assigned oracle identified by minting policy `A`.
-Under such an assignment, a CIP-???? update for a token under `X`
+Under such an assignment, a CIP-86 update for a token under `X`
 would be valid if the update transaction consumed a utxo
 that contained a token of minting policy `A`.
 In other words, the holder of an `A` token would be allowed
@@ -629,33 +629,33 @@ from a given address in an indexer
 than to keep track of all the people who control various authorization tokens,
 at a given time.
 
-### Restricting CIP-???? update transactions
+### Restricting CIP-86 update transactions
 
-We prohibit CIP-???? oracle assignment updates and metadata updates
+We prohibit CIP-86 oracle assignment updates and metadata updates
 from occurring in transactions that mint tokens,
 in order to avoid awkward clashes with CIP-25 metadata transactions.
 Also, it does not make sense conceptually
-for CIP-25 metadata transactions to coincide with CIP-???? updates.
+for CIP-25 metadata transactions to coincide with CIP-86 updates.
 CIP-25 should be used to define the initial metadata for an asset class,
-and then CIP-???? updates should be used
+and then CIP-86 updates should be used
 for any subsequent changes to that metadata.
 
-We require CIP-???? updates to occur in transactions
+We require CIP-86 updates to occur in transactions
 that only send ADA from an oracle address (main or update, as appropriate),
 to prevent unforeseen interactions with other mechanisms
 that may have negative consequences.
-CIP-???? update transactions should have the singular purpose of
-interacting with the CIP-???? update mechanism.
+CIP-86 update transactions should have the singular purpose of
+interacting with the CIP-86 update mechanism.
 
 ### Implicit oracle assignment
 
 The implicit method of assigning a metadata oracle is needed
-to allow existing token issuers to opt into the CIP-???? update mechanism.
+to allow existing token issuers to opt into the CIP-86 update mechanism.
 Their minting policies may no longer allow any more token minting or burning,
 which would prevent the token issuers from being able to
 explicitly assign an oracle via a CIP-25 update for those policies.
 The implicit assignment method bootstraps
-the CIP-???? update mechanism for these policies.
+the CIP-86 update mechanism for these policies.
 
 The implicit address is of the Enterprise address type,
 to avoid having to deal with staking keys.
@@ -663,9 +663,9 @@ If needed, the metadata oracle operator can send ADA to the Enterprise address,
 and then spend it if the operator still controls
 the payment key of that Enterprise address.
 
-### Opting out of CIP-????
+### Opting out of CIP-86
 
-Opting out of the CIP-???? update mechanism can be done
+Opting out of the CIP-86 update mechanism can be done
 by explicitly assigning an oracle with addresses
 from which ADA cannot be spent (e.g. Plutus AlwaysFails).
 If the minting policy does not allow any more minting or burning,
@@ -676,7 +676,7 @@ then this is an irreversible opt-out.
 When managing large collections of thousands of NFTs,
 one often needs to set a given field to the same value for many NFTs.
 Doing this individually for each NFT
-via CIP-25 updates or CIP-???? simple updates is inefficient,
+via CIP-25 updates or CIP-86 simple updates is inefficient,
 so we have proposed the regex metadata update as a succinct way
 to specify a mapping from multiple token names to a single metadata update.
 
@@ -705,11 +705,11 @@ This proposal may be considered active if:
 
 1. The solution meets the design goals listed in the
 [Rationale](#rationale) section to a satisfactory degree.
-2. The indexer and simple tools to construct CIP-???? update transactions
+2. The indexer and simple tools to construct CIP-86 update transactions
 (as described in the [Specification](#specification) section)
 are fully implemented and provided in an open-source (Apache 2.0 licensed)
 repository with sufficient documentation.
-3. The CIP-???? metadata format, indexer, and/or indexer API
+3. The CIP-86 metadata format, indexer, and/or indexer API
 are used by several stakeholders in the Cardano ecosystem,
 including dApps, blockchain explorers, analytics platforms, etc.
 
@@ -718,7 +718,7 @@ including dApps, blockchain explorers, analytics platforms, etc.
 Equine and MLabs are collaborating on
 developing the indexer described in this CIP
 and the Equine NFT gaming application will be
-using CIP-???? updates to manage metadata updates
+using CIP-86 updates to manage metadata updates
 for its large collection of thousands of NFTs under multiple minting policies.
 
 We will include detailed documentation, example configurations,
