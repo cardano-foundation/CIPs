@@ -447,6 +447,42 @@ It is equivalent to the following simple metadata update:
 }
 ```
 
+### Versions 1 and 2
+Like CIP-25, CIP-86 supports two different methods of
+representing policy IDs and token name:
+
+- In version 1,
+policy IDs and token names must be expressed as text
+(see [cddl/version_1.cddl](cddl/version_1.cddl)).
+- In version 2,
+policy IDs and token names must be expressed as raw bytes
+(see [cddl/version_2.cddl](cddl/version_2.cddl)).
+
+By default, all CIP-86 metadata updates use version 1.
+However, version 2 can be used if the `version` field of the object
+under the top-level `"86"` CBOR tag is set to `2`.
+
+For example:
+
+```json
+{
+  "86": {
+      "version": 2,
+      "simple_metadata_update": {
+          "<policyIdRawBytes>": {
+              "<tokenNameRawBytes>": {
+                  "<metadataField>": "<metadataValue>"
+              }
+          }
+      }
+  }
+}
+```
+
+Regex updates are disallowed in version 2, because it is unclear
+how to apply regular expressions to non-UTF-8 bytestrings (or their
+corresponding hex encodings).
+
 ### Order of application for updates
 
 Up to network consensus, the Cardano blockchain imposes
