@@ -161,14 +161,14 @@ that mints or burns tokens for that policy:
 
 ```json
 {
-    "86": {
-        "assign_metadata_oracle": {
-            "<policyId>": {
-                "main_address": "<Shelley_address>",
-                "update_address": "<Shelley_address>"
-            }
-        }
+  "86": {
+    "assign_metadata_oracle": {
+      "<policyId>": {
+        "main_address": "<Shelley_address>",
+        "update_address": "<Shelley_address>"
+      }
     }
+  }
 }
 ```
 
@@ -195,14 +195,14 @@ for the initial assignment in the minting transaction:
 
 ```json
 {
-    "86": {
-        "assign_metadata_oracle": {
-            "<policyId>": {
-                "main_address": "<Shelley_address>",
-                "update_address": "<Shelley_address>"
-            }
-        }
+  "86": {
+    "assign_metadata_oracle": {
+      "<policyId>": {
+        "main_address": "<Shelley_address>",
+        "update_address": "<Shelley_address>"
+      }
     }
+  }
 }
 ```
 
@@ -230,15 +230,15 @@ in the transaction metadata object.
 
 ```json
 {
-    "86": {
-        "simple_metadata_update": {
-            "<policyId>": {
-                "<tokenName>": {
-                    "<metadataField>": "<metadataValue>"
-                }
-            }
+  "86": {
+    "simple_metadata_update": {
+      "<policyId>": {
+        "<tokenName>": {
+          "<metadataField>": "<metadataValue>"
         }
+      }
     }
+  }
 }
 ```
 
@@ -251,15 +251,15 @@ The schema for regex metadata updates is as follows:
 
 ```json
 {
-    "86": {
-        "regex_metadata_update": {
-            "<policyId>": {
-                "<tokenNameRegex>": {
-                    "<metadataField>": "<metadataValue>"
-                }
-            }
+  "86": {
+    "regex_metadata_update": {
+      "<policyId>": {
+        "<tokenNameRegex>": {
+          "<metadataField>": "<metadataValue>"
         }
+      }
     }
+  }
 }
 ```
 
@@ -280,15 +280,15 @@ between `EquinePioneerHorse05000` and `EquinePioneerHorse05999`:
 
 ```json
 {
-    "86": {
-        "regex_metadata_update": {
-            "30ed3d95db1d6bb2c12fc5228a2986eab4553f192a12a4607780e15b": {
-                "^EquinePioneerHorse05\\d{3}$": {
-                    "age": 2
-                }
-            }
+  "86": {
+    "regex_metadata_update": {
+      "30ed3d95db1d6bb2c12fc5228a2986eab4553f192a12a4607780e15b": {
+        "^EquinePioneerHorse05\\d{3}$": {
+          "age": 2
         }
+      }
     }
+  }
 }
 ```
 
@@ -307,14 +307,14 @@ to specify new values for a fixed set of fields for a large number of assets.
 Specifically, for each policy ID we provide an object
 with the following three fields:
 
-- `field_paths` contains an array of paths pointing
+-   `field_paths` contains an array of paths pointing
 to possibly-nested fields within a token metadata object.
 Each of these field paths is a dot-separated list of field names
 (e.g. `"images.background.sunset.url"`)
 that lead from the top of the metadata object (for asset classes of the policy)
 into a targeted field within that object.
-- `token_names` contains an array of token names.
-- `values` contains a table of values, represented by an array of arrays.
+-   `token_names` contains an array of token names.
+-   `values` contains a table of values, represented by an array of arrays.
 For each token name in `token_names`,
 the outer array in `values` contains one element (an inner array)
 of metadata values to which the fields targeted by `field_paths`
@@ -325,8 +325,8 @@ and each inner array of `values` must be equal in length to `field_paths`.
 ```json
 {
   "86": {
-	  "tabular_metadata_update": {
-	    "<policyId>": {
+    "tabular_metadata_update": {
+      "<policyId>": {
         "field_paths": [
           "<fieldPath>"
         ],
@@ -354,8 +354,8 @@ of five Equine horse NFTs:
 ```json
 {
   "86": {
-	  "tabular_metadata_update": {
-	    "<policyId>": {
+    "tabular_metadata_update": {
+      "<policyId>": {
         "field_paths": [
           "age",
           "stats.acceleration",
@@ -388,62 +388,62 @@ It is equivalent to the following simple metadata update:
 
 ```json
 {
-    "86": {
-        "simple_metadata_update": {
-            "<policyId>": {
-                "EquinePioneerHorse00000": {
-                    "age": 3,
-                    "stats": {
-                        "acceleration": 34,
-                        "agility": 16,
-                        "endurance": 18,
-                        "speed": 51,
-                        "stamina": 33
-                    }
-                },
-                "EquinePioneerHorse00012": {
-                    "age": 2,
-                    "stats": {
-                        "acceleration": 24,
-                        "agility": 48,
-                        "endurance": 12,
-                        "speed": 32,
-                        "stamina": 18
-                    }
-                },
-                "EquinePioneerHorse00315": {
-                    "age": 3,
-                    "stats": {
-                        "acceleration": 33,
-                        "agility": 34,
-                        "endurance": 41,
-                        "speed": 14,
-                        "stamina": 31
-                    }
-                },
-                "EquinePioneerHorse01040": {
-                    "age": 4,
-                    "stats": {
-                        "acceleration": 19,
-                        "agility": 22,
-                        "endurance": 21,
-                        "speed": 21,
-                        "stamina": 50
-                    }
-                },
-                "EquinePioneerHorse09175": {
-                    "age": 1,
-                    "stats": {
-                        "acceleration": 24,
-                        "agility": 11,
-                        "endurance": 36,
-                        "speed": 22,
-                        "stamina": 14
-                    }
-                }
-            }
+  "86": {
+    "simple_metadata_update": {
+      "<policyId>": {
+        "EquinePioneerHorse00000": {
+          "age": 3,
+          "stats": {
+            "acceleration": 34,
+            "agility": 16,
+            "endurance": 18,
+            "speed": 51,
+            "stamina": 33
+          }
+        },
+        "EquinePioneerHorse00012": {
+          "age": 2,
+          "stats": {
+            "acceleration": 24,
+            "agility": 48,
+            "endurance": 12,
+            "speed": 32,
+            "stamina": 18
+          }
+        },
+        "EquinePioneerHorse00315": {
+          "age": 3,
+          "stats": {
+            "acceleration": 33,
+            "agility": 34,
+            "endurance": 41,
+            "speed": 14,
+            "stamina": 31
+          }
+        },
+        "EquinePioneerHorse01040": {
+          "age": 4,
+          "stats": {
+            "acceleration": 19,
+            "agility": 22,
+            "endurance": 21,
+            "speed": 21,
+            "stamina": 50
+          }
+        },
+        "EquinePioneerHorse09175": {
+          "age": 1,
+          "stats": {
+            "acceleration": 24,
+            "agility": 11,
+            "endurance": 36,
+            "speed": 22,
+            "stamina": 14
+          }
         }
+      }
     }
+  }
 }
 ```
 
@@ -451,10 +451,10 @@ It is equivalent to the following simple metadata update:
 Like CIP-25, CIP-86 supports two different methods of
 representing policy IDs and token name:
 
-- In version 1,
+-   In version 1,
 policy IDs and token names must be expressed as text
 (see [cddl/version_1.cddl](cddl/version_1.cddl)).
-- In version 2,
+-   In version 2,
 policy IDs and token names must be expressed as raw bytes
 (see [cddl/version_2.cddl](cddl/version_2.cddl)).
 
@@ -467,14 +467,14 @@ For example:
 ```json
 {
   "86": {
-      "version": 2,
-      "simple_metadata_update": {
-          "<policyIdRawBytes>": {
-              "<tokenNameRawBytes>": {
-                  "<metadataField>": "<metadataValue>"
-              }
-          }
+    "version": 2,
+    "simple_metadata_update": {
+      "<policyIdRawBytes>": {
+        "<tokenNameRawBytes>": {
+          "<metadataField>": "<metadataValue>"
+        }
       }
+    }
   }
 }
 ```
