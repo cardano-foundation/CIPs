@@ -304,13 +304,39 @@ ECMA Standard ECMA-262, June 2011. Section 15.10.
 
 Tabular metadata updates use a condensed rectangular format
 to specify new values for a fixed set of fields for a large number of assets.
-Specifically, we use the comma-separated values (CSV) format:
+Specifically, for each policy ID we provide an object
+with the following three fields:
+
+- `field_paths` contains an array of paths pointing
+to possibly-nested fields within a token metadata object.
+Each of these field paths is a dot-separated list of field names
+(e.g. `"images.background.sunset.url"`)
+that lead from the top of the metadata object (for asset classes of the policy)
+into a targeted field within that object.
+- `token_names` contains an array of token names.
+- `values` contains a table of values, represented by an array of arrays.
+For each token name in `token_names`,
+the outer array in `values` contains one element (an inner array)
+of metadata values to which the fields targeted by `field_paths`
+should be updated for that token name under the policy ID.
+The outer array of `values` must be equal in length to `token_names`
+and each inner array of `values` must be equal in length to `field_paths`.
 
 ```json
 {
   "86": {
 	  "tabular_metadata_update": {
-	    "<policyId>": "<CsvValue>"
+	    "<policyId>": {
+        "field_paths": [
+          "<fieldPath>"
+        ],
+        "token_names": [
+          "<tokenName>"
+        ],
+        "values": [
+          ["<metadataValue>"]
+        ]
+      }
     }
   }
 }
@@ -322,36 +348,43 @@ and must not mint any tokens,
 but it may contain any number of inputs and outputs.
 Otherwise, it is ignored for the purposes of token metadata.
 
-The `<CsvValue>` must be encoded as a single bytestring
-containing a whole CSV table, which must follow the following rules:
+For example, the following update would apply updates to six metadata fields
+of five Equine horse NFTs:
 
--   The first row (i.e. the header row) contains column names.
--   The first column name is `tokenName`.
--   Each of the other column names specifies a field name
-at the top level of the metadata of an asset class,
-or a path of dot-separated field names
-to reach a field nested more deeply within the metadata.
--   The values in the first column are token names.
--   Each row of the table specifies the values to be applied
-to the metadata fields corresponding to the column names
-for the token name specified in the first cell of that row.
-
-For example, in a given tabular metadata update,
-we could set the `<CsvValue>` for a given policy ID
-to the bytestring representation of the following CSV table:
-
+```json
+{
+  "86": {
+	  "tabular_metadata_update": {
+	    "<policyId>": {
+        "field_paths": [
+          "age",
+          "stats.acceleration",
+          "stats.agility",
+          "stats.endurance",
+          "stats.speed",
+          "stats.stamina"
+        ],
+        "token_names": [
+          "EquinePioneerHorse00000",
+          "EquinePioneerHorse00012",
+          "EquinePioneerHorse00315",
+          "EquinePioneerHorse01040",
+          "EquinePioneerHorse09175"
+        ],
+        "values": [
+          [3,34,16,18,51,33],
+          [2,24,48,12,32,18],
+          [3,33,34,41,14,31],
+          [4,19,22,21,21,50],
+          [1,24,11,36,22,14]
+        ]
+      }
+    }
+  }
+}
 ```
-tokenName,age,stats.acceleration,stats.agility,stats.endurance,stats.speed,stats.stamina
-EquinePioneerHorse00000,3,34,16,18,51,33
-EquinePioneerHorse00012,2,24,48,12,32,18
-EquinePioneerHorse00315,3,33,34,41,14,31
-EquinePioneerHorse01040,4,19,22,21,21,50
-EquinePioneerHorse09175,1,24,11,36,22,14
-```
 
-A tabular metadata update with the above `<CsvValue>`
-applied to a given `<policyID>`
-is equivalent to the following simple metadata update:
+It is equivalent to the following simple metadata update:
 
 ```json
 {
@@ -413,13 +446,6 @@ is equivalent to the following simple metadata update:
     }
 }
 ```
-
-The CSV format is defined by the following standard:
-
--   Internet Engineering Task Force,
-“Common Format and MIME Type for Comma-Separated Values (CSV) Files",
-Request for Comments 4180, October 2005.
-[https://www.ietf.org/rfc/rfc4180.txt](https://www.ietf.org/rfc/rfc4180.txt)
 
 ### Order of application for updates
 
@@ -507,11 +533,6 @@ The indexer applies these metadata updates in the order defined in
 [Order of application for updates](#order-of-application-for-updates).
 CIP-86 metadata updates are applied to the asset classes and metadata fields
 that they target, while keeping all other fields the same.
-
-For tabular metadata updates, the bytestring CSV value may get broken up
-into an array of bytestring chunks in the CBOR representation.
-When this happens, the indexer recombines the chunks into the whole CSV table
-before applying the tabular metadata update.
 
 To be able to handle blockchain rollbacks, the indexer keeps track of
 past metadata states for its policy IDs,
@@ -694,8 +715,7 @@ field names/paths are defined once in the column names of a rectangular table
 and applied consistently for each row of updated metadata field values.
 
 Rectangular tables are a standard format used in the data analytics field
-for these situations, and the CSV format is the most widely used
-and interoperable rectangular data format.
+for these situations.
 
 ## Path to Active
 

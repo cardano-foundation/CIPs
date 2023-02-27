@@ -23,7 +23,7 @@ action_simple = { * policy_id => { * asset_name => metadata_details } }
 
 action_regex = { * policy_id => { * asset_regex => metadata_details } }
 
-action_tabular = { * policy_id => csv_update_opaque }
+action_tabular = { * policy_id => tabular_metadata }
 
 ; Technically, both policy IDs and asset names should be 32 bytes long.
 ; However, this isn't enforced for asset names, and CIP-25v1 already treats
@@ -45,7 +45,7 @@ metadata_details =
     ? image : text_extendable,
     ? mediaType : text_64,
     ? description : text_extendable,
-    ? files : [* files_details],
+    ? files : [ * files_details],
     * ( label_64 => transaction_metadatum )
   }
 
@@ -57,58 +57,21 @@ files_details =
   }
 
 ; =========================================================================
-; Tabular updates' CSV schema
+; Tabular format
 
-; Cardano ledger imposes a fixed size of 64 on text and bytestrings,
-; which prevents us from directly encoding a CSV table as a single long
-; text. This means that, formally, the CSV in a tabular update
-; is just an opaque extendable text (i.e. a fixed text or an array of fixed 
-; texts).
-csv_update_opaque = text_extendable
+; The length of `token_names` must be equal to the length of the outer
+; array of `values`, and the length of `field_paths` must be equal to
+; the length of each inner array of `values`.
+tabular_metadata =
+  {
+    field_paths: [ * field_path],
+    token_names: [ * asset_name],
+    values: [ * [ * transaction_metadatum ] ]
+  }
 
-; Informally, if we concatenate the `csv_update_opaque` value to a single long
-; text, and then split it on unescaped newline characters, then it should comply
-; with the following cddl schema.
-; (Newline characters inside of a double-quoted field value are considered
-; escaped, which means that they do no indicate the start of a new record.)
-csv_update = [ header, * record ]
-header = [ "tokenName", * header_field ]
-record = [ text_64, * record_field ]
-header_field = text
-record_field = text
-
-; For a given `policy_id`, a `csv_update` value can be transformed into a
-; `metadata_details` value as follows:
-; 1. Pair each `record_field` with its corresponding `header_field`
-;    (i.e. like zipping two lists).
-; 2. Transform each `header_field` into a `[header_field_part]` array, by
-;    splitting it on the '.' character.
-; 3. For each pair of `record_field` and `[header_field_part]` values, construct
-;    the following nested object:
-;      csv_nested_object = 
-;        { header_field_part[0] =>
-;          { header_field_part[1] =>
-;            { header_field_part[2] =>
-;              ...
-;                        { header_field_part[N] => `record_field` }
-;              ...
-;            }
-;          }
-;        }
-; 4. For each record, combine and normalize its record fields' constructed
-;    nested objects into a single unified object for that record. Nest the
-;    unified object under the record's "tokenName" value:
-;      csv_record_object = { text_64 => Union([csv_nested_object]) }
-; 5. Unify the `record_object`s into a single object, and then nest it under
-;    the `policy_id`:
-;      csv_policy_object = { policy_id => Union([csv_record_object]) }
-; 6. Combine the `action_simple_single` values into a single `action_simple`
-;    value:
-;      csv_update_simple = Union([csv_policy_object])
-;
-; The effect of a `csv_update_opaque` on the token metadata state in the
-; CIP-86 indexer must be the same as the effect of the corresponding
-; `csv_update_simple` (applied as a simple update action).
+; Each field path is a dot-separated list of field names (text_64 values).
+; E.g. "images.background.sunset.url"
+field_path = text_64
 
 ; =========================================================================
 ; Imported from cardano-ledger/.../babbage.cddl
