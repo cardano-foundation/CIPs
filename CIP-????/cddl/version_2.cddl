@@ -10,12 +10,12 @@ action =
     version = 2,
     ? assign_metadata_oracle : action_oracle,
     ? simple_metadata_update : action_simple,
+    ? tabular_metadata_update : action_tabular
   }
 
-; Regex and tabular updates are disallowed in version 2, because it is unclear
+; Regex updates are disallowed in version 2, because it is unclear
 ; how to apply regular expressions to non-UTF-8 bytestrings (or their
-; corresponding hex encodings) and it is unclear how to embed raw bytestrings
-; in CSV.
+; corresponding hex encodings).
 
 action_oracle = { * policy_id => oracle_assignment }
 
@@ -26,6 +26,8 @@ oracle_assignment =
   }
 
 action_simple = { * policy_id => { * asset_name => metadata_details } }
+
+action_tabular = { * policy_id => tabular_metadata }
 
 ; Technically, both policy IDs and asset names should be 32 bytes long.
 ; However, this isn't enforced for asset names, and CIP-25v2 already treats
@@ -55,6 +57,23 @@ files_details =
     mediaType : text_64,
     src : text_extendable
   }
+
+; =========================================================================
+; Tabular format
+
+; The length of `token_names` must be equal to the length of the outer
+; array of `values`, and the length of `field_paths` must be equal to
+; the length of each inner array of `values`.
+tabular_metadata =
+  {
+    field_paths: [ * field_path],
+    token_names: [ * asset_name],
+    values: [ * [ * transaction_metadatum ] ]
+  }
+
+; Each field path is a dot-separated list of field names (text_64 values).
+; E.g. "images.background.sunset.url"
+field_path = text_64
 
 ; =========================================================================
 ; Imported from cardano-ledger/.../babbage.cddl
