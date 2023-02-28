@@ -1,6 +1,6 @@
 ---
-CIP: ??? 
-Title: PostQuantum signatures in Plutus Core
+CIP: ????
+Title: PostQuantum signatures
 Category: Plutus
 Authors:
   - Michał J. Gajda (mjgajda@migamake.com)
@@ -22,7 +22,7 @@ allow validation of such signatures as builtins.
 
 Provides a way of verifying post-quantum signatures as recommended by NIST in Plutus Core.
 New builtins will allow use of these signatures within smart contracts. These builtins work over
-``BuiltinByteString``s.
+`BuiltinByteString`s.
 
 ## Motivation
 
@@ -47,6 +47,10 @@ Supporting PQC signatures will bring the following benefits:
 
 ## Specification
 
+[`DSIGN`]() class instance should be provided for the post-quantum signature algorithms.
+
+### Plutus API
+
 Two new builtin functions would be provided:
 
 * A verification function for CRYSTALS(DILITHIUM) signatures; and
@@ -66,24 +70,39 @@ linear cost proportional to the number of message bits, and square with respect 
 _Constants will be proportional to the ratio of time as benchmarked against
 Ed25519._
 
-More specifically, Plutus would gain the following primitive operations:
+Since we expect adding more cryptographic signature algorithms as they evolve,
+we should add datatype for selecting cryptographic algorithm:
 
-* `verifyCrystalsDilithiumSignature :: BuiltinByteString -> BuiltinByteString ->
-  BuiltinByteString -> BuiltinBool`, for verifying arbitrary binary signed 
-  using the CRYSTALS signature scheme; and
-* `verifyFalconSignature :: BuiltinByteString -> BuiltinByteString
-  -> BuiltinByteString -> BuiltinBool`, for verifying arbitrary binary messages 
-  signed using the Falcon signature scheme; and
-* `verifySphincsSignature :: BuiltinByteString -> BuiltinByteString
-  -> BuiltinByteString -> BuiltinBool`, for verifying arbitrary binary messages 
-  signed using the Sphincs signature scheme; and
+```
+data SignAlgo = Ed25519
+              | Blake2
+              | EcDSA
+              | SECP256k1
+              | Schnorr
+              | Falcon
+              | Sphincs
+              | Dilithium
+```
+To facilitate extensibility, the name of algorithm should be rendered as text in JavaScript
+([CIP-0030]()).
 
-Both functions take parameters of a specific part of the signature scheme, even
+The following function should then be used to verify arbitrary binary signed
+with permitted signature scheme:
+
+```
+verifySignWithAlgo :: SignAlgo
+                  -> BuiltinByteString -- ^ public key
+                  -> BuiltinByteString -- ^ message or hash
+                  -> BuiltinByteString -- ^ signature
+                  -> BuiltinBool
+```
+
+This function takes parameters of a specific part of the signature scheme, even
 though they are all encoded as `BuiltinByteString`s. In order, for both
 functions, these are:
 
-1. A verification key;
-2. An input to verify (either the message itself, or a hash);
+1. A verification key (length depends on the algorithm chosen);
+2. An input to verify (either the message itself, and a hash);
 3. A signature.
 
 The two different schemes handle deserialization internally: specifically, there
@@ -93,23 +112,85 @@ themselves. This creates different expecations for each argument for both of
 these schemes; we describe these below.
 
 For the [all signature
-schemes](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
+schemes](),
 the keys are required to be given in the same format as NIST test vectors.
-
-The verification key must correspond to a result produced by [`...`]()
-from the reference implementation library. The key will be ... bytes long.
-The input must be ...
-
-* The input to verify must be a message to be checked. We 
-  assume that the caller of `...` receives the 
-  message and hashes it.
-* The signature must correspond to the format used by NIST reference test vectors.
-* The signature must correspond to a result produced by
-  [``...``]().
 
 The builtin operations will error with a descriptive message if given inputs
 that don't correspond to the constraints above, return `False` if the signature
 fails to verify the input given the key, and `True` otherwise.
+
+### Post-quantum wallets
+
+We should permit using all chosen signature algorithms to lock transactions.
+
+This allows an _opt-in_ migration as more and more wallet apps will support new signature schemes.
+
+For extra safety, users may choose to use conjunction of wallet signatures as they
+are already implemented in native ledger.
+
+### Use of standard hash algorithm
+
+Note that use of hash would require use of quantum-resistant hash algorithm.
+[SHA2, SHA3, BLAKE2 are considered quantum-safe](https://cryptobook.nakov.com/quantum-safe-cryptography#quantum-safe-and-quantum-broken-crypto-algorithms),
+in particular standard 256-bit hash used in Cardano [should be safe for a long time](https://cryptobook.nakov.com/quantum-safe-cryptography#quantum-safe-and-quantum-broken-crypto-algorithms).
+This should be documented in the Plutus documentation of `verifySignature`.
+
+However, in the interest of long-term API evolution we propose to add a flexible hashing interface:
+
+```
+data SignAlgo = SHA2_256
+              | SHA3_256
+              | Blake2
+
+hashWithAlgo :: HashAlgo -> BuiltinByteString -> BuiltinByteString
+```
+
+This will also allow for gradual _opt-in_ migration of scripts as the blockchain evolves.
+
+### Long term API evolution
+
+It would be desirable to also offer a long-term API that would not need any changes
+as we migrate blockchain to new algorithms.
+
+This would be to provide an implicit embedding of a most secure available hashing algorithm
+within the hash itself, and use of interface:
+
+```
+data LTSignature = LongTermSignature {
+                     ltsHashAlgo :: HashAlgo
+                   , ltsSignAlgo :: SignAlgo
+                   , ltsSignature :: BuiltinByteString
+                   }
+
+verifyLongTermSignature :: BuiltinByteString                       -- ^ public key
+                        -> LongTermSignature                       -- ^ message or hash
+                        -> BuiltinByteString                       -- ^ signature
+                        -> Bool  -- is hash valid
+
+isLongTermSignatureSecure :: LongTermSignature -> Bool
+```
+
+Supporting evolution of hash algorithms is much simpler:
+
+```
+-- | Long term hash
+data LongTermHash = LongTermHash {
+                      hashAlgo :: HashAlgo
+                    , hash     :: BuiltingByteString
+                    }
+
+mostSecureHashAlgo :: HashAlgo
+
+mostSecureHash :: BuiltinByteString -> LongTermHash
+mostSecureHash = hashWithAlgo mostSecureHash
+```
+
+This API needs additional support from the off-chain applications in order to:
+
+* provide correct public key for the given algorithm
+* help users to transfer their euTxOs to new signature algorithms when old algorithms are obsoleted.
+
+Note that `LongTermHash` and `LongTermSignature` can be implemented as standard library functions.
 
 ## Rationale
 
@@ -139,6 +220,22 @@ An implementation will require the following steps:
 1. Linking to PQC library.
 2. Providing the patch implementing new Plutus primitives just like for [EcDSA and Schnorr](https://github.com/input-output-hk/plutus/pull/4368).
 3. Providing the PQC primitives using `Crypto` interface for ease of use.0
+
+## Discussion full quantum resistance
+
+This CIP _does not_ provide for full quantum resistance of the Cardano blockchain yet,
+in order to decrease cost of implementation.
+
+SHA-256 hash is considered [_safe for a long-time yet_](), and any future upgrade would only need to consider SHA-384 as far as we know.
+The main concern would be the public key signatures used for entire wallet infrastructure.
+That is why we propose an _opt-in_ scheme, where users may gradually choose to migrate towards safer, post-quantum cryptography
+over the course of few years.
+That would make Cardano permit **quantum-resistant** smart contracts today at negligible cost,
+and assure **long-term viability** of those smart contracts that will be deployed in the near future.
+
+[Long-term document storage](https://adastamp.co) is a killer application for the blockchain.
+While any single signature may be obsoleted, this application adds new signatures for each document
+that keep integrity of the document and prolong its validity.
 
 ## Copyright
 
