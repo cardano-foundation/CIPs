@@ -151,9 +151,7 @@ cardano.{walletName}.signAlgo
 cardano.{walletName}.hashAlgo
 ```
 
-There should be additional extension registered if [CIP on wallet extensibility will pass]().
-```
-
+There should be additional extension registered if [CIP on wallet extensibility](https://github.com/cardano-foundation/CIPs/pull/462).
 ```
 
 Wallet providers may choose to automatically generate ultra-secure wallets for multiple quantum signature
@@ -258,7 +256,7 @@ An implementation will require the following steps:
 This CIP _does not_ provide for full quantum resistance of the Cardano blockchain yet,
 in order to decrease cost of implementation.
 
-SHA-256 hash is considered [_safe for a long-time yet_](), and any future upgrade would only need to consider SHA-384 as far as we know.
+SHA-256 hash is considered [_safe for a long-time yet_](https://cryptobook.nakov.com/quantum-safe-cryptography#quantum-safe-and-quantum-broken-crypto-algorithms), and any future upgrade would only need to consider SHA-384 as far as we know.
 The main concern would be the public key signatures used for entire wallet infrastructure.
 That is why we propose an _opt-in_ scheme, where users may gradually choose to migrate towards safer, post-quantum cryptography
 over the course of few years.
