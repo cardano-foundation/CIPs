@@ -93,7 +93,7 @@ To facilitate extensibility, the name of algorithm should be rendered as case-in
 | Ed25519                 |                 64 |                64 |                                   1 |
 | Falcon512               |                897 |               666 |                                 0.5 |
 | Dilithium2              |               1312 |              2420 |                                 0.5 |
-| Sphincs\*128s           |                 32 |              7856 |                                 2.8 |
+| Sphincs+                |                 32 |              8080^[https://sofiaceli.com/2022/07/05/pq-signatures.html#:~:text=A%20table%20of-,comparison%20of%20sizes,-%3A] |                                 2.8^[Benchmark was for Sphins\*128s] |
 
   : Reference for signature, key sizes, and time cost multipliers [as suggested here](https://blog.cloudflare.com/nist-post-quantum-surprise/). In the order of preference, with comparison against current default signature algorithm (Ed25519).
 
