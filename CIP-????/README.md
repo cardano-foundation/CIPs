@@ -93,6 +93,7 @@ Finally, it establishes the requirements and recommendations for server side pro
 
 * [jmagan/passport-cardano-web3](https://github.com/jmagan/passport-cardano-web3)
 * [jmagan/cardano-express-web3-skeleton](https://github.com/jmagan/cardano-express-web3-skeleton)
+* [jmagan/cardano-nextjs-web3-skeleton](https://github.com/jmagan/cardano-nextjs-web3-skeleton)
 ## Path to Active
 
 ### Acceptance Criteria
