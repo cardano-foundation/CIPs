@@ -17,6 +17,8 @@ License: Apache-2.0
 
 Support post-quantum signatures (Dilithium+CRYSTALS, FALCON) as recommended by NIST standardization effort in Plutus Core;
 allow validation of such signatures as builtins.
+NIST plans to finalize standardization in 2023/2024 time frame, with US executive branch recommending
+all projects to plan for post-quantum resistance by mid-2023.
 
 ## Abstract
 
