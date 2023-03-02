@@ -38,6 +38,20 @@ To find the metadata for the `user token` you need to look for the output, where
 
 Lastly and most importantly, with this construction, the metadata can be used by a PlutusV2 script with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space. 
 
+### Labels
+
+Each asset name must be prefixed by a label. The purpose of this label is to identifty the purpose of the token. For example, a reference NFT is identified by the label 100 and so every token considered a reference NFT should start its asset name with the the hex `000643b0`. This is following [CIP-0067](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067), which specifies how the label prefix should be formatted.
+
+Examples of asset names:
+| asset_name_label | asset_name_content | resulting_label_hex | resulting_content_hex | resulting_asset_name_hex     |
+|------------------|--------------------|---------------------|-----------------------|------------------------------|
+| 100              | GenToken           | 000643b0            | 47656e546f6b656e      | 000643b047656e546f6b656e     |
+| 100              | NeverGonna         | 000643b0            | 4e65766572476f6e6e61  | 000643b04e65766572476f6e6e61 |
+| 222              | GiveYouUp          | 000de140            | 47697665596f755570    | 000de14047697665596f755570   |
+
+For simplicity purposes, the document will use the label `(100)` or `(<label>)` in the following documentation, but understand it should follow the CIP-0067 specification.
+
+
 ### Reference NFT label
 
 This is the registered `asset_name_label` value
