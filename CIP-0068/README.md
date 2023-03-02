@@ -40,7 +40,7 @@ Lastly and most importantly, with this construction, the metadata can be used by
 
 ### Labels
 
-Each asset name must be prefixed by a label. The purpose of this label is to identifty the purpose of the token. For example, a reference NFT is identified by the label 100 and so every token considered a reference NFT should start its asset name with the the hex `000643b0`. This is following [CIP-0067](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067), which specifies how the label prefix should be formatted.
+Each asset name must be prefixed by a label. The intent of this label is to identifty the purpose of the token. For example, a reference NFT is identified by the label 100 and so every token considered a reference NFT should start its asset name with the the hex `000643b0`. This is following [CIP-0067](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067), which specifies how the label prefix should be formatted.
 
 Examples of asset names:
 | asset_name_label | asset_name_content | resulting_label_hex | resulting_content_hex | resulting_asset_name_hex     |
