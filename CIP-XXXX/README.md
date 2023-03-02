@@ -66,6 +66,10 @@ As noted in the abstract, we can now also do optimisations on the UPLC that were
 before, as the effects mattered. This notably meant we previously couldn't regard code which result
 wasn't used as dead code. With this change, it's possible to entirely elide such (now) dead code.
 
+One minor effect of this CIP is that evaluation strategy is less important, meaning that you
+could theoretically take a script in this new language and evaluate it lazily, without breaking
+anything.
+
 ## Specification
 
 The changes below would need to take effect in a new ledger era and Plutus version.
@@ -140,6 +144,20 @@ f = λ b -> ifThenElse b ERROR (λ x -> x)
 is precisely the example we seek to make work.
 `f True ()` will fail as expected,
 while `f False ()` will return `()` as expected.
+
+### Soundness of optimisations
+
+We note that you can soundly optimise `(\x -> M) N` into `x` is not mentioned in `M`,
+or similar occurrences where the result of `N` isn't needed.
+Such an optimisation will change the behaviour of the script necessarily,
+as any traces in `N` will no longer happen, yet, this is not important in practice
+as traces are merely a debugging tool. The budget used will decrease,
+but people do not rely on budget exhaustion to signal invalidity.
+
+Transformations like `M || N` into `force (ifThenElse M (delay True) (delay N))` follow a similar principle:
+traces that happened before might no longer happen.
+The used budget will increase if M is `False`, yet this is likely
+still an acceptable transformation for most people.
 
 ### Backward compatibility
 
