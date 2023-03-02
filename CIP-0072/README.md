@@ -41,13 +41,6 @@ Developers and publishers of dApps can register their dApps by submitting a tran
 ### **Stores / Auditors**
 Stores and auditors should be able to follow the chain and find when a new dApp registration is **anchored** on-chain. They should then perform *integrity* and *trust* validations on the dApp's certificate and metadata. 
 
-#### **Off-chain Location Advertisement**
-Each store and auditor should make public the location of their off-chain sources where they will look for the dApp's metadata based on certificates found on-chain. These can be advertised through their own API or publicly available on a website.
-
-Sample off-chain sources could be for example:
-- [CIP-26](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0026) compliant servers
-- [IPFS](https://ipfs.tech/)
-
 ##### **Targetted Releases**
 Each developer and publisher can choose where to write metadata based on the information available from known stores & auditors. This gives **developers** and **publishers** the ability to perform targeted releases. (i.e to which stores and auditors).
 
@@ -158,161 +151,6 @@ When submitting the transaction metadata pick the following value for `transacti
 
 ### Off-chain Metadata Format
 The Dapp Registration certificate itself doesn't enforce a particular structure to the metadata you might fetch off-chain. However, we recommend that you use the following structure:
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "object",
-  "properties": {
-    "subject": {
-      "type": "string"
-    },
-    "projectName": {
-      "type": "string"
-    },
-    "link": {
-      "type": "string"
-    },
-    "category": {
-      "type": "string"
-    },
-    "subCategory": {
-      "type": "string"
-    },
-    "description": {
-      "type": "object",
-      "properties": {
-        "short": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "short"
-      ]
-    },
-    "releases": {
-      "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "releaseNumber": {
-              "type": "integer"
-            },
-            "releaseName": {
-              "type": "string"
-            },
-            "auditId": {
-              "type": "string"
-            },
-            "scripts": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "version": {
-                      "type": "integer"
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "version"
-                  ]
-                }
-              ]
-            }
-          },
-          "required": [
-            "releaseNumber",
-            "releaseName",
-            "auditId",
-            "scripts"
-          ]
-        }
-      ]
-    },
-    "scripts": {
-      "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            },
-            "purpose": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string"
-            },
-            "versions": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "version": {
-                      "type": "integer"
-                    },
-                    "plutusVersion": {
-                      "type": "integer"
-                    },
-                    "fullScriptHash": {
-                      "type": "string"
-                    },
-                    "scriptHash": {
-                      "type": "string"
-                    },
-                    "contractAddress": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "version",
-                    "plutusVersion",
-                    "fullScriptHash",
-                    "scriptHash",
-                    "contractAddress"
-                  ]
-                }
-              ]
-            },
-          },
-          "required": [
-            "id",
-            "name",
-            "purpose",
-            "type",
-            "versions",
-            "audits"
-          ]
-        }
-      ]
-    }
-  },
-  "required": [
-    "subject",
-    "projectName",
-    "link",
-    "twitter",
-    "category",
-    "subCategory",
-    "description",
-    "releases",
-    "scripts"
-  ]
-}
-```
-
-### Example
 
 ```json
 {
@@ -480,13 +318,64 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
 }
 ```
 
+### Example
+
+```json
+{
+  "subject": "9SYAJPNN",
+  "projectName": "My Project",
+  "link": "https://myProject.app",
+  "social": {
+    "twitter": "twiterHandle",
+    "github": "githubHandle",
+    "website": "https://website"
+  },
+  "category": "GAMING",
+  "subCategory": "RPG",
+  "description": {
+    "short": "A story rich game where choices matter"
+  },
+  "releases": [
+    {
+      "releaseNumber": 1,
+      "releaseName": "V1",
+      "auditId": "z5L90f",
+      "scripts": [
+        {
+          "id": "PmNd6w",
+          "version": 1
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "PmNd6w",
+      "name": "Marketplace",
+      "purpose": "SPEND",
+      "type": "PLUTUS",
+      "versions": [
+        {
+          "version": 1,
+          "plutusVersion": 1,
+          "fullScriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
+          "scriptHash": "1dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
+          "contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### **Stores Custom fields**
 Each store might have their own requirements for the metadata. For example, some stores might require a field for logo, or screenshots links. The store's should adviertise what fields they require in their documentation so that developers are aware and they can include them in the metadata. 
 
 ### **Offchain Metadata Storage**
 
 There are multiple options to store metadata offchain. The most common options are:
-- IPFS
-- CIP-26
-- Bitbucket
-- Regular HTTP server
+- [CIP-26](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0026) compliant servers
+- [IPFS](https://ipfs.tech/)
+- [Bitbucket](https://bitbucket.org/)
+- Any REST JSON API
+
