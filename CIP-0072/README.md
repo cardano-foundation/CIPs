@@ -56,6 +56,11 @@ Each developer and publisher can choose to where to write metadata based on the 
 {
 	"subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
 	"rootHash": "8c4e9eec512f5f277ab811ba75c991d51600c80003e892e601c6b6c19aaf8a33",
+  "metadata": [
+    "https://cip26.foundation.app/properties/d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
+    "https://example.com/metadata.json",
+    "ipfs://QmWmXcRqPzJn5yDh8cXqL1oYjHr4kZx1aYQ1w1yTfTJqNn",
+  ],
   "schema_version": "0.0.1",
   "type": { 
     "action": "REGISTER",
@@ -82,6 +87,8 @@ Each developer and publisher can choose to where to write metadata based on the 
 *`rootHash`*: The hash of the metadata entire tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
 
 This hash is calculated by taking the entire metadata tree object, ordering the keys in the object alphanumerically, and then hashing the resulting JSON string using the blake2b-256 hashing algorithm. The hash is encoded as a hex string.
+
+*`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON object that contains the dApp's metadata.
 
 *`signature`*: The signature of the certificate. The signature is done over the blake2b hash of the certificate. The client should use the public key to verify the signature of the certificate. 
 
@@ -161,9 +168,6 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
       "type": "string"
     },
     "link": {
-      "type": "string"
-    },
-    "twitter": {
       "type": "string"
     },
     "category": {
@@ -278,42 +282,6 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
                 }
               ]
             },
-            "audits": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "auditId": {
-                      "type": "string"
-                    },
-                    "auditor": {
-                      "type": "string"
-                    },
-                    "auditLink": {
-                      "type": "string"
-                    },
-                    "auditType": {
-                      "type": "string"
-                    },
-                    "signature": {
-                      "type": "string"
-                    },
-                    "publicKey": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "auditId",
-                    "auditor",
-                    "auditLink",
-                    "auditType",
-                    "signature",
-                    "publicKey"
-                  ]
-                }
-              ]
-            }
           },
           "required": [
             "id",
@@ -345,69 +313,169 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
 
 ```json
 {
-    "subject": "9SYAJPNN",
-    "projectName": "My Project",
-    "link": "https://myProject.app",
-    "twitter": "https://twitter.com/MyProject",
-    "category": "GAMING",
-    "subCategory": "RPG",
-    "description": {
-                   "short": "A story rich game where choices matter"
-    },	
-
-    "releases": [
-        {
-            "releaseNumber": 1,
-            "releaseName": "V1",
-            "auditId": "z5L90f",
-            "scripts": [
-                {
-                    "id": "PmNd6w",
-                    "version": 1
-                }
-            ]
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "subject": {
+      "type": "string"
+    },
+    "projectName": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "subCategory": {
+      "type": "string"
+    },
+    "social": {
+      "type": "object",
+      "properties": {
+        "twitter": {
+          "type": "string"
+        },
+        "github": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
         }
-    ],
-    "scripts": [
+      }
+    },
+    "description": {
+      "type": "object",
+      "properties": {
+        "short": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "short"
+      ]
+    },
+    "releases": {
+      "type": "array",
+      "items": [
         {
-            "id": "PmNd6w",
-	    "name": "Marketplace",
-            "purpose": "SPEND",
-	    "type": "PLUTUS",		
-            "versions": [
+          "type": "object",
+          "properties": {
+            "releaseNumber": {
+              "type": "integer"
+            },
+            "releaseName": {
+              "type": "string"
+            },
+            "auditId": {
+              "type": "string"
+            },
+            "scripts": {
+              "type": "array",
+              "items": [
                 {
-                    "version": 1,
-		    "plutusVersion": 1, 
-	            "fullScriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",                     
-                    "scriptHash": "1dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
-                    "contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
-                }    
-            ],
-          "audits": [
-              {
-                "auditId": "z5L90f",
-                "auditor": "Canonical LLC.",
-                "auditLink": "https://github.com/somlinkToAessment",
-                "auditType": "MANUAL",
-                "signature": "0x1234567890abcdef",
-                "publicKey": "0x1234567890abcdef"
-              }
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "version"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "releaseNumber",
+            "releaseName",
+            "auditId",
+            "scripts"
           ]
         }
-    ]
+      ]
+    },
+    "scripts": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "purpose": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "versions": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "integer"
+                    },
+                    "plutusVersion": {
+                      "type": "integer"
+                    },
+                    "fullScriptHash": {
+                      "type": "string"
+                    },
+                    "scriptHash": {
+                      "type": "string"
+                    },
+                    "contractAddress": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "version",
+                    "plutusVersion",
+                    "fullScriptHash",
+                    "scriptHash",
+                    "contractAddress"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "purpose",
+            "type",
+            "versions"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "subject",
+    "projectName",
+    "link",
+    "social",
+    "category",
+    "subCategory",
+    "description",
+    "releases",
+    "scripts"
+  ]
 }
 ```
-
-### **Scripts Audits**
-As part of the metadata we will be including a list of audits for each script. This will be a list of audits that have been performed on the script. The audits will be performed by a third party auditor and will be signed by the auditor. 
-
-Some of the properties included in the audit are:
-
-- **auditType** property will be included that can take one of the following values: MANUAL, AUTOMATED, or MIXED.
-- **auditId** property will be included that will be a unique identifier for the audit.
-- **auditLink** property will be included that will be a link to the audit report.
-- **signature** property will be included that will be a signature of the audit report.
-- **publicKey** property will be included that will be the public key of the auditor.
 
 ### **Stores Custom fields**
 Each store might have their own requirements for the metadata. For example, some stores might require a field for logo, or screenshots links. The store's should adviertise what fields they require in their documentation so that developers are aware and they can include them in the metadata. 
@@ -416,82 +484,6 @@ Each store might have their own requirements for the metadata. For example, some
 
 There are multiple options to store metadata offchain. The most common options are:
 - IPFS
-- CIP-26 
-
-#### `CIP-26 Example`
-
-CIP-26 offers a API that stores properties regarding a particular subject. This isn't directly JSON compliant as it would only support writing flat JSON objects into a CIP-26 server. Although we can make use of encoding mechanisms to store nested JSON properties in a CIP-26 server.
-
-Sample JSON 
-```json
-  {
-  	"subject": "9SYAJPNN",
-  	"projectName": "My Project",
-  	"link": "https://myProject.app",
-  	"twitter": "https://twitter.com/MyProject",
-  	"category": "GAMING",
-  	"subCategory": "RPG",
-  	"description": {
-  		"short": "A story rich game where choices matter"
-  	},
-
-  	"releases": [{
-  		"releaseNumber": 1,
-  		"releaseName": "V1",
-  		"auditId": "z5L90f",
-  		"scripts": [{
-  			"id": "PmNd6w",
-  			"version": 1
-  		}]
-  	}],
-  	"scripts": [{
-  		"id": "PmNd6w",
-  		"name": "Marketplace",
-  		"purpose": "SPEND",
-  		"type": "PLUTUS",
-  		"versions": [{
-  			"version": 1,
-  			"plutusVersion": 1,
-  			"fullScriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
-  			"scriptHash": "1dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
-  			"contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
-  		}],
-  		"audits": [{
-  			"auditId": "z5L90f",
-  			"auditor": "Canonical LLC.",
-  			"auditLink": "https://github.com/somlinkToAessment",
-  			"auditType": "MANUAL",
-  			"signature": "0x1234567890abcdef",
-  			"publicKey": "0x1234567890abcdef"
-  		}]
-  	}]
-  }
-```
-
-Could be stored into CIP-26 by encoding the nested hierarchical objects. So the previous metadata object would look something like the following: 
-
-```json
-{
-	"subject": "9SYAJPNN",
-	"projectName": "My Project",
-	"link": "https://myProject.app",
-	"twitter": "https://twitter.com/MyProject",
-	"category": "GAMING",
-	"subCategory": "RPG",
-	"description": {
-		"short": "A story rich game where choices matter"
-	},
-	"releases": "AAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAABQAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAEAAAAA",
-	"scripts": "AAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAABwEBAAAABAAIAAAHAAAAAAADCAQAAAUDBwUGBgEAAAEAAAcEAAcAAAAAAAcDAAAAAgMGAAAGCAEJAgAAAAAAAAAAAAAAAAAAAAABAAAABAAIAAAHAAAAAAADCAQAAAUDBwUGBgEAAAEAAAcEAAcAAAAAAAcDAAAAAgMGAAAGCAEJAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAABQAGAAAAAAUAAAAAAAACAAAAAAgACAAAAAcAAAAAAAYDAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQIDBAUGBwgJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQIDBAUGBwgJAAAAAAAAAAAAAAAA"
-}
-```
-
-##### `CIP-26 submission`
-
-```bash
-curl -X 'POST' \
-  'https://somecip26server/metadata' \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d `[ENCODED_JSON_GOES_HERE`
-```
+- CIP-26
+- Bitbucket
+- Regular HTTP server
