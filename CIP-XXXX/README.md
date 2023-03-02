@@ -25,6 +25,19 @@ We propose three changes:
 - Erase type abstractions and type applications entirely when going from
   TPLC to UPLC rather than turning them into `delay` and `force`.
 
+UPLC is now **truly pure** wrt. transaction validation.
+This enables another use-case: We can **optimise** it as if it
+were entirely pure. We can turn `const () x` into `()` for any `x`!
+We can turn `expensive1 || expensive2` into `if expensive1 then True else expensive2`,
+and in general do any transformations that we'd do on a pure language without
+regard for side-effects.
+
+Issues fixed / PRs closed by this CIP:
+- https://github.com/input-output-hk/plutus/issues/4826
+- https://github.com/input-output-hk/plutus/issues/4114
+- https://github.com/input-output-hk/plutus/pull/4118
+- https://github.com/cardano-foundation/CIPs/pull/459
+
 ## Motivation
 
 Users write code in the style of `if cond then error else False`, which is unidiomatic and also problematic,
@@ -48,6 +61,10 @@ toolchains, but also means that all built-ins will no longer need to be forced b
 
 Making Plutus lazy would also solve the problems, yet this has not been done as a strict language
 is easier to reason about wrt. budgetting. Instead, we turn to making errors first-class values.
+
+As noted in the abstract, we can now also do optimisations on the UPLC that were impossible
+before, as the effects mattered. This notably meant we previously couldn't regard code which result
+wasn't used as dead code. With this change, it's possible to entirely elide such (now) dead code.
 
 ## Specification
 
