@@ -124,6 +124,11 @@ is precisely the example we seek to make work.
 `f True ()` will fail as expected,
 while `f False ()` will return `()` as expected.
 
+### Backward compatibility
+
+This CIP has the issue of old scripts not being portable to the new version trivially.
+You need to make sure your script isn't making use of any impure assumptions.
+
 ## Path to Active
 
 ### Acceptance Criteria
