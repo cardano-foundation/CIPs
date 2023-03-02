@@ -25,7 +25,7 @@ We propose three changes:
 - Erase type abstractions and type applications entirely when going from
   TPLC to UPLC rather than turning them into `delay` and `force`.
 
-## Motivation: why is this CIP necessary?
+## Motivation
 
 Users write code in the style of `if cond then error else False`, which is unidiomatic and also problematic,
 since the seemingly equivalent `cond && error` will **always err**.
