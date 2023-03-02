@@ -54,7 +54,7 @@ disallowed "implicitly" as they're also not `True`.
 
 There is also the issue of efficiency: `delay` and `force`s have added more of an
 overhead than initially assumed, and a common trick used by alternative toolchains is to
-avoid emitting these. PlutusTx still emits these as it targets TPLC, the erasure of which into UPLC
+avoid emitting these. PlutusTx still emits these as it targets PIR, the erasure of which into UPLC
 adds this overhead.
 However, removing this from the erasure itself doesn't just help PlutusTx get closer to the alternative
 toolchains, but also means that all built-ins will no longer need to be forced before application.
