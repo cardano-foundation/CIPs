@@ -5,6 +5,7 @@ Status: Proposed
 Category: Metadata	
 Authors: 
   - Bruno Martins <bruno.martins@iohk.io>
+  - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
 Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/355
