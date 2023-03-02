@@ -87,7 +87,7 @@ This hash is calculated by taking the entire metadata tree object, ordering the 
 
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON object that contains the dApp's metadata.
 
-*`signature`*: The signature of the certificate. The signature is done over the blake2b hash of the certificate. The client should use the public key to verify the signature of the certificate. 
+*`signature`*: The signature of the certificate. The signature is done over the blake2b-256 hash of the certificate. The client should use the public key to verify the signature of the certificate. 
 
 ### Certificate JSON Schema
 ```json
