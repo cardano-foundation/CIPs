@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "gray-matter": "^4.0.2",
     "handlebars": "^4.7.7",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "rimraf": "^3.0.2",
     "showdown": "^1.9.1"
   }

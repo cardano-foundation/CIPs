@@ -1,16 +1,16 @@
 ---
 CIP: 32
 Title: Inline datums
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Comments-Summary: No comments
-Comments-URI:
+Authors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Jared Corduan <jared.corduan@iohk.io>
 Status: Active
-Type: Standards Track
+Category: Plutus
 Created: 2021-11-29
 License: CC-BY-4.0
 ---
-
-# Inline datums
 
 ## Abstract
 

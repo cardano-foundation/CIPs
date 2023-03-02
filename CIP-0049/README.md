@@ -1,25 +1,15 @@
 ---
-CIP: 49 
-Title: ECDSA and Schnorr signatures in Plutus Core  
-Authors: Koz Ross (koz@mlabs.city), 
-         Michael Peyton-Jones (michael.peyton-jones@iohk.io), 
-         Iñigo Querejeta Azurmendi (querejeta.azurmendi@iohk.io)
+CIP: 49
+Title: ECDSA and Schnorr signatures in Plutus Core
+Authors: Koz Ross (koz@mlabs.city), Michael Peyton-Jones (michael.peyton-jones@iohk.io), Iñigo Querejeta Azurmendi (querejeta.azurmendi@iohk.io)
 Discussions-To: koz@mlabs.city
-Comments-Summary: 
-Comments-URI:  
 Status: Proposed
 Type: Standards Track
-Created: 2022-04-27  
-* License: 
-* License-Code:
-* Post-History:
-* Requires:
-* Replaces:
-* Superseded-By:
+Created: 2022-04-27
 ---
 ## Simple Summary
 
-Support ECDSA and Schnorr signatures over the SECP256k1 curve in Plutus Core; 
+Support ECDSA and Schnorr signatures over the SECP256k1 curve in Plutus Core;
 specifically, allow validation of such signatures as builtins.
 
 ## Abstract
