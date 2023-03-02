@@ -147,7 +147,7 @@ while `f False ()` will return `()` as expected.
 
 ### Soundness of optimisations
 
-We note that you can soundly optimise `(\x -> M) N` into `x` is not mentioned in `M`,
+We note that you can soundly optimise `(\x -> M) N` into `M` if `x` is not mentioned in `M`,
 or similar occurrences where the result of `N` isn't needed.
 Such an optimisation will change the behaviour of the script necessarily,
 as any traces in `N` will no longer happen, yet, this is not important in practice
