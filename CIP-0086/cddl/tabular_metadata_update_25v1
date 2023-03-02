@@ -1,0 +1,12 @@
+string = text .size (0..64)
+
+policy_id = string
+
+label_metadata = { * policy_id => csv : [* string] }
+; csv has a header row where it defines it's columns
+; the first column is mandatory and is called asset_name
+; the columns are the field values in each asset
+; to access nested levels, use the level-1-tag.level-2-tag notation
+
+action = { 'tabular_metadata_update' : string => label_metadata }
+metadata = { ???? : uint => action }
