@@ -49,7 +49,7 @@ Examples of asset names:
 | 100              | NeverGonna         | 000643b0            | 4e65766572476f6e6e61  | 000643b04e65766572476f6e6e61 |
 | 222              | GiveYouUp          | 000de140            | 47697665596f755570    | 000de14047697665596f755570   |
 
-For simplicity purposes, the document will use the label `(100)` or `(<label>)` in the following documentation, but understand it should follow the CIP-0067 specification.
+For simplicity purposes, the document will use the label `(100)` or `(<label>)` in the following documentation, but understand it should follow the [CIP-0067](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067) specification.
 
 
 ### Reference NFT label
@@ -273,6 +273,7 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 
 - CIP-0025: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025
 - CIP-0031: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031
+- CIP-0067: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
 
 ## Copyright
 
