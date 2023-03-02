@@ -1,6 +1,6 @@
 ---
 CIP: 58
-Title: Bitwise primitives
+Title: Plutus Bitwise Primitives
 Author:	Koz Ross <koz@mlabs.city>, Maximilian König <maximilian@mlabs.city>
 Comments-URI:	https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-\?
 Status: Proposed

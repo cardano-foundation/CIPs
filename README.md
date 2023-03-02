@@ -69,7 +69,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 54 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 55 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
-| 58 | [Plutus Bitwise primitives](./CIP-0058) | Proposed |
+| 58 | [Plutus Bitwise Primitives](./CIP-0058) | Proposed |
 | 59 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 60 | [Music Token Metadata](./CIP-0060) | Active |
 | 67 | [Asset Name Label Registry](./CIP-0067) | Proposed |
