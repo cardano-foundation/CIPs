@@ -47,6 +47,17 @@ Supporting PQC signatures will bring the following benefits:
 * Cardano will become first blockchain to verify PQC standard signatures,
   thus getting first-mover advantage.
 
+## Use cases
+
+Adding multiple PQC signature algorithms will allow the following:
+
+* opt-in migration of wallets and smart contracts to safer cryptographic protocol
+* pay-as-you-go for longer signatures required for post-quantum resistance
+* opt-in resistance to _cryptocalypse_ - surprise breakage of a single major encryption algorithm -
+  by using multiple signature algorithms for redundancy.
+* compliance with US government regulations past July 2023, when all agencies
+  are expected to plan post-quantum migration.
+
 ## Specification
 
 [`DSIGN`]() class instance should be provided for the post-quantum signature algorithms.
