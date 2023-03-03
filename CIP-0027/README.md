@@ -3,7 +3,7 @@ CIP: 27
 Title: CNFT Community Royalties Standard
 Authors: Huth S0lo <john@digitalsyndicate.io>, TheRealAdamDean <adam@crypto2099.io>
 Comments-URI: https://forum.cardano.org/t/cip-royalties/68599
-Status: Draft
+Status: Active
 Type: Informational
 Created: 2021-08-29
 License: Apache-2.0

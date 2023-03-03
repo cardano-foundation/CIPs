@@ -1,11 +1,13 @@
 ---
 CIP: 33
 Title: Reference scripts
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Comments-Summary: No comments
-Comments-URI: 
-Status: Draft
-Type: Standards
+Authors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Jared Corduan <jared.corduan@iohk.io>
+Status: Active
+Category: Plutus
 Created: 2021-11-29
 License: CC-BY-4.0
 Requires: CIP-31
@@ -26,7 +28,7 @@ Script sizes pose a significant problem. This manifests itself in two ways:
 
 We would like to alleviate these problems.
 
-The key idea is to use reference inputs and modified outputs which carry actual scripts ("reference scripts"), and allow such reference scripts to satisfy the script witnessing requirement for a transaction. 
+The key idea is to use reference inputs and modified outputs which carry actual scripts ("reference scripts"), and allow such reference scripts to satisfy the script witnessing requirement for a transaction.
 This means that the transaction which _uses_ the script will not need to provide it at all, so long as it referenced an output which contained the script.
 
 ## Specification
@@ -46,10 +48,10 @@ Changing the script context will require a new Plutus language version in the le
 The change is: a new optional field is added to outputs and inputs to represent reference scripts.
 Reference scripts are represented by their hash in the script context.
 
-The interface for old versions of the language will not be changed. 
+The interface for old versions of the language will not be changed.
 Scripts with old versions cannot be spent in transactions that include reference scripts, attempting to do so will be a phase 1 transaction validation failure.
 
-### CDDL 
+### CDDL
 
 The CDDL for transaction outputs will change as follows to reflect the new field.
 ```
@@ -60,7 +62,7 @@ transaction_output =
   , ? ref_script : plutus_script
   ]
 ```
-TODO: can we use a more generic type that allows _any_ script in a forwards-compatible way? 
+TODO: can we use a more generic type that allows _any_ script in a forwards-compatible way?
 
 ## Rationale
 
@@ -89,11 +91,11 @@ This is clearly not what you want: the reference script could be anything, perha
 
 With inline datums, we could put reference scripts in the datum field of outputs.
 
-This approach has two problems. 
+This approach has two problems.
 First, there is a representation confusion: we would need some way to know that a particular datum contained a reference script.
 We could do this implicitly, but it would be better to have an explicit marker.
 
-Secondly, this prevents having an output which is locked by a script that needs a datum _and_ has a reference script in it. 
+Secondly, this prevents having an output which is locked by a script that needs a datum _and_ has a reference script in it.
 While this is a more unusual situation, it's not out of the question.
 For example, a group of users might want to use a Plutus-based multisig script to control the UTXO with a reference script in it.
 
@@ -117,7 +119,7 @@ This would mean that we don't need to change the interface.
 We don't have obvious use cases for the information about reference scripts, but the community may come up with use cases, and our general policy is to try and include as much information about the transaction as we can, unless there is a good reason not to.
 
 We also have the question of what to do about old scripts.
-We can't really present the information about reference scripts to them in a faithful way, there is nowhere to put hte information.
+We can't really present the information about reference scripts to them in a faithful way, there is nowhere to put the information.
 We could omit the information entirely, but this is dangerous in a different way.
 Omitting information may lead scripts to make assumptions about the transaction that are untrue; for this reason we prefer not to silently omit information as a general principle.
 That leaves us only one option: reject transactions where we would have to present information about reference scripts to old scripts.

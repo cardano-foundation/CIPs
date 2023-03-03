@@ -1,16 +1,16 @@
 ---
 CIP: 31
 Title: Reference inputs
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Comments-Summary: No comments
-Comments-URI: 
-Status: Draft
-Type: Standards Track
+Authors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Jared Corduan <jared.corduan@iohk.io>
+Status: Active
+Category: Plutus
 Created: 2021-11-29
 License: CC-BY-4.0
 ---
-
-# Reference inputs
 
 ## Abstract
 
@@ -53,17 +53,17 @@ A reference input is a transaction input, which is linked to a particular transa
 
 - A referenced output must exist in the UTXO set.
 - Any value on a referenced output is _not_ considered when balancing the transaction.
-- The spending conditions on referenced outputs are _not_ checked, nor are the witnesses required to be present. 
+- The spending conditions on referenced outputs are _not_ checked, nor are the witnesses required to be present.
     - i.e. validators are not required to pass (nor are the scripts themselves or redeemers required to be present at all), and signatures are not required for pubkey outputs.
 - Referenced outputs are _not_ removed from the UTXO set if the transaction validates.
 - Reference inputs _are_ visible to scripts.
 
 For clarity, the following two behaviours which are present today are unchanged by this proposal:
 
-1. Transactions must _spend_ at least one output.[^1] 
+1. Transactions must _spend_ at least one output.[^1]
 2. Spending an output _does_ require the spending conditions to be checked.[^2]
 
-[^1]: This restriction already exists, and is important. It seems unnecessary, since transactions must always pay fees and fees must come from somewhere, but fees could in principle be paid via reward withdrawals, so the requirement to spend a UTXO is relevant. 
+[^1]: This restriction already exists, and is important. It seems unnecessary, since transactions must always pay fees and fees must come from somewhere, but fees could in principle be paid via reward withdrawals, so the requirement to spend a UTXO is relevant.
 [^2]: That is, this proposal does not change outputs or the spending of outputs, it instead adds a new way of _referring_ to outputs.
 
 ### Script context
@@ -74,7 +74,7 @@ The script context therefore needs to be augmented to contain information about 
 Changing the script context will require a new Plutus language version in the ledger to support the new interface.
 The change in the new interface is: a _new_ field is added to the structure which contains the list of reference inputs.
 
-The interface for old versions of the language will not be changed. 
+The interface for old versions of the language will not be changed.
 Scripts with old versions cannot be spent in transactions that include reference inputs, attempting to do so will be a phase 1 transaction validation failure.
 
 ### Extra datums
@@ -93,35 +93,35 @@ The CDDL for transaction bodies will change to the following to reflect the new 
 ```
 transaction_body =
  { 0 : set<transaction_input>    ; inputs
- ...      
+ ...
  , ? 16 : set<transaction_input> ; reference inputs
  }
 ```
 
 ## Rationale
 
-The key idea of this proposal is to use UTXOs to carry information. 
-But UTXOs are currently a bad fit for distributing information. 
-Because of locality, we have to include outputs that we use in the transaction, and the only way we have of doing that is to _spend_ them - and a spent output cannot then be referenced by anything else. 
+The key idea of this proposal is to use UTXOs to carry information.
+But UTXOs are currently a bad fit for distributing information.
+Because of locality, we have to include outputs that we use in the transaction, and the only way we have of doing that is to _spend_ them - and a spent output cannot then be referenced by anything else.
 To put it another way: outputs are resource-like, but information is not resource-like.
 
-The solution is to add a way to _inspect_ ("reference") outputs without spending them. 
-This allows outputs to play double duty as resource containers (for the value they carry) and information containers (for the data they carry). 
+The solution is to add a way to _inspect_ ("reference") outputs without spending them.
+This allows outputs to play double duty as resource containers (for the value they carry) and information containers (for the data they carry).
 
 ### Requirements
 
 We have a number of requirements that we need to fulfil.
 - Determinism
     - It must be possible to predict the execution of scripts precisely, given the transaction.
-- Locality 
+- Locality
     - All data involved in transaction validation should be included in the transaction or the outputs which it spends (or references).
 - Non-interference
     - As far as possible, transactions should not interfere with others. The key exception is when transactions consume resources that other transactions want (usually by consuming UTXO entries).
 - Replay protection
     - The system should not be attackable (e.g. allow unexpected data reads) by replaying old traffic.
-- Storage control and garbage-collection incentives 
+- Storage control and garbage-collection incentives
     - The amount of storage required by the system should have controls that prevent it from overloading nodes, and ideally should have incentives to shrink the amount of storage that is used over time.
-- Optimized storage 
+- Optimized storage
     - The system should be amenable to optimized storage solutions.
 - Data transfer into scripts
     - Scripts must have a way to observe the data.
@@ -193,7 +193,7 @@ This is actually a very important feature.
 Since anyone can lock an output with any address, addresses are not that useful for identifying _particular_ outputs on chain, and instead we usually rely on looking for particular tokens in the value locked by the output.
 Hence, if a script is interested in referring to the data attached to a _particular_ output, it will likely want to look at the value that is locked in the output.
 
-For example, an oracle provider would need to distinguish the outputs that they create (with good data) from outputs created by adversaries (with bad data). 
+For example, an oracle provider would need to distinguish the outputs that they create (with good data) from outputs created by adversaries (with bad data).
 They can do this with a token, so long as scripts can then see the token!
 
 ### Hydra

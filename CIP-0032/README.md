@@ -1,16 +1,16 @@
 ---
 CIP: 32
 Title: Inline datums
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Comments-Summary: No comments
-Comments-URI: 
-Status: Draft
-Type: Standards Track
+Authors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Jared Corduan <jared.corduan@iohk.io>
+Status: Active
+Category: Plutus
 Created: 2021-11-29
 License: CC-BY-4.0
 ---
-
-# Inline datums
 
 ## Abstract
 
@@ -19,10 +19,10 @@ This will allow much simpler communication of datum values between users.
 
 ## Motivation
 
-Conceptually, datums are pieces of data that are attached to outputs. 
+Conceptually, datums are pieces of data that are attached to outputs.
 However, in practice datums are implemented by attaching _hashes_ of datums to outputs, and requiring that the spending transaction provides the actual datum.
 
-This is quite inconvenient for users. 
+This is quite inconvenient for users.
 Datums tend to represent the result of computation done by the party who creates the output, and as such there is almost no chance that the spending party will know the datum without communicating with the creating party.
 That means that either the datum must be communicated between parties off-chain, or communicated on-chain by including it in the witness map of the transaction that creates the output ("extra datums").
 This is also inconvenient for the spending party, who must watch the whole chain to spot it.
@@ -39,7 +39,7 @@ Transaction outputs are changed so that the datum field can contain either a has
 
 The min UTXO value for an output with an inline datum depends on the size of the datum, following the `coinsPerUTxOWord` protocol parameter.
 
-When an output with an inline datum is spent, the spending transaction does not need to provide the datum itself. 
+When an output with an inline datum is spent, the spending transaction does not need to provide the datum itself.
 
 ### Script context
 
@@ -52,7 +52,7 @@ There are two changes in the new version of the interface:
 - The datum field on transaction outputs can either be a hash or the actual datum.
 - The datum field on transaction inputs can either be a hash or the actual datum.
 
-The interface for old versions of the language will not be changed. 
+The interface for old versions of the language will not be changed.
 Scripts with old versions cannot be spent in transactions that include inline datums, attempting to do so will be a phase 1 transaction validation failure.
 
 ### CDDL
@@ -78,10 +78,10 @@ Since inline datums change very little about the model apart from where data is 
 
 ### UTXO set size
 
-This proposal gives users a way to put much larger amounts of data into the UTXO set. 
+This proposal gives users a way to put much larger amounts of data into the UTXO set.
 Won’t this lead to much worse UTXO set bloat?
 
-The answer is that we already have a mechanism to discourage this, namely the minimum UTXO value. 
+The answer is that we already have a mechanism to discourage this, namely the minimum UTXO value.
 If inline datums turns out to drive significantly increased space usage, then we may need to increase `coinsPerUTxOWord` in order to keep the UTXO size down.
 That will be costly and inconvenient for users, but will still allow them to use inline datums where they are most useful and the cost is bearable.
 Furthermore, we hope that we will in fact be able to _reduce_ `coinsPerUTxOWord` when the upcoming work on moving the UTXO mostly to on-disk storage is complete.
@@ -165,4 +165,4 @@ Hence we choose both option 1s and do _not_ provide backwards compatibility for 
 
 ## References
 
-[1]: Chakravarty, Manuel MT, et al. "The extended UTXO model." 
+[1]: Chakravarty, Manuel MT, et al. "The extended UTXO model."

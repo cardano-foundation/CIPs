@@ -1,6 +1,6 @@
 ---
 CIP: 25
-Title: NFT Metadata Standard
+Title: Media NFT Metadata Standard
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Smaug <smaug@pool.pm>
 Comments-URI:
 Status: Active
@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines an NFT Metadata Standard for Native Tokens.
+This proposal defines an Media NFT Metadata Standard for Native Tokens.
 
 ## Motivation
 
@@ -38,7 +38,7 @@ This is the registered `transaction_metadatum_label` value
 | --------------------------- | ------------ |
 | 721                         | NFT Metadata |
 
-### Structure
+### General structure
 
 The structure allows for multiple token mints, also with different policies, in a single transaction.
 
@@ -50,7 +50,7 @@ The structure allows for multiple token mints, also with different policies, in 
         "name": <string>,
 
         "image": <uri | array>,
-        "mediaType": "image/<mime_sub_type>",
+        "mediaType": image/<mime_sub_type>,
 
         "description": <string | array>,
 
@@ -64,26 +64,47 @@ The structure allows for multiple token mints, also with different policies, in 
         <other properties>
       }
     },
-    "version": "1.0"
+    "version": <version_id>
   }
 }
 ```
 
-The **`asset_name`** must be `UTF-8` encoded for the key in the metadata map and the actual NFT. This is true for version `1.0`, future versions will use the `hex` encoding for **`asset_name`**.
+### CDDL
 
-The **`image`** and **`name`** property are marked as required. **`image`** should be an URI pointing to a resource with mime type `image/*` used as thumbnail or as actual link if the NFT is an image (ideally <= 1MB).
+[Version 1](./cddl/version_1.cddl)\
+[Version 2](./cddl/version_2.cddl)
 
-The **`description`** property is optional.
+- In version `1` the **`asset_name`** must be `utf-8` encoded and in text format for the key in the metadata map. In version `2` the the raw bytes of the **`asset_name`** are used.
 
-The **`mediaType`** and **`files`** properties are optional.<br /> **`mediaType`** is however required inside **`files`**. The **`src`** property inside **`files`** is an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image, like the on in the **`image`** property, but in an higher resolution.
+- In version `1` the **`policy_id`** must be in text format for the key in the metadata map. In version `2` the the raw bytes of the **`policy_id`** are used.
 
-The **`version`** property is also optional. If not specified the version is `1.0`. It will become mandatory in future versions if needed.
+- The  **`name`** property is marked as required.
+- The **`image`** property is required and must be a valid [Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986) pointing to a resource with mime type `image/*`.  Note that this resource is used as thumbnail or the actual link if the NFT is an image (ideally <= 1MB). If the string representing the resource location is >64 characters, an array may be used in place of a simple JSON string type, which viewers will automatically concatenate to create a single URI.
+	- Please note that if distributed storage systems like IPFS or Arweave are used it is required to use a URI containing the respective scheme (e.g., `ipfs://` or `ar://`) and not merely the content identifier (CID) as NFT viewers may not be able to locate the file.
+		- Valid identifiers would include:
+			- `"https://cardano.org/favicon-32x32.png"`
+			- `"ipfs://QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"`
+			- `["ipfs://", "QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"]`
+		- Invalid identifiers would include:
+			- `"cardano.org/favicon-32x32.png"`
+			- `"QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"`
+			- `["Qm", "bQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"]`
+	-  If an inline base64-encoded image will be used, the data must be prepended with a valid `data:<mime_type>;base64` prefix as specified by the [data URL scheme standard](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs) to indicate the image is an inline data object
+	- See [the OpenSea "IPFS and Arweave URIs" section in their reference guide](https://docs.opensea.io/docs/metadata-standards#ipfs-and-arweave-uris) for more helpful information on the topic.
 
-This structure really just defines the basis. New properties and standards can be defined later on for varies uses cases. That's why there is an "other properties" tag.
+- The **`description`** property is optional.
 
-The retrieval of the metadata should be the same for all however.
+- The **`mediaType`** and **`files`** properties are optional.<br /> **`mediaType`** is however required inside **`files`**. The **`src`** property inside **`files`** is an URI pointing to a resource of this mime type. If the mime type is `image/*`, **`mediaType`** points to the same image, like the on in the **`image`** property, but in an higher resolution.
+
+- The **`version`** property is also optional. If not specified the version is `1`. It will become mandatory in future versions if needed.
+
+- This structure really just defines the basis. New properties and standards can be defined later on for varies uses cases. That's why there is an "other properties" tag.
+
+- The retrieval of the metadata should be the same for all however.
 
 Optional fields allow to save space in the blockchain. Consequently the minimal structure for a single token is:
+
+#### Version 1
 
 ```
 {
@@ -94,6 +115,22 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
         "image": <uri | array>
       }
     }
+  }
+}
+```
+
+#### Version 2
+
+```
+{
+  "721": {
+    "<policy_id>": {
+      "<asset_name>": {
+        "name": <string>,
+        "image": <uri | array>
+      }
+    },
+    "version": 2
   }
 }
 ```
@@ -114,8 +151,8 @@ Using the latest mint transaction with the label 721 as valid metadata for a tok
 
 ## Backward Compatibility
 
-To keep NFT metadata compatible with changes coming up in the future, we use the **`version`** property. Version `1.0` is used in the current metadata structure of this CIP.
-Version `2.0` will introduce [schema.org](https://schema.org).
+To keep NFT metadata compatible with changes coming up in the future, we use the **`version`** property.
+A future version will introduce [schema.org](https://schema.org).
 
 ## References
 

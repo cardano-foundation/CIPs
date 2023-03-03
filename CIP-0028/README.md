@@ -1,6 +1,6 @@
 ---
 CIP: 28
-Title: Protocol Parameters (Alonzo)
+Title: Protocol Parameters (Alonzo Era)
 Authors: Kevin Hammond <kevin.hammond@iohk.io>
 Status: Active
 Type: Informational
@@ -9,7 +9,7 @@ License: CC-BY-4.0
 Requires: CIP-0009
 ---
 
-## Simple Summary/Abstract
+## Abstract
 
 This CIP extends CIP-0009 to include the new protocol parameters that have been introduced for Alonzo, specifically those relating to the costing of Plutus scripts.  It describes the initial settings for those parameters.
 
@@ -251,7 +251,7 @@ For simplicity, the details of the parameter settings is omitted here.
 
 There are no changes to the non-updatable protocol parameters.
 
-## Rationale for Parameter Choices
+## Rationale
 
 The majority of the parameters are needed to enable the use of Plutus scripts on-chain.  They relate to the fees calculations for
 transactions that include Plutus scripts.
@@ -276,17 +276,13 @@ script failure if the collateral was not available).
 
 ``costModels`` has been set for ``PlutusV1`` based on benchmarking inputs.  Each Plutus Core primitive has associated costs.
 
-## Change Log
+## Path to Active
 
-There have been no changes to the updatable parameters since the Alonzo hard fork.
+- [x] The Cardano Alonzo era is activated.
 
-## Test Cases
+### Change Log
 
-Not Applicable.
-
-## Implementations
-
-Not applicable.
+See [CIP-0055: Protocol Parameters (Babbage Era)](../CIP-0055).
 
 ## Copyright
 

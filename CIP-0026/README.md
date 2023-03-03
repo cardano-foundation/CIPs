@@ -315,7 +315,7 @@ The metadata server SHOULD implement the following HTTP methods:
 GET /metadata/{subject}/property/{property name}
 ```
 
-This SHOULD return the property value for the given property name (if any) associated with the subject. This is returned as a single-entry JSON object whose key is the property name and return the complete JSON entry for that subject+name (including `value`, `sequenceNumber` and `signatures`).
+This SHOULD return the property values for the given property name (if any) associated with the subject. This is returned as a array of JSON objects whose key is the property name and return the complete JSON entries for that subject+name (including `value`, `sequenceNumber` and `signatures`).
 
 The metadata server SHOULD set the Content-Length header to allow clients to decide if they wish to download sizeable metadata.
 
@@ -329,7 +329,7 @@ This SHOULD return all the property names which are available for that subject (
 GET /metadata/{subject}
 ```
 
-This SHOULD return the full metadata object associated with this subject, including the subject and all properties associated with it. 
+This SHOULD return a array of the full metadata objects associated with this subject, including the subject and all properties associated with it. 
 
 ```
 POST /metadata/query
