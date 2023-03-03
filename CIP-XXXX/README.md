@@ -51,8 +51,8 @@ An extension is an object with a single required field `"cip"` that describe a C
 
 This should act as the definitive list of known and accepted extensions to this proposal. 
 
-| CIP      | Scope                           |
-| -------- | ------------------------------- |
+| CIP                                                                           | Scope                           |
+| ------------------------------------------------------------------------------|-------------------------------- |
 | [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)   | Generic interface               |
 
 ### Extension CIPs
@@ -123,7 +123,7 @@ Once a connection is established, this can be called multiple times by the dApp 
 
 **Note**: In order to improve backwards compatibility an empty `extensions` field should supply CIP-30 functionality, as if a CIP-30 `extension` object was provided.
 
-#### cardano.{walletName}.isEnabled(): Extension[]
+#### cardano.{walletName}.isEnabled(): Promise\<Extension[]>
 
 Errors: `ConnectorError`
 
