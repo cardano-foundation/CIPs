@@ -53,7 +53,7 @@ This should act as the definitive list of known and accepted extensions to this 
 
 | CIP      | Scope                           |
 | -------- | ------------------------------- |
-| CIP-30   | Generic interface               |
+| [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)   | Generic interface               |
 
 ### Extension CIPs
 
