@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: PostQuantum signatures
+Title: PostQuantum signatures and native wallets
 Category: Plutus
 Authors:
   - Michał J. Gajda (mjgajda@migamake.com)
