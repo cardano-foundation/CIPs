@@ -210,9 +210,6 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
             "releaseName": {
               "type": "string"
             },
-            "auditId": {
-              "type": "string"
-            },
             "scripts": {
               "type": "array",
               "items": [
@@ -237,7 +234,6 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
           "required": [
             "releaseNumber",
             "releaseName",
-            "auditId",
             "scripts"
           ]
         }
@@ -340,7 +336,6 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
     {
       "releaseNumber": 1,
       "releaseName": "V1",
-      "auditId": "z5L90f",
       "scripts": [
         {
           "id": "PmNd6w",
