@@ -95,6 +95,7 @@ data SignAlgo = Ed25519
               | Falcon
               | Sphincs
               | Dilithium
+              | Sequoa
 ```
 To facilitate extensibility, the name of algorithm should be rendered as case-insensitive text in JavaScript
 ([CIP-0030](https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0030/)).
