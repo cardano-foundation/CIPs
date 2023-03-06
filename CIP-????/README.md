@@ -1,9 +1,8 @@
 ---
 CIP: ????
-Title: PostQuantum signatures and native wallets
+title: PostQuantum signatures and native wallets
 Category: Plutus
-Authors:
-  - Michał J. Gajda (mjgajda@migamake.com)
+author: Michał J. Gajda (mjgajda@migamake.com)
 Implementors: []
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/441
 Comments-Summary: 
@@ -19,6 +18,7 @@ Support post-quantum signatures (Dilithium+CRYSTALS, FALCON) as recommended by N
 allow validation of such signatures as builtins.
 NIST plans to finalize standardization in 2023/2024 time frame, with US executive branch recommending
 all projects to plan for post-quantum resistance by mid-2023.
+We should prepare Cardano Blockchain for migration.
 
 ## Abstract
 
@@ -66,9 +66,19 @@ Adding multiple PQC signature algorithms will allow the following:
 
 Two new builtin functions would be provided:
 
-* A verification function for CRYSTALS(DILITHIUM) signatures; and
-* A verification function for FALCON signatures;
-* A verification function for SPHINCS signatures.
+* A verification function for both pre-quantum and post-quantum resistant
+  signature schemes:
+     - CRYSTALS(DILITHIUM) signatures;
+     - FALCON signatures;
+     - SPHINCS signatures; and
+     - SEQUOA
+* Extensible interface for signature verification functions.
+* A long-term signature verification API useful for smart contract scripts,
+  so that smart contracts do not need to change when new cryptographic protocol
+  is added.
+* Extensible interface for hash verification functions,
+  so that smart contracts do not need to change when hashing algorithm
+  is upgraded.
 
 These would be based on NIST reference implementations,
 as maintained by [`PQClean`](https://github.com/PQClean/PQClean) library.
