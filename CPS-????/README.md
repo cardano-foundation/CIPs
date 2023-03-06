@@ -99,13 +99,16 @@ Supporting PQC signatures will bring the following benefits:
   is unknown. In absence of the mathematical proof it remains doubtful.
 
 * It is unknown when exactly post-quantum computing will break pre-existing
-  cryptography, altough [some mathematicians keep making bold claims](https://arxiv.org/pdf/2212.12372.pdf)
-  about 372 qubits being sufficient to RSA2048.
+  cryptography, altough [researchers made bold claim](https://arxiv.org/pdf/2212.12372.pdf)
+  about 372 qubits being sufficient to break RSA2048. This hybrid algorithm
+  could efficiently use an existing quantum computer, but would
+  [take a long time](https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/AkfdRQS4yoY/m/3plDftUEAgAJ).
 
 # Goals
 
 * Prepare Cardano for migration to post-quantum encryption algorithms.
 * Make any cryptographic migrations easy in the future.
+* Allow creating post-quantum resistant smart contracts today.
 
 # Copyright
 
