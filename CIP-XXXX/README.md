@@ -332,7 +332,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
 ## Rationale
 
 For this specification, I have drawn inspiration from 
-[CIP-30: Catalyst/Voltaire Registration Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036)
+[CIP-36: Catalyst/Voltaire Registration Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036)
 which succinctly and canonically publishes data to the main chain (L1) via a metadata transaction and without any
 required modification or customization to the underlying ledger with regard to Native Assets.
 
