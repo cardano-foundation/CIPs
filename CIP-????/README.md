@@ -99,12 +99,13 @@ data SignAlgo = Ed25519
 To facilitate extensibility, the name of algorithm should be rendered as case-insensitive text in JavaScript
 ([CIP-0030](https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0030/)).
 
-| Cryptographic algorithm | Public key (bytes) | Signature (bytes) | Relative cost of verification (CPU) |
-|:------------------------|-------------------:|------------------:|------------------------------------:|
-| Ed25519                 |                 64 |                64 |                                   1 |
-| Falcon512               |                897 |               666 |                                 0.5 |
-| Dilithium2              |               1312 |              2420 |                                 0.5 |
-| Sphincs+                |                 32 |              8080^[https://sofiaceli.com/2022/07/05/pq-signatures.html#:~:text=A%20table%20of-,comparison%20of%20sizes,-%3A] |                                 2.8^[Benchmark was for Sphins\*128s] |
+| Cryptographic algorithm | Public key (bytes) | Signature (bytes) | Relative cost of verification (CPU) | Standardization |
+|:------------------------|-------------------:|------------------:|------------------------------------:|----------------:|
+| Ed25519                 |                 64 |                64 |                                   1 |    [Draft](https://www.nist.gov/news-events/news/2019/10/digital-signatures-and-elliptic-curve-cryptography-request-comments-draft) |
+| Falcon512               |                897 |               666 |                                 0.5 | [Selected](https://csrc.nist.gov/projects/post-quantum-cryptography/selected-algorithms-2022) | 
+| Dilithium2              |               1312 |              2420 |                                 0.5 | [Selected](https://csrc.nist.gov/projects/post-quantum-cryptography/selected-algorithms-2022) |
+| Sphincs+                |                 32 |              8080^[https://sofiaceli.com/2022/07/05/pq-signatures.html#:~:text=A%20table%20of-,comparison%20of%20sizes,-%3A] |                                 2.8^[Benchmark was for Sphins\*128s] | [Selected](https://csrc.nist.gov/projects/post-quantum-cryptography/selected-algorithms-2022) |
+| sequoa863pq128          |                108 |               216 |                                    ? | Submitted^[Communication on ebats@cryp.to mailing list.] |
 
   : Reference for signature, key sizes, and time cost multipliers [as suggested here](https://blog.cloudflare.com/nist-post-quantum-surprise/). In the order of preference, with comparison against current default signature algorithm (Ed25519).
 
