@@ -165,7 +165,6 @@ cardano.{walletName}.hashAlgo
 ```
 
 There should be additional extension registered if [CIP on wallet extensibility](https://github.com/cardano-foundation/CIPs/pull/462).
-```
 
 Wallet providers may choose to automatically generate ultra-secure wallets for multiple quantum signature
 algorithms from a single seed. In such case, they are encouraged to provide a visible
@@ -190,7 +189,7 @@ hashWithAlgo :: HashAlgo -> BuiltinByteString -> BuiltinByteString
 
 This will also allow for gradual _opt-in_ migration of scripts as the blockchain evolves.
 
-### Long term API evolution
+### Long term crypto API evolution
 
 It would be desirable to also offer a long-term API that would not need any changes
 as we migrate blockchain to new algorithms.
@@ -262,7 +261,7 @@ An implementation will require the following steps:
 
 1. Linking to PQC library.
 2. Providing the patch implementing new Plutus primitives just like for [EcDSA and Schnorr](https://github.com/input-output-hk/plutus/pull/4368).
-3. Providing the PQC primitives using `Crypto` interface for ease of use.0
+3. Providing the PQC primitives using `Crypto` interface for ease of use.
 
 ## Discussion full quantum resistance
 
