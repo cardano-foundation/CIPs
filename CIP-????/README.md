@@ -51,6 +51,11 @@ We do prefer algorithms that were widely tested, and ideally NIST-approved.
 It is no guarantee of resistance to attack, as shown by
 [recently discovered buffer overflow in SHA-3, SHAKE, EdDSA implementations approved by NIST](https://eprint.iacr.org/2023/331). But number of reviewers and public scrutiny is much higher than all other protocols.
 
+Post-quantum cryptography migration is also opportunity
+to prepare for other future cryptographic migrations
+allowing future Cardano to handle such a fundamental
+change gracefully.
+
 ## Use cases
 
 Adding multiple PQC signature algorithms will allow the following:
@@ -189,6 +194,9 @@ hint of what is the current preferred.
 Note that use of hash would require use of quantum-resistant hash algorithm.
 [SHA2, SHA3, BLAKE2 are considered quantum-safe](https://cryptobook.nakov.com/quantum-safe-cryptography#quantum-safe-and-quantum-broken-crypto-algorithms),
 in particular standard 256-bit hash used in Cardano [should be safe for a long time](https://cryptobook.nakov.com/quantum-safe-cryptography#quantum-safe-and-quantum-broken-crypto-algorithms).
+However, we cannot [exclude risk of vulnerability in any such algorithm](https://eprint.iacr.org/2023/331).
+Because of this, we should plan for both signature and hash algorithm migration in the future.
+
 This should be documented in the Plutus documentation of `verifySignature`.
 
 However, in the interest of long-term API evolution we propose to add a flexible hashing interface:
