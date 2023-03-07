@@ -144,11 +144,12 @@ The following list contains proposals that have been under review and for which 
 
 ## Editors
 
-| Frederic Johnson <br/> [@crptmppt][] | Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] |
-| ---                                  | ---                               | ---                                           | ---                            |
+| Frederic Johnson <br/> [@crptmppt][] | Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] |
+| ---                                  | ---                               | ---                                           | ---                            | ---                            |
 
 [@crptmppt]: https://github.com/crptmppt
 [@KtorZ]: https://github.com/KtorZ
 [@SebastienGllmt]: https://github.com/SebastienGllmt
 [@rphair]: https://github.com/rphair
+[@Ryun1]: https://github.com/Ryun1
 
