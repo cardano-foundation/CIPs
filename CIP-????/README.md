@@ -47,6 +47,10 @@ Supporting PQC signatures will bring the following benefits:
 * Cardano will become first blockchain to verify PQC standard signatures,
   thus getting first-mover advantage.
 
+We do prefer algorithms that were widely tested, and ideally NIST-approved.
+It is no guarantee of resistance to attack, as shown by
+[recently discovered buffer overflow in SHA-3, SHAKE, EdDSA implementations approved by NIST](https://eprint.iacr.org/2023/331). But number of reviewers and public scrutiny is much higher than all other protocols.
+
 ## Use cases
 
 Adding multiple PQC signature algorithms will allow the following:
