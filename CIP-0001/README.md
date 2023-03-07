@@ -335,13 +335,14 @@ The missions of an editor include, but aren't exclusively limited to, any of the
 
 Current editors are listed here below:
 
-| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Frederic Johnson <br/> [@crptmppt][] | Robert Phair <br/> [@rphair][] |
-| ---                               | ---                                           | ---                                  | ---                            |
+| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Frederic Johnson <br/> [@crptmppt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] |
+| ---                               | ---                                           | ---                                  | ---                            | ---                            |
 
 [@KtorZ]: https://github.com/KtorZ
 [@SebastienGllmt]: https://github.com/SebastienGllmt
 [@crptmppt]: https://github.com/crptmppt
 [@rphair]: https://github.com/rphair
+[@Ryun1]: https://github.com/Ryun1
 
 ## Rationale: how does this CIP achieve its goals?
 

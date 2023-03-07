@@ -1,13 +1,13 @@
 ---
-CIP: 867?
-Title: Token Policy Registration
+CIP: ?
+Title: Hybrid Token Policy Registration
 Category: Tokens
 Status: Proposed
 Authors:
     - Adam Dean <adam@crypto2099.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/467
+    - https://github.com/cardano-foundation/cips/pulls/467
 Created: 2023-02-27
 License: CC-BY-4.0
 ---
@@ -348,7 +348,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
 ## Rationale
 
 For this specification, I have drawn inspiration from 
-[CIP-30: Catalyst/Voltaire Registration Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036)
+[CIP-36: Catalyst/Voltaire Registration Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036)
 which succinctly and canonically publishes data to the main chain (L1) via a metadata transaction and without any
 required modification or customization to the underlying ledger with regard to Native Assets.
 
@@ -377,4 +377,4 @@ to utilize this data quickly and efficiently in their endpoints.
 
 ## Copyright
 
-This Cardano Improvement Proposal is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
