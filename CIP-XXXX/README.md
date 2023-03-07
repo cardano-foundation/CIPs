@@ -1,13 +1,13 @@
 ---
-CIP: ?
-Title: Hybrid Token Policy Registration
+CIP: 867?
+Title: Token Policy Registration
 Category: Tokens
 Status: Proposed
 Authors:
     - Adam Dean <adam@crypto2099.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/467
 Created: 2023-02-27
 License: CC-BY-4.0
 ---
@@ -150,10 +150,26 @@ potentially dynamic information relating to the project and/or the tokens minted
 #### 6. CIP-Specific Information
 
 This entry, if present, should be a CIP ID indexed object containing additional information pertaining to that CIP.
+When and where possible the CIP-Specific registration should follow the CBOR-like declaration syntax to ensure that
+the content is well-formed and easily parseable.
+
 These additional CIPs/Schemas to be determined by the community could include:
 
 - CIP-25/68 NFT Project top-level project information
 - CIP-26 FT Project monetary policy information
+- CIP-27 NFT Project Royalty information
+
+##### CIP-26: Fungible Tokens / Monetary Policy
+
+See [CIP26](CIP-26/README.md) for a description of a fungible token specific registration ([CIP26.json](CIP-26/CIP26.json) as an 
+example, [CIP26.schema.json](CIP-26/CIP26.schema.json) for schema documentation). This information can replace the information
+currently housed in the [Cardano Token Registry](https://github.com/cardano-foundation/cardano-token-registry) and is 
+based on the format currently used in those registrations along with a few additional fields.
+
+##### Inline Datum / Reference UTXO Registration
+
+Depending on the needs of a specific project or CIP, the CIP-Specific registration should include a reference pointer to 
+an inline datum UTXO that can be consumed and used by smart contract integrations.
 
 **Example:**
 
@@ -361,4 +377,4 @@ to utilize this data quickly and efficiently in their endpoints.
 
 ## Copyright
 
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
+This Cardano Improvement Proposal is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)

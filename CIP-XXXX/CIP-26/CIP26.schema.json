@@ -1,0 +1,190 @@
+{
+  "$id": "https://raw.githubusercontent.com/Crypto2099/cardano-schemas/main/cip867/cip26.json",
+  "title": "CIP-26: Fungible Token",
+  "description": "Additional context for a policy declaring support for fungible token standards",
+  "type": "object",
+  "properties": {
+    "26": {
+      "type": "object",
+      "properties": {
+        "1": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "title": "Fungible Token Details",
+            "description": "Describes details about a particular fungible token under this policy",
+            "type": "object",
+            "properties": {
+              "0": {
+                "title": "Subject",
+                "description": "The hex-encoded Policy ID and Asset ID of the token",
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": [
+                  {
+                    "title": "Policy ID",
+                    "description": "The hex-encoded Policy ID of the token",
+                    "type": "string",
+                    "maxLength": 56,
+                    "minLength": 56
+                  },
+                  {
+                    "title": "Asset ID",
+                    "description": "The hex-encoded Asset ID of the token",
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 64
+                  }
+                ],
+                "additionalItems": false
+              },
+              "1": {
+                "title": "Name",
+                "description": "The full display name of the token",
+                "type": "string",
+                "example": "spacecoins"
+              },
+              "2": {
+                "title": "Symbol/Ticker",
+                "description": "The ticker or listing symbol for the token",
+                "type": "string",
+                "example": "SPACE"
+              },
+              "3": {
+                "title": "Description",
+                "description": "A short description for the token",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "example": [
+                  "The OG Cardano Community Token - whatever you do, your did it!"
+                ]
+              },
+              "4": {
+                "title": "Decimals",
+                "description": "How many decimal places this token should be rendered with",
+                "type": "integer",
+                "example": 0,
+                "default": 0
+              },
+              "5": {
+                "title": "URL",
+                "description": "A URL to the project's web page",
+                "$ref": "#/$defs/uriArray"
+              },
+              "6": {
+                "title": "Logo",
+                "description": "A URI to the token's logo",
+                "$ref": "#/$defs/uriArray"
+              },
+              "7": {
+                "title": "Disclosure",
+                "description": "An array with information about the Financial Disclosure statement for the token",
+                "type": "array",
+                "items": [
+                  {
+                    "title": "Disclosure URI",
+                    "description": "A URI pointing to the Disclosure JSON File (recommend Arweave or IPFS)",
+                    "$ref": "#/$defs/uriArray"
+                  },
+                  {
+                    "title": "Disclosure File Hash",
+                    "description": "The SHA256 hash of the Disclosure JSON File for tamper-proofing",
+                    "type": "string",
+                    "example": "1033280ed007f18d3a1a3d27adb0080d92dc02ce74b54cdefaf174205a110009"
+                  }
+                ],
+                "additionalItems": false,
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "8": {
+                "title": "Reference UTXO",
+                "description": "A pointer to a UTXO containing an inline datum with information about the token",
+                "type": "array",
+                "items": [
+                  {
+                    "title": "Transaction Hash",
+                    "description": "The transaction hash of the UTXO",
+                    "type": "string",
+                    "minLength": 64,
+                    "maxLength": 64
+                  },
+                  {
+                    "title": "Transaction Index",
+                    "description": "The transaction index of the UTXO",
+                    "type": "string",
+                    "minLength": 1
+                  }
+                ],
+                "additionalItems": false,
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "required": [
+              "0",
+              "1",
+              "2"
+            ]
+          }
+        }
+      },
+      "required": [
+        "1"
+      ]
+    }
+  },
+  "required": [
+    "26"
+  ],
+  "$defs": {
+    "uriArray": {
+      "title": "URI Array",
+      "$comment": "Because Cardano has a 64-character per string limit in on-chain JSON. Long strings should be broken up into an array of string parts. Particularly helpful for URIs that point to a resource on the internet is breaking URIs by scheme and path. This allows explorers to quickly and easily identify the type of resource before proceeding.",
+      "type": "array",
+      "minItems": 2,
+      "items": [
+        {
+          "title": "URI Scheme",
+          "description": "The protocol schema definition",
+          "type": "string",
+          "examples": [
+            "https://",
+            "ar://",
+            "ipfs://"
+          ]
+        },
+        {
+          "title": "URI Path",
+          "description": "One or more strings (64-character limit) to compose the URI",
+          "type": "string",
+          "maxLength": 64,
+          "examples": [
+            "faucet.spacecoins.io",
+            "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly",
+            "WRi9jboeKx1fbjcvO5q0kshaMmdaYgDnYlMEy-loZeY"
+          ]
+        }
+      ],
+      "additionalItems": true,
+      "examples": [
+        [
+          "ar://",
+          "WRi9jboeKx1fbjcvO5q0kshaMmdaYgDnYlMEy-loZeY"
+        ],
+        [
+          "https://",
+          "spacecoins.io"
+        ],
+        [
+          "ipfs://",
+          "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly"
+        ]
+      ]
+    }
+  }
+}
