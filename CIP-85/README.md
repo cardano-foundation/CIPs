@@ -639,6 +639,9 @@ They are defined in `plutus-benchmark/script-contexts`.
 | Overhead                     | 43631100         | 189800              |
 
 This is quite bad: the SOP equality case is 39x worse, accounting for the shared overhead.
+This is not too surprising, since the builtin case can perform the whole computation in Haskell, and moreover the computation is much simpler (a single recursive function over `Data`).
+Whereas the SOP case is jumping between many equality functions defined for different types, and all operating inside the main Plutus Core evaluator.
+Still, this is a striking difference.
 
 #### Validation 
 
