@@ -1,6 +1,6 @@
 ---
 CIP: 62
-Title: Cardano dApp-Connector Project Catalyst Extension
+Title: Cardano dApp-Wallet Web Bridge Catalyst Extension
 Status: Proposed
 Category: Wallets
 Authors:
@@ -21,7 +21,7 @@ Created: 2021-06-11
 License: CC-BY-4.0
 ---
 
-# CIP-0062: Cardano dApp-Connector Project Catalyst Extension
+# CIP-0062: Cardano dApp-Wallet Web Bridge Catalyst Extension
 
 ## Abstract
 
