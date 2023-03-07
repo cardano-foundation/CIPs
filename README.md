@@ -69,6 +69,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 52 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 54 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 55 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
+| 58 | [Plutus Bitwise Primitives](./CIP-0058) | Proposed |
 | 59 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 60 | [Music Token Metadata](./CIP-0060) | Active |
 | 67 | [Asset Name Label Registry](./CIP-0067) | Proposed |
@@ -101,7 +102,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 50? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 57? | [Plutus Smart-Contract Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) |
-| 58? | [Plutus Bitwise Primitives](https://github.com/cardano-foundation/CIPs/pull/283) |
 | 62? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 69? | [Plutus Script Type Uniformization](https://github.com/cardano-foundation/CIPs/pull/321/) |
 | 70? | [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336) |
@@ -144,11 +144,12 @@ The following list contains proposals that have been under review and for which 
 
 ## Editors
 
-| Frederic Johnson <br/> [@crptmppt][] | Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] |
-| ---                                  | ---                               | ---                                           | ---                            |
+| Frederic Johnson <br/> [@crptmppt][] | Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] |
+| ---                                  | ---                               | ---                                           | ---                            | ---                            |
 
 [@crptmppt]: https://github.com/crptmppt
 [@KtorZ]: https://github.com/KtorZ
 [@SebastienGllmt]: https://github.com/SebastienGllmt
 [@rphair]: https://github.com/rphair
+[@Ryun1]: https://github.com/Ryun1
 
