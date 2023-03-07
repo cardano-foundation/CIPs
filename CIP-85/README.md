@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 Plutus Core does not contain any native support for datatypes.
 Instead, users who want to use structured data must _encode_ it; a typical approach is to use [Scott encoding][].
-This CIP proposes to add native support for datatypes to Plutus Core, and to use that support to implement more efficient interchange of the script context between the ledger and scripts.
+This CIP proposes to add native support for datatypes to Plutus Core using sums-of-products (SOPs), and to use that support to implement more efficient interchange of the script context between the ledger and scripts.
 These changes will provide very substantial speed and size improvements to scripts.
 
 ## Motivation: why is this CIP necessary?
@@ -187,15 +187,13 @@ With the proposed ledger interface changes the script context is passed across _
 Most Plutus Core programs spend a significant amount of their time operating on datatypes, so we would expect that a performance improvement here would make a significant difference.
 
 Indeed, this seems to be true.
-Our benchmarks[^see-appendix-3] show that this CIP leads to 
+Our benchmarks show that this CIP leads to 
 
 1. A 0-30% real-time speedup in example programs that do not work with the script context (the 0% is a primality tester that is mostly doing arithmetic, the 30% is mostly doing datatype manipulation). 
 2. A complete removal of the significant cost of decoding the script context.
 3. A small global slowdown of 2-4%.
 
 Note that the speedup from point 1 is inclusive of the slowdown from point 3.
-
-[^see-appendix-3]: See Appendix 3 for the tables of results and more discussion.
 
 #### 3. Simple Lifting and Unlifting
 
@@ -263,10 +261,19 @@ See "Alternatives: Convert Redeemers and Datums to Sums-of-Products Rather Than 
 
 #### What about users who rely on the script context being `Data`?
 
-The only use case we know of where it is actively desirable for the script context to be in the form of `Data` is the serialization/hashing use case described in the motivation for CIP-42.
-It's likely that this CIP will negatively affect that use case, since it would mean that to hash a part of the script context users would need to either:
-1. Write a hashing function that operates recursively on the script context object. This may be expensive because it will require lots of bytestring operations.
-2. Convert the script context back to `Data` in order to use `serialiseBuiltinData`.
+We know of two cases where it is actively desirable for the script context to be in the form of `Data`:
+
+1. Serialization/hashing, as described in the motivation for CIP-42
+2. Equality checking, e.g. searching for a particular output in the transaction output list
+
+It's likely that this CIP will negatively affect these use cases, since it would mean that users would need to either
+
+1. Write a hashing/equality function that operates recursively on the script context object
+2. Convert the script context back to `Data` in order to use the builtin operations
+
+Both of these approaches are likely to be much more expensive than using the `Data` builtins today.
+We benchmarked a recursive equality function over script contexts and it is indeed over 30x worse.
+This is a serious problem, and it's not clear what we can do about it.
 
 #### Do we need an untyped way of interacting with sums-of-products objects?
 
@@ -277,6 +284,21 @@ One response is to say that this is an optimization problem for said tooling: th
 But we might also want to think about ways to allow people to operate with objects encoded using sums-of-products in a similar untyped way to what they can do with `Data`.
 
 However, this is all a problem for tools that produce Plutus Core, and seems solvable, so we do not need to solve it in this CIP, and can leave it to the tooling authors to solve later.
+
+#### Can't we just implement datatypes using `Data` itself?
+
+`Data` is expressive enough to encode datatypes, indeed this is why it is possible to encode the script context into it.
+It's performant enough that people who work with the script context as `Data` are able to get by.
+So why not just use it to encode _all_ datatypes?[^aiken]
+
+[^aiken]: The Aiken language does this.
+
+There are two reasons:
+
+1. `Data` cannot contain functions, so it's less expressive than either SOPs or Scott-encoding.
+2. The performance is much worse.
+
+To justify 2, we benchmarked some list processing using datatypes implemented with SOPs and with `Data`, and the `Data` version is over 3x worse (not accounting for overhead, so the real figure may be higher).
 
 ### Alternatives
 
@@ -523,7 +545,7 @@ Difference 2 does not seem to make as large a difference. If we did see a big di
 ### Appendix 3: Benchmark results
 
 Throughout, the following commits are referenced:
-- `master`: `d123f85ca93de6974661e8b1e7bdf068dad2f57f`
+- `master`: `df9b23f59852d11776fde382720df830c6163238`
 - `sums-of-products`: `e98b284204070053b2e64bb66c7aa0832520afec`
 
 These represent somewhat arbitrary snapshots.
@@ -533,6 +555,7 @@ These may be updated at a future date.
 #### Nofib
 
 These are benchmarks taken from the `nofib` benchmark suite used by GHC.
+They are defined in `plutus-benchmark/nofib`.
 They are not totally comprehensive, but they represent a reasonable survey of programs that do various kinds of general computation.
 
 These benchmarks are re-compiled from Haskell each time, so the comparison does not represent faster evaluation of the same script, but rather than we can now compile datatype operations using the new terms, which are faster overall.
@@ -568,9 +591,10 @@ These benchmarks are re-compiled from Haskell each time, so the comparison does 
 The results indicate that the speedup is more associated with programs that do lots of datatype manipulation, rather than those that do a lot of numerical work (which in Plutus Core means calling lots of builtin functions).
 However, we don't see any regression even in the primality tester, which is very numerically heavy (the noise threshold for the benchmarks is ~1%).
 
-#### Script context processing
+#### Script context processing 1: basic processing
 
 These are synthetic benchmarks that aim to illustrate the difference between scripts that process script contexts encoded via `Data`, or passed directly as Plutus Core terms.
+They are defined in `plutus-benchmark/script-contexts`.
 They do this by generating medium-sized script context objects and then performing a few basic operations on them.
 They thus aim to show the potential savings for scripts from the new scheme.
 
@@ -599,9 +623,27 @@ In both scenarios the budget usage drops by an order of magnitude.
 This should not be taken as representative of typical savings for scripts, since these are very synthetic examples and the amount of work apart from decoding the script context is small.
 Still, it shows that we do successfully save ourselves from doing the work, and that the work saved is significant.
 
+#### Script context processing 2: equality
+
+These benchmarks compare the cost of computing equality of script contexts in two cases:
+
+1. Script contexts encoded as `Data`, using the `equalsData` builtin
+2. Script contexts encoded as terms using SOPs, using equality functions compiled from Haskell
+
+They are defined in `plutus-benchmark/script-contexts`.
+
+| Benchmark                    | CPU budget usage | Memory budget usage |
+|:----------------------------:|:----------------:|:-------------------:|
+| Script context data equality | 58790597         | 192802              |
+| Script context SOP equality  | 632527251        | 2592146             |
+| Overhead                     | 43631100         | 189800              |
+
+This is quite bad: the SOP equality case is 39x worse, accounting for the shared overhead.
+
 #### Validation 
 
 These benchmarks are some real-world examples taken from `plutus-use-cases`.
+They are defined in `plutus-benchmark/validation`.
 They thus represent real-world workloads.
 
 The validation benchmarks are _not_ recompiled, they are specific saved Plutus Core programs.
@@ -702,6 +744,32 @@ That's not enough to completely explain the loss, but we suspect that similar ca
 This is still bad -- a slowdown is still a slowdown -- but it's less bad because it's unavoidable if we ever want to increase the size of the language.
 We will pay this cost whenever we decide expand the language.
 Especially if the cost comes from threshold effects, it may be a one-time cost that we just have to pay on some occasion.
+
+#### Datatypes using 'Data'
+
+This benchmark compares lists implemented three ways: using SOPs, using builtin lists, and using `Data`.
+It is defined in `plutus-benchmark/lists`.
+The benchmark task is summing a list of 100 integers.
+All three versions are using the Plutus Tx compiler, so any overhead is identical, and the only difference is how the list operations are implemented in the end.
+There almost certainly is a decent amount of overhead (we did not attempt to measure it here), so the proportional difference in the underlying operations may in fact be greater.
+
+| Benchmark     | CPU budget usage | Memory budget usage |
+|:-------------:|:----------------:|:-------------------:|
+| SOP lists     | 136797800        | 505300              |
+| Builtin lists | 165182654        | 524632              |
+| `Data` lists  | 427357685        | 1360262             |
+
+Using `Data` is much worse.
+This is not terribly surprising: pattern-matching on a datatype encoded using `Data` requires multiple builtin calls:
+
+- A call to `ChooseData` to identify the type of `Data`
+- A call to `UnConstrData` to get the tag and arguments as a builtin pair
+- A call to `Fst` to get the tag
+- Some number of calls to builtin operations on integers to work out which branch to take given the tag
+- A call to `Snd` to get the args
+- Some number of calls to `Head`/`Tail` to extract the arguments to be used
+
+On the other hand, for SOPs this is a single machine step.
 
 ## Copyright 
 
