@@ -159,12 +159,24 @@ These additional CIPs/Schemas to be determined by the community could include:
 - CIP-26 FT Project monetary policy information
 - CIP-27 NFT Project Royalty information
 
+##### CIP-25 & CIP-68: Non-Fungible Tokens / Policy Information
+
+See [CIP25](CIP-25) for a description of a non-fungible token project policy registration. 
+([CIP25.json](CIP-25/CIP25.json) as an example, [CIP25.schema.json](CIP-25/CIP25.schema.json) for schema documentation).
+
+Because the information registered here is mostly helpful to aggregator services and marketplaces, it applies equally to
+both CIP-25 and CIP-68 metadata standards. A project utilizing one or the other should reference this documentation and
+include the relevant information under index #6, prefixed by the number of the CIP (25 or 68) depending upon the metadata
+format.
+
 ##### CIP-26: Fungible Tokens / Monetary Policy
 
-See [CIP26](CIP-26/README.md) for a description of a fungible token specific registration ([CIP26.json](CIP-26/CIP26.json) as an 
+See [CIP26](CIP-26) for a description of a fungible token specific registration ([CIP26.json](CIP-26/CIP26.json) as an 
 example, [CIP26.schema.json](CIP-26/CIP26.schema.json) for schema documentation). This information can replace the information
 currently housed in the [Cardano Token Registry](https://github.com/cardano-foundation/cardano-token-registry) and is 
 based on the format currently used in those registrations along with a few additional fields.
+
+##### CIP-27: Cardano NFT Royalty Information
 
 ##### Inline Datum / Reference UTXO Registration
 
@@ -176,21 +188,39 @@ an inline datum UTXO that can be consumed and used by smart contract integration
 ```json 
 {
   "25": {
-    "project_name": "Cool NFT Project",
-    "description": [
-      "This is a description of my project", 
-      "longer than 64 characters so broken up into a string array"
-    ],
-    "banner_image_uri": "https://static.coolnftproject.io/images/banner1.jpg",
-    "icon_image_uri": "https://static.coolnftproject.io/images/icon.png",
-    "social_media": {
-      "discord": "https://coolnftproject.discord.gg/",
-      "twitter": "https://twitter.com/coolNFTproject"
+    "1": {
+      "0": "Cool NFT Project",
+      "1": [
+        "This is a description of my project",
+        "longer than 64 characters so broken up into a string array"
+      ],
+      "2": [
+        "https://",
+        "static.coolnftproject.io",
+        "/images/icon.png"
+      ],
+      "3": [
+        "https://",
+        "static.coolnftproject.io",
+        "/images/banner1.jpg"
+      ],
+      "4": 0,
+      "5": {
+        "twitter": [
+          "https://",
+          "twitter.com/spacebudzNFT"
+        ],
+        "discord": [
+          "https://",
+          "discord.gg/spacebudz"
+        ]
+      },
+      "6": "Virtua Metaverse"
     }
   },
   "27": {
-    "rate": "0.05",
-    "addr": [
+    "0": "0.05",
+    "1": [
       "addr_test1qqp7uedmne8vjzue66hknx87jspg56qhkm4gp6ahyw7kaahevmtcux",
       "lpy25nqhaljc70094vfu8q4knqyv6668cvwhsq64gt89"
     ]
@@ -243,28 +273,45 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
         27
       ],
       "3": [
-        "CIP-8",
         "Ed25519"
       ],
       "4": 12345,
       "5": "https://oracle.mycoolnftproject.io/",
       "6": {
         "25": {
-          "project_name": "Cool NFT Project",
-          "description": [
-            "This is a description of my project",
-            "longer than 64 characters so broken up into a string array"
-          ],
-          "banner_image_uri": "https://static.coolnftproject.io/images/banner1.jpg",
-          "icon_image_uri": "https://static.coolnftproject.io/images/icon.png",
-          "social_media": {
-            "discord": "https://coolnftproject.discord.gg/",
-            "twitter": "https://twitter.com/coolNFTproject"
+          "1": {
+            "0": "Cool NFT Project",
+            "1": [
+              "This is a description of my project",
+              "longer than 64 characters so broken up into a string array"
+            ],
+            "2": [
+              "https://",
+              "static.coolnftproject.io",
+              "/images/icon.png"
+            ],
+            "3": [
+              "https://",
+              "static.coolnftproject.io",
+              "/images/banner1.jpg"
+            ],
+            "4": 0,
+            "5": {
+              "twitter": [
+                "https://",
+                "twitter.com/spacebudzNFT"
+              ],
+              "discord": [
+                "https://",
+                "discord.gg/spacebudz"
+              ]
+            },
+            "6": "Virtua Metaverse"
           }
         },
         "27": {
-          "rate": "0.05",
-          "addr": [
+          "0": "0.05",
+          "1": [
             "addr_test1qqp7uedmne8vjzue66hknx87jspg56qhkm4gp6ahyw7kaahevmtcux",
             "lpy25nqhaljc70094vfu8q4knqyv6668cvwhsq64gt89"
           ]
@@ -305,26 +352,46 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
         26
       ],
       "3": [
-        "CIP-8",
         "Ed25519"
       ],
       "4": 12345,
       "5": "https://oracle.tokenproject.io/",
       "6": {
         "26": {
-          "subjects": [
+          "1": [
             {
-              "subject": "00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae6e7574636f696e",
-              "url": "https://fivebinaries.com/nutcoin",
-              "name": "nutcoin",
-              "ticker": "NUT",
-              "decimals": 0,
-              "logo_uri": "https://static.fivebinaries.com/nutcoin.png",
-              "description": [
-                "Sometimes people get really long-winded when they're writing",
-                "descriptions. Have you ever noticed that? So it's probably a",
-                "good idea if we support multi-line strings as arrays for a lot",
-                "of these things..."
+              "0": [
+                "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
+                "7370616365636f696e73"
+              ],
+              "1": "spacecoins",
+              "2": "SPACE",
+              "3": [
+                "the OG Cardano community token",
+                "-",
+                "whatever you do, your did it!",
+                "",
+                "Learn more at https://spacecoins.io!"
+              ],
+              "4": 0,
+              "5": [
+                "https://",
+                "spacecoins.io"
+              ],
+              "6": [
+                "ipfs://",
+                "bafkreib3e5u4am2btduu5s76rdznmqgmmrd4l6xf2vpi4vzldxe25fqapy"
+              ],
+              "7": [
+                [
+                  "ipfs://",
+                  "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly"
+                ],
+                "3507afe1daf05498d764dce55e8ba41e4acecd5bf42606ac2b8b7dc2eb0c305e"
+              ],
+              "8": [
+                "37da68d092f4e61feb237de5e86b404171b59d3880d340023a16a6983491736d",
+                "0"
               ]
             }
           ]

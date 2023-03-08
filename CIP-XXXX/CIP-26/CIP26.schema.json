@@ -156,12 +156,15 @@
             "https://",
             "ar://",
             "ipfs://"
-          ]
+          ],
+          "minLength": 4,
+          "maxLength": 64
         },
         {
           "title": "URI Path",
           "description": "One or more strings (64-character limit) to compose the URI",
           "type": "string",
+          "minLength": 1,
           "maxLength": 64,
           "examples": [
             "faucet.spacecoins.io",
@@ -170,7 +173,12 @@
           ]
         }
       ],
-      "additionalItems": true,
+      "additionalItems": {
+        "title": "Path (Cont.)",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
       "examples": [
         [
           "ar://",

@@ -41,15 +41,18 @@
               "title": "Not Safe for Work Flag",
               "description": "Flag whether the NFTs in the policy contain sensitive content that may not be suitable for all audiences",
               "type": "integer",
-              "enum": [0,1]
+              "enum": [
+                0,
+                1
+              ]
             },
             "5": {
               "title": "Social Media URIs",
               "description": "An object containing links to social media profiles for the project",
-              "patternProperties": {
-                "^[a-z0-9]$": {
-                  "$ref": "#/$defs/uriArray"
-                }
+              "type": "object",
+              "additionalProperties": {
+                "title": "Social Media URI",
+                "$ref": "#/$defs/uriArray"
               }
             },
             "6": {
@@ -81,18 +84,21 @@
       "items": [
         {
           "title": "URI Scheme",
-          "description": "The protocol scheme definition",
+          "description": "The protocol schema definition",
           "type": "string",
           "examples": [
             "https://",
             "ar://",
             "ipfs://"
-          ]
+          ],
+          "minLength": 4,
+          "maxLength": 64
         },
         {
           "title": "URI Path",
-          "description": "One or more strings (64-character limit) to compose the URI path",
+          "description": "One or more strings (64-character limit) to compose the URI",
           "type": "string",
+          "minLength": 1,
           "maxLength": 64,
           "examples": [
             "faucet.spacecoins.io",
@@ -101,7 +107,12 @@
           ]
         }
       ],
-      "additionalItems": true,
+      "additionalItems": {
+        "title": "Path (Cont.)",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
       "examples": [
         [
           "ar://",
