@@ -1,0 +1,121 @@
+{
+  "$id": "https://raw.githubusercontent.com/Crypto2099/cardano-schemas/main/cip867/cip25.json",
+  "title": "CIP-25: Non-Fungible Tokens",
+  "description": "Additional context for NFT policy declaring support for CIP-25 or CIP-68 NFT standards",
+  "type": "object",
+  "properties": {
+    "25": {
+      "type": "object",
+      "properties": {
+        "1": {
+          "title": "Project Details",
+          "description": "Describe top-level details about the NFT Project",
+          "type": "object",
+          "properties": {
+            "0": {
+              "title": "Policy Name",
+              "description": "The collection name for NFTs minted under this policy",
+              "type": "string",
+              "maxLength": 64
+            },
+            "1": {
+              "title": "Policy Description",
+              "description": "Description for the NFT project",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 64
+              }
+            },
+            "2": {
+              "title": "Project Image",
+              "description": "Project icon image URI",
+              "$ref": "#/$defs/uriArray"
+            },
+            "3": {
+              "title": "Project Banner Image",
+              "description": "Project banner image URI",
+              "$ref": "#/$defs/uriArray"
+            },
+            "4": {
+              "title": "Not Safe for Work Flag",
+              "description": "Flag whether the NFTs in the policy contain sensitive content that may not be suitable for all audiences",
+              "type": "integer",
+              "enum": [0,1]
+            },
+            "5": {
+              "title": "Social Media URIs",
+              "description": "An object containing links to social media profiles for the project",
+              "patternProperties": {
+                "^[a-z0-9]$": {
+                  "$ref": "#/$defs/uriArray"
+                }
+              }
+            },
+            "6": {
+              "title": "Project Name",
+              "description": "The name of the project creating this collection",
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "0"
+          ]
+        }
+      },
+      "required": [
+        "1"
+      ]
+    }
+  },
+  "required": [
+    "25"
+  ],
+  "$defs": {
+    "uriArray": {
+      "title": "URI Array",
+      "$comment": "Because Cardano has a 64-character per string limit in on-chain JSON. Long strings should be broken up into an array of string parts. Particularly helpful for URIs that point to a resource on the internet is breaking URIs by scheme and path. This allows explorers to quickly and easily identify the type of resource before proceeding.",
+      "type": "array",
+      "minItems": 2,
+      "items": [
+        {
+          "title": "URI Scheme",
+          "description": "The protocol scheme definition",
+          "type": "string",
+          "examples": [
+            "https://",
+            "ar://",
+            "ipfs://"
+          ]
+        },
+        {
+          "title": "URI Path",
+          "description": "One or more strings (64-character limit) to compose the URI path",
+          "type": "string",
+          "maxLength": 64,
+          "examples": [
+            "faucet.spacecoins.io",
+            "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly",
+            "WRi9jboeKx1fbjcvO5q0kshaMmdaYgDnYlMEy-loZeY"
+          ]
+        }
+      ],
+      "additionalItems": true,
+      "examples": [
+        [
+          "ar://",
+          "WRi9jboeKx1fbjcvO5q0kshaMmdaYgDnYlMEy-loZeY"
+        ],
+        [
+          "https://",
+          "spacecoins.io"
+        ],
+        [
+          "ipfs://",
+          "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly"
+        ]
+      ]
+    }
+  }
+}

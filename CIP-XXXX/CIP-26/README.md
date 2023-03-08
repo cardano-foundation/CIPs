@@ -2,9 +2,9 @@
 
 ## Top-Level Index: 26
 
-### Type: Object | Required: Yes
+##### Type: Object | Required: Yes
 
-### Properties
+#### Properties
 
 All properties should be numeric indexes with specific purposes. If the community desires an additional index to be
 defined as part of the specification, it should be added in to this CIP so that documentation always remains intact.
