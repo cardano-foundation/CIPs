@@ -1,6 +1,6 @@
 ---
 CIP: 62
-Title: Cardano dApp-Connector Governance extension
+Title: Cardano dApp-Wallet Web Bridge Catalyst Extension
 Status: Proposed
 Category: Wallets
 Authors:
@@ -21,28 +21,22 @@ Created: 2021-06-11
 License: CC-BY-4.0
 ---
 
-# CIP-0062: Cardano dApp-Connector Governance extension
+# CIP-0062: Cardano dApp-Wallet Web Bridge Catalyst Extension
 
 ## Abstract
 
-This document describes an interface between webpage/web-based stacks and Cardano wallets. This specification defines the API of the javascript object that needs to be injected into web applications in order to support [CIP-36](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036) style governance functionality.
+This document describes an interface between webpage/web-based stacks and Cardano wallets. This specification defines the API of the javascript object that needs to be injected into web applications in order to support Cardano's [Project Catalyst](https://projectcatalyst.io/).
 
-These definitions extend [CIP-30 (Cardano dApp-Wallet Web Bridge)](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030).
+These definitions extend the [CIP-30 (Cardano dApp-Wallet Web Bridge)](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) to provide specific support for Catalyst vote delegation and vote signing.
 
 ## Motivation
+<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. -->
 
-The goal for this CIP is to extend the dApp-Wallet web bridge to enable the construction of transactions containing metadata that conforms to
-[CIP-36 (Catalyst/Voltaire Registration Transaction Metadata Format - Updated)](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036),
-enabling new functionality including vote delegation to either private or public representatives (dReps),
-splitting or combining of private votes,
-the use of different voting keys or delegations
-for different purposes (Catalyst etc).
+The goal for this CIP is to extend the [CIP-30](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) dApp-Wallet web bridge to enable the creation of Project Catalyst focussed dApps. Where wallets can connect, share the user's key information, register to vote and or delegate voting rights. 
+
+This is achieved by facilitating the construction of transactions containing metadata aligned with [CIP-36 (Catalyst/Voltaire Registration Transaction Metadata Format - Updated)](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036). This enables new functionality for Project Catalyst; including vote delegation to either private or public representatives (dReps), splitting or combining of  votes, the use of different voting keys or delegations for different purposes.
 
 ## Specification
-
-### Version
-
-The API Extension specified in this document will count as version `0.2.0` for version-checking purposes below.
 
 ### Data Types
 
@@ -71,8 +65,8 @@ type enum VotingPurpose = {
 }
 ```
 
-`VotingPurpose`: Defines the voting purpose of the governance functions. This is used
-to limit the scope of the governance functions. For example, a voting purpose
+`VotingPurpose`: Defines the voting purpose of the Catalyst governance functions. This is used
+to limit the scope of the Catalyst functions. For example, a voting purpose
 might be a subset of Catalyst proposals, a council election, or even some
 private purpose (agreed by convention). Currently, only voting purpose 0 (Zero)
 is defined, and it is for Catalyst events. As described in [CIP-36](https://cips.cardano.org/cips/cip36/).
@@ -143,7 +137,7 @@ interface Delegation {
 }
 ```
 
-The record of a voters delegation.
+The record of a voter's delegation.
 
 * delegations - List of [Weighted Keys](#WeightedKey) denoting the `voteKey` and `weight` of each delegation.
 * purpose - The associated [Voting Purpose](#voting-purpose). A voter may have multiple active delegations for different purposes, but only once active delegation per unique `Voting Purpose`.
@@ -252,18 +246,18 @@ All TxSignErrors defined in [CIP-30](https://cips.cardano.org/cips/cip30/#txsign
 * UserDeclined - Raised when the user declined to sign the entire transaction, in the case of a vote submission, this would be returned if the user declined to sign ALL of the votes.
 * VoteRejected - On a vote transaction, where there may be multiple votes.  If the user accepted some votes, but rejected others, then this error is raised, AND `rejectedVotes` is present in the Error instance.
 
-### Governance Extension to CIP-30
+### Catalyst Extension to CIP-30
 
-#### cardano.{walletName}.governance.apiVersion: String
+#### cardano.{walletName}.catalyst.apiVersion: String
 
-The version number of the Governance Extension API that the wallet supports.
+The version number of the Catalyst Extension API that the wallet supports.
 
-#### cardano.{walletName}.governance.enable(purpose: VotingPurpose[]): Promise\<API>
+#### cardano.{walletName}.catalyst.enable(purpose: VotingPurpose[]): Promise\<API>
 
 Errors: [`APIError`](#extended-apierror)
 
-The `cardano.{walletName}.governance.enable()` method is used to enable the
-governance API. It should request permission from the wallet to enable the API for the requested purposes.
+The `cardano.{walletName}.catalyst.enable()` method is used to enable the
+Catalyst API. It should request permission from the wallet to enable the API for the requested purposes.
 
 If permission is granted, the rest of the API will be available. The wallet
 should maintain a specific whitelist of allowed clients and voting purposes for
@@ -285,16 +279,16 @@ permissions to be displayed to the user.
 ##### Returns
 
 Upon successful connection via
-[`cardano.{walletName}.governance.enable()`](#cardanowalletnamegovernanceenablepurpose-votingpurpose-promiseapi),
+[`cardano.{walletName}.catalyst.enable()`](#cardanowalletnamecatalystenablepurpose-votingpurpose-promiseapi),
 a javascript object we will refer to as `API` (type) / `api` (instance) is
 returned to the dApp with the following methods.
 
-### Governance API
+### Catalyst API
 
 Except `signVotes`, no other method should require any user
 interaction as the user has already consented to the dApp reading information
-about the wallet's governance state when they agreed to
-[`cardano.{walletName}.governance.enable()`](#cardanowalletnamegovernanceenablepurpose-votingpurpose-promiseapi).
+about the wallet's state when they agreed to
+[`cardano.{walletName}.catalyst.enable()`](#cardanowalletnamecatalystenablepurpose-votingpurpose-promiseapi).
 The remaining methods
 [`api.signVotes()`](#apisignvotesvotes-vote-promisebytes) and
 [`api.signData()`](#apisubmitdelegationdelegation-delegation-promisesigneddelegationmetadata)
@@ -323,9 +317,9 @@ Errors: [`APIError`](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
 ##### List of known vote transaction formats
 
-| `"purpose"` | `"ver"` | Vote Format | Specification | Example Settings String |
-| --- | --- | --- | --- | --- |
-| 0 | 0 | Project Catalyst vote: V0 | [Catalyst Core Specifications](https://input-output-hk.github.io/catalyst-core/) | `{"purpose":0,"ver":0,"fees":{"constant":10,"coefficient":2,"certificate":100},"discrimination":"production","block0_initial_hash":{"hash":"baf6b54817cf2a3e865f432c3922d28ac5be641e66662c66d445f141e409183e"},"block0_date":1586637936,"slot_duration":20,"time_era":{"epoch_start":0,"slot_start":0,"slots_per_epoch":180},"transaction_max_expiry_epochs":1}` |
+| `"purpose"` | `"ver"` | Vote Format               | Specification                                                                    | Example Settings String                                                                                                                                                                                                                                                                                                                                          |
+| ----------- | ------- | ------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0           | 0       | Project Catalyst vote: V0 | [Catalyst Core Specifications](https://input-output-hk.github.io/catalyst-core/) | `{"purpose":0,"ver":0,"fees":{"constant":10,"coefficient":2,"certificate":100},"discrimination":"production","block0_initial_hash":{"hash":"baf6b54817cf2a3e865f432c3922d28ac5be641e66662c66d445f141e409183e"},"block0_date":1586637936,"slot_duration":20,"time_era":{"epoch_start":0,"slot_start":0,"slots_per_epoch":180},"transaction_max_expiry_epochs":1}` |
 
 IF the wallet user declines SOME of the votes, a [`TxSignError`](#extended-txsignerror) should be raised with `code` set to `VoteRejected` and the optional `rejectedVotes` array specifying the votes rejected.
 
@@ -346,7 +340,7 @@ Should return the in use voting credentials of the wallet.
 
 ##### Returns
 
-The [VotingCredentials](#votingcredentials) of the wallet, which contain it's voting key and associated staking credential used for [CIP-36](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036) style governance.
+The [VotingCredentials](#votingcredentials) of the wallet, which contain it's voting key and associated staking credential used for [CIP-36](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036).
 
 #### api.submitDelegation(delegation: Delegation): Promise\<SignedDelegationMetadata>
 
@@ -390,13 +384,13 @@ TODO
 
 ## Rationale
 
-To provide [CIP-36](https://cips.cardano.org/cips/cip36/) style governance specific functionality to wallet's and expose such API to the dApps (i.e Voting Centers).
+To provide [CIP-36](https://cips.cardano.org/cips/cip36/) style governance specific functionality for Catalyst to wallet's and expose such API to the dApps (i.e Catalyst Voting Centers).
 
 This also addresses some short-comings of [CIP-30](https://cips.cardano.org/cips/cip30/); which signData can only be done by known an address; This signature is not relevant to a specific address, nor the dApp will know an address attached to the voting key. The voting key derivation is defined in [CIP-36](https://cips.cardano.org/cips/cip36/).
 
 Perhaps [CIP-30](https://cips.cardano.org/cips/cip30/) could be expanded to also know how to perform `signData` from a given public key from a specific derivation path; instead of doing so only by known address.
 
-The other reason for this specification is to have a specific, but optional, namespace for governance specific wallet functionality. As such, wallet providers might choose not to implement this specification on top of [CIP-30](https://cips.cardano.org/cips/cip30/).
+The other reason for this specification is to have a specific, but optional, namespace for Catalyst specific wallet functionality. As such, wallet providers might choose not to implement this specification on top of [CIP-30](https://cips.cardano.org/cips/cip30/).
 
 ## Path to Active
 
