@@ -16,7 +16,9 @@ This CIP defines a standard to verify Stake Pools using Decentralized Identifier
 
 The verification process of the authenticity of Stake Pools is currently a centralized effort. 
 
-## High-Level Overview
+## Specification
+
+### High-Level Overview
 
 1. Topic: Verification Validators Proof-of-Stake
 
