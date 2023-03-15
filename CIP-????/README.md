@@ -66,7 +66,8 @@ The implementation will break the backward compatibility for future Plutus Smart
     - [ ] New ledger language supported in a released node version
 
 ### Implementation Plan
-This plan will be implemented by Michael Peyton Jones and the Plutus Core team with assistance from the Ledger team.
+
+The plan will be implemented by the Plutus Core team with assistance from the Ledger team.
 The changes will be in the "PlutusV3" ledger language at the earliest, and it is not clear which ledger era or hard fork this will arrive in.
 
 
