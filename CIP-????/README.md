@@ -27,55 +27,47 @@ License: CC-BY-4.0
 -->
 
 ## Abstract
-The Untyped Plutus Language Core has established itself as the target language for a host of emerging Smart Contract Languages.
-These languages implement type safety in the following way: At compile time, types of variables are checked.
-In the compiled output, type information is thus absent (and not required anymore, nor checked).
-This proposal suggests to replace or enhance the set of builtin functions with builtin functions that are untyped i.e. their arguments
-are just the arguments expected devoid of any type instantiations.
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
+The Untyped Plutus Language Core (UPLC) has established itself as the target language for a host of emerging Smart Contract Languages. These languages implement type safety by checking the types of variables at compile time. In the compiled output, type information is absent and no longer required or checked. This proposal suggests replacing or enhancing the set of builtin functions with untyped builtin functions, whose arguments are devoid of any type instantiations. This change aims to improve performance and reduce resource costs.
 
 ## Motivation: why is this CIP necessary?
-<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
-Many of the currently available UPLC builtin functions need to be forced between 1 and 3 times to get rid of type instantiations checked at a higher level language
-of the toolstack (PLC), which most third party tools do not use.
-Moreover, the forces do nothing more than burn cycles of nodes that evaluate contracts, since there is no actual type instantiation happening internally.
-There is always demand to improve performance and reduce resource costs, which is achieved by this proposal.
+Many currently available UPLC builtin functions require forcing between 1 and 3 times to eliminate type instantiations checked at a higher level language of the toolstack (PLC), which most third-party tools do not use. These forces only burn cycles of nodes that evaluate contracts, since there is no actual type instantiation happening internally. By removing the need for these no-op force operations, this proposal aims to enhance performance and reduce resource costs.
+
+There is one data point as to how much performance improvement this may bring in the non-optimized case [here](https://github.com/input-output-hk/plutus/issues/4183#issuecomment-957934430). However, the performance improvement in the optimized case is generally constant: One can bind the forced builtins to a variable at the outermost layer of the UPLC program and from there on just use the forced builtins.
 
 ## Specification
 <!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. -->
-For all existing UPLC Builtin Functions _x_ that require _n > 0_ forces for evaluation, this proposal suggests to implement the builtin function _x_
+For all existing UPLC Builtin Functions _x_ that require _n > 0_ forces for evaluation, this proposal suggests to implement the builtin function _x'_
 without any required forces.
 
-There are two options for the implementation of this proposal.
-Either the new functions are added to the set of available builtin functions or they replace the current functions.
-This is up to discussion and shifts additional work to either the implementation of UPLC or the implementation of PLC.
-
-Addition:
- - UPLC needs to support a more diverse set of operations, implying more resources needed for maintainance and secondary implementations
-
-Replacement:
- - PLC will need to wrap builtin functions with delays internally to emulate the previous behaviour of the builtin functions
+This proposal suggests that all existing UPLC Builtin Functions _x_ be *replaced* by _x'_. Generally, this proposal also suggests that no further Builtin Functions be defined that require `force`.
 
 
 ## Rationale: how does this CIP achieve its goals?
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
-This proposal reduces the resources needed to evaluate builtin functions by removing the need to apply no-op force operations to them.
+This proposal reduces the resources needed to evaluate builtin functions by removing the need to apply no-op force operations to them. However, the actual performance impact might be negligible, and the main impact could be on simplifying the language and making it easier for compiler writers. These are weaker reasons than widespread performance improvements. Implementing this proposal may also require a new Plutus ledger language, as described in CIP-35, due to the non-backwards-compatible changes.
 
-If the decision is to replace the builtin functions:
-The resulting implementation will break backwardscompatability of implementing Plutus Smart Contracts.
+The implementation will break the backward compatibility for future Plutus Smart Contracts.
 
 ## Path to Active
 
-I need some advice on the following to sections. As I understand the specification and implementation of UPLC and PLC is currently under supervision of 
-
 ### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
+
+- [ ] `plutus` changes
+    - [ ] Specification 
+    - [ ] Production implementation
+    - [ ] Costing of the new operations
+- [ ] `cardano-ledger` changes
+    - [ ] Specification, _including_ specification of the script context translation to a Plutus Core term
+    - [ ] Implementation of new ledger language, including new ledger-script interface
+- [ ] Further benchmarking 
+    - [ ] Check additional real-world examples
+- [ ] Release
+    - [ ] New Plutus language version supported in a released node version
+    - [ ] New ledger language supported in a released node version
 
 ### Implementation Plan
-<!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
+This plan will be implemented by Michael Peyton Jones and the Plutus Core team with assistance from the Ledger team.
+The changes will be in the "PlutusV3" ledger language at the earliest, and it is not clear which ledger era or hard fork this will arrive in.
 
 
 ## Copyright
