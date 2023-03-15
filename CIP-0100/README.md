@@ -30,7 +30,9 @@ Super-charged native scripts are Plutus (V1/V2) Smart Contracts that have the fo
 
 - They are parameterized by a PlutusData object representing a Native Script
 - They have no requirements regarding the type or content of the input datum and redeemer (including whether a datum is present or not)
-  [Note: for the time being, UTxOs locked at a Smart Contract address _must_ be locked together with a Datum to be spent. This is different to Native Scripts, which don't require datums]
+  
+> Note: for the time being, UTxOs locked at a Smart Contract address _must_ be locked together with a Datum to be spent. This is different to Native Scripts, which don't require datums. Hence one still needs to be aware whether they are interacting with a Supercharged, or Normal Native Script
+
 - They enforce that the parameterized Native Script conditions are met, unless specific conditions are met that are specified in the contract. 
 
 Examples include:
@@ -44,6 +46,58 @@ This CIP will collect and list all widely used validators.
 #### List of supercharged validator tags, with specification
 
 1. `#000001`: "Always burning" Minting Validators, that always validates if all amounts of minted assets of the governed policy id are negative (i.e. being burned)
+
+#### Representation of Native Scripts as PlutusData
+
+The standard representation of Native Scripts as PlutusData objects can be derived from the following specification (in PyCardano `PlutusData` notation):
+
+```python
+@dataclass()
+class RequireSignature(PlutusData):
+    CONSTR_ID = 0
+    vkeyhash: bytes  # this is either a PubKeyHash or a VerificationKeyHash
+
+
+@dataclass()
+class RequireAllOf(PlutusData):
+    CONSTR_ID = 1
+    scripts: List[Datum]  # "Script"
+
+
+@dataclass()
+class RequireAnyOf(PlutusData):
+    CONSTR_ID = 2
+    scripts: List[Datum]  # "Script"
+
+
+@dataclass()
+class RequireMOf(PlutusData):
+    CONSTR_ID = 3
+    num: int
+    scripts: List[Datum]  # "Script"
+
+
+@dataclass()
+class RequireBefore(PlutusData):
+    CONSTR_ID = 4
+    unixtimestamp: int
+
+
+@dataclass()
+class RequireAfter(PlutusData):
+    CONSTR_ID = 5
+    unixtimestamp: int
+
+
+Script = Union[
+    RequireSignature,
+    RequireMOf,
+    RequireAnyOf,
+    RequireAllOf,
+    RequireAfter,
+    RequireBefore,
+]
+```
 
 ## Rationale
 
