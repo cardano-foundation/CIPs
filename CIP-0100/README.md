@@ -111,8 +111,9 @@ Furthermore, the proposed solution will not force all tokens to be burnable, all
 ### Acceptance Criteria
 
 - [ ] Sample Plutus smart contracts emulating native scripts are developed and tested (in different languages)
-  - [ ] [PlutusTx](https://github.com/input-output-hk/plutus)
+  - [ ] PlutusTx
   - [x] [eopsin](https://github.com/OpShin/eopsin/blob/5466faab6da42d2b21b328e433c6dfff99cddfdd/examples/smart_contracts/simple_script.py)
+  - [x] [hebi](https://github.com/OpShin/hebi/blob/master/examples/smart_contracts/simple_script.py)
   - [ ] ...
 - [ ] Simple tooling for non-developers is built to allow supercharging Native Script definitions.
   - [ ] Converter Native Script --> PlutusData for Script parameterization
