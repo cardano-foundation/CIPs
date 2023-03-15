@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 90
 Title: Extendable dApp-Wallet Web Bridge
 Category: Wallets
 Status: Proposed
