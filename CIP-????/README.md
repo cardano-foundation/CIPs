@@ -42,7 +42,7 @@ without any required forces.
 This proposal suggests that all existing UPLC Builtin Functions _x_ be *replaced* by _x'_. Generally, this proposal also suggests that no further Builtin Functions be defined that require `force`.
 
 
-## Rationale:
+## Rationale: how does this CIP achieve its goals?
 
 This proposal reduces the resources needed to evaluate builtin functions by removing the need to apply no-op force operations to them. However, the actual performance impact might be negligible, and the main impact could be on simplifying the language and making it easier for compiler writers. These are weaker reasons than widespread performance improvements. Implementing this proposal may also require a new Plutus ledger language, as described in CIP-35, due to the non-backwards-compatible changes.
 
