@@ -1,6 +1,6 @@
 ---
 CIP: 91
-Title: Untyped UPLC Builtins
+Title: Don't force Built-In functions
 Category: Plutus
 Status: Proposed
 Authors:
