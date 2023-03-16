@@ -13,9 +13,7 @@ License: CC-BY-4.0
 ---
 ## Abstract
 
-This CIP proposes replacing the current widespread use of native scripts used for minting Cardano Native Tokens with simple smart contracts,
-so called "Supercharged Native Scripts".
-The main use-case is to allow users to burn their native assets at any time by utilizing smart contracts that enforce the minting conditions while always allowing burning.
+This CIP proposes replacing the current native scripts used for minting Cardano Native Tokens with simple, parameterized smart contracts called "Supercharged Native Scripts". The main goal is to allow users to burn their native assets at any time by utilizing smart contracts that enforce the minting conditions while always allowing burning. The concept is standardized and generalized for broader use-cases.
 
 ## Motivation
 
