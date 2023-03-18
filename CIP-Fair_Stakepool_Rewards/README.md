@@ -125,7 +125,7 @@ The proposed parameter values are the following:
 | stakePoolTargetNum    | N                   | N                       | 1000           | See Rationale Section.       |
 | poolPledgeInfluence   | N                   | N                       | 0.2            | See Rationale Section.       |
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 ### Principles
 
