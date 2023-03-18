@@ -5,8 +5,7 @@ Status: Project Area Not Enlisted for CIP Process
 Category: Reward-Sharing Scheme
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
-Implementors:
-    - TBD
+Implementors: []
 Discussions:
     - https://forum.cardano.org/t/cip-improved-rewards-scheme-parameters/112409
 Created: 2022-01-03
