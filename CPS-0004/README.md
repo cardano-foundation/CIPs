@@ -23,7 +23,7 @@ To frame this discussion, it's important to outline a set of goals and baseline 
 
  * Adam K. Dean
  * Jared Corduan
- * Venessa Harris
+ * Vanessa Harris
  * HeptaSean
 
 </details>
