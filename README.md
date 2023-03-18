@@ -111,7 +111,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 77? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 79? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
 | 80? | [Transaction Serialization Deprecation Cycle](https://github.com/cardano-foundation/CIPs/pull/372) |
-| 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 | 82? | [Improved Rewards Scheme Parameters](https://github.com/cardano-foundation/CIPs/pull/422) |
 | 84? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
 | 85? | [Sums-of-products in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/455) |
