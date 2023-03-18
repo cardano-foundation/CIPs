@@ -13,8 +13,6 @@ Created: 2022-10-21
 License: CC-BY-4.0
 ---
 
-# Fair Stake Pool Rewards
-
 ## Abstract
 The current reward sharing scheme of Cardano is unfair and anticompetitive. As a result, Cardano has become more centralized over time. The high minimum fixed fee and current pledge benefit favor large stakepools and leave small stakepools at a significant disadvantage. The current scheme allows large pools with low pledge to be more attractive than smaller pools with higher pledge leading to centralization and potential Goldfinger attacks. Furthermore, k, the parameter representing the optimal number of stakepools, is set too low resulting in an ineffective pledge benefit, the formation of multipools, and a low incentive for stakepools to increase pledge over time. Finally, the current setting of a0, the pledge influence parameter, gives an unnecessarily large boost in rewards to fully pledged private pools resulting in significantly less rewards for public pools and their delegators.
 
