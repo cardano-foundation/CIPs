@@ -1,9 +1,10 @@
 ---
 CIP: 80
 Title: Transaction Serialization Deprecation Cycle
-Status: Proposed
+Status: Active
 Category: Ledger
-Authors: Jared Corduan <jared.corduan@iohk.io>
+Authors: 
+  - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A
 Created: 2022-11-09
 License: CC-BY-4.0
