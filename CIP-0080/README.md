@@ -6,6 +6,8 @@ Category: Ledger
 Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/372
 Created: 2022-11-09
 License: CC-BY-4.0
 ---
@@ -15,7 +17,7 @@ License: CC-BY-4.0
 This CIP specifies a policy for the backwards compatibility of the serialization scheme of
 Cardano transactions.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Transactions on Cardano are sent on the wire using CBOR and are specified with CDDL.
 The first scheme was introduced with the Byron phase.
@@ -124,7 +126,7 @@ Notice that block validators will not notice this change, though block producers
   must be supported for at least six months with support ending at the next hard fork event after
   the six months have passed.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 It seems clear that security issues merit breaking backwards compatibility and should be fixed
 as soon as possible.
@@ -133,10 +135,15 @@ arbitrary, but we need to allow enough time for people to migrate.
 It would be great to have more explicit definitions for "serious" and "non-serious" flaws,
 but this seems very difficult.
 
-
 ## Path to Active
 
-Not applicable.
+### Acceptance criteria
+
+- [x] The proposal is accepted and recognized by the ledger team.
+
+### Implementation plan
+
+N/A
 
 ## Copyright
 
