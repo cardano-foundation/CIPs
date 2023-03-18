@@ -76,6 +76,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 68 | [Datum Metadata Standard](./CIP-0068) | Proposed |
 | 71 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
 | 74 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
+| 80 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
 | 83 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -111,7 +112,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 77? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 78? | [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375) |
 | 79? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
-| 80? | [Transaction Serialization Deprecation Cycle](https://github.com/cardano-foundation/CIPs/pull/372) |
 | 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 | 82? | [Improved Rewards Scheme Parameters](https://github.com/cardano-foundation/CIPs/pull/422) |
 | 84? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
