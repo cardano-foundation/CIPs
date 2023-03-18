@@ -1,7 +1,7 @@
 ---
 CIP: 82
 Title: Improved Rewards Scheme Parameters
-Status: Project Area Not Enlisted for CIP Process
+Status: Inactive (project area not enlisted for CIP process)
 Category: Reward-Sharing Scheme
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
