@@ -18,7 +18,7 @@ The current parameter settings of Cardano's rewards sharing scheme leave much to
 
 The parameter changes in this proposal are an optimization of the current settings and are meant to improve the fairness and decentralization of Cardano. Furthermore, all changes suggested in this proposal have been specifically voiced by the Cardano community.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 ### Definitions
 
