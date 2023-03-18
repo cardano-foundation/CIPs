@@ -190,7 +190,7 @@ type TxSignError = {
 
 In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
 
-#### cardano.{walletName}.enable(extensions: Extension[] = []): Promise\<API>
+#### cardano.{walletName}.enable({ extensions: Extension[] } = {}): Promise\<API>
 
 Errors: APIError
 
