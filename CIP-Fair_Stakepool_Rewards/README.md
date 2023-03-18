@@ -18,7 +18,7 @@ The current reward sharing scheme of Cardano is unfair and anticompetitive. As a
 
 This proposal retains most of the original reward sharing scheme, but makes changes to ensure fairness, increase decentralization, and reduce the viability of Goldfinger attacks. By removing the minimum fixed fee, adjusting the pledge benefit, increasing k, and reducing a0, a more egalitarian network can be achieved.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 ### Definitions
 
