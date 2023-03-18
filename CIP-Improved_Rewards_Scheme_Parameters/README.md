@@ -95,7 +95,7 @@ $$poolRateEff = max(poolRate, minPoolRate)$$
 |-----------------------|---------------------|-------------------------|----------------|------------------------------|
 | stakePoolTargetNum    | N                   | N                       | 1000           | See Rationale Section.       |
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 ### Principles
 
