@@ -13,7 +13,6 @@ Created: 2022-01-03
 License: CC-BY-4.0
 ---
 
-# Improved Rewards Scheme Parameters
 ## Abstract
 
 The current parameter settings of Cardano's rewards sharing scheme leave much to be desired in terms of fairness and promoting decentralization. minPoolCost puts small stakepools at a significant disadvantage. Replacing minPoolCost with a minPoolRate will ensure a level playing field for stakepools while providing sufficient sybil attack resistance. Additionally, the current setting of k, the optimal number of stakepools, is too low to provide an adequate pledge benefit. Increasing k will make the pledge benefit more effective and get delegations moving in hopes of helping single pool operators gain delegations.
