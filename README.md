@@ -55,7 +55,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 27 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
 | 28 | [Protocol Parameters (Alonzo Era)](./CIP-0028/) | Active |
 | 29 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Active |
-| 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Draft |
+| 30 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Active |
 | 31 | [Reference Inputs](./CIP-0031/) | Active |
 | 32 | [Inline Datums](./CIP-0032/) | Active |
 | 33 | [Reference Scripts](./CIP-0033/) | Active |
@@ -85,7 +85,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2022-11-30</i></p>
+<p align="right"><i>Last updated on 2023-03-15</i></p>
 
 > 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -110,14 +110,19 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 73? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
 | 76? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
 | 77? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
-| 78? | [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375) |
 | 79? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
+| 80? | [Transaction Serialization Deprecation Cycle](https://github.com/cardano-foundation/CIPs/pull/372) |
 | 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 | 82? | [Improved Rewards Scheme Parameters](https://github.com/cardano-foundation/CIPs/pull/422) |
 | 84? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
 | 85? | [Sums-of-products in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/455) |
 | 86? | [NFT Metadata Update Oracles](https://github.com/cardano-foundation/CIPs/pull/430) |
 | 87? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
+| 88? | [Native Asset Policy Registration/Information Certificates](https://github.com/cardano-foundation/CIPs/pull/467) |
+| 89? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
+| 90? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
+| 91? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
+| 92? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
 | 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
 ### Proposals Under Review (CPS)
@@ -129,8 +134,9 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 1? | [Metadata Discoverability and Trust](https://github.com/cardano-foundation/CIPs/pull/371) |
 | 2? | [Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374) |
 | 3? | [Smart Tokens](https://github.com/cardano-foundation/CIPs/pull/382) |
+| 4? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
 
-<p align="right"><i>Last updated on 2022-11-30</i></p>
+<p align="right"><i>Last updated on 2023-03-15</i></p>
 
 ## Stalled / Waiting For Authors
 
@@ -139,8 +145,12 @@ The following list contains proposals that have been under review and for which 
 - [UPLC Serialization Optimizations](https://github.com/cardano-foundation/CIPs/pull/314)
 - [Address Resolution Through DNS](https://github.com/cardano-foundation/CIPs/pull/319)
 - [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276)
+- [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375)
+- [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
+- [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
+- [NFT Metadata extension tag](https://github.com/cardano-foundation/CIPs/pull/343)
 
-<p align="right"><i>Last updated on 2022-11-30</i></p>
+<p align="right"><i>Last updated on 2023-03-15</i></p>
 
 ## Editors
 
