@@ -5,8 +5,7 @@ Status: Inactive (project area not enlisted for CIP process)
 Category: Reward-Sharing Scheme
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
-Implementors:
-    - TBD
+Implementors: []
 Discussions:
     - https://forum.cardano.org/t/cip-fair-stakepool-rewards/109368
 Created: 2022-10-21
