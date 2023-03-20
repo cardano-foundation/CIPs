@@ -90,7 +90,7 @@ The unsaturated pledge benefit penalty is part of the current rewards calculatio
 
 $$Unsaturated Pledge Benefit Penalty = \frac{R}{1 + a0} \cdot p \cdot a0 \cdot \frac{p \frac{z0 - o}{z0}}{z0}$$
 
-See UnsaturatedPledgeBenefitPenalty.xlxs to calculate the current unsaturated pledge benefit penalty for a stakepool.
+See [UnsaturatedPledgeBenefitPenalty.xlxs](./UnsaturatedPledgeBenefitPenalty.xlxs) to calculate the current unsaturated pledge benefit penalty for a stakepool.
 
 ### Goldfinger Attacks
 
@@ -157,7 +157,7 @@ Proposal stakepool viability point: 1 ADA
 
 Proposal stakepool competitive point: 1 ADA
 
-See FairStakepoolRewards.xlxs to compare stakepool ROS between the current and proposed scheme.
+See [FairStakepoolRewards.xlxs](./FairStakepoolRewards.xlsx) to compare stakepool ROS between the current and proposed scheme.
 
 ### Backward Compatibility
 

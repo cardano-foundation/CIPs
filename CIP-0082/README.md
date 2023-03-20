@@ -125,7 +125,7 @@ Stage 4 increases k from 750 to 1000. Stage 4 will further improve the pledge be
 
 ### Test Cases and Sybil Attack Resistance
 
-Below are test cases for the current rewards scheme and each stage of this proposal. The calculated values assume all pools are operating with minimum fees. Sybil pools are assumed to be small pools with no delegations. Community pools are assumed to be pools with significant delegation. As demonstrated below, this proposal allows community pools to have sufficient revenue (higher than the USD value of minPoolCost at the launch of Shelley) while creating a level playing field for all stakepools. Sybil attack resistance is maintained at every stage, as community pool ROS remains higher than sybil pool ROS. Data used for calculations was approximated from epoch 385. See ImprovedRewardsSchemeParameters.xlxs for more test cases.
+Below are test cases for the current rewards scheme and each stage of this proposal. The calculated values assume all pools are operating with minimum fees. Sybil pools are assumed to be small pools with no delegations. Community pools are assumed to be pools with significant delegation. As demonstrated below, this proposal allows community pools to have sufficient revenue (higher than the USD value of minPoolCost at the launch of Shelley) while creating a level playing field for all stakepools. Sybil attack resistance is maintained at every stage, as community pool ROS remains higher than sybil pool ROS. Data used for calculations was approximated from epoch 385. See [ImprovedRewardsSchemeParameters.xlxs](./ImprovedRewardsSchemeParameters.xlsx) for more test cases.
 
 #### Current Rewards Scheme
 
