@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: ?
 Title: Supercharged Native Scripts for Minting and Burning Cardano Native Tokens
 Category: Tokens
 Status: Proposed
