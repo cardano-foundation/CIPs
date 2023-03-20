@@ -99,9 +99,25 @@ Script = Union[
 
 ## Rationale
 
-By replacing native scripts with smart contracts for minting and burning tokens, users will have a simple and standardized way to manage their assets and recover locked ADA. This proposal will help prevent the accumulation of unwanted tokens or NFTs and give users more control over their assets.
+The main motivation for this proposal is the problem of ADA being locked by the minUTxO requirements of the ledger together with native tokens.
+Native tokens at a UTxO increase it's size and hence increase the mininmum attached lovelace of the output.
+This is generally as desireable as it is intended since this bounds the size of the UTxO set by the given amount of lovelace.
 
-Furthermore, the proposed solution will not force all tokens to be burnable, allowing users to opt-in for burnable tokens when desired. The optional tag will make it easy for wallets to identify and handle burnable tokens, improving the user experience.
+The ADA could be unlocked by removing the tokens from the ledger altogether by burning them.
+One option to achieve this is to make all native tokens burnable by their owners.
+This leads to a number of necessary changes in the ledger and also violates security guarantees for early adopters of native tokens - generally this proposal suggests to go a different route.
+
+
+The proposed solution will not force all tokens to be burnable, allowing creators to opt-in for burnable tokens when desired. 
+We suggest that token creators are given the freedom to use the intuitive native token interface known so far and
+simple tooling to supercharge it with the available Plutus completeness.
+In order to make sure that most users can benefit from this, the proposal suggests that the future *default* for token creation is choosing
+a specific type of supercharged native scripts.
+
+By replacing native scripts with smart contracts for minting and burning tokens, users will have a simple and standardized way to manage their assets and recover locked ADA.
+This proposal will help prevent the accumulation of unwanted tokens or NFTs and give users more control over their assets.
+
+The optional tag will make it easy for wallets to identify and handle burnable tokens, improving the user experience.
 
 ## Path to Active
 
