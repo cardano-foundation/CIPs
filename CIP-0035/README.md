@@ -215,7 +215,9 @@ In order to move to Proposed status:
 - The Specification MUST include:
     - Names and types/kinds for the new functions or types.
     - A source for the implementation (e.g. a library which can be linked against); or a generic description of the functionality which is implementable in any programming language.
-    - For new types: a precise description of the measure used for the size of a value of that type.
+    - For new types
+        - A description of how constants of this type will be serialized and deserialized.
+        - A precise description of the measure used for the size of a value of that type.
     - For new builtin functions: a costing function for the builtin function.
 - The Rationale MUST include:
     - If an external implementation is provided: an argument that it satisfies the following non-exhaustive list of criteria:
