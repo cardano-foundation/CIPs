@@ -2,7 +2,7 @@
 CIP: 75
 Title: Fair Stake Pool Rewards
 Status: Inactive (project area not enlisted for CIP process)
-Category: Reward-Sharing Scheme
+Category: Ledger
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []

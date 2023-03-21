@@ -2,7 +2,7 @@
 CIP: 82
 Title: Improved Rewards Scheme Parameters
 Status: Inactive (project area not enlisted for CIP process)
-Category: Reward-Sharing Scheme
+Category: Ledger
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []
