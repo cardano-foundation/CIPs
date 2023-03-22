@@ -1,13 +1,13 @@
 ---
-CPS: 0004?
-Title: "Voltaire: Cardano Governance"
+CPS: ?
+Title: Voltaire: Cardano Governance
 Status: Open
 Category: Ledger
 Authors: Pi Lanningham <pi@sundaeswap.finance>
 Proposed Solutions:
-  - "CIP-1694: https://github.com/cardano-foundation/CIPs/pull/380"
+  - CIP-1694
 Discussions:
-  - "CIP Editors Discord, voltaire-governance channel: https://discord.gg/hdqHwSgWvG)"
+  - https://discord.gg/hdqHwSgWvG
 Created: 2023-03-14
 ---
 
