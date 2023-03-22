@@ -1,6 +1,6 @@
 ---
 CIP: 1856
-Title: Extend NFT metadata standard to support string localization
+Title: Extend NFT and FT metadata standard to support string localization
 Category: Metadata
 Status: Draft
 Authors:
@@ -16,9 +16,9 @@ License: CC-BY-4.0
 
 <!-- Existing categories:
 
-- Meta                   | For meta-CIPs which typically serves another category or group of categories.
+- Meta                   | For meta-CIPs which typically serve another category or group of categories.
 - Reward-Sharing Schemes | For CIPs discussing the reward & incentive mechanisms of the protocol.
-- Wallets                | For standardisation across wallets (hardware, full-node or light).
+- Wallets                | For standardization across wallets (hardware, full-node or light).
 - Tokens                 | About tokens (fungible or non-fungible) and minting policies in general.
 - Metadata               | For proposals around metadata (on-chain or off-chain).
 - Tools                  | A broad category for ecosystem tools not falling into any other category.
@@ -29,17 +29,21 @@ License: CC-BY-4.0
 -->
 
 ## Abstract
-This proposal defines an addition to the NFT metadata standard to support text localization
+This proposal defines an additional property to the NFT and FT metadata standard to support text localization.
 
 ## Motivation: why is this CIP necessary?
-Current NFT metadata only supports a single hardcoded language (mostly English), which limits the accessibility to a certain culture. In order to get closer to mass adoption, we need to bring down language bariers by introducing a standard to add translations to native token metadata. This is specially relevant for games, metaverse solutions, and realfi use-cases of NFTs.  
+Current NFT and FT metadata only supports a single hardcoded language (mostly English), which limits the accessibility to a certain culture. To get closer to mass adoption, we need to bring down language barriers by extending the current standard to support translations. This is especially relevant for games, metaverse solutions, and RealFi use cases of NFTs.  
 
 ## Specification
 This proposal follows the same specifications as <CIP-0025>(https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025).
-  
+    
+The name of a culture consists of its [[ISO-639]](https://www.iso.org/standard/4767.html) language code with small letters and its [[ISO-3166]](https://www.iso.org/standard/63545.html) country/region code with capital letter separated by a dash "-". For instance, this proposal was written in "en-US": English with the US culture.
+
+This convention is compatible with most operative systems (Linux and Windows) and widely used translation software.
+    
 ## Proposed structure
 
-New metadata standard will look like this:
+The new JSON metadata standard will look like this:
 ```
 {
   "721": {
@@ -81,31 +85,33 @@ New metadata standard will look like this:
 ```
 
 > **Note**
-> This metadata standard extension doesn't affect the currently used standard, as dapps can default on the legacy values if the localized strings are not available.
+> This metadata standard extension is backward compatible and it doesn't affect applications using the current standard. Dapps implementing the proposed extended standard can also default on the legacy values if the localized strings are not available on an asset.
 
-## Implementation (TypeScript)
+## Code example to access localized properties (TypeScript)
 
-To access the localized strings from the fetched metadata for a native asset from an application written with TypeScript, it will look like this:
+To access the localized strings from the fetched metadata for a native asset, we can simply access the JSON properties from the front end by using the user's selected culture:
+
 ```
 
-const response = await fetch(`${BASE_URL}/policyId/${policyId}`);    
+const response = await fetch(`${<BASE_URL>}/policyId/${<policyId>}`);    
             
 const metadata = response.json();
-const strings = metadata["721"][policyId]["strings"][culture]
+const strings = metadata["721"][<policyId>]["strings"][<culture>]
 
 console.log(`Asset name: ${strings["name"]}`);
-            
+         
 ```
-            
+     
 ## Path to Active
 
 ### Acceptance Criteria
-- NFT metadata standard extension covers all existing localization needs and use-cases on web2.
-- Implementation is compliant to JSON conventions.
+- NFT metadata standard extension covers all existing localization needs and use cases on web2.
+- Implementation is compliant with JSON conventions.
+- Implementation is compliant with the [[ISO-639]](https://www.iso.org/standard/4767.html) standard for language code, and the [[ISO-3166]](https://www.iso.org/standard/63545.html) standard for country/region code.
 - Access to localized strings is easy and logical from a coding perspective.
             
 ### Implementation Plan
-Add this new standard to all relevant documentations and references for web3 developers.
+Add this new standard to all relevant documentation and references for web3 developers.
 
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
