@@ -36,7 +36,7 @@ Some systems may want the behavior of their script to change at a specific slot 
 
 This CIP enables this behavior by using the `before` and `after` functionality of native scripts to toggle the behavior of the contract
 
-```
+```json
 {
 	"type": "any",
 	"scripts": [{
@@ -70,6 +70,26 @@ This CIP enables this behavior by using the `before` and `after` functionality o
 Native scripts are nice for minting assets, but have no way to add conditions for burning assets post-mint. 
 If you have a system that handles many Plutus UTXO entries locked by the same condition, spending many of them at the same may be expensive due to the cumulative Plutus execution cost of every utxo. This CIP would allow having all utxos locked under the same native script that all can only be spent according to some master Plutus singleton that encodes the spending condition. Depending on the contract, this can easily bring cost of a transaction down from 100 Plutus contract executions to just 1 Plutus contract and 99 native script (cheap) executions.
 
+# Motivation #4: Better smart contract wallets
+
+Some projects want to create smart-contract powered wallets. However, in a lot of cases, these don't actually need all the power of Plutus in the average use case. That is to say, a native script can be used to encode the happy path as well as a fallback Plutus path when needed
+
+```json
+{
+	"type": "any",
+	"scripts": [{
+	  		// in the general case, the user such signs like normal
+			"type": "sig",
+			"keyHash": "ed6f3e2144d70e839d8701f23ebcca229bcfde8e1d6b7838bda11ac8"
+		},
+		{
+		    // but they may use a more complicated Plutus path when needed
+			"type": "script",
+			"scriptHash": "plutus_script_hash_here"
+		}
+	]
+}
+```
 
 # Specification
 
