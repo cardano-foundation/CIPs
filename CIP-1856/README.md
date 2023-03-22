@@ -114,7 +114,7 @@ console.log(`Asset name: ${strings["name"]}`);
 Add this new standard to all relevant documentation and references for web3 developers.
 
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
