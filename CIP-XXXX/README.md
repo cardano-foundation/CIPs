@@ -26,9 +26,50 @@ To solve this, one way would be to instead have a proxy contract that receives f
 
 To avoid unnecessary feature creep to the native script feature, the most generic solution is to allow a new condition where a native scripts can only be spent if a specific Plutus script is also part of the transaction input. This allows the multisig to simply handle receiving the funds and having all the complex logic (DAO membership checks, output checks, etc.) to be added to the Plutus script.
 
-# Motivation #2: Cost reduction
+# Motivation #2: Duplicate script condition cost reduction
 
 If you have a system that handles many Plutus UTXO entries locked by the same condition, spending many of them at the same may be expensive due to the cumulative Plutus execution cost of every utxo. This CIP would allow having all utxos locked under the same native script that all can only be spent according to some master Plutus singleton that encodes the spending condition. Depending on the contract, this can easily bring cost of a transaction down from 100 Plutus contract executions to just 1 Plutus contract and 99 native script (cheap) executions.
+
+# Motivation #3: Evolving scripts
+
+Some systems may want the behavior of their script to change at a specific slot number. A good example of this is an NFT mint that may want one behavior to start (ex: allow minting new tokens), but switch to another behavior later (ex: allow minting or burning only in special situations)
+
+This CIP enables this behavior by using the `before` and `after` functionality of native scripts to toggle the behavior of the contract
+
+```
+{
+	"type": "any",
+	"scripts": [{
+    // standard multisig "before" clause"
+		"type": "all",
+		"scripts": [{
+				"type": "before",
+				"slot": 40272443
+			},
+			{
+				"type": "sig",
+				"keyHash": "ed6f3e2144d70e839d8701f23ebcca229bcfde8e1d6b7838bda11ac8"
+			}
+		]
+	}, {
+    // after some time has passed, switch to now using a multisig to govern the mint/burn behavior
+		"type": "all",
+		"scripts": [{
+				"type": "after",
+				"slot": 40272443
+			},
+			{
+				"type": "script",
+				"scriptHash": "plutus_script_hash_here"
+			}
+		]
+	}]
+}
+```
+
+Native scripts are nice for minting assets, but have no way to add conditions for burning assets post-mint. 
+If you have a system that handles many Plutus UTXO entries locked by the same condition, spending many of them at the same may be expensive due to the cumulative Plutus execution cost of every utxo. This CIP would allow having all utxos locked under the same native script that all can only be spent according to some master Plutus singleton that encodes the spending condition. Depending on the contract, this can easily bring cost of a transaction down from 100 Plutus contract executions to just 1 Plutus contract and 99 native script (cheap) executions.
+
 
 # Specification
 
