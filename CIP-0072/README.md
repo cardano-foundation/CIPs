@@ -167,6 +167,10 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
     "link": {
       "type": "string"
     },
+    "logo": {
+      "type": "string",
+      "description": "URL to the logo or the base64 encoded image"
+    },
     "category": {
       "type": "string"
     },
@@ -315,6 +319,8 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
 }
 ```
 
+This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
+
 ### Example
 
 ```json
@@ -322,6 +328,7 @@ The Dapp Registration certificate itself doesn't enforce a particular structure 
   "subject": "9SYAJPNN",
   "projectName": "My Project",
   "link": "https://myProject.app",
+  "logo": "https://myProject.app/logo.png",
   "social": {
     "twitter": "twiterHandle",
     "github": "githubHandle",
