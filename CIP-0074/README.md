@@ -55,8 +55,8 @@ This proposed change is fully backwards compatible and will not require a hard-f
 
 ### Research and References
 
-Engineering Design Specification for Delegation and Incentives in Cardano–Shelley
-https://hydra.iohk.io/build/790053/download/1/delegation_design_spec.pdf
+Design Specification for Delegation and Incentives in Cardano
+https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-delegation.pdf
 
 Reward Sharing Schemes for Stake Pools
 https://arxiv.org/pdf/1807.11218.pdf
