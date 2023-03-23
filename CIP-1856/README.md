@@ -58,27 +58,41 @@ The new JSON metadata standard will look like this:
             "mediaType": <mime_type>,
             "src": "<uri | array>"
           }],
-  
+    
           <other properties>
+              
+          "strings": {
+              "de-CH": {
+                "name": <string in Swiss German>,
+                "image": <localized uri for Swiss German | array>,
+                "description": <string in Swiss German | array>
+                 <other localized properties>
+              },
+              "it-IT": {
+                "name": <string in Italian>,
+                "image": <localized uri for Italian German | array>,     
+                "description": <string in Italian | array>
+                <other localized properties>
+              },
+                    
+              <other languages and cultures>
+          }
         },
-        "strings": {
-          "de-CH": {
-            "name": <string in Swiss German>,
-            "image": <localized uri for Swiss German | array>,
-            "description": <string in Swiss German | array>
-             <other localized properties>
-          },
-          "it-IT": {
-            "name": <string in Italian>,
-            "image": <localized uri for Italian German | array>,     
-            "description": <string in Italian | array>
-            <other localized properties>
-          },
-          
-          <other languages and cultures>
-        }
       },
-      "version": <version_id>
+      "version": <version_id>,
+                  
+      <information about collection>
+      
+      "strings": {
+              "de-CH": {
+                 <localized information about collection in de-CH>
+              },
+              "it-IT": {
+                 <localized information about collection in it-IT>
+              },
+                    
+              <other languages and cultures>
+      }
   }
 }
 
@@ -96,7 +110,7 @@ To access the localized strings from the fetched metadata for a native asset, we
 const response = await fetch(`${<BASE_URL>}/policyId/${<policyId>}`);    
             
 const metadata = response.json();
-const strings = metadata["721"][<policyId>]["strings"][<culture>]
+const strings = metadata["721"][<policy_id>][<asset_name>]["strings"][<culture>]
 
 console.log(`Asset name: ${strings["name"]}`);
          
