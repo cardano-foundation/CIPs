@@ -108,7 +108,7 @@ An extension is an object with a single field `"cip`"` that describes a CIP numb
 
 ##### Draft or Experimental Extensions
 
-Extensions that are draft, in development or prototyped should not use official "cip" numbering.
+Extensions that are draft, in development, or prototyped should not use official "cip" numbering.
 
 They should instead be referred to as "x-cip" and the number can be arbitrary and should not be expected to be unique.
 "x-cip" numbers should NOT be used which overlap official CIP or draft CIP assignments unless they are the draft extension for the respective CIP.
@@ -131,13 +131,14 @@ would be an experimental extension that has not been assigned an official CIP nu
 would be used to enable the draft extension for `CIP-62`.
 
 When a CIP is ratified, the wallet may continue to recognize the "x-cip" extension.
-In this example, it would now be `{ "cip": 62 }`.
+In this example, the finalized cip that replaces the draft would be `{ "cip": 62 }`.
 This will allow for a graceful transition from draft to official status of extensions.
 How long a wallet or dApp will recognize the draft or experimental extension object is up to the individual wallet and dApp.
 
 The reason for using `x-cip` for drafts with an official number is to clearly distinguish between draft implementations and the official version.
 The official CIP can have differences from the final draft that both the dApp and wallet may need to accommodate.
-Clearly distinguishing between them prevents avoidable compatibility errors.
+Avoiding using the official CIP extension until ratified disambiguates the draft process at the time of ratification.
+Clearly distinguishing between them prevents avoidable compatibility errors should the final draft and ratified CIP differ.
 
 If a wallet is requested to enable both the draft and ratified CIP, it should **ALWAYS** prefer the ratified CIP.
 
