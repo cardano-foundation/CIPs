@@ -149,14 +149,14 @@ For example, a wallet that supported both CIP-62 final and draft would only enab
 
 ```ts
 APIErrorCode {
- InvalidRequest: -1,
- InternalError: -2,
- Refused: -3,
- AccountChange: -4,
+	InvalidRequest: -1,
+	InternalError: -2,
+	Refused: -3,
+	AccountChange: -4,
 }
 APIError {
- code: APIErrorCode,
- info: string
+	code: APIErrorCode,
+	info: string
 }
 ```
 
