@@ -61,7 +61,7 @@ This representation was chosen when possible as it is consistent across the Card
 
 #### DataSignature
 
-```
+```ts
 type DataSignature = {|
   signature: cbor\<COSE_Sign1>,
   key: cbor\<COSE_Key>,
@@ -81,7 +81,7 @@ transaction_unspent_output = [
 
 then we define
 
-```
+```cddl
 type TransactionUnspentOutput = cbor<transaction_unspent_output>
 ```
 
@@ -89,36 +89,74 @@ This allows us to use the output for constructing new transactions using it as a
 
 #### Paginate
 
-```
+```ts
 type Paginate = {|
   page: number,
   limit: number,
 |};
 ```
+
 Used to specify optional pagination for some API calls. Limits results to {limit} each page, and uses a 0-indexing {page} to refer to which of those pages of {limit} items each. dApps should be aware that if a wallet is modified between paginated calls that this will change the pagination, e.g. some results skipped or showing up multiple times but otherwise the wallet must respect the pagination order.
 
 #### Extension
 
-An extension is an object with a single field `"cip"` that describe a CIP number extending the API (as a plain integer, without padding). For example:
+An extension is an object with a single field `"cip`"` that describes a CIP number extending the API (as a plain integer, without padding). For example:
 
-```
+```json
 { "cip": 30 }
 ```
+
+##### Draft or Experimental Extensions
+
+Extensions that are draft, in development or prototyped should not use official "cip" numbering.
+
+They should instead be referred to as "x-cip" and the number can be arbitrary and should not be expected to be unique.
+"x-cip" numbers should NOT be used which overlap official CIP or draft CIP assignments unless they are the draft extension for the respective CIP.
+
+Experimental extensions without an officially assigned CIP number *MUST* use negative numbers until their draft is officially assigned a number by the CIP process.
+
+Once a draft CIP has been assigned an official number, that number should be used.
+For example:
+
+```json
+{ "x-cip": -123 }
+```
+
+would be an experimental extension that has not been assigned an official CIP number.
+
+```json
+{ "x-cip": 62 }
+```
+
+would be used to enable the draft extension for `CIP-62`.
+
+When a CIP is ratified, the wallet may continue to recognize the "x-cip" extension.
+In this example, it would now be `{ "cip": 62 }`.
+This will allow for a graceful transition from draft to official status of extensions.
+How long a wallet or dApp will recognize the draft or experimental extension object is up to the individual wallet and dApp.
+
+The reason for using `x-cip` for drafts with an official number is to clearly distinguish between draft implementations and the official version.
+The official CIP can have differences from the final draft that both the dApp and wallet may need to accommodate.
+Clearly distinguishing between them prevents avoidable compatibility errors.
+
+If a wallet is requested to enable both the draft and ratified CIP, it should **ALWAYS** prefer the ratified CIP.
+
+For example, a wallet that supported both CIP-62 final and draft would only enable the final CIP-62 extension if the request was to enable `[{"x-cip":62},{"cip":62}].
 
 ### Error Types
 
 #### APIError
 
-```
+```ts
 APIErrorCode {
-	InvalidRequest: -1,
-	InternalError: -2,
-	Refused: -3,
-	AccountChange: -4,
+ InvalidRequest: -1,
+ InternalError: -2,
+ Refused: -3,
+ AccountChange: -4,
 }
 APIError {
-	code: APIErrorCode,
-	info: string
+ code: APIErrorCode,
+ info: string
 }
 ```
 
@@ -129,15 +167,15 @@ APIError {
 
 #### DataSignError
 
-```
+```ts
 DataSignErrorCode {
-	ProofGeneration: 1,
-	AddressNotPK: 2,
-	UserDeclined: 3,
+ ProofGeneration: 1,
+ AddressNotPK: 2,
+ UserDeclined: 3,
 }
 type DataSignError = {
-	code: DataSignErrorCode,
-	info: String
+ code: DataSignErrorCode,
+ info: String
 }
 ```
 
@@ -147,23 +185,24 @@ type DataSignError = {
 
 #### PaginateError
 
-```
+```ts
 type PaginateError = {|
     maxSize: number,
 |};
 ```
+
 {maxSize} is the maximum size for pagination and if the dApp tries to request pages outside of this boundary this error is thrown.
 
 #### TxSendError
 
-```
+```ts
 TxSendErrorCode = {
-	Refused: 1,
-	Failure: 2,
+ Refused: 1,
+ Failure: 2,
 }
 type TxSendError = {
-	code: TxSendErrorCode,
-	info: String
+ code: TxSendErrorCode,
+ info: String
 }
 ```
 
@@ -172,14 +211,14 @@ type TxSendError = {
 
 #### TxSignError
 
-```
+```ts
 TxSignErrorCode = {
-	ProofGeneration: 1,
-	UserDeclined: 2,
+ ProofGeneration: 1,
+ UserDeclined: 2,
 }
 type TxSignError = {
-	code: TxSignErrorCode,
-	info: String
+ code: TxSignErrorCode,
+ info: String
 }
 ```
 
@@ -194,15 +233,60 @@ In order to initiate communication from webpages to a user's Cardano wallet, the
 
 Errors: APIError
 
-This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
+This is the entrypoint to start communication with the user's wallet.
+The wallet should request the user's permission to connect the dApp to the user's wallet.
+Only if permission has been granted, will an API object will be returned to the dApp to use.
 
-Upon start, dApp can explicitly request a list of additional functionalities they expect as a list of CIP numbers capturing those extensions. This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface. CIP-0030 provides a set of base interfaces that every wallet must support. Then, new functionalities are introduced via additional CIPs and may be all or partially supported by wallets.
+The wallet can choose to maintain a dApp whitelist to minimize asking for the user's permission every time access is requested.
+However, this behavior is wallet specific and should be transparent to dApps using this API.
 
-DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the `cardano.{walletName}.extensions` field of the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
+If this method is called with a new extension list, and the dApp is asking for a new extension that would require specific user consent to activate, then it should be treated as if it was called for the first time.
+This is to prevent a possibility where a dApp asks for basic extensions and then asks for an extension that the wallet would otherwise have prompted the user for permission to enable.
+Otherwise, if the extension list has not changed OR the wallet does not ask for permissions to enable any individual extensions, then this function should not request access a second time, and instead, just return the `API` object.
+
+Upon start, dApp can explicitly request a list of additional functionalities they expect as a list of CIP numbers capturing those extensions.
+This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface.
+CIP-0030 provides a set of base interfaces that every wallet must support.
+Then, new functionalities are introduced via additional CIPs and may be all or partially supported by wallets.
+
+If the extensions list is not specified, it defaults to an empty list `{}`.
+The wallet should treat an empty list as a request to enable **ALL** extensions which are not mutually exclusive.
+The wallet may also enable extensions that it *prefers* for any extensions which would conflict.
+Conversely, it would then disable the non-preferred conflicting extensions.
+
+*Note:* If an extension list is supplied, extension `{"cip":30}` (or the preferred replacement in the case of a conflict) **MUST** always be enabled, even if it's not explicitly listed.
+This is because the [`cardano.{walletName}.extensions`](#cardanowalletnamesupportedextensions-extension) property of the API is necessary for the dApp to query what extensions are available for it to use.
+If `CIP-30` (or its successor) is NOT always enabled, then the dApp would have no capability to determine what extensions were available.
+Any conflicting extension to `CIP-30` **MUST** supply this property.
+
+DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all its required functionalities.
+
+*Note:* Extensions can be mutually incompatible.
+Incompatibilities can arise for example:
+
+* When extensions provide conflicting features.
+* If a newer extension wholly replaces the functionality of an older one.
+* A draft `"x-cip"` is replaced by a final `"cip"`.
+
+While conflicting extensions should be avoided where reasonable while designing CIPs, it is also the responsibility of wallet providers to assess whether they can support a given combination of extensions, or not.
+Wallets *MUST NOT* fail to enable the API should they not recognize or not support a particular combination of extensions.
+Instead, they should decide what they enable and reflect their choice in the [`cardano.{walletName}.extensions`](#cardanowalletnamesupportedextensions-extension) property of the Full API.
+DApps will use the extensions reported by that property to decide how to proceed.
+For example, they can fail and inform their users that necessary wallet features are unavailable, or may use a different, less-efficient, strategy to cope with a lack of functionality.
+This may require the wallet to re-request a different set of extensions.
 
 ##### Can extensions depend on other extensions?
 
-Yes. Extensions may have other extensions as pre-requisite. Some newer extensions may also invalidate functionality introduced by earlier extensions. There's no particular rule or constraints in that regards. Extensions are specified as CIP, and will define what it entails to enable them.
+Yes. Extensions may have other extensions as pre-requisite. Some newer extensions may also invalidate functionality introduced by earlier extensions. There are no particular rules or constraints in that regard. Extensions are specified as a CIP, and will define what it entails to enable them.
+
+Wallets should attempt to enable all extensions necessary to enable the extensions requested, even if they were not specifically requested.
+For example, if `CIP-9999` needs `CIP-8123` and a request is made to ONLY enable `[{"cip":9999}]` then the wallet should automatically enable `CIP-8123` as if the request was actually for `[{"cip":8123},{"cip":9999}]`.
+
+##### Can wallets enable more extensions than requested?
+
+Yes.
+It would be a legitimate implementation of this CIP for a wallet to **ALWAYS** enable every extension it supports, regardless of the requested list of extensions.
+The only caveat is that the [`cardano.{walletName}.extensions`](#cardanowalletnamesupportedextensions-extension) property must faithfully reflect the extensions which the wallet API object supports.
 
 ##### Should extensions follow a specific format?
 
@@ -215,7 +299,6 @@ Yes. Extensions may introduce new endpoints or error codes, and modify existing 
 ##### Are wallet expected to implement all extensions?
 
 No. It's up to wallet providers to decide which extensions they ought to support.
-
 
 #### cardano.{walletName}.isEnabled(): Promise\<bool>
 
@@ -266,6 +349,7 @@ If `amount` is `undefined`, this shall return a list of all UTXOs (unspent trans
 Errors: `APIError`
 
 The function takes a required object with parameters. With a single **required** parameter for now: `amount`. (**NOTE:** some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the `amount` parameter is required:
+
 1. Dapps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
 2. Depending on the specific wallet implementation, requesting more collateral than necessarily might worsen the user experience with that dapp, requiring the wallet to make explicit wallet reorganisation when it is not necessary and can be avoided.
 3. If dapps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
@@ -274,7 +358,7 @@ So requiring the `amount` parameter would be a by-spec behavior for a wallet. No
 
 This shall return a list of one or more UTXOs (unspent transaction outputs) controlled by the wallet that are required to reach **AT LEAST** the combined ADA value target specified in `amount` **AND** the best suitable to be used as collateral inputs for transactions with plutus script inputs (pure ADA-only utxos). If this cannot be attained, an error message with an explanation of the blocking problem shall be returned. **NOTE:** wallets are free to return utxos that add up to a **greater** total ADA value than requested in the `amount` parameter, but wallets must never return any result where utxos would sum up to a smaller total ADA value, instead in a case like that an error message must be returned.
 
-The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see https://github.com/cardano-foundation/CIPs/pull/104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
+The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see <https://github.com/cardano-foundation/CIPs/pull/104>), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
 
 The `amount` parameter is required, specified as a `string` (BigNumber) or a `number`, and the maximum allowed value must be agreed to be something like 5 ADA. Not limiting the maximum possible value might force the wallet to attempt to purify an unreasonable amount of ADA just because the dapp is doing something weird. Since by protocol the required collateral amount is always a percentage of the transaction fee, it seems that the 5 ADA limit should be enough for the foreseeable future.
 
@@ -343,10 +427,12 @@ As wallets should already have this ability, we allow dApps to request that a tr
 ### Experimental API
 
 Multiple experimental namespaces are used:
-- under `api` (ex: `api.experimental.myFunctionality`).
-- under `cardano.{walletName}` (ex: `window.cardano.{walletName}.experimental.myFunctionality`)
+
+* under `api` (ex: `api.experimental.myFunctionality`).
+* under `cardano.{walletName}` (ex: `window.cardano.{walletName}.experimental.myFunctionality`)
 
 The benefits of this are:
+
 1. Wallets can add non-standardized features while still following the CIP30 structure
 1. dApp developers can use these functions explicitly knowing they are experimental (not stable or standardized)
 1. New features can be added to CIP30 as experimental features and only moved to non-experimental once multiple wallets implement it
@@ -372,22 +458,22 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 
 ### Acceptance Criteria
 
-- [x] The interface is implemented and supported by various wallet providers. See also: [cardano-caniuse](https://www.cardano-caniuse.io/).
-- [x] The interface is used by DApps to interact with wallet providers. Few examples:
-  - https://www.jpg.store/
-  - https://app.minswap.org/
-  - https://muesliswap.com/
-  - https://exchange.sundaeswap.finance/
-  - https://app.indigoprotocol.io/
+* [x] The interface is implemented and supported by various wallet providers. See also: [cardano-caniuse](https://www.cardano-caniuse.io/).
+* [x] The interface is used by DApps to interact with wallet providers. Few examples:
+  * <https://www.jpg.store/>
+  * <https://app.minswap.org/>
+  * <https://muesliswap.com/>
+  * <https://exchange.sundaeswap.finance/>
+  * <https://app.indigoprotocol.io/>
 
 ### Implementation Plan
 
-- [x] Provide some reference implementation of wallet providers
-  - [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
-  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
+* [x] Provide some reference implementation of wallet providers
+  * [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
+  * [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
 
-- [x] Provide some reference implementation of the dapp connector
-  - [cardano-foundation/connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)
+* [x] Provide some reference implementation of the dapp connector
+  * [cardano-foundation/connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)
 
 ## Copyright
 
