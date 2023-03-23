@@ -256,7 +256,7 @@ The wallet may also enable extensions that it *prefers* for any extensions which
 Conversely, it would then disable the non-preferred conflicting extensions.
 
 *Note:* If an extension list is supplied, extension `{"cip":30}` (or the preferred replacement in the case of a conflict) **MUST** always be enabled, even if it's not explicitly listed.
-This is because the [`cardano.{walletName}.extensions`](#cardanowalletnamesupportedextensions-extension) property of the API is necessary for the dApp to query what extensions are available for it to use.
+This is because the [`api.getExtensions()`](#apigetextensions--promiseextension) method of the API is necessary for the dApp to query what extensions are available for it to use.
 If `CIP-30` (or its successor) is NOT always enabled, then the dApp would have no capability to determine what extensions were available.
 Any conflicting extension to `CIP-30` **MUST** supply this property.
 
@@ -271,7 +271,7 @@ Incompatibilities can arise for example:
 
 While conflicting extensions should be avoided where reasonable while designing CIPs, it is also the responsibility of wallet providers to assess whether they can support a given combination of extensions, or not.
 Wallets *MUST NOT* fail to enable the API should they not recognize or not support a particular combination of extensions.
-Instead, they should decide what they enable and reflect their choice in the [`cardano.{walletName}.extensions`](#cardanowalletnamesupportedextensions-extension) property of the Full API.
+Instead, they should decide what they enable and reflect their choice in the [`api.getExtensions()`](#apigetextensions--promiseextension) method of the Full API.
 DApps will use the extensions reported by that property to decide how to proceed.
 For example, they can fail and inform their users that necessary wallet features are unavailable, or may use a different, less-efficient, strategy to cope with a lack of functionality.
 This may require the wallet to re-request a different set of extensions.
@@ -287,7 +287,7 @@ For example, if `CIP-9999` needs `CIP-8123` and a request is made to ONLY enable
 
 Yes.
 It would be a legitimate implementation of this CIP for a wallet to **ALWAYS** enable every extension it supports, regardless of the requested list of extensions.
-The only caveat is that the [`cardano.{walletName}.extensions`](#cardanowalletnamesupportedextensions-extension) property must faithfully reflect the extensions which the wallet API object supports.
+The only caveat is that the [`api.getExtensions()`](#apigetextensions--promiseextension) method must faithfully reflect the extensions which the wallet API object supports.
 
 ##### Should extensions follow a specific format?
 
