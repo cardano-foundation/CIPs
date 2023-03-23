@@ -169,13 +169,13 @@ APIError {
 
 ```ts
 DataSignErrorCode {
- ProofGeneration: 1,
- AddressNotPK: 2,
- UserDeclined: 3,
+	ProofGeneration: 1,
+	AddressNotPK: 2,
+	UserDeclined: 3,
 }
 type DataSignError = {
- code: DataSignErrorCode,
- info: String
+	code: DataSignErrorCode,
+	info: String
 }
 ```
 
@@ -197,12 +197,12 @@ type PaginateError = {|
 
 ```ts
 TxSendErrorCode = {
- Refused: 1,
- Failure: 2,
+	Refused: 1,
+	Failure: 2,
 }
 type TxSendError = {
- code: TxSendErrorCode,
- info: String
+	code: TxSendErrorCode,
+	info: String
 }
 ```
 
@@ -213,12 +213,12 @@ type TxSendError = {
 
 ```ts
 TxSignErrorCode = {
- ProofGeneration: 1,
- UserDeclined: 2,
+	ProofGeneration: 1,
+	UserDeclined: 2,
 }
 type TxSignError = {
- code: TxSignErrorCode,
- info: String
+	code: TxSignErrorCode,
+	info: String
 }
 ```
 
