@@ -160,10 +160,10 @@ APIError {
 }
 ```
 
-* InvalidRequest - Inputs do not conform to this spec or are otherwise invalid.
-* InternalError - An error occurred during execution of this API call.
-* Refused - The request was refused due to lack of access - e.g. wallet disconnects.
-* AccountChange - The account has changed. The dApp should call `wallet.enable()` to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
+- InvalidRequest - Inputs do not conform to this spec or are otherwise invalid.
+- InternalError - An error occurred during execution of this API call.
+- Refused - The request was refused due to lack of access - e.g. wallet disconnects.
+- AccountChange - The account has changed. The dApp should call `wallet.enable()` to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
 
 #### DataSignError
 
@@ -179,9 +179,9 @@ type DataSignError = {
 }
 ```
 
-* ProofGeneration - Wallet could not sign the data (e.g. does not have the secret key associated with the address)
-* AddressNotPK - Address was not a P2PK address and thus had no SK associated with it.
-* UserDeclined - User declined to sign the data
+- ProofGeneration - Wallet could not sign the data (e.g. does not have the secret key associated with the address)
+- AddressNotPK - Address was not a P2PK address and thus had no SK associated with it.
+- UserDeclined - User declined to sign the data
 
 #### PaginateError
 
@@ -206,8 +206,8 @@ type TxSendError = {
 }
 ```
 
-* Refused - Wallet refuses to send the tx (could be rate limiting)
-* Failure - Wallet could not send the tx
+- Refused - Wallet refuses to send the tx (could be rate limiting)
+- Failure - Wallet could not send the tx
 
 #### TxSignError
 
@@ -222,8 +222,8 @@ type TxSignError = {
 }
 ```
 
-* ProofGeneration - User has accepted the transaction sign, but the wallet was unable to sign the transaction (e.g. not having some of the private keys)
-* UserDeclined - User declined to sign the transaction
+- ProofGeneration - User has accepted the transaction sign, but the wallet was unable to sign the transaction (e.g. not having some of the private keys)
+- UserDeclined - User declined to sign the transaction
 
 ### Initial API
 
@@ -264,9 +264,9 @@ DApps are expected to use this endpoint to perform an initial handshake and ensu
 *Note:* Extensions can be mutually incompatible.
 Incompatibilities can arise for example:
 
-* When extensions provide conflicting features.
-* If a newer extension wholly replaces the functionality of an older one.
-* A draft `"x-cip"` is replaced by a final `"cip"`.
+- When extensions provide conflicting features.
+- If a newer extension wholly replaces the functionality of an older one.
+- A draft `"x-cip"` is replaced by a final `"cip"`.
 
 While conflicting extensions should be avoided where reasonable while designing CIPs, it is also the responsibility of wallet providers to assess whether they can support a given combination of extensions, or not.
 Wallets *MUST NOT* fail to enable the API should they not recognize or not support a particular combination of extensions.
@@ -404,19 +404,19 @@ Errors: `APIError`, `DataSignError`
 
 This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
-* `alg` (1) - must be set to `EdDSA` (-8)
-* `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
-* `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
+- `alg` (1) - must be set to `EdDSA` (-8)
+- `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
+- `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
 
 The payload is not hashed and no `external_aad` is used.
 
 If the payment key for `addr` is not a P2Pk address then `DataSignError` will be returned with code `AddressNotPK`. `ProofGeneration` shall be returned if the wallet cannot generate a signature (i.e. the wallet does not own the requested payment private key), and `UserDeclined` will be returned if the user refuses the request. The return shall be a `DataSignature` with `signature` set to the hex-encoded CBOR bytes of the `COSE_Sign1` object specified above and `key` shall be the hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 
-* `kty` (1) - must be set to `OKP` (1)
-* `kid` (2) - Optional, if present must be set to the same value as in the `COSE_Sign1` specified above.
-* `alg` (3) - must be set to `EdDSA` (-8)
-* `crv` (-1) - must be set to `Ed25519` (6)
-* `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
+- `kty` (1) - must be set to `OKP` (1)
+- `kid` (2) - Optional, if present must be set to the same value as in the `COSE_Sign1` specified above.
+- `alg` (3) - must be set to `EdDSA` (-8)
+- `crv` (-1) - must be set to `Ed25519` (6)
+- `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
 #### api.submitTx(tx: cbor\<transaction>): Promise\<hash32>
 
@@ -428,8 +428,8 @@ As wallets should already have this ability, we allow dApps to request that a tr
 
 Multiple experimental namespaces are used:
 
-* under `api` (ex: `api.experimental.myFunctionality`).
-* under `cardano.{walletName}` (ex: `window.cardano.{walletName}.experimental.myFunctionality`)
+- under `api` (ex: `api.experimental.myFunctionality`).
+- under `cardano.{walletName}` (ex: `window.cardano.{walletName}.experimental.myFunctionality`)
 
 The benefits of this are:
 
@@ -458,22 +458,22 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 
 ### Acceptance Criteria
 
-* [x] The interface is implemented and supported by various wallet providers. See also: [cardano-caniuse](https://www.cardano-caniuse.io/).
-* [x] The interface is used by DApps to interact with wallet providers. Few examples:
-  * <https://www.jpg.store/>
-  * <https://app.minswap.org/>
-  * <https://muesliswap.com/>
-  * <https://exchange.sundaeswap.finance/>
-  * <https://app.indigoprotocol.io/>
+- [x] The interface is implemented and supported by various wallet providers. See also: [cardano-caniuse](https://www.cardano-caniuse.io/).
+- [x] The interface is used by DApps to interact with wallet providers. Few examples:
+  - <https://www.jpg.store/>
+  - <https://app.minswap.org/>
+  - <https://muesliswap.com/>
+  - <https://exchange.sundaeswap.finance/>
+  - <https://app.indigoprotocol.io/>
 
 ### Implementation Plan
 
-* [x] Provide some reference implementation of wallet providers
-  * [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
-  * [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
+- [x] Provide some reference implementation of wallet providers
+  - [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
+  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
 
-* [x] Provide some reference implementation of the dapp connector
-  * [cardano-foundation/connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)
+- [x] Provide some reference implementation of the dapp connector
+  - [cardano-foundation/connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)
 
 ## Copyright
 
