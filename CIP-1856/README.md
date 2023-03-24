@@ -107,12 +107,27 @@ To access the localized strings from the fetched metadata for a native asset, we
 
 ```
 
-const response = await fetch(`${<BASE_URL>}/policyId/${<policyId>}`);    
+const response = await fetch(`${<BASE_URL>}/policyId/${<policyId>}`);
             
 const metadata = response.json();
-const strings = metadata["721"][<policy_id>][<asset_name>]["strings"][<culture>]
+const policy = metadata["721"][<policy_id>];
 
-console.log(`Asset name: ${strings["name"]}`);
+function getPolicyString(policy, key, culture="en") {
+    return policy["strings"][culture][key] 
+        ? policy["strings"][culture][key] 
+        : policy[key]; // default value (not localized)
+}
+
+function getAssetString(policy, asset, key, culture="en") {
+    return policy[asset]["strings"][culture][key] 
+        ? policy[asset]["strings"][culture][key] 
+        : policy[asset][key]; // default value (not localized)
+}
+
+console.log(`Default policy property: ${getPolicyString(policy, <policy_property>)}`);
+console.log(`Localized policy property: ${getPolicyString(policy, <policy_property>, "it-IT")}`);
+console.log(`Default asset name: ${getAssetString(policy, <asset_name>, "name")}`);
+console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name", "de-CH")}`);
          
 ```
      
