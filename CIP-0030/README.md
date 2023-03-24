@@ -278,7 +278,7 @@ This may require the wallet to re-request a different set of extensions.
 
 ##### Can extensions depend on other extensions?
 
-Yes. Extensions may have other extensions as pre-requisite. Some newer extensions may also invalidate functionality introduced by earlier extensions. There are no particular rules or constraints in that regard. Extensions are specified as a CIP, and will define what it entails to enable them.
+Yes. Extensions may have other extensions as pre-requisite, extension dependencies should be unambiguously defined in their respective CIPs. Some newer extensions may also invalidate functionality introduced by earlier extensions. There are no particular rules or constraints in that regard. Extensions are specified as a CIP, and will define what it entails to enable them.
 
 Wallets should attempt to enable all extensions necessary to enable the extensions requested, even if they were not specifically requested.
 For example, if `CIP-9999` needs `CIP-8123` and a request is made to ONLY enable `[{"cip":9999}]` then the wallet should automatically enable `CIP-8123` as if the request was actually for `[{"cip":8123},{"cip":9999}]`.
