@@ -5,7 +5,7 @@ Category: Tokens
 Status: Proposed
 Authors:
     - Adam Dean <adam@crypto2099.io>
-Implementors: []
+Implementors: N/A
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/467
 Created: 2023-02-27
@@ -19,12 +19,13 @@ policy on-chain. This CIP will aim to create a method that is backwards compatib
 update over time, the supported feature set and metadata details pertaining to their tokens.
 
 This CIP will aim to make use of a hybrid (on and off-chain) information schema to enable maximum flexibility and 
-adaptability as new and novel use cases for native assets (NA) expand and grow over time.
+adaptability as new and novel use cases for native assets expand and grow over time.
 
 ## Motivation
 
 This CIP was borne out of a distaste for the lack of on-chain token policy intent registration that has been cited as
-both a centralization and security concern at various points over the preceding two years of NA history on Cardano.
+both a centralization and security concern at various points over the preceding two years of native asset history on
+Cardano.
 
 ### Example 1: The Cardano Token Registry
 
@@ -36,6 +37,12 @@ While there is no reason to believe that the CF would take any malicious or nefa
 register in this fashion introduces a point of centralization, _potential_ gate keeping, and ultimately reliance on the
 interaction of a 3rd party (the human at CF responsible for merging pull requests) in order for projects to register, or
 update, their information.
+
+***Note:*** The original intent of the *CIP-26 Cardano Token Registry* was never to have a sole provider or
+controller of the repository. However, time has shown that there is little interest from the community or various
+service providers to contribute or participate in this or alternative solutions.
+
+This CIP attempts to provide a decentralized solution to this problem.
 
 ### Example 2: Token Metadata Insecurity
 
@@ -75,15 +82,14 @@ Catalyst Voter Registration). At the root level, the registration consists of tw
 ### Token Registration Payload Object
 
 The Token Registration Payload Object (TRPO) consists of 4 required fields and then optional, additional fields to
-provide additional context and information as part of the registration payload. For the purposes of this draft CIP and
-in the examples below we will use the top-level JSON Metadata Index of **867** although this could be changed to the
-assigned CIP number if considered for acceptance for the sake of clarity.
+provide additional context and information as part of the registration payload. The top-level metadata label of **867**
+has been chosen for the purposes of this standard.
 
 ### Required Fields
 
 The following fields are required in all token registration submissions.
 
-#### 1. Script Hash (Policy ID)
+#### 1. Script Hash (Policy ID) \<String\>
 
 This should be the hex-encoded policy ID (**Script Hash**) that is being registered. This information is readily 
 available and accessible via Cardano DB-Sync and other chain indexers and is an easy point of reference. The script must
@@ -96,7 +102,7 @@ the authenticity of the registration.
 
 `'00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae'`
 
-#### 2. Feature Set
+#### 2. Feature Set \<Array:Integer\>
 
 The Feature Set should consist of an array of CIPs that should be applied to the tokens under the given policy. For
 example, a project may specify that their tokens utilize CIP-25 (Cardano NFT Metadata Standard) and CIP-27 (Cardano NFT
@@ -110,7 +116,7 @@ forward.
 
 `[25, 27]`
 
-#### 3. Witness Method
+#### 3. Witness Method \<Array:String\>
 
 The witness method portion of the payload should describe the method used to generate the witness signature (CIP-8, etc)
 to aid in validation by third parties.
@@ -119,7 +125,7 @@ to aid in validation by third parties.
 
 `['CIP-8','Ed25519']`
 
-#### 4. Nonce
+#### 4. Nonce \<Integer\>
 
 As with CIP-36 Voter Registration method, we must include a piece of data that changes to avoid a replay attack. As with
 CIP-36, and stake pool KES counter rotation, the nonce is expected to be an integer value that is incremented as new or
@@ -138,7 +144,7 @@ nonce value.
 The following are optional fields that may be included in the token registration to provide additional information or
 context to the registration.
 
-#### 5. Data Oracle URI
+#### 5. Data Oracle URI \<UriArray:String\>
 
 To be utilized and expanded upon in a separate CIP, this should be a valid URI pointing to a source of additional,
 potentially dynamic information relating to the project and/or the tokens minted under it.
@@ -431,16 +437,23 @@ utility, and standards evolve.
 
 ### Acceptance Criteria
 
-Ideally this CIP would receive feedback, criticism, and refinement from the community of people involved in and with
-token projects (both NFT and FT) to review for any weaknesses or areas of improvement. As it stands, the only real
-point of contention or refinement that I can see directly would be in the metadata format itself and a need to refine
-and define some CIP-specific CDDLs.
+- [ ] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved
+  with token projects (both NFT and FT) to review any weaknesses or areas of improvement.
+- [ ] Guidelines and examples of publication of data as well as discovery and validation should be included as part of
+  of criteria for acceptance.
+- [ ] Specifications should be updated to be written in both JSON Schema and CBOR CDDL format for maximum compatibility.
+- [ ] Implementation and use demonstrated by the community: Token Projects, Blockchain Explorers, Wallets, Marketplaces/DEXes.
+
+#### TO-DO ACCEPTANCE ACTIONS ####
+
+- [ ] Convert schema specifications to CDDL format
+- [ ] Publish instructions and tooling for publication and verification
 
 ### Implementation Plan
 
-In order to foster and facilitate implementation of this CIP I will work on some open-source code highlighting how to
-create, submit, and index/validate these on-chain registrations to make it as easy as possible for third party consumers
-to utilize this data quickly and efficiently in their endpoints.
+1. Publish open source tooling and instructions related to the publication and verification of data utilizing this standard.
+2. Achieve "buy in" from existing community actors and implementors such as: blockchain explorers, token marketplaces,
+   decentralized exchanges, wallets.
 
 ## Copyright
 
