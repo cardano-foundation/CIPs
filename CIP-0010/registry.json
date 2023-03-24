@@ -28,6 +28,10 @@
     "description": "CIP-0027 - Royalties Standard"
   },
   {
+    "transaction_metadatum_label": 867,
+    "description": "CIP-0088 - Token Policy Registration Standard"
+  },
+  {
     "transaction_metadatum_label": 888,
     "description": "finitum.io token bridge transactions metadata"
   },
