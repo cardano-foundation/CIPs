@@ -1,6 +1,6 @@
 ---
 CIP: 88
-Title: Hybrid Token Policy Registration
+Title: Token Policy Registration
 Category: Tokens
 Status: Proposed
 Authors:
