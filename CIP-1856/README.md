@@ -4,9 +4,9 @@ Title: Extend NFT and FT metadata standard to support string localization
 Category: Metadata
 Status: Draft
 Authors:
-    - [Vito Melchionna](https://github.com/VitoMelchionna) <info@granadapool.com>
-    - [Aaron Schmid](https://github.com/chitter99) <aaron@fortech.group>
-    - [Carolina Isler (@LaPetiteADA)](https://twitter.com/LaPetiteADA) <lapetiteada@granadapool.com>
+    - Vito Melchionna <info@granadapool.com>
+    - Aaron Schmid <aaron@fortech.group>
+    - Carolina Isler (@LaPetiteADA)<lapetiteada@granadapool.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
