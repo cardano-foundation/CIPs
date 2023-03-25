@@ -9,7 +9,7 @@ Authors:
     - Carolina Isler (@LaPetiteADA)<lapetiteada@granadapool.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/488
 Created: 2023-03-19
 License: CC-BY-4.0
 ---
