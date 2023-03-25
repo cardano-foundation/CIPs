@@ -35,7 +35,7 @@ This proposal defines an additional property to the NFT and FT metadata standard
 Current NFT and FT metadata only supports a single hardcoded language (mostly English), which limits the accessibility to a certain culture. To get closer to mass adoption, we need to bring down language barriers by extending the current standard to support translations. This is especially relevant for games, metaverse solutions, and RealFi use cases of NFTs.  
 
 ## Specification
-This proposal follows the same specifications as <CIP-0025>(https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025).
+This proposal follows the same specifications as [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025).
     
 The name of a culture consists of its [[ISO-639]](https://www.iso.org/standard/4767.html) language code with small letters and its [[ISO-3166]](https://www.iso.org/standard/63545.html) country/region code with capital letter separated by a dash "-". For instance, this proposal was written in "en-US": English with the US culture.
 
