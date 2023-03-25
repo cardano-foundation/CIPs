@@ -105,8 +105,13 @@ cip_details = {
     ? 68 : cip68_details
 }
 
-policy_details = {
-    1 : bytes,          ; policy_id
+token_scope = {
+    0,                  ; scope identifier
+    bytes               ; policy_id
+}
+
+scope_details = {
+    1 : token_scope
     2 : [* uint],       ; feature set
     3 : [* string],     ; signature method
     4 : uint,           ; nonce
@@ -121,10 +126,10 @@ witness = {
 
 witnesses = [1* witness]
 
-token_registration = {
+cip88_registration = {
     ? 0 : string, ; version
-    1 : policy_details,
+    1 : scope_details,
     2 : witnesses
 }
 
-metadata = { 867 : uint => token_registration }
+metadata = { 867 : uint => cip88_registration }
