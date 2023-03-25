@@ -41,7 +41,7 @@ The name of a culture consists of its [[ISO-639]](https://www.iso.org/standard/4
 
 This convention is compatible with most operative systems (Linux and Windows) and widely used translation software.
     
-## Proposed structure
+### Proposed structure
 
 The new JSON metadata standard will look like this:
 ```
