@@ -1,5 +1,5 @@
 ---
-CIP: 1856
+CIP: ?
 Title: Extend NFT and FT metadata standard to support string localization
 Category: Metadata
 Status: Draft
