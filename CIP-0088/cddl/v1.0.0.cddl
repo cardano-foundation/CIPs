@@ -1,0 +1,130 @@
+; CIP-0088 Cardano Native Asset Token Policy Registration Format
+; Version: 1.0.0
+
+string = text .size (0..64)
+
+policy_id = text .size (56) ; hex-encoded policy ID
+asset_id = text .size (0..32) ; hex-encoded asset ID
+
+; A uriData array should consist of an array of two-or-more strings.
+; The first entry should contain the URI "Scheme" (e.g. "https://", "ftp://", "ar://", "ipfs://")
+; Subsequent entries should describe the path of the URI
+uriData = [2* string]
+
+; An asset subject is a reference to a specific token
+; This is used for FT Registration and can be used to identify "Beacon" tokens for other CIPs
+asset_subject = {
+    policy_id,
+    asset_id
+}
+
+financial_disclosure = {
+    dataUri,    ; URI to the disclosure document
+    string      ; SHA256 checksum of disclosure document
+}
+
+ft_project_details = {
+    0 : asset_subject,          ; asset identifier
+    1 : string,                 ; token name
+    2 : [* string],             ; description
+    ? 3 : string,               ; token ticker
+    ? 4 : uint,                 ; token decimals
+    ? 5 : uriData,              ; token website
+    ? 6 : uriData,              ; token image
+    ? 7 : financial_disclosure, ; token financial disclosure document
+    ? 8 : asset_subject         ; beacon token identifier
+}
+
+social_media_uri = {
+    string,                     ; social media channel name
+    uriData                     ; social media URI
+}
+
+artist_detail = {
+    name : string,              ; artist or band name
+    ? image : uriData           ; optional image of the artist
+}
+
+; CIP-0060: Music NFT Metadata Standard
+; Version: 1.0.0
+music_token_details = {
+    ; TBD
+}
+
+nft_project_details = {
+    0 : string,                 ; Collection Name
+    ? 1 : [* string],           ; Description
+    ? 2 : uriData,              ; Project Image
+    ? 3 : uriData,              ; Project Banner
+    ? 4 : 0 / 1,                ; NSFW Flag (1 = true, 0 = false)
+    ? 5 : [* social_media_uri], ; Project social media
+    ? 6 : string                ; Project/Artist Name
+}
+
+; CIP-0025: NFT Metadata Standard
+; Version: 1.0.0
+cip25_details = {
+    ? 0 : string,               ; version
+    1 : nft_project_details     ; CIP-0025 NFT Project Details
+}
+
+; CIP-0026: FT Registration Standard
+; Version: 1.0.0
+cip26_details = {
+    ? 0 : string,               ; version
+    1 : [* ft_token_details]    ; CIP-0026 FT Token Registration(s)
+}
+
+; CIP-0027: NFT Royalty Standard
+; Version: 1.0.0
+cip27_details = {
+    ? 0 : string,               ; version
+    1 : string,                 ; royalty rate, floating point number (0.000000 - 1.000000)
+    2 : [* string]              ; bech32 address to receive royalties
+}
+
+; CIP-0060: Music NFT Metadata Standard
+; Version: 1.0.0
+cip60_details = {
+    ? 0 : string                ; version
+    1 : music_token_details     ; CIP-0060 Music NFT Details
+}
+
+; CIP-0068: NFT Metadata Standard
+; Version: 1.0.0
+cip68_details = {
+    ? 0 : string,               ; version
+    1 : nft_project_details     ; CIP-0068 NFT Project Details
+}
+
+cip_details = {
+    ? 25 : cip25_details,
+    ? 26 : cip26_details,
+    ? 27 : cip27_details,
+    ? 60 : cip60_details,
+    ? 68 : cip68_details
+}
+
+policy_details = {
+    1 : bytes,          ; policy_id
+    2 : [* uint],       ; feature set
+    3 : [* string],     ; signature method
+    4 : uint,           ; nonce
+    ? 5 : uriData,      ; oracle URI
+    ? 6 : cip_details   ; cip-specific feature set details
+}
+
+witness = {
+    pubKeyHash : string,
+    signature : [* bytes .size (0..64)]
+}
+
+witnesses = [1* witness]
+
+token_registration = {
+    ? 0 : string, ; version
+    1 : policy_details,
+    2 : witnesses
+}
+
+metadata = { 867 : uint => token_registration }
