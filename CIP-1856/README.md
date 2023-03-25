@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Extend NFT and FT metadata standard to support string localization
+Title: Extend token metadata for translations
 Category: Metadata
 Status: Proposed
 Authors:
