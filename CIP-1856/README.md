@@ -101,7 +101,7 @@ The new JSON metadata standard will look like this:
 > **Note**
 > This metadata standard extension is backward compatible and it doesn't affect applications using the current standard. Dapps implementing the proposed extended standard can also default on the legacy values if the localized strings are not available on an asset.
 
-## Code example to access localized properties (TypeScript)
+### Code example to access localized properties (TypeScript)
 
 To access the localized strings from the fetched metadata for a native asset, we can simply access the JSON properties from the front end by using the user's selected culture:
 
