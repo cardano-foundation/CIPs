@@ -2,7 +2,7 @@
 CIP: ?
 Title: Extend NFT and FT metadata standard to support string localization
 Category: Metadata
-Status: Draft
+Status: Proposed
 Authors:
     - Vito Melchionna <info@granadapool.com>
     - Aaron Schmid <aaron@fortech.group>
