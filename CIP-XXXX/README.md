@@ -137,6 +137,10 @@ Which we propose uses the `type: script` when used in JSON notation such as in t
 }
 ```
 
+Here is an illustration of transactions with their input set annotated by which ones fail and which ones succeed
+
+![image](https://user-images.githubusercontent.com/2608559/227744589-b8610d44-ff75-4559-b022-de75c2cb542b.png)
+
 # Backwards compatibility
 
 Currently there are two versions of native scripts:
