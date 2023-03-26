@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Vito Melchionna <info@granadapool.com>
     - Aaron Schmid <aaron@fortech.group>
-    - Carolina Isler (@LaPetiteADA)<lapetiteada@granadapool.com>
+    - Carolina Isler (@LaPetiteADA) <lapetiteada@granadapool.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/488
@@ -29,10 +29,10 @@ License: CC-BY-4.0
 -->
 
 ## Abstract
-This proposal defines an additional property to the NFT and FT metadata standard to support text localization.
+This proposal defines an additional property to the metadata standard for tokens (NFTs and FTs) to support text localization.
 
 ## Motivation: why is this CIP necessary?
-Current NFT and FT metadata only supports a single hardcoded language (mostly English), which limits the accessibility to a certain culture. To get closer to mass adoption, we need to bring down language barriers by extending the current standard to support translations. This is especially relevant for games, metaverse solutions, and RealFi use cases of NFTs.  
+Current token metadata only supports a single hardcoded language (mostly English), which limits the accessibility to a certain culture. To get closer to mass adoption, we need to bring down language barriers by extending the current standard to support translations. This is especially relevant for games, metaverse solutions, and RealFi use cases of NFTs.
 
 ## Specification
 This proposal follows the same specifications as [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025).
