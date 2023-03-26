@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Vito Melchionna <info@granadapool.com>
     - Aaron Schmid <aaron@fortech.group>
-    - Carolina Isler (@LaPetiteADA) <lapetiteada@granadapool.com>
+    - Carolina Isler @LaPetiteADA <lapetiteada@granadapool.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/488
