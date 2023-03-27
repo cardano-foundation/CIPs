@@ -29,7 +29,7 @@ Governance on Cardano in this CIP is defined as on chain decision making that is
 On rare occation a threat may be identified that requires responsible reporting procedures in order to prevent exposing an active vulnerability to bad actors who may aim to exploit the vulnerability. In the event responsible reporting is required, notify the appropriate group or entity with the responsiblility and resources to mitigate such threat in a confidential manner.
 
 Assumption: there are no known software back doors.
-
+1. Possible unknown software vulnerabilities.
 # Rational
 
 The threats and recommendations listed here are the result of consultation among cyber security experts, financial experts, game theory experts, and Voltaire workshop attendees which included developoers, stake pool operators, representatives from IOG, Cardano Foundation and Emurgo, memebers of Project Catalyst, and Cardano community members at large.
