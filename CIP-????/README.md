@@ -4,12 +4,8 @@ Title: Cardano Governance Security
 Category: Ledger
 Status: Proposed
 Authors:
-    - John Doe <john.doe@email.domain>
-    - John Doe <john.doe@email.domain>
-    - John Doe <john.doe@email.domain>
-    - John Doe <john.doe@email.domain>
-    - John Doe <john.doe@email.domain>
-    - John Doe <john.doe@email.domain>
+    - Richard McCracken <rickymac68@icloud.com>
+    - Andrew Westberg <andrewwestberg@gmail.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
