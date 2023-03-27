@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 # Abstract
 
-As Cardano community led governance comes online, security of the governance mechanisme must be addressed in a manner so that all participants are aware of the security weaknesses and how each weakness can be addressed. The guidelines contained in the CIP are relevant to Constittional Committe members, Delegation Representatives, Stake Pool Operators, voters, and Ada holders at large. The guidlines also contain as to how wallet developers, dApp developers, and infrastructure developers in general to help build situational awareness so that as development progresses in these areas, consideration in design is given to governance security.
+As Cardano community led governance comes online, security of the governance mechanism must be addressed in a manner so that all participants are aware of the security weaknesses and how each weakness can be addressed. The guidelines contained in the CIP are relevant to Constittional Committe members, Delegation Representatives, Stake Pool Operators, voters, and Ada holders at large. The guidelines also contain as to how wallet developers, dApp developers, and infrastructure developers in general to help build situational awareness so that as development progresses in these areas, consideration in design is given to governance security.
 
 # Motivation
 
