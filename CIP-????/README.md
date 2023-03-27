@@ -5,11 +5,11 @@ Category: Ledger
 Status: Proposed
 Authors:
     - John Doe <john.doe@email.domain>
-	- John Doe <john.doe@email.domain>
-	- John Doe <john.doe@email.domain>
-	- John Doe <john.doe@email.domain>
-	- John Doe <john.doe@email.domain>
-	- John Doe <john.doe@email.domain>
+    - John Doe <john.doe@email.domain>
+    - John Doe <john.doe@email.domain>
+    - John Doe <john.doe@email.domain>
+    - John Doe <john.doe@email.domain>
+    - John Doe <john.doe@email.domain>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
