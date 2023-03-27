@@ -8,7 +8,7 @@ Authors:
     - Andrew Westberg <andrewwestberg@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/490
 Created: 2023-03-27
 License: CC-BY-4.0
 ---
