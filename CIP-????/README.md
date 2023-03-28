@@ -21,7 +21,7 @@ As Cardano community led governance comes online, security of the governance mec
 
 This CIP intent is to promote awareness of governance security vulnerabilities and possible mitigation techniques in the Cardano ecosystem. The goal is to provide a comprehensive guide describing all known governance security threats and possible mitigiations techniques, but not to address specific software vulnerabilities. The governance security need is present regardless of the final form of CIP-1694 or any other governance document to minimize financial damage and nefarious activities that may occur when a system of voting, elections, and on-chain approval of automated actions are present.
 
-# Specification
+## Goals
 
 Governance on Cardano in this CIP is defined as on chain decision making that is automatically executed when some threshold of approval by human actors is met. Each threat or vulnerability will be described as a "threat", "description", and the suggested mitigiation technique will be described as a "recommendation" for each type of threat identified in this document. All known threats and mitigations will be made available to public as broadly as possible. The more voters, developers, and governance actors are aware of threats the more likely they are to be identified and mitigated before damage occurs.
 
