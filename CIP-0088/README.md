@@ -4,14 +4,12 @@ Title: Token Policy Registration
 Category: Tokens
 Status: Proposed
 Authors:
-
-- Adam Dean <adam@crypto2099.io>
-  Implementors: N/A
-  Discussions:
-- https://github.com/cardano-foundation/cips/pulls/467
-  Created: 2023-02-27
-  License: CC-BY-4.0
-
+  - Adam Dean <adam@crypto2099.io>
+Implementors: N/A
+Discussions:
+  - https://github.com/cardano-foundation/cips/pulls/467
+Created: 2023-02-27
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -130,13 +128,13 @@ misspelling or capitalization issues.
 
 `Version: 1.0.0`
 
-| Index | Name                                                             | Type   | Required | Notes                                                        |
-|-------|------------------------------------------------------------------|--------|----------|--------------------------------------------------------------|
-| 0     | Version                                                          | String | No       |                                                              |
-| 1     | [Token Registration Payload](#token-registration-payload-object) | Map    | Yes      | Object describing and providing details for the token policy | 
-| 2     | [Token Registration Witness](#token-registration-witness-array)  | Array  | Yes      | Array of witness signatures used to validate the payload     |
+| Index | Name                                                 | Type   | Required | Notes                                                        |
+|-------|------------------------------------------------------|--------|----------|--------------------------------------------------------------|
+| 0     | Version                                              | String | No       |                                                              |
+| 1     | [Registration Payload](#registration-payload-object) | Map    | Yes      | Object describing and providing details for the token policy | 
+| 2     | [Registration Witness](#registration-witness-array)  | Array  | Yes      | Array of witness signatures used to validate the payload     |
 
-### Token Registration Payload Object
+### Registration Payload Object
 
 The Token Registration Payload Object (TRPO) consists of 4 required fields and then optional, additional fields to
 provide additional context and information as part of the registration payload. The top-level metadata label of **867**
@@ -144,14 +142,14 @@ has been chosen for the purposes of this standard.
 
 #### Fields
 
-| Index | Name                                | Type                  | Required | Notes/Examples                                                                                                                                                                                                                                    |
-|-------|-------------------------------------|-----------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | Scope                               | Array \<Uint,*\>      | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
-| 2     | Feature Set                         | Array \<UInt\>        | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
-| 3     | Validation Method                   | Array \<String\>      | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
-| 4     | Nonce                               | UInt                  | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
-| 5     | Oracle URI                          | Array \<String\>      | No       | Reserved for future use, URI to an informational oracle API for this policy                                                                                                                                                                       |
-| 6     | [CIP Details](#cip-specific-fields) | Array \<CIP_Details\> | No       | If one or more of the CIPs addressed in the Feature Set have additionally defined metadata, it may be added here                                                                                                                                  |
+| Index | Name                                | Type  | Required | Notes/Examples                                                                                                                                                                                                                                    |
+|-------|-------------------------------------|-------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | Scope                               | Array | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
+| 2     | Feature Set                         | Array | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
+| 3     | Validation Method                   | Array | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
+| 4     | Nonce                               | UInt  | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
+| 5     | Oracle URI                          | Array | No       | Reserved for future use, URI to an informational oracle API for this policy                                                                                                                                                                       |
+| 6     | [CIP Details](#cip-specific-fields) | Array | No       | If one or more of the CIPs addressed in the Feature Set have additionally defined metadata, it may be added here                                                                                                                                  |
 
 The following fields are required in all token registration submissions.
 
@@ -163,33 +161,46 @@ etc.) should the specification become adopted and the community desire to expand
 
 **Scopes**
 
-- **0**: Token Project Scope. The scope identifier should consist of an array with the first element set to 0 and the
-  second
-  element being the Policy ID referenced and governed by the remainder of the registration information.
+| ID  | Scope         | Format             |
+|-----|---------------|--------------------|
+| 0   | Token Project | `[0, h'policyID']` |
 
 **Example:**
 
 `[0, h'00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae']`
 
-#### 2. Feature Set \<Array:Integer\>
+#### 2. Feature Set
 
 **Example:**
 
 `[25, 27]`
 
-#### 3. Validation Method \<Array:String\>
+#### 3. Validation Method
 
-**Example:**
+In order to minimize issues relating to capitalization and misspellings, we should use a well-defined map of integer
+values for validation methods that will be utilized by third party observers and processors to authenticate the payload.
+The validation method entry should always be provided as an array with the first element being an unsigned integer
+representing the method and additional entries providing additional context to the validation as required.
 
-`['Ed25519']`
+***Proposed Validation Methods***
 
-#### 4. Nonce \<Integer\>
+| ID  | Type                   | Format                  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|-----|------------------------|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0   | Ed25519 Key Signature  | `[0]`                   | The most basic and simplistic approach to signing and validation. In this case the Registration Witness object could contain one or more pubkey + signed witness objects. The payload to be signed should be the hex-encoded CBOR representation of the Registration Payload object.                                                                                                                                                       |
+| 1   | Beacon/Reference Token | `[1, [h'policyId',h'']` | Similar to the approach utilized by [CIP-27](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027). We could attach this metadata during a mint transaction for a specially formatted token under the policy ID in question. CIP-27 uses a "nameless" token that has an empty "Asset ID" for example. This may be a validation method that lends itself better to supporting token projects that are minted via Smart Contract. |
+
+**Examples:**
+
+`[0]`,
+`[1, [h'policyId',h'']`
+
+#### 4. Nonce
 
 **Example:**
 
 `12345`
 
-#### 5. Data Oracle URI \<UriArray:String\>
+#### 5. Data Oracle URI
 
 To be utilized and expanded upon in a separate CIP, this should be a valid URI pointing to a source of additional,
 potentially dynamic information relating to the project and/or the tokens minted under it.
@@ -212,6 +223,7 @@ These additional CIPs/Schemas to be determined by the community could include:
 - CIP-25 &amp; CIP-68 NFT Project top-level project information
 - CIP-26 FT Project Monetary Policy information
 - CIP-27 NFT Project Royalty information
+- CIP-48 Metadata References information
 - CIP-60 Music NFT information
 
 ***Beacon Token Registration***
@@ -222,13 +234,14 @@ beacon token for the purposes of smart contract interactions.
 
 ##### CIP-Specific Fields
 
-| index | name              | type   | required | notes                      |
-|-------|-------------------|--------|----------|----------------------------|
-| 25    | NFT Project       | Object | No       | CIP-25 NFT Project details |
-| 26    | FT Project        | Object | No       | CIP-26 FT Project details  |
-| 27    | NFT Royalties     | Object | No       | CIP-27 NFT Royalty details |
-| 60    | Music NFT Project | Object | No       | CIP-60 Music NFT details   |
-| 68    | NFT Project       | Object | No       | CIP-68 NFT Project details |
+| index | name                | type   | required | notes                             |
+|-------|---------------------|--------|----------|-----------------------------------|
+| 25    | NFT Project         | Object | No       | CIP-25 NFT Project details        |
+| 26    | FT Project          | Object | No       | CIP-26 FT Project details         |
+| 27    | NFT Royalties       | Object | No       | CIP-27 NFT Royalty details        |
+| 48    | Metadata References | Object | No       | CIP-48 Metadata Reference details |
+| 60    | Music NFT Project   | Object | No       | CIP-60 Music NFT details          |
+| 68    | NFT Project         | Object | No       | CIP-68 NFT Project details        |
 
 **Example:**
 
@@ -532,6 +545,39 @@ outside the scope of this CIP.
 }
 ```
 
+##### CIP-48: Metadata References Standard
+
+CIP-48 has been proposed to extend on-chain metadata formats to support "references" which could be:
+
+1. Shared/Repeated pieces of content
+2. Pointers or References to other on-chain information
+
+CIP-88 could help support the definition and standardization of the reference definitions at a top-level, allowing
+references declared within individual token metadata to be easily identified and replaced.
+
+***CIP-48: Top-Level Object Fields***
+
+| index | name              | type   | required | notes                                                          |
+|-------|-------------------|--------|----------|----------------------------------------------------------------|
+| 0     | Version           | String | No       | Default "1.0.0", which version of this specification is in use |
+| 1     | Reference Details | Object | No       | An object detailing CIP-48 references in use                   |
+
+***Reference Details Fields***
+
+| index | name       | type  | required | notes                  |
+|-------|------------|-------|----------|------------------------|
+| 1     | References | Array | No       | An array of References |
+
+***Reference Fields***
+
+| index | name    | type   | required | notes                                                                                                                 |
+|-------|---------|--------|----------|-----------------------------------------------------------------------------------------------------------------------|
+| 0     | Name    | String | Yes      | A case sensitive path identifier for this reference                                                                   |
+| 1     | Type    | Enum   | Yes      | An enum of accepted types of references which may include direct payloads or pointers to other sources of information |
+| 2     | Payload | Object | Yes      | A "Reference Payload" object containing the information to be substituted in place of the reference                   |
+
+**TODO: Expand Support for CIP-48**
+
 ##### CIP-60: Music NFT Standard
 
 `Version: 1.0.0`
@@ -597,7 +643,7 @@ suited to a top-level informational scope.
 }
 ```
 
-### Token Registration Witness Array
+### Registration Witness Array
 
 ### (Native Scripts)
 
@@ -614,20 +660,11 @@ The signing payload should be the hex-encoded Token Registration Payload Object.
 [
   [
     h'e97316c52c85eab276fd40feacf78bc5eff74e225e744567140070c3j',
-    [
-      "witness may be broken up into a sub-array of 64-character strings",
-      "assuming that the overall length of the witness is longer than the",
-      "64-character on-chain metadata limit for strings."
-    ]
+    h'bytestringsignature'
   ],
   [
     h'26bacc7b88e2b40701387c521cd0c50d5c0cfa4c6c6d7f0901395757',
-    [
-      "this is the second witness for a 2 out of 3 multi-sig script.",
-      "it's also broken up into an array.",
-      "strings in the witness array should be concatenated as-is",
-      "without spaces or any formatting applied"
-    ]
+    h'secondSignatureByteString'
   ]
 ]
 ```
@@ -646,9 +683,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
         25,
         27
       ],
-      3: [
-        "Ed25519"
-      ],
+      3: [0],
       4: 12345,
       5: [
         "https://",
@@ -708,20 +743,11 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
     2: [
       [
         h'e97316c52c85eab276fd40feacf78bc5eff74e225e744567140070c3j',
-        [
-          "witness should always be broken up into an array of max 64-byte strings",
-          "assuming that the overall length of the witness is longer than the",
-          "64-byte on-chain limit."
-        ]
+        h'firstWitnessByteString'
       ],
       [
         h'26bacc7b88e2b40701387c521cd0c50d5c0cfa4c6c6d7f0901395757',
-        [
-          "this is the second witness for a 2 out of 3 multi-sig script.",
-          "it's also broken up into an array.",
-          "strings in the witness array should be concatenated as-is",
-          "withouts spaces or any formatting applied"
-        ]
+        h'secondWitnessByteString'
       ]
     ]
   }
@@ -739,11 +765,12 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
       2: [
         26
       ],
-      3: [
-        "Ed25519"
-      ],
+      3: [0],
       4: 12345,
-      5: ["https://","oracle.tokenproject.io/"],
+      5: [
+        "https://",
+        "oracle.tokenproject.io/"
+      ],
       6: {
         26: {
           0: "1.0.0",
@@ -790,11 +817,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
     2: [
       [
         h'e97316c52c85eab276fd40feacf78bc5eff74e225e744567140070c3j',
-        [
-          "witness should always be broken up into an array of max 64-byte strings",
-          "assuming that the overall length of the witness is longer than the",
-          "64-byte on-chain limit."
-        ]
+        h'witnessByteString'
       ]
     ]
   }
