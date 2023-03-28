@@ -21,7 +21,7 @@ update over time, the supported feature set and metadata details pertaining to t
 This CIP will aim to make use of a hybrid (on and off-chain) information schema to enable maximum flexibility and
 adaptability as new and novel use cases for native assets expand and grow over time.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 This CIP was borne out of a distaste for the lack of on-chain token policy intent registration that has been cited as
 both a centralization and security concern at various points over the preceding two years of native asset history on
@@ -824,7 +824,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
 }
 ```
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 For this specification, I have drawn inspiration from
 [CIP-36: Catalyst/Voltaire Registration Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036)
