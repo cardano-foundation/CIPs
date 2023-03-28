@@ -32,9 +32,9 @@ Assumption: There are no known software back doors. Unknown software vulnerabili
 
 ### #1: Unknown software vulnerability affecting governance is discovered.
 
-Recommendation: The person discovering the vulnerability should document the circumstances and details in which the vulnerability is present and how to reproduce the vulnerability. Then report the vulnerability in a conficential manner using a secure method to the developer team with the resources to correct the vulnerability.
+Recommendation: The person discovering the vulnerability should document the circumstances and details in which the vulnerability is present and how to reproduce the vulnerability. Then report the vulnerability in a confidential manner using a secure method to the developer team with the resources to correct the vulnerability.
 
-### #2: Emergency group to support the disaster recover plan.
+### #2: Emergency group to support the disaster recovery plan.
   -attacks on persons if known
   -we don’t want attackers know who that group is?
 
@@ -80,7 +80,8 @@ Recommendation:
 
 ### #10: Corruption - in any form, any number of actors.
   -Code of Conduct mitigation
-  -on chain mitigation
+  -on-chain mitigation
+
 
 Recommendation:
 
@@ -146,7 +147,8 @@ Recommendation:
 
 Recommendation:
 
-### #24: Blocking a Constitution Committee revote after a vote of “no confidence”.
+### #24: Blocking a Constitutional Committee revote after a vote of “no confidence”.
+
 
 Recommendation:
 
@@ -158,11 +160,11 @@ Recommendation:
 
 # Rational
 
-The threats and recommendations listed here are the result of consultation among cyber security experts, financial experts, game theory experts, and Voltaire workshop attendees which included developoers, stake pool operators, representatives from IOG, Cardano Foundation and Emurgo, memebers of Project Catalyst, and Cardano community members at large.
+The threats and recommendations listed here are the result of consultation among cyber security experts, financial experts, game theory experts, and Voltaire workshop attendees which included developers, stake pool operators, representatives from IOG, Cardano Foundation and Emurgo, members of Project Catalyst, and Cardano community members at large.
 
 # Path to active
 
-This CIP will be ready for active when concurrence is established by the Cardano communities of practice for each threat and recommenation listed in this CIP.
+This CIP will be ready for active when concurrence is established by the Cardano communities of practice for each threat and recommendation listed in this CIP.
 
 # Copyright
 
