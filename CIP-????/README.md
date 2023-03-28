@@ -25,7 +25,7 @@ This CIP intent is to promote awareness of governance security vulnerabilities a
 
 Governance on Cardano in this CIP is defined as on chain decision making that is automatically executed when some threshold of approval by human actors is met. Each threat or vulnerability will be described as a "threat", "description", and the suggested mitigiation technique will be described as a "recommendation" for each type of threat identified in this document. All known threats and mitigations will be made available to public as broadly as possible. The more voters, developers, and governance actors are aware of threats the more likely they are to be identified and mitigated before damage occurs.
 
-On rare occation a threat may be identified that requires responsible reporting procedures in order to prevent exposing an active vulnerability to bad actors who may aim to exploit the vulnerability. In the event responsible reporting is required, notify the appropriate group or entity with the responsiblility and resources to mitigate such threat in a confidential manner.
+On rare occasion a threat may be identified that requires responsible reporting procedures in order to prevent exposing an active vulnerability to bad actors who may aim to exploit the vulnerability. In the event responsible reporting is required, notify the appropriate group or entity with the responsibility and resources to mitigate such threat in a confidential manner.
 
 Assumption: There are no known software back doors. Unknown software vulnerabilities may be discovered.
 
