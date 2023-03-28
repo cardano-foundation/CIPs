@@ -26,7 +26,7 @@ This CIP was borne out of a distaste for the lack of on-chain token policy inten
 both a centralization and security concern at various points over the preceding two years of native asset history on
 Cardano.
 
-### Example 1: The Cardano Token Registry
+***Example 1: The Cardano Token Registry***
 
 Many Fungible Token (FT) projects require special treatment of their NAs such as decimal places for proper display and
 formatting, project information, and token logo. As it stands, these projects must currently register via a GitHub
@@ -43,7 +43,7 @@ service providers to contribute or participate in this or alternative solutions.
 
 This CIP attempts to provide a decentralized solution to this problem.
 
-### Example 2: Token Metadata Insecurity
+***Example 2: Token Metadata Insecurity***
 
 One of the stated rationales for [CIP-68](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068) was that the
 "original" Cardano NFT Metadata Standard ([CIP-25](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025)) was
@@ -53,9 +53,9 @@ tokens) could have a malicious user inject CIP-25 metadata into the transaction,
 or otherwise nefarious metadata information tied to the tokens which may be picked up and displayed to end users
 unwittingly by explorers and wallets.
 
-### Example 3: De-duplication of Data
+***Example 3: De-duplication of Data***
 
-Similar to [Example 1](#example-1--the-cardano-token-registry) above, when it comes to Non-Fungible Token (NFT) projects
+Similar to **Example 1** above, when it comes to Non-Fungible Token (NFT) projects
 currently operating on the chain there is usually a desire to provide some level of information that pertains to all
 tokens under the given policy. Examples include project/collection names, social media handles, and miscellaneous
 project registration information. At current, this is generally solved by adding "static" fields in the metadata of

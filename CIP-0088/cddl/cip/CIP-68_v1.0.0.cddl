@@ -1,0 +1,9 @@
+; CIP-0068: NFT Metadata Standard
+; Version: 1.0.0
+
+string = text .size (0..64)
+
+cip68-details = {
+    ? 0 : string,                ; version
+    1 : nft-project-details      ; CIP-0068 NFT Project Details
+}
