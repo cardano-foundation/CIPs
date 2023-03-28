@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Richard McCracken <rickymac68@icloud.com>
     - Andrew Westberg <andrewwestberg@gmail.com>
-Implementors: []
+Implementors: N/A
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/490
 Created: 2023-03-27
