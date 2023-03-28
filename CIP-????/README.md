@@ -158,14 +158,14 @@ Recommendation:
 
 
 
-# Rational
+## Rational
 
 The threats and recommendations listed here are the result of consultation among cyber security experts, financial experts, game theory experts, and Voltaire workshop attendees which included developers, stake pool operators, representatives from IOG, Cardano Foundation and Emurgo, members of Project Catalyst, and Cardano community members at large.
 
-# Path to active
+## Path to active
 
 This CIP will be ready for active when concurrence is established by the Cardano communities of practice for each threat and recommendation listed in this CIP.
 
-# Copyright
+## Copyright
 
 This CIP is licensed under CC-BY-4.0
