@@ -11,7 +11,7 @@ other standards in the future.
 
 ***NFT Project Details Fields***
 
-| index | name                                          | type   | required |
+| Index | Name                                          | Type   | Required |
 |-------|-----------------------------------------------|--------|----------|
 | 0     | [Collection Name](#0--Collection-Name)        | String | Yes      |
 | 1     | [Description](#1--Description)                | Array  | No       |
