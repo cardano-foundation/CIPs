@@ -1,5 +1,5 @@
 ---
-CIP: ???
+CPS: ?
 Title: Cardano Governance Security
 Category: Ledger
 Status: Proposed
