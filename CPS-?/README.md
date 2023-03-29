@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: ???
 Title: Cardano Governance Security
 Category: ?
 Status: Open
@@ -9,6 +9,7 @@ Authors:
 Proposed Solutions: N/A
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/490
+    - https://github.com/cardano-foundation/CIPs/pull/491
 Created: 2023-03-28
 ---
 
