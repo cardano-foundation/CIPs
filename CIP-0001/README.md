@@ -18,13 +18,13 @@ Created: 2020-03-21
 License: CC-BY-4.0
 ---
 
-## Abstract
+# Abstract
 
 A Cardano Improvement Proposal (CIP) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP  provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-## Motivation: why is this CIP necessary?
+# Motivation: why is this CIP necessary?
 
 CIPs aim to address two challenges mainly:
 
@@ -34,9 +34,9 @@ CIPs aim to address two challenges mainly:
 
 The CIP process does not _by itself_ offer any form of governance. For example, it does not govern the process by which proposed changes to the Cardano protocol are implemented and deployed. Yet, it is a crucial, community-driven component of the governance decision pipeline as it helps to collect thoughts and proposals in an organised fashion. Additionally, specific projects may choose to actively engage with the CIP process for some or all changes to their project.
 
-## Specification
+# Specification
 
-### Table of Contents
+## Table of Contents
 
 - [Document](#document)
   - [Structure](#structure)
@@ -48,7 +48,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
     - [Status: Active](#status-active)
     - [Status: Inactive](#status-inactive)
   - [Path to Active](#path-to-active)
-  - [Categories](#categories)
+  - [Taxonomy](#taxonomy)
   - [Project Enlisting](#project-enlisting)
 - [Process](#process)
   - [1. Early Stage](#1-early-stages)
@@ -64,9 +64,9 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
   - [Reviews](#reviews)
   - [Nomination](#nomination)
 
-### Document
+## Document
 
-#### Structure
+### Structure
 
 A CIP is, first and foremost, a document which proposes a solution to a well-defined problem. Documents are [Markdown][] files with a _Preamble_ and a set of pre-defined sections. CIPs authors must abide by the general structure, though they are free to organise each section as they see fit.
 
@@ -84,7 +84,7 @@ Copyright                                       | The CIP must be explicitly lic
 
 > **Note** Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
 
-##### Header Preamble
+### Header Preamble
 
 Each CIP must begin with a YAML key:value style header preamble (also known as _front matter data_), preceded and followed by three hyphens (`---`).
 
@@ -93,7 +93,7 @@ Field          | Description
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
 `Title`        | A succinct and descriptive title
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
-`Category`     | One of the registered [categories](#categories) covering one area of the ecosystem.
+`Taxonomy`     | One of the constructs that describe the [domain/scope](#taxonomy) that the proposal covers.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
 `Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. `N/A` when not applicable and `[]` when there's currently no implementor.
 `Discussions`  | A list of links where major technical discussions regarding this CIP happened. Links should include any discussion before submission, and _must_ include a link to the pull request that created the CIP and any pull request that modifies it.
@@ -108,7 +108,7 @@ For example:
 CIP: 1
 Title: Cardano Improvement Proposals
 Status: Active
-Category: Meta
+Type: Meta
 Authors:
     - Frederic Johnson <frederic.johnson@cardanofoundation.org>
     - Sebastien Guillemot <sebastien@dcspark.io>
@@ -124,7 +124,7 @@ License: CC-BY-4.0
 
 > **Note** A reference template is available in [.github/CIP-TEMPLATE.md][CIP-TEMPLATE.md]
 
-##### Repository Organization
+### Repository Organization
 
 A CIP must be stored in a specific folder named after its number (4-digit, left-padded with `0`) and in a file called `README.md`. Before a number is assigned, use `????` as a placeholder number (thus naming new folders as `CIP-????`). After a number has been assigned, rename the folder.
 
@@ -140,7 +140,7 @@ CIP-0010
 
 ```
 
-##### Licensing
+### Licensing
 
 CIPs are licensed in the public domain. Moreso, they must be licensed under one of the following licenses. Each new CIP must identify at least one acceptable license in its preamble. In addition, each license must be referenced by its respective abbreviation below in the _"Copyright"_ section.
 
@@ -153,13 +153,13 @@ CIPs are licensed in the public domain. Moreso, they must be licensed under one 
 >
 > All licenses not explicitly included in the above lists are not acceptable terms for a Cardano Improvement Proposal unless a later CIP extends this one to add them.
 
-#### Statuses
+### Statuses
 
 CIPs can have three statuses: `Proposed`, `Active` or `Inactive`. [The CIP Process section](#process) highlights how CIPs move through these statuses; no CIP should be given one of these statuses without satisfying the criteria described here below.
 
 > **Note** There is no "draft" status: a proposal which has not been merged (and hence exists in a PR) is a draft CIP. Draft CIPs should include the status they are aiming for on acceptance. Typically, but not always, this will be _'Proposed'_.
 
-##### Status: Proposed
+#### Status: Proposed
 
 A _'Proposed'_ CIP is any CIP that meets the essential CIP criteria but is not yet _'Active'_. The criteria that must meet a CIP to be merged as _'Proposed'_ are:
 
@@ -168,7 +168,7 @@ A _'Proposed'_ CIP is any CIP that meets the essential CIP criteria but is not y
 - Its technical soundness should have been established. Where necessary, this may require review by particular experts and addressing their concerns. Note that the requirement is that the proposal makes sense (i.e. be technically sound), yet no consulted experts need to think it is a good idea.
 - It must have a valid [Path to Active](#path-to-active) as defined below.
 
-##### Status: Active
+#### Status: Active
 
 An _'Active'_ CIP has taken effect according to the criteria defined in its _'Path to Active'_ section. Said differently, each CIP defines by which criteria it can become _'Active'_ and those criteria are included in the review process. Exact criteria thereby depends on the nature of the CIP, typically:
 
@@ -179,7 +179,7 @@ An _'Active'_ CIP has taken effect according to the criteria defined in its _'Pa
 
 A proposal that is _'Active'_ is considered complete and is synonymous with "production readiness" when it comes to the maturity of a solution. _'Active'_ CIPs will not be updated substantially (apart from minor edits, proofreading and added precisions). They can, nevertheless, be challenged through new proposals if need be.
 
-##### Status: Inactive
+#### Status: Inactive
 
 An _'Inactive'_ CIP describes any proposal that does not fit into the other types. A CIP can therefore be _'Inactive'_ for various reasons (e.g. obsolete, superseded, abandoned). Hence the status must indicate a justification between parentheses; for example:
 
@@ -187,7 +187,7 @@ An _'Inactive'_ CIP describes any proposal that does not fit into the other type
 Status: Inactive (superseded by CIP-0001)
 ```
 
-#### Path to Active
+### Path to Active
 
 This must be subdivided into two sub-sections:
 
@@ -203,19 +203,57 @@ This must be subdivided into two sub-sections:
 
 > **Note** the statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may still be helpful to have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
 
-#### Categories
+# Taxonomy: Types, Classes, Categories(and CRCs).
 
-CIPs are classified into distinct categories that help organise (and thus, find) them. Categories are meant to be flexible and evolve as new domains emerge. Authors may leave the category as `?` should they not be sure under which category their proposal falls; editors will eventually assign one or reject the proposal altogether should it relate to an area where the CIP process does not apply.
+CIPs are grouped according to a distinct taxonomy that help organise (and thus, find) them. 
 
-At present, we consider the following list of initial categories:
+This taxonomy is comprised of (in descending order): Types, Classes, Categories, and CRCs. 
 
+## Types
+There are three **Types** of CIP:
+
+Type                   | Description
+---                    | ---
+Standards              | For changes that affect two classes of scope: **Core** components, rules, and parameters of the Cardano protocol(and implementations), and **Application** standards/conventions such as NFT standards, wallet interfaces, etc. 
+Meta                   | Designates meta-CIPs, such as this one, which describes a process (or guideline) in Cardano or proposes a change to (or a step in) a process.
+Informational          | These provide general information and recommendations to the Cardano community. They do not propose new features and are **optional**(good to know) in nature.
+
+## Classes
+For every `Type` of CIP, there are (currently) two **Classes** they can be assigned to:
+
+Class                  | Description
+---                    | ---
+Core                   | This specifies changes for the core components of the Cardano protocol, namely: Networking, Consensus, Ledger, Plutus.
+Application            | This specifies changes for application-level standardisation across schemas, tools, and interfaces for Wallets, (d)Apps, Tokens, Metadata, etc.
+
+## Categories
+These are a set of improvements that either fall within the **Core** or **Application** `class`.
+
+Categories are meant to be flexible and evolve as new domains emerge. 
+
+At present, we consider the following list of initial Categories(per their respective Classes):
+
+### Core
+Category | Description
+---      | ---
+Networking| For proposals regarding the Cardano Networking/P2P (mini)protocols.
+Consensus| For proposals regarding the Cardano Consensus/Ouroboros protocols
+Ledger   | For proposals regarding the Cardano Ledger, following the process described in [CIP-0084][https://github.com/cardano-foundation/CIPs/pull/456]
+Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
+
+### Application
 Category               | Description
 ---                    | ---
-Meta                   | Designates meta-CIPs, such as this one, which typically serves another category or group of categories.
-Wallets                | For standardisation across wallets (hardware, full-node or light).
+CRC                    | For application-level standardisations and conventions across wallets formats, Tokens, Metadata, Plutus Script standards, etc.
+Tools & Interfaces     | For proposals that focus on ecosystem tools and specifications/interfaces for (d)Apps and clients.
+
+#### CRC (Cardano Request for Comments)
+
+Subcategory            | Description
+---                    | ---
+Wallets                | For standardisation across wallets (hardware or software, full-node or light-node).
 Tokens                 | About tokens (fungible or non-fungible) and minting policies in general.
 Metadata               | For proposals around metadata (on-chain or off-chain).
-Tools                  | A broad category for ecosystem tools not falling into any other category.
 
 Additionally, projects of the ecosystem may explicitly enlist as new categories. The following section describes how projects can engage with the CIP process.
 
@@ -223,11 +261,11 @@ Registered categories for explicitly enlisted projects are otherwise listed belo
 
 Category | Description
 ---      | ---
-Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][https://github.com/cardano-foundation/CIPs/pull/456]
 Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
 
-#### Project Enlisting
+> **Note** Authors may leave the category as `?` should they not be sure under which `Type`,`Class` or `Category` their proposal falls; editors will eventually assign one or reject the proposal altogether should it relate to an area where the CIP process does not apply.
+
+### Project Enlisting
 
 Projects of the Cardano ecosystem that intend to follow the CIP process must explicitly enlist themselves and commit to the following:
 
