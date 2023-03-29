@@ -48,7 +48,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
     - [Status: Active](#status-active)
     - [Status: Inactive](#status-inactive)
   - [Path to Active](#path-to-active)
-  - [Taxonomy](#taxonomy)
+  - [Taxonomy](#taxonomy-types-classes-categoriesand-crcs)
   - [Project Enlisting](#project-enlisting)
 - [Process](#process)
   - [1. Early Stage](#1-early-stages)
@@ -93,7 +93,7 @@ Field          | Description
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
 `Title`        | A succinct and descriptive title
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
-`Taxonomy`     | One of the constructs that describe the [domain/scope](#taxonomy) that the proposal covers.
+`Taxonomy`     | One of the constructs that describe the [domain/scope](#taxonomy-types-classes-categoriesand-crcs) that the proposal covers.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
 `Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. `N/A` when not applicable and `[]` when there's currently no implementor.
 `Discussions`  | A list of links where major technical discussions regarding this CIP happened. Links should include any discussion before submission, and _must_ include a link to the pull request that created the CIP and any pull request that modifies it.
