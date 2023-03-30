@@ -1,7 +1,7 @@
 ---
 CIP: 1
 Title: Cardano Improvement Proposals
-Status: Active
+Status: Living
 Category: Meta
 Authors:
     - Frederic Johnson <frederic@advanceweb3.com>
@@ -47,6 +47,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
     - [Status: Proposed](#status-proposed)
     - [Status: Active](#status-active)
     - [Status: Inactive](#status-inactive)
+    - [Status: Living](#status-living)
   - [Path to Active](#path-to-active)
   - [Taxonomy](#taxonomy-types-classes-categoriesand-crcs)
   - [Project Enlisting](#project-enlisting)
@@ -92,8 +93,8 @@ Field          | Description
 ---            | ---
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
 `Title`        | A succinct and descriptive title
-`Status`       | Proposed \| Active \| Inactive (.._reason_..)
-`Taxonomy`     | One of the constructs that describe the [domain/scope](#taxonomy-types-classes-categoriesand-crcs) that the proposal covers.
+`Status`       | Proposed \| Active \| Inactive (.._reason_..) \| Living
+`Taxonomy`     | One of the constructs that describes the [scope](#taxonomy-types-classes-categoriesand-crcs) of the proposal.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
 `Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. `N/A` when not applicable and `[]` when there's currently no implementor.
 `Discussions`  | A list of links where major technical discussions regarding this CIP happened. Links should include any discussion before submission, and _must_ include a link to the pull request that created the CIP and any pull request that modifies it.
@@ -107,7 +108,7 @@ For example:
 ---
 CIP: 1
 Title: Cardano Improvement Proposals
-Status: Active
+Status: Living
 Type: Meta
 Authors:
     - Frederic Johnson <frederic.johnson@cardanofoundation.org>
@@ -186,6 +187,9 @@ An _'Inactive'_ CIP describes any proposal that does not fit into the other type
 ```
 Status: Inactive (superseded by CIP-0001)
 ```
+#### Status: Living
+
+A _'Living'_ CIP describes any proposal that is designed to be continually updated and not reach a state of finality. This is a special status and includes most notably CIP-1.
 
 ### Path to Active
 
@@ -207,7 +211,20 @@ This must be subdivided into two sub-sections:
 
 CIPs are grouped according to a distinct taxonomy that help organise (and thus, find) them. 
 
-This taxonomy is comprised of (in descending order): Types, Classes, Categories, and CRCs. 
+This taxonomy is comprised of (in descending order): Types, Classes, Categories, and CRCs.
+
+CRC is short for **Cardano Request for Comments**, and they are technically a sub-level of the `Categories` group i.e. `Subcategories`.
+
+Visual aide:
+
+```
+CIP
+  |__Type: Standards | Meta | Information
+        |__Class: Core | Application
+              |__Category: Networking | Consensus | Ledger | Plutus | CRC | Tools & Interfaces
+                    |__CRC (or Subcategory): Wallet | Tokens | Metadata
+
+```
 
 ## Types
 There are three **Types** of CIP:
@@ -416,6 +433,26 @@ An ad-hoc classification by non-rigid categories, which may evolve over time to 
 #### Simplification of the statuses
 
 Over time we've learnt that the valuable information a status should convey is really about the readiness of a CIP, especially regarding standards. For a long time, many CIPs have lived as `Draft` despite some being used in dozens of systems. Consequently, the `status` has lost a bit of its meaning. The frontier between `Draft` and `Proposed` hasn't always been clear, and it has proven challenging to come up with good statuses to describe all possible rejections. So instead, the current division of statuses is as simple-as-it-can-be and remains flexible regarding rejections.
+
+### Addendum: Key changes from CIP-0001 (version 2)
+
+#### Prelude
+
+Version 3 of CIP-0001 is a refinement that draws influence and inspiration from the existing(time tested) standards used in other leading blockchain projects, namely: Ethereum's EIP(and ERC) system and Bitcoin's BIP system.
+
+A core focus of Version 3 is to improve the organisation and delineation of CIPs according to their (near) exact scope of impact in the Cardano project. This is established with the use of a number of fundamental groupings such as Types, Classes, Categories, and subcategories(which take form as CRCs).
+
+#### Introduction of a (distinct) Taxonomy (and the Return of `type` in the preamble).
+
+In version 2 of CIP-0001, editors(at the time) found the `type` field(in version 1) to be not-too-useful and even confusing for some proposal authors. This was likely due to the lack of a defined organizational structure for its use. With that, the decision (then) was to keep it simple enough, evidently at the cost of adequate organisation of proposals and their scope of function. As Cardano evolves, and more public contributors become involved in the project's various high and low-level components/facets, the need for enhanced clarity in proposal construction and organisation becomes more critical. Version 3 of CIP-0001 introduces a Taxonomy system intended to allow CIP authors to better signal the scope of their ideas and solutions with regard to the Cardano project. 
+
+#### Extension of the statuses
+
+During the process of making changes for version 3, it was realised that there's a need to appropriately indicate proposals that may be subject to active maintenance and updates(such as this one, CIP-0001). This may be due to a rapidly evolving ecosystem and the tendency for the proposal to still be a Work-in-Progress(WIP) while still being in use in production. `Living` serves as an apt choice that helps to signal (to all readers and participants) the tendency for the rules and details of the proposal to evolve over time.
+
+#### Introduction of the Cardano Request for Comments(CRC) standards.
+
+Many proposals, particularly those related to NFT and wallet standards, focus primarily on the application level of the Cardano project. While some may argue that these proposals do not technically improve the protocol, they do improve the interactions and interfaces that users and developers rely on, resulting in a better user experience. The introduction of CRCs helps to establish an appropriate distinction between these proposals and the low-level improvements to the Cardano protocol. This is similar to the approach used in the Ethereum ecosystem via ERC standards. The use of CRCs also improves the understanding and acceptance of certain proposals that may otherwise be confused for core protocol changes or hard rules. Ultimately, the adoption of any CRC or application-level proposal depends on the social consensus and the support of the majority of participants.
 
 ### Choice of CoC
 
