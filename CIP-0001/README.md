@@ -9,6 +9,7 @@ Authors:
 - Matthias Benkort <matthias.benkort@cardanofoundation.org>
 - Duncan Coutts <duncan.coutts@iohk.io>
 - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+- Emmanuel Batse <emmanuel.batse@proton.me>
 Implementors: N/A
 Discussions:
 - https://github.com/cardano-foundation/cips/pull/366
