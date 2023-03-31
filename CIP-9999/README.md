@@ -57,7 +57,7 @@ Field                | Description
 `CPS`                | CPS number (without leading 0), or "\?" before being assigned
 `Title`              | A succinct and descriptive title
 `Status`             | Open \| Solved \| Inactive (..._reason_...)
-`Category`           | One registered or well-known category covering one area of the ecosystem.
+`Taxonomy`           | One of the groupings that describes the [scope](https://github.com/NetWalker108/CIPs/tree/master/CIP-0001#taxonomy-types-classes-categories-and-crcs) of the problem statement.
 `Authors`            | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
 `Proposed Solutions` | A list of CIPs addressing the problem, if any
 `Discussions`        | A list of links where major technical discussions regarding this CPS happened. Links should include any discussion before submission, a link to the pull request that created the CPS, and any pull request that modifies it.
@@ -70,6 +70,8 @@ For example:
 CPS: 1
 Title: The Blockchain Trilemma
 Status: Open
+Type: Informational
+Class: Core
 Category: Consensus
 Authors:
     - Alice <alice@domain.org>
