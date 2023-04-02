@@ -108,9 +108,8 @@ content, "Not Safe for Work"
 ***Type: Array | Required: No***
 
 An array of zero or more [social media handles](#social-media-handle) for the project. Each entry of the array should be
-itself an array. The first
-entry should be a string containing the "name" of the social media platform. The second entry should be an array
-describing the URI to the social media site.
+itself an array. The first entry should be a string containing the "name" of the social media platform. The second entry
+should be an array describing the URI to the social media site.
 
 #### Social Media Handle
 

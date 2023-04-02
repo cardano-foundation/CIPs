@@ -4,11 +4,13 @@ Title: Token Policy Registration
 Category: Tokens
 Status: Proposed
 Authors:
-  - Adam Dean <adam@crypto2099.io>
-Implementors: N/A
-Discussions: https://github.com/cardano-foundation/cips/pull/467
-Created: 2023-02-27
-License: CC-BY-4.0
+
+- Adam Dean <adam@crypto2099.io>
+  Implementors: N/A
+  Discussions: https://github.com/cardano-foundation/cips/pull/467
+  Created: 2023-02-27
+  License: CC-BY-4.0
+
 ---
 
 ## Abstract
@@ -217,13 +219,15 @@ This entry, if present, should be a CIP ID indexed object containing additional 
 When and where possible the CIP-Specific registration should follow the CBOR-like declaration syntax to ensure that
 the content is well-formed and easily parseable.
 
-These additional CIPs/Schemas to be determined by the community could include:
+| CIP | Name                | CDDL                                              | Rationale                       |
+|-----|---------------------|---------------------------------------------------|---------------------------------|
+| 25  | NFT Metadata        | [CIP-25_v1.0.0.cddl](cddl/cip/CIP-25_v1.0.0.cddl) | [CIP-25](CIPs/CIP-25/README.md) |
+| 26  | FT Information      | [CIP-26_v1.0.0.cddl](cddl/cip/CIP-26_v1.0.0.cddl) | [CIP-26](CIPs/CIP-26/README.md) |
+| 27  | NFT Royalties       | [CIP-27_v1.0.0.cddl](cddl/cip/CIP-27_v1.0.0.cddl) | [CIP-27](CIPs/CIP-27/README.md) |
+| 48  | Metadata References | [CIP-48_v1.0.0.cddl](cddl/cip/CIP-48_v1.0.0.cddl) | [CIP-48](CIPs/CIP-48/README.md) |
+| 60  | Music NFT Metadata  | [CIP-60_v1.0.0.cddl](cddl/cip/CIP-60_v1.0.0.cddl) | [CIP-60](CIPs/CIP-60/README.md) |
+| 68  | NFT Metadata        | [CIP-68_v1.0.0.cddl](cddl/cip/CIP-68_v1.0.0.cddl) | [CIP-68](CIPs/CIP-68/README.md) |
 
-- CIP-25 &amp; CIP-68 NFT Project top-level project information
-- CIP-26 FT Project Monetary Policy information
-- CIP-27 NFT Project Royalty information
-- CIP-48 Metadata References information
-- CIP-60 Music NFT information
 
 ***Beacon Token Registration***
 

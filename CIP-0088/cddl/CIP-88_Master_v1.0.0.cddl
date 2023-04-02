@@ -90,8 +90,8 @@ scope-details = {
 }
 
 witness = {
-    pubKeyHash : bytes,
-    signature : bytes
+    bytes, ; Public Key
+    bytes  ; Signature
 }
 
 witnesses = [+ witness]
