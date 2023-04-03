@@ -4,12 +4,17 @@ Title: Cardano FUDS (Financial Updates & Disclosure Specification)
 Category: Tokens
 Status: Proposed
 Authors:
-  - Adam Dean <adam@crypto2099.io>
+
+- Adam Dean <adam@crypto2099.io>
+
 Implementors: TBD
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/495
+
+- https://github.com/cardano-foundation/CIPs/pull/495
+
 Created: 2023-04-02
 License: CC-BY-4.0
+
 ---
 
 # Abstract
@@ -81,7 +86,7 @@ of information about Cardano token projects.
 
 # Specification
 
-
+`Version: 1.0.0`
 
 Documentation on the standard format will be presented in CBOR format below and JSON schema documentation will
 also be provided.
@@ -99,13 +104,13 @@ uri = {
 }
 
 asset.bech32 = text .size (44)
-asset.policy_id = bytes .size (28)
-asset.asset_id = bytes .size (0..32)
+asset.policy_id = text .size (56)
+asset.asset_id = text .size (0..32)
 
 asset-id = {
     bech32 : asset.bech32,
-    ? policy_id : asset.policy_id,
-    ? asset_id : asset.asset_id
+    policy_id : asset.policy_id,
+    asset_id : asset.asset_id
 }
 
 owners = (
@@ -146,7 +151,7 @@ allocation-wallet = {
     description : text,
     address : text,
     owner : &owners,
-    ? locked : "locked" / "unlocked",
+    ? lock_status : "locked" / "unlocked",
     ? future_use : &owners,
     ? proof : uri / text,
     ? allocated_quantity : uint,
@@ -173,15 +178,153 @@ financial-disclosure = {
     ? holders : uri,
     ? max_supply : uint,
     ? emission : "inflationary" / "fixed" / "deflationary"
-    ? generation_date : text,
+    generation_date : text,
     ? allocation : [* allocation-wallet],
     ? funding : [* funding-detail]
 }
 ```
 
+## Fields
+
+### Financial Disclosure
+
+| Name            | Type                                            | Required | Rationale                                                                                                                                                                |
+|-----------------|-------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| subject         | Object\<[asset-id](#asset-id)>                  | Yes      | An asset identifier object as documented below.                                                                                                                          |
+| name            | String                                          | Yes      | The full name of the token                                                                                                                                               |
+| symbol          | String                                          | Yes      | The shortened "ticker" of the token. Usually all uppercase and 3-5 characters in length                                                                                  |
+| explore         | Array<[URI](#uri)>                              | No       | A URI object describing the path to an explorer page. (Example: https://cardanoscan.io/token/0ef620255db71b69adf4cf7eb6619027a7a74f05)                                   |
+| holders         | Array<[URI](#uri)>                              | No       | A URI object describing the path to a page showing holders of the token. (Example: https://cardanoscan.io/token/0ef620255db71b69adf4cf7eb6619027a7a74f05?tab=topholders) |
+| max_supply      | Unsigned Integer                                | No       | For fixed-supply tokens, what is the maximum, total supply that will ever exist.                                                                                         |
+| emission        | String                                          | No       | One of: "inflationary", "deflationary", or "fixed". Whether the tokenomics model for this token is inflationary, fixed, or deflationary.                                 |
+| generation_date | String                                          | Yes      | An ISO-8601 Extended timestamp of when the token was first created. (Example: 2020-01-01T01:05:37+00:00)                                                                 |
+| allocation      | Array\<[allocation-wallet](#allocation-wallet)> | No       | An array of wallets that received an allocation as part of the tokenomics of the project. (Examples: Treasury, Team, Vesting, and Reserve wallets)                       |
+| funding         | Array\<[funding-detail](#funding-detail)>       | No       | An array of information about funding rounds that have been conducted                                                                                                    |
+
+### Asset ID
+
+| Name      | Type   | Required | Rationale                                                                                                     |
+|-----------|--------|----------|---------------------------------------------------------------------------------------------------------------|
+| bech32    | String | Yes      | The bech32 representation of the token. Example: `asset1pmmzqf2akudknt05ealtvcvsy7n6wnc9dd03mf`               |
+| policy_id | String | Yes      | The hex-encoded "Policy ID" of the token. Example: `d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0` |
+| asset_id  | String | Yes      | The hex-encoded "Asset ID" of the token. Example: `7370616365636f696e73` (spacecoins)                         |
+
+### URI
+
+Where a URI is defined to be used, the URI should consist of an array of two or more strings that represent the complete
+URI path when concatenated together. The first element of the URI array should always contain the `scheme` of the URI
+and subsequent entries should describe the path. By utilizing this standardized format it is possible to use other,
+non-HTTP, protocols for storage and reference including IPFS (ipfs://), Arweave (ar://), FTP (ftp://), and more.
+
+***Formatted Example***
+
+```json
+{
+  "explore": [
+    "https://",
+    // URI Scheme
+    "cardanoscan.io/",
+    // URI Path Part #1
+    "token/0ef620255db71b69adf4cf7eb6619027a7a74f05"
+    // URI Path Part #2
+  ]
+}
+```
+
+***Concatenated Example***
+
+`https://cardanoscan.io/token/0ef620255db71b69adf4cf7eb6619027a7a74f05`
+
+### Allocation Wallet
+
+| Name                 | Type                                                     | Required | Rationale                                                                                                                                                                                                                  |
+|----------------------|----------------------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name                 | String                                                   | Yes      | A "name" assigned to the wallet in question by the team. Example: `Reserves`                                                                                                                                               |
+| description          | String                                                   | Yes      | A description of the wallet and its purpose. Example: `Holds tokens for future distributions`                                                                                                                              |
+| address              | String                                                   | Yes      | The bech32-format ID of the wallet where tokens are being held. Example: `addr1vyd8rqr3758gs06xl5wkr6l3glr57huv2rqgs8pywnf9euczfg78e`                                                                                      |
+| owner                | Unsigned Integer\<[owners](#owners)>                     | Yes      | The unsigned integer representation of one of the defined "owners". Example: `2`                                                                                                                                           |
+| lock_status          | String                                                   | No       | Either "locked" or "unlocked" representing whether the tokens are locked. Example: `unlocked`                                                                                                                              |
+| future_use           | Unsigned Integer\<[owners](#owners)>                     | No       | The unsigned integer representation of one of the defined "owners" that will control the purpose of the wallet in the future. Example: `0`                                                                                 |
+| proof                | Array\<[URI](#uri)>                or String             | No       | A URI object to an explorer page showing the address in question or a text explanation of the purpose for the wallet. Example: `https://cardanoscan.io/address/addr1vyd8rqr3758gs06xl5wkr6l3glr57huv2rqgs8pywnf9euczfg78e` |
+| allocated_quantity   | Unsigned Integer                                         | No       | The total number of tokens allocated to this wallet. Example: `1000000`                                                                                                                                                    |
+| allocated_percentage | Float                                                    | No       | The percentage of `max_supply` that was allocated to this wallet and purpose. Example: `12.5`                                                                                                                              |
+| allocation_type      | Unsigned Integer\<[allocation-types](#allocation-types)> | No       | The unsigned integer representation of one of the defined "allocation types". Example: `1`                                                                                                                                 |
+| unlock_schedule      | Array\<[unlock-data](#unlock-data)>                      | No       | If funds are locked or subject to some vesting schedule, this array provides the vesting/unlock schedule of tokens.                                                                                                        |
+
+#### Owners
+
+The "owner" and "future use" of a defined allocation wallet represent a purpose for the allocation wallet. They should
+use one of the pre-defined types below, represented by an unsigned integer to minimize ambiguity and errors.
+
+| ID  | Name                         | Explanation                                                                           |
+|-----|------------------------------|---------------------------------------------------------------------------------------|
+| 0   | Airdrops or Bounties         | Tokens to be used and distributed via either airdrops or ecosystem bounties           |
+| 1   | Burn                         | A "burn" address. For tokens that may have locked policies but want to "burn" supply. |
+| 2   | Ecosystem Incentives         | Tokens reserved for incentives to participate in the token ecosystem.                 |
+| 3   | Exchange Cold Wallet         |                                                                                       |
+| 4   | Exchange Hot Wallet          |                                                                                       |
+| 5   | Escrow                       | Tokens held in escrow for some purpose                                                |
+| 6   | Marketing & Operations       | Tokens allocated to the team for the purpose of marketing or operations               |
+| 7   | Masternodes & Staking        | Tokens allocated to provide "staking" rewards                                         |
+| 8   | Private Sale Investor        | Tokens allocated to a private investor during a funding round                         |
+| 9   | Public                       | Tokens allocated for public                                                           |
+| 10  | Team, Advisors & Contractors | Tokens allocated for the team, its advisors and/or contractors                        |
+| 11  | Treasury                     | Tokens allocated to serve as a project treasury                                       |
+| 12  | Liquidity Provisioning       | Tokens to be used by the project for the purpose of providing DEX liquidity           |
+
+#### Allocation Types
+
+The "allocation type" of a defined allocation. There are only a few defined at the moment but disclosure documents
+should use one of the pre-defined numeric types below, represented by an unsigned integer to minimize ambiguity and
+errors and allow for ease of future expansion based on community need.
+
+| ID  | Name            | Explanation                                   |
+|-----|-----------------|-----------------------------------------------|
+| 0   | Private Sale    | Tokens allocated for or during a private sale |
+| 1   | Public Sale     | Tokens allocate for or during a public sale   |
+| 2   | Team Controlled | Tokens allocated to or under team control     |
+
+#### Unlock Data
+
+An _Unlock Data_ object provides information about when the funds held in an allocation wallet will become fully vested
+or unlocked.
+
+| Name              | Type             | Required | Rationale                                                                                                                  |
+|-------------------|------------------|----------|----------------------------------------------------------------------------------------------------------------------------|
+| timestamp         | String           | Yes      | ISO-8601 Extended timestamp signalling when funds will become "unlocked" or "vested". Example: `2024-01-01T00:00:00+00:00` |
+| unlock_quantity   | Unsigned Integer | No       | The amount of tokens that will become unlocked at the specified timestamp                                                  |
+| unlock_percentage | Unsigned Float   | No       | The percentage of locked tokens that will becoe unloacked at the specified timestamp                                       |
+
+### Funding Detail
+
+Funding details attempt to provide context and information to raises (public or private) that were held by the project,
+the valuation of both the project and individual tokens at the time of the raise, and the total amount raised.
+
+| Name      | Type                                               | Required | Rationale                                                                                                                      |
+|-----------|----------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------|
+| timestamp | String                                             | Yes      | ISO-8601 Extended timestamp signalling when funds will become "unlocked" or "vested". Example: `2024-01-01T00:00:00+00:00`     |
+| type      | Unsigned Integer\<[funding-types](#funding-types)> | Yes      | The unsigned integer representation for a given "type" of funding round. Example: `1`                                          |
+| price     | Unsigned Float                                     | Yes      | The price per token, in USD, charged during the funding round. Example: `0.001`                                                |
+| raised    | Unsigned Float                                     | Yes      | The total amount raised, in USD, during this funding action. Example: `5000000.420690`                                         |
+| valuation | Unsigned Float                                     | No       | The project valuation, in USD, at the time of this funding action. Example: `5000000000.00`                                    |
+| investor  | String                                             | No       | The name of the party providing the funding during this round (if applicable/desired). Example: `C-Fund-World-Fund`            |
+| source    | Array<[URI](#uri)>                                 | No       | A URI to an article or news source about the funding round. Example: `https://medium.com/token-project/Seed-Round-A-Completed` |
+
+#### Funding Types
+
+The "funding type" of a funding detail event. These should be defined and documented here by the community and should
+use one of the pre-defined numeric identifiers below, represented by an unsigned integer to minimize ambiguity and
+errors and allow for ease of future expansion based on community need.
+
+| ID  | Name         | Explanation                                  |
+|-----|--------------|----------------------------------------------|
+| 0   | Public Sale  | Funds raised during a public token sale      |
+| 1   | Private Sale | Funds raised during a private token sale     |
+| 2   | ITO/ICO Sale | Funds raised during an initial coin offering |
+
 **TODO**
 
-- [ ] Expand on explanation of fields and what purpose they aim to serve.
+- [X] Expand on explanation of fields and what purpose they aim to serve.
 - [ ] Add JSON schema docs
 - [ ] Add examples
 
@@ -193,8 +336,8 @@ of the data contained herein to a specific token project is considered out of sc
 CIP which should focus on the development and iteration of the disclosure standard.
 
 For the first draft of this CIP the specification has been attempted to model after the CoinMarketCap and
-CoinGecko information requested from their Google Docs solutions<sup>[[1](#fn1),[2](#fn2)]</sup> to attempt to be as compatible as possible with
-existing ecosystem-agnostic platforms for simplicity of integration.
+CoinGecko information requested from their Google Docs solutions<sup>[[1](#fn1),[2](#fn2)]</sup> to attempt to be as
+compatible as possible with existing ecosystem-agnostic platforms for simplicity of integration.
 
 In order to maximize cross-platform compatibility it is recommended that these financial disclosure documents
 be published as well-formed JSON documents utilizing decentralized, quasi-permanent storage solutions such as
