@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-The cardano wallets have the ability to sign arbitrary pieces of data as we can see in the [Message signing CIP-0008](/CIP-0008/README.md). All wallets implement the method ```api.signData(addr: Address, payload: Bytes): Promise<DataSignature>``` defined in [Cardano dApp-Wallet Web Bridge CIP-0030](/CIP-0030/README.md).
+The cardano wallets have the ability to sign arbitrary pieces of data as we can see in the [Message signing CIP-0008](../CIP-0008). All wallets implement the method ```api.signData(addr: Address, payload: Bytes): Promise<DataSignature>``` defined in [Cardano dApp-Wallet Web Bridge CIP-0030](../CIP-0030).
 
 An important use case for web3 sites is calling HTTP endpoints using authenticated requests signed by the private keys of the users' wallets. In this way, the servers can perform actions using onchain and offchain data. 
 
@@ -27,7 +27,7 @@ dApps generate arbritary payloads as byte arrays. These payloads are signed and 
 
 The current implementations for web3 applications use static strings. This is dangerous because if a bad actor intercepts the signed message then it can be used in a replay attack by the bad actor. That's why it is very important to produce a dynamic payload rather a static string.
 
-Another problem with the current approach is how the wallets show the information contained in the payload. The payload is a enconded byte array and it could contain anything. If Alice want to call an endpoint and Bob has the ability to change the message before Alice gets it. Alice must be notified somehow that she is signing a potentially malicious payload. A simple hex-encoded representation of the payload isn't enough to ensure a safe interaction.
+Another problem with the current approach is how the wallets show the information contained in the payload. The payload is a encoded byte array and it could contain anything. If Alice want to call an endpoint and Bob has the ability to change the message before Alice gets it. Alice must be notified somehow that she is signing a potentially malicious payload. A simple hex-encoded representation of the payload isn't enough to ensure a safe interaction.
 
 ## Specification
 
@@ -43,11 +43,11 @@ The payload MUST be encoded as a JSON string. JSON strings are semi-structured d
 
 The content of the payload will be included in the protected header of the COSESign1 signature, hence the content effects directly the behavior and security of the system. The payload MUST have the following fields: 
 
-1. The field ```url``` MUST contain the full path to the endpoint, where the payload will be processed.
+1. The field `url` MUST contain the full path to the endpoint, where the payload will be processed.
 
-2. Sometimes, the endpoint ```url``` field is not enough to determine its purpose. The user should understand perfectly the objective of the payload which he or she is signing. That's why the payload MUST contain an ```action``` field with a descriptive text containing the purpose of the payload. 
+2. Sometimes, the endpoint `url` field is not enough to determine its purpose. The user should understand perfectly the objective of the payload which he or she is signing. That's why the payload MUST contain an `action` field with a descriptive text containing the purpose of the payload. 
 
-3. The payload MUST include a UNIX timestamp. The ```timestamp``` field is used as a nonce and a mark for the payload expiration. This field is very imporant in case the payload is compromised.
+3. The payload MUST include a UNIX timestamp. The `timestamp` field is used as a nonce and a mark for the payload expiration. This field is very important in case the payload is compromised.
 
 Additional fields MAY be included in the payload. Depending on the process, it could be useful to include some aditional fields in the protected header of the signature. For example, the email information should be included in the protected header in a registration request. In that way, this payload can be used only to register that specific email and it can not be tampered. 
 
@@ -62,11 +62,11 @@ Additional fields MAY be included in the payload. Depending on the process, it c
 
 ### Wallet specification
 
-The wallets can improve the overall security implementing the following guidelines. We RECOMMEND to show in a structured way the payload information for shake of clarity. This information should be well understanded by the users before the payload is signed.  
+The wallets can improve the overall security implementing the following guidelines. We RECOMMEND to show in a structured way the payload information for sake of clarity. This information should be well understood by the users before the payload is signed.  
 
-The ```url``` field provides information about the hostname of the application. This hostname MUST be included in the wallet allow list. If a known domain A tries to sign a payload for an unknown domain B, you will be prompted with permission popup making more obvious the cross-domain interaction. When possible, the wallet SHOULD warn the user if a payload is for a different domain.
+The `url` field provides information about the hostname of the application. This hostname MUST be included in the wallet allow list. If a known domain A tries to sign a payload for an unknown domain B, you will be prompted with permission popup making more obvious the cross-domain interaction. When possible, the wallet SHOULD warn the user if a payload is for a different domain.
 
-The wallet SHOULD update the ```timestamp``` field to the current time just before the signature. This field ideally should match the moment just before the signature, thereby the server recieves the more updated payload possible. 
+The wallet SHOULD update the `timestamp` field to the current time just before the signature. This field ideally should match the moment just before the signature such that the server receives fresh payload. 
 
 ### Server processing
 
