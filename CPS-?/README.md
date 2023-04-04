@@ -13,7 +13,6 @@ Discussions:
 Created: 2023-03-28
 ---
 
-# Cardano Governance Security
 
 ## Abstract
 
