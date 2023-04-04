@@ -1,5 +1,5 @@
 ---
-CPS: ???
+CPS: ?
 Title: Cardano Governance Security
 Category: ?
 Status: Open
