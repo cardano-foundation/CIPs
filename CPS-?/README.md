@@ -35,7 +35,7 @@ Recommendation: The person discovering the vulnerability should document the cir
 
 ### #2: Emergency group to support the disaster recovery plan.
   -attacks on persons if known
-  -we don’t want attackers know who that group is?
+  -we don’t want attackers to know who that group is?
 
 Recommendation:
 
@@ -166,4 +166,4 @@ The intent of this CPS is to promote awareness of governance security vulnerabil
 
 ## Open Questions
 
-TBD
+Proposed solutions should strive to address the questions outlined within [Problem](#problem).
