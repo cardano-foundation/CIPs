@@ -36,22 +36,48 @@ An assumption is that are no known software back doors. Unknown software vulnera
 * Notify the relevant parties: The next step is to notify the appropriate parties, including the developers of the software, the blockchain community, and any relevant authorities. It's important to provide as much information as possible, so that the parties involved can understand the scope of the vulnerability and take the necessary steps to address it.
 * Keep the vulnerability confidential: It's important to keep the vulnerability confidential until a fix has been implemented. This will prevent hackers from exploiting the vulnerability before it's patched.
 
-### #2: Emergency group to support the disaster recovery plan.
-  -attacks on persons if known
-  -we don’t want attackers to know who that group is?
+### #2: Emergency Group required to support the Disaster Recovery Plan.
+* An Emergency Group may be needed in the event of disaster recovery of the network, or an emergency change must be implented as described in section #3 below. This scenario for an Emergency Group may occur under various unknown conditions. The current disaster recovery scenarios involve "Long Lived Network Wide Partitions" and a scenario involving "Long Lived Global Outage" both referenced at this link https://iohk.io/en/research/library/papers/cardano-disaster-recovery-plan/
+
+* Both disaster scenarios are currently and primarily handled by the stake pool operators, and do not yet require governance individual's private keys to get the Cardano network back to normal operation. 
+
+* In the event that governance individuals and their keys are required to recover the network, a threat exists where attacks on the persons if known and their keys would prevent recovery on the Cardano network. This section offers recomendations to pretect these key critical persons, their governance keys, and the concept that we don’t want attackers to know who the main coordinators are in Disaster Recovery Plan. 
 
 **Recommendation:**
 
+Notify the current Constituional Commitee of the person in charge of the Emergeny Group responsible for the disaster recovery so that they know any governance actions submitted by the group are valid, or that some level of trust is established. To minimize the risk of physical and cyber threats, the Emergency Group needs to protect their private keys and identities, and ensure that the Cardano network can be recovered in the event of a disaster. Notify Delegator Representatives as needed in the event that they and their keys are required to recover the Cardano network:
+
+1. Identify and select a group of trusted individuals who will be responsible for disaster recovery. These individuals should be chosen based on their experience, skills, and trustworthiness.
+
+2. Ensure that each individual in the group understands the importance of their role in disaster recovery and the need to keep their involvement confidential.
+
+3. Provide training as needed to the Emergency Group on security best practices, including physical security, cybersecurity, and operational security. This training should include:
+
+- Keeping their private keys secure: This includes storing them in secure locations, such as a safe or a safety deposit box, and using strong passwords or passphrase to protect them.
+- Limiting access to their keys: Only authorized individuals should have access to their keys, and the keys should be stored in a way that prevents key compromise.
+- Using secure communication channels: All communication should be encrypted and transmitted over secure channels to prevent interception and eavesdropping.
+- Operational security: The group should be aware of their surroundings and take steps to minimize the risk of physical threats, such as surveillance or theft.
+
+4. Develop a contingency plan for the group in the event of a security breach. This plan should include steps to revoke compromised keys, notify other members of the group of the breach, and initiate recovery procedures. Experts may need to provide guidance to Delegator Representatives. 
+
+5. Implement measures to protect the group's identities, such as using pseudonyms or code names when communicating with each other. Consider the Constitutional Committee or Delegator Representatives may need confirmation from the Emergency Group for actions taken.
+
+6. Limit the number of people who know the identities of the Emergency Group members to minimize the risk of information leaks. The identity of the group members should only be disclosed on a need-to-know basis.
+
+7. When Stake Pool Operators are requred to take action, have trusted experts communicate with them via the normal Stake Pool Operator channels so they know they are getting information from the correct source. Switch to less public channels if the normal channels are suspected of being compromised.
+
+8. Regularly review and update the security measures in place to ensure that they remain effective. Possibly do a periodic practice disaster recovery drill on one of the test networks.
+
 ### #3: Emergency change that needs to be done quickly.
-  * a nuclear option
-  * change requires “just do it” 
-  * a security that fix must be implemented but CANNOT be communicated publicly
+  * A nuclear option
+  * Change requires “just do it” 
+  * A security that fix must be implemented but CANNOT be communicated publicly
 
 **Recommendation:**
 
 ### #4: Operational Security (OPSEC) of the committee.
-  * physical security
-  * igital security
+  * Physical security
+  * Digital security
 
 **Recommendation:**
 
