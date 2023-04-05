@@ -36,7 +36,38 @@ An assumption is that are no known software back doors. Unknown software vulnera
 * Notify the relevant parties: The next step is to notify the appropriate parties, including the developers of the software, the blockchain community, and any relevant authorities. It's important to provide as much information as possible, so that the parties involved can understand the scope of the vulnerability and take the necessary steps to address it.
 * Keep the vulnerability confidential: It's important to keep the vulnerability confidential until a fix has been implemented. This will prevent hackers from exploiting the vulnerability before it's patched.
 
-### #2: Emergency Group required to support the Disaster Recovery Plan.
+### #2: Emergency change that needs to be done quickly.
+* A nuclear option where the change requires “just do it” 
+* A security fix that must be implemented but the nature cannot be communicated publicly.
+* The emergency change may, or may not, require a vote on a hard fork or parameter change.
+* This section may be in respose to section #1 above, or for other emergencies bug fixes.
+* The emergency change may have to be coordinated by IOG for the Haskell based Cardano nodes, or the primary software provider of any other Cardano node implementations.
+
+**Recommendations (2.A and 2.B):**
+
+#### A: For an Emergency change only requiring the SPOs, yet affects governance or voting:
+1. IOG provide the Stake Pool Operators with clear and concise instructions for implementing the software change. Emphasize that while the change is not mandatory, but must be implemented without delay. Explain: What is the impact? Communicate the urgency of the change to the SPOs, without providing specific details about the threat or catastrophic failure. The operators should be aware of the importance of the change, but not necessarily the reasons behind it.
+
+2. SMEs provide technical support to the SPOs as needed as they implement the change, if there are any hardware requirements, configuration file requirements, etc... Most SPOs are proficient but be careful to provide necessary details during emergency changes. Optimally software is tested on test nets first but a need may arise where use of the test net is not an option.
+
+3. Monitor the network closely after the change has been implemented, to ensure that it is functioning correctly and that there are no unforeseen issues or problems. Once the change has been successfully implemented across a high % of Cardano nodes and the network is stable, consider whether it is appropriate to provide more information about the reasons for the change. If not, continue to emphasize the importance of keeping the details confidential in order to protect the security and stability of the network.
+
+#### B: For an Emergency change requiring on chain approval Governance Action:
+* May require a hard fork or parameter change, or both.
+* May require DReps, CC, and SPO coordination.
+* May require trusted coordinators from the Cardano Foundation (CF) or IOG.
+
+1. (CF/IOG?) Assemble a team of technical experts to develop and submit the on-chain governance action proposal. This team should include software engineers, network administrators, and other relevant experts who can ensure that the proposal is technically correct and addresses the identified issue.
+
+2. Communicate the governance action proposal to the SPOs, DReps, and CC. Emphasize the importance of maintaining discretion regarding the issue and the need for a prompt vote to approve the proposal. This may take some extensive debate and convincing. Trust may be a factor.
+
+3. SMEs should communicate the urgency of the change to the SPOs, DReps and CC without providing specific details about the threat or catastrophic failure if discretion is required. SMEs may have to communicate the impact if the proposal is not approved.
+
+4. Offer technical support to the voters as needed, as an emergency response may cause people to rush and make mistakes.
+
+9. IOG, CF, SPOs, and dApp creators will have to monitor the network closely after the governance action has been approved and activated, to ensure that it is functioning correctly and that there are no unforeseen issues.
+
+### #3: Emergency Group required to support the Disaster Recovery Plan.
 * An Emergency Group may be needed in the event of disaster recovery of the network, or an emergency change must be implented as described in section #3 below. This scenario for an Emergency Group may occur under various unknown conditions. The current disaster recovery scenarios involve "Long Lived Network Wide Partitions" and a scenario involving "Long Lived Global Outage" both referenced at this link https://iohk.io/en/research/library/papers/cardano-disaster-recovery-plan/
 
 * Both disaster scenarios are currently and primarily handled by the stake pool operators, and do not yet require governance individual's private keys to get the Cardano network back to normal operation. 
@@ -45,9 +76,9 @@ An assumption is that are no known software back doors. Unknown software vulnera
 
 **Recommendation:**
 
-Notify the current Constituional Commitee of the person in charge of the Emergeny Group responsible for the disaster recovery so that they know any governance actions submitted by the group are valid, or that some level of trust is established. To minimize the risk of physical and cyber threats, the Emergency Group needs to protect their private keys and identities, and ensure that the Cardano network can be recovered in the event of a disaster. Notify Delegator Representatives as needed in the event that they and their keys are required to recover the Cardano network:
+Notify the current Constituional Commitee of the person in charge of the Emergeny Group responsible for the disaster recovery so that they know any governance actions submitted by the group are valid, or that some level of trust is established. To minimize the risk of physical and cyber threats, The Emergency Group needs to protect their private keys and identities, and ensure that the Cardano network can be recovered in the event of a disaster. Notify Delegator Representatives as needed in the event that they and their keys are required to recover the Cardano network:
 
-1. Identify and select a group of trusted individuals who will be responsible for disaster recovery. These individuals should be chosen based on their experience, skills, and trustworthiness.
+1. (CF?) Identify and select a group of trusted individuals who will be responsible for disaster recovery. These individuals should be chosen based on their experience, skills, and trustworthiness.
 
 2. Ensure that each individual in the group understands the importance of their role in disaster recovery and the need to keep their involvement confidential.
 
@@ -67,13 +98,6 @@ Notify the current Constituional Commitee of the person in charge of the Emergen
 7. When Stake Pool Operators are requred to take action, have trusted experts communicate with them via the normal Stake Pool Operator channels so they know they are getting information from the correct source. Switch to less public channels if the normal channels are suspected of being compromised.
 
 8. Regularly review and update the security measures in place to ensure that they remain effective. Possibly do a periodic practice disaster recovery drill on one of the test networks.
-
-### #3: Emergency change that needs to be done quickly.
-  * A nuclear option
-  * Change requires “just do it” 
-  * A security that fix must be implemented but CANNOT be communicated publicly
-
-**Recommendation:**
 
 ### #4: Operational Security (OPSEC) of the committee.
   * Physical security
