@@ -1,7 +1,7 @@
 ---
 CPS: ?
 Title: Cardano Governance Security
-Category: ?
+Category: Meta
 Status: Open
 Authors:
     - Richard McCracken <rickymac68@icloud.com>
@@ -31,81 +31,84 @@ In rare instances, a threat may be identified that requires responsible reportin
 
 An assumption is that are no known software back doors. Unknown software vulnerabilities may be discovered.
 
-Recommendation: The person discovering the vulnerability should document the circumstances and details in which the vulnerability is present and how to reproduce the vulnerability. Then report the vulnerability in a confidential manner using a secure method to the developer team with the resources to correct the vulnerability.
+**Recommendation:** The person discovering the vulnerability should take the following steps:
+* Document the vulnerability: The first step is to document the vulnerability as accurately as possible. This documentation should include a detailed description of the vulnerability, steps to reproduce it, and any other relevant information.
+* Notify the relevant parties: The next step is to notify the appropriate parties, including the developers of the software, the blockchain community, and any relevant authorities. It's important to provide as much information as possible, so that the parties involved can understand the scope of the vulnerability and take the necessary steps to address it.
+* Keep the vulnerability confidential: It's important to keep the vulnerability confidential until a fix has been implemented. This will prevent hackers from exploiting the vulnerability before it's patched.
 
 ### #2: Emergency group to support the disaster recovery plan.
   -attacks on persons if known
   -we don’t want attackers to know who that group is?
 
-Recommendation:
+**Recommendation:**
 
 ### #3: Emergency change that needs to be done quickly.
-  -a nuclear option
-  -change requires “just do it” 
-  -a security that fix must be implemented but CANNOT be communicated publicly
+  * a nuclear option
+  * change requires “just do it” 
+  * a security that fix must be implemented but CANNOT be communicated publicly
 
-Recommendation:
+**Recommendation:**
 
 ### #4: Operational Security (OPSEC) of the committee.
-  -physical security
-  -digital security
+  * physical security
+  * igital security
 
-Recommendation:
+**Recommendation:**
 
 ### #5: Committee keys lost or stolen or committee keys sold to a bad actor.
 
-Recommendation:
+**Recommendation:**
 
 ### #6: DRep keys lost or stolen or DRep keys sold to a bad actor.
 
-Recommendation:
+**Recommendation:**
 
 ### #7: Lack of governance for an extended period of time.
-  -Uncontrolled hard forks by SPOs
-  -Risk of no confidence
+  * Uncontrolled hard forks by SPOs
+  * Risk of no confidence
 
-Recommendation:
+**Recommendation:**
 
 ### #8: Lack of trust in voter tooling.
 
-Recommendation:
+**Recommendation:**
 
 ### #9: Trust in the wallets.
-  -wallet voting attack vector
-  -hardware wallet support
+  * wallet voting attack vector
+  * hardware wallet support
 
-Recommendation:
+**Recommendation:**
 
 
 ### #10: Corruption - in any form, any number of actors.
-  -Code of Conduct mitigation
-  -on-chain mitigation
+  * Code of Conduct mitigation
+  * on-chain mitigation
 
 
-Recommendation:
+**Recommendation:**
 
 ### #11: Collusion - the bad version of collaboration to do something illegal or undesirable.
 
-Recommendation:
+**Recommendation:**
 
 ### #12: Vote buying - Ada kickbacks.
 
-Recommendation:
+**Recommendation:**
 
 ### #13: IGCO - initial governance coin offering
-  -offering voters a token of unknown value by a representative to acquire delegators
-  -including tokens other than Ada
+  * offering voters a token of unknown value by a representative to acquire delegators
+  * including tokens other than Ada
 
-Recommendation:
+**Recommendation:**
 
 ### #14: Powerful Voter Collusion
-  -demotivates smaller bag holders
-  -cause a loss of participation
-  -too many voters abstain
-  -minority controls the outcome
-  -can push through any proposal
+  * demotivates smaller bag holders
+  * cause a loss of participation
+  * too many voters abstain
+  * minority controls the outcome
+  * can push through any proposal
 
-Recommendation:
+**Recommendation:**
 
 ### #15: Persistence - Removal of proposals by attackers.
 
@@ -113,47 +116,47 @@ Recommendation:
 
 ### #16: Risk of Proposal overload - Risk of DDOS.
 
-Recommendation:
+**Recommendation:**
 
 ### #17: Excessive actions.
-  -Drawing too much money
-  -Changing parameters that break the chain (block size=0 for example)
-  -overlapping actions and duplicate actions
+  * Drawing too much money
+  * Changing parameters that break the chain (block size=0 for example)
+  * overlapping actions and duplicate actions
 
-Recommendation:
+**Recommendation:**
 
 ### #18: Lack of technical understanding by DReps.
 Education of correct procedures for DReps
 
-Recommendation:
+**Recommendation:**
 
 ### #19: Sybil behavior - one person acting as multiple DReps.
 
-Recommendation:
+**Recommendation:**
 
 ### #20: Overpower Risk - One DRep or entity with too much power.
 
-Recommendation:
+**Recommendation:**
 
 ### #21: Superstar attack - one “superstar” person that everybody delegates to becomes a dictator with little skin in the game.
 (Example: Elon Musk as a DRep)
 
 ### #22: High chain load impacting governance.
 
-Recommendation:
+**Recommendation:**
 
 ### #23: Unknown external regulation risks - affecting a specific DRep by country or affecting governance as a whole.
 
-Recommendation:
+**Recommendation:**
 
 ### #24: Blocking a Constitutional Committee revote after a vote of “no confidence”.
 
 
-Recommendation:
+**Recommendation:**
 
 ### #25: Ensuring the legitimacy of side chains involved in governance.
 
-Recommendation:
+**Recommendation:**
 
 ## Use Cases
 
