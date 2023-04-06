@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 92
 Title: First-class errors in Plutus
 Category: Plutus
 Status: Proposed
