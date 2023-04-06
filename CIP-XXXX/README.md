@@ -4,10 +4,10 @@ Title: Cardano FUDS (Financial Updates & Disclosure Specification)
 Category: Tokens
 Status: Proposed
 Authors:
-- Adam Dean <adam@crypto2099.io>
+    - Adam Dean <adam@crypto2099.io>
 Implementors: []
 Discussions:
-- https://github.com/cardano-foundation/CIPs/pull/495
+    - https://github.com/cardano-foundation/CIPs/pull/495
 Created: 2023-04-02
 License: CC-BY-4.0
 ---
