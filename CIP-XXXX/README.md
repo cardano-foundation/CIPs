@@ -1,23 +1,18 @@
 ---
-CIP: ????
+CIP: ?
 Title: Cardano FUDS (Financial Updates & Disclosure Specification)
 Category: Tokens
 Status: Proposed
 Authors:
-
 - Adam Dean <adam@crypto2099.io>
-
-Implementors: TBD
+Implementors: []
 Discussions:
-
 - https://github.com/cardano-foundation/CIPs/pull/495
-
 Created: 2023-04-02
 License: CC-BY-4.0
-
 ---
 
-# Abstract
+## Abstract
 
 Cardano Financial Updates & Disclosure Specification (FUDS) details a specification allowing on-chain projects to
 publicly publish and disclose financial information that has historically been hosted in disparate locations and
@@ -27,7 +22,7 @@ Projects can benefit by having a template to follow for well-rounded financial d
 third-party services can benefit by easily being able to consume, analyze, and report findings based on publicly
 published information.
 
-# Motivation: Why is this CIP necessary?
+## Motivation: why is this CIP necessary?
 
 One of the primary arguments for "Why blockchain?" is due to its nature as a publicly distributed, immutable and
 auditable ledger which should increase consumer confidence through an ethos of ***"Don't trust. Verify."***
@@ -44,7 +39,7 @@ While most of the documentation in this CIP applies to token projects building a
 contained herein could also be used as a template for similar disclosures for entities such as: NFT Projects, DAOs, and
 other projects.
 
-## Goal: Increase Transparency
+### Goal: Increase Transparency
 
 By creating a community-accepted standard format for financial updates and disclosures we can simplify the disclosure
 process for both token projects and marketplace aggregator services (DEXes, etc.) that attempt to provide information to
@@ -52,7 +47,7 @@ consumers and investors. Following standards allows us to educate and inform inv
 a common set of data points, minimizing the time it takes to "Do Your Own Research" (DYOR) while increasing confidence
 in the reported dataset and verification of on-chain data to corroborate information contained within the disclosure.
 
-## Goal: Utilize On-Chain Published Information
+### Goal: Utilize On-Chain Published Information
 
 Currently, both CoinMarketCap<sup>[[1](#fn1)]</sup> and CoinGecko<sup>[[2](#fn2)]</sup>; two of the most relied upon
 aggregator resources for blockchain token projects, utilize Google Docs as a method for token projects to submit
@@ -66,7 +61,7 @@ By utilizing on-chain published information via a shared document standard we ca
    integrate
    Cardano token projects into their services.
 
-## Goal: Allow Auditors to Verify Information
+### Goal: Allow Auditors to Verify Information
 
 By creating a standard for projects to follow and third party services to consume, we can enable an ecosystem of
 verifiable trust. This is pertinent to aforementioned projects like CoinMarketCap and CoinGecko but also to
@@ -84,14 +79,14 @@ of information about Cardano token projects.
 
 ![HOSKY on CoinGecko](hosky-cg.jpg)
 
-# Specification
+## Specification
 
 `Version: 1.0.0`
 
 Documentation on the standard format will be presented in CBOR format below and JSON schema documentation will
 also be provided.
 
-## Document Format
+### Document Format
 
 ```cbor
 
@@ -184,9 +179,9 @@ financial-disclosure = {
 }
 ```
 
-## Fields
+### Fields
 
-### Financial Disclosure
+#### Financial Disclosure
 
 | Name            | Type                                            | Required | Rationale                                                                                                                                                                |
 |-----------------|-------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -201,7 +196,7 @@ financial-disclosure = {
 | allocation      | Array\<[allocation-wallet](#allocation-wallet)> | No       | An array of wallets that received an allocation as part of the tokenomics of the project. (Examples: Treasury, Team, Vesting, and Reserve wallets)                       |
 | funding         | Array\<[funding-detail](#funding-detail)>       | No       | An array of information about funding rounds that have been conducted                                                                                                    |
 
-### Asset ID
+#### Asset ID
 
 | Name      | Type   | Required | Rationale                                                                                                     |
 |-----------|--------|----------|---------------------------------------------------------------------------------------------------------------|
@@ -209,7 +204,7 @@ financial-disclosure = {
 | policy_id | String | Yes      | The hex-encoded "Policy ID" of the token. Example: `d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0` |
 | asset_id  | String | Yes      | The hex-encoded "Asset ID" of the token. Example: `7370616365636f696e73` (spacecoins)                         |
 
-### URI
+#### URI
 
 Where a URI is defined to be used, the URI should consist of an array of two or more strings that represent the complete
 URI path when concatenated together. The first element of the URI array should always contain the `scheme` of the URI
@@ -235,7 +230,7 @@ non-HTTP, protocols for storage and reference including IPFS (ipfs://), Arweave 
 
 `https://cardanoscan.io/token/0ef620255db71b69adf4cf7eb6619027a7a74f05`
 
-### Allocation Wallet
+#### Allocation Wallet
 
 | Name                 | Type                                                     | Required | Rationale                                                                                                                                                                                                                  |
 |----------------------|----------------------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -251,7 +246,7 @@ non-HTTP, protocols for storage and reference including IPFS (ipfs://), Arweave 
 | allocation_type      | Unsigned Integer\<[allocation-types](#allocation-types)> | No       | The unsigned integer representation of one of the defined "allocation types". Example: `1`                                                                                                                                 |
 | unlock_schedule      | Array\<[unlock-data](#unlock-data)>                      | No       | If funds are locked or subject to some vesting schedule, this array provides the vesting/unlock schedule of tokens.                                                                                                        |
 
-#### Owners
+##### Owners
 
 The "owner" and "future use" of a defined allocation wallet represent a purpose for the allocation wallet. They should
 use one of the pre-defined types below, represented by an unsigned integer to minimize ambiguity and errors.
@@ -272,7 +267,7 @@ use one of the pre-defined types below, represented by an unsigned integer to mi
 | 11  | Treasury                     | Tokens allocated to serve as a project treasury                                       |
 | 12  | Liquidity Provisioning       | Tokens to be used by the project for the purpose of providing DEX liquidity           |
 
-#### Allocation Types
+##### Allocation Types
 
 The "allocation type" of a defined allocation. There are only a few defined at the moment but disclosure documents
 should use one of the pre-defined numeric types below, represented by an unsigned integer to minimize ambiguity and
@@ -284,7 +279,7 @@ errors and allow for ease of future expansion based on community need.
 | 1   | Public Sale     | Tokens allocate for or during a public sale   |
 | 2   | Team Controlled | Tokens allocated to or under team control     |
 
-#### Unlock Data
+##### Unlock Data
 
 An _Unlock Data_ object provides information about when the funds held in an allocation wallet will become fully vested
 or unlocked.
@@ -295,7 +290,7 @@ or unlocked.
 | unlock_quantity   | Unsigned Integer | No       | The amount of tokens that will become unlocked at the specified timestamp                                                  |
 | unlock_percentage | Unsigned Float   | No       | The percentage of locked tokens that will becoe unloacked at the specified timestamp                                       |
 
-### Funding Detail
+#### Funding Detail
 
 Funding details attempt to provide context and information to raises (public or private) that were held by the project,
 the valuation of both the project and individual tokens at the time of the raise, and the total amount raised.
@@ -310,7 +305,7 @@ the valuation of both the project and individual tokens at the time of the raise
 | investor  | String                                             | No       | The name of the party providing the funding during this round (if applicable/desired). Example: `C-Fund-World-Fund`            |
 | source    | Array<[URI](#uri)>                                 | No       | A URI to an article or news source about the funding round. Example: `https://medium.com/token-project/Seed-Round-A-Completed` |
 
-#### Funding Types
+##### Funding Types
 
 The "funding type" of a funding detail event. These should be defined and documented here by the community and should
 use one of the pre-defined numeric identifiers below, represented by an unsigned integer to minimize ambiguity and
@@ -328,7 +323,7 @@ errors and allow for ease of future expansion based on community need.
 - [ ] Add JSON schema docs
 - [ ] Add examples
 
-# Rationale: How does this CIP achieve its goals?
+## Rationale: how does this CIP achieve its goals?
 
 This specification is written and designed to work in conjunction with a registration and validation
 specification such as [CIP-88](https://github.com/cardano-foundation/cips/pull/467). Validation and connection
@@ -347,25 +342,25 @@ In order to prove the validity of the document, when publishing to the blockchai
 published in the format of a URI that points to the document itself along with a SHA256 checksum of the document
 contents (similar to how stake pool metadata is currently handled).
 
-# Path to Active
+## Path to Active
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 - [ ] Complete all "TODO" tasks based on currently identified shortcomings as well as feedback received.
 - [ ] Receive community feedback and refinement from affected parties and potential implementors.
 - [ ] Achieve buy-in from ecosystem participants to analyze and display data based on this spec
 
-## Implementation Plan
+### Implementation Plan
 
 - [ ] Invite identified stakeholders and market experts to review and provide feedback to the specification.
 - [ ] Published OSS solutions for generation of FUDS documentation for projects
 - [ ] Published OSS solutions for indexing of FUDS documentation for aggregators
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
-# Footnotes
+## Footnotes
 
 <sup id="fn1">1</sup>:
 [CoinMarketCap Google Doc](https://docs.google.com/spreadsheets/d/1ON2o9fZtdj6aa_uaT7ALtGx1VxFnIDUi8-uS-fWji0o/edit#gid=1300521795)
