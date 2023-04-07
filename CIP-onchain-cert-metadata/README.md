@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: On-chain Certification Metadata Standard
+Title: On-chain dApp Certification Metadata Standard
 Category: Metadata
 Status: Proposed
 Authors:
