@@ -1,5 +1,5 @@
 ---
-CIP: 123
+CIP: ?
 Title: On-chain Certification Metadata Standard
 Category: Metadata
 Status: Proposed
@@ -10,7 +10,7 @@ Authors:
     - M. Ali Modiri <mixaxim@gimbalabs.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/??
+    - https://github.com/cardano-foundation/CIPs/pull/499
     - https://github.com/input-output-hk/Certification-working-group/pull/18
 Created: 2023-02-23
 License: CC-BY-4.0
