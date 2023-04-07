@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: _???
 Title: meta-assets (ERC20-like assets)
 Category: Tokens
 Status: Proposed
@@ -32,7 +32,7 @@ License: CC-BY-4.0
 
 ## Abstract
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
-This CIP proposes a standard that if adopted would allow the same level of programmability of other ecosistem at the price of the toke true ownership.
+This CIP proposes a standard that if adopted would allow the same level of programmability of other ecosistems at the price of the token true ownership.
 
 This is achieved imitating the way the account model works laveraging the UTxO structure adopted by Cardano.
 
@@ -45,9 +45,9 @@ If adopted it would allow to introduce the programmability over the transfer of 
 
 The solution proposed includes (answering to the open questions of CPS-0003):
 
-1 and 2) very much like accoun based models, wallets supporting this standard will require to know the address of the smart contract (validator)
-3) the soultion can coexsist with exsiting the native tokens
-4) the implementaiton is possible withou hardfork since Vasil
+1 and 2) very much like account based models, wallets supporting this standard will require to know the address of the smart contract (validator)
+3) the soultion can co-exsist with the exsiting native tokens
+4) the implementaiton is possible without hardfork since Vasil
 5) optimized implementations should not take significant computation, especially on transfers.
 
 ## Specification
@@ -63,31 +63,36 @@ data Data
     | B ByteString
 ```
 
-and we'll use the [plu-ts syntax for structs definition](https://www.harmoniclabs.tech/plu-ts-docs/language/values/structs.html) as an abstraction over the `Data` type.
+and we'll use the [plu-ts syntax for structs definition](https://pluts.harmoniclabs.tech/docs/onchain/Values/Structs/definition#pstruct) as an abstraction over the `Data` type.
 
-The core idea of the implementation is to remember all public key hashes that have (or have had) a balance in the meta-asset in question in a distributed sorted merkle tree.
+The core idea of the implementation is to emulate the ERC20 standard; where tokens are entries in a map with addresses (or credentials in our case) as key and integers (the balances) as value. ([see the OpenZeppelin implementation for reference](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/9b3710465583284b8c4c5d2245749246bb2e0094/contracts/token/ERC20/ERC20.sol#L16));
 
-The idea is really similar to the [Distributed Map by Marcin Bugaj described in the Plutonmicon repository](https://github.com/Plutonomicon/plutonomicon/blob/main/DistributedMap.md) but instead uses sorted merkle trees to allow logaritmic complexity (instead of linear) when proving that a public key hash `pkh` is part of the set of registered "accounts" and it needs to be sorted to prove that a `pkh` is _not_ part of the same set.
+Unlike the ERC20 standard; this CIP:
 
-The idea of sorted merkle trees has first beed introduced in [Zero-Knowledge Sets](https://people.csail.mit.edu/silvio/Selected%20Scientific%20Papers/Zero%20Knowledge/Zero-Knowledge_Sets.pdf) by Silvio Micali Michael Rabin and Joe Killian and it is here adapted to relax the constraint of the fixed set so that new public key hashes can be added.
-> **NOTE**: to allow new values insertion the tree will not be balaced nor complete; it is therefore possible to have multiple different hashes for the same ordered set based on the configuration of the tree, however that should not cause any problems as our only goal is jsut to prove a given element is or is not present.
+- allows for multiple entries with the same key (same credentials can be used for multiple accounts)
+- DOESN'T include an equivalent of the `transferFrom` method; if needed it can be added by a specific implementation but it won't be considered part of the standard.
 
-> **NOTE**: The relaxed tree we are using implies more information is revealed during a proof, see the verification of a public key hash missing in the `NewAccount` implementation
+> **NOTE**
+>
+> the UTxO model allows for multiple transfers in one transaction
+>
+> this would allow for a more powerful model than the account based equivalent but implies higher execution costs
+>
+> whith the goal of keeping the standard interoperable and easy to understand and implement
+> in this first implementation we restricts transfers from a single account to a single account
+>
+> if necessary; this restriction might be dropped in a future version of the CIP 
 
-The implementation requires:
 
-- 2 (very similar) minting policies that will be used to mint an NFT as proof that the datum present on an NFT has been obtained as result of a smart contract execution (and hence is valid)
-> **NOTE**: due to the two minting policies being similar some implementation may prefer to unify the two policies in a single one and run that with different redeemers
 
-- 2 validators
-    - one that handles the distributed sorted merkle tree (`DSMerkleTree` contract)
-    - one that handles the "accounts" (`AccountManager` contract)
+The implementation requires
+
+- a parametrized minting policy to validate the creation of new accounts (in this CIP also referred as `accountFactory`)
+- a spending validator to manage the accounts ((in this CIP also referred as `accountManager`))
 
 ### standard data types used
 
 We'll need to use some data types as defined in the script context;
-
-in particular we need to the fine the types for a transacntion output reference:
 
 ```ts
 const PTxId = pstruct({
@@ -100,6 +105,13 @@ const PTxOutRef = pstruct({
         index: int
     }
 });
+
+const PCredential = pstruct({
+    PPubKeyCredential: { pkh: bs },
+    PScriptCredential: { valHash: bs },
+});
+
+const PCurrencySymbol = palias( bs );
 ```
 which are equivalent to the data:
 ```hs
@@ -108,621 +120,271 @@ Constr 0 [ B txId ]
 
 --- PTxOutRef
 Constr 0 [ PTxId, I index ]
-```
 
-and for (payment) credentials:
-```ts
-const PCredential = pstruct({
-    PPubKeyCredential: { pkh: bs },
-    PScriptCredential: { valHash: bs },
-});
-```
-which translates to the data:
-```hs
 -- PPubKeyCredential
 Constr 0 [ B pkh ]
 
 -- PScriptCredential
 Constr 1 [ B valHash ]
+
+-- PCurrencySymbol
+B currencySym
 ```
 
-## Minting policy 1
+## `accountFactory` (minting policy)
 
-> minting poilicy to be used for the distributed merkle tree contract's utxos
+The `accountFactory` contract is responsabile of validating the creation of new accounts.
 
-redeemers:
+### validation logic
+
+If the creation of the account is considered valid (the minting policy suceeds)
+it should result in a single minted asset going to an hard-coded (parametrized) `accountManager` contract.
+
+The standard doesn't include a specification on the policy in case of burning but it is suggested to always allow for the assets burn.
+
+the data needed form the `ScriptContext` includes teh following fields:
+
+- `inputs`
+- `output`
+- `mint`
+
+used as follows:
+
+- all the transaction inputs MUST NOT include any tokens having the same currency symbol of the `accountFactory` minting policy;
+optionally a specific implementation might require a fixed number of inputs (eg. a single input) for performance reasons.
+
+- when minting assets only a single token should be minted (indipendently from the number of inputs)
+- the only asset minted MUST have an unique asset name (we suggest using the output of `[(builtin serialiseData) fstUtxoRef]` where `fstUtxoRef` is the utxo reference (or `PTxOutRef`) of the very first input of the transaction)
+
+- the asset minted MUST be included in an output of the transaction being validated going to the hard-coded `accountManager` validator.
+
+- the output going to the `accountManager` validator MUST implement the following checks (in addition to the presence of the minted asset):
+    - the address' payment credential MUST have `ScriptCredential` constructor (constructor index `1`) and validator hash MUST equal the hard coded `accountManager` hash
+    - the output datum MUST:
+        - be constructed using the `InlineDatum` consturctor (consturctor index `2`)
+        - have datum value with the [`Account`](#Account) structure (explained below) with the foeeowing fields:
+            - amount: `0`
+            - currencySym: currency symbol of the `accountFactory` minting policy
+            - credentials: the first resolved input address credentials (both public key hash and validator hash supported)
+            - state: no restrictions (up to the specific implementaiton).
+
+optionally a specific implementation might require a fixed number of outputs (eg. a single output) for performance reasons.
+
+## `accountManager` (spending validator)
+
+The `accountManager` contract is responsabile of managing exsiting accounts and their balances.
+
+This is done using some standard redeemers and optionally implementation specfic ones.
+
+### `Account`
+
+The `Account` data type is used as the `accountManager` datum; and is defined as follows:
+
 ```ts
-const TreeMintingPolicyRdmr = pstruct({
-    NewNode: {},
-    NewLeaf: {},
-    MakeRoot: {}
-})
-```
-equivalent to the data:
-```hs
--- NewNode
-Constr 0 []
-
--- NewLeaf
-Constr 1 []
-
--- MakeRoot
-Constr 2 []
-```
-
-### NewNode
-
-- mint:
-    - 1 NFT with asset name equal to the data hash of the TxOutRef used as input
-- outputs:
-    - output to the distributed merkle tree validator
-
-#### validation logic
-
-- the transaction MUST mint a value that MUST:
-    - have an entry for the CurrencySymbol of this minting policy
-    - have a single asset name entry (MUST fail otherwise) of which asset name is equal to `sha2_256( serialiseData( TxOutRef ) )`
-    - have quantity of 1
-- the minted token MUST go to the (hard coded) distributed merkle tree validator with `Node` datum
-
-### NewLeaf
-
-- mint:
-    - 1 NFT with asset name equal to the new key hash added
-- outputs:
-    - output to the distributed merkle tree validator
-
-#### validation logic
-
-- the transaction MUST mint a value that MUST:
-    - have an entry for the CurrencySymbol of this minting policy
-    - have a single asset name entry (MUST fail otherwise) of which asset name is equal to the new key hash added
-    - have quantity of 1
-- the minted token MUST go to the (hard coded) distributed merkle tree validator with `Leaf` datum
-
-### MakeRoot
-
--  mint:
-    - 1 NFT with asset name equal to the data hash of an **hard coded** TxOutRef
-- outputs:
-    - output to the distributed merkle tree validator
-
-#### validation logic
-
-- the transaction MUST mint a value that MUST:
-    - have an entry for the CurrencySymbol of this minting policy
-    - have a single asset name entry (MUST fail otherwise) of which asset name is equal to `sha2_256( serialiseData( TxOutRef ) )` where `TxOutRef` is hard coded in the minting policy
-    - have quantity of 1
-- the minted token MUST go to the (hard coded) distributed merkle tree validator with `Node` datum
-
-## Minting policy 2
-
-> minting poilicy to be used for the account manager contract's utxos
-
-redeemers:
-```ts
-const AccountMintingPolicyRdmr = pstruct({
-    NewAccount: {},
-    MintAllowedSpender: {},
-    BurnAllowedSpender: {}
-})
-```
-
-### encoding payment credentials
-
-at the moment of writing there exsits two types of credentials:
-
-1) public keys
-2) scripts
-
-of which the `blake2b_244` hash is used on-chain
-
-since the payment credentials are data that once specified is not meant to change ever it is stored as NFT asset name (instead of a field of a datum that needs to be checked not to change each time)
-
-however asset names are just bytestrings and do not allow for choiches.
-
-for this reason we need a way to remember which type of credential a 28-length hash is.
-
-We do so by adding an header byte at the start of the bytestring so that the byte `0` impies the following 28 bytes are a public key hash, and the byte `1` implies the following 28 bytes are a script hash.
-
-so that
-```hs
-PubKeyCredential pkh
-```
-becomes
-```
-00 + pkh
-```
-
-and
-```hs
-ScriptCredential scriptHash
-```
-becomes
-```
-01 + scriptHash
-```
-
-> by encoding the credentials as asset names it should also be easier to query the balance corresponding to a given hash using the exsitsting off chain tools.
-
-### NewAccount
-
-- mint:
-    - 1 NFT with asset name equal to the payment credentials
-- outputs:
-    - output to the account manager validator
-
-#### validation logic
-
-- txInfo redeemers field MUST:
-    - include an entry with `Spending` purpose and utxo that belongs to an hard coded distributed sorted merkle tree contract
-    - have redeemer `NewAccount` (constructor index == 0)
-- mint value MUST:
-    - have an entry for this currency symbol
-    - have a single entry with asset name equal to the new credentials added
-    - have quantity of 1
-- output going to the account manager validator MUST:
-    - include the minted NFT correct datum is checked by the account manager spent with `NewAccount` redemeer)
-
-### MintAllowedSpender
-
-- mint:
-    - 1 NFT with asset name equal to the concatenation of teh original owner payment credentials and the allowed spender payment credentials ( 29 + 29 length bytestring )
-- outputs:
-    - output to the account manager validator
-
-#### validation logic
-
-- txInfo redeemers field MUST:
-    - include an entry with `Spending` purpose and utxo that belongs to an hard coded account manager contract
-    - have redeemer `Approve` (constructor index == 3)
-- mint value MUST:
-    - have an entry for this currency symbol
-    - have a single entry with asset name equal to the concatenation of teh original owner payment credentials and the allowed spender payment credentials ( 29 + 29 length bytestring )
-    - have quantity of 1
-- output going to the account manager validator MUST:
-    - include the minted NFT (correct datum is checked by the account manager spent with `Approve` redemeer)
-
-### BurnAllowedSpender
-
-- inputs:
-    - account manager contract input having the NFT to burn
-- mint:
-    - (burn) 1 NFT with asset name equal to the payment credentials
-
-#### validation logic
-
-- txInfo redeemers field MUST:
-    - include an entry with `Spending` purpose and utxo that belongs to an hard coded account manager contract
-    - have redeemer `RevokeApproval` (constructor index == 4)
-- mint value MUST:
-    - have an entry for this currency symbol
-    - have a single entry with asset name of length 58 ( 29 + 29 )
-    - have quantity less than 0
-
-## DSMerkleTree contract
-
-The redeemers accepted by the merkle tree validators are:
-```ts
-const DSMerkleTreeRdmr = pstruct({
-    NewAccount: {
-        credsBs: bs // pub key hash or validator hash; encoded as described above (29-length bytestring)
-    },
-    UpdateNode: {}
-});
-```
-
-which translates to the following `Data`s:
-```hs
--- NewAccount
-Constr 0 [ B credsBs ]
-
--- UpdateNode
-Constr 1 []
-```
-
-The datums (that define the different types of node of the merkle tree) are:
-```ts
-const DSMerkleTreeDatum = pstruct({
-    // Node includes the Root
-    Node: {
-        hash: bs,
-        rootAssetName: bs, // reference to the root NFT assetName
-        leftNodeAssetName: bs, // reference to left node NFT
-        rightNodeAssetName: bs,// reference to right node NFT
-        leftBranchMax : bs,  // max key of the lowest keys branch
-        rightBranchMin: bs,  // min key of the highest keys branch
-        leftBranchWeight: int,
-        rightBranchWeight: int,
-    },
-    Leaf: {
-        credsBs: bs, // value
-        rootAssetName: bs, // reference to the root NFT assetName
-    }
-});
-```
-
-which translates to the following `Data`s:
-```hs
--- Node
-Constr 0 [ 
-    B hash,
-    B rootAssetName,
-    B leftNodeAssetName, 
-    B rightNodeAssetName, 
-    B leftBranchMax, 
-    B rightBranchMin
-]
-
--- Leaf
-Constr 1 [
-    B credsBs,
-    B rootAssetName
-]
-```
-
-### proving a `credsBs` is not included on-chain
-
-> this can be done by any validator (in parallel using reference inputs) as the inputs required are read-only.
-
-- data required
-    - `credsBs` as the key hash to proof not to be included
-    - `merkleTreeRootHash` identifying teh merkle tree in which the `pkh` is not present
-- reference inputs:
-    - all utxos from the root down to the node that has `leftBranchMax <= pkh` and `pkh <= rightBranchMin`
-
-#### validation logic
-
-- assert that `root.hash == merkleTreeRootHash`
-- loop starting form `root` as current node:
-    - assert that the left hash and the right hash concatenated and hashed are equal to `hash` extracted from the current node
-    - if `pkh` is less than `leftBranchMax`
-        - loop over the left sub-tree
-    - else if `rightBranchMin` is less than `pkh`
-        - loop over the right sub-tree
-    - else if `leftBranchMax == pkh` or `rightBranchMin == pkh`
-        - fail
-    - else
-        - success (`leftBranchMax <= pkh <= rightBranchMin`, pkh not present in none of the branches)
-
-### UpdateNode
-
-- spending input is a node
-
-#### validation logic
-
-- tx has an input (root) which MUST:
-    - have a value containing an NFT with:
-        - the same currency symbol of this one
-        - asset name equal to `rootAssetName` of the datum on this node
-        - quantity equal to 1
-    - be spent with `NewAccount` redeemer
-- the NFT is present in an output going back to the same validator, the output MUST:
-    - NOT have any other assets from the same currecy symbol other than its own
-    - NOT change the `rootAssetName` field in the datum
-
-### NewAccount
-
-the process adds 1 `Node` and 1 `Leaf` nodes 
-
-- spending input is the root
-- inputs:
-    - all nodes that needs to be updated spent with `UpdateNode` redeemer
-- outputs:
-    - one output per each node spent with `UpdateNode`
-    - the updated root (with the same rules of the `UpdateNode` redeemer)
-    - the new `Leaf`
-    - the new `Node` having the new `Leaf` and its sibling as left and right nodes (in order)
-    - a new UTxO at the accoun manager contract with datum `Account` and `amount` field equal to 0
-
-#### validation logic
-
-- proof that the `pkh` to add is not already included in the merkle tree; if succeeds remember the last node checked else the contract fails the transaction.
-- given the last node checked in the proof, the node must be updated such that:
-    - a new `Node` is added as root of the branch with lower weight, this MUST:
-        - have the new `Leaf` node with the added `pkh` as inner child
-        - have the old branch as outer child
-    - the `leftBranchMax` or `rightBranchMin` is updated to the new `pkh` according to the branch actually updated
-- starting from the last added node to the root, check that the output have the correct hash for each node
-
-## AccountManager contract
-
-The datums (that define the different types of node of the merkle tree) are:
-```ts
-const AccounManagerDatum = pstruct({
+const Account = pstruct({
     Account: {
-        // credentials: bs, // stored as asset name
-        amount: int
-    },
-    AllowedSpender: {
-        // originalOwner: bs,   // stored as first 29 bytes in the asset name
-        // spender: bs,         // stored as second 29 bytes in the asset name
-        remainingAmount: int
+        amount: int,
+        credentials: PCredential.type,
+        currencySym: PCurrencySymbol.type,
+        state: data
     }
 });
 ```
 
-which translates to the following `Data`s:
-```hs
--- Account
-Constr 0 [ I amount ]
+### `AccounManagerRedeemer`
 
--- AllowedSpender
-Constr 1 [
-    B originalOwner,
-    B spender,
-    I remainingAmount
-]
-```
+The `AccounManagerRedeemer` is used to comunicate the contract the intention with which the utxo is being spent.
 
-The redeemers accepted by the account managers validators are:
+It includes 4 standard redeemers; none of which is meant to manipulate the state of the spending account.
+
+for this reason a specific implementation will likely have more than 4 possible redeemers that will not be considered standard
+(eg. a wallet implementing an interface SHOULD NOT depend on the exsistence of these additional redeemers).
+
+The minimal `AccounManagerRedeemer` is:
+
 ```ts
 const AccounManagerRdmr = pstruct({
-    Mint: { // or Burn if amount is negative
-        account: PCredential.type,
+    Mint: { // or Burn if `amount` is negative
         amount: int
     },
     Transfer: {
         to: PCredential.type,
         amount: int
     },
-    TransferFrom: {
-        from: PCredential.type,
-        to: PCredential.type,
-        amount: int
-    },
-    Approve: {
-        spender: PCredential,
-        maxAmount: int
-    },
-    RevokeApproval: {},
     Receive: {},
-    UseApprovedSpender: {}
+    ForwardCompatibility: {}
 });
 ```
 
-which translates to the following `Data`s:
-```hs
--- Mint
-Constr 0 [
-    PCredential,
-    I amount
-]
+The validation logic is different for each redeemer.
 
--- Transfer
-Constr 1 [
-    PCredential,
-    I amount
-]
+#### Common operations and values
 
--- TransferFrom
-Constr 2 [
-    PCredential,
-    PCredential,
-    I amount
-]
+Before proceeding with the redeemers validation logic here are some common operations and values between some of the redeemers.
 
--- Approve
-Constr 3 [
-    PCredential,
-    I maxAmount
-]
+##### `ownUtxoRef`
 
--- RevokeApproval
-Constr 4 []
+the `accountManager` contract is meant to be used only as spending validator.
 
--- Receive
-Constr 5 []
+As succ we can extract the utxo being spent from the `ScriptPurpose` when constructed with the `Spending` contstructor and fail for the rest.
 
--- UseApprovedSpender
-Constr 6 []
+```ts
+const ownUtxoRef = plet(
+    pmatch( ctx.purpose )
+    .onSpending(({ utxoRef }) => utxoRef)
+    ._( _ => perror( PTxOutRef.type ) )
+);
 ```
 
-### extract typed credentials from an account NFT asset name
+##### `validatingInput`
 
-- extract the head and the tail from the bytestring asset name
-    - if the head is 0 the tail represents a public key hash
-    - else if the head is 1 the tail represents a validator hash
-    - else the validator SHOULD fail
+is the input with `utxoRef` field equivalent to `ownUtxoRef`
 
-### Mint
+##### `ownCreds`
 
-- inputs:
-    - input with: (input being validated)
-        - `Account` datum
-        - NFT's asset name matching the one in the redeemer
-- outputs:
-    - output with the same native assets value of the input
+from the `validatingInput`:
 
-#### validation logic
+```ts
+validatingInput.resolved.address.credential
+```
 
-- the input MUST:
-    - have an `Account` datum
-    - have a value containing the NFT with the asset name matching the `PCredential`s specified in the `Mint` redeemer
-    - if the `PCredential`s are of a validator the tx inputs MUST include an input from that validator hash
-- the output to the spender MUST:
-    - have an `Account` datum of which:
-        - the `amount` field is equal to the `amount` field from the spender input's datum added to the `amount` field of the redeemer
-            - the validation MUST fail if the the result of the addition is negative
-    - have a native assets value that MUST:
-        - have an entry for the NFT currency symbol
-        - have a single entry (MUST fail otherwhise) with the same asset name of the input being validated
-        - have quantity of 1
-    - go back to the account manager validator
+##### `ownValue`
 
-### Transfer
+from the `validatingInput`:
 
-- inputs:
-    - the spender input (input being vaildated)
-    - (optional) input of a the validator with hash matching the one in the credetials if the spender's credentials are not a public key hash
-    - the receiver input (with `Receive` redeemer)
-- outputs
-    - output with the spender account
-    - output with the receiver account
+```ts
+validatingInput.resolved.value
+```
 
-#### validation logic
 
-- the spender input MUST:
-    - have an `Account` datum
-    - have a value containing the NFT with the asset name matching the `PCredential`s of the spender
-    - if the `PCredential`s of the utxo are of a validator the tx inputs MUST include an input from that validator hash
-- the receiver input MUST:
-    - be spent with the `Receive` redeemer
-    - have a value containing the NFT with the asset name matching the `PCredential`s of the receiver (specified in the redeemer)
-- check the NFT asset name against the spender input credentials as explained above
-    - assert that requred signers from the tx infos MUST include a key equal to the tail if the credentials are a public key hash
-    - assert that at least one of the inputs that are not from the account manager contract MUST be from the validator of which hash is equal to the tail if the credentials are a validator hash
-- check the NFT asset name against the receiver input credentials as explained above
-    - fail if it doesn't match
-- the output to the spender MUST:
-    - have an `Account` datum of which:
-        - the `amount` field is equal to the `amount` field from the spender input's datum minus the `amount` field of the redeemer
-            - the validation MUST fail if the input amount is less than the spending amount
-    - and the value that MUST:
-        - have an entry for the NFT currency symbol
-        - have a single entry (MUST fail otherwhise) with the same asset name of the spender input
-        - have quantity of 1
-    - go back to the account manager validator
-- the output to the receiver MUST:
-    - have an `Account` datum of which:
-        - the `amount` field is equal to the `amount` field from the spender input's datum plus the `amount` field of the redeemer
-    - and the value that MUST:
-        - have an entry for the NFT currency symbol
-        - have a single entry (MUST fail otherwhise) with the same asset name of the receiver input
-        - have quantity of 1
-    - go back to the account manager validator
+##### `isOwnOutput`
 
-### TransferFrom
+given an output; we recongize the output as "own" if the attached credantials are equivalent to `ownCreds` 
+and the attached value includes an entry for the `currencySym` field in the specified in the datum.
 
-- inputs:
-    - the spender input (input being vaildated)
-    - (optional) allowed spender input (with `UseApprovedSpender` redeemer)
-    - (optional) input of a the validator if the spender credentials are not a public key hash
-    - the receiver input (with `Receive` redeemer)
-- outputs
-    - output with the spender account
-    - (optional) allowed spender output ( if present between the inputs )
-    - output with the receiver account
+```ts
+const isOwnOutput = plet(
+    pfn([ PTxOut.type ], bool )
+    ( out => 
+        out.address.credential.eq( ownCreds )
+        // a single account manager contract might handle multiple tokens
+        .and(
+            out.value.some( ({ fst: policy }) => policy.eq( account.currencySym ) )
+        ) 
+    )
+);
+```
 
-#### validation logic
+##### `isOwnInput` 
 
-- the spender input MUST:
-    - have an `Account` datum
-    - have a value containing the NFT with the asset name matching the `PCredential`s of the spender
-    - if the `PCredential`s of the utxo are of a validator the tx inputs MUST include an input from that validator
-- the receiver input MUST:
-    - be spent with the `Receive` redeemer
-    - have a value containing the NFT with the asset name matching the `PCredential`s of the receiver (specified in the redeemer)
-- check the NFT asset name against the spender input credentials as explained above
-    - assert that requred signers from the tx infos MUST include a key equal to the tail if the credentials are a public key hash
-    - assert that at least one of the inputs that are not from the account manager contract MUST be from the validator of which hash is equal to the tail if the credentials are a validator hash
-- the output to the spender MUST:
-    - have an `Account` datum of which:
-        - the `amount` field is equal to the `amount` field from the spender input's datum minus the `amount` field of the redeemer
-            - the validation MUST fail if the input amount is less than the spending amount
-    - and the value that MUST:
-        - have an entry for the NFT currency symbol
-        - have a single entry (MUST fail otherwhise) with the same asset name of the spender input
-        - have quantity of 1
-    - go back to the account manager validatorv
-- the output to the receiver MUST:
-    - have an `Account` datum of which:
-        - the `amount` field is equal to the `amount` field from the spender input's datum plus the `amount` field of the redeemer
-    - and the value that MUST:
-        - have an entry for the NFT currency symbol
-        - have a single entry (MUST fail otherwhise) with the same asset name of the receiver input
-        - have quantity of 1
-    - go back to the account manager validator
-    
-### Approve
+an input is "own" if the resolved field is "own";
 
-- inputs:
-    - input having an `Account` datum (input being validated)
-- mint:
-    - an NFT with the credentials of the original owner and the credentials of the allowed spender as asset name
-- outputs:
-    - output with preserving the approver account
-    - output with with `AllowedSpender` datum
+```ts
+const isOwnInput = plet(
+    pfn([ PTxInInfo.type ], bool )
+    ( input => isOwnOutput.$( input.resolved ) )
+);
+```
 
-#### validation logic
+##### `isOwnCurrencySym`
 
-- the input being validated MUST:
-    - have an `Account` datum
-    - have a value containing the NFT with the asset name matching the `PCredential`s of the spender
-    - if the `PCredential`s of the utxo are of a validator the tx inputs MUST include an input from that validator hash
-- the output preserving the approver account MUST:
-    - have the **exact same** datum as the validation input (`(builtin equalsData)` can be used for the purpose)
-    - have the **exact same** NFT from the input
-    - go back to the accoun manager validator
-- the tx MUST mint an NFT with asset name equal to the concatenation of the input account asset name and the `spender` credentials (redeemer field) in the form of asset name as explained in the second minting poilicy
-- the output with `AllowedSpender` datum MUST:
-    - have an `AllowedSpender` datum with:
-        - `remainingAmount` field that MUST be greather than 0 AND equal to the `maxAmount` field of the redeemer
-    - have a value with the NFT minted in this transaction
+given an asset policy we might want to know if it is the one being validated.
 
-### RevokeApproval
+this is done by comparing it with the one specified in the datum field
 
-- inputs:
-    - input having an `AllowedSpender` datum (input being validated)
-- mint:
-    - (burn) an NFT with the credentials of the original owner and the credentials of the allowed spender as asset name
+```ts
+const isOwnCurrSym = plet( account.currencySym.eqTerm );
+```
 
-#### validation logic
+##### `outIncludesNFT`
 
-- the input being validated MUST:
-    - have an `AllowedSpender` datum
-    - have a value containing the NFT with the asset name of length 58
-    - extract the original owner credentials (first 29 bytes of the assetname) and make sure that it either signed the transaction if pkh or an input is included if a validator Hash
-- the mint field MUST:
-    - have an entry for the validating input NFT
-    - have an entry for the asset name of the validating input NFT
-    - have quantity less than 0
-    
-### Receive
+given a transaction output is useful to check if the value includes the NFT generated from the `accountFactory`;
 
-- inputs:
-    - the receiver input (input being validated)
-- outputs:
-    - output with the same native asset value of the input
+this is done by checking that at least one of the attached value's entry satisfies `isOwnCurrencySym` for the policy.
 
-#### validation logic
+```ts
+ const outIncludesNFT = plet(
+    pfn([ PTxOut.type ], bool )
+    ( out => out.value.some( entry => isOwnCurrSym.$( entry.fst ) ) )
+);
+```
 
-- the receiver input MUST:
-    - have an `Account` datum
-    - be used with an other input from the same account manager validator spent either with redeemer `Transfer` or with redeemer `TransferFrom` (using the `redeemers` field from the tx infos)
-    - have a value that MUST:
-        - have an entry for the NFT currency symbol
-- the output MUST:
-    - have an `Account` datum with:
-        - an `amount` field samller or equal than the `amount` field present on the validating input's datum
-    - have value that MUST:
-        - have an entry for the NFT currency symbol
-        - have a single entry (MUST fail otherwhise) with the same asset name of the receiver input
-        - have quantity of 1
-    
-### UseApprovedSpender
+##### `ownOuts`
 
-- inputs:
-    - the receiver input (input being validated)
-- outputs:
-    - output with the same native asset value of the input
+transaction outputs filtered by `isOwnOutput`;
 
-#### validation logic
+##### `ownInputs`
 
-- the receiver input MUST:
-    - have an `AllowedSpender` datum
-    - be used with an other input from the same account manager validator spent with redeemer `TransferFrom` (using the `redeemers` field from the tx infos)
-    - have a value that MUST:
-        - have an entry for the NFT currency symbol
-- the output MUST:
-    - have an `AllowedSpender` datum with:
-        - an `amount` field greather or equal than the `amount` field present on the validating input's datum
-        - exact same `originalOwner` field as in the input being validated
-        - exact same `spender` field as in the input being validated
-    - have value that MUST:
-        - have an entry for the NFT currency symbol
-        - have a single entry (MUST fail otherwhise) with the same asset name of the receiver input
-        - have quantity of 1
+transaction inputs filtered by `isOwnInput`;
+
+##### updating the `Account` datum
+
+Between all the standard redeemers it must be checked that the datum fields `credentials`, `currencySym` and `state` remain unchanged compared to the current datum.
+
+This might not be true for any implementation specific additional redeemer.
+
+#### `Mint`
+
+the contract being called using the `Mint` redeemer MUST suceed only if the following conditions are met:
+
+> **NOTE** 
+>
+> we use `mint.amount` to describe the value of the `amount` field included in the `Mint` redeemer
+> and `account.amount` to describe the value of the `amount` field included in the input `Account` datum.
+
+- only a single input is comes from the `accountManager` validator;
+
+- the value of the input coming from the `accountManager` MUST include an entry with `PCurrencySymbol`
+equivalent to the one specified in the `currencySym` field of the `Account` datum.
+
+- the minted value in the transaction (`ctx.tx.mint`) MUST NOT include any entry with `PCurrencySymbol`
+equivalent to the one specified in the `currencySym` field of the `Account` datum (aka. no accounts are created)
+
+- there MUST be an output going back to the `accountManager` contract with the following properties
+    - it MUST have an entry for the `PCurrencySymbol` specified in the `currencySym` field of the `Account`
+    - the output datum MUST be constructed using the `InlineDatum` constructor
+    - the datum fields `credentials`, `currencySym` and `state` must be unchanged compared to the current datum.
+    - the datum field `account.amount` should change based on `mint.amount` as described below.
+
+- if the `mint.amount` is positive the output datum MUST 
+    be equal to the sum of `account.datum` and `mint.datum`
+
+- if the `amount` field included in the `Mint` redeemer is negative 
+the contract MUST FAIL if the sum of `mint.amount` and `account.amount` is strictly less than `0` (aka. burning more assets than how much the `Account` holds);
+otherwhise it should check for the output datum `amount` field to be equal to the result of the sum
+
+#### `Transfer`
+
+The `Transfer` redeemer is used to pay an other account in the same account manager.
+
+When used as redeemer the contract checks for the following conditions to be true;
+
+- `ownInputs` to be of lenght `2`
+- `ownOuts` to be of lenght `2`
+- the input sender's amount field is greather or equal than the redeemer amount (`transfer.amount`)
+- the output sender's amount field is equal to the input one minus `transfer.amount`
+- the output receiver's amount field is equal to the input one plus `transfer.amount`
+- the sender singned the transaction (included in `ctx.tx.signatories` if a `PPubKeyHash` or included a script input if a `PValidatorHash`)
+
+#### `Receive`
+
+- `ownInputs` to be of lenght `2`
+- the sender input (the `ownInput` with different `utxoRef` of the `validatingInput`)
+being spent with `Transfer` redeemer
+- in the sender input `Transefer` redeemer the `to` field is equal to the `account.credentials` (where `account` is the receiver datum)
+
+> **NOTE**
+>
+> the sender input being an `ownInputs` element and being spent with `Transfer` redeemer 
+> implies that the transfer calculation is running in that validation
+>
+> hence we don't need to perform the same calculation here
+
+#### `ForwardCompatibility`
+
+For the current version this redeemer SHOULD always fail.
+
+The main purpose of the redeemer is to avoid breaking compatibilities for addtional implementation specific redeemers
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
@@ -741,7 +403,7 @@ It must also explain how the proposal affects the backward compatibility of exis
     - preprod testnet
 - having at least 2 different wallets integrating meta asset functionalities, mainly:
     - displayning balance of a specified meta asset if the user provides the address of the respecive account manager contract
-    - transaction creation with `Transfer`, `Approve` and `RevokeApproval` redeemers
+    - transaction creation with `Transfer` redeemers
 
 ### Implementation Plan
 <!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
