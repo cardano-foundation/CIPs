@@ -8,6 +8,7 @@ Authors:
     - Nicolas Jeannerod <nicolas.jeannerod@tweag.io>
     - Mathieu Montin <mathieu.montin@tweag.io>
     - M. Ali Modiri <mixaxim@gimbalabs.io>
+    - Simon Thompson
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/499
@@ -19,6 +20,7 @@ License: CC-BY-4.0
 
 
 ## Abstract
+
 Certification is the process of providing various kinds of assurance of DApps through the provision of verifiable, trustworthy metadata linking to relevant evidence of assurance, such as audit reports, test run data, formal verification proofs etc.
 
 Currently, certification does not have a standardised way to be stored and presented to all stakeholders (DApp developer, DApp stores, end-users, auditors, ...) in an immutable, persistent and verifiable way.
@@ -27,8 +29,6 @@ This CIP descibes a standardised method for certificates to be published and sto
 
 This proposal describes how certification metadata can be designed for DApp registration. It first describes the requirements for DApp certification, and then sets out the options for its inclusion in CIP-72.
 
-
-
 ## Motivation: why is this CIP necessary?
 
 It is expected that evidence of various kinds of assurance of DApps is recorded in an immutable and verifiable way on the Cardano blockchain; these forms of assurance are: automated testing, including property-based testing (level 1), audit (level 2) and formal verification (level 3).
@@ -36,28 +36,31 @@ It is expected that evidence of various kinds of assurance of DApps is recorded 
 The metadata should be discoverable by all certification stakeholders, including end-users, DApp developers, and ecosystem components, such as light wallets and DApp stores. Information should be indexable by certification issuer, DApp developer, DApp and DApp version.
 
 ### Use-cases and Stakeholders
+
 DApp developers will seek certification from one of the issuers, according to their desired level of certification and will refer to the certificate on several platforms (e.g. on their website or in their DApp registration on a DApp store).
 
-Certification is to be provided by certification issuers including: testing services (level 1), auditors (level 2), and verification services (level 3). Certification issuers will issue these certificates referring to a particular version of a DApp that has succesfully gone through a certification process. 
+Certification is to be provided by certification issuers including: testing services (level 1), auditors (level 2), and verification services (level 3). Certification issuers will issue these certificates referring to a particular version of a DApp that has succesfully gone through a certification process.
 
 DApp stores and light wallets will be able to pull DApps information from DApps registration or chain exploring and will link a DApp to a corresponding set of certificates.
 
 End-user will interact with a DApp through a wallet and will be able to check the different certificates obtained by the DApp.
 
-
 ## Specification
 
 ### Definitions
+
 - **anchor** - A hash written on-chain that can be used to verify the integrity (by way of a cryptographic hash) of the data that is found off-chain.
 - **DApp** - A decentralised application that is described by the combination of metadata, certificate and a set of scripts.
 - **dApp Store** - A dApp aggregator application which follows on-chain data looking for and verifying dApp metadata claims, serving their users linked dApp metadata.
 - **Certification issuers** - A company that issues certification certificates on-chain.
 
 ### Certification issuers
+
 Certification issuers will broadcast on-chain certificates that will represent th level of certification reached and present evidence of the work done.
 Certification issuers will sign the certificate to attest that they have done the work and prevent certificate forgeries.
 
 ### Suggested validations
+
 - `integrity`: The DApp's metadata off-chain shall match the metadata **anchored** on-chain.
 - `trust`: The DApp's certification metadata transaction shall be signed by a trusted certfication issuer. This means a list of wallets of certification issuers needs to be known. It will then be up to the DApp store to decide which certification issuers are really trusted and publish a list of their own trusted certification issuers.
 
@@ -116,6 +119,7 @@ Certification issuers will sign the certificate to attest that they have done th
 ```
 
 ### On-chain DApp Certification Certificate
+
 ```json
 {
     "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8", 
@@ -134,20 +138,18 @@ Certification issuers will sign the certificate to attest that they have done th
 }
 ```
 
-### Properties
+### On-chain Metadata Properties
 
-`subject`: Identifier of the claim subject (i.e dApp). A UTF-8 encoded string. 
+`subject`: Identifier of the claim subject (i.e dApp). A UTF-8 encoded string.
 
 `type`: The type of the claim. This is a JSON object that contains the following properties:
 
 - `action`: The action that the certificate is asserting. It can take the following values:
-    - `CERTIFY`: The certificate is asserting that the dApp is being certified.
-    - `AUDIT`: The certificate is asserting that an audit has been performed for this DApp. `AUDIT` shall come with a certification level `certificationLevel` of `0`.
+  - `CERTIFY`: The certificate is asserting that the dApp is being certified.
+  - `AUDIT`: The certificate is asserting that an audit has been performed for this DApp. `AUDIT` shall come with a certification level `certificationLevel` of `0`.
 
-    - `certificationLevel`: The certification level is an integer between 0 and 3. 0 is reserved for audits and reports that are not compliant with the certification standards. 1, 2, and 3 refers to the certification certificates referring to the three level of certifications as defined by the certification working group.
-    - `certificationIssuer`: The name of the certification issuer.
-
-
+  - `certificationLevel`: The certification level is an integer between 0 and 3. 0 is reserved for audits and reports that are not compliant with the certification standards. 1, 2, and 3 refers to the certification certificates referring to the three level of certifications as defined by the certification working group.
+  - `certificationIssuer`: The name of the certification issuer.
 
 `rootHash`: The hash of the metadata entire tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the rootHash property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
 
@@ -157,47 +159,49 @@ This hash is calculated by taking the entire metadata tree object, ordering the 
 
 `metadata`: An array of links to the dApp's metadata. The metadata is a JSON object that contains the dApp's metadata in accordance with [CIP 26](https://cips.cardano.org/cips/cip26/)
 
-<!-- `signature`: The signature of the certificate. The signature is done over the blake2b-256 hash of `rootHash`. Any stakeholder can use the public key to verify who signed the certificate and possibly compare it with a list of known public keys to check the identity of the certificate issuer. -->
-
 Values for all fields shall be shorter than 64 characters to be able to be included on-chain.
 
 ### Metadata Label
+
 When submitting the transaction metadata pick the following value for `transaction_metadatum_label`:
 
 - `1304`: DApp Certification
 
 ### Off-chain Metadata Format
+
 The Dapp Certification certificate is complemented by off-chain metadata that can be fetched from off-chain metadata servers.
 
-### Properties
+### Off-chain Metadata Properties
 
 `subject`, a mandatory string, Identifier of the claim subject (i.e dApp). A UTF-8 encoded string.
 
 `schemaVersion`, a mandatory string, used as a versioning number for the Json schema of the on-chain metadata. This current description shall be refered as `schemaVersion: 1`.
 
 `certificateIssuer`, a mandatory object used to describe the certification issuer, that contains the following fields:
+
 - `name`, a mandatory string, the name of the certification issuer
 - `logo`, a string, a link to the logo of the certification issuer. The logo could be self-hosted in order to allow updates on the logo design.
 - `social`, an object used to list all the different social contacts of the Certificate Issuer:
-   - `twitter`, a string, the twitter handle of the Certificate Issuer
-   - `github`, a string, the github handle of the Certificate Issuer
-   - `contact`, a mandatory string, the contact email of the Certificate Issuer
-   - `website`, a mandatory string, a link to the Certificate Issuer's website
-   - `discord`, a string, a link to the Certificate Issuer's Discord server
+  - `twitter`, a string, the twitter handle of the Certificate Issuer
+  - `github`, a string, the github handle of the Certificate Issuer
+  - `contact`, a mandatory string, the contact email of the Certificate Issuer
+  - `website`, a mandatory string, a link to the Certificate Issuer's website
+  - `discord`, a string, a link to the Certificate Issuer's Discord server
 
 `report`, an object that contains:
+
 - `reportURLs`, an array of URLs, is a field where each link points to the same actual certification report for anyone to read. This ensures transparency in the findings, what was and was not considered in the certification process..
-- `reportHash`, a string, is a field that is the blake2b-256 hash of the report pointed by the links in `reportURLs`. 
+- `reportHash`, a string, is a field that is the blake2b-256 hash of the report pointed by the links in `reportURLs`.
 
 `summary`, a string, that contains the summary of the report from the certification issuer.
 
 `disclaimer`, a string, that contains the legal disclaimer from the certification issuer.
 
 `script` an array of objects that represents the whole DApp's on-chain script. Each object is comprised of:
+
 - `fullScriptHash`, a string, is the prefix and script hash or script hash+staking key
 - `scriptHash`, a string, is the script hash or script hash+staking key
 - `contractAddress`, a string, the script address
-
 
 The off-chain metadata should follow the following schema and should then be reformatted according to [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785) on canonical JSON Scheme:
 
@@ -436,15 +440,17 @@ It should be possible for there to be multiple versions of metadata published by
 It should be possible for wallets to identify to users the certification status of a DApp when they are signing a transaction that is being submitted to a deployed DApp.
 
 ### Custom fields
+
 Certification issuers should be free to add additional fields to fit some additional needs.
 
+### List of Certification issuers
 
-### Certification issuers
 | Certification issuer | URL                | Contact email        | Certification levels | Cardano address |
 |----------------------|-----               |---------------       |----------------------|------------   |
-| Example Ltd.         | http://example.com | contact@example.com  | 1,2                  | EXAMPLEADDRESS  |
- 
+| Example Ltd.         | <http://example.com> | contact@example.com  | 1,2                  | EXAMPLEADDRESS  |
+
 ## Rationale: how does this CIP achieve its goals?
+
 An on-chain solution is preferred as it allows for it to be checkable by any stakeholder and immutable.
 
 Certificate are issued by certification issuers that sign the certificate transaction to prevent certificate forgeries.
@@ -456,25 +462,28 @@ These certificates are self-standing and can be presented as-is by any stakehold
 This proposal does not affect any backward compatibility of existing solution but is based on the work done for CIP72 on DApp registration and Discovery. It is also linked to CIP52 on Cardano audit best practices guidelines.
 
 ### Other designs considered
+
 **Updates to registration entries**
 This would have required DApp owner or certification issuers to add certificates to every registration making it harder to maintain a shared state between all stakeholders.
 The chosen design requires to follow the chain to discover the certificates which should be expected from stakeholders.
 
-
 ## Path to Active
 
 ### Acceptance Criteria
-Audits are being published on-chain using this CIP by auditors. 
+
+Audits are being published on-chain using this CIP by auditors.
 
 Certificates are being issued on-chain by multiple auditors and certification companies using this CIP.
 
 Certificates are being displayed by multiple DApps stores or aggregators which uses this format.
 
 ### Implementation Plan
- - [x] This CIP will be discussed and agreed by the Cardano Certification Working Group where multiple auditors are being represented. This will ensure that certification issuer have agreed on the content and are ready to issue certificates under this format.
 
- - [x] This CIP will be presented to the IOG Lace team and Cardano Fans team which will display certificates for DApps. This is to ensure that the format contains all the necessary information for a DApp store or an aggregator to correctly link and display a certificate from the on-chain and off-chain metadata.
+- [x] This CIP will be discussed and agreed by the Cardano Certification Working Group where multiple auditors are being represented. This will ensure that certification issuer have agreed on the content and are ready to issue certificates under this format.
+
+- [x] This CIP will be presented to the IOG Lace team and Cardano Fans team which will display certificates for DApps. This is to ensure that the format contains all the necessary information for a DApp store or an aggregator to correctly link and display a certificate from the on-chain and off-chain metadata.
 
 ## Copyright
+
 This CIP is licensed under [CC-BY-4.0].
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
