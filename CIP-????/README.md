@@ -218,7 +218,7 @@ We decided to spawn the server within the dApp to force the user to manually sca
 
 ## Rationale
 
-The purpose of this CIP mainly consists of two parts. It addresses the current lack of dApp mobile support, but at the same time provides an even more decentralized alternative to state-of-the-art communication methods. To archive this goal we have introduced a WebTorrent and WebRTC based architecture. To demonstrate a viable implementation, we have implemented a proof of concept which also shows how a rpc method injection like CIP-0030 might look like.
+The purpose of this CIP mainly consists of two parts. It addresses the current lack of dApp mobile support, but at the same time provides an even more decentralized alternative to state-of-the-art communication methods. To achieve this goal we have introduced a WebTorrent and WebRTC based architecture. To demonstrate a viable implementation, we have implemented a proof of concept which also shows how a rpc method injection like CIP-0030 might look like.
 
 ## Path to Active
 
