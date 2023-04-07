@@ -8,7 +8,7 @@ Authors:
     - Nicolas Jeannerod <nicolas.jeannerod@tweag.io>
     - Mathieu Montin <mathieu.montin@tweag.io>
     - M. Ali Modiri <mixaxim@gimbalabs.io>
-    - Simon Thompson
+    - Simon Thompson <simon.thompson@iohk.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/499
