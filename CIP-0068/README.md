@@ -338,7 +338,7 @@ In order to reference the correct UTxO containing the metadata, it needs to be a
 The security for the link is derived from the minting policy itself, so it's important to write the validator with the right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
 
 
-## Backward Compatibility
+### Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
 
