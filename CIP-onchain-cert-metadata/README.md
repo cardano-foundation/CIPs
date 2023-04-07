@@ -12,6 +12,7 @@ Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/499
     - https://github.com/input-output-hk/Certification-working-group/pull/18
+    - https://docs.google.com/document/d/1vC4cS-gMLIvgduSh5Fipn_lU_0Ou0NY4X_a9lWJz2B8
 Created: 2023-02-23
 License: CC-BY-4.0
 ---
