@@ -10,3 +10,4 @@
 | 2021/09 | Goguen  | Alonzo  | 39916975    | 290          | 5,0              | TPraos          | Ouroboros Praos     |                    |
 | 2021/10 | Goguen  | Alonzo  | 43372972    | 298          | 6,0              | TPraos          | Ouroboros Praos     | intra-era hardfork |
 | 2022/09 | Goguen  | Babbage | 72316896    | 365          | 7,0              |  Praos          | Ouroboros Praos     | Vasil HF           |
+| 2023/02 | Goguen  | Babbage | 84844885    | 394          | 8,0              |  Praos          | Ouroboros Praos     | Valentine HF |

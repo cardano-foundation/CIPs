@@ -25,9 +25,6 @@ Created: YYYY-MM-DD
 
 -->
 
-# CPS-XXXX: Title
-<!-- A reminder of the document's number & title, for readability. -->
-
 ## Abstract
 <!-- A short (\~200 word) description of the target goals and the technical obstacles to those goals. -->
 
