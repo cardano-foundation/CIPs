@@ -16,7 +16,7 @@ This would be achieved by including node version information during KES or node 
 The CIP-number is inspired by the novel Odysee in Space (2001, 2010), and seeks to ease the general process for delegators and SPOs. 
 
 Among those members who participated in the discussion in Discord and shared their views and ideas were 
-Tommy Kammerer, George [APEX], Danny Tuppeny [WEN_K],  Homer [AAA], Vahid [A4G], Rick [RCADA], Sean [ENVY], Rich [ECP]
+Tommy Kammerer, George [APEX], DanTup [WEN_K],  Homer [AAA], Vahid [A4G], Rick [RCADA], Sean [ENVY], Rich [ECP]
 
 
 ## Motivation
