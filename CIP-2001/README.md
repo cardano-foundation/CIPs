@@ -2,6 +2,7 @@
 CIP: 2001
 Title: Automated Stake Pool Node Version Reporting
 Authors: Marcus Ubani - hello@larissa.health
+Comments-URI: 
 Type: Standards
 Status: Draft
 Created: 2023-04-09
