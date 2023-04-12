@@ -472,9 +472,8 @@ Release Name is a field, which dApp developers can use on top of release version
 At the begining neither on-chain, nor off-chain storage has been following RFC 8785 (canonical json) but we reached a point that, due to consistency checks, we need to take hash of both on-chain and off-chain and this forced us to stipulate that both on-chain and off-chain metadata documents need to be converted
 according to RFC 8785 before taking a blake2b-256 hash of it.
 
-### On-Chain Signature Controversy
-On-chain part has a signature, which has a role to assign owner
-It has been debated whether it is enough to just 
+### On-Chain Signature Scope
+On-chain part has a signature, which has a role to verify that a certain dApp owner made changes. In the initial version, a blake2b-256 signature was needed only for `rootHash` but following discussion, due to security concerns, decision has been made that the signature should attest the whole on-chain canonical json except signature field itself (because it would end up in an infinite recursion).
 
 ### Who Is The Owner?
 Smart contracts are ownerless, it has been debated that there could be multiple claims to the same dApps from different parties.
