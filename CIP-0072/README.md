@@ -244,7 +244,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
       "properties": {
         "short": {
           "type": "string",
-          "description": "Short dApp description (No less than 40 and no longer than 168 characters).",
+          "description": "Short dApp description (no less than 40 and no longer than 168 characters).",
           "minLength": 40,
           "maxLength": 168
         },
@@ -441,4 +441,15 @@ There are multiple options to store metadata offchain. The most common options a
 - [Bitbucket](https://bitbucket.org/)
 - Any REST JSON API
 
+## Rationale: how does this CIP achieve its goals?
+TODO
+## Path to Active
+TODO
+### Acceptance Criteria
+TODO
+### Implementation Plan
+N/A
 
+## Copyright
+[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
+[Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
