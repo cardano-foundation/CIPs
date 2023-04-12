@@ -495,10 +495,7 @@ On Cardano, there are parametrised scripts, meaning that before compilation take
 The consequence of this will be that as we pass different parameters, script hash will be changing. This is especially troublesome for things like certifications / audits but also dApp registration. This topic is being debated as part of CIP: https://github.com/cardano-foundation/CIPs/pull/385, however, it doesn't see that there has been conclusion how to tackle this problem. For the moment, a new script hash (despite changing only a parameter) requires a re REGISTRATION or an UPDATE to the existing dApp.
 
 ### Often Changing Scripts
-There are cases on Cardano main-net that script hashes are changing every day, most probably due to parameterised scripts. It is responsibility of the developers to issue an `UPDATE` command and provide off-chain metadata following the change, for scripts that are changing daily / hourly it is envisaged that this process be automated by a dApp developer.
-
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions. -->
+There are cases on Cardano main-net that script hashes are changing every day, most probably due to parameterised scripts. It is responsibility of the developers to issue an `UPDATE` command and provide on-chain and off-chain metadata following the change, for scripts that are changing daily / hourly it is envisaged that this process be automated by a dApp developer.
 
 ## Path to Active
 TODO
