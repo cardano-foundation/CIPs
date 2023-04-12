@@ -443,7 +443,7 @@ There are multiple options to store metadata offchain. The most common options a
 
 ## Rationale: how does this CIP achieve its goals?
 
-### Decoupling of dApp registration from certifications / audits
+### Decoupling of dApp Registration From Certifications / Audits
 We quickly reached a conclusion that it is better to separate them and keep scope of CIP smaller. During discussions it became clear that while there is
 some overlap of certifications / audits with dApp registration, this overlap is small and can be even removed. At one point we wanted to couple 
 certifications CIP to this CIP (e.g. via some link or dApp version) but we analyzed how dApp developers are currently following the process and we noticed
@@ -451,22 +451,53 @@ that in many cases certification / audit comes before an official dApp release o
 that dApp registration and certifications are different CIPs but they are very loosely coupled. Loose coupling has also disadvantages as it leads to a situation that in order to attest that a dApp is certified / audited, implementators will have to scan for all script hashes belonging to a dApp and check
 whether those have been certified / explicitly mentioned in the audit.
 
-### Small metadata anchor on chain
-We analyzed how much we should put on-chain vs off-chain and we quickly reached the conclusion that it is better to keep small amount of data on-chain and larger chunk off-chain for which is what exactly CIP-26 is meant for.
+### Small Metadata Anchor On Chain
+This one is rather obvious but for the sake of completeness worth documenting. We analyzed how much we should put on-chain vs off-chain and we quickly reached the conclusion that it is better to keep small amount of data on-chain and larger chunk off-chain for which is what exactly CIP-26 is meant for.
 
-### CIP-26 as NOT the only storage layer
+### CIP-26 as *ONE* of Storage Layers
 We believe that CIP-26 is geared towards storing this type of off-chain metadata format but we don't want by any means to stipulate / police this form of storage. In fact it is possible to use offchain metadata storage alternatives such as direct http hosting / REST API/ IPFS / git, etc.
 
-### How to find off-chain data?
+### How to Find Off-Chain Data?
 We went back and forth whether we should actually store link (links) to off-chain metadata, eventually we settled on a solution that this is required
-because there could be a situation that a dApp registration may have off-chain metadata stored somewhere but some stores have it, others don't have it. Now it is required that a dApp developer points to at least one store that has off-chain metadata (as a reference).
+because there could be a situation that a dApp registration may have off-chain metadata stored somewhere but some stores have it, others don't have it. Now it is required that a dApp developer points to at least one store that has off-chain metadata (as a reference metadata).
 
-### Simple dApp registration
-It has been debated whether scripts / versions should be mandatory. There are use cases which require only basic dApp information, such as dApp developer, website, twitter link, etc, there are, however, also use cases that require analysing of this dApp performance data and basic information won't suffice. To encourage dApps to share scripts (which are hard to reverse engineer and analyse) for the moment this CIP enforces and makes it a requirement to list
+### Limited fields dApp Registration (what is mandatory / what is not)
+It has been debated whether scripts / versions should NOT be mandatory. There are use cases which require only basic dApp information, such as dApp developer, website, twitter link, etc, there are, however, also use cases that require analysing of this dApp performance data and basic information won't suffice. To encourage dApps to share scripts (which are hard to reverse engineer and analyse) for the moment this CIP enforces and makes it a requirement to list
 all scripts including all script hashes belonging to a dApp. 
 
-### Optional release name?
+### Optional Release Name?
 Release Name is a field, which dApp developers can use on top of release version, it has been debated whether field should be mandatory or optional but eventually it has been agreed that we do not want to enforce this field, dapp release is an optional field, dApp version, however, needs to follow semver and is a mandatory field.
+
+### Canonical JSON
+At the begining neither on-chain, nor off-chain storage has been following RFC 8785 (canonical json) but we reached a point that, due to consistency checks, we need to take hash of both on-chain and off-chain and this forced us to stipulate that both on-chain and off-chain metadata documents need to be converted
+according to RFC 8785 before taking a blake2b-256 hash of it.
+
+### On-Chain Signature Controversy
+On-chain part has a signature, which has a role to assign owner
+It has been debated whether it is enough to just 
+
+### Who Is The Owner?
+Smart contracts are ownerless, it has been debated that there could be multiple claims to the same dApps from different parties.
+
+She standard doesn't prevent anyone from making a claim, so it's up to the different operator to their diligence work and make their own choices of whom they trust. The signature should give the most confidence as anyone can collect known public keys from known devs (i.e sundaeswap, minswap, wingriders, etc ). Future CIP revisions can include DID's and Verifiable Credentials.
+
+### DIDs
+Since DIDs / Verifiable Credetials are not yet widely used in Cardano ecosystem, usage of them in this initial CIP version has been descoped.
+
+### Category
+Category is a predefined enum with values defined in the CIP / schema, it is *NOT* a free text field, rationale for this is that dApp developers will have no idea what ontology / classification to use, which will likely result in many duplicates of the same thing.
+
+### Purpouse Field As an Array or as a Single Item?
+It may have been visible that we have a `purpose` field, which can be: "SPEND" or "MINT", those fields directly map to what is allowed by a Cardano Smart Contract. As of the time of writing CIP - PlutusTx does not allow a script to be both of type: "SPEND" and "MINT", however, there are new
+languages on Cardano being worked on where they already allow one validator to be both spending UTxOs and minting tokens - all with the same script hash. To be open for the future it has been agreed to turn `purpouse` field into `purpouses` and make it a json array.
+
+### Parametrised Scripts
+On Cardano, there are parametrised scripts, meaning that before compilation takes place, it is possible to pass certain parameters instead of using `Datum`.
+The consequence of this will be that as we pass different parameters, script hash will be changing. This is especially troublesome for things like certifications / audits but also dApp registration. This topic is being debated as part of CIP: https://github.com/cardano-foundation/CIPs/pull/385, however, it doesn't see that there has been conclusion how to tackle this problem. For the moment, a new script hash (despite changing only a parameter) requires a re REGISTRATION or an UPDATE to the existing dApp.
+
+### Often Changing Scripts
+There are cases on Cardano main-net that script hashes are changing every day, most probably due to parameterised scripts. It is responsibility of the developers to issue an `UPDATE` command and provide off-chain metadata following the change, for scripts that are changing daily / hourly it is 
+envisaged that this process be automated by a dApp developer.
 
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions. -->
