@@ -4,7 +4,7 @@ Title: onchain tx chaining
 Category: Ledger | Plutus
 Status: Draft
 Authors:
-    - John Doe <john.doe@email.domain>
+    - Michele Nuzzi <michele.nuzzi.2014@gmail.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
