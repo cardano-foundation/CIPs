@@ -87,7 +87,7 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
 
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
 
-*`signature`*: The signature of the certificate. The signature is done over the blake2b-256 hash of the certificate. The client should use the public key to verify the signature of the certificate. 
+*`signature`*: The signature of the certificate. The signature is done over whole on-chain JSON (canonical) without the signature part. The client should use the public key to verify the signature of the certificate. Fields used for signature: ["subject", "rootHash", "metadata", "type"].
 
 ### dApp on-chain certificate JSON Schema
 ```json
@@ -497,6 +497,18 @@ The consequence of this will be that as we pass different parameters, script has
 ### Often Changing Scripts
 There are cases on Cardano main-net that script hashes are changing every day, most probably due to parameterised scripts. It is responsibility of the developers to issue an `UPDATE` command and provide on-chain and off-chain metadata following the change, for scripts that are changing daily / hourly it is envisaged that this process be automated by a dApp developer.
 
+### Beacon Tokens Instead of Metadata
+It has been argued that since anybody can make claims to dApps, this CIP instead of using metadata should use tokens. dApp developers
+would mint token, which would ensure they are the owners of a given dApp. It is a certainly an interesting approach but shortcomings 
+of the current solution can also be lifted by moving to DID based system and benefit of metadata is that it is easily queriable off chain
+and currently stores can attest / validate multiple claims for the same dApp. Forcing dApp developers to MINT tokens would complicate this CIP
+and potentially hinder it's adoption.
+
+### Datums Instead of Metadata 
+It has been suggested that we do not use metadata but rather Datums. Metadata cannot enforce format and Datums could. It has been rejected as
+using Datums requires a smart contract and we want to keep this solution as accessible as possible. It is a GUI concern since if there is a 
+some app that can attest validity and conformance to JSON schema - dApp Registration / Update MUST never be done that does not conform to the schema.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -505,9 +517,10 @@ Currently CIP is available for:
 - a review for dApp developers
 - there is an open point, whether this CIP should be the first to have semver schema version (requires agreement on schema versions in CIPs first)
 - `categories` field (enum) white list needs revision, current one is a proposal only
-- authors need to go again through all comments on github and see if they have not missed something
 
 Once those remaining items are done, CIP can be merged and activated. There were no major disagreements on the last CIP editor meeting apart from a few small TODO comments mentioned above.
+
+Last but not least, PR needs to be open and officially add 1667 metadata label to the registry here: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json
 
 ### Implementation Plan
 N/A
