@@ -442,7 +442,35 @@ There are multiple options to store metadata offchain. The most common options a
 - Any REST JSON API
 
 ## Rationale: how does this CIP achieve its goals?
-TODO
+
+### Decoupling of dApp registration from certifications / audits
+We quickly reached a conclusion that it is better to separate them and keep scope of CIP smaller. During discussions it became clear that while there is
+some overlap of certifications / audits with dApp registration, this overlap is small and can be even removed. At one point we wanted to couple 
+certifications CIP to this CIP (e.g. via some link or dApp version) but we analyzed how dApp developers are currently following the process and we noticed
+that in many cases certification / audit comes before an official dApp release on main-net. Having established it, we removed this link and not only
+that dApp registration and certifications are different CIPs but they are very loosely coupled. Loose coupling has also disadvantages as it leads to a situation that in order to attest that a dApp is certified / audited, implementators will have to scan for all script hashes belonging to a dApp and check
+whether those have been certified / explicitly mentioned in the audit.
+
+### Small metadata anchor on chain
+We analyzed how much we should put on-chain vs off-chain and we quickly reached the conclusion that it is better to keep small amount of data on-chain and larger chunk off-chain for which e.g. CIP-26 is meant for.
+
+### CIP-26 as NOT the only storage layer
+We believe that CIP-26 is geared towards storing this type of off-chain metadata format but we don't want by any means to stipulate / police this form of storage. In fact it is possible to use alternatives such as direct http hosting / REST API/ IPFS / git, etc.
+
+### How to find off-chain data?
+We went back and forth whether we should actually store link (links) to off-chain metadata, eventually we settled on a solution that this is required
+because there could be a situation that a dApp registration may not have even one offchain metadata, situation far from ideal for anybody willing to reason about this data.
+
+### Simple dApp registration
+It has been debated whether scripts / versions should be mandatory. There are use cases which require only basic dApp information, such as dApp developer, website, twitter link, etc, there are, however, also use cases that require analysing of this dApp performance data and basic information won't suffice. To encourage dApps to share scripts (which are hard to reverse engineer and analyse) for the moment this CIP enforces and makes it a requirement to list
+all scripts including all script hashes belonging to a dApp. 
+
+### Optional release name?
+Release Name is a field, which dApp developers can use on top of release version, it has been debated whether field should be mandatory or optional but eventually it has been agreed that we do not want to enforce this field, dapp release is an optional field, dApp version, however, needs to follow semver and is a mandatory field.
+
+<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
+It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions. -->
+
 ## Path to Active
 TODO
 ### Acceptance Criteria
