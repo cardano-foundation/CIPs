@@ -68,53 +68,50 @@ Certification issuers will sign the certificate to attest that they have done th
 
 ```json
 {
-    "$schema": "https://json-schema.org/draft/2019-09/schema" 
-    "$id": "", 
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
     "$title": "Certification Certificate", 
     "type": "object", 
     "properties": {
-      "subject": {
-        "type": "string",
-        "description": "Can be anything. Subject of the certification. It should match the registration metadata subject.",
-      },
-      "rootHash": {
-        "type": "string",
-        "description": "blake2b hash of the off-chain certification metadata linked in the metadata field."
-      },
-      "metadata": {
-        "type": "array",
-        "description": "Array of links that points to the metadata json file."
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
-      },
-      "schemaVersion": {
-        "type": "integer",
-        "description": "Used to describe the json schema version of the on-chain metadata."
-      }
-      "type": {
-        "type": "object",
-        "description": "Describes the certification certificate type.", 
-        "properties": {
-          "action": {
+        "subject": {
             "type": "string",
-            "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certfication Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard"
-          },
-          "certificationLevel": {
-            "type": "integer",
-            "description": "Integer between 1 and 3 to describe the level of certification this certificate refers to when using a CERTIFY action. Integer of 0 for an audit when using an AUDIT action."
-          },
-          "certificateIssuer": {
-            "type": "string",
-            "description": "Certification issuer name."
-          }
+            "description": "Can be anything. Subject of the certification. It should match the registration metadata subject."
         },
-        "required": ["action", "certificationLevel", "certificateIssuer"]
-      },  
-    "required": ["subject", "rootHash","metadata", "schemaVersion", "type"]
-    }
+        "rootHash": {
+            "type": "string",
+            "description": "blake2b hash of the off-chain certification metadata linked in the metadata field."
+        },
+        "metadata": {
+            "type": "array",
+            "description": "Array of links that points to the metadata json file.",
+            "items": {
+                "type": "string"
+            }
+        },
+        "schemaVersion": {
+            "type": "string",
+            "description": "Used to describe the json schema version of the on-chain metadata."
+        },
+        "type": {
+            "type": "object",
+            "description": "Describes the certification certificate type.", 
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certification Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard"
+                },
+                "certificationLevel": {
+                    "type": "integer",
+                    "description": "Integer between 1 and 3 to describe the level of certification this certificate refers to when using a CERTIFY action. Integer of 0 for an audit when using an AUDIT action."
+                },
+                "certificateIssuer": {
+                    "type": "string",
+                    "description": "Certification issuer name."
+                }
+            },
+            "required": ["action", "certificationLevel", "certificateIssuer"]
+        }
+    },
+    "required": ["subject", "rootHash", "metadata", "schemaVersion", "type"]
 }
 ```
 
@@ -132,7 +129,7 @@ Certification issuers will sign the certificate to attest that they have done th
     "schemaVersion": "1.0",
     "type": {
         "action": "CERTIFY",
-        "certificationLevel": "1",
+        "certificationLevel": 1,
         "certificateIssuer": "Example LLC"
     }
 }
@@ -211,11 +208,11 @@ The off-chain metadata should follow the following schema and should then be ref
   "type": "object",
   "properties": {
     "subject": {
-      "type": "string"
-      "description": "Can be anything. Subject of the certification. It should match the registration metadata subject and the on-chain metadata.",
+      "type": "string",
+      "description": "Can be anything. Subject of the certification. It should match the registration metadata subject and the on-chain metadata."
     },
     "schemaVersion": {
-      "type": "string",
+      "type": "integer",
       "description": "Used to describe the json schema version of the off-chain metadata."
 
     },
@@ -231,7 +228,7 @@ The off-chain metadata should follow the following schema and should then be ref
            "description": "Name of the Certificate Issuer."
         },
         "logo": {
-            "type": "string"
+            "type": "string",
             "description": "URL to the logo of the Certificate Issuer."
         },
         "social": {
@@ -337,7 +334,7 @@ The off-chain metadata should follow the following schema and should then be ref
                         "description": "URL to the repository of the script"
                     }
                 }
-            }
+            },
             "fullScriptHash": {
               "type": "string",
               "description": "Prefix and script hash or script hash+staking key"
@@ -349,9 +346,8 @@ The off-chain metadata should follow the following schema and should then be ref
             "contractAddress": {
               "type": "string",
               "description": "Script on-chain address"
-            }
+            },
             "required": [
-                "fullScriptHash",
                 "scriptHash",
                 "contractAddress"
               ]
@@ -378,11 +374,11 @@ The off-chain metadata should follow the following schema and should then be ref
 ```json
 {
   "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
-  "schemaVersion": "1.0.0",
+  "schemaVersion": 1,
   "certificationLevel": 1,
   "certificateIssuer": {
     "name": "Audit House LLC",
-    "logo": "https://www.example.com/media/logo.svg"
+    "logo": "https://www.example.com/media/logo.svg",
     "social": {
         "contact": "contact@example.com",
         "link": "https://example.com",
@@ -398,7 +394,7 @@ The off-chain metadata should follow the following schema and should then be ref
         ],
     "reportHash": "c6bb42780a9c57a54220c856c1e947539bd15eeddfcbf3c0ddd6230e53db5fdd"
   },
-  "summary": "This is the summary of the report."
+  "summary": "This is the summary of the report.",
   "disclaimer": "This is the legal disclaimer from the report",
   "scripts": [
         {
