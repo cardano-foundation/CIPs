@@ -1,14 +1,14 @@
 ---
-CIP: ?
-Title: ?
-Category: ?
-Status: Proposed
+CIP: _???
+Title: onchain tx chaining
+Category: Ledger | Plutus
+Status: Draft
 Authors:
     - John Doe <john.doe@email.domain>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
-Created: YYYY-MM-DD
+Created: 2023-04-13
 License: CC-BY-4.0
 ---
 
