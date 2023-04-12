@@ -18,12 +18,12 @@ dApp developers do not have a standardised method to record immutable, persisten
 
 This proposal aims to standardise the process of dApp registration and verification, and to provide a set of claims that dApp developers can use to register their dApp(s).
 
-## Motivation
+## Motivation: why is this CIP necessary?
 dApps can express a plethora of information. Some of this information could be claims about who the developer is, what the dApp's associated metadata is, and more. This data lacks standardisation, persistence, and immutability. Data without these features, means that dApp users cannot verify if the dApp's expressed information is consistent across time. The goal of this CIP is to formalise how dApps register their information with a new transaction metadata format that can record the dApp's metadata, ownership, and potentially developer's identity. This formalisation means dApp users can verify if the data expressed by a dApp is consistent with what was registered on-chain.
 
 Also, having this formalisation facilitates any actor in the ecosystem to index and query this data, and provide a better user experience when it comes to dApp discovery and usage.
 
-## Glossary
+## Specification
 
 ### **Definitions**
 - **anchor** - A hash written on-chain (rootHash) that can be used to verify the integrity (by way of a cryptographic hash) of the data that is found off-chain.
@@ -225,7 +225,6 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
           "type":"string",
           "description": "An optional Twitter link.",
           "pattern": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
-
         },
         "github": {
           "type":"string",
@@ -392,8 +391,9 @@ This schema describes the minimum required fields for a store to be able to disp
   "link": "https://myProject.app",
   "logo": "https://myProject.app/logo.png",
   "social": {
-    "twitter": "twiterHandle",
-    "github": "githubHandle"
+    "github": "https://mywebsite.com",
+    "twitter": "https://twitter.com/my_dapp",
+    "github": "https://github.com/my_dapp"
   },
   "categories": ["GAMING"],
   "description": {
@@ -415,7 +415,7 @@ This schema describes the minimum required fields for a store to be able to disp
     {
       "id": "PmNd6w",
       "name": "marketplace",
-      "purpose": "SPEND",
+      "purposes": ["SPEND"],
       "type": "PLUTUS",
       "versions": [
         {
@@ -440,4 +440,5 @@ There are multiple options to store metadata offchain. The most common options a
 - [IPFS](https://ipfs.tech/)
 - [Bitbucket](https://bitbucket.org/)
 - Any REST JSON API
+
 
