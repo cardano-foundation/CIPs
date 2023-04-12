@@ -49,7 +49,7 @@ The core idea of the CIP is to add a new field in the transaction body represent
 
 Despite being a simple idea it introduces a circular dependency of hashes;
 
-Infact the current transaction hash is used to descripe the input used in the chained transaction;
+Infact the current transaction hash is used to describe the input used in the chained transaction;
 but the input of the chained transaction will determine the hash of the chained transaction;
 and the hash of the chained transaction would be included in the previous transaction body;
 and this would modify the hash of the initial transaction.
