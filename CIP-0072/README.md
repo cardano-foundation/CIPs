@@ -13,8 +13,6 @@ Created: 2022-10-18
 License: CC-BY-4.0
 ---
 
-# CIP-0072: Cardano dApp Registration & Discovery
-
 ## Abstract
 dApp developers do not have a standardised method to record immutable, persistent claims about their dApp(s) that their users can verify. A dApp developer needs to "register" their dApp by providing a set of claims about their dApp(s) that can be verified by the user. This CIP describes a standardised method for dApp developers to register their dApp(s) and for users to verify the claims made by dApp developers.
 
