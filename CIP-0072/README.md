@@ -83,7 +83,7 @@ The on chain dApp registration certificate MUST follow canonical JSON and be ser
 
 *`rootHash`*: The hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
 
-To avoid ambiguities, the hash is calculated by taking the entire metadata tree object and it MUST be serialised according to RFC 8785 (https://www.rfc-editor.org/rfc/rfc8785) compatible json format. Once serialised resulting JSON MUST be hashed using blake2b-256 hashing algorithm. The result, a hash is then encoded as a hex string.
+To avoid ambiguities, the hash is calculated by taking the entire metadata tree object and it MUST be serialised according to RFC 8785 (https://www.rfc-editor.org/rfc/rfc8785) compatible JSON format. Once serialised resulting JSON MUST be hashed using blake2b-256 hashing algorithm. The result, a hash is then encoded as a hex string.
 
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
 
@@ -469,11 +469,11 @@ all scripts including all script hashes belonging to a dApp.
 Release Name is a field, which dApp developers can use on top of release version, it has been debated whether field should be mandatory or optional but eventually it has been agreed that we do not want to enforce this field, dapp release is an optional field, dApp version, however, needs to follow semver and is a mandatory field.
 
 ### Canonical JSON
-At the begining neither on-chain, nor off-chain storage has been following RFC 8785 (canonical json) but we reached a point that, due to consistency checks, we need to take hash of both on-chain and off-chain and this forced us to stipulate that both on-chain and off-chain metadata documents need to be converted
+At the begining neither on-chain, nor off-chain storage has been following RFC 8785 (canonical JSON) but we reached a point that, due to consistency checks, we need to take hash of both on-chain and off-chain and this forced us to stipulate that both on-chain and off-chain metadata documents need to be converted
 according to RFC 8785 before taking a blake2b-256 hash of it.
 
 ### On-Chain Signature Scope
-On-chain part has a signature, which has a role to verify that a certain dApp owner made changes. In the initial version, a blake2b-256 signature was needed only for `rootHash` but following discussion, due to security concerns, decision has been made that the signature should attest the whole on-chain canonical json except signature field itself (because it would end up in an infinite recursion).
+On-chain part has a signature, which has a role to verify that a certain dApp owner made changes. In the initial version, a blake2b-256 signature was needed only for `rootHash` but following discussion, due to security concerns, decision has been made that the signature should attest the whole on-chain canonical JSON except signature field itself (because it would end up in an infinite recursion).
 
 ### Who Is The Owner?
 Smart contracts are ownerless, it has been debated that there could be multiple claims to the same dApps from different parties.
@@ -488,7 +488,7 @@ Since DIDs / Verifiable Credetials are not yet widely used in Cardano ecosystem,
 
 ### Purpouse Field As an Array or as a Single Item?
 It may have been visible that we have a `purpose` field, which can be: "SPEND" or "MINT", those fields directly map to what is allowed by a Cardano Smart Contract. As of the time of writing CIP - PlutusTx does not allow a script to be both of type: "SPEND" and "MINT", however, there are new
-languages on Cardano being worked on where they already allow one validator to be both spending UTxOs and minting tokens - all with the same script hash. To be open for the future it has been agreed to turn `purpouse` field into `purpouses` and make it a json array.
+languages on Cardano being worked on where they already allow one validator to be both spending UTxOs and minting tokens - all with the same script hash. To be open for the future it has been agreed to turn `purpouse` field into `purpouses` and make it a JSON array.
 
 ### Parametrised Scripts
 On Cardano, there are parametrised scripts, meaning that before compilation takes place, it is possible to pass certain parameters instead of using `Datum`.
