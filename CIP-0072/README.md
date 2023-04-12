@@ -452,14 +452,14 @@ that dApp registration and certifications are different CIPs but they are very l
 whether those have been certified / explicitly mentioned in the audit.
 
 ### Small metadata anchor on chain
-We analyzed how much we should put on-chain vs off-chain and we quickly reached the conclusion that it is better to keep small amount of data on-chain and larger chunk off-chain for which e.g. CIP-26 is meant for.
+We analyzed how much we should put on-chain vs off-chain and we quickly reached the conclusion that it is better to keep small amount of data on-chain and larger chunk off-chain for which is what exactly CIP-26 is meant for.
 
 ### CIP-26 as NOT the only storage layer
-We believe that CIP-26 is geared towards storing this type of off-chain metadata format but we don't want by any means to stipulate / police this form of storage. In fact it is possible to use alternatives such as direct http hosting / REST API/ IPFS / git, etc.
+We believe that CIP-26 is geared towards storing this type of off-chain metadata format but we don't want by any means to stipulate / police this form of storage. In fact it is possible to use offchain metadata storage alternatives such as direct http hosting / REST API/ IPFS / git, etc.
 
 ### How to find off-chain data?
 We went back and forth whether we should actually store link (links) to off-chain metadata, eventually we settled on a solution that this is required
-because there could be a situation that a dApp registration may not have even one offchain metadata, situation far from ideal for anybody willing to reason about this data.
+because there could be a situation that a dApp registration may have off-chain metadata stored somewhere but some stores have it, others don't have it. Now it is required that a dApp developer points to at least one store that has off-chain metadata (as a reference).
 
 ### Simple dApp registration
 It has been debated whether scripts / versions should be mandatory. There are use cases which require only basic dApp information, such as dApp developer, website, twitter link, etc, there are, however, also use cases that require analysing of this dApp performance data and basic information won't suffice. To encourage dApps to share scripts (which are hard to reverse engineer and analyse) for the moment this CIP enforces and makes it a requirement to list
