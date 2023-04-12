@@ -498,9 +498,17 @@ The consequence of this will be that as we pass different parameters, script has
 There are cases on Cardano main-net that script hashes are changing every day, most probably due to parameterised scripts. It is responsibility of the developers to issue an `UPDATE` command and provide on-chain and off-chain metadata following the change, for scripts that are changing daily / hourly it is envisaged that this process be automated by a dApp developer.
 
 ## Path to Active
-TODO
+
 ### Acceptance Criteria
-TODO
+
+Currently CIP is available for:
+- a review for dApp developers
+- there is an open point, whether this CIP should be the first to have semver schema version (requires agreement on schema versions in CIPs first)
+- `categories` field (enum) white list needs revision, current one is a proposal only
+- authors need to go again through all comments on github and see if they have not missed something
+
+Once those remaining items are done, CIP can be merged and activated. There were no major disagreements on the last CIP editor meeting apart from a few small TODO comments mentioned above.
+
 ### Implementation Plan
 N/A
 
