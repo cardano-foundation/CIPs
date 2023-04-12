@@ -478,7 +478,7 @@ On-chain part has a signature, which has a role to verify that a certain dApp ow
 ### Who Is The Owner?
 Smart contracts are ownerless, it has been debated that there could be multiple claims to the same dApps from different parties.
 
-She standard doesn't prevent anyone from making a claim, so it's up to the different operator to their diligence work and make their own choices of whom they trust. The signature should give the most confidence as anyone can collect known public keys from known devs (i.e sundaeswap, minswap, wingriders, etc ). Future CIP revisions can include DID's and Verifiable Credentials.
+The standard doesn't prevent anyone from making a claim, so it's up to the different operator to their diligence work and make their own choices of whom they trust. The signature should give the most confidence as anyone can collect known public keys from known development companies. Future CIP revisions can include DID's and Verifiable Credentials to tackle this problem in a more elegant way.
 
 ### DIDs
 Since DIDs / Verifiable Credetials are not yet widely used in Cardano ecosystem, usage of them in this initial CIP version has been descoped.
