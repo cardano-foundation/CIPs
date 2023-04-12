@@ -10,6 +10,11 @@
     "description": "CIP-0068 - Datum Metadata Standard (222 sub standard)"
   },
   {
+    "asset_name_label": 314,
+    "class": "Virtual_SubHandle",
+    "description": "ADA Handles Virtual SubHandle"
+  },
+  {
     "asset_name_label": 333,
     "class": "FT",
     "description": "CIP-0068 - Datum Metadata Standard (333 sub standard)"
