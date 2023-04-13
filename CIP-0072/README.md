@@ -483,7 +483,7 @@ Release Name is a field, which dApp developers can use on top of release version
 
 ### Canonical JSON
 At the begining neither on-chain, nor off-chain storage has been following RFC 8785 (canonical JSON) but we reached a point that, due to consistency checks, we need to take hash of both on-chain and off-chain and this forced us to stipulate that both on-chain and off-chain metadata documents need to be converted
-according to RFC 8785 before taking a blake2b-256 hash of it.
+according to RFC 8785 before taking a blake2b-256 hash of them.
 
 ### On-Chain Signature Scope
 On-chain part has a signature, which has a role to verify that a certain dApp owner made changes. In the initial version, a blake2b-256 signature was needed only for `rootHash` but following discussion, due to security concerns, decision has been made that the signature should attest the whole on-chain canonical JSON except signature field itself (because it would end up in an infinite recursion).
