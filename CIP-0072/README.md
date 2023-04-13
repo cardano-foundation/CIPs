@@ -2,7 +2,8 @@
 CIP: 72
 Title: Cardano dApp Registration & Discovery
 Status: Proposed
-Category: Metadata	
+Category: Metadata
+Version: "1.0.0"
 Authors: 
   - Bruno Martins <bruno.martins@iohk.io>
   - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
@@ -55,12 +56,13 @@ The on chain dApp registration certificate MUST follow canonical JSON and be ser
 {
 	"subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
 	"rootHash": "8c4e9eec512f5f277ab811ba75c991d51600c80003e892e601c6b6c19aaf8a33",
+  "version": "1.0.0",
   "metadata": [
     "https://cip26.foundation.app/properties/d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
     "https://example.com/metadata.json",
-    "ipfs://QmWmXcRqPzJn5yDh8cXqL1oYjHr4kZx1aYQ1w1yTfTJqNn",
+    "https://ipfs.blockfrost.io/api/v0/QmWmXcRqPzJn5yDh8cXqL1oYjHr4kZx1aYQ1w1yTfTJqNn",
   ],
-  "type": { 
+  "type": {
     "action": "REGISTER",
     "releaseNumber": "1.0.0"
   },
@@ -80,6 +82,7 @@ The on chain dApp registration certificate MUST follow canonical JSON and be ser
 - *`action`*: The action that the certificate is asserting. It can take the following values: 
   - *`REGISTER`*: The certificate is asserting that the dApp is being registered for the first time. 
   - *`UPDATE`*: The certificate is asserting that the dApp is being updated.
+  - *`DE-REGISTER`*: The certificate is asserting that the dApp is being removed and authors wish it should not longer show on stores.
 
 *`rootHash`*: The hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
 
@@ -111,7 +114,7 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
         "items": {
           "type": "string",
           "description": "A valid url pointing to off-chain CIP-72 compatible metadata document.",
-          "pattern": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
         }
       },
       "type":{
@@ -120,8 +123,8 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
          "properties":{
             "action":{
               "type":"string",
-              "enum":["REGISTER", "UPDATE"],
-              "description":"Describes the action this certificate is claiming. I.e 'REGISTER', for a new dapp; or 'UPDATE' for a new release"
+              "enum":["REGISTER", "UPDATE", "DE-REGISTER"],
+              "description":"Describes the action this certificate is claiming. I.e 'REGISTER', for a new dapp; 'UPDATE' for a new release or 'DE-REGISTER' for dApp de-listing request."
             },
             "releaseNumber":{
                "type":"string",
@@ -198,7 +201,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
     "link": {
       "type":"string",
       "description": "Website presenting a dApp.",
-      "pattern": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+      "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
     },      
     "projectName": {
       "type":"string",
@@ -210,7 +213,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
     },
     "categories": {
       "type":"array",
-      "enum":["MARKETPLACE", "DEFI", "COLLECTION", "BRIDGE", "STABLECOIN", "NFT_MINTING_PLATFORM", "GAMING", "TOKEN_DISTRIBUTION", "COMMUNITY", "MOBILE_NETWORK", "SIDECHAIN", "LAYER_2"],
+      "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"],
       "description": "One or more categories. Category MUST be one of the following schema definition."
     },
     "social": {
@@ -219,22 +222,22 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
         "website": {
           "type":"string",
           "description": "dApps website link.",
-          "pattern": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
         },
         "twitter": {
           "type":"string",
           "description": "An optional Twitter link.",
-          "pattern": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
         },
         "github": {
           "type":"string",
           "description": "An optional Github link.",
-          "pattern": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
         },
         "discord": {
           "type":"string",
           "description": "An optional Discord link.",
-          "pattern": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
         },
       },
       "required": ["website"]
@@ -295,8 +298,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
             }
           },
           "required": [
-            "releaseNumber",
-            "scripts"
+            "releaseNumber"
           ]
         }
       ]
@@ -375,7 +377,6 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
     "categories",
     "description",
     "releases",
-    "scripts"
   ]
 }
 ```
@@ -393,7 +394,7 @@ This schema describes the minimum required fields for a store to be able to disp
   "social": {
     "github": "https://mywebsite.com",
     "twitter": "https://twitter.com/my_dapp",
-    "github": "https://github.com/my_dapp"
+    "website": "https://github.com/my_dapp"
   },
   "categories": ["GAMING"],
   "description": {
