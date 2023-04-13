@@ -90,7 +90,7 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
 
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
 
-*`signature`*: The signature of the certificate. The signature is done over whole on-chain JSON (canonical) without the signature part. The client should use the public key to verify the signature of the certificate. Fields used for signature: ["subject", "rootHash", "metadata", "type"].
+*`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "version", "rootHash", "metadata","type"].
 
 ### dApp on-chain certificate JSON Schema
 ```json
@@ -117,6 +117,11 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
           "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
         }
       },
+      "version": {
+        "type": "string",
+        "description":"CIP version (semver).",
+        "pattern": "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[a-zA-Z\\d][-a-zA-Z.\\d]*)?(\\+[a-zA-Z\\d][-a-zA-Z.\\d]*)?"
+      },
       "type":{
          "type":"object",
          "description":"Describes the releases, if they are new or an updates. Also states the versioning of such releases.",
@@ -128,7 +133,8 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
             },
             "releaseNumber":{
                "type":"string",
-               "description":"An official version of the release following semver format (major.minor.patch)."
+               "description":"An official version of the release following semver format (major.minor.patch).",
+               "pattern": "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[a-zA-Z\\d][-a-zA-Z.\\d]*)?(\\+[a-zA-Z\\d][-a-zA-Z.\\d]*)?"
             },
             "releaseName":{
                "type":"string",
@@ -171,6 +177,7 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
    "required":[
       "subject",
       "rootHash",
+      "version",
       "type",
       "signature"
    ]
@@ -213,7 +220,10 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
     },
     "categories": {
       "type":"array",
-      "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"],
+      "items": {
+        "type": "string",
+        "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
+      },
       "description": "One or more categories. Category MUST be one of the following schema definition."
     },
     "social": {
@@ -319,7 +329,10 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
             },
             "purposes":{
               "type":"array",
-              "enum":["SPEND", "MINT"],
+              "items": {
+        	    "type": "string",
+		        "enum":["SPEND", "MINT"]
+              },
               "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages).",
             },
             "type":{
@@ -361,7 +374,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
           },
           "required": [
             "id",
-            "purpose",
+            "purposes",
             "type",
             "versions"
           ]
@@ -375,8 +388,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
     "link",
     "social",
     "categories",
-    "description",
-    "releases",
+    "description"
   ]
 }
 ```
@@ -396,9 +408,9 @@ This schema describes the minimum required fields for a store to be able to disp
     "twitter": "https://twitter.com/my_dapp",
     "website": "https://github.com/my_dapp"
   },
-  "categories": ["GAMING"],
+  "categories": ["Games"],
   "description": {
-    "short": "A story rich game where choices matter."
+    "short": "A story rich game where choices matter. This game is very addictive to play :)"
   },
   "releases": [
     {
