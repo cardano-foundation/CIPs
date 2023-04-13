@@ -246,19 +246,19 @@ We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8c
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
-#### 444 SFT Standard
+#### 444 RFT Standard
 
-The third introduced standard is the `444` Semi-FT standard with the registered `asset_name_label` prefix value
+The third introduced standard is the `444` Rich-FT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
-| 444                         | SFT          | SFT hold by the user's wallet making use of the union of CIP-0025 inner structure AND the Cardano foundation off-chain registry inner structure |
+| 444                         | RFT          | RFT hold by the user's wallet making use of the union of CIP-0025 inner structure AND the Cardano foundation off-chain registry inner structure |
 
-Semi-Fungible tokens don't fit cleanly into the other two FT/NFT classes of tokens and thus need their own standard. An example of a SFT would be a fractionalized NFT. The single reference NFT `(100)` represents the NFT itself, and the many `(444)` tokens represent the fractionalized shares. Minting 100 tokens and setting decimals to 2 would represent a single NFT that is split into 100 fractions.
+Rich-Fungible tokens don't fit cleanly into the other two FT/NFT classes of tokens and thus need their own standard. An example of an RFT would be a fractionalized NFT. The single reference NFT `(100)` represents the NFT itself, and the many `(444)` tokens represent the fractionalized shares. Minting 100 tokens and setting decimals to 2 would represent a single NFT that is split into 100 fractions.
 
 ##### Class
 
-The `user token` is an SFT (semi-fungible token).
+The `user token` is an RFT (rich-fungible token).
 
 ##### Pattern
 
@@ -313,7 +313,7 @@ Example datum as JSON:
 
 ##### Retrieve metadata as 3rd party
 
-A third party has the following SFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` they want to lookup. The steps are
+A third party has the following RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` they want to lookup. The steps are
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
@@ -322,7 +322,7 @@ A third party has the following SFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5c
 
 ##### Retrieve metadata from a Plutus validator
 
-We want to bring the metadata of the SFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` in the Plutus validator context. To do this we 
+We want to bring the metadata of the RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` in the Plutus validator context. To do this we 
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken` (off-chain)
 2. Look up `reference NFT` and find the output it's locked in. (off-chain)

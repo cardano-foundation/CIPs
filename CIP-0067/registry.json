@@ -16,7 +16,7 @@
   },
   {
     "asset_name_label": 444,
-    "class": "SFT",
+    "class": "RFT",
     "description": "CIP-0068 - Datum Metadata Standard (444 sub standard)"
-  }
+  },
 ]
