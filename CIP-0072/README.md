@@ -86,7 +86,7 @@ The on chain dApp registration certificate MUST follow canonical JSON and be ser
 
 *`rootHash`*: The hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
 
-To avoid ambiguities, the hash is calculated by taking the entire metadata tree object and it MUST be serialised according to RFC 8785 (https://www.rfc-editor.org/rfc/rfc8785) compatible JSON format. Once serialised resulting JSON MUST be hashed using blake2b-256 hashing algorithm. The result, a hash is then encoded as a hex string.
+*`version`*: CIP version, which version of the CIP was the on-chain certificate generated from. This is very much needed for stores and clients to know what rules they should apply for a given REGISTRATION / UPDATE.
 
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
 
@@ -147,7 +147,7 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
          ]
       },
       "signature":{
-         "description":"Signature of the whole canonical (RFC 8785) JSON document (except signature property).",
+         "description":"Signature of the blake2b-256 hash of whole canonical (RFC 8785) JSON document (except signature property).",
          "type":"object",
          "properties":{
             "r":{
@@ -521,6 +521,23 @@ and potentially hinder it's adoption.
 It has been suggested that we do not use metadata but rather Datums. Metadata cannot enforce format and Datums could. It has been rejected as
 using Datums requires a smart contract and we want to keep this solution as accessible as possible. It is a GUI concern since if there is a 
 some app that can attest validity and conformance to JSON schema - dApp Registration / Update MUST never be done that does not conform to the schema.
+
+### Scripts / Releases Fields Are Not Required
+We made a decision to change the schema so that scripts and releases are no longer required. This could help to get initial registration from dApp developers faster and
+some stores simply do not require dApps to add their scripts in order to be listed.
+
+### Schema Version or CIP Version
+We want to take schema version further and actually attest the whole CIP version so we are introducing a top level field: version. Any changes to the document will require bumping the version. CIP version needs to be also
+propagated in the on-chain JSON itself.
+
+### Tags
+We briefly discussed tags and we will likely introduce tags in the near future. An array of tags to help stores / dApp developers categories where their dApp should show. This will complement `categories` field.
+
+### DE-REGISTER
+We added DE-REGISTER in additon to `REGISTER` abnd `UPDATE`. The idea is that once dApp devs do not want their dApp to be shown, they can now unlist a dApp and stores should respect such a request.
+
+### Type Field
+`Type` field can be `PLUTUS` or `NATIVE`, we made it optional and there are already two dApps at least on Cardano at the time of writing, which are only using NATIVE scripts. This optional field helps to differentiante between NATIVE script based and NON_NATIVE dApps.
 
 ## Path to Active
 
