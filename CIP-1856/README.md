@@ -98,8 +98,10 @@ The new JSON metadata standard will look like this:
 
 ```
 
+This metadata standard extension is backward compatible and it doesn't affect applications using the current standard. Dapps implementing the proposed extended standard can also default on the legacy values if the localized strings are not available on an asset.
+
 > **Note**
-> This metadata standard extension is backward compatible and it doesn't affect applications using the current standard. Dapps implementing the proposed extended standard can also default on the legacy values if the localized strings are not available on an asset.
+> The metadata's size is a limitation that should be considered as it will eventually push the boundaries of Cardano's transaction limits and scalability. The translations under the "strings" keys can be stored off-chain on an IPFS server. Then, the localized texts will be accessible through an URL, similar to the "image" keys.
 
 ### Code example to access localized properties (TypeScript)
 
@@ -141,6 +143,8 @@ console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name"
             
 ### Implementation Plan
 Add this new standard to all relevant documentation and references for web3 developers.
+
+NMKR has supported this CIP with peer feedback, and in the future with a pilot implementation of the new standard.
 
 ## Copyright
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
