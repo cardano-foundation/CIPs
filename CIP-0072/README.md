@@ -90,7 +90,7 @@ To avoid ambiguities, the hash is calculated by taking the entire metadata tree 
 
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
 
-*`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "version", "rootHash", "metadata","type"].
+*`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "version", "rootHash", "metadata","type"]. Please note that a signature should be generated of blake2b-256 hash as a byte array, not as a hex represented string(!).
 
 ### dApp on-chain certificate JSON Schema
 ```json
