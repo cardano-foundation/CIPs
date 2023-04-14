@@ -88,7 +88,7 @@ Certification issuers will sign the certificate to attest that they have done th
             }
         },
         "schemaVersion": {
-            "type": "string",
+            "type": "integer",
             "description": "Used to describe the json schema version of the on-chain metadata."
         },
         "type": {
@@ -126,7 +126,7 @@ Certification issuers will sign the certificate to attest that they have done th
         "https://example.com/metadata.json"
     ],
 
-    "schemaVersion": "1.0",
+    "schemaVersion": 1,
     "type": {
         "action": "CERTIFY",
         "certificationLevel": 1,
