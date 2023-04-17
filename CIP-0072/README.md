@@ -82,9 +82,10 @@ The on chain dApp registration certificate MUST follow canonical JSON and be ser
 - *`action`*: The action that the certificate is asserting. It can take the following values: 
   - *`REGISTER`*: The certificate is asserting that the dApp is being registered for the first time. 
   - *`UPDATE`*: The certificate is asserting that the dApp is being updated.
-  - *`DE-REGISTER`*: The certificate is asserting that the dApp is being removed and authors wish it should not longer show on stores.
+  - *`DE_REGISTER`*: The certificate is asserting that the dApp version is being removed and it is requested that stores no longer show it.
+  - *`DE_REGISTER_ALL`*: The certificate is asserting that all dApp version are being removed and it is requested that stores no longer show it.
 
-*`rootHash`*: The hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
+*`rootHash`*: The hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section. Please note that off-chain JSON must be converted into RFC 8765 canonical form before taking the hash!
 
 *`version`*: CIP version, which version of the CIP was the on-chain certificate generated from. This is very much needed for stores and clients to know what rules they should apply for a given REGISTRATION / UPDATE.
 
@@ -128,8 +129,8 @@ The on chain dApp registration certificate MUST follow canonical JSON and be ser
          "properties":{
             "action":{
               "type":"string",
-              "enum":["REGISTER", "UPDATE", "DE-REGISTER"],
-              "description":"Describes the action this certificate is claiming. I.e 'REGISTER', for a new dapp; 'UPDATE' for a new release or 'DE-REGISTER' for dApp de-listing request."
+              "enum":["REGISTER", "UPDATE", "DE_REGISTER", "DE_REGISTER_ALL"],
+              "description":"Describes the action this certificate is claiming. I.e 'REGISTER', for a new dapp; 'UPDATE' for a new release or 'DE_REGISTER' for dApp version de-listing request and DE_REGISTER_ALL if a dApp developer wants to de-register all dApp versions in one call."
             },
             "releaseNumber":{
                "type":"string",
@@ -152,18 +153,21 @@ The on chain dApp registration certificate MUST follow canonical JSON and be ser
          "properties":{
             "r":{
                "type":"string",
-               "description":"A hex representation of the R component of the signature."
+               "description":"A hex representation of the R component of the signature.",
+               "pattern":"[0-9a-fA-F]+"
             },
             "s":{
                "type":"string",
-               "description":"A hex representation of the S component of the signature."
+               "description":"A hex representation of the S component of the signature.",
+              "pattern":"[0-9a-fA-F]+"
             },
             "algo":{
               "const":"Ed25519−EdDSA"
             },
             "pub":{
                "type":"string",
-               "description":"A hex representation of the public key."
+               "description":"A hex representation of the public key.",
+               "pattern":"[0-9a-fA-F]+"
             }
          },
          "required":[
@@ -194,7 +198,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type":"object",
   "properties": {
     "subject": {
@@ -533,8 +537,8 @@ propagated in the on-chain JSON itself.
 ### Tags
 We briefly discussed tags and we will likely introduce tags in the near future. An array of tags to help stores / dApp developers categories where their dApp should show. This will complement `categories` field.
 
-### DE-REGISTER
-We added DE-REGISTER in additon to `REGISTER` abnd `UPDATE`. The idea is that once dApp devs do not want their dApp to be shown, they can now unlist a dApp and stores should respect such a request.
+### DE_REGISTER
+We added DE_REGISTER and DE_REGISTER_ALL in additon to already existing `REGISTER` and `UPDATE`. The idea is that once dApp devs do not want their dApp version to be shown, they can now unlist a whole dApp or a dApp version and stores should respect such a request.
 
 ### Type Field
 `Type` field can be `PLUTUS` or `NATIVE`, we made it optional and there are already two dApps at least on Cardano at the time of writing, which are only using NATIVE scripts. This optional field helps to differentiante between NATIVE script based and NON_NATIVE dApps.
