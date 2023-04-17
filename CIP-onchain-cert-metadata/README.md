@@ -74,17 +74,20 @@ Certification issuers will sign the certificate to attest that they have done th
     "properties": {
         "subject": {
             "type": "string",
-            "description": "Can be anything. Subject of the certification. It should match the registration metadata subject."
+            "description": "Can be anything. Subject of the certification. It should match the registration metadata subject.",
+            "pattern": "^[\p{L}\p{N}\p{P}\p{Z}]{1,64}$
         },
         "rootHash": {
             "type": "string",
-            "description": "blake2b hash of the off-chain certification metadata linked in the metadata field."
+            "description": "blake2b-256 hash of the off-chain certification metadata linked in the metadata field.",
+            "pattern": "^[0-9a-fA-F]{64}$"
         },
         "metadata": {
             "type": "array",
             "description": "Array of links that points to the metadata json file.",
             "items": {
-                "type": "string"
+                "type": "string",
+                "pattern": "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}|ipfs:\/\/[a-zA-Z0-9]+)$"
             }
         },
         "schemaVersion": {
@@ -97,6 +100,7 @@ Certification issuers will sign the certificate to attest that they have done th
             "properties": {
                 "action": {
                     "type": "string",
+                    "enum": ["CERTIFY", "AUDIT"],
                     "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certification Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard"
                 },
                 "certificationLevel": {
@@ -232,29 +236,35 @@ The off-chain metadata should follow the following schema and should then be ref
         "logo": {
             "type": "string",
             "description": "URL to the logo of the Certificate Issuer."
+            "pattern": "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})\.(?:jpg|jpeg|png|gif|bmp|svg|webp|tiff|tif)$"
         },
         "social": {
           "type": "object",
           "properties": {
             "twitter": {
               "type": "string",
-              "description": "Twitter handle of the Certificate Issuer."
+              "description": "Twitter handle of the Certificate Issuer.",
+              "pattern": "@\w{1,15}"
             },
             "github": {
               "type": "string",
-              "description": "GitHub handle of the Certificate Issuer."
+              "description": "GitHub handle of the Certificate Issuer.",
+              "pattern": "^(?:https?:\/\/)?(?:www\.)?github\.com\/[\w-]+\/[\w.-]+$"
             },
             "contact": {
               "type": "string",
-              "description": "Contact email of the Certification Issuer."
+              "description": "Contact email of the Certification Issuer.",
+              "pattern" = "^\S+@\S+\.\S+$"
             },
             "website": {
               "type": "string",
-              "description": "URL to the website of the Certificate Issuer."
+              "description": "URL to the website of the Certificate Issuer.",
+              "pattern": "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$"
             },
             "discord": {
                 "type": "string",
-                "description": "URL to the Discord server of the Certificate Issuer."
+                "description": "URL to the Discord server of the Certificate Issuer.",
+                "pattern": "^(?:https?:\/\/)?discord(?:\.gg|app\.com\/invite|\.com\/invite)\/[\w-]+$"
             }
           },
           "description": "Social contacts of the Certificate Issuer.",
@@ -277,13 +287,15 @@ The off-chain metadata should follow the following schema and should then be ref
           "items": [
               {
                 "type": "string",
-                "description": "A URL to the report of the certification/audit."
+                "description": "A URL to the report of the certification/audit.",
+                "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})\.(?:json|pdf)$"
               }
           ]
         },
         "reportHash": {
           "type": "string",
-          "description": "Hash of the report pointed by the links in reportURLs"
+          "description": "Hash of the report pointed by the links in reportURLs",
+          "pattern": "^[a-fA-F0-9]{64}$"
         }
       },
       "required": [
@@ -293,7 +305,7 @@ The off-chain metadata should follow the following schema and should then be ref
     },
     "summary": {
       "type": "string",
-      "description": "A string of the summary of the certification/audit. "
+      "description": "A string of the summary of the certification/audit."
     },
     "disclaimer": {
       "type": "string",
