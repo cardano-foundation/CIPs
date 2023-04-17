@@ -75,7 +75,7 @@ Certification issuers will sign the certificate to attest that they have done th
         "subject": {
             "type": "string",
             "description": "Can be anything. Subject of the certification. It should match the registration metadata subject.",
-            "pattern": "^[\p{L}\p{N}\p{P}\p{Z}]{1,64}$
+            "pattern": "^[\p{L}\p{N}\p{P}\p{Z}]{1,64}$"
         },
         "rootHash": {
             "type": "string",
