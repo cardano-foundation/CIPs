@@ -75,7 +75,7 @@ Certification issuers will sign the certificate to attest that they have done th
         "subject": {
             "type": "string",
             "description": "Can be anything. Subject of the certification. It should match the registration metadata subject.",
-            "pattern": "^[\p{L}\p{N}\p{P}\p{Z}]{1,64}$"
+            "pattern": "^[\\p{L}\\p{N}\\p{P}\\p{Z}]{1,64}$"
         },
         "rootHash": {
             "type": "string",
@@ -87,7 +87,7 @@ Certification issuers will sign the certificate to attest that they have done th
             "description": "Array of links that points to the metadata json file.",
             "items": {
                 "type": "string",
-                "pattern": "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}|ipfs:\/\/[a-zA-Z0-9]+)$"
+                "pattern": "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,}|ipfs:\/\/[a-zA-Z0-9]+)$"
             }
         },
         "schemaVersion": {
@@ -236,7 +236,7 @@ The off-chain metadata should follow the following schema and should then be ref
         "logo": {
             "type": "string",
             "description": "URL to the logo of the Certificate Issuer."
-            "pattern": "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})\.(?:jpg|jpeg|png|gif|bmp|svg|webp|tiff|tif)$"
+            "pattern": "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})\\.(?:jpg|jpeg|png|gif|bmp|svg|webp|tiff|tif)$"
         },
         "social": {
           "type": "object",
@@ -244,27 +244,27 @@ The off-chain metadata should follow the following schema and should then be ref
             "twitter": {
               "type": "string",
               "description": "Twitter handle of the Certificate Issuer.",
-              "pattern": "@\w{1,15}"
+              "pattern": "@\\w{1,15}"
             },
             "github": {
               "type": "string",
               "description": "GitHub handle of the Certificate Issuer.",
-              "pattern": "^(?:https?:\/\/)?(?:www\.)?github\.com\/[\w-]+\/[\w.-]+$"
+              "pattern": "^(?:https?:\/\/)?(?:www\\.)?github\\.com\/[\\w-]+\/[\\w.-]+$"
             },
             "contact": {
               "type": "string",
               "description": "Contact email of the Certification Issuer.",
-              "pattern" = "^\S+@\S+\.\S+$"
+              "pattern" = "^\\S+@\\S+\\.\\S+$"
             },
             "website": {
               "type": "string",
               "description": "URL to the website of the Certificate Issuer.",
-              "pattern": "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$"
+              "pattern": "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$"
             },
             "discord": {
                 "type": "string",
                 "description": "URL to the Discord server of the Certificate Issuer.",
-                "pattern": "^(?:https?:\/\/)?discord(?:\.gg|app\.com\/invite|\.com\/invite)\/[\w-]+$"
+                "pattern": "^(?:https?:\/\/)?discord(?:\\.gg|app\\.com\/invite|\\.com\/invite)\/[\\w-]+$"
             }
           },
           "description": "Social contacts of the Certificate Issuer.",
@@ -288,7 +288,7 @@ The off-chain metadata should follow the following schema and should then be ref
               {
                 "type": "string",
                 "description": "A URL to the report of the certification/audit.",
-                "^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})\.(?:json|pdf)$"
+                "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})\\.(?:json|pdf)$"
               }
           ]
         },
