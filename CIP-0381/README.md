@@ -42,14 +42,8 @@ chains/tokens/smart contracts. However, sidechains need to periodically commit t
 provide the same security guarantees as the latter. This periodical commitment is performed through a threshold 
 signature by the dynamic committee of the Sidechain. The most interesting construction for medium sized committees 
 is ATMS, presented in the paper [Proof of Stake Sidechains](https://cointhinktank.com/upload/Proof-of-Stake%20Sidechains.pdf), 
-in section 5.2 and requires pairings. We have yet not found an efficient solution that does not require pairings.
-ATMS is a k-of-t threshold signature scheme (meaning that we need at least k signers to participate). Let
-n <= t - k be the number of signers that did not participate in the ATMS signature. ATMS verification proceeds
-as follows:
-  * Check that n <= t - k
-  * n (log_2(t) hash computations + equality checks) (this is a very pessimistic upper bound. In practice, it's much less)
-  * n G1 additions and 1 G1 negation
-  * 2 miller loops + final verify
+in section 5.3 and requires pairings. We have yet not found an efficient solution that does not require pairings.
+ATMS is a k-of-t threshold signature scheme (meaning that we need at least k signers to participate). 
 * **Zero Knowledge Proofs** are an incredibly powerful tool. There exist different types of zero knowledge proofs, 
 but the most succinct (and cheaper to verify) rely on pairings for verification. Zero knowledge proofs can be used 
 to make Mithril certificates, or sidechain checkpoints even more succinct, or to create layer 2 solutions to provide 
@@ -114,48 +108,46 @@ equivalent to byte arrays of a given size, it makes sense to include these types
 therefore some checks on the data used by the smart contract. In particular, all three types can only be achieved 
 with byte arrays that represent a point which is part of the prime order subgroup. 
 
-* `BLS12_381G1Element`
-* `BLS12_381G2Element`
-* `BLS12_381GTElement`
+* `bls12_381_G1_element`
+* `bls12_381_G2_element`
+* `bls12_381_MlResult`
 
 We need to support the binary operation of G1 and G2 (which are additive groups), as well as the binary operation 
 over GT (which is represented as a multiplicative group). We also want to enable hashing to G1 and G2.
-In particular, we expose the hash to curve (which we denote with `H2G1` and `H2G2` for G1 and G2 
-respectively) algorithm as described in 
+In particular, we expose the hash to curve (which we denote with `hashToGroup`) algorithm as described in 
 [hash to curve draft](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve#section-8), 
 using `BLS12381G1_XMD:SHA-256_SSWU_RO_` and `BLS12381G2_XMD:SHA-256_SSWU_RO_` for G1 and G2 respectively.
 We do not include the type of the Scalar, nor operations related to it. These type of operations can already be 
 performed with the Integral type. In particular, we need the following functions: 
 
 * Group operations: 
-    * `BLS12_381_G1_add :: BLS12_381G1Element -> BLS12_381G1Element -> BLS12_381G1Element`
-    * `BLS12_381_G1_mult :: Integer -> BLS12_381G1Element -> BLS12_381G1Element`
-    * `BLS12_381_G1_neg :: BLS12_381G1Element -> BLS12_381G1Element`
-    * `BLS12_381_H2G1 :: ByteString -> BLS12_381G1Element`
-    * `BLS12_381_G2_add :: BLS12_381G2Element -> BLS12_381G2Element -> BLS12_381G2Element`
-    * `BLS12_381_G2_mult :: Integer -> BLS12_381G2Element -> BLS12_381G2Element`
-    * `BLS12_381_G2_neg :: BLS12_381G2Element -> BLS12_381G2Element`
-    * `BLS12_381_H2G2 :: ByteString -> BLS12_381G2Element`
-    * `BLS12_381_GT_mul :: Blst12381GTElement -> Blst12381GTElement -> Blst12381GTElement`
+    * `bls12_381_G1_add :: bls12_381_G1_element -> bls12_381_G1_element -> bls12_381_G1_element`
+    * `bls12_381_G1_scalarMul :: Integer -> bls12_381_G1_element -> bls12_381_G1_element`
+    * `bls12_381_G1_neg :: bls12_381_G1_element -> bls12_381_G1_element`
+    * `bls12_381_G1_hashToGroup :: ByteString -> bls12_381_G1_element`
+    * `bls12_381_G2_add :: bls12_381_G2_element -> bls12_381_G2_element -> bls12_381_G2_element`
+    * `bls12_381_G2_scalarMul :: Integer -> bls12_381_G2_element -> bls12_381_G2_element`
+    * `bls12_381_G2_neg :: bls12_381_G2_element -> bls12_381_G2_element`
+    * `bls12_381_G2_hashToGroup :: ByteString -> bls12_381_G2_element`
+    * `bls12_381_mulMlResult :: bls12_381_MlResult -> bls12_381_MlResult -> bls12_381_MlResult`
 * Pairing operations:
-    * `BLS12_381_ppairing_ml :: BLS12_381G1Element -> BLS12_381G2Element -> BLS12_381GTElement`
-    * `BLS12_381_final_verify :: BLS12_381GTElement -> BLS12_381GTElement -> bool` This performs the final 
+    * `bls12_381_millerLoop :: bls12_381_G1_element -> bls12_381_G2_element -> bls12_381_MlResult`
+    * `bls12_381_finalVerify :: bls12_381_MlResult -> bls12_381_MlResult -> bool` This performs the final 
   exponentiation (see section `An important note on GT elements` below).
 
 On top of the elliptic curve operations, we also need to include deserialization functions, and equality definitions
 among the G1 and G2 types. 
 
 * Deserialisation: 
-  * `serialiseG1 :: Bls12_381G1Element -> ByteString`
-  * `deserialiseG1 :: ByteString -> Bls12_381G1Element`
-  * `serialiseG2 :: Bls12_381G2Element -> ByteString`
-  * `deserialiseG2 :: ByteString -> Bls12_381G2Element`
-  * `deserialiseGT :: ByteString -> Bls12_381GTElement`
+  * `bls12_381_G1_compress :: bls12_381_G1_element -> ByteString`
+  * `bls12_381_G1_uncompress :: ByteString -> bls12_381_G1_element`
+  * `bls12_381_G2_compress :: bls12_381_G2_element -> ByteString`
+  * `bls12_381_G2_uncompress :: ByteString -> bls12_381_G2_element`
 * Equality functions:
-  * `eq :: BLS12_381G1Element -> BLS12_381G1Element -> bool`
-  * `eq :: BLS12_381G2Element -> BLS12_381G2Element -> bool`
+  * `bls12_381_G1_equal :: bls12_381_G1_element -> bls12_381_G1_element -> bool`
+  * `bls12_381_G2_equal :: bls12_381_G2_element -> bls12_381_G2_element -> bool`
 
-This makes a total of 18 new functions and three new types. 
+This makes a total of 17 new functions and three new types. 
 
 We follow the [ZCash Bls12-381 specification](https://github.com/supranational/blst#serialization-format) for the
 serialization of elements:
@@ -190,7 +182,7 @@ We include the serialisation of the generator of G1 and the generator of G2:
 
 #### An important note on GT elements
 We intentionally limit what can be done with the GT element. In fact, the only way that one can generate a 
-GT element is using the `BLS12_381_ppairing_ml` function. Then these elements can only be used for operations among 
+GT element is using the `bls12_381_millerLoop` function. Then these elements can only be used for operations among 
 them (mult) and a final equality check (denote `final_verify`). In other words, GT elements are only there to eventually
 perform some equality checks. We thought of including the inverse
 function to allow division, but given that we simply allow for equality checks, if one needs to divide by `A`, 
@@ -202,10 +194,13 @@ to perform the operations over these points (mults). Finally, when we want to ch
 one of the two points (or equivalently in this case we compute the conjugate), and multiply the result by the 
 other point. Only now we compute the final exponentiation
 and verify that the result is the identity element. In other words: 
-* the 'partial pairing' function, `BLS12_381_ppairing_ml` (stands for partial pairing miller loop) simply
+* the 'partial pairing' function, `bls12_381_millerLoop` simply
 computes the miller loop
-* the equality check function, `final_verify`, first
+* the equality check function, `bls12_381_finalVerify`, first
 computes an inverse, then a multiplication, a final exponentiation and checks that the element is the identity. 
+
+While the results of the miller loop are already elements in Fp12, they are not necessarily part of the group. This
+is why we call the type used in the built-ins `bls12_381_MlResult` rather than `bls12_381_GT`.
 
 Using the estimates exposed in the section `Costing of function`, we can see how this representation of
 GT elements is beneficial. Assume that we want to check the following relation: 
@@ -213,13 +208,14 @@ GT elements is beneficial. Assume that we want to check the following relation:
 around 370us. A full pairing would be 700us, and therefore checking this relation would cost around
 2,8ms. If, instead, we break down the pairing into a miller loop and a final exponentiation, and only
 compute the latter once, the cost of the relation above would be 330 * 4 + 370 = 1,7ms. 
-                                         
-For this reason it is important to limit what can be done with GTElements, as the pairing really is not the full 
+
+For this reason it is important to limit what can be done with `bls12_381_MlResult`, as the pairing really is not the full
 pairing operation, but only the miller loop. 
 ### Source implementation
 * [BLST](https://github.com/supranational/blst) library, providing the algebraic operations.
-* [cardano-base](https://github.com/input-output-hk/cardano-base/tree/bls12-381/cardano-crypto-class/src/Cardano/Crypto/EllipticCurve)
+* [cardano-base](https://github.com/input-output-hk/cardano-base/tree/master/cardano-crypto-class/src/Cardano/Crypto/EllipticCurve)
 with the haskell FFI to the BLST library.
+* [plutus](https://github.com/input-output-hk/plutus/pull/5231)
 
 Other libraries of interest
 * [Ethereum support for BLS12_381](https://eips.ethereum.org/EIPS/eip-2537). Not directly relevant as this is an 
@@ -288,51 +284,52 @@ used in the space.
 
 Further reading regarding curve BLS12_381 can be found [here](https://hackmd.io/@benjaminion/bls12-381) and the
 references thereof cited. 
-## Path to Proposed
-To move this draft to proposed, we need to argue the trustworthiness of `blst` library, cost all functions and 
-include these functions to Plutus. Furthermore, before proceeding to `Proposed`, we will provide a Haskell implementation 
-of one of the algorithms that we want to do on-chain, implemented in terms of the primitives we are going to provide. 
-This will help in benchmarking the viability of using these primitives on main-net. 
 
 ### Trustworthiness of implementations
 * [BLST](https://github.com/supranational/blst) library—
 [audited by NCC Group](https://research.nccgroup.com/wp-content/uploads/2021/01/NCC_Group_EthereumFoundation_ETHF002_Report_2021-01-20_v1.0.pdf) 
-and [being formally verified](https://github.com/GaloisInc/BLST-Verification) by Galois
+and [being formally verified](https://github.com/GaloisInc/BLST-Verification) by Galois.
+
+* We also have an [analysis by Duncan](https://github.com/cardano-foundation/CIPs/pull/220#issuecomment-1508306896https://github.com/cardano-foundation/CIPs/pull/220#issuecomment-1508306896)
+  for effects of including this library for continuous integration and long term maintainability.
 ### Costing of function
 
-We performed some benchmarks on the curve operations that can be used to cost each of the functions. We performed 
-the benchmarks on a 2,7 GHz Quad-Core Intel Core i7, using the `blst` library. Further benchmarks are required
-to provide final costings of functions.
-Deserialization functions check that elements are part of the prime order subgroup. The pairing evaluation only
-computes the miller loop, and the final verify of GTs computes an inversion in GT, a multiplication, a final 
-exponentiation and a check wrt the identity element (more info in section An important note on GT elements).
+We did some [preliminary costing](https://github.com/input-output-hk/plutus/tree/kwxm/BLS12_381/prototype/plutus-benchmark/bls-benchmarks) 
+of the BLS functions and the following cost of the new built-in functions: 
+```
+bls12_381_G1_compress    : 3341914
+bls12_381_G1_uncompress  : 16511372
+bls12_381_G1_add         : 1046420
+bls12_381_G1_equal       : 545063
+bls12_381_G1_hashToCurve : 66311195 + 23097*x
+bls12_381_G1_mul         : 94607019 + 87060*x (we use 94955259, with x = 4)
+bls12_381_G1_neg         : 292890
+bls12_381_G2_compress    : 3948421
+bls12_381_G2_uncompress  : 33114723
+bls12_381_G2_add         : 2359410
+bls12_381_G2_equal       : 1102635
+bls12_381_G2_hashToCurve : 204557793 + 23271*x
+bls12_381_G2_mul         : 190191402 + 85902*x
+bls12_381_G2_neg         : 307813
+bls12_381_GT_finalVerify : 388656972
+bls12_381_GT_millerLoop  : 402099373
+bls12_381_GT_mul         : 2533975
+blake2b_256                     : 358499 + 10186*x (521475, with x = 16)
+addInteger                      : 85664 + 712*max(x,y) (88512, with x = y = 4)
+multiplyInteger                 : 1000 + 55553*(x+y) (641924, with x = y = 4, and we include the price of modular reduction, as we need one per mult)
+divideInteger                   : if x>y
+then  809015 + 577*x*y
+else  196500
+modInteger                      : 196500  
+expInteger                      : We estimate 32 mults and adds (23373952)
+```
 
-* Group operations:
-  * G1 addition: 806 ns
-  * G1 multiplication:  20,5 us 
-  * G1 negation: 12 ns
-  * G1 Hash to group: 61,8 us
-  * G2 addition: 1,6 us
-  * G2 multiplication: 40,5 us
-  * G2 negation: 18 ns
-  * G2 Hash to group: 167,2 us
-  * GT multiplication: 2 us
-* Pairing operations:
-  * Miller loop: 330,2 us
-  * Final verify: 371.2 us
-* Deserialization: 
-  * G1: 63,8 us
-  * G2: 77 us
-* Equality checks:
-  * G1: 228 ns
-  * G2: 656 ns
+Using these preliminary benchmarks, we performed some estimates of how much it would cost to verify Groth16 or Plonk 
+proofs using the bindings. Details can be found [here](https://hackmd.io/X80zXoxWQrqSLaO0nizjaA). The estimates for
+Groth16 (~23% of the execution budget required for a proof verification) were confirmed by the benchmarks shared above.
 
 ### Plutus implementor
-IOHK internal. We currently have implemented the FFI binding in 
-[`cardano-base`](https://github.com/input-output-hk/cardano-base/pull/266).
-
-### Haskell implementation of ATMS
-We will provide a Haskell implementation of ATMS verification to understand the complexity of such a procedure.
+IOG internal. PR open for Plutus bindings https://github.com/input-output-hk/plutus/pull/5231
 
 ## Path to Active
 Release in upcoming update.
