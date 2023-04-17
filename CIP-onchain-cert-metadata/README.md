@@ -337,10 +337,6 @@ The off-chain metadata should follow the following schema and should then be ref
                     }
                 }
             },
-            "fullScriptHash": {
-              "type": "string",
-              "description": "Prefix and script hash or script hash+staking key"
-            },
             "scriptHash": {
               "type": "string",
               "description": "Script hash or script hash+staking key"
@@ -350,8 +346,7 @@ The off-chain metadata should follow the following schema and should then be ref
               "description": "Script on-chain address"
             },
             "required": [
-                "scriptHash",
-                "contractAddress"
+                "scriptHash"
               ]
         }
       ]
