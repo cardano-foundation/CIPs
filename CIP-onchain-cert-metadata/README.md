@@ -254,7 +254,7 @@ The off-chain metadata should follow the following schema and should then be ref
             "contact": {
               "type": "string",
               "description": "Contact email of the Certification Issuer.",
-              "pattern" = "^\\S+@\\S+\\.\\S+$"
+              "pattern" : "^\\S+@\\S+\\.\\S+$"
             },
             "website": {
               "type": "string",
