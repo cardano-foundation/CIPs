@@ -36,6 +36,10 @@
     "description": "Marlowe - a DSL for writing and executing financial contracts"
   },
   {
+    "transaction_metadatum_label": 1667,
+    "description": "CIP-72: dApp registration & Discovery"
+  },
+  {
     "transaction_metadatum_label": 1870,
     "description": "Open Badges v2.0 compliant metadata"
   },
