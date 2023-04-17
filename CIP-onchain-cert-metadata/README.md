@@ -101,6 +101,7 @@ Certification issuers will sign the certificate to attest that they have done th
                 },
                 "certificationLevel": {
                     "type": "integer",
+                    "enum": [0,1,2,3],
                     "description": "Integer between 1 and 3 to describe the level of certification this certificate refers to when using a CERTIFY action. Integer of 0 for an audit when using an AUDIT action."
                 },
                 "certificateIssuer": {
@@ -218,6 +219,7 @@ The off-chain metadata should follow the following schema and should then be ref
     },
     "certificationLevel": {
       "type": "integer",
+      "enum": [0,1,2,3],
       "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certfication Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard. Shall match the on-chain certificationLevel"
     },
     "certificateIssuer": {
