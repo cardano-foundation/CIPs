@@ -290,8 +290,41 @@ references thereof cited.
 [audited by NCC Group](https://research.nccgroup.com/wp-content/uploads/2021/01/NCC_Group_EthereumFoundation_ETHF002_Report_2021-01-20_v1.0.pdf) 
 and [being formally verified](https://github.com/GaloisInc/BLST-Verification) by Galois.
 
-* We also have an [analysis by Duncan](https://github.com/cardano-foundation/CIPs/pull/220#issuecomment-1508306896https://github.com/cardano-foundation/CIPs/pull/220#issuecomment-1508306896)
-  for effects of including this library for continuous integration and long term maintainability.
+We also have an [analysis by Duncan](https://github.com/cardano-foundation/CIPs/pull/220#issuecomment-1508306896https://github.com/cardano-foundation/CIPs/pull/220#issuecomment-1508306896)
+for effects of including this library for continuous integration and long term maintainability:
+
+In addition to security audits on the proposed implementation, it is important that we review the inclusion of 
+the library for practical issues of build systems, and long term maintainability.
+
+In particular in this case the library will be used in the chain format and in chain verification. This means 
+we have special constraints that the format and verification logic must never change. Or more specifically: 
+it must be possible forever to be able to verify the existing uses on the chain. So even if there are upgrades 
+or format changes in future, it must still be possible to decode and verify the old uses. This is not a 
+constraint that most software has, and so many libraries are not designed to work within that constraint.
+
+The proposed implementation is https://github.com/supranational/blst
+
+* The implementation is in C and assembly for x86 and ARM v8. This is good for the existing Haskell 
+  implementation of the Cardano node because integrating with C libraries is relatively straightforward, it's 
+  well supported by the build and CI system and does not pull in too many extra dependencies. (Contrast for 
+  example if it were a Rust library where we would have serious practical problems on this front.)
+* The implementation appears to have been designed with blockchain implementations in mind. This is a good 
+  sign for the long term maintainability because it probably means that the library authors will continue to 
+  support the existing format and semantics even if there are changes or improvements.
+* The implementation is claimed to be compliant with draft IETF specifications. There is a risk that the 
+  specs may change before being declared final, and the library may be updated to follow. There is a risk 
+  that the Cardano community will have to support the old version forever. Though given the point above, 
+  it's probably the case that library updates would still provide compatibility with the current IETF drafts 
+  and serialisation formats.
+
+So overall this seems like something the core development team and Cardano community could support long term 
+without too high a cost. Though we should be aware of the risk that we may have to support an old version of 
+the library, if the library gets changed in incompatible ways.
+
+To ensure no compatibility surprises, it is worth considering forking the repository at a specific commit/version 
+and building the node using that version. This is to guarantee the version remains available. Then for any future 
+updates, the fork repo could be updated to a new version explicitly, with appropriate compatibility checks to 
+ensure the existing on-chain uses are still compatible.
 ### Costing of function
 
 We did some [preliminary costing](https://github.com/input-output-hk/plutus/tree/kwxm/BLS12_381/prototype/plutus-benchmark/bls-benchmarks) 
