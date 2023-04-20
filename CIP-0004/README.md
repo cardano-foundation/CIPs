@@ -1,10 +1,17 @@
 ---
 CIP: 4
 Title: Wallet Checksums
-Authors: Ruslan Dudin <ruslan@emurgo.io>, Sebastien Guillemot <sebastien@emurgo.io>
-Comments-URI: https://forum.cardano.org/t/cip4-wallet-checksum/32819
-Status: Draft
-Type: Standards
+Status: Proposed
+Category: Wallets
+Authors:
+  - Ruslan Dudin <ruslan@emurgo.io>
+  - Sebastien Guillemot <seba@dcspark.io>
+Implementors:
+  - Ruslan Dudin <ruslan@emurgo.io>
+  - Sebastien Guillemot <seba@dcspark.io>
+Discussions:
+  - https://forum.cardano.org/t/cip4-wallet-checksum/32819
+  - https://github.com/cardano-foundation/CIPs/pull/4
 Created: 2019-05-01
 License: Apache-2.0
 ---
@@ -13,7 +20,7 @@ License: Apache-2.0
 
 We introduce a checksum algorithm to help users verify they are restoring the right wallet before the restoration actually takes place.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Users occasionally enter the wrong [mnemonic](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki) for their wallet. In this case, they simply see a 0 ADA wallet after syncing is over. This not only wastes the user's time, in the worst case it makes them think they either lost all their ADA or think there is a bug in the wallet implementation.
 
@@ -40,7 +47,7 @@ To satisfy (2) and (3), the a hash of the public key is used
 
 To satisfy (4) and (5), we generate for an *ImagePart* and a *TextPart*. The brain can roughly remember images allowing you to quickly dismiss checksums that look totally different. However, since images can sometimes be similar, a *TextPart* is also provided for double-checking. Additionally, if the user does not have access to a printer, the text part can be easily written down by hand on a piece of paper to satisfy (5).
 
-## Rationale & Concrete implementation
+## Rationale: how does this CIP achieve its goals?
 
 We first provide a template for the code, explain the template and then provide the parameterization we use for Cardano
 
@@ -123,9 +130,18 @@ Instead, we replace it with [FNV-1a](https://tools.ietf.org/html/draft-eastlake-
 
 Note that a different construction is needed for wallet types which do not have a public key (such as a balance tracking application which simply manages a set of addresses). In the balanace tracking case, simply hashing the set of addresses used is possible, but it means that adding & removing an address would change the checksum (possibly unintuitive). Since the checksum is meant to represent the wallet itself, we also cannot run a checksum on the name of the wallet or any other user-inputted data.
 
-## Reference implementation
+## Path to Active
 
-- [Javascript implementation](https://github.com/Emurgo/CIP4) (contains test vectors)
+### Acceptance Criteria
+
+- [x] There exists a reference implementation with test vectors.
+- [ ] Checksums are adopted by two or more wallets.
+  - [x] Yoroi
+
+### Implementation Plan
+
+- [x] Reference implementations:
+  - [Javascript](https://github.com/Emurgo/CIP4)
 
 ## Copyright
 

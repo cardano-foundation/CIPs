@@ -1,11 +1,13 @@
 ---
 CIP: 33
 Title: Reference scripts
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Comments-Summary: No comments
-Comments-URI:
+Authors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors:
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Jared Corduan <jared.corduan@iohk.io>
 Status: Active
-Type: Standards
+Category: Plutus
 Created: 2021-11-29
 License: CC-BY-4.0
 Requires: CIP-31
@@ -117,7 +119,7 @@ This would mean that we don't need to change the interface.
 We don't have obvious use cases for the information about reference scripts, but the community may come up with use cases, and our general policy is to try and include as much information about the transaction as we can, unless there is a good reason not to.
 
 We also have the question of what to do about old scripts.
-We can't really present the information about reference scripts to them in a faithful way, there is nowhere to put hte information.
+We can't really present the information about reference scripts to them in a faithful way, there is nowhere to put the information.
 We could omit the information entirely, but this is dangerous in a different way.
 Omitting information may lead scripts to make assumptions about the transaction that are untrue; for this reason we prefer not to silently omit information as a general principle.
 That leaves us only one option: reject transactions where we would have to present information about reference scripts to old scripts.

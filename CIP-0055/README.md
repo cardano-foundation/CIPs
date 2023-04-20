@@ -1,15 +1,15 @@
 ---
 CIP: 55
-Title: Babbage Era Protocol Parameters
+Title: Protocol Parameters (Babbage Era)
 Authors: Jared Corduan <jared.corduan@iohk.io>
-Status: Proposed
+Status: Active
 Type: Informational
 Created: 2022-05-19
 License: CC-BY-4.0
 Requires: CIP-0028
 ---
 
-## Simple Summary/Abstract
+## Abstract
 
 This CIP extends CIP-0028 to introduce a change to one of the Alonzo protocol parameters in the Babbage era, namely `lovelacePerUTxOWord`.
 We propose to have this updateable parameter be based on bytes instead of words (eight bytes).
@@ -85,7 +85,7 @@ We would like the formula for the minimum lovelace in a unspent transaction outp
 be simpler and easier to reason about by all users of the Cardano network, while at
 the same time accounting for the size of the output.
 
-## Backwards compatibility
+### Backwards compatibility
 
 The [translation](#translation-from-the-alonzo-era-to-the-babbage-era) section
 explains how we will transition from the `coinsPerUTxOWord` parameter to the `coinsPerUTxOByte` parameter.
@@ -97,7 +97,7 @@ in protocol parameter updates.
 
 ## Path to Active
 
-As of the time of this writing, this CIP has been implemented, but not release, in the Cardano ledger.
+- [x] The Cardano Babbage era is activated.
 
 ## Copyright
 

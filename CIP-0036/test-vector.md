@@ -1,110 +1,136 @@
-# Test vector for CIP15
+# Test Vector for CIP-0036
 
-### Inputs
+## Keys
 
-Payment **public** key hex
-```
-3273a5316e4de228863bd7cf8dac90d57149e1a595f3dd131073b84e35546676
-```
+**Note:** Not all keys are required for certificate recreation.
 
-Staking **private** key hex
+Payment **private** signing key Hex:
 ```
-f5beaeff7932a4164d270afde7716067582412e8977e67986cd9b456fc082e3a
+614fdfe13d403bee2014570b190d81851f17d8daca0b6dd1ce33014403191003
 ```
 
-Catalyst **private** key hex
+Payment **public** verification Hex:
+```
+7a24dd8e692cec94b612c2ec81f508aada96557c2052a447b9d197b006fa7d2a
+```
+
+Staking **private** signing key Hex:
+```
+852fa5d17df3efdfdcd6dac53ec9fe5593f3c0bd7cadb3c2af76c7e15dfa8a5c
+```
+
+Staking **public** verification key Hex:
+```
+e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369
+```
+
+CIP-36 Vote **public** verification key Hex:
+```
+0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0
+```
+
+CIP-36 Vote **extended private** signing key Hex:
 ```
 4820f7ce221e177c8eae2b2ee5c1f1581a0d88ca5c14329d8f2389e77a465655c27662621bfb99cb9445bf8114cc2a630afd2dd53bc88c08c5f2aed8e9c7cb89
 ```
 
-### Intermediate steps
+## Addresses
+- This example uses Pre-Production testnet (testnet-magic 1).
 
-Reward address generated from staking key
+Payment Address:
 ```
-bech32
-stake_test1uzhr5zn6akj2affzua8ylcm8t872spuf5cf6tzjrvnmwemcehgcjm
+bech32: "addr_test1qprhw4s70k0vzyhvxp6h97hvrtlkrlcvlmtgmaxdtjz87xrjkctk27ypuv9dzlzxusqse89naweygpjn5dxnygvus05sdq9h07"
 
-hex-encoded
-e0ae3a0a7aeda4aea522e74e4fe36759fca80789a613a58a4364f6ecef
+hex-encoded: "004777561e7d9ec112ec307572faec1aff61ff0cfed68df4cd5c847f1872b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9"
+````
+
+Staking Address:
+```
+bech32: "stake_test1upetv9m90zq7xzk303rwgqgvnje7hvjyqef6xnfjyxwg86gzpmj80"
+
+hex-encoded: "e072b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9"
 ```
 
-Data to sign (human readable format)
+## Certificate Example
 
-Legacy version (full delegation to one key only):
+- Assigning all voting power to a single voting key. 
+
+### Human Readable Format
+
+Legacy CIP-15 version:
 ```javascript
-61284: {
-  1: '0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0',
-  2: '0x86870efc99c453a873a16492ce87738ec79a0ebd064379a62e2c9cf4e119219e',
-  3: '0xe0ae3a0a7aeda4aea522e74e4fe36759fca80789a613a58a4364f6ecef',
-  4: 1234,
-},
+"61284": {
+  "1": "0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0",
+  "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+  "3": "0xe072b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
+  "4": 1234
+}
 ```
 
-New version:
+CIP-36 version:
 ```javascript
-61284: {
-  1: [['0xa6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663', 1], ['0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee', 3]],
-  2: '0x86870efc99c453a873a16492ce87738ec79a0ebd064379a62e2c9cf4e119219e',
-  3: '0xe0ae3a0a7aeda4aea522e74e4fe36759fca80789a613a58a4364f6ecef',
-  4: 1234,
-  5: 0
-},
+"61284": {
+  "1": [["0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0", 1]],
+  "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+  "3": "0x004777561e7d9ec112ec307572faec1aff61ff0cfed68df4cd5c847f1872b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
+  "4": 1234,
+  "5": 0
+}
 ```
 
+### CBOR Encoding
 
-Metadata (CBOR encoding)
-
-Legacy:
+Legacy CIP-15 version:
 ```
-a119ef64a4015820a6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d166302582086870efc99c453a873a16492ce87738ec79a0ebd064379a62e2c9cf4e119219e03581de0ae3a0a7aeda4aea522e74e4fe36759fca80789a613a58a4364f6ecef041904d2
-```
-
-New:
-```
-a119ef64a50182825820a6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d16630182582000588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee0302582086870efc99c453a873a16492ce87738ec79a0ebd064379a62e2c9cf4e119219e03581de0ae3a0a7aeda4aea522e74e4fe36759fca80789a613a58a4364f6ecef041904d20500
+a119ef64a40158200036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0025820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e43236903581de072b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9041904d2
 ```
 
-Blake2b-256 hash of metadata
-
-Legacy:
+CIP-36 version:
 ```
-872bcb4a9e2b110a06fd5de04be5924b6c659c28a1665ecc75def13ebca6dfd8
+a119ef64a501818258200036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a001025820e3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369035839004777561e7d9ec112ec307572faec1aff61ff0cfed68df4cd5c847f1872b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9041904d20500
 ```
 
-New:
+### Blake2b-256 Hash
+
+Legacy CIP-15 version:
 ```
-5bc0681f173efd76e1989037a3694b8a7abea22053f5940cbb5cfcdf721007d7
+9946e71b5f6c16150cf431910a0f7dbb8084a992577847802e60d32becb3d6be
 ```
 
-### Output
+CIP-36 version:
+```
+3110fbad72589a80de7fc174310e92dac35bbfece1690c2dce53c2235a9776fa
+```
 
-Legacy:
+## Metadata Example with Witness
+
+Legacy CIP-15 version:
 ```javascript
 {
-  61284: {
-    1: '0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0',
-    2: '0x1c5d88aa573da97e5a4667e0f7c4a9c6a3d848934c3b0a5b9296b401540f2aef',
-    3: '0xe0ae3a0a7aeda4aea522e74e4fe36759fca80789a613a58a4364f6ecef',
-    4: 1234,
+  "61284": {
+    "1": "0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0",
+    "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+    "3": "0xe072b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
+    "4": 1234
   },
-  61285: {
-    1: '0xcf8e34db193edc930faf64626a0a759dd9ce654874d4b6f255dc2aa8f52313b6dbb9aa1b162b43ed8946668edca920dd34f5a51a14130814fdc86adb6218b501'
+  "61285": {
+    "1": "0xa9ec8735804c6c4c5c4a02e9589c65508ec7060063b2d7dbeba82d1cbfa1b8be6b457f95d4ead5e8b454b989624fa44e0b89a64d089fdc0a6a1268fef4876d0f" 
   }
 }
 ```
 
-New:
+CIP-36 version:
 ```javascript
 {
-  61284: {
-    1: [['0xa6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663', 1], ['0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee', 3]],
-    2: '0x1c5d88aa573da97e5a4667e0f7c4a9c6a3d848934c3b0a5b9296b401540f2aef',
-    3: '0xe0ae3a0a7aeda4aea522e74e4fe36759fca80789a613a58a4364f6ecef',
-    4: 1234,
-    5: 0
+  "61284": {
+    "1": [["0x0036ef3e1f0d3f5989e2d155ea54bdb2a72c4c456ccb959af4c94868f473f5a0", 1]],
+    "2": "0xe3cd2404c84de65f96918f18d5b445bcb933a7cda18eeded7945dd191e432369",
+    "3": "0x004777561e7d9ec112ec307572faec1aff61ff0cfed68df4cd5c847f1872b617657881e30ad17c46e4010c9cb3ebb2440653a34d32219c83e9",
+    "4": 1234,
+    "5": 0
   },
-  61285: {
-    1: '0x3aaa2e6b43c0a96e880a7d70df84dffb2a1a17b19d7a99a6ed27b91d499b32027c43acfbf6dff097af7634b2ee38c8039af259b0b6a64316f02b4ffee28a0608'
+  "61285": {
+    "1": "0xcbb96ba1596fafc18eec84e306feea3067ba1c6ace95b11af820bcbd53837ef32bdcf28176749061e1f2a1300d4df98c80582722786e40cf330072d0b78a7408"
   }
 }
 ```

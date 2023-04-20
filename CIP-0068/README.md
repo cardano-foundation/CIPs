@@ -38,6 +38,20 @@ To find the metadata for the `user token` you need to look for the output, where
 
 Lastly and most importantly, with this construction, the metadata can be used by a PlutusV2 script with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space. 
 
+### Labels
+
+Each asset name must be prefixed by a label. The intent of this label is to identifty the purpose of the token. For example, a reference NFT is identified by the label 100 and so every token considered a reference NFT should start its asset name with the the hex `000643b0`. This is following [CIP-0067](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067), which specifies how the label prefix should be formatted.
+
+Examples of asset names:
+| asset_name_label | asset_name_content | resulting_label_hex | resulting_content_hex | resulting_asset_name_hex     |
+|------------------|--------------------|---------------------|-----------------------|------------------------------|
+| 100              | GenToken           | 000643b0            | 47656e546f6b656e      | 000643b047656e546f6b656e     |
+| 100              | NeverGonna         | 000643b0            | 4e65766572476f6e6e61  | 000643b04e65766572476f6e6e61 |
+| 222              | GiveYouUp          | 000de140            | 47697665596f755570    | 000de14047697665596f755570   |
+
+For simplicity purposes, the document will use the label `(100)` or `(<label>)` in the following documentation, but understand it should follow the CIP-0067 specification.
+
+
 ### Reference NFT label
 
 This is the registered `asset_name_label` value
@@ -57,7 +71,7 @@ Some remarks about the above,
 1. The `user token` and `reference NFT` do not need to be minted in the same transaction. The order of minting is also not important.
 2. It may be the case that there can be multiple `user tokens` (multiple asset names or quantity greater than 1) referencing the same `reference NFT`.
 
-The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor:
+The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor. The third field allows for arbitrary plutus data. This could be useful to forward relevant data to the plutus script:
 ```
 big_int = int / big_uint / big_nint
 big_uint = #6.2(bounded_bytes)
@@ -71,7 +85,12 @@ metadata =
   
 version = int
 
-datum = #6.121([metadata, version])
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, version, extra])
 ```
 
 ## 222 NFT Standard
@@ -106,6 +125,7 @@ files_details =
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
     src : bounded_bytes ; UTF-8
+    ; ... Additional properties are allowed
   }
 
 metadata = 
@@ -115,9 +135,15 @@ metadata =
     ? mediaType : bounded_bytes, ; UTF-8
     ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
+    ; ... Additional properties are allowed
   }
   
-datum = #6.121([metadata, 1]) ; version 1
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
@@ -178,11 +204,24 @@ metadata =
     description : bounded_bytes, ; UTF-8
     ? ticker: bounded_bytes, ; UTF-8
     ? url: bounded_bytes, ; UTF-8
-    ? logo: bounded_bytes, ; UTF-8
-    ? decimals: big_int
+    ? logo: uri,
+    ? decimals: int
+    ; ... Additional properties are allowed
   }
+
+; A URI as a UTF-8 encoded bytestring.
+; The URI scheme must be one of `https`, `ipfs` or `data`
+; Do not encode plain file payloads as URI.
+; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
+; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
+uri = bounded_bytes
+
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
   
-datum = #6.121([metadata, 1]) ; version 1
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
@@ -234,6 +273,7 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 
 - CIP-0025: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025
 - CIP-0031: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031
+- CIP-0067: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
 
 ## Copyright
 

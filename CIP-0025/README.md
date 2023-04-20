@@ -1,6 +1,6 @@
 ---
 CIP: 25
-Title: NFT Metadata Standard
+Title: Media NFT Metadata Standard
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Smaug <smaug@pool.pm>
 Comments-URI:
 Status: Active
@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines an NFT Metadata Standard for Native Tokens.
+This proposal defines an Media NFT Metadata Standard for Native Tokens.
 
 ## Motivation
 
@@ -24,7 +24,7 @@ Cardano has the ability to send metadata in a transaction, that's the way we can
 > are always created in specific forging operations, we can always trace them back through their
 > transaction graph to their origin.
 
-(Section 4.1 in the paper: https://hydra.iohk.io/build/5400786/download/1/eutxoma.pdf)
+(Section 4 in the paper: https://iohk.io/en/research/library/papers/utxomautxo-with-multi-asset-support/)
 
 ## Considerations
 
