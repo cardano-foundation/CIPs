@@ -64,8 +64,39 @@ Certification issuers will sign the certificate to attest that they have done th
 - `integrity`: The DApp's metadata off-chain shall match the metadata **anchored** on-chain.
 - `trust`: The DApp's certification metadata transaction shall be signed by a trusted certfication issuer. This means a list of wallets of certification issuers needs to be known. It will then be up to the DApp store to decide which certification issuers are really trusted and publish a list of their own trusted certification issuers.
 
-### Certificate JSON Schema
+### Certificate Schemas
 
+The on-chain metadata should follow the following CDDL schema:
+
+```cddl
+transaction_metadata = {
+  "1304": on-chain_metadata
+}
+
+on-chain_metadata = {
+      "subject": tstr .size (1..64)
+    , "rootHash": tstr .regexp "[0-9a-fA-F]{64}" ; hash of the off-chain metadata pointed by the links in metadata
+    , "metadata": [+URL]
+    , "schemaVersion": uint
+    , "type": certify / audit
+}
+
+certify = {
+      "action": "CERTIFY" 
+    , "certificationLevel": 1 / 2 / 3 
+    , "certificateIssuer": tstr
+}
+
+audit = {
+      "action": "AUDIT" 
+    , "certificationLevel": 0 
+    , "certificateIssuer": tstr
+}
+
+URL = tstr ; .regexp ""
+```
+
+This schema can be translated into a JSON schema:
 ```json
 {
     "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -205,7 +236,63 @@ The Dapp Certification certificate is complemented by off-chain metadata that ca
 - `scriptHash`, a string, is the script hash or script hash+staking key
 - `contractAddress`, a string, the script address
 
-The off-chain metadata should follow the following schema and should then be reformatted according to [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785) on canonical JSON Scheme:
+The off-chain metadata shall follow the following CDDL schema:
+
+```
+off-chain_metadata = {
+      "subject": tstr .size (1..64)
+    , "schemaVersion": uint
+    , "certificationLevel": 0 / 1 / 2 / 3
+    , "certificateIssuer": certificateIssuerType
+    , "report": reportType
+    , "summary": tstr
+    , "disclaimer": tstr
+    , scripts: [+scriptType]
+}
+
+certificateIssuerType = {
+      "name": tstr
+    , * "logo": URL
+    , "social": socialType
+}
+
+socialType = {
+      "contact": email 
+    , * "twitter": twitterHandle
+    , * "github": githubRepo
+    , "website": URL
+}
+
+reportType = {
+      "reportURLs": [+URL]
+    , "reportHash": tstr .regexp "[0-9a-fA-F]{64}"
+}
+
+scriptType = {
+      * "smartContractInfo": smartContractInfoType
+    , "scriptHash": tstr .regexp "[0-9a-fA-F]{56}"
+    , * "contractAddress": cardanoAddress
+}
+
+smartContractInfoType = {
+      * "era": tstr
+    , * "compiler": tstr
+    , * "compilerVersion": tstr
+    , * "optimizer": tstr
+    , * "optimizerVersion": tstr
+    , * "progLang": tstr
+    , * "repository": URL
+}
+
+URL = tstr ; .regexp "URL regexp"
+twitterHandle = tstr .size(1..15)
+githubRepo = tstr ; .regexp "githubRepo"
+email = tstr ; .regexp "email address"
+cardanoAddress = tstr .regexp "addr1[0-9a-z]{53}" 
+```
+
+
+The schema can be translated into the following JSON schema:
 
 ```json
 {
