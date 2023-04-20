@@ -17,8 +17,7 @@ License: CC-BY-4.0
 
 Plutus Core does not contain any native support for datatypes.
 Instead, users who want to use structured data must _encode_ it; a typical approach is to use [Scott encoding][].
-This CIP proposes to add native support for datatypes to Plutus Core using sums-of-products (SOPs), and to use that support to implement more efficient interchange of the script context between the ledger and scripts.
-These changes will provide very substantial speed and size improvements to scripts.
+This CIP proposes to add native support for datatypes to Plutus Core using sums-of-products (SOPs), and to use that support more efficient scripts, and better code-generation for compilers targeting Plutus Core.
 
 ## Motivation: why is this CIP necessary?
 
@@ -39,6 +38,10 @@ This section talks about Haskell, but the same problem applies in other language
 Given a Haskell value, how do you translate it into the equivalent Plutus Core term ('lifting')?
 It's clear what to do for a Haskell value of one of the Plutus Core builtin types (just turn it into a constant), but it's much more complicated for a Haskell value that is a datatype value: you have to know how to do all the complicated Scott-encoding work.
 
+For example:
+- `1` lifts to `(con integer 1)` (easy enough)
+- `Just 1` lifts to `(delay (lam case_Nothing (lam case_Just [caseJust (con integer 1)])))` (much more complicated)
+
 This means that it's difficult to specify how to do lifting for structured data.
 For example, if we want users (or the ledger!) to create Plutus Core terms representing structured data, it will be difficult to explain how to do it.
 
@@ -47,42 +50,32 @@ Again, it's clear how to do this for builtin types and very unclear how to do it
 Doing anything with a Scott-encoded datatype usually requires applying it to arguments and _evaluating_ it.
 It's not reasonable to require the Plutus Core evaluator just to work out what a term means.
 
-In practice this makes Plutus Core terms very opaque.
+For example:
+- `(con integer 1)` clearly unlifts to `1`
+- `(delay (lam case_Nothing (lam case_Just [caseJust (con integer 1)])))` should unlift to `Just `, but this is hard to see. Scott encodings are not even canonical (there can be many terms that represent the same Scott-encoded value), so it is hard to know what they represent in general.
 
-#### 3. The 'Data' Type
+In practice this makes Plutus Core terms very opaque and difficult to work with.
+
+#### 3. The `Data` Type
 
 The design of the EUTXO model rests on passing arguments to the script for the redeemer, datum, and script context.
 But we hit upon the problem of how to _represent_ this information.
 
-The first design was to encode each argument as a Plutus Core term, and pass it directly to the script.
+The first design was to encode each argument as a Plutus Core term (using Scott-encoding for structued data), and pass it directly to the script.
 However, this had several problems:
 1. At that point, the on-chain form of Plutus Core was typed, and we would ideally want to typecheck the application before peforming it. But this could be expensive.
 2. As we saw above, Plutus Core terms representing structured data are very opaque, so using them for redeemers and datums would make those values very opaque to users.
-3. Creating the script context would require the ledger to take a Haskell value and lift it into a Plutus Core term, which as we've seen is difficult.
+3. Creating the script context would require the ledger to take a Haskell value and lift it into a Plutus Core term, which as we've seen is non-trivial.
 
 The solution that we chose was to pick a single generic structured data type which would be used for data interchange between the ledger and scripts.
-This is the 'Data' type.
+This is the `Data` type.
 
-However, Data is not the natural representation of structured values inside a script, that would be as datatypes.
-So this means we often want a decoding step where the script translates Data into its own representation.
+However, `Data` is not the natural representation of structured values inside a script, that would be as datatypes.
+So this means we often want a decoding step where the script translates `Data` into its own representation.
 
-### Problems With the Status Quo
+### Why change anything?
 
-There are a few problems with the status quo.
-
-#### 1. Decoding the Script Context is Too Expensive
-
-As we progressed to more realistic (or indeed, real) examples, two things became clear:
-1. Real-world script contexts can be large, especially due to the complexity of values stored in outputs
-2. The cost of processing the script context is too high in any case
-
-These combine to make decoding real world script contexts prohibitive in many cases.
-Budget profiling of our examples in `plutus-use-cases` revealed that many were spending 30-40% of their budget just on decoding the script context, which is unacceptable.
-
-In reality, this is well known among developers, and most have moved to _not_ decoding the script context, and instead working directly with the underlying Data object.
-This is much more error prone, but at least provides a workaround.
-
-#### 2. Everything Can Always be Faster
+#### 1. Everything Can Always be Faster
 
 The Plutus Core interpreter has got a lot faster over the last few years (at least one order of magnitude, possibly two by now).
 However, there continues to be relentless pressure on script resource usage.
@@ -90,15 +83,23 @@ This will always be the case: no matter how fast we make things, things can _alw
 
 That means that significant performance gains are always compelling.
 
-#### 3. Creating and Analyzing Plutus Core Terms is Difficult
+#### 2. Creating and Analyzing Plutus Core Terms is Difficult
 
 As discussed above, both lifting and unlifting are currently very tricky or impossible.
 
+#### 3. Working with Data is Clumsy and Slow
+
+The `Data` type is used in many places as a representation of structured data:
+1. The script context is represented as `Data`
+2. Some language toolchains that target PLC use `Data` for all structured data, rather than Scott encoding or similar.
+
+However, working with `Data` is not very pleasant.
+Deconstructing a datatype encoded as `Data` requires multiple steps, each of which has to go through the builtins machinery, which imposes additional overhead.
+Our benchmarks show that this is very 3x slower even than Scott encoding datatypes.
+
 ## Specification
 
-This specification has two parts: firstly a change to Plutus Core, and secondly a change to the ledger interface to scripts for a new Plutus language version.
-
-### 1. Plutus Core Changes
+### Plutus Core Changes
 
 The following new term constructors are added to the Plutus Core language:[^typed-plutus-core]
 ```
@@ -143,7 +144,7 @@ Also, note that case branches are arbitrary terms, and can be anything which can
 That means that, for example, it is legal to use a builtin as a case branch, or an expression which evaluates to a function.
 However, the most typical case will probably be a literal lambda.
 
-A new Plutus Core minor language version V is added to indicate support for these terms.
+A new Plutus Core minor language version 1.1.0 is added to indicate support for these terms.
 They are illegal before that version.
 
 #### Costing
@@ -158,44 +159,25 @@ However:
 - `constr`s arguments are all evaluated in turn, so we are sure to pay a linear price.
 - `case`'s branches are _not_ all evaluated, but the only place we could do a linear amount work is in selecting the chosen branch. But this can be avoided in the implementation by storing the cases in a datastructure with constant-time indexing.
 
-### 2. Ledger Changes
-
-A new Plutus ledger language L is added to the ledger.
-The Plutus Core language version V is both allowed and required in L (since the changes to the ledger-script interface will require sums-of-products). 
-Optionally, we may choose to backport support for the Plutus Core language version V to earlier Plutus ledger languages, since it only adds more features.
-
-The ledger-script interface changes in L as follows:
-- Instead of the script context argument being a Data object, it is now a Plutus Core term.
-- The translation of the script context into Data is replaced by a translation of the script context into a Plutus Core term.
-
-The full specification of the new translation is to be determined in collaboration with the ledger team, but broadly:
-- Integers and bytestrings are translated to Plutus Core integers and bytestrings instead of using the `I` and `B` Data constructors.
-- Constructors are translated to Plutus Core `constr` terms instead of using the Data `Constr` constructor.
-- Uses of the `Map` and `List` Data constructors will need more specific handling but will be translated in line with their underlying dataype representation in Plutus Core.
-
 ## Rationale: how does this CIP achieve its goals?
 
 ### Benefits
 
-#### 1. Avoid Decoding the Script Context
-
-This CIP solves problem 1 in the most drastic way possible: it removes it entirely.
-With the proposed ledger interface changes the script context is passed across _already decoded_, so there is zero work for the script to do.
-
-#### 2. Faster Processing of Structured Data
+#### 1. Faster Processing of Structured Data
 
 Most Plutus Core programs spend a significant amount of their time operating on datatypes, so we would expect that a performance improvement here would make a significant difference.
 
 Indeed, this seems to be true.
-Our benchmarks show that this CIP leads to 
+Our benchmarks show that this CIP leads to:
 
-1. A 0-30% real-time speedup in example programs that do not work with the script context (the 0% is a primality tester that is mostly doing arithmetic, the 30% is mostly doing datatype manipulation). 
-2. A complete removal of the significant cost of decoding the script context.
-3. A small global slowdown of 2-4%.
+1. A 0-30% real-time speedup in example programs that do generic computation work, versus Scott encoding[^scott-vs-data] (the 0% is a primality tester that is mostly doing arithmetic, the 30% is mostly doing data manipulation). 
+2. A small global slowdown of 2-4%.
 
-Note that the speedup from point 1 is inclusive of the slowdown from point 3.
+Note that the speedup from point 1 is inclusive of the slowdown from point 2.
 
-#### 3. Simple Lifting and Unlifting
+[^scott-vs-data]: See "Can't we just implement datatypes using `Data` itself?" for comparison with using `Data` directly.
+
+#### 2. Simple Lifting and Unlifting
 
 Today, lifting is complicated, and unlifting is mostly impossible.
 With this CIP lifting becomes very simple, and unlifting becomes not only possible but simple.
@@ -236,59 +218,11 @@ Even in a strict language like Rust, nobody would expect this to evaluate the `N
 
 Furthermore, this additional laziness has significant performance benefits, see Appendix 2 for more discussion.
 
-#### Is this still worth it if users aren't decoding the script context?
-
-The issues with decoding the script context only apply to users who actually try and decode it; many people have moved on to just using the underlying Data object instead.
-Arguably that saps the motivation for this proposal.
-
-There are two responses to this:
-1. This proposal seems worth it on the basis of its other benefits (benefits 2 and 3).
-2. Removing the problems with decoding the script context may allow users to return to that approach, which can be more ergonomic (and potentially cheaper, since builtin calls are expensive).
-
-#### Why not also make datums and redeemers terms instead of `Data`?
-
-It is always nice to get rid of things, and this CIP does _not_ let us get rid of `Data`, because it is still used for redeemers and datums.
-That begs the question: could we also have redeemers and datums be Plutus Core terms instead of values of type `Data`?
-
-The problem is that, unlike the encoded script context, redeemers and datums are _user facing_.
-They appear in the block format, they can be supplied by users (e.g. directly at the CLI!), and they can be inspected in block explorers.
-There is therefore a significant benefit to having them in a simpler format that is easier to work with.
-If they were Plutus Core terms in generality, we could have all kinds of strange things like people embedding functions in them.
-
-So it still seems beneficial to have redeemers and datums being `Data`.
-
-See "Alternatives: Convert Redeemers and Datums to Sums-of-Products Rather Than Builtin Data" for a variant.
-
-#### What about users who rely on the script context being `Data`?
-
-We know of two cases where it is actively desirable for the script context to be in the form of `Data`:
-
-1. Serialization/hashing, as described in the motivation for CIP-42
-2. Equality checking, e.g. searching for a particular output in the transaction output list
-
-It's likely that this CIP will negatively affect these use cases, since it would mean that users would need to either
-
-1. Write a hashing/equality function that operates recursively on the script context object
-2. Convert the script context back to `Data` in order to use the builtin operations
-
-Both of these approaches are likely to be much more expensive than using the `Data` builtins today.
-We benchmarked a recursive equality function over script contexts and it is indeed over 30x worse.
-This is a serious problem, and it's not clear what we can do about it.
-
-#### Do we need an untyped way of interacting with sums-of-products objects?
-
-Today, for users operating in a typed setting, using the raw `Data` representation of the script context has an advantage apart from speed: it avoids needing all the type definitions for the many parts of the script context, instead using only the single builtin type `Data`.
-This can lead to lower script sizes, depending on the tooling being used.
-
-One response is to say that this is an optimization problem for said tooling: they should try harder to ensure that everything relating to type definitions gets optimized away in the end.
-But we might also want to think about ways to allow people to operate with objects encoded using sums-of-products in a similar untyped way to what they can do with `Data`.
-
-However, this is all a problem for tools that produce Plutus Core, and seems solvable, so we do not need to solve it in this CIP, and can leave it to the tooling authors to solve later.
-
 #### Can't we just implement datatypes using `Data` itself?
 
 `Data` is expressive enough to encode datatypes, indeed this is why it is possible to encode the script context into it.
 It's performant enough that people who work with the script context as `Data` are able to get by.
+Moreover, lifting and unlifting to `Data` is very easy.
 So why not just use it to encode _all_ datatypes?[^aiken]
 
 [^aiken]: The Aiken language does this.
@@ -355,40 +289,18 @@ We think that this is an acceptable cost for a simpler implementation.
 
 [^see-appendix-2]: See Appendix 2 for more details.
 
-#### 3. Convert Redeemers and Datums to Sums-of-Products Rather Than Builtin Data
-
-This proposal changes how the script context is passed to scripts, thus removing one use of the Plutus builtin type `Data`.
-However, we still use the builtin `Data` type for passing redeemers and datums, which continue to be `Data` objects in the transaction.[^why-redeemers-datums-data]
-
-[^why-redeemers-datums-data]: See "Why not also make datums and redeemers terms instead of `Data`?" for why we want to keep redeemers and datums as `Data` in transactions themselves.
-
-An alternative would be to encode the `Data` objects for redeemers and datums using sums-of-products instead of the builtin `Data` type.
-That would require us to define and specify a stable `dataToTerm :: Data -> Term` function that converts a `Data` object into a term using sums-of-products.
-This would be simple for some cases (e.g. `Constr`), but less simple for other cases (notably `Map` and `List`).
-
-This has some costs:
-1. We have an additional conversion function that we need to specify.
-2. The details of the conversion function would be relevant to script authors, since they would need to know how their `Data` object had been encoded in order to operate on it.
-3. The ledger-script interface becomes generally more complex, since instead of passing `Data` objects directly, we now need to encode them.
-
-However, it would have a significant advantage in that we would potentially be able to remove the builtin `Data` type and its associated builtins entirely.
-Of course, they would still have to be supported in old ledger languages, so the reduction in implementation complexity would be limited.
-
-Strictly, this could be implemented as a later change, but if we're going to change the ledger-script interface anyway, it would be nice to do it in one go.
-
 ## Path to Active
 
 ### Acceptance Criteria
 
 - [ ] `plutus` changes
     - [ ] Specification 
-    - [ ] Production implementation
-    - [ ] Costing of the new operations
+    - [x] Production implementation
+    - [x] Costing of the new operations
 - [ ] `cardano-ledger` changes
-    - [ ] Specification, _including_ specification of the script context translation to a Plutus Core term
-    - [ ] Implementation of new ledger language, including new ledger-script interface
+    - [ ] Implementation of new ledger language including SOPs
 - [ ] Further benchmarking 
-    - [ ] Ensure that regressions on existing scripts do not occur 
+    - [x] Ensure that regressions on existing scripts do not occur 
     - [ ] Check additional real-world examples
 - [ ] Release
     - [ ] New Plutus language version supported in a released node version
@@ -397,7 +309,7 @@ Strictly, this could be implemented as a later change, but if we're going to cha
 ### Implementation Plan
 
 This plan will be implemented by Michael Peyton Jones and the Plutus Core team with assistance from the Ledger team.
-The changes will be in the "PlutusV3" ledger language at the earliest, and it is not clear which ledger era or hard fork this will arrive in.
+The changes will be in the `PlutusV3` ledger language at the earliest, which will probably arrive in the Conway ledger era.
 
 ## Appendices
 
@@ -590,58 +502,6 @@ These benchmarks are re-compiled from Haskell each time, so the comparison does 
 
 The results indicate that the speedup is more associated with programs that do lots of datatype manipulation, rather than those that do a lot of numerical work (which in Plutus Core means calling lots of builtin functions).
 However, we don't see any regression even in the primality tester, which is very numerically heavy (the noise threshold for the benchmarks is ~1%).
-
-#### Script context processing 1: basic processing
-
-These are synthetic benchmarks that aim to illustrate the difference between scripts that process script contexts encoded via `Data`, or passed directly as Plutus Core terms.
-They are defined in `plutus-benchmark/script-contexts`.
-They do this by generating medium-sized script context objects and then performing a few basic operations on them.
-They thus aim to show the potential savings for scripts from the new scheme.
-
-- `checkScriptContext1` decodes the script context from `Data`, and then does O(size of script context) work. This represents a somewhat realistic case where the script context is used to a modest degree.
-- `checkScriptContext2` decodes the script context from `Data`, and then does constant work. This represents the case where the script context decoding is pure overhead.
-- `checkScriptContext3` is the same as `checkScriptContext1`, but passing the script context as a term directly.
-- `checkScriptContext4` is the same as `checkScriptContext2`, but passing the script context as a term directly.
-
-The 4/20 variants indicate the size of the generated script context object.
-
-Since the difference here should be visible in how many machine steps are taken, we just give the budget numbers for the different scenarios.
-All these benchmarks are run on `sums-of-products`, since the difference lies in the construction of the script, not how it is evaluated.
-
-| Benchmark              | CPU budget usage | Memory budget usage |
-|:----------------------:|:----------------:|:-------------------:|
-| checkScriptContext1-4  | 137571245        | 447793             |
-| checkScriptContext1-20 | 483223997        | 1573169             |
-| checkScriptContext2-4  | 131415877        | 426584             |
-| checkScriptContext2-20 | 442300997        | 1415128            |
-| checkScriptContext3-4  | 12424957         | 47311              |
-| checkScriptContext3-20 | 50504589         | 198543             |
-| checkScriptContext4-4  | 2175589          | 8302               |
-| checkScriptContext4-20 | 6591589          | 27502              |
-
-In both scenarios the budget usage drops by an order of magnitude.
-This should not be taken as representative of typical savings for scripts, since these are very synthetic examples and the amount of work apart from decoding the script context is small.
-Still, it shows that we do successfully save ourselves from doing the work, and that the work saved is significant.
-
-#### Script context processing 2: equality
-
-These benchmarks compare the cost of computing equality of script contexts in two cases:
-
-1. Script contexts encoded as `Data`, using the `equalsData` builtin
-2. Script contexts encoded as terms using SOPs, using equality functions compiled from Haskell
-
-They are defined in `plutus-benchmark/script-contexts`.
-
-| Benchmark                    | CPU budget usage | Memory budget usage |
-|:----------------------------:|:----------------:|:-------------------:|
-| Script context data equality | 58790597         | 192802              |
-| Script context SOP equality  | 632527251        | 2592146             |
-| Overhead                     | 43631100         | 189800              |
-
-This is quite bad: the SOP equality case is 39x worse, accounting for the shared overhead.
-This is not too surprising, since the builtin case can perform the whole computation in Haskell, and moreover the computation is much simpler (a single recursive function over `Data`).
-Whereas the SOP case is jumping between many equality functions defined for different types, and all operating inside the main Plutus Core evaluator.
-Still, this is a striking difference.
 
 #### Validation 
 
