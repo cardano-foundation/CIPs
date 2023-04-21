@@ -189,6 +189,8 @@ An hard fork enables the suggested changes.
 ### Implementation Plan
 <!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
 
+N/A
+
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
 
