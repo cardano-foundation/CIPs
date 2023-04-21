@@ -586,5 +586,4 @@ Certificates are being displayed by multiple DApps stores or aggregators which u
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0].
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
