@@ -3,7 +3,6 @@ CIP: 72
 Title: Cardano dApp Registration & Discovery
 Status: Proposed
 Category: Metadata
-Version: "1.0.0"
 Authors: 
   - Bruno Martins <bruno.martins@iohk.io>
   - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
@@ -50,9 +49,8 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
 
 ```json
 {
-  "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
-  "rootHash": "8c4e9eec512f5f277ab811ba75c991d51600c80003e892e601c6b6c19aaf8a33",
-  "version": "1.0.0",
+  "subject": "b37aabd81024c043f53a069c91e51a5b52e4ea399ae17ee1fe3cb9c44db707eb",
+  "rootHash": "7abcda7de6d883e7570118c1ccc8ee2e911f2e628a41ab0685ffee15f39bba96",
   "metadata": [
 	  "https://cip26.foundation.app/properties/d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
     "https://example.com/metadata.json",
@@ -63,10 +61,10 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
     "releaseNumber": "1.0.0"
   },
 	"signature": {
-		"r": "5114674f1ce8a2615f2b15138944e5c58511804d72a96260ce8c587e7220daa90b9e65b450ff49563744d7633b43a78b8dc6ec3e3397b50080",
-		"s": "a15f06ce8005ad817a1681a4e96ee6b4831679ef448d7c283b188ed64d399d6bac420fadf33964b2f2e0f2d1abd401e8eb09ab29e3ff280600",
+		"r": "27159ce7d992c98fb04d5e9a59e43e75f77882b676fc6b2ccb8e952c2373da3e",
+		"s": "16b59ab1a9e349cd68d232f7652f238926dc24a2e435949ebe2e402a6557cfb4",
 		"algo": "Ed25519−EdDSA",
-		"pub": "b7a3c12dc0c8c748ab07525b701122b88bd78f600c76342d27f25e5f92444cde"
+		"pub": "b384b53d5fe9f499ecf088083e505f40d2a6c123bf7201608494fdb89a051b80"
 	}
 }
 ```
@@ -77,21 +75,18 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
 *`type`*: The type of the claim. This is a JSON object that contains the following properties: 
 - *`action`*: The action that the certificate is asserting. It can take the following values: 
   - *`REGISTER`*: The certificate is asserting that the dApp is registered for the first time or is providing an update.
-  - *`DE_REGISTER_RELEASE`*: The certificate is asserting that the dApp release version is being removed and it is requested that stores no longer show it.
-  - *`DE_REGISTER_DAPP`*: The certificate is asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is expected.
+  - *`DE_REGISTER`*: The certificate is asserting that the dApp is deprecated / archived. So, no further dApp's on-chain update is expected.
 
 *`rootHash`*: The hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section. Please note that off-chain JSON must be converted into RFC 8765 canonical form before taking the hash!
 
-*`version`*: CIP version, which version of the CIP was the on-chain certificate generated from. This is very much needed for stores and clients to know what rules they should apply for a given REGISTRATION / UPDATE.
-
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
 
-*`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "version", "rootHash", "metadata","type"]. Please note that a signature should be generated of blake2b-256 hash as a byte array, not as a hex represented string(!).
+*`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "rootHash", "metadata","type"]. Please note that a signature should be generated of blake2b-256 hash as a byte array, not as a hex represented string(!).
 
 ### dApp on-chain certificate JSON Schema
 ```json
 {
-   "$schema":"https://json-schema.org/draft/2019-09/schema",
+   "$schema":"https://json-schema.org/draft/2020-12/schema",
    "$id":"https://example.com/dApp.schema.json",
    "title": "Cardano dApp Claim",
    "description": "Registration of Cardano dApp claim.",
@@ -99,11 +94,17 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
    "properties":{
       "subject":{
          "type":"string",
-         "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, max 64 chars. Typically it is randomly generated hash by the dApp developer."
+               "minLength": 64,
+               "maxLength": 64,
+               "pattern":"^[0-9a-fA-F]{64}$",
+              "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, must be 64 chars. Typically it is randomly generated hash by the dApp developer."
       },
       "rootHash":{
          "type":"string",
-         "description":"blake2b hash of the metadata describing the dApp."
+               "minLength": 64,
+               "maxLength": 64,
+               "pattern":"^[0-9a-fA-F]{64}$",
+              "description":"blake2b-256 hash of the metadata describing the off-chain part of the dApp."
       },
       "metadata": {
         "type": "array",
@@ -113,29 +114,19 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
           "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
         }
       },
-      "version": {
-        "type": "string",
-        "description":"CIP version (semver).",
-        "pattern": "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[a-zA-Z\\d][-a-zA-Z.\\d]*)?(\\+[a-zA-Z\\d][-a-zA-Z.\\d]*)?"
-      },
       "type":{
          "type":"object",
          "description":"Describes the releases, if they are new or an updates. Also states the versioning of such releases.",
          "properties":{
             "action":{
               "type":"string",
-              "enum":["REGISTER", "DE_REGISTER_RELEASE", "DE_REGISTER_DAPP"],
-              "description":"Describes the action this certificate is claiming. I.e 'REGISTER', for a new dApp or an update; 'DE_REGISTER_RELEASE', for dApp release version de-listing request; `DE_REGISTER_DAPP`, for asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is expected."
-            },
-            "releaseNumber":{
-               "type":"string",
-               "description":"An official version of the release following semver format (major.minor.patch).",
-               "pattern": "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[a-zA-Z\\d][-a-zA-Z.\\d]*)?(\\+[a-zA-Z\\d][-a-zA-Z.\\d]*)?"
-            },
+              "enum":["REGISTER", "DE_REGISTER"],
+              "pattern": "^(REGISTER|DE_REGISTER)$",
+              "description":"Describes the action this certificate is claiming; i.e 'REGISTER', for a new dApp or an update, DE_REGISTER for asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is to be expected."
+            }
          },
          "required":[
-            "action",
-            "releaseNumber"
+            "action"
          ]
       },
       "signature":{
@@ -145,12 +136,16 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
             "r":{
                "type":"string",
                "description":"A hex representation of the R component of the signature.",
-               "pattern":"[0-9a-fA-F]+"
+               "minLength": 64,
+               "maxLength": 64,
+               "pattern":"^[0-9a-fA-F]{64}$"
             },
             "s":{
                "type":"string",
                "description":"A hex representation of the S component of the signature.",
-              "pattern":"[0-9a-fA-F]+"
+               "minLength": 64,
+               "maxLength": 64,
+               "pattern":"^[0-9a-fA-F]{64}$"
             },
             "algo":{
               "const":"Ed25519−EdDSA"
@@ -158,7 +153,9 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
             "pub":{
                "type":"string",
                "description":"A hex representation of the public key.",
-               "pattern":"[0-9a-fA-F]+"
+               "minLength": 64,
+               "maxLength": 64,
+               "pattern":"^[0-9a-fA-F]{64}$"
             }
          },
          "required":[
@@ -172,7 +169,6 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
    "required":[
       "subject",
       "rootHash",
-      "version",
       "type",
       "signature"
    ]
@@ -189,11 +185,13 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type":"object",
   "properties": {
     "subject": {
       "type":"string",
+      "maxLength": 64,
+      "pattern":"^[0-9a-fA-F]{64}$",
       "description": "A subject, it must match with subject stored on chain data. A UTF-8 encoded string, max 64 chars"
     },
     "projectName": {
@@ -281,6 +279,18 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
               "type": "string",
               "description": "An optional human readable release name, e.g. V1",
             },
+            "tags": {
+              "type":"array",
+              "items": {
+        	      "type": "string",
+		            "enum":["SECURITY_VULNERABILITY", "DESIGN_FLAW"],
+                "description": "dApp owners can mark an app with special tags to indicate, e.g. security vulnerability. Stores can mark releases in a special way depending in the context."
+              }
+            },
+            "comment": {
+              "type": "string",
+              "description": "A free text field to provide comment about this particular release, e.g. new features it brings, etc."
+            },
             "scripts": {
               "type": "array",
               "items": [
@@ -325,8 +335,8 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
             "purposes":{
               "type":"array",
               "items": {
-        	    "type": "string",
-		        "enum":["SPEND", "MINT"]
+        	      "type": "string",
+		            "enum":["SPEND", "MINT"]
               },
               "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages).",
             },
@@ -342,7 +352,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
                   "properties":{
                     "version":{
                       "type":"integer",
-                      "description":"Script version, monotically increasing.",
+                      "description":"Script version, monotonically increasing.",
                     },
                     "plutusVersion":{
                       "type":"integer",
@@ -517,34 +527,34 @@ some app that can attest validity and conformance to JSON schema - dApp Registra
 We made a decision to change the schema so that scripts and releases are no longer required. This could help to get initial registration from dApp developers faster and
 some stores simply do not require dApps to add their scripts in order to be listed.
 
-### Schema Version or CIP Version
-We want to take schema version further and actually attest the whole CIP version so we are introducing a top level field: version. Any changes to the document will require bumping the version. CIP version needs to be also
-propagated in the on-chain JSON itself.
+### Schema Version
+We discussed and analyzed idea of schema version and or even whole CIP version. It turns out that CIP is already versioned by CIP-??? where ??? is version number. During this CIP being in `PROPOSED` state we reserve our right to make small changes to the schema / document, after CIP becomes active, it will require a new CIP. This is the current process, which other CIPs are also following.
 
 ### Tags
 We briefly discussed tags and we will likely introduce tags in the near future. An array of tags to help stores / dApp developers categories where their dApp should show. This will complement `categories` field.
 
 ### DE_REGISTER
-We added DE_REGISTER_RELEASE and DE_REGISTER_DAPP in additon to already existing `REGISTER`. The idea is that once dApp devs do not want their dApp release version to be shown, they can now unlist a dApp release version or a whole dApp and stores should respect such a request.
+We added DE_REGISTER in additon to already existing `REGISTER`. The idea is that once dApp devs want to deprecate dApp they can now issue DE_REGISTER request.
 
 ### Type Field
 `Type` field can be `PLUTUS` or `NATIVE`, we made it optional and there are already two dApps at least on Cardano at the time of writing, which are only using NATIVE scripts. This optional field helps to differentiante between NATIVE script based and NON_NATIVE dApps.
 
+### Version Deprecation
+We discussed scenario what to do in case a dApp team wants to deprecate a particular version. Upon a few iteration we settled on doing this in off-chain section. It can be done via tags, e.g. tag: "SECURITY_VULNERABILITY. `Tags` is newly introduced field, available only in the off-chain JSON.
+
 ## Path to Active
 
+We will evaluate a months if we have not missed any details, collect feedback from dApp developers, stores. We reserve right to make small changes in this time, while the proposal
+is in PROPOSED status. Upon period (no longer than 6 months) from time of merging PR in `PROPOSED` status to the main / master branch, we will
+update the proposal to be in `ACTIVE` state.
+
 ### Acceptance Criteria
-
-Currently CIP is available for:
-- a review for dApp developers
-- there is an open point, whether this CIP should be the first to have semver schema version (requires agreement on schema versions in CIPs first)
-- `categories` field (enum) white list needs revision, current one is a proposal only
-
-Once those remaining items are done, CIP can be merged and activated. There were no major disagreements on the last CIP editor meeting apart from a few small TODO comments mentioned above.
-
-Last but not least, PR needs to be open and officially add 1667 metadata label to the registry here: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json
+- IOG and CF approval
+- Community representative approval (Santiago / TxPipe && Marcel / Eternl wallet)
+- PR to https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json
 
 ### Implementation Plan
-N/A
+- Reference implementation: https://github.com/Cardano-Fans/crfa-dapp-registration-and-certification-service (incubator)
 
 ## Copyright
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
