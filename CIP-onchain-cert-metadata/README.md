@@ -141,7 +141,7 @@ This schema can be translated into a JSON schema:
                 "action": {
                     "type": "string",
                     "enum": ["CERTIFY", "AUDIT"],
-                    "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certification Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard"
+                    "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certification Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard."
                 },
                 "certificationLevel": {
                     "type": "integer",
@@ -320,7 +320,7 @@ The schema can be translated into the following JSON schema:
     "certificationLevel": {
       "type": "integer",
       "enum": [0,1,2,3],
-      "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certfication Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard. Shall match the on-chain certificationLevel"
+      "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certfication Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard. Shall match the on-chain certificationLevel."
     },
     "certificateIssuer": {
       "type": "object",
@@ -390,7 +390,7 @@ The schema can be translated into the following JSON schema:
         },
         "reportHash": {
           "type": "string",
-          "description": "Hash of the report pointed by the links in reportURLs",
+          "description": "Hash of the report pointed by the links in reportURLs.",
           "pattern": "^[a-fA-F0-9]{64}$"
         }
       },
@@ -405,7 +405,7 @@ The schema can be translated into the following JSON schema:
     },
     "disclaimer": {
       "type": "string",
-      "description": "A string of the legal disclaimer from the Certificate Issuer"
+      "description": "A string of the legal disclaimer from the Certificate Issuer."
     },
     "scripts": {
       "type": "array",
@@ -437,21 +437,21 @@ The schema can be translated into the following JSON schema:
                     },
                     "progLang": {
                         "type": "string",
-                        "description": "Programming language used for this script"
+                        "description": "Programming language used for this script."
                     },
                     "repository": {
                         "type": "string",
-                        "description": "URL to the repository of the script"
+                        "description": "URL to the repository of the script."
                     }
                 }
             },
             "scriptHash": {
               "type": "string",
-              "description": "Script hash or script hash+staking key"
+              "description": "Script hash or script hash+staking key."
             },
             "contractAddress": {
               "type": "string",
-              "description": "Script on-chain address"
+              "description": "Script on-chain address.h"
             },
             "required": [
                 "scriptHash"
