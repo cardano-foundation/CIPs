@@ -31,7 +31,15 @@ This proposal describes how certification metadata can be designed for DApp regi
 
 ## Motivation: why is this CIP necessary?
 
-It is expected that evidence of various kinds of assurance of DApps is recorded in an immutable and verifiable way on the Cardano blockchain; these forms of assurance are: automated testing, including property-based testing (level 1), audit (level 2) and formal verification (level 3).
+It is expected that evidence of various kinds of assurance of DApps is recorded in an immutable and verifiable way on the Cardano blockchain.
+Three level of certications are thought of at the time of this CIP: level 1 to 3. They were presented at the following [link](https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/)
+
+Level 1 will be used for testing throug automated tooling. This level will be designed to give continual assurance that a smart contract verifies a range of properties. Level 1 covers the discovery of different types of bugs or issues. It should be thought as low cost and low effort if a DApp developer already has a sound testing practice in place. It will still bring a substantial level of assurance. It will be possible to be integrated into a continuous developement and testing practice so that, even nightly builds and releases should be certifiable.
+Level 2 will be used for in-depth audit. It will be done by third-party auditors, following [CIP-52](https://cips.cardano.org/cips/cip52/). It will be a more in-depth analysis and review of what can be achieved in level 1. 
+Level 3 will be used for formal verification. This level is more specialized and is used to bring a full mathematical assurance that critical aspects of the smart contract.
+
+Those level of certification and their standards are yet to be defined. The Cardano Certification Working Group will be one place where those standards are discussed. 
+In order to bootstrap the use of this CIP, an "AUDIT" type with a certification level of 0 has been added in the possible metadata. This will allow auditors and other "certification" issuers to publish on-chain information about the verification that was done on a particular DApp.
 
 The metadata should be discoverable by all certification stakeholders, including end-users, DApp developers, and ecosystem components, such as light wallets and DApp stores. Information should be indexable by certification issuer, DApp developer, DApp and DApp version.
 
@@ -56,8 +64,9 @@ End-user will interact with a DApp through a wallet and will be able to check th
 
 ### Certification issuers
 
-Certification issuers will broadcast on-chain certificates that will represent th level of certification reached and present evidence of the work done.
-Certification issuers will sign the certificate to attest that they have done the work and prevent certificate forgeries.
+Certification issuers will broadcast on-chain certificates that will represent the level of certification reached and present evidence of the work done.
+
+Certification issuers will sign the transaction with the certification certificate as metadata from a known wallet. They will attest that they have done the work and prevent certificate forgeries.
 
 ### Suggested validations
 
