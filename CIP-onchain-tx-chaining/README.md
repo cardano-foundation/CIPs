@@ -58,6 +58,8 @@ and this would modify the hash of the initial transaction.
 
 To break the circular dependecy we can modify the definition of a valid transaction input so that it doesn't require a transaciton hash if it is an output of a previus transaction.
 
+The only information needed for a chained input is the (previous) transaction that generated it and the output index.
+
 In particular the current `transacion_input` definition is
 
 ```cddl
@@ -66,13 +68,26 @@ transaction_input = [ transaction_id : $hash32
                     ]
 ```
 
-so we introduce a new `chainable_transaction_input` cddl definition
+We can define a new type of transaction input that here we call `chained_tx_input`
 
 ```cddl
-chainable_transaction_input = uint / transaction_input
+chained_tx_input = [ prev_tx_pointer: uint
+                   , index : uint
+                   ]
 ```
 
-so that if the transacion input is only an unsinged integer the hash is implied to be the one of the previous transaction (this being the chained transacion).
+so that we can introduce a new `chainable_transaction_input` cddl definition
+
+```cddl
+chainable_transaction_input = chained_tx_input / transaction_input
+```
+
+We can distinguish the two types of inputs based on the type of the first element of the array;
+
+if it is an unsigned integer it should be interpreted as a pointer to a previous transaction (`chained_tx_input` first element)
+(`0` being the transaction immediately before the current chained one)
+
+if otherwhise the first element of the array are bytes then it should be interpreted as the `transaciton_input` first element
 
 the final `transaction_body` cddl (taking in consideration the conaway modifications) would then become:
 
@@ -82,7 +97,11 @@ transaction_input = [ transaction_id : $hash32
                     , index : uint
                     ]
 
-chainable_transaction_input = uint / transaction_input
+chained_tx_input = [ prev_tx_pointer: uint
+                   , index : uint
+                   ]
+
+chainable_transaction_input = chained_tx_input / transaction_input
 
 transaction_body =
   { 0 : set<chainable_transaction_input>      ; This CIP; modified inputs field
