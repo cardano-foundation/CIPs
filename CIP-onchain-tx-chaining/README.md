@@ -58,7 +58,7 @@ and this would modify the hash of the initial transaction.
 
 To break the circular dependecy we can modify the definition of a valid transaction input so that it doesn't require a transaciton hash if it is an output of a previus transaction.
 
-The only information needed for a chained input is the (previous) transaction that generated it and the output index.
+The only information needed for a chained input is the which previous transaction generated it and the output index.
 
 In particular the current `transacion_input` definition is
 
@@ -92,15 +92,17 @@ if otherwhise the first element of the array are bytes then it should be interpr
 the final `transaction_body` cddl (taking in consideration the conaway modifications) would then become:
 
 ```cddl
-; up to babbage transaction_input
+; up to babbage only transaction_input
 transaction_input = [ transaction_id : $hash32
                     , index : uint
                     ]
 
+; new type of transaction input
 chained_tx_input = [ prev_tx_pointer: uint
                    , index : uint
                    ]
 
+; all possible transaction input types
 chainable_transaction_input = chained_tx_input / transaction_input
 
 transaction_body =
