@@ -111,15 +111,15 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
         "description": "An array of valid URLs pointing to off-chain CIP-72 compatible metadata document. If an individual URL is longer than 64 characters, it must be expressed as an array of strings (where each string may contain at most 64 characters).",
         "items": {
           "anyOf": [{
-            "type": "string",
+            "type": "string"
           }, {
             "type": "array",
             "items": {
-              "type": "string",
+              "type": "string"
             }
           }],
           "examples": ["https://raw.githubusercontent.com/org/repo/offchain.json", ["https://raw.githubusercontent.com/long-org-name", "long-repo-name/offchain.json"], "ipfs://QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp", ["ipfs://QmbQDvKJeo2NgGcGdnUiaAdADA", "UFibTzuKNKc0jA390alDAD5Uij7jzmK8ZccmWp"]]
-        },
+        }
       },
       "type":{
          "type":"object",
