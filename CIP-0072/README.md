@@ -52,13 +52,10 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
   "subject": "b37aabd81024c043f53a069c91e51a5b52e4ea399ae17ee1fe3cb9c44db707eb",
   "rootHash": "7abcda7de6d883e7570118c1ccc8ee2e911f2e628a41ab0685ffee15f39bba96",
   "metadata": [
-	  "https://cip26.foundation.app/properties/d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
-    "https://example.com/metadata.json",
-    "https://ipfs.blockfrost.io/api/v0/QmWmXcRqPzJn5yDh8cXqL1oYjHr4kZx1aYQ1w1yTfTJqNn",
+    "https://cip26.foundation.app/my_dapp.json"
   ],
   "type": {
-    "action": "REGISTER",
-    "releaseNumber": "1.0.0"
+    "action": "REGISTER"
   },
 	"signature": {
 		"r": "27159ce7d992c98fb04d5e9a59e43e75f77882b676fc6b2ccb8e952c2373da3e",
@@ -83,6 +80,42 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
 
 *`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "rootHash", "metadata","type"]. Please note that a signature should be generated of blake2b-256 hash as a byte array, not as a hex represented string(!).
 
+### On chain CDDL for registration / de-registration
+```
+string = bstr .size (1..64) ; tstr / string from 1 up to 64 chars only
+
+sig_256 = bstr .size (64..64) ; 256 bytes signature (256 / 64 = 4 bytes)
+
+transaction_metadata = {
+  "1667": on-chain_metadata
+}
+
+on-chain_metadata = {
+  "subject": string
+  , "rootHash": sig_256
+  , "metadata": [+ string] / [+ [+ string]]
+  , "type": registration / de-registration
+  , "signature": signature
+}
+
+registration = {
+    "action": "REGISTRATION"
+}
+
+de-registration = {
+    "action": "DE_REGISTRATION"
+}
+
+signature = {
+     "r": string
+   , "s": string
+   , "algo": text .regexp "Ed25519-EdDSA"
+   , "pub": string
+}
+```
+
+which can be expressed using JSON schema.
+
 ### dApp on-chain certificate JSON Schema
 ```json
 {
@@ -94,10 +127,10 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
    "properties":{
       "subject":{
          "type":"string",
-               "minLength": 64,
+               "minLength": 1,
                "maxLength": 64,
-               "pattern":"^[0-9a-fA-F]{64}$",
-              "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, must be 64 chars. Typically it is randomly generated hash by the dApp developer."
+               "pattern":"^[0-9a-fA-F]{1,64}$",
+              "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, must be max 64 chars. Typically it is randomly generated hash by the dApp developer."
       },
       "rootHash":{
          "type":"string",
@@ -111,11 +144,15 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
         "description": "An array of valid URLs pointing to off-chain CIP-72 compatible metadata document. If an individual URL is longer than 64 characters, it must be expressed as an array of strings (where each string may contain at most 64 characters).",
         "items": {
           "anyOf": [{
-            "type": "string"
-          }, {
+            "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }, {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
             }
           }],
           "examples": ["https://raw.githubusercontent.com/org/repo/offchain.json", ["https://raw.githubusercontent.com/long-org-name/", "long-repo-name/offchain.json"], "ipfs://QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp", ["ipfs://QmbQDvKJeo2NgGcGdnUiaAdADA", "UFibTzuKNKc0jA390alDAD5Uij7jzmK8ZccmWp"]]
@@ -123,7 +160,7 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
       },
       "type":{
          "type":"object",
-         "description":"Describes the releases, if they are new or an updates. Also states the versioning of such releases.",
+         "description":"Describes the releases, if they are new or an updates.",
          "properties":{
             "action":{
               "type":"string",
@@ -192,217 +229,215 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type":"object",
-  "properties": {
-    "subject": {
-      "type":"string",
-      "maxLength": 64,
-      "pattern":"^[0-9a-fA-F]{64}$",
-      "description": "A subject, it must match with subject stored on chain data. A UTF-8 encoded string, max 64 chars"
-    },
-    "projectName": {
-      "type":"string",
-      "description": "A project name, e.g. My dApp."
-    },
-    "link": {
-      "type":"string",
-      "description": "Website presenting a dApp.",
-      "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-    },      
-    "projectName": {
-      "type":"string",
-      "description": "A project name, e.g. My dApp."
-    },
-    "logo": {
-      "type":"string",
-      "description": "URL to the logo or the base64 encoded image."
-    },
-    "categories": {
-      "type":"array",
-      "items": {
-        "type": "string",
-        "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type":"object",
+    "properties": {
+      "subject": {
+        "type":"string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern":"^[0-9a-fA-F]{1,64}$",
+        "description": "A subject, it must match with subject stored on chain data. A UTF-8 encoded string, 1 - 64 chars."
       },
-      "description": "One or more categories. Category MUST be one of the following schema definition."
-    },
-    "social": {
-      "type":"object",
-      "properties": {
-        "website": {
-          "type":"string",
-          "description": "dApps website link.",
-          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-        },
-        "twitter": {
-          "type":"string",
-          "description": "An optional Twitter link.",
-          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-        },
-        "github": {
-          "type":"string",
-          "description": "An optional Github link.",
-          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-        },
-        "discord": {
-          "type":"string",
-          "description": "An optional Discord link.",
-          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-        },
+      "projectName": {
+        "type":"string",
+        "description": "A project name, e.g. My dApp."
       },
-      "required": ["website"]
-    },
-    "description": {
-      "type": "object",
-      "properties": {
-        "short": {
+      "link": {
+        "type":"string",
+        "description": "Website presenting a dApp.",
+        "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+      },      
+      "logo": {
+        "type":"string",
+        "description": "URL to the logo or the base64 encoded image."
+      },
+      "categories": {
+        "type":"array",
+        "items": {
           "type": "string",
-          "description": "Short dApp description (no less than 40 and no longer than 168 characters).",
-          "minLength": 40,
-          "maxLength": 168
+          "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
         },
-        "long": {
-          "type": "string",
-          "description": "An optional long dApp description (no less than 40 and no longer than 1008 characters).",
-          "minLength": 40,
-          "maxLength": 1008
-        }
+        "description": "One or more categories. Category MUST be one of the following schema definition."
       },
-      "required": [
-        "short"
-      ]
-    },
-    "releases": {
-      "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "releaseNumber": {
-              "type": "string",
-              "description": "Semver compatible release number (major.minor.patch), e.g. 1.2.3, where 1 is major, 2 is a minor and 3 is a patch.",
-            },
-            "releaseName": {
-              "type": "string",
-              "description": "An optional human readable release name, e.g. V1",
-            },
-            "tags": {
-              "type":"array",
-              "items": {
-        	      "type": "string",
-		            "enum":["SECURITY_VULNERABILITY", "DESIGN_FLAW"],
-                "description": "dApp owners can mark an app with special tags to indicate, e.g. security vulnerability. Stores can mark releases in a special way depending in the context."
+      "social": {
+        "type":"object",
+        "properties": {
+          "website": {
+            "type":"string",
+            "description": "dApps website link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          },
+          "twitter": {
+            "type":"string",
+            "description": "An optional Twitter link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          },
+          "github": {
+            "type":"string",
+            "description": "An optional Github link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          },
+          "discord": {
+            "type":"string",
+            "description": "An optional Discord link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          }
+        },
+        "required": ["website"]
+      },
+      "description": {
+        "type": "object",
+        "properties": {
+          "short": {
+            "type": "string",
+            "description": "Short dApp description (no less than 40 and no longer than 168 characters).",
+            "minLength": 40,
+            "maxLength": 168
+          },
+          "long": {
+            "type": "string",
+            "description": "An optional long dApp description (no less than 40 and no longer than 1008 characters).",
+            "minLength": 40,
+            "maxLength": 1008
+          }
+        },
+        "required": [
+          "short"
+        ]
+      },
+      "releases": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "releaseNumber": {
+                "type": "string",
+                "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\\+([0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*))?$",
+                "description": "Semver compatible release number (major.minor.patch), e.g. 1.2.3, where 1 is major, 2 is a minor and 3 is a patch."
+              },
+              "releaseName": {
+                "type": "string",
+                "description": "An optional human readable release name, e.g. V1"
+              },
+              "tags": {
+                "type":"array",
+                "items": {
+                    "type": "string",
+                    "enum":["SECURITY_VULNERABILITY", "DESIGN_FLAW"],
+                  "description": "dApp owners can mark an app with special tags to indicate, e.g. security vulnerability. Stores can mark releases in a special way depending in the context."
+                }
+              },
+              "comment": {
+                "type": "string",
+                "description": "A free text field to provide comment about this particular release, e.g. new features it brings, etc."
+              },
+              "scripts": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "version"
+                    ]
+                  }
+                ]
               }
             },
-            "comment": {
-              "type": "string",
-              "description": "A free text field to provide comment about this particular release, e.g. new features it brings, etc."
-            },
-            "scripts": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "version": {
-                      "type": "integer"
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "version"
-                  ]
-                }
-              ]
-            }
-          },
-          "required": [
-            "releaseNumber"
-          ]
-        }
-      ]
-    },
-    "scripts": {
-      "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties":{
-            "id": {
-              "type":"string",
-              "description": "Unique Script ID (across all scripts from this dApp).",
-            },
-            "name":{
-              "type":"string",
-              "description": "An optional script name usually related to it's function.",
-            },
-            "purposes":{
-              "type":"array",
-              "items": {
-        	      "type": "string",
-		            "enum":["SPEND", "MINT"]
+            "required": [
+              "releaseNumber"
+            ]
+          }
+        ]
+      },
+      "scripts": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties":{
+              "id": {
+                "type":"string",
+                "description": "Unique Script ID (across all scripts from this dApp)."
               },
-              "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages).",
+              "name":{
+                "type":"string",
+                "description": "An optional script name usually related to it's function."
+              },
+              "purposes":{
+                "type":"array",
+                "items": {
+                    "type": "string",
+                      "enum":["SPEND", "MINT"]
+                },
+                "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages)."
+              },
+              "type":{
+                "enum":["PLUTUS", "NATIVE"],
+                "description": "Script Type. PLUTUS refers to the typical PlutusV1 or PlutusV2 scripts, where as NATIVE means there has been no Plutus directly used by this is a native script."
+              },
+              "versions":{
+                "type":"array",
+                "items":[
+                  {
+                    "type":"object",
+                    "properties":{
+                      "version":{
+                        "type":"integer",
+                        "description":"Script version, monotonically increasing."
+                      },
+                      "plutusVersion":{
+                        "type":"integer",
+                        "enum":[1, 2]
+                      },
+                      "scriptHash":{
+                        "type":"string",
+                        "description":"Full on-chain script hash (hex).",
+                        "pattern":"[0-9a-fA-F]+"
+                      },
+                      "contractAddress": {
+                        "type":"string",
+                        "description":"An optional Bech32 contract address matching script's hash."
+                      }
+                    },
+                    "required": [
+                      "version",
+                      "plutusVersion",
+                      "scriptHash"
+                    ]
+                  }
+                ]
+              }
             },
-            "type":{
-              "enum":["PLUTUS", "NATIVE"],
-              "description": "Script Type. PLUTUS refers to the typical PlutusV1 or PlutusV2 scripts, where as NATIVE means there has been no Plutus directly used by this is a native script.",
-            },
-            "versions":{
-              "type":"array",
-              "items":[
-                {
-                  "type":"object",
-                  "properties":{
-                    "version":{
-                      "type":"integer",
-                      "description":"Script version, monotonically increasing.",
-                    },
-                    "plutusVersion":{
-                      "type":"integer",
-                      "enum":[1, 2],
-                    },
-                    "scriptHash":{
-                      "type":"string",
-                      "description":"Full on-chain script hash (hex).",
-                      "pattern":"[0-9a-fA-F]+"
-                    },
-                    "contractAddress": {
-                      "type":"string",
-                      "description":"An optional Bech32 contract address matching script's hash.",
-                    }
-                  },
-                  "required": [
-                    "version",
-                    "plutusVersion",
-                    "scriptHash"
-                  ]
-                }
-              ]
-            }
-          },
-          "required": [
-            "id",
-            "purposes",
-            "type",
-            "versions"
-          ]
-        }
-      ]
-    }
-  },
-  "required": [
-    "subject",
-    "projectName",
-    "link",
-    "social",
-    "categories",
-    "description"
-  ]
-}
+            "required": [
+              "id",
+              "purposes",
+              "type",
+              "versions"
+            ]
+          }
+        ]
+      }
+    },
+    "required": [
+      "subject",
+      "projectName",
+      "link",
+      "social",
+      "categories",
+      "description"
+    ]
+  }
 ```
 
 This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
@@ -547,17 +582,17 @@ We added DE_REGISTER in additon to already existing `REGISTER`. The idea is that
 `Type` field can be `PLUTUS` or `NATIVE`, we made it optional and there are already two dApps at least on Cardano at the time of writing, which are only using NATIVE scripts. This optional field helps to differentiante between NATIVE script based and NON_NATIVE dApps.
 
 ### Version Deprecation
-We discussed scenario what to do in case a dApp team wants to deprecate a particular version. Upon a few iteration we settled on doing this in off-chain section. It can be done via tags, e.g. tag: "SECURITY_VULNERABILITY. `Tags` is newly introduced field, available only in the off-chain JSON.
+We discussed scenario what to do in case a dApp team wants to deprecate a particular version. Upon a few iteration we settled on doing this in off-chain section. It can be done via tags, e.g. tag: "SECURITY_VULNERABILITY. `Tags` is newly introduced field, available only in the off-chain JSON. Changes to any versions will require on-chain re-registration
+since rootHash changes.
 
 ## Path to Active
-
-We will evaluate a months if we have not missed any details, collect feedback from dApp developers, stores. We reserve right to make small changes in this time, while the proposal
-is in PROPOSED status. Upon period (no longer than 6 months) from time of merging PR in `PROPOSED` status to the main / master branch, we will
+We will evaluate for a few months if we have not missed any details, collect feedback from dApp developers, stores. We reserve right to make small changes in this time, while the proposal
+is in `PROPOSED` status. After certain period (no longer than 6 months), from time of merging PR in `PROPOSED` status to the main / master branch, we will
 update the proposal to be in `ACTIVE` state.
 
 ### Acceptance Criteria
 - IOG and CF approval
-- Community representative approval (Santiago / TxPipe && Marcel / Eternl wallet)
+- Community representative approval (Santiago / TxPipe and Marcel / Eternl wallet)
 - PR to https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json
 
 ### Implementation Plan
