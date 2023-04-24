@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 89
 Title: Beacon Tokens & Distributed Dapps
 Category: Tools
 Status: Informational
