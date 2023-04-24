@@ -93,7 +93,7 @@ transaction_metadata = {
 on-chain_metadata = {
   "subject": string
   , "rootHash": sig_256
-  , "metadata": [+ string] / [+ [+ string]]
+  , "metadata": [+ string] / [+ string / [+ string]]
   , "type": registration / de-registration
   , "signature": signature
 }
