@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 4
 Title: Spending Script Redundant Executions
 Status: Open
 Category: Plutus
