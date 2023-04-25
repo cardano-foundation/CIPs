@@ -144,7 +144,7 @@ console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name"
 ### Implementation Plan
 Add this new standard to all relevant documentation and references for web3 developers.
 
-NMKR has supported this CIP with peer feedback, and in the future with a pilot implementation of the new standard.
+NMKR has supported this CIP with peer feedback, and in the future with a pilot implementation of this localization method.
 
 ## Copyright
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
