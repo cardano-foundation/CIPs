@@ -34,7 +34,8 @@ This specification involves multiple parties. We split this specification in thr
 
 ```
 +-----------+               +---------------+              +----------------+
-|  Wallet   |               |  DApp Server  |              |   Blockchain   |
+|  Wallet/  |               |  DApp Server  |              |   Blockchain   |
+|  Client   |               |               |              |                |
 +-----------+               +---------------+              +----------------+
       |                              |                               |
       |                              |                               |
