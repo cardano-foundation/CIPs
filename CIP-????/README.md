@@ -16,12 +16,11 @@ License: CC-BY-4.0
 
 ## Abstract
 
-The cardano wallets have the ability to sign arbitrary pieces of data as we can see in the [Message signing CIP-0008](../CIP-0008). All wallets implement the method ```api.signData(addr: Address, payload: Bytes): Promise<DataSignature>``` defined in [Cardano dApp-Wallet Web Bridge CIP-0030](../CIP-0030).
-
-An important use case for web3 sites is calling HTTP endpoints using authenticated requests signed by the private keys of the users' wallets. In this way, the servers can perform actions using onchain and offchain data. 
-
+The proposed Cardano Improvement Proposal (CIP) outlines a conventional structure for data payloads that are signed by wallets, which can be used by decentralized application (dApp) servers to authenticate user requests. By leveraging the Cardano blockchain as an identity provider, dApp servers can securely and trustlessly verify user identities without relying on centralized servers or third-party services. This CIP aims to provide a standard approach for implementing wallet signature authentication in dApps, improving the security and reliability of user interactions with decentralized systems.
 
 ## Motivation
+
+The cardano wallets have the ability to sign arbitrary piece of data as we can see in the [Message signing CIP-0008](/CIP-0008/README.md). All wallets implement the method ```api.signData(addr: Address, payload: Bytes): Promise<DataSignature>``` defined in [Cardano dApp-Wallet Web Bridge CIP-0030](/CIP-0030/README.md).
 
 dApps generate arbritary payloads as byte arrays. These payloads are signed and included in the protected headers of the signatures. The wallets are responsible for showing the payload data to the user, who will proceed to sign or reject the payload. It's a common practice to encode a string or a JSON string but there isn't any standard for the way to construct and to show this data.
 
@@ -31,7 +30,36 @@ Another problem with the current approach is how the wallets show the informatio
 
 ## Specification
 
-This specification involves multiple parties. We split this specification in three parts: server processing, payload structure and wallet specification.
+This specification involves multiple parties. We split this specification in three parts: dApp server processing, payload structure and wallet specification.
+
+```
++-----------+               +---------------+              +----------------+
+|  Wallet   |               |  DApp Server  |              |   Blockchain   |
++-----------+               +---------------+              +----------------+
+      |                              |                               |
+      |                              |                               |
+      | 1. Create payload            |                               |
+      |------------+                 |                               |
+      |            |                 |                               |
+      |<-----------+                 |                               |
+      |                              |                               |
+      | 2. Request signature         |                               |
+      |------------+                 |                               |
+      |            |                 |                               |
+      |<-----------+                 |                               |
+      |                              |                               |
+      | 4. Send signed payload       |                               |
+      |----------------------------->|                               |
+      |                              |                               |
+      |                              | 5. Verify signature           |   
+      |                              |------------+                  |
+      |                              |            |                  |
+      |                              |<-----------+                  |
+      |                              |                               |
+      |                              | 6. Check blockchain (optional)|
+      |                              |------------------------------>|
+      |                              |                               |
+```
 
 ### Requirement Levels 
 
@@ -43,9 +71,9 @@ The payload MUST be encoded as a JSON string. JSON strings are semi-structured d
 
 The content of the payload will be included in the protected header of the COSESign1 signature, hence the content effects directly the behavior and security of the system. The payload MUST have the following fields: 
 
-1. The field `url` MUST contain the full path to the endpoint, where the payload will be processed.
+1. The field `uri` MUST contain the full path to the endpoint, where the payload will be processed.
 
-2. Sometimes, the endpoint `url` field is not enough to determine its purpose. The user should understand perfectly the objective of the payload which he or she is signing. That's why the payload MUST contain an `action` field with a descriptive text containing the purpose of the payload. 
+2. Sometimes, the endpoint `uri` field is not enough to determine its purpose. The user should understand perfectly the objective of the payload which he or she is signing. That's why the payload MUST contain an `action` field with a descriptive text containing the purpose of the payload. 
 
 3. The payload MUST include a UNIX timestamp. The `timestamp` field is used as a nonce and a mark for the payload expiration. This field is very important in case the payload is compromised.
 
@@ -53,7 +81,7 @@ Additional fields MAY be included in the payload. Depending on the process, it c
 
 ```JSON
 {
-    "url": "http://example.com/signup",
+    "uri": "http://example.com/signup",
     "action": "Sign up",
     "timestamp": 1673261248,
     ["email": "email@example.com"] <- Optional
@@ -64,7 +92,7 @@ Additional fields MAY be included in the payload. Depending on the process, it c
 
 The wallets can improve the overall security implementing the following guidelines. We RECOMMEND to show in a structured way the payload information for sake of clarity. This information should be well understood by the users before the payload is signed.  
 
-The `url` field provides information about the hostname of the application. This hostname MUST be included in the wallet allow list. If a known domain A tries to sign a payload for an unknown domain B, you will be prompted with permission popup making more obvious the cross-domain interaction. When possible, the wallet SHOULD warn the user if a payload is for a different domain.
+The `uri` field provides information about the hostname of the application. This hostname MUST be included in the wallet allow list. If a known domain A tries to sign a payload for an unknown domain B, you will be prompted with permission popup making more obvious the cross-domain interaction. When possible, the wallet SHOULD warn the user if a payload is for a different domain.
 
 The wallet SHOULD update the `timestamp` field to the current time just before the signature. This field ideally should match the moment just before the signature such that the server receives fresh payload. 
 
@@ -72,7 +100,7 @@ The wallet SHOULD update the `timestamp` field to the current time just before t
 
 The server has ultimate responsibility of processing correctly the requests. We use the content to validate the payload. The request will be processed with the following steps:
 
-1. The server MUST check the action and the endpoint included in the request. Each route to an endpoint MUST have an associated action and a URL. The first step is to check that they match with the parameterized action.
+1. The server MUST check the action and the endpoint included in the request. Each route to an endpoint MUST have an associated action and a URI. The first step is to check that they match with the parameterized action.
 
 2. The server MUST check the expiration of the payload. The expiration SHOULD be enough to give time to the user to introduce the wallet password but it SHOULD NOT be too long, we RECOMMEND not more than 5 minutes.
 
@@ -84,7 +112,7 @@ Additionally the server COULD extract the payload content and pass it through th
 
 This specification provides the general guidelines and necessary recommendations for performing secure authenticated web3 requests in the Cardano ecosystem. It covers the two main desired characteristics for a secure payload: It must expire and it must be non-static.
 
-Another important aspect for security is how wallets process the payload. They can improve the security using the data inside the payload to warn the users about possible malicious interactions. This specification emphasizes the importance of informing users clearly about the purpose of the payloads and how wallets can use the URL field to apply allow-lists and/or cross-domain policies.
+Another important aspect for security is how wallets process the payload. They can improve the security using the data inside the payload to warn the users about possible malicious interactions. This specification emphasizes the importance of informing users clearly about the purpose of the payloads and how wallets can use the URI field to apply allow-lists and/or cross-domain policies.
 
 Finally, it establishes the requirements and recommendations for server side processing. The server must also ensure the validity of the signature and the payload, as well as of its purpose in order to accomplish the authentication. 
 
@@ -103,7 +131,7 @@ Finally, it establishes the requirements and recommendations for server side pro
     1. It MUST detect when the payload is formatted using this specification.
     2. The information contained in the payload MUST be parsed and formatted in the signing pop-up.
     3. The wallet SHOULD update the timestamp just before the payload is signed.
-    4. The wallet MUST detect if the URL is in the allow list.
+    4. The wallet MUST detect if the URI is in the allow list.
     5. The wallet SHOULD warn the user against cross-domain requests.
 - [ ] A detailed documentation about web3 standards should be published. This documentation will include this standard and further best practices for web3 technologies.
 
