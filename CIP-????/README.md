@@ -111,12 +111,11 @@ Additionally the server COULD extract the payload content and pass it through th
 
 ## Rationale: how does this CIP achieve its goals?
 
-This specification provides the general guidelines and necessary recommendations for performing secure authenticated web3 requests in the Cardano ecosystem. It covers the two main desired characteristics for a secure payload: It must expire and it must be non-static.
+This specification provides the general guidelines and necessary recommendations for performing secure authenticated web3 requests in the Cardano ecosystem. It covers the two main desired characteristics for a secure payload: It must expire and it must be non-static. Moreover, the signature method proposed in this CIP does not require users to spend funds in a transaction, which further lowers the cost and barriers to entry for users.
 
-Another important aspect for security is how wallets process the payload. They can improve the security using the data inside the payload to warn the users about possible malicious interactions. This specification emphasizes the importance of informing users clearly about the purpose of the payloads and how wallets can use the URI field to apply allow-lists and/or cross-domain policies.
+Another important aspect for security is how wallets process the payload. They can improve the security using the data inside the payload to warn the users about possible malicious interactions. This specification emphasizes the importance of informing users clearly about the purpose of the payloads and how wallets can use the URI field to apply allow-lists and/or cross-domain policies. It establishes also the requirements and recommendations for server side processing. The server must also ensure the validity of the signature and the payload, as well as of its purpose in order to accomplish the authentication. 
 
-Finally, it establishes the requirements and recommendations for server side processing. The server must also ensure the validity of the signature and the payload, as well as of its purpose in order to accomplish the authentication. 
-
+In addition to the aforementioned aspects, this CIP also aims to promote decentralization and enhance security and privacy by enabling users to sign and verify transactions without relying on external servers or third parties. By allowing users to create and sign their own payloads, this specification reduces the dependency on centralized authorities and enhances the security and privacy of the transactions.
 
 ### Reference implementation
 
