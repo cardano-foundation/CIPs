@@ -78,14 +78,18 @@ Certification issuers will sign the transaction with the certification certifica
 The on-chain metadata should follow the following CDDL schema:
 
 ```cddl
+string = bstr .size (1..64) ; tstr / string from 1 up to 64 chars only
+
+sig_256 = bstr .size (64..64) ; 256 bytes signature (256 / 64 = 4 bytes)
+
 transaction_metadata = {
   "1304": on-chain_metadata
 }
 
 on-chain_metadata = {
-      "subject": tstr .size (1..64)
-    , "rootHash": tstr .regexp "[0-9a-fA-F]{64}" ; hash of the off-chain metadata pointed by the links in metadata
-    , "metadata": [+URL]
+      "subject": string
+    , "rootHash": sig_256
+    , "metadata": [+ string] / [+ [+ string]]
     , "schemaVersion": uint
     , "type": certify / audit
 }
@@ -93,16 +97,14 @@ on-chain_metadata = {
 certify = {
       "action": "CERTIFY" 
     , "certificationLevel": 1 / 2 / 3 
-    , "certificateIssuer": tstr
+    , "certificateIssuer": string
 }
 
 audit = {
       "action": "AUDIT" 
     , "certificationLevel": 0 
-    , "certificateIssuer": tstr
+    , "certificateIssuer": string
 }
-
-URL = tstr ; .regexp ""
 ```
 
 This schema can be translated into a JSON schema:
@@ -245,63 +247,7 @@ The Dapp Certification certificate is complemented by off-chain metadata that ca
 - `scriptHash`, a string, is the script hash or script hash+staking key
 - `contractAddress`, a string, the script address
 
-The off-chain metadata shall follow the following CDDL schema:
-
-```
-off-chain_metadata = {
-      "subject": tstr .size (1..64)
-    , "schemaVersion": uint
-    , "certificationLevel": 0 / 1 / 2 / 3
-    , "certificateIssuer": certificateIssuerType
-    , "report": reportType
-    , "summary": tstr
-    , "disclaimer": tstr
-    , scripts: [+scriptType]
-}
-
-certificateIssuerType = {
-      "name": tstr
-    , * "logo": URL
-    , "social": socialType
-}
-
-socialType = {
-      "contact": email 
-    , * "twitter": twitterHandle
-    , * "github": githubRepo
-    , "website": URL
-}
-
-reportType = {
-      "reportURLs": [+URL]
-    , "reportHash": tstr .regexp "[0-9a-fA-F]{64}"
-}
-
-scriptType = {
-      * "smartContractInfo": smartContractInfoType
-    , "scriptHash": tstr .regexp "[0-9a-fA-F]{56}"
-    , * "contractAddress": cardanoAddress
-}
-
-smartContractInfoType = {
-      * "era": tstr
-    , * "compiler": tstr
-    , * "compilerVersion": tstr
-    , * "optimizer": tstr
-    , * "optimizerVersion": tstr
-    , * "progLang": tstr
-    , * "repository": URL
-}
-
-URL = tstr ; .regexp "URL regexp"
-twitterHandle = tstr .size(1..15)
-githubRepo = tstr ; .regexp "githubRepo"
-email = tstr ; .regexp "email address"
-cardanoAddress = tstr .regexp "addr1[0-9a-z]{53}" 
-```
-
-
-The schema can be translated into the following JSON schema:
+The off-chain metadata shall follow the following JSON schema:
 
 ```json
 {
