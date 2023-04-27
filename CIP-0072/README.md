@@ -256,7 +256,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
         "type":"array",
         "items": {
           "type": "string",
-          "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
+          "enum":["Games", "Development", "DeFi", "NFT", "Security", "Marketplace", "Education", "Identity", "Other"]
         },
         "description": "One or more categories. Category MUST be one of the following schema definition."
       },
