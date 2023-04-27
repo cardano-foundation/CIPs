@@ -515,7 +515,7 @@ whether those have been certified / explicitly mentioned in the audit.
 This one is rather obvious but for the sake of completeness worth documenting. We analyzed how much we should put on-chain vs off-chain and we quickly reached the conclusion that it is better to keep small amount of data on-chain and larger chunk off-chain for which is what exactly CIP-26 is meant for.
 
 ### CIP-26 as *ONE* of Storage Layers
-We believe that CIP-26 is geared towards storing this type of off-chain metadata format but we don't want by any means to stipulate / police this form of storage. In fact it is possible to use offchain metadata storage alternatives such as direct http hosting / REST API/ IPFS / git, etc.
+We believe that CIP-26 is geared towards storing this type of off-chain metadata format but we don't want by any means to stipulate / police this form of storage. In fact it is possible to use offchain metadata storage alternatives such as CIP-26 compatible server / direct http(s) hosting / IPFS, etc.
 
 ### How to Find Off-Chain Data?
 We went back and forth whether we should actually store link (links) to off-chain metadata, eventually we settled on a solution that this is required
@@ -537,7 +537,7 @@ Smart contracts are ownerless, it has been debated that there could be multiple 
 The standard doesn't prevent anyone from making a claim, so it's up to the different operator to their diligence work and make their own choices of whom they trust. The signature should give the most confidence as anyone can collect known public keys from known development companies. Future CIP revisions can include DID's and Verifiable Credentials to tackle this problem in a more elegant way.
 
 ### DIDs
-Since DIDs / Verifiable Credetials are not yet widely used in Cardano ecosystem, usage of them in this initial CIP version has been descoped.
+Since DIDs / Verifiable Credetials are not yet widely used in Cardano ecosystem, usage of them in this initial CIP version has been de-scoped.
 
 ### Categories
 `Categories` is a predefined enum with values defined in the CIP / schema, it is *NOT* a free text field, rationale for this is that dApp developers will have no idea what ontology / classification to use, which will likely result in many duplicates of the same thing.
@@ -548,7 +548,7 @@ languages on Cardano being worked on where they already allow one validator to b
 
 ### Parametrised Scripts
 On Cardano, there are parametrised scripts, meaning that before compilation takes place, it is possible to pass certain parameters instead of using `Datum`.
-The consequence of this will be that as we pass different parameters, script hash will be changing. This is especially troublesome for things like certifications / audits but also dApp registration. This topic is being debated as part of CIP: https://github.com/cardano-foundation/CIPs/pull/385, however, it doesn't seem that there has been conclusion how to tackle this problem. For the moment, a new script hash (despite changing only a parameter) requires a re REGISTRATION to the existing dApp.
+The consequence of this will be that as we pass different parameters, script hash will be changing. This is especially troublesome for things like certifications / audits but also dApp registration. This topic is being debated as part of CIP: https://github.com/cardano-foundation/CIPs/pull/385, however, it doesn't seem that there has been conclusion how to tackle this problem. For the moment, a new script hash (despite changing only a parameter) requires a re REGISTRATION to the existing dApp with a requirement to add new version(s) in the dApp's off-chain metadata.
 
 ### Often Changing Scripts
 There are cases on Cardano main-net that script hashes are changing every day, most probably due to parameterised scripts. It is responsibility of the developers to issue an `REGISTRATION` command and provide on-chain and off-chain metadata following the change, for scripts that are changing daily / hourly it is envisaged that this process be automated by a dApp developer.
@@ -566,14 +566,13 @@ using Datums requires a smart contract and we want to keep this solution as acce
 some app that can attest validity and conformance to JSON schema - dApp Registration / Update MUST never be done that does not conform to the schema.
 
 ### Scripts / Releases Fields Are Not Required
-We made a decision to change the schema so that scripts and releases are no longer required. This could help to get initial registration from dApp developers faster and
-some stores simply do not require dApps to add their scripts in order to be listed.
+We made a decision to change the schema so that scripts and releases are no longer required. This could help to get initial registration from dApp developers faster and some stores simply do not require dApps to add their scripts in order to be listed.
 
 ### Schema Version
 We discussed and analyzed idea of schema version and or even whole CIP version. It turns out that CIP is already versioned by CIP-??? where ??? is version number. During this CIP being in `PROPOSED` state we reserve our right to make small changes to the schema / document, after CIP becomes active, it will require a new CIP. This is the current process, which other CIPs are also following.
 
 ### Tags
-We briefly discussed tags and we will likely introduce tags in the near future. An array of tags to help stores / dApp developers categories where their dApp should show. This will complement `categories` field.
+We briefly discussed tags and we will likely introduce tags in the future. An array of tags to help stores / dApp developers categories where their dApp should show. This will complement `categories` field.
 
 ### DE_REGISTER
 We added DE_REGISTER in additon to already existing `REGISTER`. The idea is that once dApp devs want to deprecate dApp they can now issue DE_REGISTER request.
