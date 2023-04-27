@@ -4,10 +4,10 @@ Title: Cardano dApp-Wallet Web Bridge Governance Extension
 Category: Wallets
 Status: Proposed
 Authors:
-  - Ryan Williams <ryan.williams@iohk.io>
+    - Ryan Williams <ryan.williams@iohk.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/509
 Created: 2022-02-24
 License: CC-BY-4.0
 ---
@@ -21,7 +21,7 @@ that needs to be injected into web applications.
 These definitions extend
 [CIP-30 | Cardano dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)
 to provide support for
-[CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/pull/380)
+[CIP-1694? | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/pull/380)
 focussed web-based stacks. Here we aim to support the requirements of both Ada
 holders' and DReps' interactions with such web-based stacks.
 
