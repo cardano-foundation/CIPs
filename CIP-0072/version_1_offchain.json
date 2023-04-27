@@ -91,13 +91,9 @@
                 "type": "string",
                 "description": "An optional human readable release name, e.g. V1"
               },
-              "tags": {
-                "type":"array",
-                "items": {
-                    "type": "string",
-                    "enum":["SECURITY_VULNERABILITY", "DESIGN_FLAW"],
-                  "description": "dApp owners can mark an app with special tags to indicate, e.g. security vulnerability. Stores can mark releases in a special way depending in the context."
-                }
+              "security_vulnerability": {
+                "type": "boolean",
+                "description": "Indicates that a given version has a security vulnerability."
               },
               "comment": {
                 "type": "string",

@@ -28,7 +28,7 @@ Also, having this formalisation facilitates any actor in the ecosystem to index 
 ### **Definitions**
 - **anchor** - A hash written on-chain (rootHash) that can be used to verify the integrity (by way of a cryptographic hash) of the data that is found off-chain.
 - **dApp** - A decentralised application that is described by the combination of metadata, certificate and a set of used scripts.
-- **metadata claim** - Generically any attempt to map off-chain metadata to an on-chain subject. This specification looks at dApp specific metadata claims.
+- **metadata claim** - Generically any attempt to map off-chain metadata to an on-chain subject. This specification looks at dApp specific metadata claims. Caution: it is highly recommended that dApp developers provide links to a specific snapshot (version) without removing all previous snapshots / version links. Some stores may choose not to show a dApp if all off-chain historical versions are not available but instead only latest snapshot. 
 - **client** - Any ecosystem participant which follows on-chain data to consume metadata claims (i.e. dApp stores, wallets, auditors, block explorers, etc.).
 - **dApp Store** - A dApp aggregator application which follows on-chain data looking for and verifying dApp metadata claims, serving their users linked dApp metadata.
 - **publishers** - Entities which publish metadata claims on-chain, in the case of dApps the publishers are likely the dApp developer(s). 
@@ -52,10 +52,11 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
   "subject": "b37aabd81024c043f53a069c91e51a5b52e4ea399ae17ee1fe3cb9c44db707eb",
   "rootHash": "7abcda7de6d883e7570118c1ccc8ee2e911f2e628a41ab0685ffee15f39bba96",
   "metadata": [
-    "https://cip26.foundation.app/my_dapp.json"
+    "https://cip26.foundation.app/my_dapp_7abcda.json"
   ],
   "type": {
-    "action": "REGISTER"
+    "action": "REGISTER",
+    "comment": "New release adding zapping support."
   },
 	"signature": {
 		"r": "27159ce7d992c98fb04d5e9a59e43e75f77882b676fc6b2ccb8e952c2373da3e",
@@ -87,30 +88,32 @@ string = bstr .size (1..64) ; tstr / string from 1 up to 64 chars only
 sig_256 = bstr .size (64..64) ; 256 bytes signature (256 / 64 = 4 bytes)
 
 transaction_metadata = {
-  "1667": on-chain_metadata
+  1667: on-chain_metadata
 }
 
 on-chain_metadata = {
-  "subject": string
-  , "rootHash": sig_256
-  , "metadata": [+ string] / [+ string / [+ string]]
-  , "type": registration / de-registration
-  , "signature": signature
+  subject: string,
+  rootHash: sig_256,
+  metadata: [+ string] / [+ string / [+ string]],
+  type: registration / de-registration,
+  signature: signature,
 }
 
 registration = {
-    "action": "REGISTRATION"
+  action: "REGISTRATION",
+  ? comment: string, ; max 64 chars
 }
 
 de-registration = {
-    "action": "DE_REGISTRATION"
+  action: "DE_REGISTRATION",
+  ? comment: string, ; max 64 chars
 }
 
 signature = {
-     "r": string
-   , "s": string
-   , "algo": text .regexp "Ed25519-EdDSA"
-   , "pub": string
+  r: string,
+  s: string,
+  algo: text .regexp "Ed25519-EdDSA",
+  pub: string,
 }
 ```
 
@@ -119,105 +122,111 @@ which can be expressed using JSON schema.
 ### dApp on-chain certificate JSON Schema
 ```json
 {
-   "$schema":"https://json-schema.org/draft/2020-12/schema",
-   "$id":"https://example.com/dApp.schema.json",
-   "title": "Cardano dApp Claim",
-   "description": "Registration of Cardano dApp claim.",
-   "type":"object",
-   "properties":{
-      "subject":{
-         "type":"string",
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
+    "$id":"https://example.com/dApp.schema.json",
+    "title": "Cardano dApp Claim",
+    "description": "Registration of Cardano dApp claim.",
+    "type":"object",
+    "properties":{
+       "subject":{
+          "type":"string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern":"^[0-9a-fA-F]{1,64}$",
+                "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, must be max 64 chars. Typically it is randomly generated hash by the dApp developer."
+       },
+       "rootHash":{
+          "type":"string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern":"^[0-9a-fA-F]{64}$",
+               "description":"blake2b-256 hash of the metadata describing the off-chain part of the dApp."
+       },
+       "metadata": {
+         "type": "array",
+         "description": "An array of valid URLs pointing to off-chain CIP-72 compatible metadata document. If an individual URL is longer than 64 characters, it must be expressed as an array of strings (where each string may contain at most 64 characters).",
+         "items": {
+           "anyOf": [{
+             "type": "string",
                "minLength": 1,
-               "maxLength": 64,
-               "pattern":"^[0-9a-fA-F]{1,64}$",
-              "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, must be max 64 chars. Typically it is randomly generated hash by the dApp developer."
-      },
-      "rootHash":{
-         "type":"string",
-               "minLength": 64,
-               "maxLength": 64,
-               "pattern":"^[0-9a-fA-F]{64}$",
-              "description":"blake2b-256 hash of the metadata describing the off-chain part of the dApp."
-      },
-      "metadata": {
-        "type": "array",
-        "description": "An array of valid URLs pointing to off-chain CIP-72 compatible metadata document. If an individual URL is longer than 64 characters, it must be expressed as an array of strings (where each string may contain at most 64 characters).",
-        "items": {
-          "anyOf": [{
-            "type": "string",
-              "minLength": 1,
-              "maxLength": 64
-            }, {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 64
-            }
-          }],
-          "examples": ["https://raw.githubusercontent.com/org/repo/offchain.json", ["https://raw.githubusercontent.com/long-org-name/", "long-repo-name/offchain.json"], "ipfs://QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp", ["ipfs://QmbQDvKJeo2NgGcGdnUiaAdADA", "UFibTzuKNKc0jA390alDAD5Uij7jzmK8ZccmWp"]]
-        }
-      },
-      "type":{
-         "type":"object",
-         "description":"Describes the releases, if they are new or an updates.",
-         "properties":{
-            "action":{
-              "type":"string",
-              "enum":["REGISTER", "DE_REGISTER"],
-              "pattern": "^(REGISTER|DE_REGISTER)$",
-              "description":"Describes the action this certificate is claiming; i.e 'REGISTER', for a new dApp or an update, DE_REGISTER for asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is to be expected."
-            }
-         },
-         "required":[
-            "action"
-         ]
-      },
-      "signature":{
-         "description":"Signature of the blake2b-256 hash of whole canonical (RFC 8785) JSON document (except signature property).",
-         "type":"object",
-         "properties":{
-            "r":{
+               "maxLength": 64
+             }, {
+             "type": "array",
+             "items": {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 64
+             }
+           }],
+           "examples": ["https://raw.githubusercontent.com/org/repo/offchain.json", ["https://raw.githubusercontent.com/long-org-name/", "long-repo-name/offchain.json"], "ipfs://QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp", ["ipfs://QmbQDvKJeo2NgGcGdnUiaAdADA", "UFibTzuKNKc0jA390alDAD5Uij7jzmK8ZccmWp"]]
+         }
+       },
+       "type":{
+          "type":"object",
+          "description":"Describes the releases, if they are new or an updates.",
+          "properties":{
+             "action":{
                "type":"string",
-               "description":"A hex representation of the R component of the signature.",
-               "minLength": 64,
-               "maxLength": 64,
-               "pattern":"^[0-9a-fA-F]{64}$"
-            },
-            "s":{
-               "type":"string",
-               "description":"A hex representation of the S component of the signature.",
-               "minLength": 64,
-               "maxLength": 64,
-               "pattern":"^[0-9a-fA-F]{64}$"
-            },
-            "algo":{
-              "const":"Ed25519−EdDSA"
-            },
-            "pub":{
-               "type":"string",
-               "description":"A hex representation of the public key.",
-               "minLength": 64,
-               "maxLength": 64,
-               "pattern":"^[0-9a-fA-F]{64}$"
-            }
-         },
-         "required":[
-            "r",
-            "s",
-            "algo",
-            "pub"
-         ]
-      }
-   },
-   "required":[
-      "subject",
-      "rootHash",
-      "type",
-      "signature"
-   ]
-}
-```
+               "enum":["REGISTER", "DE_REGISTER"],
+               "pattern": "^(REGISTER|DE_REGISTER)$",
+               "description":"Describes the action this certificate is claiming; i.e 'REGISTER', for a new dApp or an update, DE_REGISTER for asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is to be expected."
+             },
+             "comment": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "A free text field to provide details about this particular changes (64 chars limited)."
+             }
+          },
+          "required":[
+             "action"
+          ]
+       },
+       "signature":{
+          "description":"Signature of the blake2b-256 hash of whole canonical (RFC 8785) JSON document (except signature property).",
+          "type":"object",
+          "properties":{
+             "r":{
+                "type":"string",
+                "description":"A hex representation of the R component of the signature.",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern":"^[0-9a-fA-F]{64}$"
+             },
+             "s":{
+                "type":"string",
+                "description":"A hex representation of the S component of the signature.",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern":"^[0-9a-fA-F]{64}$"
+             },
+             "algo":{
+               "const":"Ed25519-EdDSA"
+             },
+             "pub":{
+                "type":"string",
+                "description":"A hex representation of the public key.",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern":"^[0-9a-fA-F]{64}$"
+             }
+          },
+          "required":[
+             "r",
+             "s",
+             "algo",
+             "pub"
+          ]
+       }
+    },
+    "required":[
+       "subject",
+       "rootHash",
+       "type",
+       "signature"
+    ]
+ }
+ ```
 
 ### Metadata Label
 When submitting the transaction metadata pick the following value for `transaction_metadatum_label`:
@@ -256,7 +265,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
         "type":"array",
         "items": {
           "type": "string",
-          "enum":["Games", "Development", "DeFi", "NFT", "Security", "Marketplace", "Education", "Identity", "Other"]
+          "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
         },
         "description": "One or more categories. Category MUST be one of the following schema definition."
       },
@@ -315,19 +324,15 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
               "releaseNumber": {
                 "type": "string",
                 "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\\+([0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*))?$",
-                "description": "Semver compatible release number (major.minor.patch), e.g. 1.2.3, where 1 is major, 2 is a minor and 3 is a patch."
+                "description": "Semver compatible release number (major.minor.patch) or (major.minor.patch-some_text) e.g. 1.2.3 or 1.1.1-alpha"
               },
               "releaseName": {
                 "type": "string",
                 "description": "An optional human readable release name, e.g. V1"
               },
-              "tags": {
-                "type":"array",
-                "items": {
-                    "type": "string",
-                    "enum":["SECURITY_VULNERABILITY", "DESIGN_FLAW"],
-                  "description": "dApp owners can mark an app with special tags to indicate, e.g. security vulnerability. Stores can mark releases in a special way depending in the context."
-                }
+              "security_vulnerability": {
+                "type": "boolean",
+                "description": "Indicates that a given version has a security vulnerability."
               },
               "comment": {
                 "type": "string",
@@ -438,7 +443,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
       "description"
     ]
   }
-```
+  ```
 
 This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
 
@@ -581,8 +586,15 @@ We added DE_REGISTER in additon to already existing `REGISTER`. The idea is that
 `Type` field can be `PLUTUS` or `NATIVE`, we made it optional and there are already two dApps at least on Cardano at the time of writing, which are only using NATIVE scripts. This optional field helps to differentiante between NATIVE script based and NON_NATIVE dApps.
 
 ### Version Deprecation
-We discussed scenario what to do in case a dApp team wants to deprecate a particular version. Upon a few iteration we settled on doing this in off-chain section. It can be done via tags, e.g. tag: "SECURITY_VULNERABILITY. `Tags` is newly introduced field, available only in the off-chain JSON. Changes to any versions will require on-chain re-registration
-since rootHash changes.
+We discussed scenario what to do in case a dApp team wants to deprecate a particular version. Upon a few iteration we settled on doing this in off-chain section.
+
+### Version Security Vulnerability Flagging
+It is not uncommon to see a dApp release a version and then release a fix in the new version and flag the previous version
+as having security vulnerability. We are intoducing an optional field in the offchain json on the release level: `security_vulnerability": true.
+
+### Comment Field (on-chain JSON)
+We are introducing a field in the on-chain JSON only, which allows dApp development teams to provide a free text field
+comment about changes they are making in a given (re-)registration request.
 
 ## Path to Active
 We will evaluate for a few months if we have not missed any details, collect feedback from dApp developers, stores. We reserve right to make small changes in this time, while the proposal
