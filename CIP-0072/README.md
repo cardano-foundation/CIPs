@@ -52,7 +52,7 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
   "subject": "b37aabd81024c043f53a069c91e51a5b52e4ea399ae17ee1fe3cb9c44db707eb",
   "rootHash": "7abcda7de6d883e7570118c1ccc8ee2e911f2e628a41ab0685ffee15f39bba96",
   "metadata": [
-    "https://cip26.foundation.app/my_dapp_7abcda.json"
+    "https://foundation.app/my_dapp_7abcda.json"
   ],
   "type": {
     "action": "REGISTER",
@@ -100,13 +100,13 @@ on-chain_metadata = {
 }
 
 registration = {
-  action: "REGISTRATION",
-  ? comment: string, ; max 64 chars
+  action: "REGISTER",
+  ? comment: string,
 }
 
 de-registration = {
-  action: "DE_REGISTRATION",
-  ? comment: string, ; max 64 chars
+  action: "DE_REGISTER",
+  ? comment: string,
 }
 
 signature = {
@@ -168,7 +168,6 @@ which can be expressed using JSON schema.
              "action":{
                "type":"string",
                "enum":["REGISTER", "DE_REGISTER"],
-               "pattern": "^(REGISTER|DE_REGISTER)$",
                "description":"Describes the action this certificate is claiming; i.e 'REGISTER', for a new dApp or an update, DE_REGISTER for asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is to be expected."
              },
              "comment": {
@@ -590,7 +589,7 @@ We discussed scenario what to do in case a dApp team wants to deprecate a partic
 
 ### Version Security Vulnerability Flagging
 It is not uncommon to see a dApp release a version and then release a fix in the new version and flag the previous version
-as having security vulnerability. We are intoducing an optional field in the offchain json on the release level: `security_vulnerability": true.
+as having security vulnerability. We are intoducing an optional field in the offchain json on the release level: `securityVulnerability": true.
 
 ### Comment Field (on-chain JSON)
 We are introducing a field in the on-chain JSON only, which allows dApp development teams to provide a free text field

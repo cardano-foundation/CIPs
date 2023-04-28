@@ -45,7 +45,6 @@
              "action":{
                "type":"string",
                "enum":["REGISTER", "DE_REGISTER"],
-               "pattern": "^(REGISTER|DE_REGISTER)$",
                "description":"Describes the action this certificate is claiming; i.e 'REGISTER', for a new dApp or an update, DE_REGISTER for asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is to be expected."
              },
              "comment": {
