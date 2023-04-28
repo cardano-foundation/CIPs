@@ -8,6 +8,7 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/509
+    - https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
 Created: 2022-02-24
 License: CC-BY-4.0
 ---
@@ -26,7 +27,7 @@ focussed web-based stacks. Here we aim to support the requirements of both Ada
 holders' and DReps' interactions with such web-based stacks.
 
 > **Note** This proposal assumes knowledge of the ledger governance model as outlined within
-> [CIP-1694](https://github.com/cardano-foundation/CIPs/pull/380).
+> [CIP-1694?](https://github.com/cardano-foundation/CIPs/pull/380).
 
 ## Motivation: why is this CIP necessary?
 
@@ -154,14 +155,12 @@ on-chain entities.
 
 > **Note** This specification is not concerned with how metadata hosted.
 
-#### SignedDelegationCertificate
+#### DelegationCertificate
 
 ```ts
-interface SignedDelegationCertificate {
+interface DelegationCertificate {
   target: DRepID | "Abstain" | "No Confidence";
   stakeKey: PubStakeKey;
-  txHash: string;
-  witness: string;
 }
 ```
 
@@ -176,6 +175,21 @@ to chain and included within a block.
   then the name.
 - `stakeKey`: The public stake key acting as the stake credential of the Ada
   holder who has submitted the delegation.
+
+#### SignedDelegationCertificate
+
+```ts
+interface SignedDelegationCertificate {
+  certificate: DelegationCertificate
+  txHash: string;
+  witness: string;
+}
+```
+
+This interface represents a vote delegation certificate that has been submitted
+to chain and included within a block.
+
+- `certificate`: Contains the `DRepRegistrationCertificate` object.
 - `txHash`: A string containing the hash of the transaction which contained this
   certificate that was submitted to chain and included in a block. This is to be
   used by clients to track the status of the delegation transaction on-chain.
@@ -312,8 +326,7 @@ Interface representing a governance action to initiate a Hard-Fork, as described
 in
 [Conway ledger specification `hard_fork_initiation_action`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L120).
 
-- `protocolVer`: A number representing the new major protocol version which is
-  too hard-fork to.
+- `protocolVer`: A number representing the new major protocol version too hard-fork to.
 
 ##### UpdateParameters
 
@@ -565,12 +578,12 @@ for the case of
 
 An array of the connected user's active stake keys.
 
-#### `api.submitDelegation(DRep: DRepID, stakeKey: PubStakeKey): Promise<SignedDelegationCertificate>`
+#### `api.submitDelegation(DelegationCertificate[]): Promise<SignedDelegationCertificate[]>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
-This endpoint requests the wallet to build, sign and submit a vote delegation
-certificate for a supplied DRepID and Public Stake Key. This certificate is
+This endpoint requests the wallet to build, sign and submit vote delegation
+certificates for a supplied DRepID and public stake key. These certificates are 
 described **todo: add CDDL when available**. This must be signed by the secret
 key of the provided public stake key.
 
@@ -578,17 +591,19 @@ By allowing clients to supply the stake key we are placing the burden of
 multi-governance-delegation management onto the client, reducing the complexity
 for wallet implementations.
 
-The user's permission to sign this transaction must be requested by the wallet,
+The user's permission to sign must be requested by the wallet,
 additionally wallets may wish to display the contents of the certificate to the
 user to check. This allows for the user to catch malicious clients attempting to
-alter the certificate's contents.
+alter the certificate's contents. It is up to the wallet to decide if user permission's is required for each signature or one permission granted to sign all.
+
+One `TxSignError` should be returned if there is a signature error with any of the certificates.
 
 ##### Returns
 
-This returns a `SignedDelegationCertificate` object which contains all the
+This returns an array of `SignedDelegationCertificate` objects which contains all the
 details of the submitted delegation certificate, for the client to confirm. The
-returned `txHash` can be used by the client to track the status of the
-transaction containing the certificate on Cardano.
+returned `txHash`s can be used by the client to track the status of the
+transactions containing the certificates on Cardano.
 
 #### `api.submitDRepRegistration(certificate: DRepRegistrationCertificate): Promise<signedDRepRegistrationCertificate>`
 
@@ -644,9 +659,12 @@ The wallet must create and attach a governance credential witness using the
 secret side of the supplied public DRep key. Wallets using this API should
 always fill in the the role field with DRep.
 
-The user's permission to sign this transaction must be requested for by the
-wallet, additionally wallets should display the contents of the transaction
-field to the user to confirm the data supplied by the client.
+The user's permission to sign must be requested by the wallet,
+additionally wallets should display the contents of the vote transaction to the
+user to check. This allows for the user to catch malicious clients attempting to
+alter the vote's contents. It is up to the wallet to decide if user permission's is required for each signature or one permission granted to sign all.
+
+One `TxSignError` should be returned if there is a signature error with any of the transactions.
 
 ##### Returns
 
@@ -792,7 +810,7 @@ deserialize transactions to inspect their contents.
 
 #### The role of the wallet
 
-Relying on wallet's for transaction construction and submission has precedent
+Relying on wallets for transaction construction and submission has precedent
 from the approach of
 [CIP-62?](https://github.com/cardano-foundation/CIPs/pull/296). This abstracts
 clients from the need to manage core wallet functionality such as UTxO handling.
@@ -887,8 +905,9 @@ wallet implementations more straight forward for wallets implementing both APIs.
 
 ### Implementation Plan
 
-- [ ] Provide a public Discord channel for open discussion of this
+- [x] Provide a public Discord channel for open discussion of this
       specification.
+  - See [`gov-wallet-cip`](https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983) channel in the [IOG Technical Discord](https://discord.gg/inputoutput) under the `🥑BUILD` section (to view you have to opt-in to the Builders group).
 - [ ] Author to setup regular discussion forums to support wallet implementors.
 
 ## Copyright
