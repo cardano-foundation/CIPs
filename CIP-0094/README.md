@@ -171,11 +171,15 @@ The transaction carrying the answer metadata must then **be signed using a stake
 >
 > Only the first answer to a poll for each credential shall be considered. If multiple answers are found, only the first answer submitted (transaction & block ordering tallying) shall be considered.
 
-### Duration
+### Procedure and Duration
 
-A poll starts when a valid transaction with a question is posted on-chain and ends at the end of the following epoch, so there's always at least one entire epoch for answering the poll.
+A poll starts when a valid transaction with a question is posted on-chain. Ballots can be submitted until the end of the following epoch, so there is always at least one whole epoch to answer the poll.
 
-In particular, the stake distribution of pools will be considered at the moment the poll is _started_.
+After the epoch in which the Stake Pool Operators have cast their votes, there follows a period of one or more epochs in which the ADA Delegates may respond: If they disagree with the choice of their current Stake pool, they can delegate to another pool. This changes the stake weight and thus influences the result.
+
+![Alt text](CIP-0094_procedure-duration.png "Epoch poll phases")
+
+Indirectly, this results in the possibility of participation for all ada holders. Only after this re-delegation epoch(s) is completed, is the stake snaphot of the pools made to calculate the outcome. 
 
 ### Outcome
 
