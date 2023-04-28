@@ -330,7 +330,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
                 "type": "string",
                 "description": "An optional human readable release name, e.g. V1"
               },
-              "security_vulnerability": {
+              "securityVulnerability": {
                 "type": "boolean",
                 "description": "Indicates that a given version has a security vulnerability."
               },
