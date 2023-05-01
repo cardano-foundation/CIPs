@@ -766,7 +766,7 @@ necessity for clients (and this API).
 
 Web-based stacks, with wallet connectivity, are a familiar place for users to be
 able to interact with Cardano. These tools lower the technical bar to be able to
-engage with the eco-system. Thus we believe encouraging further adoption of this
+engage with the ecosystem. Thus we believe encouraging further adoption of this
 approach is beneficial.
 
 The primary alternative approach to this is wallet providers integrating this
