@@ -32,7 +32,7 @@ holders' and DReps' interactions with such web-based stacks.
 ## Motivation: why is this CIP necessary?
 
 CIP-1694 introduces many new concepts, entities and actors to Cardano;
-describing their implementation at the ledger level. Yet, for most eco-system
+describing their implementation at the ledger level. Yet, for most ecosystem
 participants low level details are abstracted away by tools, such as wallets.
 This creates a need for tooling to be able support the utilization of ledger
 features. This specification allows for creation of web-based tools for the
