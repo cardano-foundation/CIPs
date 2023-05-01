@@ -81,12 +81,43 @@ The content of the payload will be included in the protected header of the COSES
 Additional fields MAY be included in the payload. Depending on the process, it could be useful to include some aditional fields in the protected header of the signature. For example, the email information should be included in the protected header in a registration request. In that way, this payload can be used only to register that specific email and it can not be tampered. 
 
 ```JSON
+// JSON Schema
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "action": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "integer"
+    }
+  },
+  "required": ["uri", "action", "timestamp"],
+  "additionalProperties": {
+    "type": "string"
+  }
+}
+
+// Minimum payload:
+{
+    "uri": "http://example.com/signin",
+    "action": "Sign in",
+    "timestamp": 1673261248,
+}
+
+// Sign up payload example:
 {
     "uri": "http://example.com/signup",
     "action": "Sign up",
     "timestamp": 1673261248,
-    ["email": "email@example.com"] <- Optional
+    "email": "email@example.com"
 }
+
 ```
 
 ### Wallet specification
