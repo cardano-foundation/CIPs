@@ -849,7 +849,7 @@ seed phrase.
 
 With this definition we aim to standard for tooling to be able to derive DRep
 credentials from mnemonics, not only those wallets who support this web-bridge.
-This standard brings all the benefits of the application of generic eco-system
+This standard brings all the benefits of the application of generic ecosystem
 standards.
 
 ### Multi-stake Key Support
