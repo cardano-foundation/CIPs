@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: ?
 Title: Representing the Script Context as a Sums-of-Products Term
 Authors: 
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
@@ -21,11 +21,11 @@ This is slow to process, so we propose to use the support for sums-of-products (
 
 ## Motivation: why is this CIP necessary?
 
-## Background
+### Background
 
 This CIP assumes familiarity with the concepts described in CIP-85, including SOPs and the origin of `Data`.
 
-## The Problem
+### The Problem
 
 The problem is:
 1. It is slow to perform any kind of manipulation of the script context (see CIP-85 for benchmarking of operations on `Data` versus SOPs)
