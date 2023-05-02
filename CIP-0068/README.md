@@ -95,7 +95,7 @@ datum = #6.121([metadata, version, extra])
 
 #### 222 NFT Standard
 
-Besides the necessary standard for the `reference NFT` we're introducing two specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, semi fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
+Besides the necessary standard for the `reference NFT` we're introducing two specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, rich fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
