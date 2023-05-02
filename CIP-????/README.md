@@ -12,8 +12,6 @@ Created: 2022-12-27
 License: CC-BY-4.0
 ---
 
-# CIP-XXXX: Authenticated Web3 HTTP requests
-
 ## Abstract
 
 The proposed Cardano Improvement Proposal (CIP) outlines a conventional structure for data payloads that are signed by wallets, which can be used by decentralized application (dApp) servers to authenticate user requests. By leveraging the Cardano blockchain as an identity provider, dApp servers can securely and trustlessly verify user identities without relying on centralized servers or third-party services. This CIP aims to provide a standard approach for implementing wallet signature authentication in dApps, improving the security and reliability of user interactions with decentralized systems.
