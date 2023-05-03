@@ -53,6 +53,9 @@ DApp stores and light wallets will be able to pull DApps information from DApps 
 
 End-user will interact with a DApp through a wallet and will be able to check the different certificates obtained by the DApp.
 
+One use-case would be for a wallet to maintain a list of valid certificates, and the corresponding DApp. 
+It could then both: verify that the user interacts with the latest version of the DApp through the Registration metadata of CIP-0072, and that the contract was certified using the corresponding metadata from this proposed CIP. 
+
 ## Specification
 
 ### Definitions
@@ -83,27 +86,27 @@ string = bstr .size (1..64) ; tstr / string from 1 up to 64 chars only
 sig_256 = bstr .size (64..64) ; 256 bytes signature (256 / 64 = 4 bytes)
 
 transaction_metadata = {
-  "1304": on-chain_metadata
+  1304: on-chain_metadata
 }
 
 on-chain_metadata = {
-      "subject": string
-    , "rootHash": sig_256
-    , "metadata": [+ string] / [+ [+ string]]
-    , "schemaVersion": uint
-    , "type": certify / audit
+      subject: string
+    , rootHash: sig_256
+    , metadata: [+ string] / [+ string / [+ string]]
+    , schemaVersion: uint
+    , type: certify / audit
 }
 
 certify = {
-      "action": "CERTIFY" 
-    , "certificationLevel": 1 / 2 / 3 
-    , "certificateIssuer": string
+      action: "CERTIFY" 
+    , certificationLevel: 1 / 2 / 3 
+    , certificateIssuer: string
 }
 
 audit = {
-      "action": "AUDIT" 
-    , "certificationLevel": 0 
-    , "certificateIssuer": string
+      action: "AUDIT" 
+    , certificationLevel: 0 
+    , certificateIssuer: string
 }
 ```
 
@@ -165,19 +168,20 @@ This schema can be translated into a JSON schema:
 ### On-chain DApp Certification Certificate
 
 ```json
-{
-    "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8", 
-    "rootHash": "f08ccc1ee08d034d8317d1d84cab76d3cac48a8466ca9e54a291bb998c49a1732e93280bf04a11293c73195affe4fcaa41f7b27c067396f97f701dd96f72665e",
-    "metadata": [
-        "ipfs://abcdefghijklmnopqrstuvwxyz0123456789",
-        "https://example.com/metadata.json"
-    ],
+{ "1304": {
+        "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5", 
+        "rootHash": "f08ccc1ee08d034d8317d1d84cab76d3cac48a8466ca9e54a291bb998c49a173",
+        "metadata": [
+            "ipfs://abcdefghijklmnopqrstuvwxyz0123456789",
+            "https://example.com/metadata.json"
+        ],
 
-    "schemaVersion": 1,
-    "type": {
-        "action": "CERTIFY",
-        "certificationLevel": 1,
-        "certificateIssuer": "Example LLC"
+        "schemaVersion": 1,
+        "type": {
+            "action": "CERTIFY",
+            "certificationLevel": 1,
+            "certificateIssuer": "Example LLC"
+        }
     }
 }
 ```
@@ -428,7 +432,7 @@ The off-chain metadata shall follow the following JSON schema:
   "schemaVersion": 1,
   "certificationLevel": 1,
   "certificateIssuer": {
-    "name": "Audit House LLC",
+    "name": "Example LLC",
     "logo": "https://www.example.com/media/logo.svg",
     "social": {
         "contact": "contact@example.com",
@@ -458,7 +462,6 @@ The off-chain metadata shall follow the following JSON schema:
             "progLang": "plutus-v2",
             "repository": "https://github.com/DAppDev/TestDApp/"
           },
-          "fullScriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
           "scriptHash": "1dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
           "contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
         },
@@ -472,7 +475,6 @@ The off-chain metadata shall follow the following JSON schema:
             "progLang": "plutus-v2",
             "repository": "https://github.com/DAppDev/TestDApp/"
           },
-          "fullScriptHash": "384da5375661cb1e07713eea236cd681921dcb4e80d7cd0ed4e7feebd7",
           "scriptHash": "6cd68191dcb4e80d7c5661cb1e074e7feebd73eea232d0ed384da537",
           "contractAddress": "addr1wywukn5q6lrdntgrysv0f7a0tna63ymffh23ms5uxsaesuk8s8fel"
         }
@@ -523,6 +525,8 @@ Audits are being published on-chain using this CIP by auditors.
 Certificates are being issued on-chain by multiple auditors and certification companies using this CIP.
 
 Certificates are being displayed by multiple DApps stores or aggregators which uses this format.
+
+Certificates for all three certification levels have been issued using this schema.
 
 ### Implementation Plan
 
