@@ -246,7 +246,7 @@ interface DRepRetirementCertificate {
 }
 ```
 
-This data structure is used to represent a DRep Retirement Certificate as
+This data structure is used to represent a DRep retirement certificate as
 described in
 [CIP-1698 Delegated Representatives](https://github.com/JaredCorduan/CIPs/blob/voltaire-v1/CIP-1694/README.md#delegated-representatives-DReps).
 //todo: link CDDL
@@ -266,8 +266,8 @@ interface SignedDRepRetirementCertificate {
 }
 ```
 
-This is returned from the wallet back to the client once a DRep Retirement
-Certificate is submitted to chain and included in a block.
+This is returned from the wallet back to the client once a DRep retirement
+certificate is submitted to chain and included in a block.
 
 - `certificate`: Contains the `DRepRetirementCertificate` object.
 - `txHash`: A string containing the hash of the transaction which contained this
@@ -886,6 +886,8 @@ wallet implementations more straight forward for wallets implementing both APIs.
 
 ### Open Questions
 
+- The burden of transaction building to be placed on dApps or wallets?
+- Move DRep key to CIP-1852?
 - Is it necessary to provide a method to prove ownership of DRep key? and can
   CIP-30's `api.signData()` be used to prove ownership of multi-stake keys?
 - Is it sensible to place multi-stake key burden onto clients?
