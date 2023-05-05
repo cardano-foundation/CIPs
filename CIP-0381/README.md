@@ -138,7 +138,7 @@ performed with the Integral type. In particular, we need the following functions
 On top of the elliptic curve operations, we also need to include deserialization functions, and equality definitions
 among the G1 and G2 types. 
 
-* Deserialisation: 
+* Deserialisation (more information of the choice of compressed form over uncompressed form [here](#compressed-vs-decompressed)): 
   * `bls12_381_G1_compress :: bls12_381_G1_element -> ByteString`
   * `bls12_381_G1_uncompress :: ByteString -> bls12_381_G1_element`
   * `bls12_381_G2_compress :: bls12_381_G2_element -> ByteString`
@@ -179,6 +179,110 @@ We include the serialisation of the generator of G1 and the generator of G2:
 2, 74, 162, 178, 240, 143, 10, 145, 38, 8, 5, 39, 45, 197, 16, 81, 198, 228, 122, 212, 250, 64, 59, 2, 180, 
 81, 11, 100, 122, 227, 209, 119, 11, 172, 3, 38, 168, 5, 187, 239, 212, 128, 86, 200, 193, 33, 189, 184]
 ```
+
+#### Compressed vs Decompressed
+To recap, we have types `bls12_381_G1_element` and `bls12_381_G2_element` each of which is essentially a pair 
+of values `(x,y)` that satisfy an equation of the form `y^2 = x^3+ax+b`.  The blst library provides two 
+serialisation formats for these:
+
+* The serialised format, where you have a bytestring encoding both the `x` and `y` coordinates of a point.  
+  A serialised `bls12_381_G1_element` takes up 96 bytes and a serialised `bls12_381_G2_element` takes up 192 
+  bytes.
+* The compressed format, where you have a bytestring that only contains the `x` coordinate.  When you 
+  uncompress a compressed point to get an in-memory point, the `y` coordinate has to be calculated from 
+  the equation of the curve.  A compressed `bls12_381_G1_element` takes up 48 bytes and a compressed 
+  `bls12_381_G2_element` takes 92 bytes.
+
+The PLC implementation currently uses the compressed format for serialising `bls12_381_G1_element` and 
+`bls12_381_G1_element`s.  There are at least three places where this is (or could be) used:
+
+* Storing a group element as a bytestring inside a Data object which will be passed as a parameter to a script.
+* During flat serialisation of PLC scripts (constants from G1 and G2 are converted into bytestrings and then 
+  flat deals with these as usual).
+* In the concrete PLC/UPLC syntax, where constants are written as hex strings representing compressed points.
+
+The serialised format could also be used for all of these.  The advantage of doing that is that deserialisation 
+is much cheaper than uncompression (which involves calculating a square root in a finite field, which is 
+expensive in general), but the disadvantage is that the serialised format requires twice as much space as 
+the compressed form.  We ran some benchmarks to determine CPU costs (in ExUnits) for both 
+deserialisation, and uncompression and came up with the following:
+```
+bls12_381_G1_deserialize : 701442
+bls12_381_G1_uncompress  : 16511372
+
+bls12_381_G2_deserialize : 1095773
+bls12_381_G2_uncompress  : 33114723
+```
+
+For G1 uncompression is about 23 times more expensive than deserialisation, and for G2 uncompression is about 
+30 times more expensive than deserialisation.  The maximum CPU budget per script is currently 1,000,000,000, 
+so a single G2 uncompression is about 0.3% of the total allowance, whereas a G2 deserialisation is about 0.01%.
+This might seem like a compelling reason to prefer serialisation over compression, but our claim is that the time 
+saving is not worthwhile because you can't fit enough serialised points into a script to make the speed gain 
+significant. The bls-costs program runs a number of benchmarks for execution costs of scripts that exercise 
+the BLS builtins. One of these creates UPLC scripts which include varying numbers of compressed points and 
+at run-time uncompresses them and adds them all together; bls-costs runs these scripts and prints out their 
+costs as fractions of the maximum CPU budget and maximum script size (currently 16384). Here are the results:
+
+Uncompress n G1 points and add the results
+```
+    n     script size             CPU usage               Memory usage
+  ----------------------------------------------------------------------
+    -      68   (0.4%)             100   (0.0%)             100   (0.0%) 
+10     618   (3.8%)       185801250   (1.9%)           45642   (0.3%)
+20    1168   (7.1%)       371912820   (3.7%)           88002   (0.6%)
+30    1718  (10.5%)       558024390   (5.6%)          130362   (0.9%)
+40    2268  (13.8%)       744135960   (7.4%)          172722   (1.2%)
+50    2818  (17.2%)       930247530   (9.3%)          215082   (1.5%)
+60    3368  (20.6%)      1116359100  (11.2%)          257442   (1.8%)
+70    3918  (23.9%)      1302470670  (13.0%)          299802   (2.1%)
+80    4468  (27.3%)      1488582240  (14.9%)          342162   (2.4%)
+90    5018  (30.6%)      1674693810  (16.7%)          384522   (2.7%)
+100    5568  (34.0%)      1860805380  (18.6%)          426882   (3.0%)
+110    6118  (37.3%)      2046916950  (20.5%)          469242   (3.4%)
+120    6668  (40.7%)      2233028520  (22.3%)          511602   (3.7%)
+130    7218  (44.1%)      2419140090  (24.2%)          553962   (4.0%)
+140    7768  (47.4%)      2605251660  (26.1%)          596322   (4.3%)
+150    8318  (50.8%)      2791363230  (27.9%)          638682   (4.6%)
+```
+
+Uncompress n G2 points and add the results
+```
+    n     script size             CPU usage               Memory usage
+  ----------------------------------------------------------------------
+    -      68   (0.4%)             100   (0.0%)             100   (0.0%) 
+10    1098   (6.7%)       363545910   (3.6%)           45984   (0.3%)
+20    2128  (13.0%)       728715130   (7.3%)           88704   (0.6%)
+30    3158  (19.3%)      1093884350  (10.9%)          131424   (0.9%)
+40    4188  (25.6%)      1459053570  (14.6%)          174144   (1.2%)
+50    5218  (31.8%)      1824222790  (18.2%)          216864   (1.5%)
+60    6248  (38.1%)      2189392010  (21.9%)          259584   (1.9%)
+70    7278  (44.4%)      2554561230  (25.5%)          302304   (2.2%)
+80    8308  (50.7%)      2919730450  (29.2%)          345024   (2.5%)
+90    9338  (57.0%)      3284899670  (32.8%)          387744   (2.8%)
+100   10368  (63.3%)      3650068890  (36.5%)          430464   (3.1%)
+110   11398  (69.6%)      4015238110  (40.2%)          473184   (3.4%)
+120   12428  (75.9%)      4380407330  (43.8%)          515904   (3.7%)
+130   13458  (82.1%)      4745576550  (47.5%)          558624   (4.0%)
+140   14488  (88.4%)      5110745770  (51.1%)          601344   (4.3%)
+150   15518  (94.7%)      5475914990  (54.8%)          644064   (4.6%)
+```
+
+It's clear that the limiting factor is the script size: we can process about 300 G1 points or 150 G2 points 
+in a single script before we run out of space, but we're only about 50% of the way to the maximum CPU budget.  
+If we used blst serialisation instead then there would be some saving in execution time, but we'd only be 
+able to process about half as many points in a single script, and it's unlikely that the time savings would 
+compensate for that.  For example, uncompressing 50 G2 points would cost you about 1,655,000,000 CPU ExUnits 
+and deserialising them would cost about 54,788,000, which is 1,600,000,000 ExUnits cheaper. This tool says 
+that's about 0.27 Ada.  However, 50 serialised G2 points take up 4800 more bytes than 50 serialised ones, 
+and the calculator tells me that the extra bytes would cost 0.36 Ada, so in fact using serialisation would 
+cost you 0.09 Ada more than using compression for the same number of points.
+
+So even though uncompression is a lot more expensive per point than deserialisation, it looks as if the size 
+savings due to compression actually outweigh the speed gains due to serialisation because bytes per script 
+are a lot more expensive than ExUnits per script.  
+
+For that reason, these bindings support the compressed format and only the compressed format.
 
 #### An important note on GT elements
 We intentionally limit what can be done with the GT element. In fact, the only way that one can generate a 
