@@ -124,16 +124,18 @@ performed with the Integral type. In particular, we need the following functions
     * `bls12_381_G1_add :: bls12_381_G1_element -> bls12_381_G1_element -> bls12_381_G1_element`
     * `bls12_381_G1_scalarMul :: Integer -> bls12_381_G1_element -> bls12_381_G1_element`
     * `bls12_381_G1_neg :: bls12_381_G1_element -> bls12_381_G1_element`
-    * `bls12_381_G1_hashToGroup :: ByteString -> bls12_381_G1_element`
     * `bls12_381_G2_add :: bls12_381_G2_element -> bls12_381_G2_element -> bls12_381_G2_element`
     * `bls12_381_G2_scalarMul :: Integer -> bls12_381_G2_element -> bls12_381_G2_element`
     * `bls12_381_G2_neg :: bls12_381_G2_element -> bls12_381_G2_element`
-    * `bls12_381_G2_hashToGroup :: ByteString -> bls12_381_G2_element`
     * `bls12_381_mulMlResult :: bls12_381_MlResult -> bls12_381_MlResult -> bls12_381_MlResult`
 * Pairing operations:
     * `bls12_381_millerLoop :: bls12_381_G1_element -> bls12_381_G2_element -> bls12_381_MlResult`
     * `bls12_381_finalVerify :: bls12_381_MlResult -> bls12_381_MlResult -> bool` This performs the final 
   exponentiation (see section `An important note on GT elements` below).
+* Hash to curve. We include hash-to-curve functions, as per [Hashing to Elliptic Curves](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve)
+  internet draft. Refer to [this](#hash-to-curve) section for further details: 
+  * `bls12_381_G1_hashToGroup :: ByteString -> ByteString -> bls12_381_G1_element`
+  * `bls12_381_G2_hashToGroup :: ByteString -> ByteString -> bls12_381_G2_element`
 
 On top of the elliptic curve operations, we also need to include deserialization functions, and equality definitions
 among the G1 and G2 types. 
@@ -179,6 +181,20 @@ We include the serialisation of the generator of G1 and the generator of G2:
 2, 74, 162, 178, 240, 143, 10, 145, 38, 8, 5, 39, 45, 197, 16, 81, 198, 228, 122, 212, 250, 64, 59, 2, 180, 
 81, 11, 100, 122, 227, 209, 119, 11, 172, 3, 38, 168, 5, 187, 239, 212, 128, 86, 200, 193, 33, 189, 184]
 ```
+
+#### Hash to curve
+We expose the hash-to-curve functions following the [Hashing to Elliptic Curves](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve)
+internet draft. The function signature takes as input two `ByteString`s and returns a point. The first 
+`ByteString` is the message to be hashed, while the second `ByteString` is the Domain Separation Tag (DST). 
+For more information on the DST, see [section 3.1](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve#name-domain-separation-requireme)
+of the internet draft.
+
+Some libraries expose the possibility to use yet another `ByteString` when calling the hash-to-curve function. 
+See for example the [`blst` library](https://github.com/supranational/blst/blob/master/src/hash_to_field.c#L121).
+We choose not to include this extra `ByteString` in the function signature, because it is not part of the standard
+draft. In the case where we want to match a hash that did use this `aug` `ByteString`, one simply needs to prepend
+that value to the message. One can verify that by running the test-vector generation script introduced in 
+[cardano-base](https://github.com/input-output-hk/cardano-base/blob/master/cardano-crypto-tests/bls12-381-test-vectors/src/main.rs#L222..L231).
 
 #### Compressed vs Decompressed
 To recap, we have types `bls12_381_G1_element` and `bls12_381_G2_element` each of which is essentially a pair 
