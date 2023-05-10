@@ -28,11 +28,17 @@ Another problem with the current approach is how the wallets show the informatio
 
 ## Specification
 
-This specification involves multiple parties. We split this specification in three parts: dApp server processing, payload structure and wallet specification.
+This specification involves multiple parties: Wallet/Client, dApp Server and Blockchain. 
+
+1. **Wallet/Client**: The Wallet/Client is responsible for managing the user's cryptographic keys. Anyone can create a wallet using the CIP-0030 API interface, but it may produce invalid or malicious data sent to the dApp. This CIP aims to validate the ownership and veracity of the data provided by wallets. Additionally, it establishes guidelines for mitigating common wallet attacks, improving security for user interaction.
+
+2. **dApp Server**: The dApp Server represents the server-side infraestructure that supports decentralized applications (dApps). It communicates with the blockchain to retrieve stored data and validate wallet status. It must enforce minimum payload requirements to ensure authenticity and protect users from malicious actors.
+
+3. **Blockchain**: The Blockchain is the underlying distributed ledger technology that forms the foundation of decentralized systems. It is a decentralized and immutable ledger that securely records all transactions and data in a chronological and transparent manner. The Blockchain can be utilized for authentication, providing user identity, and for authorization, tracking user history and current status.
 
 ```
 +-----------+               +---------------+              +----------------+
-|  Wallet/  |               |  DApp Server  |              |   Blockchain   |
+|  Wallet/  |               |  dApp Server  |              |   Blockchain   |
 |  Client   |               |               |              |                |
 +-----------+               +---------------+              +----------------+
       |                              |                               |
@@ -72,7 +78,7 @@ The content of the payload will be included in the protected header of the COSES
 
 1. The field `uri` MUST contain the full path to the endpoint, where the payload will be processed.
 
-2. Sometimes, the endpoint `uri` field is not enough to determine its purpose. The user should understand perfectly the objective of the payload which he or she is signing. That's why the payload MUST contain an `action` field with a descriptive text containing the purpose of the payload. 
+2. Sometimes, the endpoint `uri` field is not enough to determine its purpose. The user should understand perfectly the objective of the payload which he or she is signing. That's why the payload MUST contain an `action` field with a descriptive text containing the purpose of the payload. For example, if someone calls the endpoint `/users` without an action field, they can create or delete users. However, by including the action field in the payload, it not only provides additional clarity but also effectively limits the scope of the payload.
 
 3. The payload MUST include a UNIX timestamp. The `timestamp` field is used as a nonce and a mark for the payload expiration. This field is very important in case the payload is compromised.
 
@@ -129,7 +135,7 @@ The `uri` field provides information about the hostname of the application. This
 
 The wallet SHOULD update the `timestamp` field to the current time just before the signature. This field ideally should match the moment just before the signature such that the server receives fresh payload. 
 
-### Server processing
+### dApp Server processing
 
 The server has ultimate responsibility of processing correctly the requests. We use the content to validate the payload. The request will be processed with the following steps:
 
@@ -143,7 +149,9 @@ Additionally the server COULD extract the payload content and pass it through th
 
 ## Rationale: how does this CIP achieve its goals?
 
-This specification provides the general guidelines and necessary recommendations for performing secure authenticated web3 requests in the Cardano ecosystem. It covers the two main desired characteristics for a secure payload: It must expire and it must be non-static. Moreover, the signature method proposed in this CIP does not require users to spend funds in a transaction, which further lowers the cost and barriers to entry for users.
+CIP-0008 enhances authentication by enabling individuals to prove ownership of addresses, identities, and off-chain data through message signing. It provides a reliable means of authentication by allowing individuals to attach a public key to their data and sign messages associated with that data, thereby establishing ownership and ensuring the integrity of the authentication process.
+
+Additionally, This specification provides the general guidelines and necessary recommendations for performing secure authenticated web3 requests in the Cardano ecosystem. It covers the two main desired characteristics for a secure payload: It must expire and it must be non-static. Moreover, the signature method proposed in this CIP does not require users to spend funds in a transaction, which further lowers the cost and barriers to entry for users.
 
 Another important aspect for security is how wallets process the payload. They can improve the security using the data inside the payload to warn the users about possible malicious interactions. This specification emphasizes the importance of informing users clearly about the purpose of the payloads and how wallets can use the URI field to apply allow-lists and/or cross-domain policies. It establishes also the requirements and recommendations for server side processing. The server must also ensure the validity of the signature and the payload, as well as of its purpose in order to accomplish the authentication. 
 
