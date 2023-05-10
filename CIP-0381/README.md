@@ -187,7 +187,9 @@ We expose the hash-to-curve functions following the [Hashing to Elliptic Curves]
 internet draft. The function signature takes as input two `ByteString`s and returns a point. The first 
 `ByteString` is the message to be hashed, while the second `ByteString` is the Domain Separation Tag (DST). 
 For more information on the DST, see [section 3.1](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve#name-domain-separation-requireme)
-of the internet draft.
+of the internet draft. We limit the DST to be at most 255 bytes, following the standard specification. If 
+applications require a domain separation tag that is longer than 255 bytes, they should convert it to a smaller
+DST following the instructions of the standard draft (see [section 5.3.3](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve#name-using-dsts-longer-than-255-)).
 
 Some libraries expose the possibility to use yet another `ByteString` when calling the hash-to-curve function. 
 See for example the [`blst` library](https://github.com/supranational/blst/blob/master/src/hash_to_field.c#L121).
