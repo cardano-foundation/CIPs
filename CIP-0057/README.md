@@ -402,7 +402,7 @@ Yet, whereas there's a notion of purpose on-chain that is tightly coupled to the
   - [ ] Scalus (?)
 
 - [x] There exists one or (ideally) more tools leveraging the blueprints
-  - [x] [Aiken](aiken-lang.org/)
+  - [x] [Aiken](https://aiken-lang.org/)
   - [x] [Mesh.js](https://meshjs.dev/)
   - [x] [Lucid](https://lucid.spacebudz.io/)
   - [ ] [Demeter](https://demeter.run/)
