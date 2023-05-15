@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 95
 Title: Cardano dApp-Wallet Web Bridge Governance Extension
 Category: Wallets
 Status: Proposed
@@ -26,7 +26,8 @@ to provide support for
 focussed web-based stacks. Here we aim to support the requirements of both Ada
 holders' and DReps' interactions with such web-based stacks.
 
-> **Note** This proposal assumes knowledge of the ledger governance model as outlined within
+> **Note** This proposal assumes knowledge of the ledger governance model as
+> outlined within
 > [CIP-1694?](https://github.com/cardano-foundation/CIPs/pull/380).
 
 ## Motivation: why is this CIP necessary?
@@ -83,27 +84,28 @@ We believe the overhead that would be introduced by "multi-DRep" accounts is an
 unjustified expense. Future iterations of this specification may expand on this,
 but at present this is seen as unnecessary.
 
-> **Note** `1718` was the year that François-Marie adopted the pseudonym Voltaire.
+> **Note** `1718` was the year that François-Marie adopted the pseudonym
+> Voltaire.
 
 #### Tooling
 
-Supporting tooling should clearly label these key pairs as "CIP-???? DRep Keys".
+Supporting tooling should clearly label these key pairs as "CIP-95 DRep Keys".
 
 Bech32 prefixes of `drep_sk` and `drep_vk` should be used.
 
 Examples of acceptable `keyType`s for supporting tools:
 
-| `keyType`                            | Description           |
-| ------------------------------------ | --------------------- |
-| `CIP????DRepSigningKey_ed25519`      | DRep Signing Key      |
-| `CIP????DRepVerificationKey_ed25519` | DRep Verification Key |
+| `keyType`                          | Description           |
+| ---------------------------------- | --------------------- |
+| `CIP95DRepSigningKey_ed25519`      | DRep Signing Key      |
+| `CIP95DRepVerificationKey_ed25519` | DRep Verification Key |
 
-For hardware implementations: 
+For hardware implementations:
 
-| `keyType` | Description | 
-| ------------------------------------ | ------------------------------ |
-| `CIP????DRepVerificationKey_ed25519` | Hardware DRep Verification Key | |
-| `CIP????DRepHWSigningFile_ed25519` | Hardware DRep Signing File |
+| `keyType`                          | Description                    |
+| ---------------------------------- | ------------------------------ |
+| `CIP95DRepVerificationKey_ed25519` | Hardware DRep Verification Key |     
+| `CIP95DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
 
 ### Data Types
 
@@ -180,7 +182,7 @@ to chain and included within a block.
 
 ```ts
 interface SignedDelegationCertificate {
-  certificate: DelegationCertificate
+  certificate: DelegationCertificate;
   txHash: string;
   witness: string;
 }
@@ -326,7 +328,8 @@ Interface representing a governance action to initiate a Hard-Fork, as described
 in
 [Conway ledger specification `hard_fork_initiation_action`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L120).
 
-- `protocolVer`: A number representing the new major protocol version too hard-fork to.
+- `protocolVer`: A number representing the new major protocol version too
+  hard-fork to.
 
 ##### UpdateParameters
 
@@ -583,7 +586,7 @@ An array of the connected user's active stake keys.
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
 This endpoint requests the wallet to build, sign and submit vote delegation
-certificates for a supplied DRepID and public stake key. These certificates are 
+certificates for a supplied DRepID and public stake key. These certificates are
 described **todo: add CDDL when available**. This must be signed by the secret
 key of the provided public stake key.
 
@@ -591,19 +594,22 @@ By allowing clients to supply the stake key we are placing the burden of
 multi-governance-delegation management onto the client, reducing the complexity
 for wallet implementations.
 
-The user's permission to sign must be requested by the wallet,
-additionally wallets may wish to display the contents of the certificate to the
-user to check. This allows for the user to catch malicious clients attempting to
-alter the certificate's contents. It is up to the wallet to decide if user permission's is required for each signature or one permission granted to sign all.
+The user's permission to sign must be requested by the wallet, additionally
+wallets may wish to display the contents of the certificate to the user to
+check. This allows for the user to catch malicious clients attempting to alter
+the certificate's contents. It is up to the wallet to decide if user
+permission's is required for each signature or one permission granted to sign
+all.
 
-One `TxSignError` should be returned if there is a signature error with any of the certificates.
+One `TxSignError` should be returned if there is a signature error with any of
+the certificates.
 
 ##### Returns
 
-This returns an array of `SignedDelegationCertificate` objects which contains all the
-details of the submitted delegation certificate, for the client to confirm. The
-returned `txHash`s can be used by the client to track the status of the
-transactions containing the certificates on Cardano.
+This returns an array of `SignedDelegationCertificate` objects which contains
+all the details of the submitted delegation certificate, for the client to
+confirm. The returned `txHash`s can be used by the client to track the status of
+the transactions containing the certificates on Cardano.
 
 #### `api.submitDRepRegistration(certificate: DRepRegistrationCertificate): Promise<signedDRepRegistrationCertificate>`
 
@@ -659,12 +665,14 @@ The wallet must create and attach a governance credential witness using the
 secret side of the supplied public DRep key. Wallets using this API should
 always fill in the the role field with DRep.
 
-The user's permission to sign must be requested by the wallet,
-additionally wallets should display the contents of the vote transaction to the
-user to check. This allows for the user to catch malicious clients attempting to
-alter the vote's contents. It is up to the wallet to decide if user permission's is required for each signature or one permission granted to sign all.
+The user's permission to sign must be requested by the wallet, additionally
+wallets should display the contents of the vote transaction to the user to
+check. This allows for the user to catch malicious clients attempting to alter
+the vote's contents. It is up to the wallet to decide if user permission's is
+required for each signature or one permission granted to sign all.
 
-One `TxSignError` should be returned if there is a signature error with any of the transactions.
+One `TxSignError` should be returned if there is a signature error with any of
+the transactions.
 
 ##### Returns
 
@@ -746,27 +754,27 @@ Assume that connection has already been established via
 
 ## Rationale: how does this CIP achieve its goals?
 
-The guiding principle for this design is to reduce the complexity for wallet
-providers to implement. This is motivated by the necessity for users to be able
-to interact with the age of Voltaire as soon as possible, keeping the wallet's
-ask small should reduce implementation time.
+The principle aim for this design is to reduce the complexity for wallet
+implementors. This is motivated by the necessity for users to be able to
+interact with the age of Voltaire promptly, by keeping the wallet's providers
+ask small we aim to reduce implementation time.
 
 This design aims to make the tracking of a user's governance state an optional
 endeavour for wallet providers. This is achieved by placing the responsibility
-on clients to track a user's governance (CIP-1694) state, i.e. if a wallet user
-is a DRep, what DRep a wallet holder has delegated to.
+on clients to track a user's governance state, i.e. if a wallet user is a DRep,
+what DRep a wallet holder has delegated to, etc.
 
 Despite only defining the minimal set of endpoints required, we do not wish to
-discourage the creation of subsequent CIPs which may support a wider range of
-governance endpoints. Nor does this specification aim to discourage wallet
-providers from fully integrating CIP-1694 governance, side-stepping the
-necessity for clients (and this API).
+discourage the creation of subsequent CIPs with a wider range of governance
+functionality. Nor does this specification aim to discourage wallet providers
+from fully integrating CIP-1694 governance, side-stepping the necessity for this
+API and client applications.
 
 ### Why Web-based Stacks
 
 Web-based stacks, with wallet connectivity, are a familiar place for users to be
-able to interact with Cardano. These tools lower the technical bar to be able to
-engage with the ecosystem. Thus we believe encouraging further adoption of this
+able to interact with Cardano. These tools lower the technical bar to engage
+with the ecosystem. Thus we believe encouraging further adoption of this
 approach is beneficial.
 
 The primary alternative approach to this is wallet providers integrating this
@@ -878,11 +886,12 @@ wallet implementors.
 
 #### CIP-62?
 
-[CIP-62?](https://github.com/cardano-foundation/CIPs/pull/296) is another
-extension to the CIP-30 API, this proposal is independent of this. This proposal
-does not rely on any of the implementation defined in CIP-62?. We have attempted
-to avoid any collisions of naming between these proposals, this was done to make
-wallet implementations more straight forward for wallets implementing both APIs.
+[CIP-62? | Cardano dApp-Wallet Web Bridge Catalyst Extension](https://github.com/cardano-foundation/CIPs/pull/296)
+is another extension to the CIP-30 API, this proposal is independent of this.
+This specification does not rely on any of the implementation defined in
+CIP-62?. We have attempted to avoid any collisions of naming between these
+proposals, this was done to make wallet implementations more straight forward
+for wallets implementing both APIs.
 
 ### Open Questions
 
@@ -909,7 +918,10 @@ wallet implementations more straight forward for wallets implementing both APIs.
 
 - [x] Provide a public Discord channel for open discussion of this
       specification.
-  - See [`gov-wallet-cip`](https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983) channel in the [IOG Technical Discord](https://discord.gg/inputoutput) under the `🥑BUILD` section (to view you have to opt-in to the Builders group).
+  - See
+    [`gov-wallet-cip`](https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983)
+    channel in the [IOG Technical Discord](https://discord.gg/inputoutput) under
+    the `🥑BUILD` section (to view you have to opt-in to the Builders group).
 - [ ] Author to setup regular discussion forums to support wallet implementors.
 
 ## Copyright
