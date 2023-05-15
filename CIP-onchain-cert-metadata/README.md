@@ -27,7 +27,7 @@ Currently, certification does not have a standardised way to be stored and prese
 
 This CIP descibes a standardised method for certificates to be published and stored on-chain and for stakeholders to be able to verify the different claims of this certificate.
 
-This proposal describes how certification metadata can be designed for DApp registration. It first describes the requirements for DApp certification, and then sets out the options for its inclusion in CIP-72.
+This CIP describes how a certification certificate can be registered on-chain and how to anchor it to a more detailed off-chain certification report.
 
 ## Motivation: why is this CIP necessary?
 
@@ -47,7 +47,7 @@ The metadata should be discoverable by all certification stakeholders, including
 
 DApp developers will seek certification from one of the issuers, according to their desired level of certification and will refer to the certificate on several platforms (e.g. on their website or in their DApp registration on a DApp store).
 
-Certification is to be provided by certification issuers including: testing services (level 1), auditors (level 2), and verification services (level 3). Certification issuers will issue these certificates referring to a particular version of a DApp that has succesfully gone through a certification process.
+Certification is to be provided by certification issuers including: testing services (level 1), auditors (level 2), and verification services (level 3). Certification issuers will issue these certificates referring to a particular version of a DApp that has succesfully gone through a certification process. More details can be found about the certification levels on this [blogpost](https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/). The [Certification Working Group](https://github.com/input-output-hk/Certification-working-group/) will work on establishing more formally those certification levels.
 
 DApp stores and light wallets will be able to pull DApps information from DApps registration or chain exploring and will link a DApp to a corresponding set of certificates.
 
@@ -74,7 +74,8 @@ Certification issuers will sign the transaction with the certification certifica
 ### Suggested validations
 
 - `integrity`: The DApp's metadata off-chain shall match the metadata **anchored** on-chain.
-- `trust`: The DApp's certification metadata transaction shall be signed by a trusted certfication issuer. This means a list of wallets of certification issuers needs to be known. It will then be up to the DApp store to decide which certification issuers are really trusted and publish a list of their own trusted certification issuers.
+- `trust`: The DApp's certification metadata transaction shall be signed by a trusted certfication issuer. This means a list of wallets of certification issuers needs to be known. It will then be up to the DApp store to decide which certification issuers are really trusted and publish a list of their own trusted certification issuers. It is not in the scope of this CIP to establish such a list. 
+
 
 ### Certificate Schemas
 
@@ -255,7 +256,7 @@ The off-chain metadata shall follow the following JSON schema:
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
     "subject": {
@@ -484,20 +485,28 @@ The off-chain metadata shall follow the following JSON schema:
 
 The metadata should be discoverable by all certification stakeholders, including end-users, DApp developers, and ecosystem components, such as light wallets and DApp stores. Information should be indexable by certification issuer, DApp developer, DApp and DApp version.
 
-It should be possible for there to be multiple versions of metadata published by the same certification issuer for the same version of a DApp, particularly when a (minor) update of the evidence is necessary. In such a case it should be possible to identify the most recent version of the report for that DApp version. It will also be the case that the same DApp may have certification metadata provided by multiple different certification issuers.
+It should be possible for there to be multiple versions of metadata published by the same certification issuer for the same version of a DApp, particularly when a (minor) update of the evidence is necessary.
+
+In such a case it should be possible to identify the most recent version of the report for that DApp version. It will also be the case that the same DApp may have certification metadata provided by multiple different certification issuers.
 
 It should be possible for wallets to identify to users the certification status of a DApp when they are signing a transaction that is being submitted to a deployed DApp.
 
-### Custom fields
+Registration updaten (see [CIP-0072]()) mandates the DApp developer to list all the script hashes associated with the DApp. This enables to fully characterize the on-chain part of a DApp.
+Similarly, the certification certificate mandates the certification issuer to list all the script hashes of the DApp.
+Cross-referencing the list of script information from both sources will allow for a wallet to get the latest version of the on-chain part of a DApp and checking if there is a corresponding certification associated.
+The wallet would then be able to inform a user that they are about to sign a transaction to a particular script that was certified.
+A wallet developer could also be able to filter certificates from their own list of known and trusted auditors.
 
-Certification issuers should be free to add additional fields to fit some additional needs.
+### Aggregators Custom Fields
+Each aggregator or DApp store can add their own requirements for the metadata or can offer additional features if the report pointed by `reportURLs`.
+The aggregator or DApp store should advertise their requirements in a documentation so that a certification issuer can format their report accordingly.
+Similarly, certification issuers can format their report pointed by `reportURLs` as they please and document any design choice so that aggregators or DApp stores can offer additional features by parsing the report.
 
-### List of Certification issuers
+<!-- ### List of Certification issuers -->
 
-| Certification issuer | URL                | Contact email        | Certification levels | Cardano address |
+|<!--  Certification issuer | URL                | Contact email        | Certification levels | Cardano address |
 |----------------------|-----               |---------------       |----------------------|------------   |
-| Example Ltd.         | <http://example.com> | contact@example.com  | 1,2                  | EXAMPLEADDRESS  |
-
+| Example Ltd.         | <http://example.com> | contact@example.com  | 1,2                  | EXAMPLEADDRESS   -->
 ## Rationale: how does this CIP achieve its goals?
 
 An on-chain solution is preferred as it allows for it to be checkable by any stakeholder and immutable.
