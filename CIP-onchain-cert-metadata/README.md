@@ -502,11 +502,6 @@ Each aggregator or DApp store can add their own requirements for the metadata or
 The aggregator or DApp store should advertise their requirements in a documentation so that a certification issuer can format their report accordingly.
 Similarly, certification issuers can format their report pointed by `reportURLs` as they please and document any design choice so that aggregators or DApp stores can offer additional features by parsing the report.
 
-<!-- ### List of Certification issuers -->
-
-|<!--  Certification issuer | URL                | Contact email        | Certification levels | Cardano address |
-|----------------------|-----               |---------------       |----------------------|------------   |
-| Example Ltd.         | <http://example.com> | contact@example.com  | 1,2                  | EXAMPLEADDRESS   -->
 ## Rationale: how does this CIP achieve its goals?
 
 An on-chain solution is preferred as it allows for it to be checkable by any stakeholder and immutable.
