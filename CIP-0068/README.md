@@ -331,11 +331,11 @@ We want to bring the metadata of the RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8
 
 #### 500 Royalty Standard
 
-The third introduced standard is the `500` Royalty NFT standard with the registered `asset_name_label` prefix value
+The fourth introduced standard is the `500` Royalty NFT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
-| 500                         | NFT          | Royalty NFT locked at a script containing a datum making use of CIP-0027 inner structure             |
+| 500                         | NFT          | Royalty NFT locked at a script containing a datum with royalty information |
 
 
 
