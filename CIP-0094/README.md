@@ -173,11 +173,11 @@ The transaction carrying the answer metadata must then **be signed using a stake
 
 ### Procedure and Duration
 
-A poll starts when a valid transaction with a question is posted on-chain. Ballots can be submitted until the end of the following epoch, so there is always at least one whole epoch to answer the poll.
+A poll starts when a valid transaction with a question is posted on-chain. Answers can be submitted until the end of the following epoch, so there is always at least one whole epoch to answer the poll.
 
-After the epoch in which the Stake Pool Operators have cast their votes, there follows a period of one or more epochs in which the ADA Delegates may respond: If they disagree with the choice of their current Stake pool, they can delegate to another pool. This changes the stake weight and thus influences the result.
+After one or more epochs in which the Stake Pool Operators have cast their answers, there follows a period of one or more epochs in which the ADA Delegates may respond: If they disagree with the choice of their current Stake pool, they can delegate to another pool. This changes the stake weight and thus influences the result. At the current state, the epochs for the answer and redelegation phase are only defined off-chain. In the future, they could also be defined as part of the signed question. 
 
-![Alt text](CIP-0094_procedure-duration.png "Epoch poll phases")
+![Alt text](CIP-0094_procedure-duration.png "Epoch poll phases example")
 
 Indirectly, this results in the possibility of participation for all ada holders. Only after this re-delegation epoch(s) is completed, is the stake snaphot of the pools made to calculate the outcome. 
 
