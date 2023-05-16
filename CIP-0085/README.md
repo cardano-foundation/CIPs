@@ -289,6 +289,24 @@ We think that this is an acceptable cost for a simpler implementation.
 
 [^see-appendix-2]: See Appendix 2 for more details.
 
+#### 3. Unsaturated `constr` and `case`
+
+Both `constr` and `case` in this proposal are _saturated_, meaning that they have all of the arguments that they need explicitly provided in the AST.
+This is not the only option. 
+
+We could easily have unsaturated `constr`, by making `(constr i)` a _function_ that then needs to be applied to its arguments. 
+This would be mildly more complicated to implement, since we wouldn't know how _many_ arguments to expect, and so we would need to always be able to add aditional arguments to a `constr` value, but this would be manageable.
+
+Unsaturated `case` is more complicated. 
+While the tag on the scrutinee `constr` value tells us which branch we are going to take in the end, we don't know how many branches we need in total.
+In principle we could extend the tags on constructors to include not only the selected tag but also the maximum tag.
+That would allow us to know how many case branches we need.
+A more serious problem is that we would not be able to be non-strict in the branches any more, as they would be passed as function arguments and hence forced.
+
+The main advantage of unsaturated `constr` and `case` is that it would avoid the need for n-ary terms in the language, as both would then have a fixed number of children.
+However, it makes them more complex to work with, and likely less efficient to implement.
+Finally, this is simply a less common design, and so conservatism suggests sticking to the more standard approach unless there is a compelling reason not to.
+
 ## Path to Active
 
 ### Acceptance Criteria
