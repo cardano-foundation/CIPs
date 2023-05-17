@@ -53,15 +53,15 @@ This specification involves multiple parties: Wallet/Client, dApp Server and Blo
       |            |                 |                               |
       |<-----------+                 |                               |
       |                              |                               |
-      | 4. Send signed payload       |                               |
+      | 3. Send signed payload       |                               |
       |----------------------------->|                               |
       |                              |                               |
-      |                              | 5. Verify signature           |   
+      |                              | 4. Verify signature           |   
       |                              |------------+                  |
       |                              |            |                  |
       |                              |<-----------+                  |
       |                              |                               |
-      |                              | 6. Check blockchain (optional)|
+      |                              | 5. Check blockchain (optional)|
       |                              |------------------------------>|
       |                              |                               |
 ```
