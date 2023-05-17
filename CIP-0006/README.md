@@ -16,7 +16,7 @@ This CIP defines the concept of extended metadata for pools that is referenced f
 
 ## Motivation
 
-As the ecosystem around Cardano stake pools proliferate so will the desire to slice, organize and search pool information dynamically.  Currently the metadata referenced on chain provides 512 bytes that can be allocated across the four information categories ([delegation-design-specification Section 4.2)](https://hydra.iohk.io/build/790053/download/1/delegation_design_spec.pdf):
+As the ecosystem around Cardano stake pools proliferate so will the desire to slice, organize and search pool information dynamically.  Currently the metadata referenced on chain provides 512 bytes that can be allocated across the four information categories ([delegation-design-specification Section 4.2)](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-delegation.pdf):
 
 | key           | Value                                |  Rules  |
 | ---           | ---                                  |  ---  |

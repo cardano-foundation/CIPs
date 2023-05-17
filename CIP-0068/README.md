@@ -38,6 +38,20 @@ To find the metadata for the `user token` you need to look for the output, where
 
 Lastly and most importantly, with this construction, the metadata can be used by a PlutusV2 script with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space. 
 
+### Labels
+
+Each asset name must be prefixed by a label. The intent of this label is to identifty the purpose of the token. For example, a reference NFT is identified by the label 100 and so every token considered a reference NFT should start its asset name with the the hex `000643b0`. This is following [CIP-0067](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067), which specifies how the label prefix should be formatted.
+
+Examples of asset names:
+| asset_name_label | asset_name_content | resulting_label_hex | resulting_content_hex | resulting_asset_name_hex     |
+|------------------|--------------------|---------------------|-----------------------|------------------------------|
+| 100              | GenToken           | 000643b0            | 47656e546f6b656e      | 000643b047656e546f6b656e     |
+| 100              | NeverGonna         | 000643b0            | 4e65766572476f6e6e61  | 000643b04e65766572476f6e6e61 |
+| 222              | GiveYouUp          | 000de140            | 47697665596f755570    | 000de14047697665596f755570   |
+
+For simplicity purposes, the document will use the label `(100)` or `(<label>)` in the following documentation, but understand it should follow the CIP-0067 specification.
+
+
 ### Reference NFT label
 
 This is the registered `asset_name_label` value
@@ -57,7 +71,7 @@ Some remarks about the above,
 1. The `user token` and `reference NFT` do not need to be minted in the same transaction. The order of minting is also not important.
 2. It may be the case that there can be multiple `user tokens` (multiple asset names or quantity greater than 1) referencing the same `reference NFT`.
 
-The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor:
+The datum in the output with the `reference NFT` contains the metadata at the first field of the constructor 0. The version number is at the second field of this constructor. The third field allows for arbitrary plutus data. This could be useful to forward relevant data to the plutus script:
 ```
 big_int = int / big_uint / big_nint
 big_uint = #6.2(bounded_bytes)
@@ -71,23 +85,28 @@ metadata =
   
 version = int
 
-datum = #6.121([metadata, version])
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, version, extra])
 ```
 
-## 222 NFT Standard
+#### 222 NFT Standard
 
-Besides the necessary standard for the `reference NFT` we're introducing two specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, semi fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
+Besides the necessary standard for the `reference NFT` we're introducing three specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, rich fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
 | 222                         | NFT          | NFT hold by the user's wallet making use of CIP-0025 inner structure |
 
 
-### Class
+##### Class
 
 The `user token` represents an NFT (non-fungible token).
 
-### Pattern
+##### Pattern
 
 The `user token` and `reference NFT` **must** have an identical name, preceded by the `asset_name_label` prefix.
 
@@ -96,7 +115,7 @@ Example:\
 `reference NFT`: `(100)Test123`
 
 
-### Metadata
+##### Metadata
 
 This is a low-level representation of the metadata, following closely the structure of CIP-0025. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
@@ -106,6 +125,7 @@ files_details =
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
     src : bounded_bytes ; UTF-8
+    ; ... Additional properties are allowed
   }
 
 metadata = 
@@ -115,16 +135,22 @@ metadata =
     ? mediaType : bounded_bytes, ; UTF-8
     ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
+    ; ... Additional properties are allowed
   }
   
-datum = #6.121([metadata, 1]) ; version 1
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
-{"constructor" : 0, "fields": [{"map": [{"k": "6E616D65", "v": "5370616365427564"}, {"k": "696D616765", "v": "697066733A2F2F74657374"}]}, {"int": 1}]}
+{"constructor" : 0, "fields": [{"map": [{"k": {"bytes": "6E616D65"}, "v": {"bytes": "5370616365427564"}}, {"k": {"bytes": "696D616765"}, "v": {"bytes": "697066733A2F2F74657374"}}]}, {"int": 1}]}
 ```
 
-### Retrieve metadata as 3rd party
+##### Retrieve metadata as 3rd party
 
 A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` they want to lookup. The steps are
 
@@ -133,7 +159,7 @@ A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5c
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
-### Retrieve metadata from a Plutus validator
+##### Retrieve metadata from a Plutus validator
 
 We want to bring the metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` in the Plutus validator context. To do this we
 
@@ -142,7 +168,7 @@ We want to bring the metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
-## 333 FT Standard
+#### 333 FT Standard
 
 The second introduced standard is the `333` FT standard with the registered `asset_name_label` prefix value
 
@@ -151,12 +177,12 @@ The second introduced standard is the `333` FT standard with the registered `ass
 | 333                         | FT           | FT hold by the user's wallet making use of Cardano foundation off-chain registry inner structure |
 
 
-### Class
+##### Class
 
 The `user token` is an FT (fungible token).
 
 
-### Pattern
+##### Pattern
 
 The `user token` and `reference NFT` **must** have an identical name, preceded by the `asset_name_label` prefix.
 
@@ -165,7 +191,7 @@ Example:\
 `reference NFT`: `(100)Test123`
 
 
-### Metadata
+##### Metadata
 
 This is a low-level representation of the metadata, following closely the structure of the Cardano foundation off-chain metadata registry. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
@@ -180,6 +206,7 @@ metadata =
     ? url: bounded_bytes, ; UTF-8
     ? logo: uri,
     ? decimals: int
+    ; ... Additional properties are allowed
   }
 
 ; A URI as a UTF-8 encoded bytestring.
@@ -187,16 +214,21 @@ metadata =
 ; Do not encode plain file payloads as URI.
 ; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
 ; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
-uri = bounded_bytes 
+uri = bounded_bytes
+
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
   
-datum = #6.121([metadata, 1]) ; version 1
+datum = #6.121([metadata, 1, extra]) ; version 1
 ```
 Example datum as JSON:
 ```json
-{"constructor" : 0, "fields": [{"map": [{"k": "6E616D65", "v": "5370616365427564"}, {"k": "6465736372697074696F6E", "v": "54686973206973206D79207465737420746F6B656E"}]}, {"int": 1}]}
+{"constructor" : 0, "fields": [{"map": [{"k": {"bytes": "6E616D65"}, "v": {"bytes": "5370616365427564"}}, {"k": {"bytes": "6465736372697074696F6E"}, "v": {"bytes": "54686973206973206D79207465737420746F6B656E"}}]}, {"int": 1}]}
 ```
 
-### Retrieve metadata as 3rd party
+##### Retrieve metadata as 3rd party
 
 A third party has the following FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` they want to lookup. The steps are
 
@@ -205,9 +237,92 @@ A third party has the following FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cb
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
-### Retrieve metadata from a Plutus validator
+##### Retrieve metadata from a Plutus validator
 
 We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` in the Plutus validator context. To do this we 
+
+1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken` (off-chain)
+2. Look up `reference NFT` and find the output it's locked in. (off-chain)
+3. Reference the output in the transaction. (off-chain)
+4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
+
+#### 444 RFT Standard
+
+The third introduced standard is the `444` Rich-FT standard with the registered `asset_name_label` prefix value
+
+| asset_name_label            | class        | description                                                          |
+| --------------------------- | ------------ | -------------------------------------------------------------------- |
+| 444                         | RFT          | RFT hold by the user's wallet making use of the union of CIP-0025 inner structure AND the Cardano foundation off-chain registry inner structure |
+
+Rich-Fungible tokens don't fit cleanly into the other two FT/NFT classes of tokens and thus need their own standard. An example of an RFT would be a fractionalized NFT. The single reference NFT `(100)` represents the NFT itself, and the many `(444)` tokens represent the fractionalized shares. Minting 100 tokens and setting decimals to 2 would represent a single NFT that is split into 100 fractions.
+
+##### Class
+
+The `user token` is an RFT (rich-fungible token).
+
+##### Pattern
+
+The `user token` and `reference NFT` **must** have an identical name, preceded by the `asset_name_label` prefix.
+
+Example:\
+`user token`: `(444)Test123`\
+`reference NFT`: `(100)Test123`
+
+##### Metadata
+
+This is a low-level representation of the metadata, following closely the structure of CIP-0025 with the optional decimals field added. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
+
+```
+files_details = 
+  {
+    ? name : bounded_bytes, ; UTF-8
+    mediaType : bounded_bytes, ; UTF-8
+    src : bounded_bytes ; UTF-8
+    ; ... Additional properties are allowed
+  }
+
+metadata = 
+  {
+    name : bounded_bytes, ; UTF-8
+    image : bounded_bytes, ; UTF-8
+    ? mediaType : bounded_bytes, ; UTF-8
+    ? description : bounded_bytes, ; UTF-8
+    ? decimals: int,
+    ? files : [* files_details]
+    ; ... Additional properties are allowed
+  }
+
+; A URI as a UTF-8 encoded bytestring.
+; The URI scheme must be one of `https`, `ipfs` or `data`
+; Do not encode plain file payloads as URI.
+; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
+; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
+uri = bounded_bytes
+
+; Custom user defined plutus data.
+; Setting data is optional, but the field is required
+; and needs to be at least Unit/Void: #6.121([])
+extra = plutus_data
+  
+datum = #6.121([metadata, 1, extra]) ; version 1
+```
+Example datum as JSON:
+```json
+{"constructor" : 0, "fields": [{"map": [{"k": {"bytes": "6E616D65"}, "v": {"bytes":"5370616365427564"}}, {"k": {"bytes": "6465736372697074696F6E"}, "v": {"bytes":"54686973206973206D79207465737420746F6B656E"}}, {"k": {"bytes": "696D616765"}, "v": {"bytes": "697066733A2F2F74657374"}}, {"k": {"bytes": "646563696D616C73"}, "v": {"int": 2}}]}, {"int": 1}]}
+```
+
+##### Retrieve metadata as 3rd party
+
+A third party has the following RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` they want to lookup. The steps are
+
+1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
+2. Look up `reference NFT` and find the output it's locked in.
+3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
+4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+
+##### Retrieve metadata from a Plutus validator
+
+We want to bring the metadata of the RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` in the Plutus validator context. To do this we 
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken` (off-chain)
 2. Look up `reference NFT` and find the output it's locked in. (off-chain)
@@ -223,7 +338,7 @@ In order to reference the correct UTxO containing the metadata, it needs to be a
 The security for the link is derived from the minting policy itself, so it's important to write the validator with the right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
 
 
-## Backward Compatibility
+### Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
 
@@ -241,6 +356,7 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 
 - CIP-0025: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025
 - CIP-0031: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031
+- CIP-0067: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
 
 ## Copyright
 
