@@ -7,7 +7,7 @@ Authors:
     - Juan Salvador Magán Valero <jmaganvalero@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/442
 Created: 2022-12-27
 License: CC-BY-4.0
 ---
