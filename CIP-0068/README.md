@@ -345,10 +345,10 @@ The `royalty token` is an NFT (non-fungible token).
 
 ##### Pattern
 
-The `royalty token` and `reference NFT` **must** have an identical name, preceded by the `asset_name_label` prefix.
+The `royalty token` and `reference NFT` **must** have an identical policy ID. The royalty token's name should be `Royalty`, preceded by the `asset_name_label` prefix.
 
 Example:\
-`royalty token`: `(500)Test123`\
+`royalty token`: `(500)Royalty`\
 `reference NFT`: `(100)Test123`
 
 ##### Metadata
@@ -390,7 +390,7 @@ royalty_info = #6.121([royalty_recipients, version, extra])
 
 A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to lookup the royalties. The steps are
 
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)TestToken`
+1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty`
 2. Look up `royalty NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
@@ -399,7 +399,7 @@ A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5c
 
 We want to bring the royalty metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` in the Plutus validator context. To do this we
 
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)TestToken` (off-chain)
+1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty` (off-chain)
 2. Look up `royalty NFT` and find the output it's locked in. (off-chain)
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `royalty NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
