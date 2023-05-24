@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 93
 Title: Authenticated Web3 HTTP requests
 Category: Tools
 Status: Proposed
