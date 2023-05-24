@@ -101,7 +101,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 39? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
 | 45? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
 | 46? | [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385/files) |
-| 48? | [Extended NFT metadata](https://github.com/cardano-foundation/CIPs/pull/249) |
 | 50? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 57? | [Plutus Smart-Contract Blueprint](https://github.com/cardano-foundation/CIPs/pull/258) |
@@ -124,6 +123,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 90? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 91? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
 | 92? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
+| 93? | [Authenticated Web3 HTTP requests](https://github.com/cardano-foundation/CIPs/pull/442) |
+| 94? | [SPO On-chain Polls](https://github.com/cardano-foundation/CIPs/pull/496) |
+| 95? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
+| 96? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
 ### Proposals Under Review (CPS)
@@ -149,7 +152,6 @@ The following list contains proposals that have been under review and for which 
 - [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375)
 - [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 - [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
-- [NFT Metadata extension tag](https://github.com/cardano-foundation/CIPs/pull/343)
 
 <p align="right"><i>Last updated on 2023-03-15</i></p>
 
