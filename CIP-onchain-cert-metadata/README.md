@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 96
 Title: On-chain dApp Certification Metadata
 Category: Metadata
 Status: Proposed
