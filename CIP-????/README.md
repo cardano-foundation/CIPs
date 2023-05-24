@@ -157,6 +157,13 @@ Another important aspect for security is how wallets process the payload. They c
 
 In addition to the aforementioned aspects, this CIP also aims to promote decentralization and enhance security and privacy by enabling users to sign and verify transactions without relying on external servers or third parties. By allowing users to create and sign their own payloads, this specification reduces the dependency on centralized authorities and enhances the security and privacy of the transactions.
 
+### Version history
+
+| Version | Date      | Author                         | Rationale              |   
+|:-------:|-----------|--------------------------------|------------------------|
+| v1      |2022-12-27 | Juan Salvador Magán Valero     | Initial release        |
+
+
 ### Reference implementation
 
 * [jmagan/passport-cardano-web3](https://github.com/jmagan/passport-cardano-web3)
