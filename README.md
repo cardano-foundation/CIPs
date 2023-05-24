@@ -80,6 +80,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 80 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
 | 82 | <strike>[Improved Rewards Scheme Parameters](./CIP-0082)</strike> | Inactive |
 | 83 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
+| 86 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
@@ -116,7 +117,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 | 84? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
 | 85? | [Sums-of-products in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/455) |
-| 86? | [NFT Metadata Update Oracles](https://github.com/cardano-foundation/CIPs/pull/430) |
 | 87? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
 | 88? | [Native Asset Policy Registration/Information Certificates](https://github.com/cardano-foundation/CIPs/pull/467) |
 | 89? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
