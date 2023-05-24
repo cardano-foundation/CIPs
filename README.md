@@ -153,7 +153,7 @@ The following list contains proposals that have been under review and for which 
 - [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 - [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
 
-<p align="right"><i>Last updated on 2023-03-15</i></p>
+<p align="right"><i>Last updated on 2023-05-24</i></p>
 
 ## Editors
 
