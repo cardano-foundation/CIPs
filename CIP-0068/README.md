@@ -337,24 +337,21 @@ The fourth introduced standard is the `500` Royalty NFT standard with the regist
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
 | 500                         | NFT          | Royalty NFT locked at a script containing a datum with royalty information |
 
-
-
 ##### Class
 
-The `royalty token` is an NFT (non-fungible token).
+The `royalty NFT` is an NFT (non-fungible token).
 
 ##### Pattern
 
-The `royalty token` and `reference NFT` **must** have an identical policy ID. The royalty token's name should be `Royalty`, preceded by the `asset_name_label` prefix.
+The ideal way to handle the `royalty NFT` is to have it under the same `policy id` as the collection. This will make the authentication process smoother and more efficient. However, a different `policy id` may be specified if necessary.
+
+The `asset name` **must** be `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0067/README.md) label `500` followed by the word "Royalty".
 
 Example:\
-`royalty token`: `(500)Royalty`\
+`royalty NFT`: `(500)Royalty`\
 `reference NFT`: `(100)Test123`
 
 ##### Metadata
-
-The ideal way to handle the royalty token is to have it under the same `policy id` as the collection. This will make the authentication process smoother and more efficient. However, Nebula allows for specifying a different `policy id` if necessary.\
-The `asset name` **must** be `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0067/README.md) label `500`.
 
 The royalty info datum is specified as follows (CDDL):
 
