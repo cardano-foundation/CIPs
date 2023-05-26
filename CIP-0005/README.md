@@ -51,8 +51,8 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_shared_vk`   | CIP-1854's address verification key                | Ed25519 public key                 |
 | `addr_shared_xsk`  | CIP-1854's address extended signing key            | Ed25519-bip32 extended private key |
 | `addr_shared_xvk`  | CIP-1854's address extended verification key       | Ed25519 public key with chain code |
-| `drep_sk`          | CIP-????'s DRep vote signing key                   | Ed25519 private key                |
-| `drep_vk`          | CIP-????'s DRep vote verification key              | Ed25519 public key                 |
+| `drep_sk`          | CIP-0095's DRep vote signing key                   | Ed25519 private key                |
+| `drep_vk`          | CIP-0095's DRep vote verification key              | Ed25519 public key                 |
 | `gov_sk`           | Governance vote signing key                        | Ed25519 private key                |
 | `gov_vk`           | Governance vote verification key                   | Ed25519 public key                 |
 | `cvote_sk`         | CIP-36's vote signing key                          | Ed25519 private key                |

@@ -896,7 +896,7 @@ for wallets implementing both APIs.
 ### Open Questions
 
 - The burden of transaction building to be placed on dApps or wallets?
-- Move DRep key to CIP-1852?
+- Move DRep key definitions into a CIP which is dedicated to describing CIP-1694 related credentials?
 - Is it necessary to provide a method to prove ownership of DRep key? and can
   CIP-30's `api.signData()` be used to prove ownership of multi-stake keys?
 - Is it sensible to place multi-stake key burden onto clients?
