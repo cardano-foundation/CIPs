@@ -81,6 +81,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 80 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
 | 82 | <strike>[Improved Rewards Scheme Parameters](./CIP-0082)</strike> | Inactive |
 | 83 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
+| 86 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
@@ -88,7 +89,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-03-15</i></p>
+<p align="right"><i>Last updated on 2023-05-24</i></p>
 
 > 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -102,7 +103,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 39? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
 | 45? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
 | 46? | [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385/files) |
-| 48? | [Extended NFT metadata](https://github.com/cardano-foundation/CIPs/pull/249) |
 | 50? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 62? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
@@ -117,14 +117,19 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 | 84? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
 | 85? | [Sums-of-products in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/455) |
-| 86? | [NFT Metadata Update Oracles](https://github.com/cardano-foundation/CIPs/pull/430) |
 | 87? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
 | 88? | [Native Asset Policy Registration/Information Certificates](https://github.com/cardano-foundation/CIPs/pull/467) |
 | 89? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
 | 90? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 91? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
 | 92? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
+| 93? | [Authenticated Web3 HTTP requests](https://github.com/cardano-foundation/CIPs/pull/442) |
+| 94? | [SPO On-chain Polls](https://github.com/cardano-foundation/CIPs/pull/496) |
+| 95? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
+| 96? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
+
+<p align="right"><i>Last updated on 2023-05-24</i></p>
 
 ### Proposals Under Review (CPS)
 
@@ -149,9 +154,8 @@ The following list contains proposals that have been under review and for which 
 - [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375)
 - [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 - [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
-- [NFT Metadata extension tag](https://github.com/cardano-foundation/CIPs/pull/343)
 
-<p align="right"><i>Last updated on 2023-03-15</i></p>
+<p align="right"><i>Last updated on 2023-05-24</i></p>
 
 ## Editors
 
