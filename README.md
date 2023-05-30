@@ -81,6 +81,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 80 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
 | 82 | <strike>[Improved Rewards Scheme Parameters](./CIP-0082)</strike> | Inactive |
 | 83 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
+| 85 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
 | 86 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -89,7 +90,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-05-24</i></p>
+<p align="right"><i>Last updated on 2023-05-30</i></p>
 
 > 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -102,21 +103,16 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 38? | [Arbitrary Script as Native Script Spending Conditions](https://github.com/cardano-foundation/CIPs/pull/309)
 | 39? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
 | 45? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
-| 46? | [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385/files) |
 | 50? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 56? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 62? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 69? | [Plutus Script Type Uniformization](https://github.com/cardano-foundation/CIPs/pull/321/) |
-| 70? | [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336) |
 | 72? | [DApp Registration](https://github.com/cardano-foundation/CIPs/pull/355) |
 | 73? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
 | 76? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
 | 77? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 79? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
-| 80? | [Transaction Serialization Deprecation Cycle](https://github.com/cardano-foundation/CIPs/pull/372) |
-| 81? | [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 | 84? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
-| 85? | [Sums-of-products in Plutus Core](https://github.com/cardano-foundation/CIPs/pull/455) |
 | 87? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
 | 88? | [Native Asset Policy Registration/Information Certificates](https://github.com/cardano-foundation/CIPs/pull/467) |
 | 89? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
@@ -127,6 +123,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 94? | [SPO On-chain Polls](https://github.com/cardano-foundation/CIPs/pull/496) |
 | 95? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
 | 96? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
+| 97? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
 | 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
 <p align="right"><i>Last updated on 2023-05-24</i></p>
@@ -142,7 +139,7 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 3? | [Smart Tokens](https://github.com/cardano-foundation/CIPs/pull/382) |
 | 4? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
 
-<p align="right"><i>Last updated on 2023-03-15</i></p>
+<p align="right"><i>Last updated on 2023-05-30</i></p>
 
 ## Stalled / Waiting For Authors
 
@@ -154,8 +151,11 @@ The following list contains proposals that have been under review and for which 
 - [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375)
 - [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 - [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
+- [On-chain Transaction Chaining](https://github.com/cardano-foundation/CIPs/pull/508)
+- [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385)
+- [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336)
 
-<p align="right"><i>Last updated on 2023-05-24</i></p>
+<p align="right"><i>Last updated on 2023-05-30</i></p>
 
 ## Editors
 
