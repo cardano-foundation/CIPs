@@ -384,7 +384,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
                     "type": "string",
                       "enum":["SPEND", "MINT"]
                 },
-                "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages)."
+                "description": "Purposes of the script, SPEND or MINT (notice it can be both for some modern Cardano languages)."
               },
               "type":{
                 "enum":["PLUTUS", "NATIVE"],
@@ -546,9 +546,9 @@ Since DIDs / Verifiable Credetials are not yet widely used in Cardano ecosystem,
 ### Categories
 `Categories` is a predefined enum with values defined in the CIP / schema, it is *NOT* a free text field, rationale for this is that dApp developers will have no idea what ontology / classification to use, which will likely result in many duplicates of the same thing.
 
-### Purpouse Field As an Array or as a Single Item?
+### Purpose Field As an Array or as a Single Item?
 It may have been visible that we have a `purpose` field, which can be: "SPEND" or "MINT", those fields directly map to what is allowed by a Cardano Smart Contract. As of the time of writing CIP - PlutusTx does not allow a script to be both of type: "SPEND" and "MINT", however, there are new
-languages on Cardano being worked on where they already allow one validator to be both spending UTxOs and minting tokens - all with the same script hash. To be open for the future it has been agreed to turn `purpouse` field into `purpouses` and make it a JSON array.
+languages on Cardano being worked on where they already allow one validator to be both spending UTxOs and minting tokens - all with the same script hash. To be open for the future it has been agreed to turn `purpose` field into `purposes` and make it a JSON array.
 
 ### Parametrised Scripts
 On Cardano, there are parametrised scripts, meaning that before compilation takes place, it is possible to pass certain parameters instead of using `Datum`.
@@ -609,5 +609,4 @@ update the proposal to be in `ACTIVE` state.
 - Reference implementation: https://github.com/Cardano-Fans/crfa-dapp-registration-and-certification-service (incubator)
 
 ## Copyright
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
-[Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
+[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
