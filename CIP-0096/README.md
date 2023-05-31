@@ -121,7 +121,7 @@ This schema can be translated into a JSON schema:
         "subject": {
             "type": "string",
             "description": "Can be anything. Subject of the certification. It should match the registration metadata subject.",
-            "pattern": "^[\\p{L}\\p{N}\\p{P}\\p{Z}]{1,64}$"
+            "pattern": "^[a-zA-Z0-9]{1,64}$"
         },
         "rootHash": {
             "type": "string",
@@ -206,7 +206,7 @@ This hash is calculated by taking the entire metadata tree object, ordering the 
 
 `schemaVersion`: A versioning number for the json schema of the on-chain metadata. This current description shall be refered as `schemaVersion: 1`.
 
-`metadata`: An array of links to the dApp's metadata. The metadata is a JSON object that contains the dApp's metadata in accordance with [CIP 26](https://cips.cardano.org/cips/cip26/)
+`metadata`: An array of links to the dApp's metadata. The metadata is a JSON object that follows the specification below.
 
 Values for all fields shall be shorter than 64 characters to be able to be included on-chain.
 
@@ -247,8 +247,6 @@ The Dapp Certification certificate is complemented by off-chain metadata that ca
 `disclaimer`, a string, that contains the legal disclaimer from the certification issuer.
 
 `script` an array of objects that represents the whole DApp's on-chain script. Each object is comprised of:
-
-- `fullScriptHash`, a string, is the prefix and script hash or script hash+staking key
 - `scriptHash`, a string, is the script hash or script hash+staking key
 - `contractAddress`, a string, the script address
 
