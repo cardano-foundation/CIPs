@@ -453,10 +453,10 @@ representing policy IDs and token name:
 
 -   In version 1,
 policy IDs and token names must be expressed as text
-(see [cddl/version_1.cddl](cddl/version_1.cddl)).
+(see [cddl/version_1.cddl](./cddl/version_1.cddl)).
 -   In version 2,
 policy IDs and token names must be expressed as raw bytes
-(see [cddl/version_2.cddl](cddl/version_2.cddl)).
+(see [cddl/version_2.cddl](./cddl/version_2.cddl)).
 
 By default, all CIP-86 metadata updates use version 1.
 However, version 2 can be used if the `version` field of the object
