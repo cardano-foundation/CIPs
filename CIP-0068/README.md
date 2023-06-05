@@ -343,7 +343,7 @@ The `royalty NFT` is an NFT (non-fungible token).
 
 ##### Pattern
 
-The ideal way to handle the `royalty NFT` is to have it under the same `policy id` as the collection. This will make the authentication process smoother and more efficient. However, a different `policy id` may be specified if necessary.
+The `royalty NFT` **must** have an identical `policy id` as the collection.
 
 The `asset name` **must** be `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0067/README.md) label `500` followed by the word "Royalty".
 
