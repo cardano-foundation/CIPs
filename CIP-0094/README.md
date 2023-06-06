@@ -2,12 +2,14 @@
 CIP: 94
 Title: On-chain SPO polls
 Category: Tools
-Status: Proposed
+Status: Active
 Authors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Markus Gufler <markus.gufler-ext@cardanofoundation.org>
 Implementors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
+    - Ashish Prajapati <https://cardanoscan.io/contactUs>
+    - Dmytro Stashenko <https://preprod.adastat.net/about>
 Discussions:
     - https://github.com/cardano-foundation/cips/pull/496
     - https://github.com/cardano-foundation/cips/pull/102
@@ -165,7 +167,11 @@ A1185EA202582029093FD43FC30BA31E306AF06CE
 </tbody>
 </table>
 
-The transaction carrying the answer metadata must then **be signed using a stake pool operator cold key**. Because cold key are not payment keys, this requires specifying an extra required signer on the transaction (transaction's field number 14 as per [Babbage's CDDL](https://github.com/input-output-hk/cardano-ledger/blob/cffa75fdbd800cda60997791e51bf02f2af0c42b/eras/babbage/test-suite/cddl-files/babbage.cddl#L66)). The signature shall be produced in an air-gapped environment only.
+The transaction carrying the answer metadata must then **be signed using a stake pool operator cold key**. Because cold key are not payment keys, it is required to specify an extra required signer on the transaction (transaction's field number 14 as per [Babbage's CDDL](https://github.com/input-output-hk/cardano-ledger/blob/cffa75fdbd800cda60997791e51bf02f2af0c42b/eras/babbage/test-suite/cddl-files/babbage.cddl#L66)) to prevent malicious nodes from potentially propagating transactions without the necessary key witnesses.
+
+Alternatively, operators that are unable to sign arbitrary transactions due to hardware limitations can opt for stake pool update-registration certificate and attach the transaction metadata to it. Because an update-registration requires a signature from the cold key, the extra required signer field is redundant in that situation.
+
+Regardless of the method, the signature shall be produced in an air-gapped environment only.
 
 > **Warning**
 >
@@ -252,24 +258,32 @@ Other tools are then free to replicate the approach taken in the cardano-cli, bu
 
 ### Acceptance Criteria
 
-- [ ] Visible agreement and engagement from a large set of SPOs
-- [ ] The Cardano Foundation has conducted a first trial poll on mainnet
+- [x] The Cardano Foundation has conducted a first trial poll on mainnet ([CardanoScan](https://cardanoscan.io/spo-polls/96861fe7da8d45ba5db95071ed3889ed1412929f33610636c072a4b5ab550211) / [AdaStat](https://preprod.adastat.net/polls/62c6be72bdf0b5b16e37e4f55cf87e46bd1281ee358b25b8006358bf25e71798))
+- [x] Visible agreement and engagement from a large set of SPOs
+  - [x] Multiple SPOs workshops
+  - [x] ~800 stake pools participating on the first mainnet poll
+  - [x] ~11B stake answered the first mainnet poll
 
 ### Implementation Plan
+
+- [x] Provide a reference implementation for the signing method
+  - [x] [`cardano-cli`](https://github.com/input-output-hk/cardano-node/tree/master/cardano-cli#readme) [has been updated](https://github.com/input-output-hk/cardano-node/pull/5050) to provide support for constructing and signing relevant transactions.
+  - [x] Created [scripts to crawl the chain](https://github.com/cardano-foundation/CIP-0094-polls/tree/main/crawler#cip-0094-chain-crawler) for results.
 
 - [ ] Possibly add support for KES signing as an alternative to EdDSA from the cold key and the VRF proving.
 
 #### Tools Support
 
-- [x] [`cardano-cli`](https://github.com/input-output-hk/cardano-node/tree/master/cardano-cli#readme) will be updated to provide support for constructing and signing relevant transactions
-  - [x] See [input-output-hk/cardano-node#5050](https://github.com/input-output-hk/cardano-node/pull/5050).
-- [ ] [`cncli`](https://github.com/cardano-community/cncli) might be updated with similar support
+- [x] [`cncli`](https://github.com/cardano-community/cncli) has been updated with similar support
+- [x] [`CardanoScan`](https://cardanoscan.io/spo-polls) now lists available and past polls directly on their web UI.
+- [x] [`AdaStat`](https://preprod.adastat.net/polls) now lists available and past polls directly on their web UI.
 - [ ] [`cardano-signer`](https://github.com/gitmachtl/cardano-signer) might be updated with similar support
 
 #### Test runs
 
-- [ ] Announce a testnet run (on Preprod) and invite SPOs to a workshop session to conduct a testnet poll.
-- [ ] Possibly do a second test run, but on mainnet this time.
+- [x] Announce a testnet run (on Preprod) and invite SPOs to a workshop session to conduct a testnet poll.
+  - See the [Preprod poll on AdaStat](https://preprod.adastat.net/polls/62c6be72bdf0b5b16e37e4f55cf87e46bd1281ee358b25b8006358bf25e71798).
+- [ ] ~~Possibly do a second test run, but on mainnet this time.~~
 
 ## Copyright
 
