@@ -335,7 +335,7 @@ The fourth introduced standard is the `500` Royalty NFT standard with the regist
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
-| 500                         | NFT          | Royalty NFT locked at a script containing a datum with royalty information |
+| 500                         | NFT          | Royalty NFT stored in a UTxO containing a datum with royalty information |
 
 ##### Class
 
@@ -382,6 +382,8 @@ extra = plutus_data
 
 royalty_info = #6.121([royalty_recipients, version, extra])
 ```
+
+To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the script address of a validator that ensures the specified fees are not arbitrarily changed, such as an always-fails validator.
 
 ##### Retrieve metadata as 3rd party
 
