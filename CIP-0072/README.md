@@ -639,7 +639,7 @@ Once `Acceptance Criteria` are met and all comments / feedback from dApp develop
 
 ### Acceptance Criteria
 
-- At least 3 dApps register via following this CIP
+- At least 3 non trivial dApps from 3 different teams register on-chain / off-chain via following this CIP
 - At least one Implementator (main-net) implements the store indexing this CIP metadata from on-chain
 
 ### Implementation Plan
