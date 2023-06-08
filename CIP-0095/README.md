@@ -4,11 +4,11 @@ Title: Cardano dApp-Wallet Web Bridge Governance Extension
 Category: Wallets
 Status: Proposed
 Authors:
-    - Ryan Williams <ryan.williams@iohk.io>
+  - Ryan Williams <ryan.williams@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/509
-    - https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
+  - https://github.com/cardano-foundation/cips/pulls/509
+  - https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
 Created: 2022-02-24
 License: CC-BY-4.0
 ---
@@ -50,6 +50,9 @@ CIP-1694's governance design.
 We define the following specification as an extension to the specification
 described within CIP-30.
 
+- todo: explain
+  [extension](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#extension)
+
 > **Note** This specification will evolve as the proposed ledger governance
 > model matures. It is likely the precise data structures outlined here will be
 > need to be adjusted.
@@ -76,6 +79,9 @@ must follow:
 
 `m / 1718' / 1815' / account' / chain / address_index`
 
+> **Note** `1718` was the year that François-Marie adopted the pseudonym
+> Voltaire.
+
 We strongly suggest that a maximum of one set of DRep credentials should be
 associated with one wallet account, this can be achieved by setting `chain=0`
 and `address_index=0`. Thus avoiding the need for DRep Key discovery.
@@ -84,14 +90,12 @@ We believe the overhead that would be introduced by "multi-DRep" accounts is an
 unjustified expense. Future iterations of this specification may expand on this,
 but at present this is seen as unnecessary.
 
-> **Note** `1718` was the year that François-Marie adopted the pseudonym
-> Voltaire.
-
 #### Tooling
 
 Supporting tooling should clearly label these key pairs as "CIP-95 DRep Keys".
 
-Bech32 prefixes of `drep_sk` and `drep_vk` should be used.
+Bech32 prefixes of `drep_sk` and `drep_vk` should be used, as described in
+[CIP-0005](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md).
 
 Examples of acceptable `keyType`s for supporting tools:
 
@@ -104,7 +108,7 @@ For hardware implementations:
 
 | `keyType`                          | Description                    |
 | ---------------------------------- | ------------------------------ |
-| `CIP95DRepVerificationKey_ed25519` | Hardware DRep Verification Key |     
+| `CIP95DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
 | `CIP95DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
 
 ### Data Types
@@ -137,352 +141,28 @@ type PubStakeKey = string;
 A hex string representing 32 byte Ed25519 public key used as a staking
 credential.
 
-#### MetadataAnchor
+#### Tx TODO
+
+unsigned, unwitnessed Tx containing a
+
+#### SubmittedTransaction
 
 ```ts
-interface MetadataAnchor {
-  metadataURL: string;
-  metadataHash: string;
-}
-```
-
-This interface represents a metadata anchor which can be related to particular
-on-chain entities.
-
-- `metadataURL`: A string containing the URL-to-plaintext version of the
-  metadata.
-- `metadataHash`: A string containing a Blake2b-256 hash of the metadata
-  plaintext, which is stored at the metadataURL. This hash allows clients to
-  verify the correctness of data presented at metadataURL.
-
-> **Note** This specification is not concerned with how metadata hosted.
-
-#### DelegationCertificate
-
-```ts
-interface DelegationCertificate {
-  target: DRepID | "Abstain" | "No Confidence";
-  stakeKey: PubStakeKey;
-}
-```
-
-This interface represents a vote delegation certificate that has been submitted
-to chain and included within a block.
-
-- `target`: The target of the delegation, DRep ID provided if the delegation was
-  to a
-  [registered DRep](https://github.com/JaredCorduan/CIPs/blob/voltaire-v1/CIP-1694/README.md#registered-dreps).
-  If delegating to a
-  [pre-defined DRep](https://github.com/JaredCorduan/CIPs/blob/voltaire-v1/CIP-1694/README.md#pre-defined-dreps)
-  then the name.
-- `stakeKey`: The public stake key acting as the stake credential of the Ada
-  holder who has submitted the delegation.
-
-#### SignedDelegationCertificate
-
-```ts
-interface SignedDelegationCertificate {
-  certificate: DelegationCertificate;
+interface SubmittedTransaction {
+  tx: ;
   txHash: string;
   witness: string;
 }
 ```
 
-This interface represents a vote delegation certificate that has been submitted
-to chain and included within a block.
+This interface represents a
 
-- `certificate`: Contains the `DRepRegistrationCertificate` object.
+- `tx`:
 - `txHash`: A string containing the hash of the transaction which contained this
   certificate that was submitted to chain and included in a block. This is to be
   used by clients to track the status of the delegation transaction on-chain.
 - `witness`: A string containing the stake credential witness attached to the
   certificate.
-
-#### DRepRegistrationCertificate
-
-```ts
-interface DRepRegistrationCertificate {
-  dRepKey: PubDRepKey;
-  metadataAnchor?: MetadataAnchor;
-  depositAmount?: number;
-  // reward address for deposit return TBC
-}
-```
-
-This interface represents a DRep registration certificate as described in
-[CIP-1698 Delegated Representatives](https://github.com/JaredCorduan/CIPs/blob/voltaire-v1/CIP-1694/README.md#delegated-representatives-DReps).
-//todo: link CDDL
-
-- `dRepKey`: The public side of the DRep Key pair used for witnessing the
-  certificate and to be hashed to provide DRep ID.
-- `metadataAnchor`: Optionally allows the linking of off-chain metadata.
-- `depositAmount`: Optionally supplied by the client, if the user is registering
-  for the first time a deposit amount is supplied.
-
-#### SignedDRepRegistrationCertificate
-
-```ts
-interface SignedDRepRegistrationCertificate {
-  certificate: DRepRegistrationCertificate;
-  txHash: string;
-  witness: string;
-}
-```
-
-This is returned from the wallet back to the client once a DRep registration
-certificate is submitted to chain and included in a block.
-
-- `certificate`: Contains the `DRepRegistrationCertificate` object.
-- `txHash`: A string containing the hash of the transaction which contained this
-  certificate that was submitted to chain and included in a block. This is to be
-  used by dApps to track the status of the transaction on-chain.
-- `witness`: A string containing the DRep credential witness attached to the
-  certificate.
-
-#### DRepRetirementCertificate
-
-```ts
-interface DRepRetirementCertificate {
-  dRepKey: PubDRepKey;
-  expirationEpoch: number;
-}
-```
-
-This data structure is used to represent a DRep retirement certificate as
-described in
-[CIP-1698 Delegated Representatives](https://github.com/JaredCorduan/CIPs/blob/voltaire-v1/CIP-1694/README.md#delegated-representatives-DReps).
-//todo: link CDDL
-
-- `dRepKey`: The public side of the DRep Key pair used for witnessing the
-  certificate and to be hashed to obtain the required DRep ID.
-- `expirationEpoch`: An integer representing the Cardano epoch number after
-  which the DRep will retire.
-
-#### SignedDRepRetirementCertificate
-
-```ts
-interface SignedDRepRetirementCertificate {
-  certificate: DRepRetirementCertificate;
-  txHash: String;
-  witness: string;
-}
-```
-
-This is returned from the wallet back to the client once a DRep retirement
-certificate is submitted to chain and included in a block.
-
-- `certificate`: Contains the `DRepRetirementCertificate` object.
-- `txHash`: A string containing the hash of the transaction which contained this
-  certificate that was submitted to chain and included in a block. This is to be
-  used by clients to track the status of the transaction on-chain.
-- `witness`: A string containing the dRep credential witness attached to the
-  certificate.
-
-#### Governance Action Types
-
-Here we outline interfaces for each governance action which need to support
-additional data to the ledger
-
-##### NewCommittee
-
-```ts
-interface NewCommittee {
-  keyHashes: string[];
-  quorum: number;
-}
-```
-
-Interface representing a governance action to introduce a new committee/quorum,
-as described in
-[Conway ledger specification `new_commitee`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L126).
-
-- `keyHashes`: A string list representing the 28-byte Blake2b-224 hash digests
-  of the new committee's keys.
-- `committeeSize`: A number representing the needed quorum for the new
-  committee.
-
-##### UpdateConstitution
-
-```ts
-interface UpdateConstitution {
-  constitutionHash: string;
-}
-```
-
-Interface representing a governance action to update the Cardano Constitution
-document, as described in
-[Conway ledger specification `new_constitution`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L128).
-
-- `constitutionHash`: A string containing the 32-byte Blake2b-256 hash digest of
-  the new constitution document.
-
-##### HardForkInit
-
-```ts
-interface HardForkInit {
-  protocolVer: number;
-}
-```
-
-Interface representing a governance action to initiate a Hard-Fork, as described
-in
-[Conway ledger specification `hard_fork_initiation_action`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L120).
-
-- `protocolVer`: A number representing the new major protocol version too
-  hard-fork to.
-
-##### UpdateParameters
-
-```ts
-interface UpdateParameters {
-  params: {
-    key: string;
-    newValue: number;
-  }[];
-}
-```
-
-// todo: make a better representation for this Interface representing a
-governance action to update values of protocol parameters, as described in
-[Conway ledger specification `parameter_change_action`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L118).
-
-- `params`: An array of objects representing the parameters to be adjusted and
-  their new values.
-- `key`: The protocol parameter to be adjusted.
-- `newValue`: A string array of each parameters new value.
-
-##### TreasuryWithdrawal
-
-```ts
-interface TreasuryWithdrawal {
-  mappings: {
-    recipient: string;
-    amount: number;
-  }[];
-}
-```
-
-Interface representing a governance action to withdraw funds from the Cardano
-treasury, as described in
-[Conway ledger specification `treasury_withdrawals_action`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L122).
-
-- `mappings`: An array of objects representing reward addresses and amounts in
-  Ada.
-- `recipient`: A string representing a reward account address.
-- `amount`: A number representing the amount of Lovelace to send to the
-  corresponding recipient.
-
-#### GovernanceActionID
-
-```ts
-interface GovernanceActionID {
-  transactionID: string;
-  govActionIndex: number;
-}
-```
-
-Interface representing a governance action ID, as described in
-[Conway ledger specification `governance_action_id`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L145).
-
-- `transactionID`: A 32-byte Blake2b-256 hash digest of the transaction
-  containing the governance action.
-- `govActionIndex`: The index within the transaction body pointing to the
-  governance action.
-
-#### GovernanceAction
-
-```ts
-interface GovernanceAction {
-  actionType:
-    | "MotionOfNoConfidence" // no payload
-    | NewCommittee
-    | UpdateConstitution
-    | HardForkInit
-    | UpdateParameters
-    | TreasuryWithdrawal
-    | "Info"; // no payload
-  lastAction: GovernanceActionID;
-  depositAmount: number;
-  rewardAddress: string;
-  metadataAnchor: MetadataAnchor;
-}
-```
-
-Interface representing a governance action proposal to be submitted in a
-transaction, to chain, as described in
-[Conway ledger specification `proposal_procedure`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#97).
-
-- `actionType`: The governance action type, with needed additional payload data.
-- `lastAction`: A `GovernanceActionID` object identifying the preceding
-  governance action of this type.
-- `depositAmount`: A number representing the number of Lovelace deposited for
-  this action.
-- `rewardAddress`: A string containing the address where the deposit will be
-  returned to.
-- `metadataAnchor`: Used to allow the linking of off-chain metadata.
-
-#### SignedGovernanceAction
-
-```ts
-interface SignedGovernanceAction {
-  action: GovernanceAction;
-  governanceActionID: GovernanceActionID;
-}
-```
-
-Interface representing a governance action which has been successfully submitted
-to chain and included in a block.
-
-- `action`: Contains the submitted `GovernanceAction` object.
-- `governanceActionID`: A `GovernanceActionID` object representing the ID of the
-  submitted governance action.
-
-> **Note** Unlike other 'signed' data structures we omit a witness field, this
-> is because verification from client applications is not necessary.
-
-#### Vote
-
-```ts
-interface Vote {
-  DRepKey: PubDRepKey;
-  governanceActionID: GovernanceActionID;
-  choice: "Yes" | "No" | "Abstain";
-  metadataAnchor?: MetadataAnchor;
-}
-```
-
-An interface used to represent an unsigned vote transaction, as described in
-[Conway ledger specification `voting_procedure`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#89).
-
-- `DRepKey`: The public side of the DRep Key pair used for witnessing the vote.
-- `governanceActionID`: A `GovernanceActionID` object representing the target
-  governance action for this vote.
-- `choice`: A string representing the user's choice for the governance action
-  vote, must be either 'Yes', 'No' or 'Abstain'.
-- `metadataAnchor`: Optionally used to allow the linking of off-chain metadata
-  in a way to ensure correctness.
-
-> **Note** This interface does not map directly to the
-> [Conway ledger specification `voting_procedure`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L79),
-> this is because this specification only caters for DRep role.
-
-#### SignedVote
-
-```ts
-interface SignedVote {
-  vote: Vote;
-  txHash: string;
-  witness: string;
-}
-```
-
-Interface representing a vote transaction which has been successfully submitted
-to chain and included in a block.
-
-- `vote`: Contains the `Vote` object representing the submitted vote.
-- `txHash`: A string containing the hash of the transaction which contained this
-  submitted vote.
-- `witness`: The governance credential witness for this vote.
 
 ### Error Types
 
@@ -581,123 +261,163 @@ for the case of
 
 An array of the connected user's active stake keys.
 
-#### `api.submitDelegation(DelegationCertificate[]): Promise<SignedDelegationCertificate[]>`
+#### `api.submitVoteDelegation(delegations: [tx, pubStakeKey]): Promise<SubmittedTransaction[]>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
-This endpoint requests the wallet to build, sign and submit vote delegation
-certificates for a supplied DRepID and public stake key. These certificates are
-described **todo: add CDDL when available**. This must be signed by the secret
-key of the provided public stake key.
+This endpoint requests the wallet to inspect, sign and submit transaction(s)
+containing vote delegation certificates. The wallet should articulate this
+request from client application in a explicit and highly informative way. Users
+must be shown the target of the delegation (DRepID or a predefined DRep
+identifier) and must be informed which of their stake keys are being used. For
+the case of multiple delegations at once, the user may only be asked for
+permission to authorize all at once, but this can depend on wallet's
+implementation.
+
+If user grants permission, each transaction must be signed by the secret key of
+the provided public stake key, with the signature and key to be added to the
+transaction witness set before submission.
 
 By allowing clients to supply the stake key we are placing the burden of
-multi-governance-delegation management onto the client, reducing the complexity
-for wallet implementations.
+"multi-governance-delegation" management onto the client, reducing the
+complexity for wallet implementations. By forcing wallets to inspect these
+certificates it allows the user to catch malicious client applications
+attempting to insert their own delegation targets.
 
-The user's permission to sign must be requested by the wallet, additionally
-wallets may wish to display the contents of the certificate to the user to
-check. This allows for the user to catch malicious clients attempting to alter
-the certificate's contents. It is up to the wallet to decide if user
-permission's is required for each signature or one permission granted to sign
-all.
+##### Errors
 
 One `TxSignError` should be returned if there is a signature error with any of
 the certificates.
 
 ##### Returns
 
-This returns an array of `SignedDelegationCertificate` objects which contains
-all the details of the submitted delegation certificate, for the client to
-confirm. The returned `txHash`s can be used by the client to track the status of
-the transactions containing the certificates on Cardano.
+This returns an array of `SubmittedTransaction` objects which contain the
+details of the submitted delegation certificates, for the client to confirm. The
+returned `txHash`s can be used by the client to track the status of the
+transactions containing the certificates on Cardano.
 
-#### `api.submitDRepRegistration(certificate: DRepRegistrationCertificate): Promise<signedDRepRegistrationCertificate>`
+#### `api.submitDRepRegistration(tx, pubDRepKey): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
-This endpoint requests the wallet to build, sign and submit a DRep registration
-certificate as described **todo: add CDDL when available**. The wallet must sign
-the certificate using the secret side of the supplied DRep public key presented
-in the `DRepKey` field.
+This endpoint requests the wallet to inspect, sign and submit a transaction
+containing a DRep registration certificate. The wallet should articulate this
+request from client application in a explicit and highly informative way. Users
+should be made aware of the type of certificate, associated DRepID, metadata
+anchor and or deposit amount.
 
-The user's permission to sign this transaction must be requested for by the
-wallet, additionally wallets may wish to display the contents of the certificate
-to the user to check.
+If user grants permission, the transaction must be signed by the secret key of
+the provided public DRep Key, with the signature and key to be added to the
+transaction witness set before submission.
 
-Wallets should be responsible for handling the payment of deposit required with
-the submission of this certificate shown by the `depositAmount` field.
+By allowing clients to supply the DRep Key and choose UTxOs we are placing the
+burden of managing a user's DRep registration deposit on the application. By
+forcing wallets to inspect these certificates it allows the user to catch
+malicious client applications attempting to insert their own data into the
+certificate.
+
+##### Errors
+
+One `TxSignError` should be returned if there is a signature error with any of
+the certificates.
 
 ##### Returns
 
-This returns a `signedDRepRegistrationCertificate` object which contains all the
-details of the submitted registration certificate, for the client to confirm.
-The returned `txHash` can be used by the client to track the status of the
-transaction containing the certificate on Cardano.
+This returns a `SubmittedTransaction` object which contains all the details of
+the submitted registration certificate, for the client to confirm. The returned
+`txHash` can be used by the client to track the status of the transaction
+containing the certificate on Cardano.
 
-#### `api.submitDRepRetirement(certificate: DRepRetirementCertificate): Promise<SignedDRepRetirementCertificate>`
+#### `api.submitDRepRetirement(tx, pubDRepKey): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
-This endpoint requests the wallet to build, sign and submit a DRep retirement
-certificate as described in CIP-1694 **todo: add CDDL when available**. The
-wallet must sign the certificate using the secret side of the supplied dRep
-public key presented in the `DRepKey` field.
+This endpoint requests the wallet to inspect, sign and submit a transaction
+containing a DRep retirement certificate. The wallet should articulate this
+request from client application in a explicit and highly informative way. Users
+should be made aware of the type of certificate, associated DRepID and metadata
+anchor.
 
-The user's permission to sign this transaction must be requested for by the
-wallet, additionally wallets may wish to display the contents of the certificate
-to the user to check.
+If user grants permission, the transaction must be signed by the secret key of
+the provided public DRep Key, with the signature and key to be added to the
+transaction witness set before submission.
+
+By forcing wallets to inspect these certificates it allows the user to catch
+malicious client applications attempting to insert their own data into the
+certificate.
+
+##### Errors
+
+One `TxSignError` should be returned if there is a signature error with any of
+the certificates.
 
 ##### Returns
 
-This returns a `SignedDRepRetirementCertificate` object which contains all the
-details of the submitted retirement certificate, for the client to confirm. The
-returned `txHash` can be used by the client to track the status of the
-transaction containing the certificate on Cardano.
+This returns a `SubmittedTransaction` object which contains all the details of
+the submitted retirement certificate, for the client to confirm. The returned
+`txHash` can be used by the client to track the status of the transaction
+containing the certificate on Cardano.
 
-#### `api.submitVote(votes: Vote[]): Promise<SignedVote>[]`
+#### `api.submitVote([tx, pubDRepKey]): Promise<SubmittedTransaction>[]`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
-This endpoint requests the wallet to build, sign and submit transaction(s)
-containing supplied data in the vote field as described in the
-[ledger conway specification](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L79).
-The wallet must create and attach a governance credential witness using the
-secret side of the supplied public DRep key. Wallets using this API should
-always fill in the the role field with DRep.
+This endpoint requests the wallet to inspect, sign and submit transaction(s)
+containing votes. The wallet should articulate this request from client
+application in a explicit and highly informative way. For each vote, users must
+be shown the governance action ID, vote choice (yes, no, abstain) and metadata
+anchor. For the case of multiple votes at once, the user may only be asked for
+permission to authorize all at once, but this can depend on wallet's
+implementation.
 
-The user's permission to sign must be requested by the wallet, additionally
-wallets should display the contents of the vote transaction to the user to
-check. This allows for the user to catch malicious clients attempting to alter
-the vote's contents. It is up to the wallet to decide if user permission's is
-required for each signature or one permission granted to sign all.
+If user grants permission, each transaction must be signed by the secret key of
+the provided public stake key, with the signature and key to be added to the
+transaction witness set before submission.
+
+By forcing wallets to inspect these votes it allows the user to catch malicious
+client applications attempting to alter the vote's contents.
+
+##### Errors
 
 One `TxSignError` should be returned if there is a signature error with any of
 the transactions.
 
 ##### Returns
 
-This returns an array of `SignedVote` objects, matching each `Vote` passed at
-invocation. The returned `txHash` fields can be used by the client to track the
-status of the submitted vote transactions.
+This returns an array of `SubmittedTransaction` objects which contain the
+details of the submitted votes, for the client to confirm. The returned
+`txHash`s can be used by the client to track the status of the transactions
+containing the certificates on Cardano.
 
-#### `api.submitGovernanceAction(action: GovernanceAction): Promise<SignedGovernanceAction>`
+#### `api.submitGovernanceAction(tx): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
-This endpoint requests the wallet to build, sign and submit a transaction
-containing supplied data in the governance action field as described in the
-[ledger conway specification](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L94).
+This endpoint requests the wallet to inspect, sign and submit a transaction
+containing a governance action. The wallet should articulate this request from
+client application in a explicit and highly informative way. For the governance
+action the user must be shown the amount of ADA to be locked as deposit,
+governance action type and the metadata anchor.
 
-Wallets should be responsible for handling the payment of deposit required with
-the submission of this certificate. This is in accordance with the
-`depositAmount` field.
+If user grants permission, the transaction must be signed using the wallets
+payment key and submitted.
+
+By allowing clients to choose UTxOs, we are placing the burden of managing the
+deposit on the application. By forcing wallets to inspect these transactions it
+allows the user to catch malicious client applications attempting to insert
+their own data into the governance action.
+
+##### Errors
+
+One `TxSignError` should be returned if there is a signature error with any of
+the transactions.
 
 ##### Returns
 
-This returns a `SignedGovernanceAction` object which contains all the details of
-the submitted governance action submission, for the client to confirm. The
-returned `txHash` can be used by the client to track the status of the
-transaction on Cardano.
+This returns a `SubmittedTransaction` object which contains all the details of
+the submitted governance action, for the client to confirm. The returned
+`txHash` can be used by the client to track the status of the transaction
+containing the certificate on Cardano.
 
 ### Examples of Flows
 
@@ -714,7 +434,9 @@ transaction on Cardano.
 4. **Chain Lookup:** The client uses a chain indexer to work out the governance
    state of the provided credentials.
 
-#### Vote Delegation
+TODO: add updated flows for delegation and DRep registration
+
+<!-- #### Vote Delegation
 
 Assume a "DRep Aggregator/Explorer" specialized client, who aggregates DRep
 metadata from on-chain registration certificates to show to prospective
@@ -750,7 +472,7 @@ Assume that connection has already been established via
    a block.
 3. **Feedback to user:** The wallet returns a
    `SignedDRepRegistrationCertificate` and the client uses the `txHash` to track
-   the status of the transaction on-chain, providing feedback to the user.
+   the status of the transaction on-chain, providing feedback to the user. -->
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -784,7 +506,7 @@ combined functionality and would encourage wallet providers to pursue this. But
 we understand that this may add overhead to wallet designs so offer this API as
 an alternative.
 
-### Why these DReps and Ada Holders
+### Why these DReps and Ada Holders?
 
 This proposal only caters to two types of actor described in CIP-1694; Ada
 holders and DReps, this decision was three fold. Primarily this is to allow
@@ -797,33 +519,23 @@ represent the majority of participants. These alternative credentials are
 unlikely to be stored within standard wallet software which may interface with
 this API.
 
-### Transaction Burden
+### The Role of the Wallet
 
-Endpoints defined here require wallets to generate, sign and submit transactions
-to chain. The possible minimum ask for wallets is to just sign transactions this
-is because signing keys should always remain within the wallet's control. This
-alternative approach moves the complexity of transaction building and submission
-onto client applications.
+The endpoints specified here aim to maintain the wallets role of: sharing public
+keys, inspecting, signing and submission.
+
+By not placing the burden of transaction construction onto the wallet, we move
+this application specific complexity from wallet implementations and onto
+applications. This has a number of benefits, primarily this should lower the bar
+for wallet adoption. But this also helps in the creation of iterative updates,
+all wallet implementers do not need to update if the format of these
+transactions is adjusted
 
 The design outlined here aims to improve the security by placing the burden of
 submission onto wallets. This prevents malicious clients from being able to
 censor which transactions are submitted to chain. This is of particular concern
 due to the potential political impact of transactions being handled by this API.
 We thus deem it necessary for wallets to bare this burden.
-
-Furthermore by passing typescript interfaces to wallets rather than serialized
-transactions we make inspection of transaction elements as easy as possible for
-wallet's. This improves security as it avoids the need for wallets to
-deserialize transactions to inspect their contents.
-
-#### The role of the wallet
-
-Relying on wallets for transaction construction and submission has precedent
-from the approach of
-[CIP-62?](https://github.com/cardano-foundation/CIPs/pull/296). This abstracts
-clients from the need to manage core wallet functionality such as UTxO handling.
-This approach allows client developers to focus on their domain rather than
-having to be involved in wallet function management.
 
 ### Extension Design
 
@@ -860,6 +572,8 @@ credentials from mnemonics, not only those wallets who support this web-bridge.
 This standard brings all the benefits of the application of generic ecosystem
 standards.
 
+- TODO: why not reuse Catalyst's CIP-36 key?
+
 ### Multi-stake Key Support
 
 Although
@@ -895,8 +609,10 @@ for wallets implementing both APIs.
 
 ### Open Questions
 
-- The burden of transaction building to be placed on dApps or wallets?
-- Move DRep key definitions into a CIP which is dedicated to describing CIP-1694 related credentials?
+- <s>The burden of transaction building to be placed on dApps or wallets?</s>
+  - This has been moved from the wallet to the application.
+- Move DRep key definitions into a CIP which is dedicated to describing CIP-1694
+  related credentials? or CIP-1852?
 - Is it necessary to provide a method to prove ownership of DRep key? and can
   CIP-30's `api.signData()` be used to prove ownership of multi-stake keys?
 - Is it sensible to place multi-stake key burden onto clients?
