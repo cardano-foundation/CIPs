@@ -15,6 +15,8 @@ Discussions:
     - https://github.com/cardano-foundation/cips/pull/102
     - https://github.com/input-output-hk/cardano-node/pull/5050
     - https://github.com/input-output-hk/cardano-node/pull/5132
+    - https://forum.cardano.org/t/entering-voltaire-on-chain-poll-for-spos/117330
+    - https://forum.cardano.org/t/entering-voltaire-poll-experiment-live-on-mainnet/117879
 Created: 2023-03-21
 License: CC-BY-4.0
 ---
@@ -176,6 +178,10 @@ Regardless of the method, the signature shall be produced in an air-gapped envir
 > **Warning**
 >
 > Only the first answer to a poll for each credential shall be considered. If multiple answers are found, only the first answer submitted (transaction & block ordering tallying) shall be considered.
+
+### Adding context
+
+It is possible to optionally attach extra context to the transaction as metadata following the procedure described in [CIP-0020](../CIP-0020/). Beside the structure specified in CIP-0020, such extra metadata is free-form and can be used to signal an intention behind a choice, or to voice a concern, or simply to give extra context. This is totally optional though we encourage SPOs to use this to inform their delegators of their choices.
 
 ### Procedure & Duration
 
