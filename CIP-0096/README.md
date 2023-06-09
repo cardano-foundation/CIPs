@@ -525,6 +525,8 @@ The chosen design requires to follow the chain to discover the certificates whic
 
 Audits are being published on-chain using this CIP by auditors.
 
+The Certification Working Group has produced the specification for the different certification levels, in a CIP or in another reference documents.
+
 Certificates are being issued on-chain by multiple auditors and certification companies using this CIP.
 
 Certificates are being displayed by multiple DApps stores or aggregators which uses this format.
