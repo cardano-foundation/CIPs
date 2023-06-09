@@ -83,6 +83,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 83 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
 | 85 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
 | 86 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
+| 94 | [SPO On-chain Polls](./CIP-0094) | Active |
 | 381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
@@ -90,7 +91,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-05-30</i></p>
+<p align="right"><i>Last updated on 2023-06-09</i></p>
 
 > 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -120,13 +121,12 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 91? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
 | 92? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
 | 93? | [Authenticated Web3 HTTP requests](https://github.com/cardano-foundation/CIPs/pull/442) |
-| 94? | [SPO On-chain Polls](https://github.com/cardano-foundation/CIPs/pull/496) |
 | 95? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
 | 96? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 97? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
 | 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
-<p align="right"><i>Last updated on 2023-05-24</i></p>
+<p align="right"><i>Last updated on 2023-06-09</i></p>
 
 ### Proposals Under Review (CPS)
 
