@@ -32,7 +32,7 @@ This CIP describes how a certification certificate can be registered on-chain an
 ## Motivation: why is this CIP necessary?
 
 It is expected that evidence of various kinds of assurance of DApps is recorded in an immutable and verifiable way on the Cardano blockchain.
-Three levels of certications are thought of at the time of this CIP: level 1 to 3. They were presented at the following [link](https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/) and will be fully described in a future document.
+Three levels of certification are thought of at the time of this CIP: level 1 to 3. They were presented at the following [link](https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/) and will be fully described in a future document.
 
 Level 1 will be used for testing through automated tooling. This level will be designed to give continual assurance that a smart contract verifies a range of properties. Level 1 covers the discovery of different types of bugs or issues. It should be thought as low cost and low effort if a DApp developer already has a sound testing practice in place. It will still bring a substantial level of assurance. It will be possible to be integrated into a continuous development and testing practice so that, even nightly builds and releases should be certifiable.
 Level 2 will be used for in-depth audit. It will be done by third-party auditors, following [CIP-52](https://cips.cardano.org/cips/cip52/). It will be a more in-depth analysis and review of what can be achieved in level 1. 
