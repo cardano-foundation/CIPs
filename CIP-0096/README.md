@@ -218,7 +218,8 @@ When submitting the transaction metadata pick the following value for `transacti
 
 ### Off-chain Metadata Format
 
-The Dapp Certification certificate is complemented by off-chain metadata that can be fetched from off-chain metadata servers.
+The Dapp Certification certificate is complemented by off-chain metadata that can be fetched from servers that will hosts the off-chain metadata file. 
+The metadata can be self hosted by the DApp developer, the certificate issuer, on IPFS, or on any-third party service. The only requirement for a certificate to be valid is that at least one of the URL pointed in the `metadata` field points to a correct off-chain metadata JSON file whose hash is the same as the `rootHash` value.
 
 ### Off-chain Metadata Properties
 
