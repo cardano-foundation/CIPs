@@ -32,14 +32,14 @@ This CIP describes how a certification certificate can be registered on-chain an
 ## Motivation: why is this CIP necessary?
 
 It is expected that evidence of various kinds of assurance of DApps is recorded in an immutable and verifiable way on the Cardano blockchain.
-Three level of certications are thought of at the time of this CIP: level 1 to 3. They were presented at the following [link](https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/)
+Three levels of certications are thought of at the time of this CIP: level 1 to 3. They were presented at the following [link](https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/) and will be fully described in a future document.
 
 Level 1 will be used for testing through automated tooling. This level will be designed to give continual assurance that a smart contract verifies a range of properties. Level 1 covers the discovery of different types of bugs or issues. It should be thought as low cost and low effort if a DApp developer already has a sound testing practice in place. It will still bring a substantial level of assurance. It will be possible to be integrated into a continuous development and testing practice so that, even nightly builds and releases should be certifiable.
 Level 2 will be used for in-depth audit. It will be done by third-party auditors, following [CIP-52](https://cips.cardano.org/cips/cip52/). It will be a more in-depth analysis and review of what can be achieved in level 1. 
 Level 3 will be used for formal verification. This level is more specialized and is used to bring a full mathematical assurance that critical aspects of the smart contract.
 
 Those level of certification and their standards are yet to be defined. The Cardano Certification Working Group will be one place where those standards are discussed. 
-In order to bootstrap the use of this CIP, an "AUDIT" type with a certification level of 0 has been added in the possible metadata. This will allow auditors and other "certification" issuers to publish on-chain information about the verification that was done on a particular DApp.
+In order to bootstrap the use of this CIP, an "AUDIT" type with a certification level of 0 has been added in the possible metadata. This will allow auditors and other "certification" issuers to publish on-chain information about the verification that was done on a particular DApp. The "AUDIT" type could also be used in the future to publish audit reports on-chain that do not meet the future standards for certification but are however useful for the ecosystem.
 
 The metadata should be discoverable by all certification stakeholders, including end-users, DApp developers, and ecosystem components, such as light wallets and DApp stores. Information should be indexable by certification issuer, DApp developer, DApp and DApp version.
 
@@ -69,7 +69,7 @@ It could then both: verify that the user interacts with the latest version of th
 
 Certification issuers will broadcast on-chain certificates that will represent the level of certification reached and present evidence of the work done.
 
-Certification issuers will sign the transaction with the certification certificate as metadata from a known wallet. They will attest that they have done the work and prevent certificate forgeries.
+Certification issuers will sign the transaction with the certification certificate as metadata from a known payment address. They will attest that they have done the work and prevent certificate forgeries.
 
 ### Suggested validations
 
@@ -197,7 +197,7 @@ This schema can be translated into a JSON schema:
   - `CERTIFY`: The certificate is asserting that the dApp is being certified.
   - `AUDIT`: The certificate is asserting that an audit has been performed for this DApp. `AUDIT` shall come with a certification level `certificationLevel` of `0`.
 
-  - `certificationLevel`: The certification level is an integer between 0 and 3. 0 is reserved for audits and reports that are not compliant with the certification standards. 1, 2, and 3 refers to the certification certificates referring to the three level of certifications as defined by the certification working group.
+  - `certificationLevel`: The certification level is an integer between 0 and 3. 0 is reserved for audits and reports that are not compliant with the certification standards. 1, 2, and 3 refers to the certification certificates referring to the three levels of certifications as defined by the certification working group.
   - `certificationIssuer`: The name of the certification issuer.
 
 `rootHash`: The hash of the metadata entire tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the rootHash property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section.
