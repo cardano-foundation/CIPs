@@ -1,12 +1,23 @@
 ---
 CIP: 68
 Title: Datum Metadata Standard
-Authors: Alessandro Konrad <alessandro.konrad@live.de>, Thomas Vellekoop <thomas.vellekoop@iohk.io>
-Comments-URI:
-Status: Proposed
-Type: Informational
+Status: Active
+Category: Tokens
+Authors:
+  - Alessandro Konrad <alessandro.konrad@live.de>
+  - Thomas Vellekoop <thomas.vellekoop@iohk.io>
+Implementors:
+  - Alessandro Konrad (SpaceBudz)
+  - 5Binaries (Blockfrost)
+  - Smaug (Pool.pm)
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/299
+  - https://github.com/cardano-foundation/CIPs/pull/359
+  - https://github.com/cardano-foundation/CIPs/pull/458
+  - https://github.com/cardano-foundation/CIPs/pull/471
+  - https://github.com/cardano-foundation/CIPs/pull/494
+  - https://github.com/cardano-foundation/CIPs/issues/520
 Created: 2022-07-13
-Post-History:
 License: CC-BY-4.0
 ---
 
@@ -14,7 +25,7 @@ License: CC-BY-4.0
 
 This proposal defines a metadata standard for native assets making use of output datums not only for NFTs but any asset class.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 This proposal addresses a few shortcomings of [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025):
 
@@ -23,10 +34,9 @@ This proposal addresses a few shortcomings of [CIP-0025](https://github.com/card
 - Non-inspectable metadata from within Plutus validators...
 
 Besides these shortcomings CIP-0025 has some [flaws](https://github.com/cardano-foundation/CIPs/pull/85#issuecomment-1054123645) in its design.
-For people unaware of CIP-0025 or want to use a different way of minting or want to use a different metadata format/mechanism you open up a protocol to metadata spoofing, because this standard is so established and metadata in minting transactions are interpreted by most platforms by default. Since this standard is not enforced at the protocol level there is no guarantee everyone will be aware of it or follow the rules. At the same time you limit and constraint the capabilities of the ledger if everyone was forced to follow the rules of CIP-0025. 
+For people unaware of CIP-0025 or want to use a different way of minting or want to use a different metadata format/mechanism you open up a protocol to metadata spoofing, because this standard is so established and metadata in minting transactions are interpreted by most platforms by default. Since this standard is not enforced at the protocol level there is no guarantee everyone will be aware of it or follow the rules. At the same time you limit and constraint the capabilities of the ledger if everyone was forced to follow the rules of CIP-0025.
 
 This standard tackles all these problems and offers many more advantages, not only for NFTs, but also for any asset class that may follow. Additionally, this CIP will introduce a way to classify tokens so that third parties like wallets can easily know what the kind of token it is.
-
 
 ## Specification
 
@@ -36,7 +46,7 @@ The basic idea is to have two assets issued, where one references the other. We 
 
 To find the metadata for the `user token` you need to look for the output, where the `reference NFT` is locked in. How this is done concretely will become clear below. Moreover, this output contains a datum, which holds the metadata. The advantage of this approach is that the issuer of the assets can decide how the transaction output with the `reference NFT` is locked and further handled. If the issuer wants complete immutable metadata, the `reference NFT` can be locked at the address of an unspendable script. Similarly, if the issuer wants the NFTs/FTs to evolve or wants a mechanism to update the metadata, the `reference NFT` can be locked at the address of a script with arbitrary logic that the issuer decides.
 
-Lastly and most importantly, with this construction, the metadata can be used by a PlutusV2 script with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space. 
+Lastly and most importantly, with this construction, the metadata can be used by a PlutusV2 script with the use of reference inputs [CIP-0031](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031). This will drive further innovation in the token space.
 
 ### Labels
 
@@ -63,7 +73,7 @@ This is the registered `asset_name_label` value
 ### Constraints and conditions
 
 For a correct relationship between the `user token` and the `reference NFT` a few conditions **must** be met.
-- The `user token` and `reference NFT` **must** be under the same policy ID. 
+- The `user token` and `reference NFT` **must** be under the same policy ID.
 - For a specific `user token` there **must** exist exactly **one** `reference NFT`
 - The `user token` and associated `reference NFT` **must** follow the standard naming pattern. The asset name of both assets is prefixed with its respective `asset_name_label` followed by a pattern defined by the asset class (e.g. asset_name_label 222)
 
@@ -82,7 +92,7 @@ metadata =
   / [ * metadata ]
   / big_int
   / bounded_bytes
-  
+
 version = int
 
 ; Custom user defined plutus data.
@@ -94,6 +104,8 @@ datum = #6.121([metadata, version, extra])
 ```
 
 #### 222 NFT Standard
+
+> **Note** Since `version >= 1`
 
 Besides the necessary standard for the `reference NFT` we're introducing three specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, rich fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
 
@@ -120,7 +132,7 @@ Example:\
 This is a low-level representation of the metadata, following closely the structure of CIP-0025. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
 ```
-files_details = 
+files_details =
   {
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
@@ -128,7 +140,7 @@ files_details =
     ; ... Additional properties are allowed
   }
 
-metadata = 
+metadata =
   {
     name : bounded_bytes, ; UTF-8
     image : bounded_bytes, ; UTF-8
@@ -137,13 +149,15 @@ metadata =
     ? files : [* files_details]
     ; ... Additional properties are allowed
   }
-  
+
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
 
-datum = #6.121([metadata, 1, extra]) ; version 1
+datum = #6.121([metadata, version, extra])
+
+version = 1 / 2
 ```
 Example datum as JSON:
 ```json
@@ -169,6 +183,8 @@ We want to bring the metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
 #### 333 FT Standard
+
+> **Note** Since `version >= 1`
 
 The second introduced standard is the `333` FT standard with the registered `asset_name_label` prefix value
 
@@ -198,7 +214,7 @@ This is a low-level representation of the metadata, following closely the struct
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
 
-metadata = 
+metadata =
   {
     name : bounded_bytes, ; UTF-8
     description : bounded_bytes, ; UTF-8
@@ -220,8 +236,10 @@ uri = bounded_bytes
 ; Setting data is optional, but the field is required
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
-  
-datum = #6.121([metadata, 1, extra]) ; version 1
+
+datum = #6.121([metadata, version, extra])
+
+version = 1 / 2
 ```
 Example datum as JSON:
 ```json
@@ -239,7 +257,7 @@ A third party has the following FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cb
 
 ##### Retrieve metadata from a Plutus validator
 
-We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` in the Plutus validator context. To do this we 
+We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` in the Plutus validator context. To do this we
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken` (off-chain)
 2. Look up `reference NFT` and find the output it's locked in. (off-chain)
@@ -247,6 +265,8 @@ We want to bring the metadata of the FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8c
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
 #### 444 RFT Standard
+
+> **Warning** Since `version >= 2`
 
 The third introduced standard is the `444` Rich-FT standard with the registered `asset_name_label` prefix value
 
@@ -273,7 +293,7 @@ Example:\
 This is a low-level representation of the metadata, following closely the structure of CIP-0025 with the optional decimals field added. All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
 ```
-files_details = 
+files_details =
   {
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
@@ -281,7 +301,7 @@ files_details =
     ; ... Additional properties are allowed
   }
 
-metadata = 
+metadata =
   {
     name : bounded_bytes, ; UTF-8
     image : bounded_bytes, ; UTF-8
@@ -303,8 +323,10 @@ uri = bounded_bytes
 ; Setting data is optional, but the field is required
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
-  
-datum = #6.121([metadata, 1, extra]) ; version 1
+
+datum = #6.121([metadata, version, extra])
+
+version = 2
 ```
 Example datum as JSON:
 ```json
@@ -322,28 +344,30 @@ A third party has the following RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5c
 
 ##### Retrieve metadata from a Plutus validator
 
-We want to bring the metadata of the RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` in the Plutus validator context. To do this we 
+We want to bring the metadata of the RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` in the Plutus validator context. To do this we
 
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken` (off-chain)
 2. Look up `reference NFT` and find the output it's locked in. (off-chain)
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 Without seperation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be quite cumbersome as you would need to add the metadata everytime to the new output where the `user token` is sent to. Hence you separate metadata and `user token` and lock the metadata inside another UTxO, so you can freely move the `user token` around.
 
-In order to reference the correct UTxO containing the metadata, it needs to be authenticated, otherwise metadata spoofing attacks become possible. One way to achieve that is by adding an NFT (`reference NFT`) to the UTxO. This NFT needs to under the same Policy ID as the `user token`, followed by an asset name pattern defined in the standard. This way you create a secure link between `reference NFT` and `user token` without the need for any extra data and you can make use of this off-chain and on-chain. 
+In order to reference the correct UTxO containing the metadata, it needs to be authenticated, otherwise metadata spoofing attacks become possible. One way to achieve that is by adding an NFT (`reference NFT`) to the UTxO. This NFT needs to under the same Policy ID as the `user token`, followed by an asset name pattern defined in the standard. This way you create a secure link between `reference NFT` and `user token` without the need for any extra data and you can make use of this off-chain and on-chain.
 
 The security for the link is derived from the minting policy itself, so it's important to write the validator with the right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
 
+### Related work
 
-### Backward Compatibility
-
-To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
-
+- [CIP-0025](../CIP-0025)
+- [CIP-0031](../CIP-0031)
+- [CIP-0067](../CIP-0067)
 
 ## Path to Active
+
+### Acceptance Criteria
 
 - Agree on a binary encoding for asset name labels in [CIP-0067](https://github.com/cardano-foundation/CIPs/pull/298).
 - Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
@@ -351,14 +375,22 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 [Implementation](./ref_impl/)
 - Open-source more practical implementations/projects which make use of this CIP.
 
+### Implementation Plan
 
-## References
+To keep metadata compatibility with changes coming in the future, we introduce
+a `version` field in the datum as an integer to increment. New asset classes or
+changes to the on-chain format must come with a version bump.
 
-- CIP-0025: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025
-- CIP-0031: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031
-- CIP-0067: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
+#### Changelog
+
+##### version 1
+
+- NFT (222) & FT (333) asset classes
+
+##### version 2
+
+- Added new RFT asset class (444)
 
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
-
