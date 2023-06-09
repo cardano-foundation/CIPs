@@ -189,7 +189,7 @@ This schema can be translated into a JSON schema:
 
 ### On-chain Metadata Properties
 
-`subject`: Identifier of the claim subject (i.e dApp). A UTF-8 encoded string.
+`subject`: Identifier of the claim subject (i.e dApp). A UTF-8 encoded string. The `subject` value needs to be the same as the one used for registering the DApp as per [CIP-0072](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0072). CIP-0072 gives no requirement or even recommendations on how to fill this value.
 
 `type`: The type of the claim. This is a JSON object that contains the following properties:
 
@@ -223,7 +223,7 @@ The metadata can be self hosted by the DApp developer, the certificate issuer, o
 
 ### Off-chain Metadata Properties
 
-`subject`, a mandatory string, Identifier of the claim subject (i.e dApp). A UTF-8 encoded string.
+`subject`, a mandatory string, Identifier of the claim subject (i.e dApp). A UTF-8 encoded string. This field is required to be the same as the on-chain `subject` field. 
 
 `schemaVersion`, a mandatory string, used as a versioning number for the Json schema of the on-chain metadata. This current description shall be refered as `schemaVersion: 1`.
 
