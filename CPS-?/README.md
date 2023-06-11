@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 6
 Title: Cardano Governance Security
 Category: Ledger
 Status: Open
