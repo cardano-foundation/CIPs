@@ -1,7 +1,7 @@
 ---
 CPS: ?
 Title: Cardano Governance Security
-Category: Meta
+Category: Ledger
 Status: Open
 Authors:
     - Richard McCracken <rickymac68@icloud.com>
