@@ -9,12 +9,19 @@
     "action": {
       "type": "string"
     },
+    "actionText": {
+      "type": "string"
+    },
     "timestamp": {
+      "type": "integer"
+    },
+    "slot": {
       "type": "integer"
     }
   },
-  "required": ["uri", "action", "timestamp"],
+  "required": ["uri", "action"],
+  "oneOf": [{ "required": ["timestamp"] }, { "required": ["slot"] }],
   "additionalProperties": {
-    "type": "string"
+    "type": ["string", "object"]
   }
 }

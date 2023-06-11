@@ -80,9 +80,11 @@ The content of the payload will be included in the protected header of the COSES
 
 2. Sometimes, the endpoint `uri` field is not enough to determine its purpose. The user should understand perfectly the objective of the payload which he or she is signing. That's why the payload MUST contain an `action` field with a descriptive text containing the purpose of the payload. For example, if someone calls the endpoint `/users` without an action field, they can create or delete users. However, by including the action field in the payload, it not only provides additional clarity but also effectively limits the scope of the payload.
 
-3. The payload MUST include a UNIX timestamp. The `timestamp` field is used as a nonce and a mark for the payload expiration. This field is very important in case the payload is compromised.
+3. In order to improve globalization, the payload MAY include an `actionText` field that represents the action in the locale of the user. When present, the wallet MUST display this field to the user. By including the `actionText` field, the wallet facilitates the processing of the action field, eliminating the need for the server to be aware of the user's locale and the possible variants of the action text.
 
-Additional fields MAY be included in the payload. Depending on the process, it could be useful to include some aditional fields in the protected header of the signature. For example, the email information should be included in the protected header in a registration request. In that way, this payload can be used only to register that specific email and it can not be tampered. 
+4. The payload MUST include either a UNIX `timestamp` or a `slot` number. The `slot` field represents a specific time in the blockchain and serves as a reference for synchronization between the client and the server. The `timestamp` or `slot` number is also used as a nonce and serves as an indicator for payload expiration in case the payload is compromised.
+
+Additional fields MAY be included in the payload, and these fields can be string fields or objects. Depending on the specific process or use case, including additional fields in the protected header of the signature can provide valuable functionality and security enhancements. For example, in a registration request, it may be useful to include the email information as an additional field in the protected header. By doing so, the payload can be uniquely associated with that specific email, ensuring its integrity and preventing tampering.
 
 #### JSON Schema
 ```JSON
@@ -97,13 +99,20 @@ Additional fields MAY be included in the payload. Depending on the process, it c
     "action": {
       "type": "string"
     },
+    "actionText": {
+      "type": "string"
+    },
     "timestamp": {
+      "type": "integer"
+    },
+    "slot": {
       "type": "integer"
     }
   },
-  "required": ["uri", "action", "timestamp"],
+  "required": ["uri", "action"],
+  "oneOf": [{ "required": ["timestamp"] }, { "required": ["slot"] }],
   "additionalProperties": {
-    "type": "string"
+    "type": ["string", "object"]
   }
 }
 ```
@@ -116,7 +125,7 @@ Additional fields MAY be included in the payload. Depending on the process, it c
     "timestamp": 1673261248,
 }
 ```
-#### Sign up payload example:
+#### Sign up payload examples:
 ```JSON
 {
     "uri": "http://example.com/signup",
@@ -125,6 +134,12 @@ Additional fields MAY be included in the payload. Depending on the process, it c
     "email": "email@example.com"
 }
 
+{
+    "uri": "http://example.com/signup",
+    "action": "SIGN_UP",
+    "actionText": "Registrar",
+    "slot": 94941399
+}
 ```
 
 ### Wallet specification
@@ -157,6 +172,13 @@ Another important aspect for security is how wallets process the payload. They c
 
 In addition to the aforementioned aspects, this CIP also aims to promote decentralization and enhance security and privacy by enabling users to sign and verify transactions without relying on external servers or third parties. By allowing users to create and sign their own payloads, this specification reduces the dependency on centralized authorities and enhances the security and privacy of the transactions.
 
+### Common usage
+
+The payload signature ensures wallet ownership without incurring transaction fees. However, requiring the user to enter their spending password for every authenticated request can be inconvenient for the user experience. To address this, it is recommended to restrict the use of the payload signature to only important requests such as login, sign up, or other critical operations depending on the dApp requirements.
+
+A common practice is to request the user's signature for the login process, and once authenticated, the dApp can issue a session token, such as a JSON Web Token (JWT), to manage the session. By implementing this approach, future non-critical requests can be performed using standard web 2.0 methods, eliminating the need to enter the spending password for each step. This significantly enhances the usability of the application, providing a smoother user experience.
+
+
 ### Version history
 
 | Version | Date      | Author                         | Rationale              |   
@@ -169,6 +191,7 @@ In addition to the aforementioned aspects, this CIP also aims to promote decentr
 * [jmagan/passport-cardano-web3](https://github.com/jmagan/passport-cardano-web3)
 * [jmagan/cardano-express-web3-skeleton](https://github.com/jmagan/cardano-express-web3-skeleton)
 * [jmagan/cardano-nextjs-web3-skeleton](https://github.com/jmagan/cardano-nextjs-web3-skeleton)
+
 ## Path to Active
 
 ### Acceptance Criteria
