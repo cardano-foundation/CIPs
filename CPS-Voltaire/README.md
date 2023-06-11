@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 7
 Title: Voltaire: Cardano Governance
 Status: Open
 Category: Ledger
