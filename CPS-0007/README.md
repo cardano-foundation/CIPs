@@ -47,14 +47,16 @@ For a variety of reasons, including moral, philosophical, financial, and possibl
 
 IOG in particular has continued to provide skill and resources for years longer than initially intended, and is significantly over-budget and over-extended. IOG has said that they may be unable or unwilling to support development of the chain indefinitely, and so an expedient and iterative approach to governance is likely to have higher positive impact on our ability to maintain velocity as an ecosystem.
 
+However, diluting that power to the community comes with substantial risks and challenges, not the least of which is ensuring that the will of the community is captured *accurately*. For example, one barrier to that accuracy is the possibility of "sybil attacks", wherein the anonymity of the blockchain allows someone to cast their vote many times.
+
 ## **Goals**
 
-Synthesizing from the above, I posit these (hopefully uncontroversial) goals, constraints, considerations, or ground truths for any governance system. I'm only one person, though, so this list will very likely be revised and updated by collective community input as discussion unfolds.
+Synthesizing from the above, and with input from the broader Cardano community, the following goals, constraints, considerations, or ground truths for any governance system arise:
 
 1. A system of on-chain rules should allow decisions to be made and enacted regarding (at a minimum) the three types of changes listed above.
 2. Every (or nearly every) ADA holder should be able to meaningfully participate in this decision making process.
 3. This system should not materially undermine the security of the chain.
-4. This system should not undermine it's ability to serve it's financial function, such as overburdening the chain, damaging the monetary policy, etc.
+4. This system should not undermine its ability to serve its financial function, such as overburdening the chain, damaging the monetary policy, etc.
 5. This system should be implementable within a reasonable time frame and budget.
 6. This system should be recursively updatable; if improvements or changes to the system of governance are needed, they should be voted on and enacted via this system.
 7. This system is highly dependent on the off chain user experience and community tooling, since very few users are reading raw CBOR dumps from the chain.
@@ -71,9 +73,9 @@ Additionally, here is a more opinionated (and potentially controversial) list of
 6. While it may be useful to draw inspiration from existing real-world systems, it should also be understood that blockchain governance will have an entirely different set of constraints.  For example, the ADA community does not share one culture or geographic locality. Additionally, the decisions being made are not the same kinds of decisions that a world government needs to make.
 7. The uncontrolled hard fork described above is dangerous (from a safety standpoint) and disruptive (from an economic standpoint); it will likely seriously undermine the cohesion of the Cardano community. For this reason, it should be considered a tool of absolute last resort.
 
-## **Questions a Solution Ought Answer**
+### Open Questions
 
-In this section, based on the goals above, we outline an incomplete set of questions that any proposed solution likely ought to answer:
+Based on the goals above, an incomplete set of questions arises that any proposed solution likely ought to answer:
 
 1. What are the exact categories of actors considered by the proposed system, and what actions are available to them under what conditions? What are the explicit justifications for the additional complexity added by distinguishing each category as a separate category?
 2. How is the weight of each vote determined in the proposed system, and how does it defend against fraud and manipulation?
@@ -84,7 +86,7 @@ In this section, based on the goals above, we outline an incomplete set of quest
 7. What is an estimated timeline and budget for implementation of the proposed system?
 8. Who is going to implement the proposed solution, and how will it be paid for?
 
-## **Open Questions**
+### Philosophical Questions
 
 Below are a set of philosophical questions applicable across a broad range of solutions that are being discussed by the community:
 

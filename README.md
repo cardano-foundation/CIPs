@@ -129,6 +129,7 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 1? | [Metadata Discoverability and Trust](https://github.com/cardano-foundation/CIPs/pull/371) |
 | 2? | [Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374) |
 | 3? | [Smart Tokens](https://github.com/cardano-foundation/CIPs/pull/382) |
+| 7? | [Cardano Governance](https://github.com/cardano-foundation/CIPs/pull/481) |
 
 <p align="right"><i>Last updated on 2022-11-30</i></p>
 
