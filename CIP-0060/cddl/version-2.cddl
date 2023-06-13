@@ -1,0 +1,103 @@
+string = text .size (0..64)
+
+policy_id = string / bytes ; hex string for CIP-25 version 1, bytes version 2
+asset_name = string / bytes ; utf-8 for CIP-25 version 1, bytes for version 2
+
+artist_details =
+  {
+    name : string,                      ; artist or band name
+    ? image : string / [* string],      ; optional image of the artist
+  }
+
+release_details = 
+  {
+    ? release_title : string,
+    ? copyright: string,
+
+    ? visual_artist: string,
+    ? distributor: string,
+    ? release_date: string,
+    ? publication_date: string,
+    ? catalog_number: uint,
+    ? release_version: uint,
+    ? producer: string,
+    ? co_producer: string,
+    ? distributor: string,
+    ? metadata_language: string,
+    ? country_of_origin: string,
+    ? language: string,
+    ? links: { * string => string / [* string] },
+  }
+
+song_details = 
+  {
+    ; For Single, some of these values are defined at the top level. For Multiple, define them for each track.
+    ? artists : [* artist_details],
+    ? track_number: uint,
+    ? song_title: string / [* string],
+    ? song_duration: string .regexp "^P(?!$)(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)$",    ; iso8601 duration
+    ? genres: [1*3 string],
+    ? copyright: string,
+
+    ; For Single, some of these values are defined at the top level. For Multiple, optionally define them for each track
+    ? contributing_artists : [* artist_details],
+    ? series: string,
+    ? collection: string,
+    ? set: string,
+    ? mood: string,
+    ? lyrics: string,
+    ? lyricists: [* string],
+    ? special_thanks: [* string],
+    ? visual_artist: string,
+    ? distributor: string,
+    ? release_date: string,
+    ? publication_date: string,
+    ? catalog_number: uint,
+    ? bitrate: string,
+    ? bpm: string,
+    ? mix_engineer: string,
+    ? mastering_engineer: string,
+    ? producer: string,
+    ? co_producer: string,
+    ? featured_artist: artist_details,
+    ? recording_engineer: string,
+    ? release_version: uint,
+    ? parental_advisory: string,
+    ? explicit: bool,
+    ? isrc: string,
+    ? iswc: string,
+    ? ipi: [* string],
+    ? ipn: [* string],
+    ? isni: [* string],
+    ? metadata_language: string,
+    ? country_of_origin: string,
+    ? language: string,
+    ? derived_from: string,
+    ? links: { * string => string / [* string] },
+  }
+
+files_details = 
+  {
+    name : string,
+    mediaType : string,
+    src : string / [* string],
+    song : song_details,                                                       ; song music_metadata that applies to the track.
+  }  
+
+metadata_details = 
+  {
+    name : string,
+    image : string / [* string],
+    music_metadata_version: 2,                                                 ; v2 update moves music metadata under its own music_metadata section.
+    release_type: "Single" / "Multiple",
+    release: release_details,                                                  ; top-level music metadata that applies to the whole album.
+
+    files : [* files_details],                                                 ; was optional in CIP-25, required by CIP-60
+    ? version: 1 / 2,                                                          ; CIP-25 version
+    ? mediaType : string,                                                      ; mediaType for the image. audio goes under files.
+    ? description : string / [* string],
+  }
+
+label_metadata = { * policy_id => { * asset_name => metadata_details } }
+
+metadata = { 721 : uint => label_metadata }

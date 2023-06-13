@@ -13,5 +13,10 @@
     "asset_name_label": 333,
     "class": "FT",
     "description": "CIP-0068 - Datum Metadata Standard (333 sub standard)"
-  }
+  },
+  {
+    "asset_name_label": 444,
+    "class": "RFT",
+    "description": "CIP-0068 - Datum Metadata Standard (444 sub standard)"
+  },
 ]

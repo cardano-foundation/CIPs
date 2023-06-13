@@ -8,6 +8,10 @@
     "description": "milkomeda.com - the destination address in the sidechain"
   },
   {
+    "transaction_metadatum_label": 94,
+    "description": "CIP-0094 - On-chain governance polls"
+  },
+  {
     "transaction_metadatum_label": 123,
     "description": "shareslake.com - Bridge routing information"
   },
@@ -26,6 +30,10 @@
   {
     "transaction_metadatum_label": 777,
     "description": "CIP-0027 - Royalties Standard"
+  },
+  {
+    "transaction_metadatum_label": 839,
+    "description": "Agora - Proposal creation metadata"
   },
   {
     "transaction_metadatum_label": 888,

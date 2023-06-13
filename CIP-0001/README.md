@@ -212,7 +212,6 @@ At present, we consider the following list of initial categories:
 Category               | Description
 ---                    | ---
 Meta                   | Designates meta-CIPs, such as this one, which typically serves another category or group of categories.
-Reward-Sharing Schemes | For CIPs discussing the reward & incentive mechanisms of the protocol.
 Wallets                | For standardisation across wallets (hardware, full-node or light).
 Tokens                 | About tokens (fungible or non-fungible) and minting policies in general.
 Metadata               | For proposals around metadata (on-chain or off-chain).
@@ -225,7 +224,7 @@ Registered categories for explicitly enlisted projects are otherwise listed belo
 Category | Description
 ---      | ---
 Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in ?
+Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][https://github.com/cardano-foundation/CIPs/pull/456]
 Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
 
 #### Project Enlisting
@@ -335,12 +334,11 @@ The missions of an editor include, but aren't exclusively limited to, any of the
 
 Current editors are listed here below:
 
-| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Frederic Johnson <br/> [@crptmppt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] |
-| ---                               | ---                                           | ---                                  | ---                            | ---                            |
+| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] |
+| ---                               | ---                                           | ---                            | ---                            |
 
 [@KtorZ]: https://github.com/KtorZ
 [@SebastienGllmt]: https://github.com/SebastienGllmt
-[@crptmppt]: https://github.com/crptmppt
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
 

@@ -1,0 +1,207 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type":"object",
+    "properties": {
+      "subject": {
+        "type":"string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern":"^[0-9a-fA-F]{1,64}$",
+        "description": "A subject, it must match with subject stored on chain data. A UTF-8 encoded string, 1 - 64 chars."
+      },
+      "projectName": {
+        "type":"string",
+        "description": "A project name, e.g. My dApp."
+      },
+      "link": {
+        "type":"string",
+        "description": "Website presenting a dApp.",
+        "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+      },      
+      "logo": {
+        "type":"string",
+        "description": "URL to the logo or the base64 encoded image."
+      },
+      "categories": {
+        "type":"array",
+        "items": {
+          "type": "string",
+          "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
+        },
+        "description": "One or more categories. Category MUST be one of the following schema definition."
+      },
+      "social": {
+        "type":"object",
+        "properties": {
+          "website": {
+            "type":"string",
+            "description": "dApps website link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          },
+          "twitter": {
+            "type":"string",
+            "description": "An optional Twitter link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          },
+          "github": {
+            "type":"string",
+            "description": "An optional Github link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          },
+          "discord": {
+            "type":"string",
+            "description": "An optional Discord link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          }
+        },
+        "required": ["website"]
+      },
+      "description": {
+        "type": "object",
+        "properties": {
+          "short": {
+            "type": "string",
+            "description": "Short dApp description (no less than 40 and no longer than 168 characters).",
+            "minLength": 40,
+            "maxLength": 168
+          },
+          "long": {
+            "type": "string",
+            "description": "An optional long dApp description (no less than 40 and no longer than 1008 characters).",
+            "minLength": 40,
+            "maxLength": 1008
+          }
+        },
+        "required": [
+          "short"
+        ]
+      },
+      "releases": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "releaseNumber": {
+                "type": "string",
+                "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\\+([0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*))?$",
+                "description": "Semver compatible release number (major.minor.patch) or (major.minor.patch-some_text) e.g. 1.2.3 or 1.1.1-alpha"
+              },
+              "releaseName": {
+                "type": "string",
+                "description": "An optional human readable release name, e.g. V1"
+              },
+              "securityVulnerability": {
+                "type": "boolean",
+                "description": "Indicates that a given version has a security vulnerability."
+              },
+              "comment": {
+                "type": "string",
+                "description": "A free text field to provide comment about this particular release, e.g. new features it brings, etc."
+              },
+              "scripts": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "version"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "releaseNumber"
+            ]
+          }
+        ]
+      },
+      "scripts": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties":{
+              "id": {
+                "type":"string",
+                "description": "Unique Script ID (across all scripts from this dApp)."
+              },
+              "name":{
+                "type":"string",
+                "description": "An optional script name usually related to it's function."
+              },
+              "purposes":{
+                "type":"array",
+                "items": {
+                    "type": "string",
+                      "enum":["SPEND", "MINT"]
+                },
+                "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages)."
+              },
+              "type":{
+                "enum":["PLUTUS", "NATIVE"],
+                "description": "Script Type. PLUTUS refers to the typical PlutusV1 or PlutusV2 scripts, where as NATIVE means there has been no Plutus directly used by this is a native script."
+              },
+              "versions":{
+                "type":"array",
+                "items":[
+                  {
+                    "type":"object",
+                    "properties":{
+                      "version":{
+                        "type":"integer",
+                        "description":"Script version, monotonically increasing."
+                      },
+                      "plutusVersion":{
+                        "type":"integer",
+                        "enum":[1, 2]
+                      },
+                      "scriptHash":{
+                        "type":"string",
+                        "description":"Full on-chain script hash (hex).",
+                        "pattern":"[0-9a-fA-F]+"
+                      },
+                      "contractAddress": {
+                        "type":"string",
+                        "description":"An optional Bech32 contract address matching script's hash."
+                      }
+                    },
+                    "required": [
+                      "version",
+                      "plutusVersion",
+                      "scriptHash"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "purposes",
+              "type",
+              "versions"
+            ]
+          }
+        ]
+      }
+    },
+    "required": [
+      "subject",
+      "projectName",
+      "link",
+      "social",
+      "categories",
+      "description"
+    ]
+  }
+  
