@@ -177,10 +177,10 @@ a governance issue (see [CIP-1694]).
 
 The following table gives the current set of reviewers for Ledger CIPs.
 
-| Name          | Email                 | GitHub username |
-|---------------|-----------------------|-----------------|
-| Jared Corduan | jared.corduan@iohk.io | @JaredCorduan  |
-| Andre Knispel | andre.knispel@iohk.io | @WhatisRT        |
+| Name               | Email                      | GitHub username |
+|--------------------|----------------------------|-----------------|
+| Andre Knispel      | andre.knispel@iohk.io      | @WhatisRT       |
+| Alexey Kuleshevich | alexey.kuleshevich@iohk.io | @lehins         |
 
 ## Rationale: how does this CIP achieve its goals?
 
