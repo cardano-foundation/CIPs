@@ -671,6 +671,29 @@ from a given address in an indexer
 than to keep track of all the people who control various authorization tokens,
 at a given time.
 
+### Removing the original CIP-86 update transaction restriction
+
+In the first draft of this proposal,
+we prohibited CIP-86 oracle assignment updates and metadata updates
+from occurring in transactions that mint tokens,
+in order to avoid awkward clashes with CIP-25 metadata transactions.
+This was removed because, while it likely does not make sense 
+to create CIP-25 and CIP-86 metadata for the same token in one transaction,
+it could feasibly make sense to want to update the metadata 
+for other tokens while minting another one.
+
+We also originally required CIP-86 updates to occur in transactions
+that only send ADA from an oracle address (main or update, as appropriate),
+to prevent unforeseen interactions with other mechanisms
+that may have negative consequences.
+This requirement was removed for a two reasons.
+First, the reasoning above does not establish any specific issues 
+with other transaction types. Second, it is too restrictive 
+and creates unnecessary additional transactions for long sequences of updates,
+causing the update issuer to spend unnecessary transaction fees.
+Therefore, we decided to remove these unnecessary restrictions 
+on CIP-86 update transactions.
+
 ### Implicit oracle assignment
 
 The implicit method of assigning a metadata oracle is needed
