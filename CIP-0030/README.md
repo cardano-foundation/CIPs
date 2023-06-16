@@ -102,6 +102,10 @@ Used to specify optional pagination for some API calls. Limits results to {limit
 
 An extension is an object with a single field `"cip"` that describe a CIP number extending the API (as a plain integer, without padding). For example:
 
+```
+{ "cip": 30 }
+```
+
 ### TransactionSignatureRequest
 
 ```
@@ -112,10 +116,6 @@ type = TransactionSignatureRequest {|
 ```
 
 Used to represent a single transaction awaiting a user's signature. More details on {partialSign} can be found in `api.signTx()`.
-
-```
-{ "cip": 30 }
-```
 
 ### Error Types
 
@@ -331,9 +331,7 @@ Requests that a user sign the unsigned portions of the supplied transaction. The
 
 Errors: `APIError`, `TxSignError`
 
-Performs the same operation as `api.signTx()`, but supports mulitple transactions. This is a shortcut to sign multiple transactions at the same time. The returned witness set array values correspond directly with the elements in the `txs` parameter, meaning that the witness set at index 0 corresponds to the transaction at index 0, and so on.
-
-**Note:** There are some security concerns regarding malicious dApps possibly including a problematic transaction within the array. Moreover, signing a transaction does not guarantee a blockchain submission. It is the wallet's responsibility to take these scenarios into account and build a comprehensive UI to mitigate them (e.g via a whitelist system).
+Signs a chain of transactions, which can be described as a sequence of interconnected transactions where each subsequent transaction depends on the previous one. The returned array values of the witness set directly correspond to the elements in the `txs` parameter, aligning the witness set at index 0 with the transaction at index 0, and so forth.
 
 ### api.signData(addr: Address, payload: Bytes): Promise\<DataSignature>
 
