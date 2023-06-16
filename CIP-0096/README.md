@@ -488,13 +488,16 @@ It should be possible for there to be multiple versions of metadata published by
 
 In such a case it should be possible to identify the most recent version of the report for that DApp version. It will also be the case that the same DApp may have certification metadata provided by multiple different certification issuers.
 
-It should be possible for wallets to identify to users the certification status of a DApp when they are signing a transaction that is being submitted to a deployed DApp.
+It will be possible for wallets to identify to users the certification status of a DApp when they are signing a transaction that is being submitted to a deployed DApp.
 
 Registration update (see [CIP-0072](https://github.com/cardano-foundation/CIPs/pull/355)) mandates the DApp developer to list all the script hashes associated with the DApp. This enables to fully characterize the on-chain part of a DApp.
 Similarly, the certification certificate mandates the certification issuer to list all the script hashes of the DApp.
-Cross-referencing the list of script information from both sources will allow for a wallet to get the latest version of the on-chain part of a DApp and checking if there is a corresponding certification associated.
-The wallet would then be able to inform a user that they are about to sign a transaction to a particular script that was certified.
-A wallet developer could also be able to filter certificates from their own list of known and trusted auditors.
+
+Cross-checking the list of script information from both sources will allow for a wallet to get the latest version of the on-chain part of a DApp and checking if there is a corresponding certification associated.
+The wallet would then be able to inform a user that they are about to sign a transaction for a DApp that is certified. The wallet could also link to the certificate on-chain, if the user wants to know more about the certificate.
+
+Certificates could be filtered by either the wallet, the user, or both from their own lists of known and trusted auditors.
+
 
 ### Aggregators Custom Fields
 Each aggregator or DApp store can add their own requirements for the metadata or can offer additional features if the report pointed by `reportURLs`.
