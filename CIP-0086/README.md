@@ -258,7 +258,9 @@ The schema for regex metadata updates is as follows:
 }
 ```
 
-A regex metadata update transaction may contain any inputs and outputs,
+A regex metadata update transaction must be signed
+by the signing key of the oracle update address,
+but it may contain any inputs and outputs,
 as these are ignored for the purposes of updating token metadata.
 
 The only difference from the simple metadata update is that
