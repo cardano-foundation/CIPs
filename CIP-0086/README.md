@@ -551,7 +551,8 @@ cached in the indexer database for the respective asset classes.
 
 For each oracle main address currently assigned to a policy ID,
 the indexer monitors the blockchain for transactions
-that contain oracle assignment updates in their metadata.
+that contain oracle assignment updates in their metadata
+and are signed by the signing key of the main address.
 The indexer updates its database to reflect these explicit oracle assignments
 and removes any implicit assignments that were replaced by explicit assignments.
 
