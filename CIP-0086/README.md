@@ -499,9 +499,11 @@ in the order that they are encountered in this sequence.
 Should a transaction contain both CIP-25 and CIP-86 updates,
 then the CIP-25 updates should be applied first, 
 followed by the CIP-86 updates.
-A transaction that contains a CIP-25 update may also
-contain an explicit oracle assignment,
-but these can be applied in parallel because they do not clash with each other.
+If a transaction contains both a CIP-25 update
+and a CIP-86 explicit oracle assignment,
+then the CIP-25 update will be applied as usual
+and the oracle addresses (main and/or update) will be set to
+those of the explicit CIP-86 oracle assignment.
 If the Cardano node rolls back some blocks from the chain tip,
 then roll back the updates from those blocks as well.
 
