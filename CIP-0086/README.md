@@ -215,7 +215,9 @@ by the new explicit assignment.
 
 ### Simple metadata updates
 
-A simple metadata update transaction may contain any inputs and outputs,
+A simple metadata update transaction must be signed
+by the signing key of the oracle update address,
+but it may contain any inputs and outputs,
 as these are ignored for the purposes of updating token metadata.
 
 The schema for simple metadata updates in CIP-86
