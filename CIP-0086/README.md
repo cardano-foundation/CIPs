@@ -337,7 +337,9 @@ and each inner array of `values` must be equal in length to `field_paths`.
 }
 ```
 
-A tabular metadata update transaction may contain any inputs and outputs,
+A tabular metadata update transaction must be signed
+by the signing key of the oracle update address,
+but it may contain any inputs and outputs,
 as these are ignored for the purposes of updating token metadata.
 
 For example, the following update would apply updates to six metadata fields
