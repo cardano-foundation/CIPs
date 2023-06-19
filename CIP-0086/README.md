@@ -185,7 +185,9 @@ and keeping the staking key empty.
 
 The metadata oracle assignment for a policy ID can be updated
 via a transaction signed by the oracle main address key.
-The transaction may contain any inputs and outputs, 
+The oracle assignment transaction must be signed
+by the signing key of the main oracle address,
+but it may contain any inputs and outputs, 
 as these are ignored for the purposes of metadata oracle assignment.
 
 The schema for updating an oracle assignment is the same as
