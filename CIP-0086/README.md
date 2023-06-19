@@ -696,7 +696,7 @@ We also originally required CIP-86 updates to occur in transactions
 that only send ADA from an oracle address (main or update, as appropriate),
 to prevent unforeseen interactions with other mechanisms
 that may have negative consequences.
-This requirement was removed for a two reasons.
+This requirement was removed for two reasons.
 First, the reasoning above does not establish any specific issues 
 with other transaction types. Second, it is too restrictive 
 and creates unnecessary additional transactions for long sequences of updates,
