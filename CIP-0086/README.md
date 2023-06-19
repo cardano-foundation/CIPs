@@ -558,7 +558,8 @@ and removes any implicit assignments that were replaced by explicit assignments.
 
 For each oracle update address currently assigned to a policy ID,
 the indexer monitors the blockchain for transactions
-that contain CIP-86 token metadata updates.
+that contain CIP-86 token metadata updates
+and are signed by the signing key of the update address.
 The indexer applies these metadata updates in the order defined in
 [Order of application for updates](#order-of-application-for-updates).
 CIP-86 metadata updates are applied to the asset classes and metadata fields
