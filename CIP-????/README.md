@@ -1,14 +1,15 @@
 ---
 CIP: ?
-Title: Integration of `keccak256` into Plutus 
-Authors: Sergei Patrikeev <so.patrikeev@gmail.com>
-Discussions-To: https://github.com/cardano-foundation/CIPs/pull/524
-Comments-URI: https://github.com/cardano-foundation/CIPs/pull/524
-Status: Draft
+Title: Integration of `keccak256` into Plutus
+Status: Proposed
 Category: Plutus
-Type: Standards Track
+Authors: 
+  - Sergei Patrikeev <so.patrikeev@gmail.com>
+  - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
+Implementors: []
+Discussions: 
+  - https://github.com/cardano-foundation/CIPs/pull/524
 Created: 2023-06-13
-Post-History: None 
 License: Apache-2.0
 ---
 
