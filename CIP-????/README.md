@@ -36,9 +36,6 @@ The changes would require a single function to be added to Plutus.
 ## Rationale
 While the `keccak256` function might be implemented in on-chain scripts, doing so would be computationally unfeasible. 
 
-## Path to Proposed
-This Draft is ready to be moved to Proposed.
-
 ### Trustworthiness of Implementations
 The implementation of `keccak256` is based on the version found in the [cardano-base](https://github.com/input-output-hk/cardano-base/blob/master/cardano-crypto-class/src/Cardano/Crypto/Hash/Keccak256.hs) library.
 
