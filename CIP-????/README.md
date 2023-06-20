@@ -1,5 +1,5 @@
 ---
-CIP: ???
+CIP: ?
 Title: Integration of `keccak256` into Plutus 
 Authors: Sergei Patrikeev <so.patrikeev@gmail.com>
 Discussions-To: https://github.com/cardano-foundation/CIPs/pull/524
