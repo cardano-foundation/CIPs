@@ -49,6 +49,7 @@ The addition of `keccak256` is backward compatible and will not interfere with e
 Upon successful review and evaluation, the `keccak256` function is planned for release in an upcoming update.
 
 ## References
+- [CIP-49](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0049/README.md): ECDSA and Schnorr signatures in Plutus Core 
 - keccak256: https://keccak.team/files/Keccak-submission-3.pdf
 - Ethereum Yellow Paper: https://ethereum.github.io/yellowpaper/paper.pdf
 - Ethereum standard on signing data: https://eips.ethereum.org/EIPS/eip-712
