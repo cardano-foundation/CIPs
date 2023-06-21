@@ -21,7 +21,7 @@ Music tokens on Cardano can be either NFTs or FTs and contain links to audio fil
 
 This CIP divides the additional metadata parameters into two categories of `Required` and `Optional`. When minting a music token on Cardano, you are expected to include ALL of the required fields. If you choose to include one or more of the optional fields, they must be named exactly as defined in this CIP. This will properly allow indexing apps and music players to utilize as much of your token metadata as possible without issues.
 
-[CDDL Spec Version 2](./cddl/version-2.cddl)
+[CDDL Spec Version 2](./cddl/version-2.cddl)<br/>
 [CDDL Spec Version 1 (deprecated)](./cddl/version-1.cddl)
 
 ## Summary of v2 Changes ##
