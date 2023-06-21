@@ -47,11 +47,19 @@ CIP-1694's governance design.
 
 ## Specification
 
-We define the following specification as an extension to the specification
-described within CIP-30.
+We define the following section as an extension to the specification described
+within CIP-30.
 
-- todo: explain
-  [extension](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#extension)
+To access these functionalities a client application must present this CIP
+extension object:
+
+```ts
+{ "cip": 95 }
+```
+
+This extension object is provided during the initial handshake procedure as
+described within
+[CIP-30's Initial API](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cardanowalletnameenable-extensions-extension----promiseapi).
 
 > **Note** This specification will evolve as the proposed ledger governance
 > model matures. It is likely the precise data structures outlined here will be
@@ -113,6 +121,12 @@ For hardware implementations:
 
 ### Data Types
 
+From
+[CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#data-types)
+we only inherit:
+
+- [cbor\<T>](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cbort)
+
 #### DRepID
 
 ```ts
@@ -129,8 +143,8 @@ hash digest of a 32 byte Ed25519 public key, as described in
 type PubDRepKey = string;
 ```
 
-A hex string representing 32 byte Ed25519 DRep public key, as described in
-[DRep Key](#DRep-key).
+A hex-encoded string representing 32 byte Ed25519 DRep public key, as described
+in [DRep Key](#DRep-key).
 
 #### PubStakeKey
 
@@ -138,31 +152,40 @@ A hex string representing 32 byte Ed25519 DRep public key, as described in
 type PubStakeKey = string;
 ```
 
-A hex string representing 32 byte Ed25519 public key used as a staking
+A hex-encoded string representing 32 byte Ed25519 public key used as a staking
 credential.
 
-#### Tx TODO
+#### UnsignedTransaction
 
-unsigned, unwitnessed Tx containing a
+```ts
+type UnsignedTransaction = string;
+```
+
+A hex-encoded string representing a CBOR transaction that is completely unsigned
+(has an empty transaction witness set).
+
+This data model is used to represent transactions which contain, for example:
+DRep registration certificates and the client wishes the wallet inspect, add
+signatures (with payment and DRep key) and submit.
 
 #### SubmittedTransaction
 
 ```ts
 interface SubmittedTransaction {
-  tx: ;
+  tx: cbor<transaction>;
   txHash: string;
   witness: string;
 }
 ```
 
-This interface represents a
+This interface represents a transaction that has been submitted to chain.
 
-- `tx`:
+- `tx`: A hex-encoded string representing CBOR transaction, which was submitted
+  to chain.
 - `txHash`: A string containing the hash of the transaction which contained this
   certificate that was submitted to chain and included in a block. This is to be
   used by clients to track the status of the delegation transaction on-chain.
-- `witness`: A string containing the stake credential witness attached to the
-  certificate.
+- `witness`: A string containing the witnesses attached to the transaction.
 
 ### Error Types
 
@@ -261,7 +284,7 @@ for the case of
 
 An array of the connected user's active stake keys.
 
-#### `api.submitVoteDelegation(delegations: [tx, pubStakeKey]): Promise<SubmittedTransaction[]>`
+#### `api.submitVoteDelegation([tx: UnsignedTransaction, stakeKey: PubStakeKey]): Promise<SubmittedTransaction[]>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -296,7 +319,7 @@ details of the submitted delegation certificates, for the client to confirm. The
 returned `txHash`s can be used by the client to track the status of the
 transactions containing the certificates on Cardano.
 
-#### `api.submitDRepRegistration(tx, pubDRepKey): Promise<SubmittedTransaction>`
+#### `api.submitDRepRegistration(tx: UnsignedTransaction, dRepKey: PubDRepKey): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -328,7 +351,7 @@ the submitted registration certificate, for the client to confirm. The returned
 `txHash` can be used by the client to track the status of the transaction
 containing the certificate on Cardano.
 
-#### `api.submitDRepRetirement(tx, pubDRepKey): Promise<SubmittedTransaction>`
+#### `api.submitDRepRetirement: UnsignedTransaction, dRepKey: PubDRepKey): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -358,7 +381,7 @@ the submitted retirement certificate, for the client to confirm. The returned
 `txHash` can be used by the client to track the status of the transaction
 containing the certificate on Cardano.
 
-#### `api.submitVote([tx, pubDRepKey]): Promise<SubmittedTransaction>[]`
+#### `api.submitVote([tx: UnsignedTransaction, dRepKey: PubDRepKey]): Promise<SubmittedTransaction>[]`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -389,7 +412,7 @@ details of the submitted votes, for the client to confirm. The returned
 `txHash`s can be used by the client to track the status of the transactions
 containing the certificates on Cardano.
 
-#### `api.submitGovernanceAction(tx): Promise<SubmittedTransaction>`
+#### `api.submitGovernanceAction(tx: UnsignedTransaction): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -421,12 +444,15 @@ containing the certificate on Cardano.
 
 ### Examples of Flows
 
-#### Login
+#### Connection and Login
+
+This describes a potential flow of connection between CIP-95 compatible client
+application and wallet then a subsequent login.
 
 1. **Connection:** User indicates to the client their intent to connect, causing
-   client offer a list of supported wallets, user selects their wallet causing
-   the client to invoke `.{wallet-name}.enable({ "cip": ?})` from the shared
-   cardano `namespace`.
+   client offer a list of supported wallets, user selects their desired wallet.
+   The client will then invoke `.{wallet-name}.enable({ "cip": 95 })` from the
+   shared `cardano` namespace.
 2. **Wallet Confirmation:** The wallet indicates through its UI the clients
    intent to connect, the user grants permission.
 3. **Share Credentials:** The client invokes both `.getActiveStakeKeys()` and
@@ -529,7 +555,9 @@ this application specific complexity from wallet implementations and onto
 applications. This has a number of benefits, primarily this should lower the bar
 for wallet adoption. But this also helps in the creation of iterative updates,
 all wallet implementers do not need to update if the format of these
-transactions is adjusted
+transactions is adjusted.
+
+-todo: also easier error checking for wallet
 
 The design outlined here aims to improve the security by placing the burden of
 submission onto wallets. This prevents malicious clients from being able to
@@ -616,9 +644,13 @@ for wallets implementing both APIs.
 - Is it necessary to provide a method to prove ownership of DRep key? and can
   CIP-30's `api.signData()` be used to prove ownership of multi-stake keys?
 - Is it sensible to place multi-stake key burden onto clients?
-- Does supporting governance action submission a necessary burden for the scope
-  of this proposal?
+- <s>Does supporting governance action submission a necessary burden for the
+  scope of this proposal?</s>
+  - Since moving burden of transaction construction from wallet to app, this
+    becomes much less of an issue as the complex error checking should now be
+    done by the application.
 - Should this proposal cater for non-key-based stake credential?
+  - We could just change all references of keys to credentials to allow this?
 - Should there be a more elegant way for the optional sharing of governance
   state?
 
