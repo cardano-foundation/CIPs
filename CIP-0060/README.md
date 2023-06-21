@@ -21,8 +21,8 @@ Music tokens on Cardano can be either NFTs or FTs and contain links to audio fil
 
 This CIP divides the additional metadata parameters into two categories of `Required` and `Optional`. When minting a music token on Cardano, you are expected to include ALL of the required fields. If you choose to include one or more of the optional fields, they must be named exactly as defined in this CIP. This will properly allow indexing apps and music players to utilize as much of your token metadata as possible without issues.
 
-[CDDL Spec Version 2](cddl/version-2.cddl)
-[CDDL Spec Version 1 (deprecated)](cddl/version-1.cddl)
+[CDDL Spec Version 2](./cddl/version-2.cddl)
+[CDDL Spec Version 1 (deprecated)](./cddl/version-1.cddl)
 
 ## Summary of v2 Changes ##
 In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_title`. `release` is a more generic name that covers all types of releases from Albums, EPs, LPs, Singles, and Compilations. At the top level, we are grouping those metadata items that relate to the release under a new key `release`. At the file for each song, there is a new `song` key that holds the metadata specific to the individual song. These changes separate the music-specific metadata from the general CIP-25/CIP-68 NFT metadata. A music player can look at just the information necessary instead of having to ignore extra NFT-related fields. CIP-68 NFTs are officially supported and an example specific to CIP-68 has been added below.
