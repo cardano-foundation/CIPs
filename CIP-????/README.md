@@ -30,8 +30,19 @@ which is a fundamental component of Ethereum's cryptographic framework:
 Adding `keccak256` to Plutus would enhance the potential for cross-chain solutions between Cardano and EVM-based blockchains.
 
 ## Specification
-`keccak256` function is already available in [cardano-base](https://github.com/input-output-hk/cardano-base/blob/master/cardano-crypto-class/src/Cardano/Crypto/Hash/Keccak256.hs).
-The changes would require a single function to be added to Plutus.
+This proposal aims to introduce a new built-in hash function `keccak_256`.
+
+This function will be developed following the [`keccak256`](https://keccak.team/files/Keccak-submission-3.pdf) specification 
+and will utilize the [cryptonite](https://github.com/haskell-crypto/cryptonite/blob/master/Crypto/Hash/Keccak.hs) implementation. 
+Since `cryptonite` is already a part of the [`cardano-base`](https://github.com/input-output-hk/cardano-base/blob/master/cardano-crypto-class/src/Cardano/Crypto/Hash/Keccak256.hs), 
+this simplifies its integration into Plutus. The cost of the `keccak_256` operation will scale linearly with the length of the message.
+
+More specifically, Plutus will gain the following primitive operation:
+
+* `keccak_256` :: ByteString -> ByteString
+
+The input to this function can be a `ByteString` of arbitrary size, and the output will be a `ByteString` of 32 bytes. 
+Note that this function aligns with the format of existing hash functions in Plutus, such as [blake2b_256](https://github.com/input-output-hk/plutus/blob/75267027f157f1312964e7126280920d1245c52d/plutus-core/plutus-core/src/Data/ByteString/Hash.hs#L25)
 
 ## Rationale
 While the `keccak256` function might be implemented in on-chain scripts, doing so would be computationally unfeasible. 
