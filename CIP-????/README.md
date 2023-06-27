@@ -61,3 +61,6 @@ Upon successful review and evaluation, the `keccak256` function is planned for r
 - keccak256: https://keccak.team/files/Keccak-submission-3.pdf
 - Ethereum Yellow Paper: https://ethereum.github.io/yellowpaper/paper.pdf
 - Ethereum standard on signing data: https://eips.ethereum.org/EIPS/eip-712
+
+## Copyright
+This CIP is licensed under [Apache-2.0][https://www.apache.org/licenses/LICENSE-2.0]. 
