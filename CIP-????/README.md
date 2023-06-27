@@ -44,7 +44,7 @@ More specifically, Plutus will gain the following primitive operation:
 The input to this function can be a `ByteString` of arbitrary size, and the output will be a `ByteString` of 32 bytes. 
 Note that this function aligns with the format of existing hash functions in Plutus, such as [blake2b_256](https://github.com/input-output-hk/plutus/blob/75267027f157f1312964e7126280920d1245c52d/plutus-core/plutus-core/src/Data/ByteString/Hash.hs#L25)
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 While the `keccak256` function might be implemented in on-chain scripts, doing so would be computationally unfeasible. 
 
 ### Trustworthiness of Implementations
