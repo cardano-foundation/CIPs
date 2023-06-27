@@ -17,7 +17,7 @@ License: Apache-2.0
 This CIP proposes an extension of the current Plutus functions to provide support for the [`keccak256`](https://keccak.team/files/Keccak-submission-3.pdf) hashing algorithm,
 primarily to ensure compatibility with Ethereum's cryptographic infrastructure.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 The [integration](https://github.com/input-output-hk/cardano-base/pull/252) of the ECDSA and Schnorr signatures over the secp256k1 curve into Plutus was a significant 
 step towards interoperability with Ethereum and Bitcoin ecosystems. However, full compatibility is still impossible 
