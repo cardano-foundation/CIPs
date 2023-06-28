@@ -79,113 +79,10 @@ Certification issuers will sign the transaction with the certification certifica
 
 ### Certificate Schemas
 
-The on-chain metadata should follow the following CDDL schema:
+The on-chain metadata should follow the following CDDL schema: [CDDL Schema version 1](./version_1_onchain.cddl). A JSON version of this schema is also available: [JSON Schema Version 1](./version_1_onchain.json).
 
-```cddl
-string = bstr .size (1..64) ; tstr / string from 1 up to 64 chars only
+If new version of the schemas are released, we will keep in this section all the previous ones.
 
-sig_256 = bstr .size (64..64) ; 256 bytes signature (256 / 64 = 4 bytes)
-
-transaction_metadata = {
-  1304: on-chain_metadata
-}
-
-on-chain_metadata = {
-      subject: string
-    , rootHash: sig_256
-    , metadata: [+ string] / [+ string / [+ string]]
-    , schemaVersion: uint
-    , type: certify / audit
-}
-
-certify = {
-      action: "CERTIFY" 
-    , certificationLevel: 1 / 2 / 3 
-    , certificateIssuer: string
-}
-
-audit = {
-      action: "AUDIT" 
-    , certificationLevel: 0 
-    , certificateIssuer: string
-}
-```
-
-This schema can be translated into a JSON schema:
-```json
-{
-    "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "$title": "Certification Certificate", 
-    "type": "object", 
-    "properties": {
-        "subject": {
-            "type": "string",
-            "description": "Can be anything. Subject of the certification. It should match the registration metadata subject.",
-            "pattern": "^[a-zA-Z0-9]{1,64}$"
-        },
-        "rootHash": {
-            "type": "string",
-            "description": "blake2b-256 hash of the off-chain certification metadata linked in the metadata field.",
-            "pattern": "^[0-9a-fA-F]{64}$"
-        },
-        "metadata": {
-            "type": "array",
-            "description": "Array of links that points to the metadata json file.",
-            "items": {
-                "type": "string",
-                "pattern": "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,}|ipfs:\/\/[a-zA-Z0-9]+)$"
-            }
-        },
-        "schemaVersion": {
-            "type": "integer",
-            "description": "Used to describe the json schema version of the on-chain metadata."
-        },
-        "type": {
-            "type": "object",
-            "description": "Describes the certification certificate type.", 
-            "properties": {
-                "action": {
-                    "type": "string",
-                    "enum": ["CERTIFY", "AUDIT"],
-                    "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certification Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard."
-                },
-                "certificationLevel": {
-                    "type": "integer",
-                    "enum": [0,1,2,3],
-                    "description": "Integer between 1 and 3 to describe the level of certification this certificate refers to when using a CERTIFY action. Integer of 0 for an audit when using an AUDIT action."
-                },
-                "certificateIssuer": {
-                    "type": "string",
-                    "description": "Certification issuer name."
-                }
-            },
-            "required": ["action", "certificationLevel", "certificateIssuer"]
-        }
-    },
-    "required": ["subject", "rootHash", "metadata", "schemaVersion", "type"]
-}
-```
-
-### On-chain DApp Certification Certificate
-
-```json
-{ "1304": {
-        "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5", 
-        "rootHash": "f08ccc1ee08d034d8317d1d84cab76d3cac48a8466ca9e54a291bb998c49a173",
-        "metadata": [
-            "ipfs://abcdefghijklmnopqrstuvwxyz0123456789",
-            "https://example.com/metadata.json"
-        ],
-
-        "schemaVersion": 1,
-        "type": {
-            "action": "CERTIFY",
-            "certificationLevel": 1,
-            "certificateIssuer": "Example LLC"
-        }
-    }
-}
-```
 
 ### On-chain Metadata Properties
 
@@ -215,6 +112,24 @@ Values for all fields shall be shorter than 64 characters to be able to be inclu
 When submitting the transaction metadata pick the following value for `transaction_metadatum_label`:
 
 - `1304`: DApp Certification
+
+### Example
+
+
+```json
+{
+    "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5",
+    "rootHash": "4e9eec517ab811600c8a8c1ba75c992f5f27f8a330003e892e1d5a601c6b6c19",
+    "metadata": [
+    "https://example.com/metadata.json"],
+    "schema_version": 1,
+    "type": { 
+        "action": "CERTIFY",
+        "certificationLevel": 1,
+        "certificateIssuer": "Example LLC.",
+    },
+}
+```
 
 ### Off-chain Metadata Format
 
@@ -251,184 +166,13 @@ The metadata can be self hosted by the DApp developer, the certificate issuer, o
 - `scriptHash`, a string, is the script hash or script hash+staking key
 - `contractAddress`, a string, the script address
 
-The off-chain metadata shall follow the following JSON schema:
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "properties": {
-    "subject": {
-      "type": "string",
-      "description": "Can be anything. Subject of the certification. It should match the registration metadata subject and the on-chain metadata."
-    },
-    "schemaVersion": {
-      "type": "integer",
-      "description": "Used to describe the json schema version of the off-chain metadata."
-
-    },
-    "certificationLevel": {
-      "type": "integer",
-      "enum": [0,1,2,3],
-      "description": "Describes the action this certification certificate is claiming. For the moment, CERTIFY shall be used to claim a certification that meets the Certfication Standard. AUDIT shall be used to publish on-chain an audit that may not meet the Certification standard. Shall match the on-chain certificationLevel."
-    },
-    "certificateIssuer": {
-      "type": "object",
-      "properties": {
-        "name": {
-           "type": "string",
-           "description": "Name of the Certificate Issuer."
-        },
-        "logo": {
-            "type": "string",
-            "description": "URL to the logo of the Certificate Issuer."
-            "pattern": "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})\\.(?:jpg|jpeg|png|gif|bmp|svg|webp|tiff|tif)$"
-        },
-        "social": {
-          "type": "object",
-          "properties": {
-            "twitter": {
-              "type": "string",
-              "description": "Twitter handle of the Certificate Issuer.",
-              "pattern": "@\\w{1,15}"
-            },
-            "github": {
-              "type": "string",
-              "description": "GitHub handle of the Certificate Issuer.",
-              "pattern": "^(?:https?:\/\/)?(?:www\\.)?github\\.com\/[\\w-]+\/[\\w.-]+$"
-            },
-            "contact": {
-              "type": "string",
-              "description": "Contact email of the Certification Issuer.",
-              "pattern" : "^\\S+@\\S+\\.\\S+$"
-            },
-            "website": {
-              "type": "string",
-              "description": "URL to the website of the Certificate Issuer.",
-              "pattern": "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$"
-            },
-            "discord": {
-                "type": "string",
-                "description": "URL to the Discord server of the Certificate Issuer.",
-                "pattern": "^(?:https?:\/\/)?discord(?:\\.gg|app\\.com\/invite|\\.com\/invite)\/[\\w-]+$"
-            }
-          },
-          "description": "Social contacts of the Certificate Issuer.",
-          "required": [
-              "website",
-              "contact"
-          ]
-        }
-      },
-      "required": [
-          "name",
-          "social"
-      ]
-    },
-    "report": {
-      "type": "object",
-      "properties": {
-        "reportURLs": {
-          "type": "array",
-          "items": [
-              {
-                "type": "string",
-                "description": "A URL to the report of the certification/audit.",
-                "^(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})\\.(?:json|pdf)$"
-              }
-          ]
-        },
-        "reportHash": {
-          "type": "string",
-          "description": "Hash of the report pointed by the links in reportURLs.",
-          "pattern": "^[a-fA-F0-9]{64}$"
-        }
-      },
-      "required": [
-          "reportURLs",
-          "reportHash"
-      ]
-    },
-    "summary": {
-      "type": "string",
-      "description": "A string of the summary of the certification/audit."
-    },
-    "disclaimer": {
-      "type": "string",
-      "description": "A string of the legal disclaimer from the Certificate Issuer."
-    },
-    "scripts": {
-      "type": "array",
-      "items": [
-        {
-            "smartContractInfo": {
-                "type": "object",
-                "properties": {
-                    "era": {
-                        "type": "string",
-                        "description": "Describe which era this script was written for."
-
-                    },
-                    "compiler": {
-                        "type": "string",
-                        "description": "Compiler used for this script."
-                    },
-                    "compilerVersion": {
-                        "type": "string",
-                        "description": "Compiler version used for this script."
-                    },
-                    "optimizer": {
-                        "type": "string",
-                        "description": "Post compilation optimizer used for this script."
-                    },
-                    "optimizerVersion": {
-                        "type": "string",
-                        "description": "Post compilation optimizer version used for this script."
-                    },
-                    "progLang": {
-                        "type": "string",
-                        "description": "Programming language used for this script."
-                    },
-                    "repository": {
-                        "type": "string",
-                        "description": "URL to the repository of the script."
-                    }
-                }
-            },
-            "scriptHash": {
-              "type": "string",
-              "description": "Script hash or script hash+staking key."
-            },
-            "contractAddress": {
-              "type": "string",
-              "description": "Script on-chain address.h"
-            },
-            "required": [
-                "scriptHash"
-              ]
-        }
-      ]
-    }
-  },
-
-  "required": [
-    "subject",
-    "schemaVersion",
-    "certificationLevel",
-    "certificateIssuer",
-    "report",
-    "summary",
-    "disclaimer",
-    "scripts"
-  ]
-}
-```
+The off-chain metadata shall follow the following JSON schema [JSON Schema version 1](./version_1_offchain.json). If new schemas for the offchain metadata are released, the previous ones will also be linked in this section.
 
 ### Example
 
 ```json
 {
-  "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5b8213c8365b980f2d8c48d5fbb2ec3ce642725a20351dbff9861ce9695ac5db8",
+  "subject": "d684512ccb313191dd08563fd8d737312f7f104a70d9c72018f6b0621ea738c5",
   "schemaVersion": 1,
   "certificationLevel": 1,
   "certificateIssuer": {
