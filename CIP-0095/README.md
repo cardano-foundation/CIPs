@@ -256,7 +256,7 @@ review and to consent to signature and submission. The exceptions to this are
 `.getActiveStakeKeys()` and `.getDRepKey()`, user consent should not be needed
 to share public key information.
 
-#### `api.getDRepKey(): Promise<PubDRepKey>`
+#### `api.getPubDRepKey(): Promise<PubDRepKey>`
 
 Errors: `APIError`
 
@@ -267,7 +267,7 @@ as described in [DRep Key](#DRep-key).
 
 The wallet account's DRep Key.
 
-#### `api.getActiveStakeKeys(): Promise<PubStakeKey[]>`
+#### `api.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
 
 Errors: `APIError`
 
@@ -327,7 +327,7 @@ This endpoint requests the wallet to inspect, sign and submit a transaction
 containing a DRep registration certificate. The wallet should articulate this
 request from client application in a explicit and highly informative way. Users
 should be made aware of the type of certificate, associated DRepID, metadata
-anchor and or deposit amount.
+anchor and deposit amount.
 
 If user grants permission, the transaction must be signed by the secret key of
 the provided public DRep Key, with the signature and key to be added to the
@@ -455,50 +455,57 @@ application and wallet then a subsequent login.
    shared `cardano` namespace.
 2. **Wallet Confirmation:** The wallet indicates through its UI the clients
    intent to connect, the user grants permission.
-3. **Share Credentials:** The client invokes both `.getActiveStakeKeys()` and
+3. **Share Credentials:** The client invokes both `.getActivePubStakeKeys()` and
    `.getDRepKey()`, causing the connected wallet to share relevant credentials.
 4. **Chain Lookup:** The client uses a chain indexer to work out the governance
    state of the provided credentials.
 
-TODO: add updated flows for delegation and DRep registration
-
-<!-- #### Vote Delegation
+#### Vote Delegation
 
 Assume a "DRep Aggregator/Explorer" specialized client, who aggregates DRep
 metadata from on-chain registration certificates to show to prospective
-delegators. Assume that connection has already been made via
-`.{wallet-name}.enable({ "cip": ?})`.
+delegators. Assume that connection to a users wallet has already been made via
+`cardano.{wallet-name}.enable({ "cip": 95})`.
 
 1. **Choose DRep:** User browses DReps and selects one which align's with their
    values and chooses which stake credential they wish to use for delegation.
-2. **Construct Delegation:** The client passes the chosen DRep's ID and the
-   connected wallet's chosen stake key to the wallet in a
-   `api.submitDelegation()` call.
-3. **Submit Delegation:** The wallet uses the provided details from the client
-   to construct a delegation certificate, the wallet confirms the contents of
-   the certificate with the user when asking for signature permission, wallet
-   submits transaction through it's infrastructure.
-4. **Feedback to user:** The wallet returns a `SignedDelegationCertificate` and
-   the client uses the `txHash` to track the status of the transaction on-chain,
-   providing feedback to the user.
+2. **Construct Delegation:** The client application uses CIP-30 endpoints to
+   query the wallet's UTxO set and payment address. Using this information and
+   the selected DRep ID constructs a transaction containing a vote delegation
+   certificate. Likely using a helper support library.
+3. **Submit Invocation:** Using one of the wallet's stake keys obtained via
+   `.getActivePubStakeKeys()` the client passes the transaction and stake key to
+   the wallet via `.submitVoteDelegation()`.
+4. **Inspect, sign and submit:** The wallet inspects the content of the
+   transaction, showing the user the target of the delegation (DRep ID) and the
+   stake key being used. If the user confirm that they accepts this then the
+   wallet should sign and submit the transaction.
+5. **Feedback to user:** The wallet returns a `SubmittedTransaction` and the
+   client uses the `txHash` field to track the status of the transaction
+   on-chain, providing feedback to the user.
 
 #### DRep Registration
 
 Assume that connection has already been established via
-`.{wallet-name}.enable({ "cip": ?})`.
+`cardano.{wallet-name}.enable({ "cip": 95})` to a DRep registration focussed
+client.
 
 1. **User Indicates Intent:** User indicates to the client that they wish to
    register as a DRep. The client asks the user to provide metadata anchor, this
    is bundled with DRepID the client derives from the wallets DRepKey provided
-   via `.getDRepKey()`. This information is passed to the wallet via
+   via `.getPubDRepKey()`.
+2. **Build Transaction**: The client application bundles the wallet's DRep ID
+   and metadata anchor into a DRep registration certificate. Using CIP-30
+   endpoints the client constructs a unsigned transaction and includes the DRep
+   certificates, before passing this to the wallet via
    `.submitDRepRegistration()`.
-2. **Sign and Submit:** The wallet uses the data provided to generate a DRep
-   registration certificate, signing it with the matching key to the key hash
-   provided in the certificate. This is then submitted to chain and included in
-   a block.
-3. **Feedback to user:** The wallet returns a
-   `SignedDRepRegistrationCertificate` and the client uses the `txHash` to track
-   the status of the transaction on-chain, providing feedback to the user. -->
+3. **Inspect, sign and submit:** The wallet inspects the content of the
+   transaction, showing the user associated certificate's DRepID, metadata
+   anchor and deposit amount. If the user confirm that they accepts this then
+   the wallet should sign and submit the transaction.
+4. **Feedback to user:** The wallet returns a `SubmittedTransaction` and the
+   client uses the `txHash` field to track the status of the transaction
+   on-chain, providing feedback to the user.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -510,13 +517,13 @@ ask small we aim to reduce implementation time.
 This design aims to make the tracking of a user's governance state an optional
 endeavour for wallet providers. This is achieved by placing the responsibility
 on clients to track a user's governance state, i.e. if a wallet user is a DRep,
-what DRep a wallet holder has delegated to, etc.
+what DRep a wallet user has delegated to, etc.
 
 Despite only defining the minimal set of endpoints required, we do not wish to
 discourage the creation of subsequent CIPs with a wider range of governance
 functionality. Nor does this specification aim to discourage wallet providers
-from fully integrating CIP-1694 governance, side-stepping the necessity for this
-API and client applications.
+from fully integrating governance features, side-stepping the necessity for this
+API and client applications (matching how staking is achieved).
 
 ### Why Web-based Stacks
 
@@ -529,58 +536,63 @@ The primary alternative approach to this is wallet providers integrating this
 functionality fully inside of wallet software, matching how staking is often
 implemented. We deem this approach as preferable from a security standpoint for
 combined functionality and would encourage wallet providers to pursue this. But
-we understand that this may add overhead to wallet designs so offer this API as
-an alternative.
+we understand that this adds significant overhead to wallet designs, so we offer
+this API as an alternative.
 
-### Why these DReps and Ada Holders?
+### Why DReps and Ada Holders?
 
-This proposal only caters to two types of actor described in CIP-1694; Ada
-holders and DReps, this decision was three fold. Primarily this is to allow
-these groups to utilize a client to participate in Cardano's governance. These
-groups are likely less comfortable utilizing command-line interfaces than other
-groups, thus making alternatives from them is a priority. Secondly, the other
-types of actor (Constitution Committee member and SPOs) are identified by
-different credentials than Ada holders and DReps. Thirdly, these groups
-represent the majority of participants. These alternative credentials are
-unlikely to be stored within standard wallet software which may interface with
-this API.
+This proposal only caters to two types of governance actor described in
+CIP-1694; Ada holders and DReps, this decision was three fold. Primarily, this
+is to allow these groups to utilize a web-based client to participate in
+Cardano's governance. These groups are likely less comfortable utilizing
+command-line interfaces than other groups, thus making alternatives from them is
+a priority. Secondly, the other types of actor (Constitution Committee member
+and SPOs) are identified by different credentials than Ada holders and DReps,
+making their integration in this specification complex. These alternative
+credentials are unlikely to be stored within standard wallet software which may
+interface with this API. Thirdly, Ada holders and DReps likely represent the
+majority of participants thus we aim to cast a wide net with this specification.
 
 ### The Role of the Wallet
 
-The endpoints specified here aim to maintain the wallets role of: sharing public
-keys, inspecting, signing and submission.
+The endpoints specified here aim to maintain the role of the wallet as: sharing
+public keys, transaction inspecting, transaction signing and transaction
+submission.
 
 By not placing the burden of transaction construction onto the wallet, we move
-this application specific complexity from wallet implementations and onto
+the application specific complexity from wallet implementations and onto
 applications. This has a number of benefits, primarily this should lower the bar
 for wallet adoption. But this also helps in the creation of iterative updates,
 all wallet implementers do not need to update if the format of these
-transactions is adjusted.
+transactions is adjusted during development.
 
--todo: also easier error checking for wallet
+By placing the burden of submission onto wallets we prevent malicious clients
+from being able to censor which transactions are submitted to chain. This is of
+particular concern due to the potential political impact of transactions being
+handled by this API. We thus deem it necessary for wallets to bare this burden.
 
-The design outlined here aims to improve the security by placing the burden of
-submission onto wallets. This prevents malicious clients from being able to
-censor which transactions are submitted to chain. This is of particular concern
-due to the potential political impact of transactions being handled by this API.
-We thus deem it necessary for wallets to bare this burden.
+One argument against this design is that, if wallets are required to be able to
+inspect and thus understand these application specific transactions then they
+may as well build the transaction. For this reason I have placed this back into
+the
 
 ### Extension Design
 
-Whilst CIP-30 facilitated the launch of client development on Cardano, it's
+Whilst CIP-30 facilitated the launch of dApp client development on Cardano, it's
 functionality is limited in scope. Although it does offer generic functions,
 these cannot satisfy the problem that this proposal tackles. Thus extending it's
 functionality is a necessity.
 
 With this specification we chose to extend CIP-30's functionalities. There would
 be two competing designs to this approach. One; move to have this specification
-included within CIP-30. Two; deploy this specification as its own standalone
+included within CIP-30. Two; deploy this specification as it's own standalone
 web-bridge.
 
 It would be undesirable to include this functionality within the base CIP-30 API
-because it would force all clients and wallets supporting CIP-30 to support this
-API. This is because not all client apps or wallet will have the need or desire
-to support this specification thus forcing cooperation would not desirable.
+because it would force all wallets supporting CIP-30 to support this API. This
+is undesirable because not all client apps or wallet will have the need or
+desire to support this specification thus forcing cooperation would not
+desirable.
 
 The reason we chose to not deploy this specification on its own is because it is
 unlikely that clients implementing this API will not want to also use the
@@ -639,6 +651,8 @@ for wallets implementing both APIs.
 
 - <s>The burden of transaction building to be placed on dApps or wallets?</s>
   - This has been moved from the wallet to the application.
+  - Since wallets still have to be able to be able to inspect these
+    transactions, its not far away from just generating the transaction itself.
 - Move DRep key definitions into a CIP which is dedicated to describing CIP-1694
   related credentials? or CIP-1852?
 - Is it necessary to provide a method to prove ownership of DRep key? and can
@@ -653,6 +667,7 @@ for wallets implementing both APIs.
   - We could just change all references of keys to credentials to allow this?
 - Should there be a more elegant way for the optional sharing of governance
   state?
+- should provide support for combination certificates?
 
 ## Path to Active
 
