@@ -50,9 +50,6 @@ While the `keccak256` function might be implemented in on-chain scripts, doing s
 ### Trustworthiness of Implementations
 The implementation of `keccak256` is based on the version found in the [cardano-base](https://github.com/input-output-hk/cardano-base/blob/master/cardano-crypto-class/src/Cardano/Crypto/Hash/Keccak256.hs) library.
 
-## Backward Compatibility
-The addition of `keccak256` is backward compatible and will not interfere with existing functions within Plutus.
-
 ## Path to Active
 Upon successful review and evaluation, the `keccak256` function is planned for release in an upcoming update.
 
