@@ -19,7 +19,7 @@ primarily to ensure compatibility with Ethereum's cryptographic infrastructure.
 
 ## Motivation: why is this CIP necessary?
 
-The [integration](https://github.com/input-output-hk/cardano-base/pull/252) of the ECDSA and Schnorr signatures over the secp256k1 curve into Plutus was a significant 
+The [integration](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0049/README.md) of the ECDSA and Schnorr signatures over the secp256k1 curve into Plutus was a significant 
 step towards interoperability with Ethereum and Bitcoin ecosystems. However, full compatibility is still impossible 
 due to the absence of the `keccak256` hashing algorithm in Plutus interpreter, 
 which is a fundamental component of Ethereum's cryptographic framework:
@@ -52,12 +52,6 @@ The implementation of `keccak256` is based on the version found in the [cardano-
 
 ## Path to Active
 Upon successful review and evaluation, the `keccak256` function is planned for release in an upcoming update.
-
-## References
-- [CIP-49](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0049/README.md): ECDSA and Schnorr signatures in Plutus Core 
-- keccak256: https://keccak.team/files/Keccak-submission-3.pdf
-- Ethereum Yellow Paper: https://ethereum.github.io/yellowpaper/paper.pdf
-- Ethereum standard on signing data: https://eips.ethereum.org/EIPS/eip-712
 
 ## Copyright
 This CIP is licensed under [Apache-2.0][https://www.apache.org/licenses/LICENSE-2.0]. 
