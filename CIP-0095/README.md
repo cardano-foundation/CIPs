@@ -319,7 +319,7 @@ details of the submitted delegation certificates, for the client to confirm. The
 returned `txHash`s can be used by the client to track the status of the
 transactions containing the certificates on Cardano.
 
-#### `api.submitDRepRegistration(tx: UnsignedTransaction, dRepKey: PubDRepKey): Promise<SubmittedTransaction>`
+#### `api.submitDRepRegistration(tx: UnsignedTransaction): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -329,15 +329,14 @@ request from client application in a explicit and highly informative way. Users
 should be made aware of the type of certificate, associated DRepID, metadata
 anchor and deposit amount.
 
-If user grants permission, the transaction must be signed by the secret key of
-the provided public DRep Key, with the signature and key to be added to the
-transaction witness set before submission.
+If user grants permission, the transaction must be signed by the secret DRep key
+as described in [DRep Key](#drep-key), with the signature and key to be added to
+the transaction witness set before submission.
 
-By allowing clients to supply the DRep Key and choose UTxOs we are placing the
-burden of managing a user's DRep registration deposit on the application. By
-forcing wallets to inspect these certificates it allows the user to catch
-malicious client applications attempting to insert their own data into the
-certificate.
+By allowing clients to choose UTxOs we are placing the burden of managing a
+user's DRep registration deposit on the application. By forcing wallets to
+inspect these certificates it allows the user to catch malicious client
+applications attempting to insert their own data into the certificate.
 
 ##### Errors
 
@@ -351,7 +350,7 @@ the submitted registration certificate, for the client to confirm. The returned
 `txHash` can be used by the client to track the status of the transaction
 containing the certificate on Cardano.
 
-#### `api.submitDRepRetirement: UnsignedTransaction, dRepKey: PubDRepKey): Promise<SubmittedTransaction>`
+#### `api.submitDRepRetirement(tx: UnsignedTransaction): Promise<SubmittedTransaction>`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -361,9 +360,9 @@ request from client application in a explicit and highly informative way. Users
 should be made aware of the type of certificate, associated DRepID and metadata
 anchor.
 
-If user grants permission, the transaction must be signed by the secret key of
-the provided public DRep Key, with the signature and key to be added to the
-transaction witness set before submission.
+If user grants permission, the transaction must be signed by the secret DRep key
+as described in [DRep Key](#drep-key), with the signature and key to be added to
+the transaction witness set before submission.
 
 By forcing wallets to inspect these certificates it allows the user to catch
 malicious client applications attempting to insert their own data into the
@@ -381,7 +380,7 @@ the submitted retirement certificate, for the client to confirm. The returned
 `txHash` can be used by the client to track the status of the transaction
 containing the certificate on Cardano.
 
-#### `api.submitVote([tx: UnsignedTransaction, dRepKey: PubDRepKey]): Promise<SubmittedTransaction>[]`
+#### `api.submitVote([tx: UnsignedTransaction]): Promise<SubmittedTransaction>[]`
 
 Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
 
@@ -393,9 +392,9 @@ anchor. For the case of multiple votes at once, the user may only be asked for
 permission to authorize all at once, but this can depend on wallet's
 implementation.
 
-If user grants permission, each transaction must be signed by the secret key of
-the provided public stake key, with the signature and key to be added to the
-transaction witness set before submission.
+If user grants permission, each transaction must be signed by the secret DRep
+key as described in [DRep Key](#drep-key), with the signature and key to be
+added to the transaction witness set before submission.
 
 By forcing wallets to inspect these votes it allows the user to catch malicious
 client applications attempting to alter the vote's contents.
@@ -420,7 +419,7 @@ This endpoint requests the wallet to inspect, sign and submit a transaction
 containing a governance action. The wallet should articulate this request from
 client application in a explicit and highly informative way. For the governance
 action the user must be shown the amount of ADA to be locked as deposit,
-governance action type and the metadata anchor.
+governance action type, all action specific details and the metadata anchor.
 
 If user grants permission, the transaction must be signed using the wallets
 payment key and submitted.
@@ -632,6 +631,10 @@ complexity of supporting these types of wallet. This means that we are likely
 excluding tooling for DAOs from being supported through this standard. The
 argument could be made that such entities generally prefer to use more advanced
 wallet tooling which is not dependent on web-based stacks.
+
+- TODO: discuss change design to allow script based credentials?
+- TODO: discuss why end points for each type of cert, rather than group by
+  key/signature
 
 ### Backwards Compatibility
 
