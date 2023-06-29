@@ -47,11 +47,14 @@ Note that this function aligns with the format of existing hash functions in Plu
 ## Rationale: how does this CIP achieve its goals?
 While the `keccak256` function might be implemented in on-chain scripts, doing so would be computationally unfeasible. 
 
-### Trustworthiness of Implementations
-The implementation of `keccak256` is based on the version found in the [cardano-base](https://github.com/input-output-hk/cardano-base/blob/master/cardano-crypto-class/src/Cardano/Crypto/Hash/Keccak256.hs) library.
-
 ## Path to Active
-Upon successful review and evaluation, the `keccak256` function is planned for release in an upcoming update.
+### Acceptance Criteria
+The `keccak256` function must be integrated into the Plutus and accessible to developers writing smart contracts.
+
+A suite of tests should be developed and executed successfully to ensure the robustness of the `keccak256`.
+
+### Implementation Plan
+Costing of the `keccak256` will be done by the Plutus team.
 
 ## Copyright
 This CIP is licensed under [Apache-2.0][https://www.apache.org/licenses/LICENSE-2.0]. 
