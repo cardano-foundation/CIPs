@@ -49,7 +49,7 @@ While the `keccak256` function might be implemented in on-chain scripts, doing s
 
 ## Path to Active
 This CIP may transition to active status once the Plutus version containing the `keccak_256` function is introduced 
-in a node release and becomes available on the main-net.
+in a node release and becomes available on Mainnet.
 
 ### Acceptance Criteria
 * A Plutus binding is created for the `keccak256` function and included in a new version of Plutus.
