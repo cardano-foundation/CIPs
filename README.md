@@ -96,7 +96,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 
 <p align="right"><i>Last updated on 2023-06-30</i></p>
 
-> 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
+> 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
 ### Proposals Under Review (CIP)
 
@@ -136,6 +136,8 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0005 | [Plutus Script Usability](./CPS-0005) | Open |
 
 <p align="right"><i>Last updated on 2023-06-09</i></p>
+
+> 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
 
 ### Proposals Under Review (CPS)
 
