@@ -137,8 +137,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 
 <p align="right"><i>Last updated on 2023-06-09</i></p>
 
-> 💡 For more details about Statuses, refer to [CIP-0001](./CIP-0001).
-
 ### Proposals Under Review (CPS)
 
 Below are listed tentative CPSs still under discussion with the community. They are listed below for easing navigation and also tentatively allocating numbers to avoid clashes later on.
