@@ -3,7 +3,8 @@ CPS: 7
 Title: Voltaire: Cardano Governance
 Status: Open
 Category: Ledger
-Authors: Pi Lanningham <pi@sundaeswap.finance>
+Authors: 
+  - Pi Lanningham <pi@sundaeswap.finance>
 Proposed Solutions:
   - CIP-1694
 Discussions:
