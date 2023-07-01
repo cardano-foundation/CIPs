@@ -606,12 +606,32 @@ this we see as a necessary step for wallet implementors. By setting a
 (hierarchical) deterministic derivation path it enables restorability from a
 seed phrase.
 
-With this definition we aim to standard for tooling to be able to derive DRep
-credentials from mnemonics, not only those wallets who support this web-bridge.
-This standard brings all the benefits of the application of generic ecosystem
+With this definition we aim to standard for all ecosystem tooling to be able to
+derive DRep credentials from mnemonics. This brings the benefits ecosystem
 standards.
 
-- TODO: why not reuse Catalyst's CIP-36 key?
+#### Why not reuse [CIP-36 Vote Keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#voting-key)?
+
+CIP-36 defines derivation path for a key pair to be used within CIP-36 style
+governance. The most notable user of this standard is
+[Project Catalyst](projectcatalyst.io), where CIP-36 vote keys are used to sign
+vote transactions on the Jormungandr side-chain.
+
+One suggestion is to reuse this key pair instead of defining a new key pair in
+DRep key. The benefits to this would be that it is easier for users and tools to
+manage a single key pair to be used for any projects following the CIP-36
+standard and for use in this API. This would mean a single key could be used to
+sign Catalyst votes and CIP-1694 DRep votes.
+
+Reusing keys comes with the downside of possible confusion for users and
+tooling. This is why we have attempted to assign the DRep keys clear and
+explicit naming and usage to avoid confusion with CIP-36 vote keys. Furthermore,
+the keys described here are used for more than just vote signing just the
+"CIP-36 vote key" naming may be a cause of confusion.
+
+> **Note** The derivation path used for CIP-36 vote keys includes `1694` as the
+> `purpose`, this is a perhaps misleading reality and hints to the original
+> intension of using CIP-36 vote keys for Cardano's Voltaire.
 
 ### Multi-stake Key Support
 
