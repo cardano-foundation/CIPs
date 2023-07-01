@@ -83,6 +83,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0080 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
 | 0082 | <strike>[Improved Rewards Scheme Parameters](./CIP-0082)</strike> | Inactive |
 | 0083 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
+| 0084 | [Cardano Ledger Evolution](./CIP-0084) | Active |
 | 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
@@ -94,7 +95,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-06-30</i></p>
+<p align="right"><i>Last updated on 2023-07-01</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -114,7 +115,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0076? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
 | 0077? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 0079? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
-| 0084? | [Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/pull/456) |
 | 0087? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
 | 0088? | [Native Asset Policy Registration/Information Certificates](https://github.com/cardano-foundation/CIPs/pull/467) |
 | 0089? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
@@ -125,7 +125,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0095? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 1694? | [A proposal for entering the Voltaire phase](https://github.com/cardano-foundation/CIPs/pull/380) |
 
 <p align="right"><i>Last updated on 2023-06-30</i></p>
 
