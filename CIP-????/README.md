@@ -169,9 +169,7 @@ a governance issue (see [CIP-1694]).
 * Familiarity with the existing ledger specifications is required to propose changes to the ledger.
 * The CIP specifications for ledger CIPs must be sufficiently detailed for inclusion in
   a formal ledger specification.
-* Some changes may require getting an expert opinion.
-  For example, changes to the incentives model (such as changing the reward calculation)
-  should include a proper game theoretic analysis.
+* Though proposals can be accepted solely on the basis of peer and Ledger team review, some areas (e.g. changes to the incentives model) might only considered ready for implementation if accompanied by an opinion from an expert designated by the implementor (e.g. with a proper game theoretic analysis).
 
 ### The Ledger reviewers
 
