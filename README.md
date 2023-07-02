@@ -48,8 +48,8 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0020 | [Transaction message/comment metadata](./CIP-0020/) | Active |
 | 0021 | [Transaction requirements for interoperability with hardware wallets](./CIP-0021/) | Draft |
 | 0022 | [Pool operator verification](./CIP-0022/) | Active |
-| 0023 | [Fair Min Fees](./CIP-0023/) | Draft |
-| 0024 | [Non-Centralizing Rankings](./CIP-0024/) | Draft |
+| 0023 | [Fair Min Fees](./CIP-0023/) | Proposed |
+| 0024 | [Non-Centralizing Daedalus Rankings](./CIP-0024/) | Proposed |
 | 0025 | [Media NFT Metadata Standard](./CIP-0025/) | Active |
 | 0026 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 0027 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
@@ -79,9 +79,9 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0071 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
 | 0072 | [DApp Registration](./CIP-0072) | Proposed |
 | 0074 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
-| 0075 | <strike>[Fair Stake Pool Rewards](./CIP-0075)</strike> | Inactive |
+| 0075 | [Fair Stake Pool Rewards](./CIP-0075) | Proposed |
 | 0080 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
-| 0082 | <strike>[Improved Rewards Scheme Parameters](./CIP-0082)</strike> | Inactive |
+| 0082 | [Improved Rewards Scheme Parameters](./CIP-0082) | Proposed |
 | 0083 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
 | 0084 | [Cardano Ledger Evolution](./CIP-0084) | Active |
 | 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
@@ -95,7 +95,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-07-01</i></p>
+<p align="right"><i>Last updated on 2023-07-02</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -133,8 +133,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | #    | Title | Status |
 | ---- | --- | --- |
 | 0005 | [Plutus Script Usability](./CPS-0005) | Open |
+| 0007 | [Voltaire era Governance](./CPS-0007) | Open |
 
-<p align="right"><i>Last updated on 2023-06-09</i></p>
+<p align="right"><i>Last updated on 2023-07-02</i></p>
 
 > 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
 
@@ -149,9 +150,8 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0003? | [Smart Tokens](https://github.com/cardano-foundation/CIPs/pull/382) |
 | 0004? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
 | 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
-| 0007? | [Voltaire era Governance](https://github.com/cardano-foundation/CIPs/pull/481) |
 
-<p align="right"><i>Last updated on 2023-06-09</i></p>
+<p align="right"><i>Last updated on 2023-07-02</i></p>
 
 ## Stalled / Waiting For Authors
 
