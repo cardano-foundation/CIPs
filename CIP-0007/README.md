@@ -1,7 +1,8 @@
 ---
 CIP: 7
 Title: Curve Pledge Benefit
-Authors: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
+Authors:
+  - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Category: Ledger
 Status: Proposed
 Created: 2020-08-11
