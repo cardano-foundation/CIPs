@@ -177,7 +177,7 @@ Before implementation, engineering and research teams must review the feasibilit
 4. Transaction is submitted.
 5. Protocol update is confirmed.
 
-## Implementation Plan
+### Implementation Plan
 
 Implementation can be staged to reduce shock to the network:
 
