@@ -88,11 +88,11 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
+| 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
-| 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
 <p align="right"><i>Last updated on 2023-07-02</i></p>
