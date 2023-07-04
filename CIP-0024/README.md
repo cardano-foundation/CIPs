@@ -94,7 +94,7 @@ It will also bring the rankings more in line with the general Cardano principle 
 
 ### Implementation Plan
 
-Author has offered to produce an implementation of this change as a Daedalus pull request if shown where the current desirability equation is implemented in the code.
+- [ ] Author has offered to produce an implementation of this change as a cardano-wallet / Daedalus pull request if shown where the current desirability equation is implemented in the code.
 
 ## Copyright
 
