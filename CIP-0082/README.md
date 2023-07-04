@@ -1,7 +1,7 @@
 ---
 CIP: 82
 Title: Improved Rewards Scheme Parameters
-Status: Inactive (project area not enlisted for CIP process)
+Status: Proposed
 Category: Ledger
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
