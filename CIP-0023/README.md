@@ -37,10 +37,6 @@ This creates a more fair marketplace for all stakepool operators and increases d
 |-----------------------  |--------------------  |------------------------ |---------------   | ---------------------------- |
 ```
 
-### Test Cases
-
-See the minfees.php code to test different potential values of the parameters.
-
 ### Backward Compatibility
 
 There are 2 ways to handle the existing pool certificates with minimum variable pool fee less than the proposed value:
@@ -139,6 +135,10 @@ Annual pool operator funding given proposed parameters for fully saturated stake
 $692.64 USD/epoch * 73 epochs/year = $50,562.72 USD/year
 
 In summary, the proposed parameter changes would create a more fair marketplace for stakepools, provide more fair rewards for delegators to smaller pools and would lower incentives for centralization providing a more resilient network.
+
+### Test Cases
+
+See the minfees.php code to test different potential values of the parameters.
 
 ## Path to Active
 
