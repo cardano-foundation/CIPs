@@ -1,6 +1,6 @@
 ---
 CIP: 24
-Title: Non-Centralizing Daedalus Rankings
+Title: Non-Centralizing Rankings
 Authors:
   - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Category: Wallets
