@@ -93,7 +93,7 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
 
 [On-chain CDDL for registration / de-registration (Version 1)](./version_1_onchain.cddl)
 
-which also an be expressed using JSON schema:
+which also can be expressed using JSON schema:
 
 [dApp on-chain certificate JSON Schema (Version 1)](./version_1_onchain.json)
 
