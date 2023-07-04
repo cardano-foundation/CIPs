@@ -6,7 +6,8 @@ Category: Plutus
 Authors: 
   - Sergei Patrikeev <so.patrikeev@gmail.com>
   - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
-Implementors: []
+Implementors:
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Discussions: 
   - https://github.com/cardano-foundation/CIPs/pull/524
 Created: 2023-06-13
