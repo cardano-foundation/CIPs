@@ -7,6 +7,7 @@ Category: Ledger
 Status: Proposed
 Created: 2020-08-11
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/12
   - https://forum.cardano.org/t/protocol-parameters-pledge-and-sybil-resistance/35100
   - https://github.com/input-output-hk/cardano-node/issues/1518
 Implementors: []
