@@ -127,7 +127,9 @@ Agreement by the Ledger team as defined in [CIP-0084](https://github.com/cardano
 
 ### Implementation Plan
 
-Author has offered to produce an implementation of this change as a pull request if shown where the current maxPool reward equation is implemented in the code.
+- [ ] Agreement by the Ledger team as defined in [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) under _Expectations for ledger CIPs_ including "expert opinion" on changes to rewards & incentives.
+
+- [ ] Author has offered to produce an implementation of this change as a pull request if shown where the current maxPool reward equation is implemented in the code.
 
 ## Copyright
 
