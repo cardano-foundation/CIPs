@@ -90,7 +90,7 @@ It will also bring the rankings more in line with the general Cardano principle 
 
 ### Acceptance Criteria
 
-Confirmation by Daedalus development team that the changes to Cardano's proof-of-stake incentives are considered acceptable and desirable.
+- [ ] One or more wallet software implements this new ranking approach.
 
 ### Implementation Plan
 
