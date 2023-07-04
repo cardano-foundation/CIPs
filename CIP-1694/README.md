@@ -476,9 +476,8 @@ After this phase, although rewards will continue to be earned for block delegati
 DReps arguably need to be compensated for their work. Research on incentive models is still ongoing,
 and we do not wish to hold up implementation of this CIP while this is resolved.
 
-Our interim proposal is therefore to escrow Lovelace from the existing Cardano treasury until this
-extremely important decision can be agreed on by the community, through the on-chain governance
-mechanism that is being constructed.
+Our interim proposal is to leave this decision up to the users of the system by introducing an "optional tax" on governance action as a fee with a configurable minimum.
+This leaves the door open to introduce DReps incentives through social constructs and off-chain protocols.
 
 Alternatively, DReps could pay themselves through instances of the "Treasury withdrawal" governance action.
 Such an action would be auditable on-chain, and should reflect an off-chain agreement between DReps and delegators.
@@ -509,19 +508,35 @@ for example, a motion of no confidence is enacted.
 | 6. Treasury Withdrawals                                             | Movements from the treasury, sub-categorized into small, medium or large withdrawals (based on the amount of Lovelace to be withdrawn). The thresholds for treasury withdrawals are discussed below. |
 | 7. Info                                                             | An action that has no effect on-chain, other than an on-chain record. |
 
-**Any Ada holder** can submit a governance action to the chain.
-They must provide a deposit of `govDeposit` Lovelace, which will be returned when the action is finalized
-(whether it is **ratified**, has been **dropped**, or has **expired**).
-The deposit amount will be added to the _deposit pot_, similar to stake key deposits.
-It will also be counted towards the stake of the reward address it will be paid back to, to not reduce the submitter's voting power to vote on their own (and competing) actions.
-
-Note that a motion of no-confidence is an extreme measure that enables Ada holders to revoke the power
-that has been granted to the current constitutional committee.
-Any outstanding governance actions, including ones that the committee has ratified or ones that would be enacted this epoch,
-will be dropped if the motion is enacted.
+> **Note**
+> motion of no-confidence is an extreme measure that enables Ada holders to revoke the power
+> that has been granted to the current constitutional committee.
+> Any outstanding governance actions, including ones that the committee has ratified or ones that would be enacted this epoch,
+> will be dropped if the motion is enacted.
 
 > **Note**
 > A **single** governance action might contain **multiple** protocol parameter updates. Many parameters are inter-connected and might require moving in lockstep.
+
+#### Fee
+
+**Any Ada holder** can submit a governance action to the chain.
+Transactions that carry governance actions must satisfy a **minimum fee** to be valid.
+The minimum fee is parameterized by a new protocol parameter `minGovernanceFee`.
+
+When a governance action is ratified, or when it expires,
+any governance fee surplus is distributed amongst DReps **that took part in the vote**, regardless of their vote.
+The distribution is done proportionnally to the DRep stake distribution, rounded down to the nearest Lovelace.
+Any remainder Lovelace is sent to the treasury.
+
+For the fee distribution, we consider the stake distribution at the moment of the ratification (or expiry, depending on the case).
+
+For example, if a governance action is given `F` fees,
+`minGovernanceFee` is sent to the treasury and `F - minGovernanceFee` is split amongst active DReps.
+
+> **Warning**
+>
+> This is a **fee**, not a deposit. Funds allocated as fees are effectively
+> spent and do not count as active stake for the duration of the vote.
 
 #### Ratification
 
@@ -731,7 +746,7 @@ The **governance group** consists of all the new protocol parameters that are in
 * governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_6$, $P_7$, $Q_1$, $Q_{2b}$, $Q_4$)
 * constitutional committee term limits
 * governance action expiration
-* governance action deposit (`govDeposit`)
+* governance action minimum fee (`minGovernanceFee`)
 * DRep deposit amount (`drepDeposit`)
 * DRep activity period (`drepActivity`)
 * minimal constitutional committee size
@@ -784,8 +799,7 @@ In particular, the following will be tracked:
 
 * the governance action ID
 * the epoch that the action expires
-* the deposit amount
-* the rewards address that will receive the deposit when it is returned
+* the fee amount
 * the total 'Yes'/'No'/'Abstain' votes of the constitutional committee for this action
 * the total 'Yes'/'No'/'Abstain' votes of the DReps for this action
 * the total 'Yes'/'No'/'Abstain' votes of the SPOs  for this action
@@ -971,7 +985,7 @@ as a ledger state query.
 
 Since governance actions are available for anyone to submit, we need some mechanism to prevent those
 individuals responsible for voting from becoming overwhelmed with a flood of proposals.
-A large deposit is one such mechanism, but this comes at the unfortunate cost of being a barrier
+A large-enough deposit or fee is one such mechanism, but this comes at the unfortunate cost of being a barrier
 for some people to submit an action.
 Note, however, that crowd-sourcing with a Plutus script is always an option to gather the deposit.
 
@@ -979,6 +993,26 @@ We could, alternatively, accept the possibility of a large number of actions act
 time, and instead depend on off-chain socialization to guide voters' attention to those that merit it.
 In this scenario, the constitutional committee might choose to only consider proposals which have
 already garnered enough votes from the DReps.
+
+### Governance action fee
+
+By introducing an optional fee on each governance action, we push the question of the DRep incentives down to the users of the system.
+Through the various discussions that happened both online and offline, it's been clear that the topic of DRep incentives is a polarizing one.
+Hence, there's hardly no good answer to this problem that can be formulated without a governance framework already in place.
+
+Introducing a fee on transactions not only provides some spam prevention, but it also creates a fee market for governance action.
+That market both depends on how DReps evaluates their time, and how Ada holders are willing to promote governance actions.
+Fee can be adjustable based on the work required by the action, or they can be agreed upon via off-chain protocols.
+
+Having the fee allocated proportionnally to DReps stake prevents opportunistic attacks where a malicious actors would register at the
+last minute in hope to collect fees on an action.
+Being proportional to the stake also means that it isn't a pre-condition for participation. Even small DReps can participate, though at a lower expense.
+Similarly it doesn't preclude actions to be submitted without any surplus fee for there might be actions supported by a large part of the network
+and not needing any incentive.
+
+We still define a `minGovernanceFee` in case we want to ensure that there exist a minimum fee that is agreed upon at a network-level, if
+only to cover for the resource cost of keeping track of a governance action in the ledger.
+Being a protocol parameter means that it can be adjusted and nullified as needed.
 
 ### No AVST
 
