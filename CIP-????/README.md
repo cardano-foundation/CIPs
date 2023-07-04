@@ -30,6 +30,13 @@ which is a fundamental component of Ethereum's cryptographic framework:
 
 Adding `keccak256` to Plutus would enhance the potential for cross-chain solutions between Cardano and EVM-based blockchains.
 
+A compelling integration that would greatly benefit from `keccak256` support on the Cardano blockchain is [Hyperlane](https://hyperlane.xyz/).
+Hyperlane is a permissionless interoperability layer that facilitates communication of arbitrary data between smart contracts across multiple blockchains. Hyperlane's [interchain security modules](https://docs.hyperlane.xyz/docs/protocol/sovereign-consensus)
+rely on the verification of specific cryptographic proofs from one chain to another. These proofs utilize the `keccak256` hash to calculate consistent cross-chain message IDs.
+The multi-signature module verifies that a majority of off-chain validators have signed an ECDSA signature over a `keccak256` digest, a common practice in EVM.
+
+While Hyperlane [can support](https://github.com/hyperlane-xyz/hyperlane-monorepo/issues/2399) different cryptographic primitives for non-EVM chains, doing so could compromise censorship resistance, resulting in only limited support for Cardano in Hyperlane. By implementing this CIP, Cardano could fully integrate with Hyperlane's security modules, enabling Cardano smart contracts to communicate with any blockchain supported by Hyperlane.
+
 ## Specification
 This proposal aims to introduce a new built-in hash function `keccak_256`.
 
@@ -56,7 +63,6 @@ in a node release and becomes available on Mainnet.
 * A Plutus binding is created for the `keccak256` function and included in a new version of Plutus.
 * Integration tests, similar to those of the existing Plutus hash functions, are added to the testing infrastructure.
 * The function is benchmarked to assess its cost.
-* E2E tests with real use cases are incorporated into the testing infrastructure.
 
 ### Implementation Plan
 The Plutus team will develop the binding, integration tests, and benchmarks. The E2E tests will be designed and implemented 
