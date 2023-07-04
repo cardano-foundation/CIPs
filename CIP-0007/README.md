@@ -123,7 +123,7 @@ This proposal is backwards compatible with the current reward function by settin
 
 ### Acceptance Criteria
 
-Agreement by the Ledger team as defined in [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) under _Expectations for ledger CIPs_ including "expert opinion" on changes to rewards & incentives.
+- [ ] The new equation is implemented in the ledger and enacted through a hard-fork.
 
 ### Implementation Plan
 
