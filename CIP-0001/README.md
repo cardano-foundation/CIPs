@@ -155,7 +155,7 @@ While CIPs are mainly technical documents meant to be read primarily by develope
 
 Field          | Description
 ---            | ---
-`Source`       | A link to the original CIP document
+`Source`       | The canonical GitHub link to the original CIP document
 `Title`        | A translation of the CIP's title
 `Revision`     | The commit hash (8-10 first hex-digits) of the source (e.g. `12ab34cd`)
 `Translators`  | A list of translators names and email addresses (e.g. `John Doe <john.doe@email.domain>`)
