@@ -1,30 +1,11 @@
 ---
 CIP : 1694
 Titre : Un premier pas vers une gouvernance décentralisée on-chain
-État d’avancement : Proposé
-Catégorie : Grand livre
-Auteurs:
-    - Jared Corduan <jared.corduan@iohk.io>
-    - Matthias Benkort <matthias.benkort@cardanofoundation.org>
-    - Kevin Hammond <kevin.hammond@iohk.io>
-    - Charles Hoskinson <charles.hoskinson@iohk.io>
-    - André Knispel <andre.knispel@iohk.io>
-    - Samuel Leathers <samuel.leathers@iohk.io>
-Discussions :
-    - <https://github.com/cardano-foundation/CIPs/pull/380>
-    - <https://forum.cardano.org/t/swarm-session-cip-1694/114453>
-    - <https://twitter.com/IOHK_Charles/status/1632211417221701632>
-    - <https://twitter.com/RichardMcCrackn/status/1632514347195850752>
-    - <https://twitter.com/RichardMcCrackn/status/1633135124500865024>
-    - <https://twitter.com/_KtorZ_/status/1632356766368382976>
-    - <https://twitter.com/_KtorZ_/status/1630087586193584128>
-    - <https://twitter.com/_KtorZ_/status/1631430933219012608>
-    - <https://twitter.com/technologypoet/status/1632158736985866241>
-    - <https://twitter.com/danny_cryptofay/status/1631606919071776768>
-    - <https://www.youtube.com/watch?v=2hCnmMG1__8>
-    - <https://www.youtube.com/watch?v=KiLhhOVXQOg>
-Créé: 2022-11-18
-Licence: CC-BY-4.0
+Revision : b3e3508a
+Translators :
+    - Mike Hornan <support@able-pool.io>
+    - Alexandre Lafleur <alexandre.lafleur@stm.info>
+Language : fr
 ---
 
 ## Résumé
