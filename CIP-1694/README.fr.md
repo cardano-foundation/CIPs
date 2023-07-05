@@ -1,5 +1,5 @@
 ---
-CIP: 1694
+Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
 Revision: b3e3508a
 Translators:
