@@ -7,6 +7,7 @@ Authors:
     - Nicolas Ayotte <nick@equine.gg>
     - George Flerovsky <george@mlabs.city>
     - Samuel Williams <samuel@mlabs.city>
+    - Nathaniel Lane <nathaniel@mlabs.city>
 Implementors:
     - Equine <https://www.equine.gg/>
     - MLabs <https://mlabs.city/>
@@ -184,11 +185,10 @@ and keeping the staking key empty.
 
 The metadata oracle assignment for a policy ID can be updated
 via a transaction signed by the oracle main address key.
-The transaction must only send ADA from the oracle main address to itself
-and must not mint any tokens,
-but it may contain any number of inputs and outputs.
-Otherwise, the transaction is ignored
-for the purposes of metadata oracle assignment.
+The oracle assignment transaction must be signed
+by the signing key of the main oracle address,
+but it may contain any inputs and outputs, 
+as these are ignored for the purposes of metadata oracle assignment.
 
 The schema for updating an oracle assignment is the same as
 for the initial assignment in the minting transaction:
@@ -217,11 +217,10 @@ by the new explicit assignment.
 
 ### Simple metadata updates
 
-A simple metadata update transaction must only send ADA
-from the oracle update address to itself
-and must not mint any tokens,
-but it may contain any number of inputs and outputs.
-Otherwise, the transaction is ignored for the purposes of token metadata.
+A simple metadata update transaction must be signed
+by the signing key of the oracle update address,
+but it may contain any inputs and outputs,
+as these are ignored for the purposes of updating token metadata.
 
 The schema for simple metadata updates in CIP-86
 is similar to the CIP-25 schema,
@@ -263,10 +262,10 @@ The schema for regex metadata updates is as follows:
 }
 ```
 
-A regex metadata update transaction must only send ADA
-from the oracle update address to itself and must not mint any tokens,
-but it may contain any number of inputs and outputs.
-Otherwise, it is ignored for the purposes of token metadata.
+A regex metadata update transaction must be signed
+by the signing key of the oracle update address,
+but it may contain any inputs and outputs,
+as these are ignored for the purposes of updating token metadata.
 
 The only difference from the simple metadata update is that
 here the token names are defined in terms of PCRE regular expressions (regex).
@@ -342,11 +341,10 @@ and each inner array of `values` must be equal in length to `field_paths`.
 }
 ```
 
-A tabular metadata update transaction must
-only send ADA from the oracle update address to itself
-and must not mint any tokens,
-but it may contain any number of inputs and outputs.
-Otherwise, it is ignored for the purposes of token metadata.
+A tabular metadata update transaction must be signed
+by the signing key of the oracle update address,
+but it may contain any inputs and outputs,
+as these are ignored for the purposes of updating token metadata.
 
 For example, the following update would apply updates to six metadata fields
 of five Equine horse NFTs:
@@ -500,6 +498,14 @@ To reconstruct the metadata state for a given asset class,
 scan through the sequence of transactions in a Cardano node’s blockchain,
 applying the CIP-25 and CIP-86 updates
 in the order that they are encountered in this sequence.
+Should a transaction contain both CIP-25 and CIP-86 updates,
+then the CIP-25 updates should be applied first, 
+followed by the CIP-86 updates.
+If a transaction contains both a CIP-25 update
+and a CIP-86 explicit oracle assignment,
+then the CIP-25 update will be applied as usual
+and the oracle addresses (main and/or update) will be set to
+those of the explicit CIP-86 oracle assignment.
 If the Cardano node rolls back some blocks from the chain tip,
 then roll back the updates from those blocks as well.
 
@@ -509,15 +515,6 @@ before submitting any subsequent metadata updates for the same asset classes.
 Doing so should minimize any confusion about
 the order of simultaneous pending metadata updates
 while the Cardano network settles toward consensus.
-
-A transaction that contains a CIP-25 update may also
-contain an explicit oracle assignment,
-but these can be applied in parallel because they do not clash with each other.
-On the other hand, a CIP-25 update transaction
-cannot contain CIP-86 token metadata updates,
-because CIP-25 updates can only occur in minting transactions
-while CIP-86 token metadata transactions can
-only occur in non-minting transactions.
 
 A transaction can contain CIP-86 token metadata updates of different types,
 plus oracle assignment updates.
@@ -555,16 +552,16 @@ A CIP-25 metadata update is applied as a wholesale replacement of the metadata
 cached in the indexer database for the respective asset classes.
 
 For each oracle main address currently assigned to a policy ID,
-the indexer monitors the blockchain for non-minting transactions
-that only send ADA from the oracle main address to itself
-and contain oracle assignment updates in their metadata.
+the indexer monitors the blockchain for transactions
+that contain oracle assignment updates in their metadata
+and are signed by the signing key of the main address.
 The indexer updates its database to reflect these explicit oracle assignments
 and removes any implicit assignments that were replaced by explicit assignments.
 
 For each oracle update address currently assigned to a policy ID,
-the indexer monitors the blockchain for non-minting transactions
-that only send ADA from the oracle update address to itself
-and contain CIP-86 token metadata updates.
+the indexer monitors the blockchain for transactions
+that contain CIP-86 token metadata updates
+and are signed by the signing key of the update address.
 The indexer applies these metadata updates in the order defined in
 [Order of application for updates](#order-of-application-for-updates).
 CIP-86 metadata updates are applied to the asset classes and metadata fields
@@ -686,23 +683,28 @@ from a given address in an indexer
 than to keep track of all the people who control various authorization tokens,
 at a given time.
 
-### Restricting CIP-86 update transactions
+### Removing the original CIP-86 update transaction restriction
 
-We prohibit CIP-86 oracle assignment updates and metadata updates
+In the first draft of this proposal,
+we prohibited CIP-86 oracle assignment updates and metadata updates
 from occurring in transactions that mint tokens,
 in order to avoid awkward clashes with CIP-25 metadata transactions.
-Also, it does not make sense conceptually
-for CIP-25 metadata transactions to coincide with CIP-86 updates.
-CIP-25 should be used to define the initial metadata for an asset class,
-and then CIP-86 updates should be used
-for any subsequent changes to that metadata.
+This was removed because, while it likely does not make sense 
+to create CIP-25 and CIP-86 metadata for the same token in one transaction,
+it could feasibly make sense to want to update the metadata 
+for other tokens while minting another one.
 
-We require CIP-86 updates to occur in transactions
+We also originally required CIP-86 updates to occur in transactions
 that only send ADA from an oracle address (main or update, as appropriate),
 to prevent unforeseen interactions with other mechanisms
 that may have negative consequences.
-CIP-86 update transactions should have the singular purpose of
-interacting with the CIP-86 update mechanism.
+This requirement was removed for two reasons.
+First, the reasoning above does not establish any specific issues 
+with other transaction types. Second, it is too restrictive 
+and creates unnecessary additional transactions for long sequences of updates,
+causing the update issuer to spend unnecessary transaction fees.
+Therefore, we decided to remove these unnecessary restrictions 
+on CIP-86 update transactions.
 
 ### Implicit oracle assignment
 
