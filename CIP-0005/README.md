@@ -95,6 +95,7 @@ We define the following set of common prefixes with their corresponding semantic
 | `stake_vkh`        | Stake address verification key hash                | blake2b\_224 digest of a delegation verification key      |
 | `stake_shared_vkh` | Shared stake address verification key hash         | blake2b\_224 digest of a delegation verification key      |
 | `req_signer_vkh`   | Required signer verification key hash              | blake2b\_224 digest of a required signer verification key |
+| `drep_id`          | CIP-1694 DRep ID                                   | blake2b\_224 digest of a DRep's voting credential         |
 | `vrf_vkh`          | VRF verification key hash                          | blake2b\_256 digest of a VRF verification key             |
 | `datum`            | Output datum hash                                  | blake2b\_256 digest of output datum                       |
 | `script_data`      | Script data hash                                   | blake2b\_256 digest of script data                        |

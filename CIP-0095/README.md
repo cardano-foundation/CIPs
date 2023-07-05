@@ -127,16 +127,6 @@ we only inherit:
 
 - [cbor\<T>](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cbort)
 
-#### DRepID
-
-```ts
-type DRepID = string;
-```
-
-A hex string representing a registered DRep's ID which is a 32-byte Blake2b-224
-hash digest of a 32 byte Ed25519 public key, as described in
-[CIP-1694 Registered DReps](https://github.com/JaredCorduan/CIPs/blob/voltaire-v1/CIP-1694/README.md#registered-dreps).
-
 #### PubDRepKey
 
 ```ts
