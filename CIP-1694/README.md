@@ -266,8 +266,6 @@ The constitutional committee is considered to be in one of the following two sta
 
 In a _state of no-confidence_, the current committee is no longer able to participate in governance actions
 and must be replaced before any governance actions can be ratified (see below).
-Any outstanding governance actions are dropped immediately after the protocol enters a state of no-confidence,
-and will not be enacted.
 
 #### Constitutional committee keys
 
@@ -366,17 +364,25 @@ that will vote on their behalf.  In addition, two pre-defined DRep options are a
 #### Registered DReps
 
 In Voltaire, existing stake credentials will be
-able to delegate their stake to registered DReps for voting purposes,
+able to delegate their stake to DReps for voting purposes,
 in addition to the current delegation to stake pools for block production.
 DRep delegation will mimic the existing stake delegation mechanisms (via on-chain certificates).
 Similarly, DRep registration will mimic the existing stake registration mechanisms.
 Additionally, registered DReps will need to vote regularly to still be considered active.
 Specifically, if a DRep does not submit any votes for `drepActivity`-many epochs, the DRep is considered inactive,
 where `drepActivity` is a new protocol parameter.
-Inactive DReps do not count towards the active voting stake anymore.
+Inactive DReps do not count towards the active voting stake anymore, and can become active again for `drepActivity`-many epochs by voting on any governance actions.
 The reason for marking DReps as inactive is so that DReps who stop participating but still have
 stake delegated to them do not eventually leave the system in a state where no governance
 action can pass.
+
+> **Note**
+>
+> It is not necessary to register as a DRep to be able to vote, or for
+> that vote to be counted. However, unregistered DReps do not count
+> towards the active voting stake, so they behave like an inactive
+> DRep that can never become active. This is to have the least
+> possible hurdle for someone who wants to vote on their own behalf.
 
 Registered DReps are identified by a credential that can be either:
 
@@ -453,7 +459,7 @@ distribution. This distribution will determine how much stake is backed by each
 > current version of the per-DRep stake distribution as given on the epoch boundary.
 >
 > This means that **for any topic which individual voters care deeply about,
-> they have time to register themselves as a DRep and vote directly**.
+> they have time to delegate to themselves as a DRep and vote directly**.
 > However, it means that there may be a difference between the stake that is used for block
 > production and the stake that is used for voting in any given epoch.
 
@@ -463,8 +469,8 @@ distribution. This distribution will determine how much stake is backed by each
 There will be a short [bootstrapping phase](#bootstrapping-phase) during which rewards will be earned
 for stake delegation etc. and may be withdrawn at any time.
 After this phase, although rewards will continue to be earned for block delegation etc., reward accounts will be
-**blocked from withdrawing any rewards** unless their associated stake credential is also delegated to a DRep
-(either pre-defined or registered).  This helps to ensure high participation, and so, legitimacy.
+**blocked from withdrawing any rewards** unless their associated stake credential is also delegated to a DRep.
+This helps to ensure high participation, and so, legitimacy.
 
 > **Note**
 >
@@ -495,9 +501,6 @@ A governance action is an on-chain event that is triggered by a transaction and 
 - An action that doesn't collect sufficient `Yes` votes before its deadline is said to have **expired**.
 - An action that has been ratified is said to be **enacted** once it has been activated on the network.
 
-Regardless of whether they have been ratified, actions may, however, be **dropped without being enacted** if,
-for example, a motion of no confidence is enacted.
-
 
 | Action                                                              | Description |
 | :---                                                                | :--- |
@@ -511,14 +514,12 @@ for example, a motion of no confidence is enacted.
 
 **Any Ada holder** can submit a governance action to the chain.
 They must provide a deposit of `govDeposit` Lovelace, which will be returned when the action is finalized
-(whether it is **ratified**, has been **dropped**, or has **expired**).
+(whether it is **ratified** or has **expired**).
 The deposit amount will be added to the _deposit pot_, similar to stake key deposits.
 It will also be counted towards the stake of the reward address it will be paid back to, to not reduce the submitter's voting power to vote on their own (and competing) actions.
 
 Note that a motion of no-confidence is an extreme measure that enables Ada holders to revoke the power
 that has been granted to the current constitutional committee.
-Any outstanding governance actions, including ones that the committee has ratified or ones that would be enacted this epoch,
-will be dropped if the motion is enacted.
 
 > **Note**
 > A **single** governance action might contain **multiple** protocol parameter updates. Many parameters are inter-connected and might require moving in lockstep.
@@ -537,7 +538,8 @@ Depending on the type of governance action, an action will thus be ratified when
 > **Warning**
 > As explained above, different stake distributions apply to DReps and SPOs.
 
-A successful election of a new constitutional committee, a constitutional change or a hard-fork delays
+A successful motion of no-confidence, election of a new constitutional committee,
+a constitutional change or a hard-fork delays
 ratification of all other governance actions until the first epoch after their enactment. This gives
 a new constitutional committee enough time to vote on current proposals, re-evaluate existing proposals
 with respect to a new constitution, and ensures that the in principle arbitrary semantic changes caused
@@ -615,10 +617,6 @@ Actions that have been ratified in the current epoch are prioritized as follows 
 
 > **Note** Enactment for _Info_ actions is a null action, since they do not have any effect on the protocol.
 
-Enactment of a successful _Motion of no-confidence_ invalidates *all* other **not yet enacted** governance actions (whether or not they have been ratified),
-causing them to be immediately **dropped** without ever being enacted.
-Deposits for dropped actions will be returned immediately.
-
 ##### Order of enactment
 
 Governance actions are enacted in order of acceptance to the chain.
@@ -632,22 +630,11 @@ Once ratified, actions are staged for enactment.
 All submitted governance actions will therefore either:
 
 1. be **ratified**, then **enacted**
-2. be **dropped** as a result of a successful _Motion of no-confidence_
-3. or **expire** after a number of epochs
+2. or **expire** after a number of epochs
 
 In all of those cases, deposits are returned immediately.
 
-Some actions will be enacted _immediately_ (i.e. at the same epoch boundary they are ratified), others are enacted only on _the following epoch boundary_.
-
-| Governance action type         | Enactment           |
-| :--                            | :--                 |
-| 1. Motion of no-confidence     | Immediate           |
-| 2. New committee/threshold     | Immediate           |
-| 3. Update to the Constitution  | Immediate           |
-| 4. Hard-fork initiation        | Next epoch boundary |
-| 5. Protocol parameter changes  | Next epoch boundary |
-| 6. Treasury withdrawal         | Immediate           |
-| 7. Info                        | Immediate           |
+All governance actions are enacted on the epoch boundary after their ratification.
 
 <!-- TODO - break up the protocol parameters into those which effect the header/body validation split (so that some can be enacted immediately)? -->
 
@@ -760,7 +747,6 @@ Each vote transaction consists of the following:
 
 For SPOs and DReps, the number of votes that are cast (whether 'Yes', 'No' or 'Abstain') is proportional to the Lovelace that is delegated to them at the point the
 action is checked for ratification.  For constitututional committee members, each current committee member has one vote.
-Votes from unregistered SPOs or DReps count as having zero stake.
 
 > **Warning** 'Abstain' votes are not included in the "active voting stake".
 >
@@ -803,7 +789,7 @@ We define a number of new terms related to voting stake:
 
 * Lovelace contained in a transaction output is considered **active for voting** (that is, it forms the "active voting stake"):
   * It contains a registered stake credential.
-  * The registered stake credential has delegated its voting rights to a registered DRep.
+  * The registered stake credential has delegated its voting rights to a DRep.
 * Relative to some percentage `P`, a DRep (SPO) **vote threshold has been met** if the sum of the relative stake that has been delegated to the DReps (SPOs)
   that vote 'Yes' to a governance action
   is at least `P`.
