@@ -563,14 +563,78 @@ handled by this API. We thus deem it necessary for wallets to bare this burden.
 One argument against this design is that, if wallets are required to be able to
 inspect and thus understand these application specific transactions then they
 may as well build the transaction. For this reason I have placed this back into
-the
+the [Open Questions](#open-questions).
 
-### Extension Design
+### CIP-30 Reuse
 
 Whilst CIP-30 facilitated the launch of dApp client development on Cardano, it's
 functionality is limited in scope. Although it does offer generic functions,
-these cannot satisfy the problem that this proposal tackles. Thus extending it's
-functionality is a necessity.
+these cannot satisfy the problem that this proposal tackles in a backwards
+compatible manner. Thus extending it's functionality is a necessity.
+
+#### Backwards Compatibility
+
+The primary issue with just using CIP-30 to inspect, sign and submit Conway
+transactions/certificates is that wallet implementations are likely
+incompatible. This is because such certificates/transactions were not part of
+the ledger design at time of original CIP-30 implementation. Furthermore, CIP-30
+was written and implemented before voting credentials were defined and thus it
+would be impossible to provide signatures with this credential to votes, DRep
+registrations and DRep retirements.
+
+Although it is likely that some of the capabilities of this API can be achieved
+by existing CIP-30 implementations it is not certain how much. We would like to
+avoid the potential mismatching of capabilities between CIP-30 implementations,
+as this creates unpredictable wallet behavior for client applications. Such
+behavior was a primary motivator to introduce such an extendability mechanism to
+CIP-30.
+
+#### Functionality Differences
+
+In this proposal we specify the precise information that must be shown to the
+user at time of signature and submission for transactions. This is not possible
+with current CIP-30 implementations, rather CIP-30's
+[`.signTx()`](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apisigntxtx-cbortransaction-partialsign-bool--false-promisecbortransaction_witness_set)
+only requires that "must request the user's consent in an informative way".
+
+In the case of political transactions we think it should be explicit and
+unambiguous what information the user must be shown. This is to prevent
+politically motivated malicious client applications from attempting to sign and
+submit malicious transactions.
+
+### Sign and Submit
+
+By making our endpoints combination, sign and submit we bring forth two
+benefits. Firstly, we avoid any potential issues with backwards compatibility of
+the new transactions and clients attempting to use CIP-30's
+[`.submitTx()`](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apisubmittxtx-cbortransaction-promisehash32)
+to submit transactions. Secondly, we improve security by allowing the submit to
+chain, this prevents malicious clients from censoring which transactions are
+submitted to chain.
+
+### Explicit Singular Endpoints
+
+This API explicitly separates all our transaction inspect, sign and submit
+endpoints. A reasonable alternative to this could be to group endpoints together
+by which keys (stake or DRep) are needed to witness the
+certificate/transactions. Here we chose to avoid any potential complexity on the
+behalf of a wallet, to figure out what type of transaction/certificate they have
+to inspect. This in particularly important for cases of transactions containing
+multiple governance artifacts, for example: a vote, a governance action and DRep
+registration certificate in one transaction. By separating the signing and
+submission of each transaction/certificate we avoid the need for wallets to have
+to deal with such edge cases.
+
+One downside of this approach is that it limits how much can be done in a single
+transaction. These methods do not allow multiple certificates to be supplied at
+once. Thus users are limited to a single governance artifact per transaction.
+This is limiting as it means users have to submit multiple transactions to
+achieve what is possible in one. We do recognize this as a legitimate drawback
+of our design. Later CIPs which replace this one may choose a more compact
+design to allow such transactions, but for this we aim to keep wallet
+implementations more straight forward.
+
+### Extension Design
 
 With this specification we chose to extend CIP-30's functionalities. There would
 be two competing designs to this approach. One; move to have this specification
@@ -632,19 +696,20 @@ This is because a single stake key can delegate to a single DRep. By allowing
 users to spread stake across multiple stake keys it allows different weighted
 delegation to different DReps, this could be a very desirable feature.
 
-### Types of wallets
+### Types of credential
 
 This specification does not cater for wallets who manage non-key-based stake
 credentials and those who wish to handle non-key-based DRep credentials. This
-does limit the usefulness of this specification, but we believe the added
-complexity of supporting these types of wallet. This means that we are likely
-excluding tooling for DAOs from being supported through this standard. The
-argument could be made that such entities generally prefer to use more advanced
-wallet tooling which is not dependent on web-based stacks.
+does limit the usefulness of this specification. But the complexities that would
+be introduced by generalization this specification to these credentials is
+unlikely to yield much benefit since these types of wallet are not prevalent in
+Cardano.
 
-- TODO: discuss change design to allow script based credentials?
-- TODO: discuss why end points for each type of cert, rather than group by
-  key/signature
+Although this means that we are likely excluding tooling for DAOs from being
+supported through this standard. The argument could be made that such entities
+generally prefer to use more advanced wallet tooling rather than relying on
+interaction with web-based stacks, thus it is not even certain DAOs would want
+to use such a standard.
 
 ### Backwards Compatibility
 
