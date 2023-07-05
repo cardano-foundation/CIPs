@@ -1,11 +1,11 @@
 ---
-CIP : 1694
-Titre : Un premier pas vers une gouvernance décentralisée on-chain
-Revision : b3e3508a
-Translators :
+CIP: 1694
+Titre: Un premier pas vers une gouvernance décentralisée on-chain
+Revision: b3e3508a
+Translators:
     - Mike Hornan <support@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@stm.info>
-Language : fr
+Language: fr
 ---
 
 ## Résumé
