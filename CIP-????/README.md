@@ -62,7 +62,7 @@ in a node release and becomes available on Mainnet.
 ### Acceptance Criteria
 * A Plutus binding is created for the `keccak256` function and included in a new version of Plutus.
 * Integration tests, similar to those of the existing Plutus hash functions, are added to the testing infrastructure.
-* The function is benchmarked to assess its cost.
+* The function is benchmarked to assess its cost. As for other hash functions available in Plutus (blake2b and sha256), we expect the cost of keccak to be linear with respect to the size of the message.
 
 ### Implementation Plan
 The Plutus team will develop the binding, integration tests, and benchmarks. The E2E tests will be designed and implemented 
