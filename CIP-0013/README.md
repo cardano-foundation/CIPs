@@ -16,6 +16,7 @@ Discussions:
 - https://github.com/cardano-foundation/CIPs/pull/61
 - https://github.com/cardano-foundation/CIPs/pull/86
 - https://forum.cardano.org/t/cip-stake-uri-scheme-for-pools-delegation-portfolios/40594
+- https://github.com/cardano-foundation/CIPs/pull/546
 Created: 2020-09-22
 License: CC-BY-4.0
 ---
