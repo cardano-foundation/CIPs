@@ -7,9 +7,9 @@ Authors:
 - Adam Dean <adam@crypto2099.io>
 - Carl <vegas@hosky.io>
 - Alex Dochioiu <alex@dochioiu.com>
-  Implementors:
+Implementors:
 - VESPR Wallet
-  Discussions:
+Discussions:
 - https://github.com/cardano-foundation/CIPs/pull/546
   Created: 2023-06-20
   License: CC-BY-4.0
