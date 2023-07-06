@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 45
 Title: Decentralized WebRTC dApp-Wallet Communication
 Status: Proposed
 Category: Wallets
