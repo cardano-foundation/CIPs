@@ -40,7 +40,7 @@ and two new fields will be added to normal transaction bodies for:
 We also introduce three distinct governance bodies that have specific functions in this new governance framework:
 
 1. a constitutional committee
-2. a group of delegate representatives (henceforth called **DReps**)
+2. a group of delegated representatives (henceforth called **DReps**)
 3. the stake pool operators (henceforth called **SPOs**)
 
 Every governance action must be ratified by at least two of these three governance bodies using their on-chain **votes**.
@@ -295,22 +295,22 @@ In particular, it is possible to elect an empty committee if the community wishe
 There will be a new protocol parameter for the minimal size of the committee,
 itself a nonnegative number.
 
-#### Term limits
+#### Terms
 
-Each newly elected constitutional committee will have per-member term limits.
-Per-member limits allow for a rotation scheme, such as a third of the committee
+Each newly elected constitutional committee will have a term.
+Per-member terms allow for a rotation scheme, such as a third of the committee
 expiring every year.
 Expired members can no longer vote.
 Member can also willingly resign early, which will be marked on-chain as an expired member.
 
 The system will automatically enter a state of no-confidence when the number of non-expired
 committee members falls below the minimal size of the committee.
-For example, a committee of size five with a quorum of three and two expired members can still
-pass governance actions if all of non-expired members vote `Yes`.
+For example, a committee of size five with a threshold of 3/5 a minimum size of three and two expired members can still
+pass governance actions if two non-expired members vote `Yes`.
 However, if one more member expires then the system enters a state of no-confidence,
 since the two remaining members are not enough to meet quorum.
 
-The maximum term limit is a governance protocol parameter, specified as a number of epochs.
+The maximum term is a governance protocol parameter, specified as a number of epochs.
 During a state of no-confidence, no action can be ratified,
 so the committee should plan for its own replacement if it wishes to avoid disruption.
 
@@ -326,7 +326,7 @@ so the committee should plan for its own replacement if it wishes to avoid disru
 
 #### Pre-defined DReps
 
-In order to participate in governance, each stake credential must be delegated to a DRep.
+In order to participate in governance, a stake credential must be delegated to a DRep.
 Ada holders will generally delegate their voting rights to a registered DRep
 that will vote on their behalf.  In addition, two pre-defined DRep options are available:
 
@@ -341,13 +341,9 @@ that will vote on their behalf.  In addition, two pre-defined DRep options are a
 
 * `No Confidence`
 
-  If an Ada holder delegates to `No Confidence`, then their stake is counted as
-  a **no** vote on every governance action apart from a "Motion of no confidence".
-  This also signals that they have no confidence in the existing constitutional committee.
-
-  The effect of delegating to `No Confidence` on chain is that this stake *will* be considered to be
-  a part of the active voting stake. It will count as a `Yes` vote on every `No Confidence`
-  action and a `No` vote on every other action.
+  If an Ada holder delegates to `No Confidence`, then their stake is counted
+  as a `Yes` vote on every `No Confidence` action and a `No` vote on every other action.
+  The delegated stake *will* be considered part of the active voting stake.
   It also serves as a directly auditable measure of the confidence of Ada holders in the constitutional
   committee.
 
@@ -401,7 +397,6 @@ DRep registration certificates include:
 
 * a DRep ID
 * a deposit
-* a stake credential (for the deposit return)
 * an optional anchor
 
 An **anchor** is a pair of:
@@ -419,8 +414,6 @@ Client applications should, however, perform the usual sanity checks when fetchi
 DRep retirement certificates include:
 
 * a DRep ID
-* the epoch number after which the DRep will retire
-* an optional anchor
 
 Note that a DRep is retired immediately upon the chain accepting a retirement certificate,
 and the deposit is returned as part of the transaction that submits the retirement certificate
@@ -432,7 +425,6 @@ Vote delegation certificates include:
 
 * the DRep ID to which the stake should be delegated
 * the stake credential for the delegator
-* an optional anchor
 
 > **Note**
 >
@@ -450,8 +442,8 @@ The authorization scheme (i.e. which signatures are required for registration, r
 
 In addition to the existing per-stake-credential distribution and the
 per-stake-pool distribution, the ledger will now also determine the per-DRep stake
-distribution. This distribution will determine how much stake is backed by each
-`Yes` vote from a DRep.
+distribution. This distribution will determine how much stake each vote from a DRep
+is backed by.
 
 > **Warning**
 >
@@ -498,19 +490,19 @@ We define seven different types of **governance actions**.
 A governance action is an on-chain event that is triggered by a transaction and has a deadline after which it cannot be enacted.
 
 - An action is said to be **ratified** when it gathers enough votes in its favor (through the rules and parameters that are detailed below).
-- An action that doesn't collect sufficient `Yes` votes before its deadline is said to have **expired**.
+- An action that fails to be ratified before its deadline is said to have **expired**.
 - An action that has been ratified is said to be **enacted** once it has been activated on the network.
 
 
-| Action                                                              | Description |
-| :---                                                                | :--- |
-| 1. Motion of no-confidence                                          | A motion to create a _state of no-confidence_ in the current constitutional committee |
-| 2. New constitutional committee and/or threshold and/or term limits | Changes to the members of the constitutional committee and/or to its signature threshold and/or term limits|
-| 3. Updates to the Constitution                                      | A modification to the off-chain Constitution, recorded as an on-chain hash of the text document |
-| 4. Hard-Fork[^2] Initiation                                         | Triggers a non-backwards compatible upgrade of the network; requires a prior software upgrade |
-| 5. Protocol Parameter Changes                                       | Any change to **one or more** updatable protocol parameters, excluding changes to major protocol versions ("hard forks") |
-| 6. Treasury Withdrawals                                             | Movements from the treasury, sub-categorized into small, medium or large withdrawals (based on the amount of Lovelace to be withdrawn). The thresholds for treasury withdrawals are discussed below. |
-| 7. Info                                                             | An action that has no effect on-chain, other than an on-chain record. |
+| Action                                                        | Description                                                                                                              |
+|:--------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------|
+| 1. Motion of no-confidence                                    | A motion to create a _state of no-confidence_ in the current constitutional committee                                    |
+| 2. New constitutional committee and/or threshold and/or terms | Changes to the members of the constitutional committee and/or to its signature threshold and/or terms                    |
+| 3. Updates to the Constitution                                | A modification to the off-chain Constitution, recorded as an on-chain hash of the text document                          |
+| 4. Hard-Fork[^2] Initiation                                   | Triggers a non-backwards compatible upgrade of the network; requires a prior software upgrade                            |
+| 5. Protocol Parameter Changes                                 | Any change to **one or more** updatable protocol parameters, excluding changes to major protocol versions ("hard forks") |
+| 6. Treasury Withdrawals                                       | Withdrawals from the treasury                                                                                            |
+| 7. Info                                                       | An action that has no effect on-chain, other than an on-chain record                                                     |
 
 **Any Ada holder** can submit a governance action to the chain.
 They must provide a deposit of `govDeposit` Lovelace, which will be returned when the action is finalized
@@ -531,9 +523,9 @@ Different kinds of governance actions have different ratification requirements b
 with the exception of a hard-fork initiation, which requires ratification by all governance bodies.
 Depending on the type of governance action, an action will thus be ratified when a combination of the following occurs:
 
-* the constitutional committee approves of the action (the number of members who vote 'Yes' meet the threshold of the constitutional committee)
-* the DReps approve of the action (the stake controlled by the DReps who vote 'Yes' meets a certain threshold of the total active voting stake)
-* the SPOs approve of the action (the stake controlled by the SPOs who vote 'Yes' meets a certain threshold over the total registered voting stake)
+* the constitutional committee approves of the action (the number of members who vote `Yes` meets the threshold of the constitutional committee)
+* the DReps approve of the action (the stake controlled by the DReps who vote `Yes` meets a certain threshold of the total active voting stake)
+* the SPOs approve of the action (the stake controlled by the SPOs who vote `Yes` meets a certain threshold over the total registered voting stake)
 
 > **Warning**
 > As explained above, different stake distributions apply to DReps and SPOs.
@@ -557,8 +549,7 @@ The following table details the ratification requirements for each governance ac
   A value of - means that constitutional committee votes do not apply.
 
 * **DReps**<br/>
-  The DRep vote threshold that must be met as a percentage of *active voting stake*.<br/>
-  A value of - means that DReps votes do not apply.
+  The DRep vote threshold that must be met as a percentage of *active voting stake*.
 
 * **SPOs**<br/>
   The SPO vote threshold which must be met as a percentage of the stake held by all stake pools.<br/>
@@ -636,33 +627,28 @@ In all of those cases, deposits are returned immediately.
 
 All governance actions are enacted on the epoch boundary after their ratification.
 
-<!-- TODO - break up the protocol parameters into those which effect the header/body validation split (so that some can be enacted immediately)? -->
-
 #### Content
 
 Every governance action will include the following:
 
 * a deposit amount (recorded since the amount of the deposit is an updatable protocol parameter)
 * a reward address to receive the deposit when it is repaid
-* an optional anchor for any metadata that is needed to justify the action
+* an anchor for any metadata that is needed to justify the action
 * a hash digest value to prevent collisions with competing actions of the same type (as described earlier)
 
 <!-- TODO: Provide a CBOR specification in the annexe for these new on-chain entities -->
 
 In addition, each action will include some elements that are specific to its type:
 
-| Governance action type         | Additional data                                               |
-| :--                            | :--                                                           |
-| 1. Motion of no-confidence     | None                                                          |
-| 2. New committee/threshold     | The set of verification key hash digests (members to be removed), a map of verification key hash digests to epoch numbers (new members and their term limit),  and a fraction (quorum threshold) |
-| 3. Update to the Constitution  | A hash digest of the Constitution document                    |
-| 4. Hard-fork initiation        | The new (greater) major protocol version                      |
-| 5. Protocol parameters changes | The changed parameters                                        |
-| 6. Treasury withdrawal         | A map from stake credentials to a positive number of Lovelace |
-| 7. Info                        | None                                                          |
-
-> **Warning**
-> For treasury withdrawals, there will be upper and lower thresholds on the amount: the withdrawal threshold is the **total** amount of Lovelace that is withdrawn by the action, not the amount of any single withdrawal if the action specifies more than one withdrawal.
+| Governance action type         | Additional data                                                                                                                                                                                 |
+|:-------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1. Motion of no-confidence     | None                                                                                                                                                                                            |
+| 2. New committee/threshold     | The set of verification key hash digests (members to be removed), a map of verification key hash digests to epoch numbers (new members and their term limit), and a fraction (quorum threshold) |
+| 3. Update to the Constitution  | A hash digest of the Constitution document                                                                                                                                                      |
+| 4. Hard-fork initiation        | The new (greater) major protocol version                                                                                                                                                        |
+| 5. Protocol parameters changes | The changed parameters                                                                                                                                                                          |
+| 6. Treasury withdrawal         | A map from stake credentials to a positive number of Lovelace                                                                                                                                   |
+| 7. Info                        | None                                                                                                                                                                                            |
 
 > **Note**
 > The new major protocol version must be precisely one greater than the current protocol version.
@@ -715,14 +701,13 @@ The **technical group** consists of:
 * proportion of collateral needed for scripts (`collateralPercentage`)
 
 The **governance group** consists of all the new protocol parameters that are introduced in this CIP:
-* governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_6$, $P_7$, $Q_1$, $Q_{2b}$, $Q_4$)
-* constitutional committee term limits
-* governance action expiration
+* governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$)
+* maximum term length (in epochs) of the constitutional committee (`ccTermLimit`)
+* governance action expiration (`govExpiration`)
 * governance action deposit (`govDeposit`)
 * DRep deposit amount (`drepDeposit`)
 * DRep activity period (`drepActivity`)
-* minimal constitutional committee size
-* maximum term limit (in epochs) of the constitutional committee
+* minimal constitutional committee size (`minCCSize`)
 
 <!-- TODO:
   - Decide on the initial values for the new governance parameters
@@ -756,7 +741,7 @@ action is checked for ratification.  For constitututional committee members, eac
 > To avoid confusion, we will only use the word 'Abstain' from this point onward to mean an on-chain vote to abstain.
 
 The governance credential witness will trigger the appropriate verifications in the ledger according to the existing `UTxOW` ledger rule
-(i.e. a signature check for verification keys, and a validator execution with a specific vote redeemer and new Plutus purpose for scripts).
+(i.e. a signature check for verification keys, and a validator execution with a specific vote redeemer and new Plutus script purpose for scripts).
 
 Votes can be cast multiple times for each governance action by a single credential.
 Correctly submitted votes override any older votes for the same credential and role.
@@ -791,7 +776,7 @@ We define a number of new terms related to voting stake:
   * It contains a registered stake credential.
   * The registered stake credential has delegated its voting rights to a DRep.
 * Relative to some percentage `P`, a DRep (SPO) **vote threshold has been met** if the sum of the relative stake that has been delegated to the DReps (SPOs)
-  that vote 'Yes' to a governance action
+  that vote `Yes` to a governance action
   is at least `P`.
 
 ## Rationale
