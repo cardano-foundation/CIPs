@@ -23,18 +23,18 @@ We want to introduce a decentralized communication method between dApps and wall
 
 ## Motivation
 
-In a decentralized ecosystem a communication between wallet apps and dApps is still challanging. The inter-app communication on mobile devices does not directly allow remote procedure calls and is mostly restricted to Universal Links (iOS) or Deeplinks (Android). State-of-the-art solutions like WalletConnect tackle these problems using WebRTC communication which also works across devices, but requires a central signaling server (STUN or TURN server) to estalblish a WebRTC connection. In this CIP we want to introduce an architecture which uses WebTorrent trackers for peer discovery to remove the need of this central component. 
+In a decentralized ecosystem a communication between wallet-apps and dApps is still challanging. The inter-app communication on mobile devices does not directly allow remote procedure calls and is mostly restricted to Universal Links (iOS) or Deeplinks (Android). State-of-the-art solutions like WalletConnect tackle these problems using WebRTC communication which also works across devices, but requires a central signaling server to estalblish a WebRTC connection. In this CIP we want to introduce an architecture which uses WebTorrent trackers for the peer discovery to remove the need of this central component. 
 
 ## Specification
 
-### Establish a WebRTC Connection Using a STUN/TURN Server (State-of-the-art approach)
+### Establish a WebRTC Connection Using a Signaling Server (State-of-the-art approach)
 
 ```mermaid
 sequenceDiagram
-    dApp-->>+TURN/STUN: Who am I?
-    TURN/STUN-->>dApp: You are <ip:port>
-    Wallet-->>+TURN/STUN: Who am I?
-    TURN/STUN-->>Wallet: You are <ip:port>
+    dApp-->>+Signaling Server: Who am I?
+    Signaling Server-->>dApp: You are <ip:port>
+    Wallet-->>+Signaling Server: Who am I?
+    Signaling Server-->>Wallet: You are <ip:port>
     dApp->>Wallet: messages
     Wallet->>dApp: messages
 ```
@@ -66,7 +66,7 @@ flowchart LR
     dApp-->|Share public key| Wallet 
 ```
 
-Deeplinks, Universal Links or even a QR code could be used to share the public key. The wallet app would query a list of trackers using the public key to establish the WebRTC connection. Once this is done, the data is sent peer-to-peer via the WebRTC standard (e.g. to invoke RPC calls).
+Deeplinks, Universal Links or even a QR code could be used to share the public key. The wallet app would query a list of trackers using the public key to establish the WebRTC connection. Once this has been done, the data is sent peer-to-peer via the WebRTC standard (e.g. to invoke RPC calls).
 
 ```mermaid
 flowchart LR
@@ -90,7 +90,7 @@ flowchart LR
 
 ### Proof of Concept 
 
-The idea of using WebTorrent trackers instead of STUN/TURN servers for peer discovery was already mentioned in [Aug 2018 by Chris McCormick](https://mccormick.cx/news/entries/on-self-hosting-and-decentralized-software):
+The idea of using WebTorrent trackers instead of signaling servers for peer discovery was already mentioned in [Aug 2018 by Chris McCormick](https://mccormick.cx/news/entries/on-self-hosting-and-decentralized-software):
  "I've also been tinkering with WebTorrent. [...]
 Working with this technology made me realise something the other day: it's now possible to host back-end services, or "servers" inside browser tabs. [...] So anyway, I've made this weird thing to enable developers to build "backend" services which run in browser tabs"
 
@@ -224,23 +224,35 @@ The purpose of this CIP mainly consists of two parts. It addresses the current l
 
 ### Acceptance Criteria
 
-- [ ] A library should be build to make it easy from dAPP and wallet side to implement the proposed communication method
-- [ ] The library target should be browser to avoid the need of manual polyfills
-- [ ] Mobile testing on different devices and operating systems needs to be done with a special focus to the wallet app running in background mode
+- [x] A library should be build to make it easy from dAPP and wallet side to implement the proposed communication method
+- [x] The library target should be browser to avoid the need of manual polyfills
+- [x] Mobile testing on different devices and operating systems needs to be done with a special focus to the wallet app running in background mode
 - [ ] Potential security issues and attack vectors need to be discussed in detail
 - [ ] A full reference implementation is needed to test if the entire user flow and at the same time provide this as a how-to for developers
 
 ### Implementation Plan
 
-- [ ] Fork/Extend bugout to add webpack 5 and typescript support
-- [ ] Povide a general intermediate cardano-connect typescript library to provide 
+- [x] Fork/Extend bugout to add webpack 5 and typescript support
+- [x] Povide a general intermediate cardano-connect typescript library to provide 
     1. A check for mobile/desktop environment
     2. Depending on the environment provide interfaces for CIP-0030 / and / or CIP-?
     3. Add a full implementation of the server/client side code above to define a communication standard similar to CIP-0030 (getRewardAddresses, signData, signTx, ...)
 - [ ] Start discussions about security gaps within the proposed method with various developers and also look for research papers
 - [x] Check if the wallet app also reacts to rpc calls in background mode on Android
-- [ ] Check if the wallet app also reacts to rpc calls in background mode on iOS
+- [x] Check if the wallet app also reacts to rpc calls in background mode on iOS
 - [ ] Implement the library within an example dApp and [boost wallet](https://github.com/boost-pool/boost-wallet)
+
+### Updates
+
+- The re-implementation of bugout that matches the expectations below is now available as [meerkat](https://github.com/fabianbormann/meerkat)
+
+- A general [cardano-connect typescript library](https://github.com/fabianbormann/cardano-peer-connect) with 100% CIP-30 support has been provided
+
+- The copy & paste [demo implementation](https://github.com/fabianbormann/cip-0045-demo-implementation) is ready to use 
+
+- Cardano Foundation's [connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) component does include the dApp part of CIP-45 (via feature flag), so that dApp developers don't need to write a single line of code if they rely on this component
+
+- The wording of the CIP-45 has been changed. Many thanks to [@jehrhardt](https://github.com/jehrhardt) for his valuable explanation and suggestions
 
 ## Copyright
 
