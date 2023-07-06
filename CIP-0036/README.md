@@ -26,7 +26,7 @@ We therefore need a registration transaction that serves three purposes:
 
 1. Registers a "voting key" to be included in the sidechain and/or delegates to existing "voting key"s
 2. Associates mainnet ADA to this voting key(s)
-3. Declares an address to receive Catalyst rewards
+3. Declares a payment address to receive Catalyst rewards
 
 
 Note: This schema does not attempt to differentiate delegations from direct registrations, as the two options have exactly the same format.  It also does not distinguish between delegations that are made as "private" arrangements (proxy votes)
@@ -43,7 +43,7 @@ A registration transaction is a regular Cardano transaction with a specific tran
 Notably, there should be five entries inside the metadata map:
  - A non-empty array of delegations, as described below;
  - A stake address for the network that this transaction is submitted to (to point to the Ada that is being delegated);
- - A Shelley address discriminated for the same network  this transaction is submitted to to receive rewards.
+ - A Shelley payment address (see [CIP-0019](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0019)) discriminated for the same network this transaction is submitted to, to receive rewards.
  - A nonce that identifies that most recent delegation
  - A non-negative integer that indicates the purpose of the vote. This is an optional field to allow for compatibility with CIP-15. For now, we define 0 as the value to use for Catalyst, and leave others for future use. A new registration should not invalidate a previous one with a different voting purpose value.
 
@@ -55,11 +55,40 @@ Each delegation therefore contains:
   - a voting key: simply an ED25519 public key. This is the spending credential in the sidechain that will receive voting power from this delegation. For direct voting it's necessary to have the corresponding private key to cast votes in the sidechain. How this key is created is up to the wallet.
   - the weight that is associated with this key: this is a 4-byte unsigned integer (CBOR major type 0, The weight may range from 0 to 2^32-1) that represents the relative weight of this delegation over the total weight of all delegations in the same registration transaction.
 
-### Voting key derivation path
+### Voting key 
+
+The terms "(CIP-36) voting keys" and "(CIP-36) vote keys" should be used interchangeably to indicate the keys described in this specification. But it should be made clear that implementations should favour the term "(CIP-36) vote" and that the association of both terms aims to reduce the possibility of confusion.
+
+The term governance should not be associated with these keys nor should these keys be associated with other vote or voting keys used in the ecosystem. When discussing these keys in a wider context they should be specified by such terminology as "CIP-36 vote keys" or "CIP-36 style vote keys".
+
+#### Derivation path
 
 To avoid linking voting keys directly with Cardano spending keys, the voting key derivation path must start with a specific segment:
 
 `m / 1694' / 1815' / account' / chain / address_index`
+
+We recommend that implementors only use `address_index`=0 to avoid the need for voting key discovery.
+
+#### Tooling
+
+Supporting tooling should clearly define and differentiate this as a unique key type, describing such keys as "CIP-36 vote keys". When utilizing Bech32 encoding the appropriate `cvote_sk` and `cvote_vk` prefixes should be used as described in [CIP-05](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005)
+
+Examples of acceptable `keyType`s for supporting tools:
+
+| `keyType` | Description |
+| --------- | ----------- |
+| `CIP36VoteSigningKey_ed25519` | Catalyst Vote Signing Key |
+| `CIP36VoteExtendedSigningKey_ed25519` | Catalyst Vote Signing Key |
+| `CIP36VoteVerificationKey_ed25519` | Catalyst Vote Verification Key |
+| `CIP36VoteExtendedVerificationKey_ed25519` | Catalyst Vote Verification Key |
+
+For hardware implementations:
+| `keyType` | Description |
+| --------- | ----------- |
+| `CIP36VoteVerificationKey_ed25519` | Hardware Catalyst Vote Verification Key |
+| `CIP36VoteHWSigningFile_ed25519` | Hardware Catalyst Vote Signing File |
+
+The intention with this design is that if projects beyond Catalyst implement this specification they are able to add to themselves `keyType` **Description**s.
 
 ### Associating voting power with a voting key
 
@@ -92,7 +121,7 @@ Voting registration example:
   1: [["0xa6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663", 1], ["0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee", 3]],
   // stake_pub - CBOR byte array
   2: "0xad4b948699193634a39dd56f779a2951a24779ad52aa7916f6912b8ec4702cee",
-  // reward_address - CBOR byte array
+  // payment_address - CBOR byte array
   3: "0x00588e8e1d18cba576a4d35758069fe94e53f638b6faf7c07b8abd2bc5c5cdee47b60edc7772855324c85033c638364214cbfc6627889f81c4",
   // nonce
   4: 5479467
@@ -101,7 +130,7 @@ Voting registration example:
 }
 ```
 The entries under keys 1, 2, 3, 4 and 5 represent the Catalyst delegation array,
-the staking credential on the Cardano network, the address to receive rewards,
+the staking credential on the Cardano network, the payment address to receive rewards,
 a nonce, and a voting purpose, respectively. A registration with these metadata will be
 considered valid if the following conditions hold:
 
@@ -110,7 +139,7 @@ considered valid if the following conditions hold:
   The advised way to construct a nonce is to use the current slot number.
   This is a simple way to keep the nonce increasing without having to access
   the previous transaction data.
-- The reward address is a Shelley address discriminated for the same network
+- The payment address is a Shelley payment address discriminated for the same network
   this transaction is submitted to.
 - The delegation array is not empty
 - The weights in the delegation array are not all zero
@@ -229,6 +258,10 @@ Fund 8:
  - renamed the `voting_key` field to `delegations` and add support for splitting voting power across multiple vote keys.
  - added the `voting_purpose` field to limit the scope of the delegations.
  - rename the `staking_pub_key` field to `stake_credential` and `registration_signature` to `registration_witness` to allow for future credentials additions.
+
+Fund 10:
+- Replaced the `reward_address` field with `payment_address` field, keeping it at index 3. Stipulating that `payment_address` must be a Shelley payment address, otherwise voting reward payments will not be received.
+  - **Note:** up to Catalyst's Fund 9, voting rewards were paid via MIR transfer to a stake address provided within the `reward_address` field. From Fund 10 onwards, a regular payment address must be provided in the `payment_address` field to receive voting rewards. This allows Catalyst to avoid MIR transfers and instead pay voting rewards via regular transactions.
 
 Fund 11:
  - added the `deregistration` metadata format.

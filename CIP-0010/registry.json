@@ -8,6 +8,10 @@
     "description": "milkomeda.com - the destination address in the sidechain"
   },
   {
+    "transaction_metadatum_label": 94,
+    "description": "CIP-0094 - On-chain governance polls"
+  },
+  {
     "transaction_metadatum_label": 123,
     "description": "shareslake.com - Bridge routing information"
   },
@@ -28,20 +32,20 @@
     "description": "CIP-0027 - Royalties Standard"
   },
   {
+    "transaction_metadatum_label": 839,
+    "description": "Agora - Proposal creation metadata"
+  },
+  {
     "transaction_metadatum_label": 888,
     "description": "finitum.io token bridge transactions metadata"
   },
   {
-    "transaction_metadatum_label": 1188,
-    "description": "paradiso.app marketplace metadata"
-  },
-  {
-    "transaction_metadatum_label": 1189,
-    "description": "paradiso.app services metadata"
-  },
-  {
     "transaction_metadatum_label": 1564,
     "description": "Marlowe - a DSL for writing and executing financial contracts"
+  },
+  {
+    "transaction_metadatum_label": 1667,
+    "description": "CIP-72: dApp registration & Discovery"
   },
   {
     "transaction_metadatum_label": 1870,
