@@ -11,8 +11,8 @@ Implementors:
 - VESPR Wallet
 Discussions:
 - https://github.com/cardano-foundation/CIPs/pull/546
-  Created: 2023-06-20
-  License: CC-BY-4.0
+Created: 2023-06-20
+License: CC-BY-4.0
 ---
 
 # Abstract
