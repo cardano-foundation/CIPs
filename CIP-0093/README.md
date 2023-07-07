@@ -188,7 +188,7 @@ During discussions about this specification, the possibility of modifying CIP-00
 
 While this alternative approach brings advantages, such as defining the payload in CBOR, which aligns well with Cardano, it also presents challenges. JSON and CBOR offer different levels of expressiveness, and the choice between the two depends on the specific needs of the application. JSON provides a more flexible and widely supported data format, whereas CBOR offers a more compact and efficient representation, particularly beneficial when working with the blockchain.
 
-Considering these factors, it was concluded that deploying this standard as it currently stands, while coexisting with a future version that allows users to choose between JSON and CBOR payloads, would be the most practical approach. This would provide sufficient time for modifying CIP-0008 and CIP-0030, enabling browser developers to fulfill the requirements for human readability and make necessary adjustments to the wallet API. Consequently, a version 2 of this CIP can be introduced, incorporating COSESign and CBOR, accommodating both realms, and ensuring broad support.
+Considering these factors, it was concluded that deploying this standard as it currently stands, while coexisting with a future version that allows users to choose between JSON and CBOR payloads, would be the most practical approach. This would provide sufficient time for modifying CIP-0008 and CIP-0030, enabling browser wallet developers to fulfill the requirements for human readability and make necessary adjustments to the wallet API. Consequently, a version 2 of this CIP can be introduced, incorporating COSESign and CBOR, accommodating both realms, and ensuring broad support.
 
 ### Common usage
 
