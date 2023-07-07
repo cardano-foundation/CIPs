@@ -4,8 +4,8 @@ Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.m
 Title: Un premier pas vers une gouvernance décentralisée on-chain
 Revision: b3e3508a
 Translators:
-    - Mike Hornan <support@able-pool.io>
-    - Alexandre Lafleur <alexandre.lafleur@stm.info>
+    - Mike Hornan <mike.hornan@able-pool.io>
+    - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
 Language: fr
 ---
 
@@ -271,7 +271,7 @@ Cela pourrait se produire, par exemple, si les électeurs ont une confiance coll
 
 Contrairement à la conception de la gouvernance Shelley, la taille du comité constitutionnel n’est pas fixe et peut être n’importe quel nombre non négatif.
 Il peut être modifié chaque fois qu’un nouveau comité est élu (« Nouveau comité constitutionnel et/ou seuil »).
-De même, le seuil du comité (la fraction des votes « oui » du comité qui sont nécessaires pour ratifier les mesures de gouvernance) n’est pas fixe et
+De même, le seuil du comité (la fraction des votes `Yes` du comité qui sont nécessaires pour ratifier les mesures de gouvernance) n’est pas fixe et
 peut également varier en fonction de la mesure de gouvernance.
 Cela donne beaucoup de flexibilité à la composition du comité.
 En particulier, il est possible d’élire un comité vide si la communauté souhaite supprimer entièrement le comité constitutionnel. Notez que cela est différent d’un état de non-confiance et constitue toujours un système de gouvernance capable de mettre en oeuvre des propositions.
@@ -290,7 +290,7 @@ Le membre peut également volontairement démissionner plus tôt, ce qui sera ma
 Le système entrera automatiquement dans un état de non-confiance lorsque le nombre de membres du comité
 non expirés tombe en dessous de la taille minimale du comité.
 Par exemple, un comité de taille cinq avec un quorum de trois et deux membres expirés peut encore
-passer des actions de gouvernance si tous les membres non expirés votent `Oui`.
+passer des actions de gouvernance si tous les membres non expirés votent `Yes`.
 Cependant, si un autre membre expire, le système entre dans un état de non-confiance,
 puisque les deux membres restants ne suffisent pas pour atteindre le quorum.
 
@@ -314,31 +314,31 @@ Afin de participer à la gouvernance, chaque justificatif d’identité de mise 
 Les détenteurs d’Ada délégueront généralement leurs droits de vote à un DRep enregistré
 qui voteront en leur nom. De plus, deux options DRep prédéfinies sont disponibles :
 
-* `Abstention`
+* `Abstain`
 
-  Si un détenteur d’Ada délègue à `Abstention`, alors sa mise est activement marquée
+  Si un détenteur d’Ada délègue à `Abstain`, alors sa mise est activement marquée
   comme ne participant pas à la gouvernance.
 
-  L’effet de la délégation de `Abstention` sur la chaîne est que la participation déléguée *ne sera pas* considérée comme
+  L’effet de la délégation de `Abstain` sur la chaîne est que la participation déléguée *ne sera pas* considérée comme
   une partie de la participation active de vote. Toutefois, la participation *sera* considérée comme enregistrée pour
   l’objectif des incitations décrites dans [Incitations pour les détenteurs d’Ada à déléguer une mise de vote](#incitatifs-pour-les-détenteurs-dada-à-déléguer-une-mise-de-vote).
 
-* `Non-Confiance`
+* `No Confidence`
 
-  Si un détenteur d’Ada délègue à `Non-Confiance`, sa participation est comptée comme
+  Si un détenteur d’Ada délègue à `No Confidence`, sa participation est comptée comme
   un vote **non** sur toutes les mesures de gouvernance, à l’exception d’une « motion de non-confiance ».
   Cela indique également qu’ils n’ont pas confiance dans le comité constitutionnel existant.
 
-  L’effet de la délégation de la `Non-Confiance` sur la chaîne est que cette participation *sera* considérée comme
-  une partie de la participation active de vote. Cela comptera comme un vote `oui` sur chaque `Non-Confiance`
-  et un vote `non` à toutes les autres actions.
+  L’effet de la délégation de la `No Confidence` sur la chaîne est que cette participation *sera* considérée comme
+  une partie de la participation active de vote. Cela comptera comme un vote `Yes` sur chaque `No Confidence`
+  et un vote `No` à toutes les autres actions.
   Il sert également de mesure directement vérifiable de la confiance des détenteurs d’Ada dans la constitution.
   comité.
 
 
 > **Note**
 > Les DReps prédéfinis ne votent pas à l'intérieur des transactions, leur comportement est pris en compte au niveau du protocole.
-> Le DRep `abstention` peut être choisi pour diverses raisons, y compris le désir de ne pas
+> Le DRep `Abstain` peut être choisi pour diverses raisons, y compris le désir de ne pas
 > participer au système de gouvernance.
 
 > **Note**
@@ -427,7 +427,7 @@ Le système d’autorisation (c’est-à-dire quelles signatures sont requises p
 En plus de la distribution existante par délégation de mise et de la
 distribution par pool de participation, le grand livre déterminera désormais également la distribution de la mise par DRep.
 Cette répartition déterminera le montant de la mise soutenue par chaque
-vote `Oui` d’un DRep.
+vote `Yes` d’un DRep.
 
 > **Warning**
 >
@@ -474,7 +474,7 @@ Nous définissons sept types différents d'**actions de gouvernance**.
 Une action de gouvernance est un événement en chaîne qui est déclenché par une transaction et a une date limite après lequel il ne peut être promulgué.
 
 - Une action est dite **ratifiée** lorsqu’elle recueille suffisamment de votes en sa faveur (grâce aux règles et paramètres détaillés ci-dessous).
-- Une action qui ne recueille pas suffisamment de votes `Oui` avant sa date limite est dite **expirée**.
+- Une action qui ne recueille pas suffisamment de votes `Yes` avant sa date limite est dite **expirée**.
 - Une action qui a été ratifiée est dite **promulguée** une fois qu’elle a été activée sur le réseau.
 
 Qu’elles aient été ratifiées ou non, les actions peuvent toutefois être **abandonnées sans être adoptées** si, selon le cas :
@@ -683,39 +683,39 @@ Les groupes de paramètres _réseaux_, _économique_ et _technique_ collectent l
 De plus, nous introduisons un nouveau groupe _gouvernance_ qui est spécifique aux nouveaux paramètres de gouvernance qui seront introduits par le CIP-1694.
 
 Le **groupe de réseaux** se compose de :
-* taille maximale du corps du bloc ('maxBBSize')
-* taille maximale de la transaction ('maxTxSize')
-* taille maximale de l’en-tête de bloc ('maxBHSize')
-* taille maximale d’une valeur de ressource sérialisée ('maxValSize')
-* nombre maximal d’unités d’exécution de script dans une seule transaction ('maxTxExUnits')
-* nombre maximal d’unités d’exécution de script dans un seul bloc ('maxBlockExUnits')
-* nombre maximal d’entrées collatérales ('maxCollateralInputs')
+* taille maximale du corps du bloc (`maxBBSize`)
+* taille maximale de la transaction (`maxTxSize`)
+* taille maximale de l’en-tête de bloc (`maxBHSize`)
+* taille maximale d’une valeur de ressource sérialisée (`maxValSize`)
+* nombre maximal d’unités d’exécution de script dans une seule transaction (`maxTxExUnits`)
+* nombre maximal d’unités d’exécution de script dans un seul bloc (`maxBlockExUnits`)
+* nombre maximal d’entrées collatérales (`maxCollateralInputs`)
 
 Le **groupe économique** comprend :
-* coefficient de redevance minimal (« minFeeA »)
-* constante de frais minimum ('minFeeB')
-* clé de délégation Lovelace dépôt ('keyDeposit')
-* inscription à la piscine Dépôt Lovelace ('poolDeposit')
-* expansion monétaire (« rho »)
-* expansion de la trésorerie (« tau »))
-* réduction des primes fixes minimales pour les pools ('minPoolCost')
-* dépôt minimum de Lovelace par octet d’UTxO sérialisé ('coinsPerUTxOByte')
-* prix des unités d’exécution de Plutus (« prix »)
+* coefficient de redevance minimal (`minFeeA`)
+* constante de frais minimum (`minFeeB`)
+* clé de délégation Lovelace dépôt (`keyDeposit`)
+* inscription à la piscine Dépôt Lovelace (`poolDeposit`)
+* expansion monétaire (`rho`)
+* expansion de la trésorerie (`tau`)
+* réduction des primes fixes minimales pour les pools (`minPoolCost`)
+* dépôt minimum de Lovelace par octet d’UTxO sérialisé (`coinsPerUTxOByte`)
+* prix des unités d’exécution de Plutus (`prix`)
 
 Le **groupe technique** est composé de :
-* l'influence du pool pledge ('A0')
-* époque maximale du retrait du pool ('eMax')
-* nombre souhaité de pools ('nOpt')
-* modèles de coûts d’exécution de Plutus ('costModels')
-* proportion de collatéral nécessaire pour les scripts ('collateralPercentage')
+* l'influence du pool pledge (`A0`)
+* époque maximale du retrait du pool (`eMax`)
+* nombre souhaité de pools (`nOpt`)
+* modèles de coûts d’exécution de Plutus (`costModels`)
+* proportion de collatéral nécessaire pour les scripts (`collateralPercentage`)
 
 Le **groupe de gouvernance** comprend tous les nouveaux paramètres de protocole introduits dans ce CIP :
 * seuils de vote de gouvernance ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_6$, $P_7$, $Q_1$, $Q_{2b}$, $Q_4$)
 * limitation de la durée du mandat des comités constitutionnels
 * expiration des mesures de gouvernance
-* dépôt d’action de gouvernance ('govDeposit')
-* montant du dépôt DRep ('drepDeposit')
-* période d’activité DRep ('drepActivity')
+* dépôt d’action de gouvernance (`govDeposit`)
+* montant du dépôt DRep (`drepDeposit`)
+* période d’activité DRep (`drepActivity`)
 * taille minimale du comité constitutionnel
 * limite maximale du mandat (en époques) du comité constitutionnel
 
@@ -786,9 +786,9 @@ Nous définissons un certain nombre de nouveaux termes liés à la participation
 * Lovelace contenu dans une sortie de transaction est considéré comme **actif pour le vote** (c’est-à-dire qu’il forme la « participation de vote active ») :
   * Il contient une identification de mise enregistrée.
   * L’accréditation de mise enregistrée a délégué ses droits de vote à un DRep enregistré.
-* Par rapport à un certain pourcentage « P », un seuil de vote DRep (SPO) **a été atteint** si la somme de la mise relative qui a été déléguée aux DReps (SPO)
- qui votent « oui » à une mesure de gouvernance
- est au moins 'P'.
+* Par rapport à un certain pourcentage `P`, un seuil de vote DRep (SPO) **a été atteint** si la somme de la mise relative qui a été déléguée aux DReps (SPO)
+ qui votent `Yes` à une mesure de gouvernance
+ est au moins `P`.
 
 ## Raison d’être
 
@@ -1028,24 +1028,24 @@ Le processus de ratification finale sera probablement un mélange de diverses id
 
  De même, les certificats MIR et genesis actuels seront supprimés.
 
-- [ ] Un nouvel objectif `Vote` sera ajouté aux contextes de script Plutus.
+- [ ] Un nouvel objectif `Voting` sera ajouté aux contextes de script Plutus.
  Cela prévoira, en particulier, le vote aux scripts on-chain.
 
 > **Warning** Comme d’habitude, nous fournirons une spécification CDDL pour chacune de ces modifications.
 
 #### Modifications apportées aux règles existantes du grand livre
 
-* La règle de transition 'PPUP' sera réécrite et déplacée de la règle 'UTxO' vers la règle 'LEDGER' en tant que nouvelle règle 'TALLY'.
+* La règle de transition `PPUP` sera réécrite et déplacée de la règle `UTxO` vers la règle `LEDGER` en tant que nouvelle règle `TALLY`.
 
  Il traitera et enregistrera les actions de gouvernance et les votes.
 
 * La règle de transition `NEWEPOCH` sera modifiée.
 * La sous-règle `MIR` sera supprimée.
-* Une nouvelle règle `RATIFIEZ` sera introduite pour mettre en scène les actions de gouvernance en vue de leur promulgation.
+* Une nouvelle règle `RATIFY` sera introduite pour mettre en scène les actions de gouvernance en vue de leur promulgation.
 
  Il ratifiera les mesures de gouvernance et les mettra en oeuvre en vue de leur promulgation à l’époque actuelle ou à l’époque suivante, selon le cas.
 
-* Une nouvelle règle de `PROMULGATION` sera appelée immédiatement après la règle `EPOCH` . Cette règle édictera des mesures de gouvernance qui ont déjà été ratifiées.
+* Une nouvelle règle de `ENACTMENT` sera appelée immédiatement après la règle `EPOCH` . Cette règle édictera des mesures de gouvernance qui ont déjà été ratifiées.
 * La règle `EPOCH` n’appellera plus la sous-règle `NEWPP` ni ne calculera si le quorum est atteint sur l’état PPUP.
 
 #### Modifications apportées au protocole de requête d’état local
@@ -1173,12 +1173,12 @@ Ce CIP est sous licence [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/
 
 [^1]: Une description formelle des règles actuelles pour les actions de gouvernance est donnée dans la [spécification du registre Shelley](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec).
 
-    - Pour les modifications des paramètres de protocole (y compris les hard forks), la règle de transition `PPUP` (Figure 13) décrit comment les mises à jour des paramètres de protocole sont traitées, et la règle de transition « NEWPP » (Figure 43) décrit comment les modifications apportées aux paramètres de protocole sont mises en œuvre.
+    - Pour les modifications des paramètres de protocole (y compris les hard forks), la règle de transition `PPUP` (Figure 13) décrit comment les mises à jour des paramètres de protocole sont traitées, et la règle de transition `NEWPP` (Figure 43) décrit comment les modifications apportées aux paramètres de protocole sont mises en œuvre.
 
     - Pour les transferts de fonds, la règle de transition `DELEG` (figure 24) décrit la manière dont les certificats MIR sont traités, et la règle de transition `MIR` (figure 55) décrit comment les mouvements de trésorerie et de réserves sont promulgués.
 
     > **Note**
-  > Les capacités de la règle de transition 'MIR' ont été étendues dans la [spécification du registre Alonzo](https://hydra.iohk.io/job/Cardano/cardano-ledger/specs.alonzo-ledger/latest/download-by-type/doc-pdf/alonzo-changes)
+  > Les capacités de la règle de transition `MIR` ont été étendues dans la [spécification du registre Alonzo](https://hydra.iohk.io/job/Cardano/cardano-ledger/specs.alonzo-ledger/latest/download-by-type/doc-pdf/alonzo-changes)
 
 
 [^ 2]: Il existe de nombreuses définitions différentes du terme « hard fork » dans l’industrie de la blockchain. Les hard forks font généralement référence à des mises à jour non rétrocompatibles d’un réseau. Dans Cardano, nous formalisons un peu plus la définition en appelant toute mise à niveau qui conduirait à la validation de _more blocks_ un « hard fork » et forçons les noeuds à se conformer à la nouvelle version du protocole, obsolant ainsi les noeuds incapables de gérer la mise à niveau.
