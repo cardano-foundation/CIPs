@@ -103,10 +103,20 @@ Additional fields MAY be included in the payload, and these fields can be string
       "type": "string"
     },
     "timestamp": {
-      "type": "integer"
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        { "type": "string", "pattern": "^\\d+$" }
+      ]
     },
     "slot": {
-      "type": "integer"
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        { "type": "string", "pattern": "^\\d+$" }
+      ]
     }
   },
   "required": ["uri", "action"],
@@ -130,7 +140,7 @@ Additional fields MAY be included in the payload, and these fields can be string
 {
     "uri": "http://example.com/signup",
     "action": "Sign up",
-    "timestamp": 1673261248,
+    "timestamp": "1673261248",
     "email": "email@example.com"
 }
 
@@ -172,6 +182,14 @@ Another important aspect for security is how wallets process the payload. They c
 
 In addition to the aforementioned aspects, this CIP also aims to promote decentralization and enhance security and privacy by enabling users to sign and verify transactions without relying on external servers or third parties. By allowing users to create and sign their own payloads, this specification reduces the dependency on centralized authorities and enhances the security and privacy of the transactions.
 
+### Alternative implementations
+
+During discussions about this specification, the possibility of modifying CIP-0008 to incorporate the standards defined here was considered. However, a thorough evaluation revealed that this approach would require extensive modifications to CIP-0008 and CIP-0030, leading to significant changes in the Cardano wallet API. Moreover, it would result in a lengthy waiting period for browser wallet developers to implement the necessary requirements. This could potentially bypass important security measures outlined in this CIP, such as the requirement for human readability.
+
+While this alternative approach brings advantages, such as defining the payload in CBOR, which aligns well with Cardano, it also presents challenges. JSON and CBOR offer different levels of expressiveness, and the choice between the two depends on the specific needs of the application. JSON provides a more flexible and widely supported data format, whereas CBOR offers a more compact and efficient representation, particularly beneficial when working with the blockchain.
+
+Considering these factors, it was concluded that deploying this standard as it currently stands, while coexisting with a future version that allows users to choose between JSON and CBOR payloads, would be the most practical approach. This would provide sufficient time for modifying CIP-0008 and CIP-0030, enabling browser developers to fulfill the requirements for human readability and make necessary adjustments to the wallet API. Consequently, a version 2 of this CIP can be introduced, incorporating COSESign and CBOR, accommodating both realms, and ensuring broad support.
+
 ### Common usage
 
 The payload signature ensures wallet ownership without incurring transaction fees. However, requiring the user to enter their spending password for every authenticated request can be inconvenient for the user experience. To address this, it is recommended to restrict the use of the payload signature to only important requests such as login, sign up, or other critical operations depending on the dApp requirements.
@@ -208,8 +226,8 @@ A common practice is to request the user's signature for the login process, and 
 ### Implementation Plan
 
 - [X] Create a library for processing payload according to this specification.
-- [ ] Open a conversation about this specification and its possible improvements.
-- [ ] Talk about further web3 standards and new specifications. 
+- [X] Open a conversation about this specification and its possible improvements.
+- [X] Talk about further web3 standards and new specifications. 
 - [ ] Write the documentation for web3 developers.
 
 ## Copyright

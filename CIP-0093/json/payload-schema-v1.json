@@ -13,10 +13,20 @@
       "type": "string"
     },
     "timestamp": {
-      "type": "integer"
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        { "type": "string", "pattern": "^\\d+$" }
+      ]
     },
     "slot": {
-      "type": "integer"
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        { "type": "string", "pattern": "^\\d+$" }
+      ]
     }
   },
   "required": ["uri", "action"],
