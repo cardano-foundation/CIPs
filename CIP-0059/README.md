@@ -34,7 +34,7 @@ and were only intended to be used as
 for a very specific abstraction used in the ledger code.
 (The story is even a bit more confusing, since the Allegra and Mary era share a lot of code
 and are specified together in the "Shelley-MA
-[specification](https://hydra.iohk.io/job/Cardano/cardano-ledger/specs.shelley-ma/latest/download-by-type/doc-pdf/shelley-ma).
+[specification](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/mary-ledger.pdf).
 The letters "MA" can hilariously refer to both "Mary Allegra" and "Multi-Assets".)
 How did we then go from poets to Alonzo?
 Recall that "Goguen" was the only non-poet named in the phases on the Cardano roadmap.
@@ -80,7 +80,7 @@ align with the protocol version described in this CIP.
 
 Note also that the protocol version present inside of each block header indicates the maximum supported protocol version
 that the block producer is capable of supporting (see section 13, Software Updates, of the
-[Shelley ledger specification](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec)).
+[Shelley ledger specification](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf)).
 
 ## Specification
 
