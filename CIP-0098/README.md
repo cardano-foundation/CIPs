@@ -422,7 +422,7 @@ This collection contains 1744 tokens as monolithic HTML NFTs.
 
 This collection would have used **89.54 %** less block space with DATs.
 
-### Example 3
+#### Example 3
 
 This is a collection of 3409 tokens and the first one ever minted using the DAT Metadata Standard.
 
