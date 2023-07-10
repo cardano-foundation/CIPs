@@ -433,7 +433,7 @@ This is a collection of 3409 tokens and the first one ever minted using the DAT 
 
 By using DATs, **97.46 %** less block space was used. It is also important to note that, since the token as monolithic NFT is larger than 16 kB, this collection wouldn't have been possible on Cardano.
 
-## Solutions 3 and 4: **Diversity of tools and archival qualities**
+### Solutions 3 and 4: **Diversity of tools and archival qualities**
 
 Although problems 3 and 4 address different topics, one solution solves both: providing a standardized way to describe dependencies and build instructions.
 
