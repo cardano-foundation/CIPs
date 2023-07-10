@@ -237,7 +237,7 @@ These are policy-specific on-chain dependencies managed by the creator. They mus
 - **`type`** (_required_): dependency type
 - **`asset_name`** (_required_): name of the asset within the same policy
 
-### **2.c.** Internal dependencies:
+#### **2.c.** Internal dependencies:
 
 These are on-chain dependencies managed internally by the viewer and made available to the _renderer_ at runtime.
 
