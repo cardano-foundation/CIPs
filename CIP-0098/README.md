@@ -223,7 +223,7 @@ Properties for the _renderer_ token:
 
 The _renderer_ token should be burned after minting to free up the UTxO.
 
-### **2.b.** On-chain dependencies
+#### **2.b.** On-chain dependencies
 
 These are policy-specific on-chain dependencies managed by the creator. They must be minted within the same `policy_id` and are referenced by their `asset_name`.
 
