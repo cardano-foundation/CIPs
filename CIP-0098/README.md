@@ -176,7 +176,7 @@ Referencing another token's arguments does not work recursively.
 
 The _renderer_ token is at the heart of a DAT collection and can either be a self-contained program or one with dependencies. It is always part of the same `policy_id` as the _scene_ tokens. Multiple _renderer_ tokens can exist within a policy, but _scene_ tokens can only reference one _renderer_ at a time.
 
-### **2.a.** Metadata
+#### **2.a.** Metadata
 
 The _renderer_'s code is stored in the `files` property as-is or as a base64-encoded string. The `name` property of the file must match the `asset_name` with the appropriate file extension, so viewers can filter out the renderer-related files.
 
