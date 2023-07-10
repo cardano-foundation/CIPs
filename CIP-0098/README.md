@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Distributed Artifact Token Metadata Standard
-Category: Metadata
+Category: Tokens
 Status: Proposed
 Authors:
   - Wout Fierens <wout@venster.art>
