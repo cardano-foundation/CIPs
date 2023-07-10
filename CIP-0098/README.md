@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: DAT Metadata Standard
+Title: Distributed Artifact Token Metadata Standard
 Category: Metadata
 Status: Proposed
 Authors:
