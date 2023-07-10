@@ -65,7 +65,7 @@ The code to render all _scene_ tokens is stored in a _renderer_ token, which in 
 
 The _scene_ token is the part the end user will receive in their wallet. It contains all the information to render the DAT.
 
-### **1.a.** Metadata
+#### **1.a.** Metadata
 
 _Scene_ tokens require a `renderer` property to be present, referencing the token containing the code of the renderer.
 
