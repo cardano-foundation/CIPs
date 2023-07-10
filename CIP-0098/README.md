@@ -172,7 +172,7 @@ Referencing another token's arguments does not work recursively.
 
 **Note**: The list of directives mentioned above is not final. Proposals for new directives will be considered and added over time.
 
-## **2**. Renderer
+### **2**. Renderer
 
 The _renderer_ token is at the heart of a DAT collection and can either be a self-contained program or one with dependencies. It is always part of the same `policy_id` as the _scene_ tokens. Multiple _renderer_ tokens can exist within a policy, but _scene_ tokens can only reference one _renderer_ at a time.
 
