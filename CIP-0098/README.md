@@ -305,7 +305,7 @@ The build of a locally executed token revolves around a Dockerfile that should b
 }
 ```
 
-### **2.f.** License types
+#### **2.f.** License types
 
 For creators, it is recommended to choose a license that aligns with their values and with the purpose of the digital artifact. Any license can be used, but popular licenses are:
 
@@ -316,13 +316,13 @@ For creators, it is recommended to choose a license that aligns with their value
 
 Using [no license](https://choosealicense.com/no-permission/) is also an option to explicitly indicate that no one other than the creator may use the software.
 
-## **3**. Dependency
+### **3**. Dependency
 
 This section applies to _onchain_ and _internal_ dependencies. Aside from how they are referenced, they are technically the same.
 
 Dependency tokens can have multiple parts if they do not fit into one 16kB transaction. The dependency referenced from the _renderer_ serves as an entry point, referencing the additional parts.
 
-### **3.a.** Metadata
+#### **3.a.** Metadata
 
 The code is stored in the **`files`** property as-is or as a base64-encoded string. The `name` property of the file must match the `asset_name`. Like the _renderer_, every file can have an individual `license` property.
 
@@ -361,7 +361,7 @@ Dependency tokens should be burned after minting to free up the UTxOs.
 
 This section presents the resolutions to the four problems mentioned in the motivation section of this CIP. Given that this standard has already been embraced by a few collections, real-world examples are used to demonstrate the implementation and advantages of DATs.
 
-## Solution 1: **Storage limit**
+### Solution 1: **Storage limit**
 
 The distributed nature of DATs allows bigger on-chain codebases with dependencies. The separation of code and metadata effectively doubles the available space.
 
@@ -369,7 +369,7 @@ Additionally, dependencies can be stored in chunks, which allows for the realist
 
 **Note**: It is important to note that the increase of storage capacity applies to _renderer_ tokens, not _scene_ tokens. Therefore, the additional space is only available for code used by the _renderer_ and not for static data like images in _scene_ tokens.
 
-### Example 1
+#### Example 1
 
 This collection contains 3409 tokens and the first one ever minted using the DAT Metadata Standard.
 
@@ -382,7 +382,7 @@ This collection contains 3409 tokens and the first one ever minted using the DAT
 | **font dependency 2**      |     15.24 kB |        1 |        15.24 kB |
 | **total**                  | **56.63 kB** | **3413** |  **4895.99 kB** |
 
-### Example 2
+#### Example 2
 
 This collection contains 512 tokens and the second one ever minted using the DAT Metadata Standard.
 
@@ -394,13 +394,13 @@ This collection contains 512 tokens and the second one ever minted using the DAT
 | **font dependency**        |     15.35 kB |       1 |        15.35 kB |
 | **total**                  | **39.28 kB** | **515** |  **1289.47 kB** |
 
-## Solution 2: **Inefficient use of block space**
+### Solution 2: **Inefficient use of block space**
 
 By looking at three real-world cases, it becomes clear that using DATs requires roughly 90% less block space than using isolated monolithic NFTs.
 
 The data used in the following examples is extracted from existing token collections. The first two examples used monolithic NFTs, while the third one used DATs.
 
-### Example 1
+#### Example 1
 
 This collection contains 17190 tokens as monolithic HTML NFTs.
 
