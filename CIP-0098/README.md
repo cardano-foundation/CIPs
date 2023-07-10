@@ -1,5 +1,5 @@
 ---
-CIP: 98?
+CIP: ?
 Title: DAT Metadata Standard
 Category: Metadata
 Status: Proposed
