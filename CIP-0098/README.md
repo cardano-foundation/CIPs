@@ -439,7 +439,7 @@ Although problems 3 and 4 address different topics, one solution solves both: pr
 
 There are two variants of DATs: browser-based and non-browser-based. Almost all on-chain generative tokens on any blockchain fall into the first group. This standard supports both variants.
 
-### Variant 1: **Browser-based**
+#### Variant 1: **Browser-based**
 
 Existing token viewers and blockchain explorers already support monolithic browser-based generative tokens. The most commonly used output formats are HTML and SVG, which can handle embedded JavaScript but can't have any dependencies.
 
