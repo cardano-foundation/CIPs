@@ -267,7 +267,7 @@ Alternatively, the asset's `policy_id` and `asset_name` can be used:
 - **`asset_name`** (_required_): name of the asset
 - **`policy_id`** (_required_): policy id of the asset
 
-### **2.d.** External dependencies:
+#### **2.d.** External dependencies:
 
 These are off-chain dependencies managed by the viewer and made available to the _renderer_ at runtime.
 
