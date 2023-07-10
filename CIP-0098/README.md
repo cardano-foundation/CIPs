@@ -113,7 +113,7 @@ Properties for the _scene_ token:
     arguments for the invocation of the _renderer_ (e.g.: `[123]`)
 - **`properties`** (_optional_): an object with arbitrary key/value pairs describing the token's (unique) properties
 
-### **1.b.** Argument directives
+#### **1.b.** Argument directives
 
 Several directives for dynamic arguments can be passed to the renderer. Before rendering a DAT, viewers must resolve any directives by querying the requested data from the blockchain and passing the actual values to the renderer.
 
