@@ -411,7 +411,7 @@ This collection contains 17190 tokens as monolithic HTML NFTs.
 
 This collection would have used **90.03 %** less block space with DATs
 
-### Example 2
+#### Example 2
 
 This collection contains 1744 tokens as monolithic HTML NFTs.
 
