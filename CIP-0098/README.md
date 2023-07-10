@@ -289,7 +289,7 @@ These are off-chain dependencies managed by the viewer and made available to the
 
 **Note**: The _external_ dependency definitions are not referencing any token on the blockchain, unlike the _onchain_ and _internal_ variants. Their sole purpose is instructing token viewers which external dependency to load at runtime. A list of available libraries is maintained in the [venster-external-dependencies repo](https://github.com/venster-io/venster-external-dependencies).
 
-### **2.e.** Build instructions
+#### **2.e.** Build instructions
 
 This section only applies to non-browser-based renderers.
 
