@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
   - Wout Fierens <wout@venster.art>
 Discussions:
-  - https://github.com/cardano-foundation/cips/pulls/?
+  - https://github.com/cardano-foundation/cips/pulls/530
 Created: 2023-06-30
 License: CC-BY-4.0
 ---
