@@ -61,7 +61,7 @@ The code to render all _scene_ tokens is stored in a _renderer_ token, which in 
 
 **Note**: The DAT Metadata Standard builds on the existing [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025) standard.
 
-## **1**. Scene
+### **1**. Scene
 
 The _scene_ token is the part the end user will receive in their wallet. It contains all the information to render the DAT.
 
