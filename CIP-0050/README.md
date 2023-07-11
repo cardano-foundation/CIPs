@@ -1,6 +1,6 @@
 ---
 CIP: 50
-Title: Shelley’s Voltaire decentralization update 
+Title: Pledge Leverage-Based Staking Rewards
 Status: Proposed
 Category: Ledger
 Authors:
