@@ -815,7 +815,6 @@ We define a number of new terms related to voting stake:
 + [Reducing the power of entities with large amounts of Ada](#reducing-the-power-of-entities-with-large-amounts-of-ada)
 + [Piggybacking on stake pool stake distribution](#piggybacking-on-stake-pool-stake-distribution)
 + [Separation of hard-fork initiation from standard protocol parameter changes](#separation-of-hard-fork-initiation-from-standard-protocol-parameter-changes)
-+ [Treasury withdrawals vs Project Catalyst](#treasury-withdrawals-vs-project-catalyst)
 + [The purpose of the DReps](#the-purpose-of-the-dreps)
 + [Ratification requirements table](#ratification-requirements-table)
 + [Motion of no-confidence](#motion-of-no-confidence)
