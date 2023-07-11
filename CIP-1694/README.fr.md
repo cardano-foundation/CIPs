@@ -876,7 +876,7 @@ Les électeurs peuvent choisir de déléguer leur vote aux DReps sans avoir à s
 
 ### Tableau des exigences de ratification
 
-Les conditions énoncées dans le [tableau des conditions de ratification](#requirements) sont expliquées ici.
+Les conditions énoncées dans le [tableau des conditions de ratification](#exigences) sont expliquées ici.
 La plupart des actions de gouvernance ont le même type d’exigences :
 le comité constitutionnel et le DReps doivent atteindre un nombre suffisant de
 Votes 'Oui'.
