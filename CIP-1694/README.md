@@ -815,7 +815,6 @@ We define a number of new terms related to voting stake:
 + [Reducing the power of entities with large amounts of Ada](#reducing-the-power-of-entities-with-large-amounts-of-ada)
 + [Piggybacking on stake pool stake distribution](#piggybacking-on-stake-pool-stake-distribution)
 + [Separation of hard-fork initiation from standard protocol parameter changes](#separation-of-hard-fork-initiation-from-standard-protocol-parameter-changes)
-+ [Treasury withdrawals vs Project Catalyst](#treasury-withdrawals-vs-project-catalyst)
 + [The purpose of the DReps](#the-purpose-of-the-dreps)
 + [Ratification requirements table](#ratification-requirements-table)
 + [Motion of no-confidence](#motion-of-no-confidence)
@@ -1189,16 +1188,16 @@ Nothing prevents money being taken out of the treasury other than the proposed v
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
 
-[^1]: A formal description of the current rules for governance actions is given in the [Shelley ledger specification](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec).
+[^1]: A formal description of the current rules for governance actions is given in the [Shelley ledger specification](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf).
 
     - For protocol parameter changes (including hard forks), the `PPUP` transition rule (Figure 13) describes how protocol parameter updates are processed, and the `NEWPP` transition rule (Figure 43) describes how changes to protocol parameters are enacted.
 
     - For funds transfers, the `DELEG` transition rule (Figure 24) describes how MIR certificates are processed, and the `MIR` transition rule (Figure 55) describes how treasury and reserve movements are enacted.
 
     > **Note**
-    > The capabilities of the `MIR` transition rule were expanded in the [Alonzo ledger specification](https://hydra.iohk.io/job/Cardano/cardano-ledger/specs.alonzo-ledger/latest/download-by-type/doc-pdf/alonzo-changes)
+    > The capabilities of the `MIR` transition rule were expanded in the [Alonzo ledger specification](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/alonzo-ledger.pdf)
 
 
 [^2]: There are many varying definitions of the term "hard fork" in the blockchain industry. Hard forks typically refer to non-backwards compatible updates of a network. In Cardano, we formalize the definition slightly more by calling any upgrade that would lead to _more blocks_ being validated a "hard fork" and force nodes to comply with the new protocol version, effectively obsoleting nodes that are unable to handle the upgrade.
 
-[^3]: This is the definition used in "active stake" for stake delegation to stake pools, see Section 17.1, Total stake calculation, of the [Shelley ledger specification](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec).
+[^3]: This is the definition used in "active stake" for stake delegation to stake pools, see Section 17.1, Total stake calculation, of the [Shelley ledger specification](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf).

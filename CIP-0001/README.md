@@ -41,6 +41,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
 - [Document](#document)
   - [Structure](#structure)
     - [Header Preamble](#header-preamble)
+    - [Translations](#translations)
     - [Repository Organization](#repository-organization)
     - [Licensing](#licensing)
   - [Statuses](#statuses)
@@ -139,6 +140,29 @@ CIP-0010
 └── registry.schema.json
 
 ```
+
+##### Translations
+
+While CIPs are mainly technical documents meant to be read primarily by developers -- and thus often written in English; some may be translated into various languages to increase their outreach. Any file in a CIP folder may also include translated content satisfying the following rules:
+
+- Any translated file shall share a common basename with its original source.
+
+- Translation file basenames must have a suffix using an [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) language code, separated by a dot `.` character. (e.g. `README.fr.md`).
+
+- When no language code is provided as suffix, the default language for the document is assumed to be English (UK/US).
+
+- Translated CIPs (i.e. `README` files), must not include the original preamble. They must, however, include the following preamble as yaml frontmatter data:
+
+Field          | Description
+---            | ---
+`CIP`          | The CIP number (without leading 0)
+`Source`       | The canonical GitHub link to the original CIP document
+`Title`        | A translation of the CIP's title
+`Revision`     | The commit hash (8-10 first hex-digits) of the source (e.g. `12ab34cd`)
+`Translators`  | A list of translators names and email addresses (e.g. `John Doe <john.doe@email.domain>`)
+`Language`     | An [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) code of the target language (e.g. `fr`)
+
+- Translated CIPs inherit the same licensing terms as their original sources.
 
 ##### Licensing
 
