@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: b3e3508
+Revision: 89bb166
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -797,7 +797,6 @@ Nous définissons un certain nombre de nouveaux termes liés à la participation
 + [Réduire le pouvoir des entités avec de grandes quantités d’Ada](#réduire-la-puissance-des-entités-avec-de-grandes-quantités-dada)
 + [Greffage sur la distribution des mises du pool de participation](#greffage-sur-la-distribution-des-mises-du-pool-de-participation)
 + [Séparation de l’initiation du hard-fork des modifications des paramètres de protocole standard](#séparation-de-linitiation-du-hard-fork-des-modifications-des-paramètres-du-protocole-standard)
-+ [Retraits de trésorerie vs Project Catalyst](#retraits-de-trésorerie-vs-project-catalyst)
 + [Le but des DReps](#le-but-des-dreps)
 + [Tableau des exigences de ratification](#tableau-des-exigences-de-ratification)
 + [Motion de non-confiance](#motion-de-non-confiance)
@@ -1171,16 +1170,16 @@ Rien n’empêche de retirer de l’argent du Trésor autre que les votes propos
 
 Ce CIP est sous licence [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
 
-[^1]: Une description formelle des règles actuelles pour les actions de gouvernance est donnée dans la [spécification du registre Shelley](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec).
+[^1]: Une description formelle des règles actuelles pour les actions de gouvernance est donnée dans la [spécification du registre Shelley](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf).
 
     - Pour les modifications des paramètres de protocole (y compris les hard forks), la règle de transition `PPUP` (Figure 13) décrit comment les mises à jour des paramètres de protocole sont traitées, et la règle de transition `NEWPP` (Figure 43) décrit comment les modifications apportées aux paramètres de protocole sont mises en œuvre.
 
     - Pour les transferts de fonds, la règle de transition `DELEG` (figure 24) décrit la manière dont les certificats MIR sont traités, et la règle de transition `MIR` (figure 55) décrit comment les mouvements de trésorerie et de réserves sont promulgués.
 
     > **Note**
-  > Les capacités de la règle de transition `MIR` ont été étendues dans la [spécification du registre Alonzo](https://hydra.iohk.io/job/Cardano/cardano-ledger/specs.alonzo-ledger/latest/download-by-type/doc-pdf/alonzo-changes)
+  > Les capacités de la règle de transition `MIR` ont été étendues dans la [spécification du registre Alonzo](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/alonzo-ledger.pdf)
 
 
 [^ 2]: Il existe de nombreuses définitions différentes du terme « hard fork » dans l’industrie de la blockchain. Les hard forks font généralement référence à des mises à jour non rétrocompatibles d’un réseau. Dans Cardano, nous formalisons un peu plus la définition en appelant toute mise à niveau qui conduirait à la validation de _more blocks_ un « hard fork » et forçons les noeuds à se conformer à la nouvelle version du protocole, obsolant ainsi les noeuds incapables de gérer la mise à niveau.
 
-[^3]: Il s’agit de la définition utilisée dans « participation active » pour la délégation de participation aux pools de participations, voir Section 17.1, Calcul de la mise totale, de la [spécification du grand livre Shelley](https://hydra.iohk.io/job/Cardano/cardano-ledger/shelleyLedgerSpec/latest/download-by-type/doc-pdf/ledger-spec).
+[^3]: Il s’agit de la définition utilisée dans « participation active » pour la délégation de participation aux pools de participations, voir Section 17.1, Calcul de la mise totale, de la [spécification du grand livre Shelley](https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf).
