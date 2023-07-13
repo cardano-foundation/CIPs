@@ -228,6 +228,31 @@ How any private companies, public or private institutions,  individuals etc. cho
   - [Changes to the stake snapshot](#changes-to-the-stake-snapshot)
   - [Definitions relating to voting stake](#definitions-relating-to-voting-stake)
 
+### Definitions
+
+Eligible stake: all stake that belongs to a registered stake credential.
+DRep: registered DRep or auto DRep
+Active DRep stake: Eligible stake that is delegated to a DRep
+Active reward stake: Eligible stake delegated to an active stake pool
+
+A threshold is a fraction defined as the ratio of 'Yes' votes over the 'Yes' and 'No' votes required for an action to pass.
+
+An action passes, if the fraction `Yes / (Yes + No)` exceeds the threshold required for that action.
+
+The way we count 'No' votes differs on the type of action and the body of governance involved.
+
+For DRep votes, the stake that voted 'No' is equal to `active DRep stake - 'Yes' voted stake - 'Abstain' voted stake`.
+The decision to count active DRep stake as a 'No' for those that did not vote at all is for security reasons. It functions as a dynamic participation threshold.
+Question: why didn't we do a static threshold?
+
+For SPO votes, in the case of a Hard Fork action, the stake that voted 'No' is equal to `active reward stake - 'Yes' voted stake - 'Abstain' voted stake`.
+
+For SPO votes, for all other actions, the stake that voted 'No' is equal to the stake delegated to the SPOs that actually voted 'No'.
+
+Hard Forks are treated differently, since SPOs need to update the node software before they approve the update. For all other actions, SPOs should not be required to vote since exchanges should not be expected to cast a vote in governance matters.
+
+For the constitutional committee, each elected, non-expired and non-retired member is counted as one vote. The 'No' votes are exactly those of constitutional committee members that voted 'No'.
+
 ### The Cardano Constitution
 
 The Cardano Constitution is a text document that defines Cardano's shared values and guiding principles.
