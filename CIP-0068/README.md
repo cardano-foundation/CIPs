@@ -383,6 +383,18 @@ extra = plutus_data
 royalty_info = #6.121([royalty_recipients, version, extra])
 ```
 
+Example of onchain variable fee calculation:
+```
+; Given a royalty fee of 1.6% (0.016)
+
+; To store this in the royalty datum
+1 / (0.016 / 10) => 625
+
+; To read it back
+10 / 625 => 0.016
+```
+Because the computational complexity of Plutus primitives scales with size, this approach significantly minimizes resource consumption.
+
 To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the script address of a validator that ensures the specified fees are not arbitrarily changed, such as an always-fails validator.
 
 ##### Retrieve metadata as 3rd party
