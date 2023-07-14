@@ -30,6 +30,24 @@ holders' and DReps' interactions with such web-based stacks.
 > outlined within
 > [CIP-1694?](https://github.com/cardano-foundation/CIPs/pull/380).
 
+<details>
+  <summary><strong>Wallets and Tooling Hackathon</strong></summary>
+
+  On 2023.07.14 a online and in person community hackathon took place, aims of this event included maturation of the design of this specification.
+
+  We would like to thank the following attendees for providing their valuable insights:
+  - Piotr Czeglik - Lace
+  - Mircea Hasegan - Lace
+  - Alex Apeldoorn - Lace
+  - Michal Szorad - Yoroi
+  - Javier Bueno - Yoroi
+  - Vladimir Volek - Five Binaries
+  - Marek Mahut - Five Binaries
+  - Markus Gufler - Cardano Foundation
+  - Michal Ciborowski - BinarApps
+
+</details>
+
 ## Motivation: why is this CIP necessary?
 
 CIP-1694 introduces many new concepts, entities and actors to Cardano;
@@ -62,10 +80,11 @@ described within
 [CIP-30's Initial API](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cardanowalletnameenable-extensions-extension----promiseapi).
 
 > **Note** This specification will evolve as the proposed ledger governance
-> model matures. It is likely the precise data structures outlined here will be
-> need to be adjusted.
+> model matures.
 
 ### DRep Key
+
+// TODO: Move into a separate CIP.
 
 CIP-1694 does not define a derivation path for registered DRep credentials, here
 we propose the introduction of DRep Keys to act as DRep credentials for
@@ -274,162 +293,16 @@ for the case of
 
 An array of the connected user's active stake keys.
 
-#### `api.submitVoteDelegation([tx: UnsignedTransaction, stakeKey: PubStakeKey]): Promise<SubmittedTransaction[]>`
+#### `api.signTx()`
 
-Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
+// TODO: add more detail here
+- Here we supersede CIP-30's `.signTx()` and replace it.
+- This endpoint extends CIP30 implementation to be able to support all Conway ledger era transactions.
 
-This endpoint requests the wallet to inspect, sign and submit transaction(s)
-containing vote delegation certificates. The wallet should articulate this
-request from client application in a explicit and highly informative way. Users
-must be shown the target of the delegation (DRepID or a predefined DRep
-identifier) and must be informed which of their stake keys are being used. For
-the case of multiple delegations at once, the user may only be asked for
-permission to authorize all at once, but this can depend on wallet's
-implementation.
-
-If user grants permission, each transaction must be signed by the secret key of
-the provided public stake key, with the signature and key to be added to the
-transaction witness set before submission.
-
-By allowing clients to supply the stake key we are placing the burden of
-"multi-governance-delegation" management onto the client, reducing the
-complexity for wallet implementations. By forcing wallets to inspect these
-certificates it allows the user to catch malicious client applications
-attempting to insert their own delegation targets.
-
-##### Errors
-
-One `TxSignError` should be returned if there is a signature error with any of
-the certificates.
-
-##### Returns
-
-This returns an array of `SubmittedTransaction` objects which contain the
-details of the submitted delegation certificates, for the client to confirm. The
-returned `txHash`s can be used by the client to track the status of the
-transactions containing the certificates on Cardano.
-
-#### `api.submitDRepRegistration(tx: UnsignedTransaction): Promise<SubmittedTransaction>`
-
-Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
-
-This endpoint requests the wallet to inspect, sign and submit a transaction
-containing a DRep registration certificate. The wallet should articulate this
-request from client application in a explicit and highly informative way. Users
-should be made aware of the type of certificate, associated DRepID, metadata
-anchor and deposit amount.
-
-If user grants permission, the transaction must be signed by the secret DRep key
-as described in [DRep Key](#drep-key), with the signature and key to be added to
-the transaction witness set before submission.
-
-By allowing clients to choose UTxOs we are placing the burden of managing a
-user's DRep registration deposit on the application. By forcing wallets to
-inspect these certificates it allows the user to catch malicious client
-applications attempting to insert their own data into the certificate.
-
-##### Errors
-
-One `TxSignError` should be returned if there is a signature error with any of
-the certificates.
-
-##### Returns
-
-This returns a `SubmittedTransaction` object which contains all the details of
-the submitted registration certificate, for the client to confirm. The returned
-`txHash` can be used by the client to track the status of the transaction
-containing the certificate on Cardano.
-
-#### `api.submitDRepRetirement(tx: UnsignedTransaction): Promise<SubmittedTransaction>`
-
-Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
-
-This endpoint requests the wallet to inspect, sign and submit a transaction
-containing a DRep retirement certificate. The wallet should articulate this
-request from client application in a explicit and highly informative way. Users
-should be made aware of the type of certificate, associated DRepID and metadata
-anchor.
-
-If user grants permission, the transaction must be signed by the secret DRep key
-as described in [DRep Key](#drep-key), with the signature and key to be added to
-the transaction witness set before submission.
-
-By forcing wallets to inspect these certificates it allows the user to catch
-malicious client applications attempting to insert their own data into the
-certificate.
-
-##### Errors
-
-One `TxSignError` should be returned if there is a signature error with any of
-the certificates.
-
-##### Returns
-
-This returns a `SubmittedTransaction` object which contains all the details of
-the submitted retirement certificate, for the client to confirm. The returned
-`txHash` can be used by the client to track the status of the transaction
-containing the certificate on Cardano.
-
-#### `api.submitVote([tx: UnsignedTransaction]): Promise<SubmittedTransaction>[]`
-
-Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
-
-This endpoint requests the wallet to inspect, sign and submit transaction(s)
-containing votes. The wallet should articulate this request from client
-application in a explicit and highly informative way. For each vote, users must
-be shown the governance action ID, vote choice (yes, no, abstain) and metadata
-anchor. For the case of multiple votes at once, the user may only be asked for
-permission to authorize all at once, but this can depend on wallet's
-implementation.
-
-If user grants permission, each transaction must be signed by the secret DRep
-key as described in [DRep Key](#drep-key), with the signature and key to be
-added to the transaction witness set before submission.
-
-By forcing wallets to inspect these votes it allows the user to catch malicious
-client applications attempting to alter the vote's contents.
-
-##### Errors
-
-One `TxSignError` should be returned if there is a signature error with any of
-the transactions.
-
-##### Returns
-
-This returns an array of `SubmittedTransaction` objects which contain the
-details of the submitted votes, for the client to confirm. The returned
-`txHash`s can be used by the client to track the status of the transactions
-containing the certificates on Cardano.
-
-#### `api.submitGovernanceAction(tx: UnsignedTransaction): Promise<SubmittedTransaction>`
-
-Errors: [APIError](#extended-apierror), [`TxSignError`](#extended-txsignerror)
-
-This endpoint requests the wallet to inspect, sign and submit a transaction
-containing a governance action. The wallet should articulate this request from
-client application in a explicit and highly informative way. For the governance
-action the user must be shown the amount of ADA to be locked as deposit,
-governance action type, all action specific details and the metadata anchor.
-
-If user grants permission, the transaction must be signed using the wallets
-payment key and submitted.
-
-By allowing clients to choose UTxOs, we are placing the burden of managing the
-deposit on the application. By forcing wallets to inspect these transactions it
-allows the user to catch malicious client applications attempting to insert
-their own data into the governance action.
-
-##### Errors
-
-One `TxSignError` should be returned if there is a signature error with any of
-the transactions.
-
-##### Returns
-
-This returns a `SubmittedTransaction` object which contains all the details of
-the submitted governance action, for the client to confirm. The returned
-`txHash` can be used by the client to track the status of the transaction
-containing the certificate on Cardano.
+#### `api.signData()`
+// TODO: add more detail here
+- Here we supersede CIP-30's `.signData()` and replace it. 
+- This endpoint extends CIP30 implementation to be able to support signatures using Conway ledger era's voting credential.
 
 ### Examples of Flows
 
@@ -445,11 +318,11 @@ application and wallet then a subsequent login.
 2. **Wallet Confirmation:** The wallet indicates through its UI the clients
    intent to connect, the user grants permission.
 3. **Share Credentials:** The client invokes both `.getActivePubStakeKeys()` and
-   `.getDRepKey()`, causing the connected wallet to share relevant credentials.
+   `.getPubDRepKey()`, causing the connected wallet to share relevant credentials.
 4. **Chain Lookup:** The client uses a chain indexer to work out the governance
    state of the provided credentials.
 
-#### Vote Delegation
+<!-- #### Vote Delegation
 
 Assume a "DRep Aggregator/Explorer" specialized client, who aggregates DRep
 metadata from on-chain registration certificates to show to prospective
@@ -494,12 +367,12 @@ client.
    the wallet should sign and submit the transaction.
 4. **Feedback to user:** The wallet returns a `SubmittedTransaction` and the
    client uses the `txHash` field to track the status of the transaction
-   on-chain, providing feedback to the user.
+   on-chain, providing feedback to the user. -->
 
 ## Rationale: how does this CIP achieve its goals?
 
 The principle aim for this design is to reduce the complexity for wallet
-implementors. This is motivated by the necessity for users to be able to
+implementors whilst maintaining backwards compatibility with CIP-30 implementations. This is motivated by the necessity for users to be able to
 interact with the age of Voltaire promptly, by keeping the wallet's providers
 ask small we aim to reduce implementation time.
 
@@ -514,7 +387,7 @@ functionality. Nor does this specification aim to discourage wallet providers
 from fully integrating governance features, side-stepping the necessity for this
 API and client applications (matching how staking is achieved).
 
-### Why Web-based Stacks
+### Why Web-based Stacks?
 
 Web-based stacks, with wallet connectivity, are a familiar place for users to be
 able to interact with Cardano. These tools lower the technical bar to engage
@@ -602,17 +475,9 @@ unambiguous what information the user must be shown. This is to prevent
 politically motivated malicious client applications from attempting to sign and
 submit malicious transactions.
 
-### Sign and Submit
-
-By making our endpoints combination, sign and submit we bring forth two
-benefits. Firstly, we avoid any potential issues with backwards compatibility of
-the new transactions and clients attempting to use CIP-30's
-[`.submitTx()`](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apisubmittxtx-cbortransaction-promisehash32)
-to submit transactions. Secondly, we improve security by allowing the submit to
-chain, this prevents malicious clients from censoring which transactions are
-submitted to chain.
-
 ### Explicit Singular Endpoints
+
+// TODO: change to explain pivot
 
 This API explicitly separates all our transaction inspect, sign and submit
 endpoints. A reasonable alternative to this could be to group endpoints together
@@ -636,6 +501,8 @@ implementations more straight forward.
 
 ### Extension Design
 
+// TODO: add in explanation for replacing CIP30 endpoints
+
 With this specification we chose to extend CIP-30's functionalities. There would
 be two competing designs to this approach. One; move to have this specification
 included within CIP-30. Two; deploy this specification as it's own standalone
@@ -653,7 +520,7 @@ functionality offered by CIP-30. Additionally, CIP-30 offers a extensibility
 mechanism meaning that the initial handshake connection is defined and thus wont
 be needed to be defined within this specification.
 
-### DRep Key
+<!-- ### DRep Key
 
 We chose to introduce the concept of a DRep Key, building on top of CIP-1694,
 this we see as a necessary step for wallet implementors. By setting a
@@ -662,7 +529,7 @@ seed phrase.
 
 With this definition we aim to standard for all ecosystem tooling to be able to
 derive DRep credentials from mnemonics. This brings the benefits ecosystem
-standards.
+standards. -->
 
 #### Why not reuse [CIP-36 Vote Keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#voting-key)?
 
@@ -728,24 +595,27 @@ for wallets implementing both APIs.
 ### Open Questions
 
 - <s>The burden of transaction building to be placed on dApps or wallets?</s>
-  - This has been moved from the wallet to the application.
-  - Since wallets still have to be able to be able to inspect these
-    transactions, its not far away from just generating the transaction itself.
-- Move DRep key definitions into a CIP which is dedicated to describing CIP-1694
-  related credentials? or CIP-1852?
-- Is it necessary to provide a method to prove ownership of DRep key? and can
-  CIP-30's `api.signData()` be used to prove ownership of multi-stake keys?
-- Is it sensible to place multi-stake key burden onto clients?
+  - As we are replacing CIP-30's signTx it makes sense to follow the same flow and place the burden on the client applications.
+- <s>Move DRep key definitions into a CIP which is dedicated to describing CIP-1694
+  related credentials? or CIP-1852?</s>
+  - Yes, this is a cleaner approach, as we keep the purity of this proposal to being a wallet web bridge.
 - <s>Does supporting governance action submission a necessary burden for the
   scope of this proposal?</s>
   - Since moving burden of transaction construction from wallet to app, this
     becomes much less of an issue as the complex error checking should now be
     done by the application.
-- Should this proposal cater for non-key-based stake credential?
-  - We could just change all references of keys to credentials to allow this?
-- Should there be a more elegant way for the optional sharing of governance
-  state?
-- should provide support for combination certificates?
+- <s>should provide support for combination certificates?</s>
+  - Yes we will support ALL conway ledger era Tx/Certs, this will allow for CIP95 to be "the Conway compatible" wallet web bridge.
+- <s>Is it necessary to provide a method to prove ownership of DRep key?</s>
+  - Yes, this will be a useful add. 
+- <s>Is it sensible to place multi-stake key burden onto clients?</s>
+  - Yes, seems like a reasonable approach. If wallets want to manage it, they can only provide the keys they wish.
+- <s>Do we need to share stake keys or can we just reuse reward addresses?</s>
+  - Reusing CIP30's `.getRewardAddresses()` may act as an alternative, but it is unclear how implementors have supported this function and thus its reuse maybe a mistake.
+  - It is a more reasonable approach to share public key material instead of addresses as it gives the client application more freedom.
+- <s>Should this proposal cater for non-key-based stake credential?</s>
+  - We can leave this for a future iteration.
+- Should there be a way for the optional sharing of governance state, from wallet to client?
 
 ## Path to Active
 
@@ -763,7 +633,11 @@ for wallets implementing both APIs.
     [`gov-wallet-cip`](https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983)
     channel in the [IOG Technical Discord](https://discord.gg/inputoutput) under
     the `🥑BUILD` section (to view you have to opt-in to the Builders group).
-- [ ] Author to setup regular discussion forums to support wallet implementors.
+- [x] Author to engage with wallet providers for feedback.
+- [x] Author to run a hackathon workshop with wallet providers.
+  - In person and online hackathon run 2023.07.13, outcomes presented here. TODO: add outcomes summary.
+- [x] Author to provide a reference client application for wallet implementors to be able to test against.
+  - See: [Ryun1/cip95-cardano-wallet-connector](https://github.com/Ryun1/cardano-wallet-connector).
 
 ## Copyright
 
