@@ -2,7 +2,7 @@
 CPS: ?
 Title: Cardano Pointer Address Removal
 Status: Open
-Category: Core
+Category: Ledger
 Authors:
     - Andrew Westberg <andrewwestberg@gmail.com>
 Proposed Solutions: []
