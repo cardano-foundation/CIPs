@@ -7,7 +7,7 @@ Authors:
     - Andrew Westberg <andrewwestberg@gmail.com>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/374
 Created: 2022-11-11
 ---
 
