@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 2
 Title: Cardano Pointer Address Removal
 Status: Open
 Category: Ledger
