@@ -1,6 +1,6 @@
 ---
 CIP: CIP-????
-Title: POO (Proof of Onboarding) Protocol
+Title: Proof of Onboarding
 Status: Proposed
 Category: Wallets
 Authors:
@@ -47,6 +47,108 @@ We feel that this is necessary as a CIP in order to minimize friction for new pr
 across the wide spectrum of Cardano wallets.
 
 # Specification
+
+## CIP-13 Cardano URI Extensions
+
+Distributing Native Assets (and/or ADA) to attendees of IRL events has historically been a pain point in the ecosystem.
+Some implemented solutions have included: Pre-generating wallet seed phrases and pre-populating these wallets with a
+minimum amount of ADA as well as the desired Native Assets, (re)creating token fountain/faucet designs which can be
+cumbersome and not user-friendly to instruct individuals to install a wallet, visit a website, enter a code and claim
+tokens.
+
+The Cardano Token Claim URI schema is proposed to allow wallets (particularly mobile wallets) to implement a QR-friendly
+URI structure allowing for easy onboarding and distribution of Native Assets and/or ADA to individuals in a variety of
+situations but not least of which being at IRL events specifically tailored and geared to onboarding new users to the
+ecosystem.
+
+Examples:
+```html
+<!-- Token Claim URIs -->
+<a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=consensus2023">Claim $HOSKY</a>
+<a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io%2Fconsensus23&code=ABC123">Claim $HOSKY</a>
+<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com">Claim NFTxLV Commermorative NFT!</a>
+```
+
+### ABNF Grammar
+
+* For a token claim URI (authority = `claim`), a versioning path, a `faucet_url` and an optional `code` (required in v1).
+
+``` 
+cardanourn = "web+cardano:" claimtokenref
+
+claimtokenref = "//claim" claimversion claimquery
+claimversion = "/v1" | "/v2"
+claimquery = ( "?" claimurl) ?( "&" claimcode)
+claimurl = "faucet_url=" text
+claimcode = "code=" text
+```
+
+### Token Claim URI Queries
+
+Token Claim URIs must include a path indicating protocol version and at minimum a `faucet_url` argument pointing to the
+faucet hosted and maintained by the project.
+
+**All arguments for Token Claim URIs should be URL-encoded**
+
+***Version 1 URIs***
+
+Version 1 URIs must include a `faucet_url` and a `code` as required parameters.
+
+***Version 2 URIs***
+
+Version 2 URIs must include a `faucet_url` and may optionally include a `code` or other arguments per the needs of the
+project's faucet API.
+
+### Handling Token Claim URI Queries
+
+The token claim URI should consist of a required versioning `path` (i.e. `/v1` or `/v2`) as well as one or more required
+or optional URL-encoded arguments.
+
+All Token Claim URIs must include a URL-encoded `faucet_url` argument. The `code` argument is required for Version 1
+Claim URIs while being flagged as optional for Version 2 and beyond.
+
+The wallet provider should send a POST request to the provided `Faucet URL` that includes:
+* The change/receipt wallet address of the user
+* Any additional arguments specified in the URI as key: value pairs
+
+**Example:**
+
+```
+URI: web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io%2Fconsensus23&code=ABC123
+Version: 1
+URL: https://claim.hosky.io/consensus23
+CODE: ABC123
+JSON POST Data:
+```
+```json
+{
+  "address": "addr1abc...xyz",
+  "code": "ABC123"
+}
+```
+
+#### Note on the `address` field
+
+The wallet should always send the recipient address in bech32 format. If a particular token faucet implementation wishes
+to restrict or limit access to their faucet based on staking key or individual wallet address, this should be handled at
+the wallet end.
+
+#### Note on the `code` field
+
+The code is required in Version 1 but specified as optional in Version 2 and beyond. Specifying a `code` allows for
+reliable tracking and/or limiting of claims to the faucet host. Codes can be used to identify attendees of particular
+events (i.e. CODE = `consensus2023`) or can be a unique, one-time code per user (i.e. CODE = `abc123xyz987`). In this
+way we leave the code to be flexible to match a variety of analytical use cases depending upon the needs of the
+implementing project.
+
+### Security Considerations
+
+1. For payment links, we cannot prompt the user to send the funds right away as they may not be fully aware of the URI they clicked or were redirected to. Instead, it may be better to simply pre-populate fields in a transaction.
+2. For either payment or staking links, we should be wary of people who disguise links as actually opening up a phishing website that LOOKS like that corresponding part of the wallet UI.
+3. If wallets *create* stake pool links, the actual ada or lovelace balance should not be used literally as the `proportion` figure, to avoid revealing the identity of the wallet owner who is creating the portfolio (e.g. the proportions could be scaled to normalise the largest to `1`).
+4. Wallets should prompt/warn users prior to sending potentially sensitive information (wallet address + code) via the
+   token claim URI. An informational pop-up or confirmation modal should be displayed to users such as:
+   `We are about to send your address and code 123456 to https://claim.hosky.io. Are you sure you want to proceed?`
 
 Additional specifications for this CIP relevant to CIP-13 have been made under the heading of "Token Claim URI" under
 its [README.md](../CIP-0013/README.md)
@@ -125,34 +227,45 @@ including:
 * The user's wallet receive address
 * The code (if present in the URI [required for Version 1])
 
-_Examples:_
-```json 
-URI: web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io
-URL: https://claim.hosky.io
-POST JSON Data:
+### Examples
+
+#### _Faucet URL Only (v2+)_
+- URI: ```web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.hosky.io```
+- Faucet URL: ```https://claim.hosky.io```
+- POST JSON Data:
+```json
 {
   "address": "addr1abc...xyz"
 }
+```
 
-URI: web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023
-URL: https://claim.nftxlv.com
-JSON POST Data:
+#### _Faucet URL + Campaign Code (v1)_
+- URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023```
+- Faucet URL: ```https://claim.nftxlv.com```
+- POST JSON Data:
+```json
 {
   "address": "addr1abc...xyz",
   "code": "NFTxLV2023"
 }
+```
 
-URI: web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=ABC123
-URL: https://claim.hosky.io
-POST JSON Data:
+#### _Faucet URL + Unique Code (v1)_
+- URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023```
+- Faucet URL: ```https://claim.hosky.io```
+- POST JSON Data:
+```json
 {
   "address": "addr1abc...xyz",
   "code": "ABC123"
 }
+```
 
-URI: web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023&user_id=Adam1337
-URL: https://claim.nftxlv.com
-POST JSON Data:
+#### _Faucet URL + Campaign Code + Custom User ID (v2)_
+- URI: ```web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023&user_id=Adam1337```
+- Faucet URL: ```https://claim.nftxlv.com```
+- POST JSON Data:
+```json
 {
   "address": "addr1abc...xyz",
   "code": "NFTxLV2023",
