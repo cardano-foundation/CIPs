@@ -40,7 +40,7 @@ and two new fields will be added to normal transaction bodies for:
 We also introduce three distinct governance bodies that have specific functions in this new governance framework:
 
 1. a constitutional committee
-2. a group of delegated representatives (henceforth called **DReps**)
+2. a group of delegate representatives (henceforth called **DReps**)
 3. the stake pool operators (henceforth called **SPOs**)
 
 Every governance action must be ratified by at least two of these three governance bodies using their on-chain **votes**.
