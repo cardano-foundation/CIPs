@@ -297,7 +297,7 @@ First Successful Request
   "queue_position": 23,
   "status": "accepted",
   "tokens": {
-    "a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.HOSKY": "29433292000000"
+    "a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.484f534b59": "29433292000000"
   }
 }
 ```
@@ -313,7 +313,7 @@ Subsequent Successful Request (Address + Code Match) prior to token distribution
   "queue_position": 1,
   "status": "queued",
   "tokens": {
-    "a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.HOSKY": "29433292000000"
+    "a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.484f534b59": "29433292000000"
   }
 }
 ```
@@ -328,7 +328,7 @@ Subsequent Successful Request (Address + Code Match) after token(s) are distribu
   "lovelaces": "2000000",
   "status": "claimed",
   "tokens": {
-    "a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.HOSKY": "29433292000000"
+    "a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.484f534b59": "29433292000000"
   },
   "tx_hash": "TX1234"
 }
