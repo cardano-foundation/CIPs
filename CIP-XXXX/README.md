@@ -410,7 +410,7 @@ marketing and event efforts: Proof of Onboarding.
 
 ## Acceptance Criteria
 
-- [ ] Demonstrate a working MVP
+- [X] Demonstrate a working MVP
 - [ ] Open source an MVP example of token faucet server-side code
 - [ ] Receive feedback and iterate on Version 2 based on community feedback
 
@@ -422,6 +422,19 @@ implementation should give us important insight on whether the system requires a
 
 From there we will do our best to engage with other teams and projects in the ecosystem to encourage and support
 adoption of this standard on a larger scale.
+
+## Acceptance & Implementation Actions
+
+1. The Proof of Onboarding protocol was demonstrated via MVP during the Edinburgh, Scotland, UK CIP-1694 workshop hosted
+   by IOG in July 2023. This MVP demonstrated that the protocol works as described in this CIP and the overall feedback
+   from participants has been positive. This MVP was executed in collaboration with VESPR mobile Cardano wallet, HOSKY
+   token project, and Adam Dean as the distributor and architect of the specification.
+   1. [X] VESPR Mobile Wallet as of the time of this writing has support for Version 1 of the Proof of Onboarding Protocol
+      and is freely available for the use of any and all projects.
+   2. [ ] HOSKY Token project is working on finalizing and releasing a working, open source MVP for the software needed
+      to be run by the distributing project that will support fungible and non-fungible tokens or any combination thereof.
+   3. [ ] Adam Dean is in talks with additional wallet providers to bring P.O.O. support to more platforms as well as
+      working on open source tooling to facilitate ease of implementation for other projects.
 
 # Copyright
 
