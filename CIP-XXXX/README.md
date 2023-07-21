@@ -68,7 +68,7 @@ Examples:
 <!-- Token Claim URIs -->
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=consensus2023">Claim $HOSKY</a>
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io%2Fconsensus23&code=ABC123">Claim $HOSKY</a>
-<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=ABC123&invoice=123456">Claim NFTxLV Commermorative NFT!</a>
+<a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=ABC123&invoice=123456">Claim NFTxLV Commermorative NFT!</a>
 ```
 
 ### ABNF Grammar
@@ -80,7 +80,7 @@ Examples:
 cardanourn = "web+cardano:" claimtokenref
 
 claimtokenref = "//claim" claimversion claimquery
-claimversion = "/v1" | "/v2"
+claimversion = "/v1"
 claimquery = ( "?" claimurl) ( "&" claimcode)
 claimurl = "faucet_url=" text
 claimcode = "code=" text
