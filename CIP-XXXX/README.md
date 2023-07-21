@@ -15,6 +15,8 @@ Created: 2023-06-20
 License: CC-BY-4.0
 ---
 
+> Current Version: 1
+
 # Abstract
 
 Since at least 2021 when Cardano entered the Mary Era and implemented Native Assets, projects and creators building on
@@ -66,19 +68,20 @@ Examples:
 <!-- Token Claim URIs -->
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=consensus2023">Claim $HOSKY</a>
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io%2Fconsensus23&code=ABC123">Claim $HOSKY</a>
-<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com">Claim NFTxLV Commermorative NFT!</a>
+<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=ABC123&invoice=123456">Claim NFTxLV Commermorative NFT!</a>
 ```
 
 ### ABNF Grammar
 
-* For a token claim URI (authority = `claim`), a versioning path, a `faucet_url` and an optional `code` (required in v1).
+* For a token claim URI (authority = `claim`), a versioning path, a `faucet_url` and a required `code`.
+* Additional query parameters may be provided and should be passed through to the provided `faucet_url` as-is.
 
 ``` 
 cardanourn = "web+cardano:" claimtokenref
 
 claimtokenref = "//claim" claimversion claimquery
 claimversion = "/v1" | "/v2"
-claimquery = ( "?" claimurl) ?( "&" claimcode)
+claimquery = ( "?" claimurl) ( "&" claimcode)
 claimurl = "faucet_url=" text
 claimcode = "code=" text
 ```
@@ -92,20 +95,16 @@ faucet hosted and maintained by the project.
 
 ***Version 1 URIs***
 
-Version 1 URIs must include a `faucet_url` and a `code` as required parameters.
+Version 1 URIs must include a `faucet_url` and a `code` as required parameters. URIs may include additional arguments to
+suit the needs of the project's faucet API.
 
-***Version 2 URIs***
-
-Version 2 URIs must include a `faucet_url` and may optionally include a `code` or other arguments per the needs of the
-project's faucet API.
 
 ### Handling Token Claim URI Queries
 
-The token claim URI should consist of a required versioning `path` (i.e. `/v1` or `/v2`) as well as one or more required
+The token claim URI should consist of a required versioning `path` (i.e. `/v1`) as well as one or more required
 or optional URL-encoded arguments.
 
-All Token Claim URIs must include a URL-encoded `faucet_url` argument. The `code` argument is required for Version 1
-Claim URIs while being flagged as optional for Version 2 and beyond.
+All Token Claim URIs must include a URL-encoded `faucet_url` argument as well as a `code` argument.
 
 The wallet provider should send a POST request to the provided `Faucet URL` that includes:
 * The change/receipt wallet address of the user
@@ -135,23 +134,16 @@ the wallet end.
 
 #### Note on the `code` field
 
-The code is required in Version 1 but specified as optional in Version 2 and beyond. Specifying a `code` allows for
-reliable tracking and/or limiting of claims to the faucet host. Codes can be used to identify attendees of particular
-events (i.e. CODE = `consensus2023`) or can be a unique, one-time code per user (i.e. CODE = `abc123xyz987`). In this
-way we leave the code to be flexible to match a variety of analytical use cases depending upon the needs of the
-implementing project.
+The code is required. Specifying a `code` allows for reliable tracking and/or limiting of claims to the faucet host. 
+Codes can be used to identify attendees of particular events (i.e. CODE = `consensus2023`) or can be a unique, one-time
+code per user (i.e. CODE = `abc123xyz987`). In this way we leave the code to be flexible to match a variety of
+analytical use cases depending upon the needs of the implementing project.
 
 ### Security Considerations
 
-1. For payment links, we cannot prompt the user to send the funds right away as they may not be fully aware of the URI they clicked or were redirected to. Instead, it may be better to simply pre-populate fields in a transaction.
-2. For either payment or staking links, we should be wary of people who disguise links as actually opening up a phishing website that LOOKS like that corresponding part of the wallet UI.
-3. If wallets *create* stake pool links, the actual ada or lovelace balance should not be used literally as the `proportion` figure, to avoid revealing the identity of the wallet owner who is creating the portfolio (e.g. the proportions could be scaled to normalise the largest to `1`).
-4. Wallets should prompt/warn users prior to sending potentially sensitive information (wallet address + code) via the
+1. Wallets should prompt/warn users prior to sending potentially sensitive information (wallet address + code) via the
    token claim URI. An informational pop-up or confirmation modal should be displayed to users such as:
    `We are about to send your address and code 123456 to https://claim.hosky.io. Are you sure you want to proceed?`
-
-Additional specifications for this CIP relevant to CIP-13 have been made under the heading of "Token Claim URI" under
-its [README.md](../CIP-0013/README.md)
 
 ## Process Flow
 
@@ -179,45 +171,20 @@ Version 1 URIs must include two required arguments:
 * `faucet_url` as a fully-typed URL (i.e. https://claim.hosky.io)
 * `code` as either a campaign identifier or unique, one-time use code
 
+Version 1 URIs may include additional query parameters that should be passed through to the api server.
+
 _Version 1 Examples:_
 
 ```html
-<!-- A Version 1 Cardano Claim URI with campaign identifier code -->
+<!-- A Cardano Claim URI with campaign identifier code -->
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=consensus2023">Thanks for attending Consensus 2023!</a>
 
-<!-- A Version 1 Cardano Claim URI with unique, one-time use code -->
+<!-- A Cardano Claim URI with unique, one-time use code -->
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=dff6508d8dfb4e128fd67e9ff54af147">Claim your $HOSKY now!</a>
+
+<!-- A Cardano Claim URI with a campaign-specific code and optional user_id argument -->
+<a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=NFTxLV2023&user_id=Idjiot1337">Get your $HOSKY!</a>
 ```
-
-### Version 2
-
-Version 2 URIs must include `/v2` as the path of the URI
-
-Version 2 URIs must include one required argument:
-
-* `faucet_url` as a fully-typed URL (i.e. https://claim.hosky.io)
-
-Version 2 URIs may include additional, optional arguments:
-
-* `code` as either a campaign identifier or unique, one-time use code
-* Additional arguments should be passed by the wallet to the API server in the JSON body of the POST request.
-
-
-_Version 2 Examples:_
-```html 
-<!-- A Cardano Claim URI with only the URL specified -->
-<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.hosky.io">Claim $HOSKY Now!</a>
-
-<!-- A Cardano Claim URI with a campaign-specific code -->
-<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023">Claim your NFTxLV 2023 NFT now!</a>
-
-<!-- A Cardano Claim URI with a unique, one-time use code -->
-<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=ABC123">Claim Some $HOSKY!</a>
-
-<!-- A Cardano Claim URI with a campaign-specific code and optional user_id -->
-<a href="web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=NFTxLV2023&user_id=Idjiot1337">Get your $HOSKY!</a>
-```
-
 ## Wallet Requests
 
 Light wallets that detect and support `web+cardano` URIs as well as mobile wallets who detect either a QR code or other
@@ -225,21 +192,12 @@ link with this format should parse the URI and send a `POST` request to the spec
 including:
 
 * The user's wallet receive address
-* The code (if present in the URI [required for Version 1])
+* The code
+* Additional URI query parameters passed through
 
 ### Examples
 
-#### _Faucet URL Only (v2+)_
-- URI: ```web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.hosky.io```
-- Faucet URL: ```https://claim.hosky.io```
-- POST JSON Data:
-```json
-{
-  "address": "addr1abc...xyz"
-}
-```
-
-#### _Faucet URL + Campaign Code (v1)_
+#### _Faucet URL + Campaign Code_
 - URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023```
 - Faucet URL: ```https://claim.nftxlv.com```
 - POST JSON Data:
@@ -250,7 +208,7 @@ including:
 }
 ```
 
-#### _Faucet URL + Unique Code (v1)_
+#### _Faucet URL + Unique Code_
 - URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023```
 - Faucet URL: ```https://claim.hosky.io```
 - POST JSON Data:
@@ -261,8 +219,8 @@ including:
 }
 ```
 
-#### _Faucet URL + Campaign Code + Custom User ID (v2)_
-- URI: ```web+cardano://claim/v2?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023&user_id=Adam1337```
+#### _Faucet URL + Campaign Code + Custom User ID_
+- URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023&user_id=Adam1337```
 - Faucet URL: ```https://claim.nftxlv.com```
 - POST JSON Data:
 ```json
@@ -282,7 +240,6 @@ The expected API that any token fountain implementation should follow and wallet
 on Swagger!
 
 * [Version 1](https://app.swaggerhub.com/apis/CatastrophicCardano/FaucetAPI/1)
-* [Version 2](https://app.swaggerhub.com/apis/CatastrophicCardano/FaucetAPI/2)
 
 ### Successful Responses
 
@@ -335,6 +292,39 @@ Subsequent Successful Request (Address + Code Match) after token(s) are distribu
 ```
 
 ### Error Responses
+
+#### Bad Request - Invalid Address (400)
+
+The provided address is not a valid Cardano address
+
+```json
+{
+   "code": 400,
+   "status": "invalidaddress"
+}
+```
+
+#### Bad Request - Missing Code (400)
+
+No code was provided in the request
+
+```json
+{
+   "code": 400,
+   "status": "missingcode"
+}
+```
+
+#### Bad Request - Invalid Network (400)
+
+The wallet provided is from the wrong network (testnet/mainnet)
+
+```json
+{
+   "code": 400,
+   "status": "invalidnetwork"
+}
+```
 
 #### Invalid - Not Known (404)
 
@@ -412,7 +402,7 @@ marketing and event efforts: Proof of Onboarding.
 
 - [X] Demonstrate a working MVP
 - [ ] Open source an MVP example of token faucet server-side code
-- [ ] Receive feedback and iterate on Version 2 based on community feedback
+- [ ] Receive feedback and iterate based on community feedback
 
 ## Implementation Plan
 
