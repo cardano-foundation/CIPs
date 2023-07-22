@@ -51,7 +51,7 @@ This Cardano Improvement Proposal (CIP) introduces a standardized and flexible m
 
 With the advent of the Voltaire era, Cardano is moving towards a decentralized governance model. CIP-1694 addresses a potential technical implementation of ledger rules for creating, voting on, and ratifying proposed changes to the ledger. The ledger has no mechanism or desire to validate this metadata, and as a result, the official specification leaves the format of this metadata unspecified.
 
-To facilitate rich user experiences for the various governance actors, however, it would be beneficial to have a suggested universal format for this metadata, allowing deep and interconnected discovery and exploration of this metadata. This CIP seeks to provide that standard format, and a minimal set of fields for various governance actions, leavine the true depth of metadata to be defined later through the extensibility mechanism outlined below.
+To facilitate rich user experiences for the various governance actors, however, it would be beneficial to have a suggested universal format for this metadata, allowing deep and interconnected discovery and exploration of this metadata. This CIP seeks to provide that standard format, and a minimal set of fields for various governance actions, leaving the true depth of metadata to be defined later through the extensibility mechanism outlined below.
 
 While this specification is written with CIP-1694 in mind, many of the ideas should be equally suitable for any other governance proposal, provided that proposal has a mechanism for attaching metadata to a governance action.
 
