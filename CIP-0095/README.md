@@ -22,29 +22,33 @@ that needs to be injected into web applications.
 These definitions extend
 [CIP-30 | Cardano dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)
 to provide support for
-[CIP-1694? | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/pull/380)
-focussed web-based stacks. Here we aim to support the requirements of both Ada
-holders' and DReps' interactions with such web-based stacks.
+[CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md)
+focussed web-based stacks. Here we aim to support the requirements of the Conway
+Ledger era, this specification is based on the
+[Draft Conway Ledger Era Specification](https://github.com/input-output-hk/cardano-ledger/tree/master/eras/conway/test-suite/cddl-files).
 
 > **Note** This proposal assumes knowledge of the ledger governance model as
 > outlined within
-> [CIP-1694?](https://github.com/cardano-foundation/CIPs/pull/380).
+> [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
 
 <details>
   <summary><strong>Wallets and Tooling Hackathon</strong></summary>
 
-  On 2023.07.14 a online and in person community hackathon took place, aims of this event included maturation of the design of this specification.
+On 2023.07.13 a online and in person community hackathon took place, aims of
+this event included maturation of the design of this specification.
 
-  We would like to thank the following attendees for providing their valuable insights:
-  - Piotr Czeglik - Lace
-  - Mircea Hasegan - Lace
-  - Alex Apeldoorn - Lace
-  - Michal Szorad - Yoroi
-  - Javier Bueno - Yoroi
-  - Vladimir Volek - Five Binaries
-  - Marek Mahut - Five Binaries
-  - Markus Gufler - Cardano Foundation
-  - Michal Ciborowski - BinarApps
+We would like to thank the following attendees for providing their valuable
+insights:
+
+- Piotr Czeglik - Lace
+- Mircea Hasegan - Lace
+- Alex Apeldoorn - Lace
+- Michal Szorad - Yoroi
+- Javier Bueno - Yoroi
+- Vladimir Volek - Five Binaries
+- Marek Mahut - Five Binaries
+- Markus Gufler - Cardano Foundation
+- Michal Ciborowski - BinarApps
 
 </details>
 
@@ -52,12 +56,19 @@ holders' and DReps' interactions with such web-based stacks.
 
 CIP-1694 introduces many new concepts, entities and actors to Cardano;
 describing their implementation at the ledger level. Yet, for most ecosystem
-participants low level details are abstracted away by tools, such as wallets.
-This creates a need for tooling to be able support the utilization of ledger
-features. This specification allows for creation of web-based tools for the
-utilization of CIP-1694's governance features.
+participants low level details are abstracted away by tooling. This creates a
+need for such tooling to be able support the utilization of ledger features.
+This specification allows for creation of web-based tools for the utilization of
+CIP-1694's governance features.
 
-This proposal enables Ada holders and DReps to engage web-based tooling through
+Whilst CIP-30 facilitated the launch of dApp client development on Cardano, it's
+functionality is limited in scope. It was written well before the emergence of
+the Conway Ledger Era and thus lacks the required methods to support full user
+interaction. We believe that expecting existing CIP-30 implementors to upgrade
+implementations is unfeasible, thus we must extend it's functionality with this
+API.
+
+This proposal enables Ada holders, and DReps to engage web-based tooling through
 wallets. Thus the primary stakeholders for this proposal are tool developers and
 wallet providers. Here we aim to outline all endpoints needed to be exposed to
 web based tools to support all the needs Ada holders and DReps to engage with
@@ -84,7 +95,7 @@ described within
 
 ### DRep Key
 
-// TODO: Move into a separate CIP.
+// TODO: Move this into a separate CIP.
 
 CIP-1694 does not define a derivation path for registered DRep credentials, here
 we propose the introduction of DRep Keys to act as DRep credentials for
@@ -104,14 +115,14 @@ standard.
 To differentiate DRep credentials from other Cardano keys the derivation path
 must follow:
 
-`m / 1718' / 1815' / account' / chain / address_index`
+`m / 1694' / 1815' / account' / 1718 / address_index`
 
 > **Note** `1718` was the year that François-Marie adopted the pseudonym
 > Voltaire.
 
 We strongly suggest that a maximum of one set of DRep credentials should be
-associated with one wallet account, this can be achieved by setting `chain=0`
-and `address_index=0`. Thus avoiding the need for DRep Key discovery.
+associated with one wallet account, this can be achieved by only ever setting
+`address_index=0`. This avoids the need for DRep Key discovery.
 
 We believe the overhead that would be introduced by "multi-DRep" accounts is an
 unjustified expense. Future iterations of this specification may expand on this,
@@ -142,7 +153,7 @@ For hardware implementations:
 
 From
 [CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#data-types)
-we only inherit:
+we inherit:
 
 - [cbor\<T>](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cbort)
 
@@ -163,38 +174,6 @@ type PubStakeKey = string;
 
 A hex-encoded string representing 32 byte Ed25519 public key used as a staking
 credential.
-
-#### UnsignedTransaction
-
-```ts
-type UnsignedTransaction = string;
-```
-
-A hex-encoded string representing a CBOR transaction that is completely unsigned
-(has an empty transaction witness set).
-
-This data model is used to represent transactions which contain, for example:
-DRep registration certificates and the client wishes the wallet inspect, add
-signatures (with payment and DRep key) and submit.
-
-#### SubmittedTransaction
-
-```ts
-interface SubmittedTransaction {
-  tx: cbor<transaction>;
-  txHash: string;
-  witness: string;
-}
-```
-
-This interface represents a transaction that has been submitted to chain.
-
-- `tx`: A hex-encoded string representing CBOR transaction, which was submitted
-  to chain.
-- `txHash`: A string containing the hash of the transaction which contained this
-  certificate that was submitted to chain and included in a block. This is to be
-  used by clients to track the status of the delegation transaction on-chain.
-- `witness`: A string containing the witnesses attached to the transaction.
 
 ### Error Types
 
@@ -260,11 +239,6 @@ interface TxSignError = {
 
 ### Full Governance API
 
-Methods contained in this section on invocation should request the user to
-review and to consent to signature and submission. The exceptions to this are
-`.getActiveStakeKeys()` and `.getDRepKey()`, user consent should not be needed
-to share public key information.
-
 #### `api.getPubDRepKey(): Promise<PubDRepKey>`
 
 Errors: `APIError`
@@ -293,16 +267,34 @@ for the case of
 
 An array of the connected user's active stake keys.
 
-#### `api.signTx()`
+#### `api.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
+
+Errors: `APIError`, `TxSignError`
 
 // TODO: add more detail here
-- Here we supersede CIP-30's `.signTx()` and replace it.
-- This endpoint extends CIP30 implementation to be able to support all Conway ledger era transactions.
 
-#### `api.signData()`
+Here we supersede CIP-30's `.signTx()` and replace it, to allow signatures with
+the Conway era `voting_credential`.
+
+This endpoint extends CIP30 implementation to be able to support all Conway
+ledger era transactions and certificates.
+
+##### Returns
+
+The portions of the witness set that were signed as a result of this call are
+returned to encourage dApps to verify the contents returned by this endpoint
+while building the final transaction.
+
+#### `api.signData(addr: Address, payload: Bytes): Promise<DataSignature>`
+
+Errors: `APIError`, `DataSignError`
+
 // TODO: add more detail here
-- Here we supersede CIP-30's `.signData()` and replace it. 
-- This endpoint extends CIP30 implementation to be able to support signatures using Conway ledger era's voting credential.
+
+Here we supersede CIP-30's `.signData()` and replace it, to allow signatures
+with the Conway era `voting_credential`.
+
+##### Returns
 
 ### Examples of Flows
 
@@ -318,7 +310,8 @@ application and wallet then a subsequent login.
 2. **Wallet Confirmation:** The wallet indicates through its UI the clients
    intent to connect, the user grants permission.
 3. **Share Credentials:** The client invokes both `.getActivePubStakeKeys()` and
-   `.getPubDRepKey()`, causing the connected wallet to share relevant credentials.
+   `.getPubDRepKey()`, causing the connected wallet to share relevant
+   credentials.
 4. **Chain Lookup:** The client uses a chain indexer to work out the governance
    state of the provided credentials.
 
@@ -372,7 +365,8 @@ client.
 ## Rationale: how does this CIP achieve its goals?
 
 The principle aim for this design is to reduce the complexity for wallet
-implementors whilst maintaining backwards compatibility with CIP-30 implementations. This is motivated by the necessity for users to be able to
+implementors whilst maintaining backwards compatibility with CIP-30
+implementations. This is motivated by the necessity for users to be able to
 interact with the age of Voltaire promptly, by keeping the wallet's providers
 ask small we aim to reduce implementation time.
 
@@ -520,6 +514,10 @@ functionality offered by CIP-30. Additionally, CIP-30 offers a extensibility
 mechanism meaning that the initial handshake connection is defined and thus wont
 be needed to be defined within this specification.
 
+- TODO: moves multi-stake key issues to wallet by reusing signTx
+- TODO: CIP95 extension tag clearly allows for dApps to know if these functions
+  are allowed
+
 <!-- ### DRep Key
 
 We chose to introduce the concept of a DRep Key, building on top of CIP-1694,
@@ -595,27 +593,35 @@ for wallets implementing both APIs.
 ### Open Questions
 
 - <s>The burden of transaction building to be placed on dApps or wallets?</s>
-  - As we are replacing CIP-30's signTx it makes sense to follow the same flow and place the burden on the client applications.
-- <s>Move DRep key definitions into a CIP which is dedicated to describing CIP-1694
-  related credentials? or CIP-1852?</s>
-  - Yes, this is a cleaner approach, as we keep the purity of this proposal to being a wallet web bridge.
+  - As we are replacing CIP-30's signTx it makes sense to follow the same flow
+    and place the burden on the client applications.
+- <s>Move DRep key definitions into a CIP which is dedicated to describing
+  CIP-1694 related credentials? or CIP-1852?</s>
+  - Yes, this is a cleaner approach, as we keep the purity of this proposal to
+    being a wallet web bridge.
 - <s>Does supporting governance action submission a necessary burden for the
   scope of this proposal?</s>
   - Since moving burden of transaction construction from wallet to app, this
     becomes much less of an issue as the complex error checking should now be
     done by the application.
 - <s>should provide support for combination certificates?</s>
-  - Yes we will support ALL conway ledger era Tx/Certs, this will allow for CIP95 to be "the Conway compatible" wallet web bridge.
+  - Yes we will support ALL conway ledger era Tx/Certs, this will allow for
+    CIP95 to be "the Conway compatible" wallet web bridge.
 - <s>Is it necessary to provide a method to prove ownership of DRep key?</s>
-  - Yes, this will be a useful add. 
+  - Yes, this will be a useful add.
 - <s>Is it sensible to place multi-stake key burden onto clients?</s>
-  - Yes, seems like a reasonable approach. If wallets want to manage it, they can only provide the keys they wish.
+  - Yes, seems like a reasonable approach. If wallets want to manage it, they
+    can only provide the keys they wish.
 - <s>Do we need to share stake keys or can we just reuse reward addresses?</s>
-  - Reusing CIP30's `.getRewardAddresses()` may act as an alternative, but it is unclear how implementors have supported this function and thus its reuse maybe a mistake.
-  - It is a more reasonable approach to share public key material instead of addresses as it gives the client application more freedom.
+  - Reusing CIP30's `.getRewardAddresses()` may act as an alternative, but it is
+    unclear how implementors have supported this function and thus its reuse
+    maybe a mistake.
+  - It is a more reasonable approach to share public key material instead of
+    addresses as it gives the client application more freedom.
 - <s>Should this proposal cater for non-key-based stake credential?</s>
   - We can leave this for a future iteration.
-- Should there be a way for the optional sharing of governance state, from wallet to client?
+- Should there be a way for the optional sharing of governance state, from
+  wallet to client?
 
 ## Path to Active
 
@@ -635,9 +641,12 @@ for wallets implementing both APIs.
     the `🥑BUILD` section (to view you have to opt-in to the Builders group).
 - [x] Author to engage with wallet providers for feedback.
 - [x] Author to run a hackathon workshop with wallet providers.
-  - In person and online hackathon run 2023.07.13, outcomes presented here. TODO: add outcomes summary.
-- [x] Author to provide a reference client application for wallet implementors to be able to test against.
-  - See: [Ryun1/cip95-cardano-wallet-connector](https://github.com/Ryun1/cardano-wallet-connector).
+  - In person and online hackathon run 2023.07.13, outcomes presented here.
+    TODO: add outcomes summary.
+- [x] Author to provide a reference client application for wallet implementors
+      to be able to test against.
+  - See:
+    [Ryun1/cip95-cardano-wallet-connector](https://github.com/Ryun1/cardano-wallet-connector).
 
 ## Copyright
 
