@@ -1,13 +1,13 @@
 ---
 CIP: ?
-Title: Governance Action Metadata Standard
+Title: Governance Metadata
 Category: Metadata
 Status: Proposed
 Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/556
 Created: 2023-04-09
 License: CC-BY-4.0
 ---
