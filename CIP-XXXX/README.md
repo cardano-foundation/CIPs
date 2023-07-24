@@ -337,7 +337,7 @@ The specified code does not exist
 }
 ```
 
-#### Invalid - Already Claimed (409)
+##### Invalid - Already Claimed (409)
 
 An address was already used (if not code present) or the code presented was found but the address did not match
 
