@@ -1071,33 +1071,6 @@ The rotational schedule of the first non-bootstrap committee could be included i
 Note, however, that since the constitutional committee never votes on new committees,
 it cannot actually enforce the rotation.
 
-#### Final safety measure, post bootstrapping
-
-Many people have stated that they believe that the actual voting turnout will not be so large
-as to be a strain on the throughput of the system.
-We also believe that this is likely to be the case, but when the bootstrap phase ends we will
-put one final, temporary safety	measure in place (this will also allow us to justify a low DRep deposit amount).
-
-For values of $X$ and $Y$ that are still to be determined,
-as soon as the bootstrap phase has ended,
-when we calculate the DReps stake distribution for the next epoch boundary,
-we will consider _only_ those DReps that are _either_ in the top $X$-many DReps ranked by stake amount,
-or those DReps that have at least $Y$ Lovelace.
-Every epoch, the value of $X$ will _increase_ and the value of $Y$ will decrease,
-so that eventually $X$ will be effectively infinite and $Y$ will be zero.
-Note that this is only an incentive, and nothing actually stops any DRep from casting their
-vote (though it will not be counted if it does not meet the requirements).
-
-If the community decides at some point that there is indeed a problem with congestion,
-then a hard fork could be enacted that limits the number of DReps in a more restrictive way.
-
-Reasonable numbers for the initial value of $X$ are probably 5,000-10,000.
-Reasonable numbers for the initial value of $Y$ are probably the total number of Lovelace
-divided by the initial value of $X$.
-
-The mechanism should be set to relax at a rate where the restriction is completely eliminated after
-a period of six months to one year.
-
 #### Other Ideas / Open Questions
 
 ##### Pledge-weighted SPO voting
@@ -1129,6 +1102,28 @@ We could reduce this deposit for proposals which go through some agreed upon off
 This would be marked on-chain by the endorsement of at least one constitutional committee member.
 The downside of this idea is that it gives more power to the constitutional committee.
 
+##### Different deposit amounts for different governance actions
+
+Multiple workshops for this CIP have proposed to introduce a different
+deposit amount for each type of governance action. It was not clear
+whether a majority was in favor of this idea, but this may be
+considered if it becomes clear that it is necessary.
+
+##### Minimum active voting stake
+
+As a further guarantee to ensure governance actions cannot be proposed
+right before a hard fork, be voted on by one DRep with a large amount
+of stake and be enacted immediately, there could be an additional
+requirement that a certain fixed absolute amount of stake needs to
+cast a 'Yes' vote on the action to be enacted.
+
+This does not seem necessary in the current design, since the stake of
+all registered DReps behaves like a 'No' vote until they have actually
+cast a vote. This means that for this scenario to occur, the malicious
+actor needs at least to be in control of the fraction of DRep stake
+corresponding to the relevant threshold, at which point this might as
+well be considered a legitimate action.
+
 ##### Include hash of (future) genesis configuration within hard-fork proposal
 
 Some hard-forks require new genesis configurations.
@@ -1155,6 +1150,33 @@ We could imagine finding better terms for these concepts.
 ##### Rate-limiting treasury movements
 
 Nothing prevents money being taken out of the treasury other than the proposed votes and voting thresholds. Given that the Cardano treasury is a quite fundamental component of its monetary policy, we could imagine enforcing (at the protocol level) the maximum amount that can removed from the treasury over any period of time.
+
+##### Final safety measure, post bootstrapping
+
+Many people have stated that they believe that the actual voting turnout will not be so large
+as to be a strain on the throughput of the system.
+We also believe that this is likely to be the case, but when the bootstrap phase ends we might
+put one final, temporary safety	measure in place (this will also allow us to justify a low DRep deposit amount).
+
+For values of $X$ and $Y$ that are still to be determined,
+as soon as the bootstrap phase has ended,
+when we calculate the DReps stake distribution for the next epoch boundary,
+we will consider _only_ those DReps that are _either_ in the top $X$-many DReps ranked by stake amount,
+or those DReps that have at least $Y$ Lovelace.
+Every epoch, the value of $X$ will _increase_ and the value of $Y$ will decrease,
+so that eventually $X$ will be effectively infinite and $Y$ will be zero.
+Note that this is only an incentive, and nothing actually stops any DRep from casting their
+vote (though it will not be counted if it does not meet the requirements).
+
+If the community decides at some point that there is indeed a problem with congestion,
+then a hard fork could be enacted that limits the number of DReps in a more restrictive way.
+
+Reasonable numbers for the initial value of $X$ are probably 5,000-10,000.
+Reasonable numbers for the initial value of $Y$ are probably the total number of Lovelace
+divided by the initial value of $X$.
+
+The mechanism should be set to relax at a rate where the restriction is completely eliminated after
+a period of six months to one year.
 
 ## Copyright
 
