@@ -326,7 +326,7 @@ The wallet provided is from the wrong network (testnet/mainnet)
 }
 ```
 
-#### Invalid - Not Known (404)
+##### Invalid - Not Known (404)
 
 The specified code does not exist
 
