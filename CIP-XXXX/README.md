@@ -132,7 +132,7 @@ The wallet should always send the recipient address in bech32 format. If a parti
 to restrict or limit access to their faucet based on staking key or individual wallet address, this should be handled at
 the wallet end.
 
-#### Note on the `code` field
+##### Note on the `code` field
 
 The code is required. Specifying a `code` allows for reliable tracking and/or limiting of claims to the faucet host. 
 Codes can be used to identify attendees of particular events (i.e. CODE = `consensus2023`) or can be a unique, one-time
