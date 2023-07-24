@@ -29,7 +29,7 @@ This describes a general standard URI scheme with two specific protocols to hand
 
 ### In general:
 
-Developers of protocols that use URI schemes should be able to choose unique protcol keywords for how these links are handled by applications.
+Developers of protocols that use URI schemes should be able to choose unique protocol keywords for how these links are handled by applications.
 
 Beyond the two earliest defined protocols below, protocols using distinct keywords (e.g. `//stake`) can be defined in other standards and CIPs and implemented without ambiguity by applications which interpret those particular URI protocols.
 
