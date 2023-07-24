@@ -48,7 +48,7 @@ Furthermore, the aforementioned "paper wallet" technique has many drawbacks incl
 We feel that this is necessary as a CIP in order to minimize friction for new projects while maximizing compatibility
 across the wide spectrum of Cardano wallets.
 
-# Specification
+## Specification
 
 ## CIP-13 Cardano URI Extensions
 
