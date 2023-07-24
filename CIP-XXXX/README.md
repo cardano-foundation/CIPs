@@ -126,7 +126,7 @@ JSON POST Data:
 }
 ```
 
-#### Note on the `address` field
+##### Note on the `address` field
 
 The wallet should always send the recipient address in bech32 format. If a particular token faucet implementation wishes
 to restrict or limit access to their faucet based on staking key or individual wallet address, this should be handled at
