@@ -195,7 +195,7 @@ including:
 * The code
 * Additional URI query parameters passed through
 
-### Examples
+#### Examples
 
 #### _Faucet URL + Campaign Code_
 - URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023```
