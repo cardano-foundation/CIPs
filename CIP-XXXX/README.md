@@ -370,7 +370,7 @@ For time-limited fountains, a code of 425 means that the period for redemption h
 }
 ```
 
-#### Invalid - Rate Limited (429)
+##### Invalid - Rate Limited (429)
 
 Rate limiting settings and details are left to the discretion and implementation of individual projects. A status code
 of 429 or this status response should be considered as a rate limiting response.
