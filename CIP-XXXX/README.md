@@ -231,7 +231,7 @@ including:
 }
 ```
 
-## API Server Response Codes
+### API Server Response Codes
 
 The API server is expected to return one of the following defined status blocks in `application/json` format. Any other
 responses from the API server should be considered invalid and discarded or display an error.
