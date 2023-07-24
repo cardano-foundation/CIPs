@@ -50,7 +50,7 @@ across the wide spectrum of Cardano wallets.
 
 ## Specification
 
-## CIP-13 Cardano URI Extensions
+### CIP-13 Cardano URI Extensions
 
 Distributing Native Assets (and/or ADA) to attendees of IRL events has historically been a pain point in the ecosystem.
 Some implemented solutions have included: Pre-generating wallet seed phrases and pre-populating these wallets with a
