@@ -23,7 +23,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal describes a basic URI scheme with two specific protocols to handle Ada transfers and links to weighted lists of stake pools.
+This describes a general standard URI scheme with two specific protocols to handle Ada transfers and links to weighted lists of stake pools.
 
 ## Motivation: why is this CIP necessary?
 
