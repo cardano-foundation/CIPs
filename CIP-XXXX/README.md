@@ -86,7 +86,7 @@ claimurl = "faucet_url=" text
 claimcode = "code=" text
 ```
 
-### Token Claim URI Queries
+#### Token Claim URI Queries
 
 Token Claim URIs must include a path indicating protocol version and at minimum a `faucet_url` argument pointing to the
 faucet hosted and maintained by the project.
