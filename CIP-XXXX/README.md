@@ -219,7 +219,7 @@ including:
 }
 ```
 
-#### _Faucet URL + Campaign Code + Custom User ID_
+##### _Faucet URL + Campaign Code + Custom User ID_
 - URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023&user_id=Adam1337```
 - Faucet URL: ```https://claim.nftxlv.com```
 - POST JSON Data:
