@@ -104,8 +104,6 @@ amountparam = "amount=" *digit [ "." *digit ]
 
 The amount parameter must follow the [same rules](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki#transfer-amountsize) described in BIP-21, namely, it must be specified in decimal ADA, without commas and using the period (.) decimal separator.
 
-BIP-21 is limited to only features Bitcoin supports. A similar feature for Ethereum would, for example, also support gas as an extra parameter. BIP-21 is easily extensible but we have to take precaution to avoid different wallets having different implementations of these features as they become available on Cardano. To get an idea of some extra features that could be added, consider this (still under discussion) proposal for Ethereum: [EIP-681](https://eips.ethereum.org/EIPS/eip-681)
-
 #### Stake pool URI queries
 
 ```
@@ -152,7 +150,9 @@ An ABNF grammar should be specified and explained similarly for each CIP that de
 
 ## Rationale: how does this CIP achieve its goals?
 
-### For general URI scheme: Why not use Universal links, deep links or other non-protocol-based Solution?
+### Rationale for general URI scheme
+
+#### Why not use Universal links, deep links or other non-protocol-based Solution?
 
 An alternative solution to the original problem described above is to use standard URL links in combination with a routing backend system. The routing system is used to redirect to the app's URI. The advantage of this scheme is that it allows to provide a fallback mechanism to handle the case when no application implementing the protocol is installed (for instance, by redirecting to the App Store or Google Play). This is the approach behind iOS Universal Links and Android App Links. In general, it provides a better user experience but requires a centralized system which makes it unsuitable for as a multi-app standard.
 
@@ -162,7 +162,15 @@ For background, see
   - [Apple Developer Docs > Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
   - [React Native > Linking](https://reactnative.dev/docs/linking.html)
 
-### For stake pool links: How do URI delegation portfolio links supplement use of JSON files for the same purpose?
+### Rationale for payment links
+
+#### Why confine payment links to address and mount like BIP-21?
+
+BIP-21 is limited to only features Bitcoin supports. A similar feature for Ethereum would, for example, also support gas as an extra parameter. BIP-21 is easily extensible but we have to take precaution to avoid different wallets having different implementations of these features as they become available on Cardano. To get an idea of some extra features that could be added, consider this (still under discussion) proposal for Ethereum: [EIP-681](https://eips.ethereum.org/EIPS/eip-681)
+
+### Rationale for stake pool links
+
+#### How do URI delegation portfolio links supplement use of JSON files for the same purpose?
 
 URIs facilitate the "social element" of delegated staking and pool promotion through a socially familiar, easily accessible, and less centralised convention for sharing stake pool references and potential delegation portfolios without having to construct or host a JSON file.
 
