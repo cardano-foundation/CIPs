@@ -293,7 +293,7 @@ Subsequent Successful Request (Address + Code Match) after token(s) are distribu
 
 #### Error Responses
 
-#### Bad Request - Invalid Address (400)
+##### Bad Request - Invalid Address (400)
 
 The provided address is not a valid Cardano address
 
