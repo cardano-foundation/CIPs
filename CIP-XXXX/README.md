@@ -33,7 +33,7 @@ wallet to reward, incentivize, and onboard new users easier than ever.
 This CIP defines an extension to the CIP-13 URI Scheme as well as an API specification to facilitate and streamline
 communications between wallets and project servers.
 
-# Motivation: Why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 By leveraging the power of Cardano-specific URIs (CIP-13) and the modern technological advances of mobile devices and
 wallets we can provide a framework for Cardano projects to attend real world events, incentivize or reward attendees via
