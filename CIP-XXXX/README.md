@@ -291,7 +291,7 @@ Subsequent Successful Request (Address + Code Match) after token(s) are distribu
 }
 ```
 
-### Error Responses
+#### Error Responses
 
 #### Bad Request - Invalid Address (400)
 
