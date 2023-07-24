@@ -387,7 +387,7 @@ of 429 or this status response should be considered as a rate limiting response.
 Implementations should of course be prepared to handle situations where a server is non-responsive for any reason and
 be prepared to handle any other, non-specified error codes including 500 codes.
 
-# Rationale
+## Rationale: How does this CIP achieve its goals?
 
 By creating a well-defined standard for both a CIP-13 URI scheme and the expected API response(s) we can create a
 framework that both wallets and projects can utilize to encourage and onboard new users into the ecosystem via Native
