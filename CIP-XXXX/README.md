@@ -162,7 +162,7 @@ The URI format consists of the CIP-13 `web+cardano://` scheme, followed by the `
 
 ***NOTE: ALL ARGUMENTS SHOULD BE URL-ENCODED***
 
-### Version 1
+#### Version 1
 
 Version 1 URIs must include `/v1` as the path of the URI.
 
