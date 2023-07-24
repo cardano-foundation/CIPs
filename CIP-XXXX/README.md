@@ -359,7 +359,7 @@ For time-limited fountains, a code of 410 means that the period for redemption h
 }
 ```
 
-#### Invalid - Too Early (425)
+##### Invalid - Too Early (425)
 
 For time-limited fountains, a code of 425 means that the period for redemption has not begun yet
 
