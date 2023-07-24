@@ -348,7 +348,7 @@ An address was already used (if not code present) or the code presented was foun
 }
 ```
 
-#### Invalid - Expired (410)
+##### Invalid - Expired (410)
 
 For time-limited fountains, a code of 410 means that the period for redemption has expired
 
