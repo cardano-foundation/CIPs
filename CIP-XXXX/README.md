@@ -382,7 +382,7 @@ of 429 or this status response should be considered as a rate limiting response.
 }
 ```
 
-#### Server Error (500)
+##### Server Error (500)
 
 Implementations should of course be prepared to handle situations where a server is non-responsive for any reason and
 be prepared to handle any other, non-specified error codes including 500 codes.
