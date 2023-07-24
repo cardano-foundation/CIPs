@@ -275,7 +275,7 @@ Subsequent Successful Request (Address + Code Match) prior to token distribution
 }
 ```
 
-#### Valid Complete (202)
+##### Valid Complete (202)
 
 Subsequent Successful Request (Address + Code Match) after token(s) are distributed
 
