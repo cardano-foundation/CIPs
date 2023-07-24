@@ -426,6 +426,6 @@ adoption of this standard on a larger scale.
    3. [ ] Adam Dean is in talks with additional wallet providers to bring P.O.O. support to more platforms as well as
       working on open source tooling to facilitate ease of implementation for other projects.
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
