@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 > Current Version: 1
 
-# Abstract
+## Abstract
 
 Since at least 2021 when Cardano entered the Mary Era and implemented Native Assets, projects and creators building on
 the network have sought a means to distribute their tokens efficiently to users. Of particular frustration has been the
