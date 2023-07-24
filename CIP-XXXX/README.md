@@ -99,7 +99,7 @@ Version 1 URIs must include a `faucet_url` and a `code` as required parameters. 
 suit the needs of the project's faucet API.
 
 
-### Handling Token Claim URI Queries
+#### Handling Token Claim URI Queries
 
 The token claim URI should consist of a required versioning `path` (i.e. `/v1`) as well as one or more required
 or optional URL-encoded arguments.
