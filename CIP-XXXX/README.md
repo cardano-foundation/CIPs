@@ -398,7 +398,7 @@ marketing and event efforts: Proof of Onboarding.
 
 ## Path to Active
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 - [X] Demonstrate a working MVP
 - [ ] Open source an MVP example of token faucet server-side code
