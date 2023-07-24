@@ -304,7 +304,7 @@ The provided address is not a valid Cardano address
 }
 ```
 
-#### Bad Request - Missing Code (400)
+##### Bad Request - Missing Code (400)
 
 No code was provided in the request
 
