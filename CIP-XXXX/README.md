@@ -315,7 +315,7 @@ No code was provided in the request
 }
 ```
 
-#### Bad Request - Invalid Network (400)
+##### Bad Request - Invalid Network (400)
 
 The wallet provided is from the wrong network (testnet/mainnet)
 
