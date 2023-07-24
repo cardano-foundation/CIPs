@@ -88,10 +88,6 @@ This top-level definition is mainly to allow switching to a particular protocol 
 ```
 cardanouri = "web+cardano:" (paymentref | authorityref)
 
-paymentref = cardanoaddress [ "?" amountparam ]
-cardanoaddress = *(base58 | bech32)
-amountparam = "amount=" *digit [ "." *digit ]
-
 authorityref = (stakepoolref | otherref)
 otherref = "//" authority query
 ```
@@ -104,10 +100,17 @@ For grammar reference, see:
 
 #### Payment URI queries
 
+```
+paymentref = cardanoaddress [ "?" amountparam ]
+cardanoaddress = *(base58 | bech32)
+amountparam = "amount=" *digit [ "." *digit ]
+```
+
 The amount parameter must follow the [same rules](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki#transfer-amountsize) described in BIP-21, namely, it must be specified in decimal ADA, without commas and using the period (.) decimal separator.
 
 #### Stake pool URI queries
 
+```
 stakepoolref = "//stake" query
 query = ( "?" stakepoolpair) *( "&" stakepoolpair)
 stakepoolpair = stakepool [ "=" proportion]
@@ -117,6 +120,7 @@ poolhexid = 56HEXDIG
 poolticker = 3*5UNICODE
 
 proportion = *digit [ "." *digit ]
+```
 
 For brevity, essential in many Internet contexts, `poolticker`  must be supported here in addition to the unambiguous `poolhexid`.
 
