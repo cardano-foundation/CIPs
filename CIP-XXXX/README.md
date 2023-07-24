@@ -243,7 +243,7 @@ on Swagger!
 
 #### Successful Responses
 
-#### Valid (200)
+##### Valid (200)
 
 First Successful Request
 
