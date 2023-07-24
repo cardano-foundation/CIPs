@@ -156,7 +156,7 @@ The envisioned process flow for the POO Protocol is as follows:
 6. The project API returns a documented status code indicating the success or failure of the operation
 7. If a successful status is detected and returned, the project issues tokens to the specified address per their campaign settings
 
-## URI Format
+### URI Format
 
 The URI format consists of the CIP-13 `web+cardano://` scheme, followed by the `claim` authority, then a `version` path.
 
