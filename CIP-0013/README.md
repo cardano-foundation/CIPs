@@ -131,11 +131,7 @@ For brevity, essential in many Internet contexts, `poolticker`  must be supporte
 * Any missing `proportion` is assigned a precise value of `1`.
 * If a stake pool is listed multiple times, the URI is rejected as invalid.
 
-### Other URI queries
-
-An ABNF grammar should be specified and explained similarly for each CIP that defines a new Cardano URI authority by explicitly defining the terms `authority` and `query` as for the "Stake pool" case above.
-
-### Handling stake pool links
+##### Handling stake pool links
 
 When there is more than one pool registered with any of the specified `poolticker` parameters (whether for pool groups which have the same ticker for all pools, or for separate pools using the same ticker), the choice to which pool(s) to finally delegate is left to the user through the wallet UI.
 
@@ -145,6 +141,10 @@ If, during a wallet or other application's development process, it is still only
 
 * any value for the first URI query argument;
 * any URI query argument beyond the first.
+
+#### Other URI queries
+
+An ABNF grammar should be specified and explained similarly for each CIP that defines a new Cardano URI authority by explicitly defining the terms `authority` and `query` as for the "Stake pool" case above.
 
 ### Security Considerations
 
