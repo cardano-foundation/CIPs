@@ -80,7 +80,7 @@ BIP-21 is limited to only features Bitcoin supports. A similar feature for Ether
 
 ### ABNF Grammar
 
-This protocol definition is mainly to allow switching to the particular protocol for each separately defined `authority, with a payment link being the "default":
+This top-level definition is mainly to allow switching to a particular protocol for each separately defined `authority`, with a payment link being the default:
 
 * When `authority` is unspecified, it is a payment URI (with an address and an optional amount parameter;
 * When `authority` is explicit (containing `//` followed by the authority keyword), it is defined in the `//stake` case below or in a separate CIP for that protocol.
