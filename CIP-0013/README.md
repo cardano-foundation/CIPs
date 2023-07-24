@@ -68,15 +68,11 @@ Examples:
 
 The protocol term (e.g. `//stake`) is called the _authority_ as defined in [Wikipedia > Uniform Resource Identifier > Syntax](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax).
 
-### Considerations for URI scheme name
+### Choice of URI scheme name
 
 `cardano:` is chosen over `ada:` because other projects that implement this standard tend to take the project name over the currency name (this makes sense if we consider this protocol as a generic way for interacting with the blockchain through wallets and dApps - as opposed to a simple payment system).
 
 Depending on the protocol registration method (see Rationale), browsers generally enforce a `web+` or `ext+` prefix for non-whitelisted protocols (note: `bitcoin:` was whitelisted; see [registerProtocolHandler > Permitted schemes](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/registerProtocolHandler#permitted_schemes)). The prefix `ext+` is recommended for extensions, but not mandatory (see [protocol_handlers](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/protocol_handlers)).
-
-### Considerations for payment link query string
-
-BIP-21 is limited to only features Bitcoin supports. A similar feature for Ethereum would, for example, also support gas as an extra parameter. BIP-21 is easily extensible but we have to take precaution to avoid different wallets having different implementations of these features as they become available on Cardano. To get an idea of some extra features that could be added, consider this (still under discussion) proposal for Ethereum: [EIP-681](https://eips.ethereum.org/EIPS/eip-681)
 
 ### Grammar & interpretation
 
@@ -107,6 +103,8 @@ amountparam = "amount=" *digit [ "." *digit ]
 ```
 
 The amount parameter must follow the [same rules](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki#transfer-amountsize) described in BIP-21, namely, it must be specified in decimal ADA, without commas and using the period (.) decimal separator.
+
+BIP-21 is limited to only features Bitcoin supports. A similar feature for Ethereum would, for example, also support gas as an extra parameter. BIP-21 is easily extensible but we have to take precaution to avoid different wallets having different implementations of these features as they become available on Cardano. To get an idea of some extra features that could be added, consider this (still under discussion) proposal for Ethereum: [EIP-681](https://eips.ethereum.org/EIPS/eip-681)
 
 #### Stake pool URI queries
 
