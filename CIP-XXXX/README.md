@@ -139,7 +139,7 @@ Codes can be used to identify attendees of particular events (i.e. CODE = `conse
 code per user (i.e. CODE = `abc123xyz987`). In this way we leave the code to be flexible to match a variety of
 analytical use cases depending upon the needs of the implementing project.
 
-### Security Considerations
+#### Security Considerations
 
 1. Wallets should prompt/warn users prior to sending potentially sensitive information (wallet address + code) via the
    token claim URI. An informational pop-up or confirmation modal should be displayed to users such as:
