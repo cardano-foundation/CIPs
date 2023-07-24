@@ -145,7 +145,7 @@ analytical use cases depending upon the needs of the implementing project.
    token claim URI. An informational pop-up or confirmation modal should be displayed to users such as:
    `We are about to send your address and code 123456 to https://claim.hosky.io. Are you sure you want to proceed?`
 
-## Process Flow
+### Process Flow
 
 The envisioned process flow for the POO Protocol is as follows:
 1. The project set asides some amount of budget (tokens + Lovelace [minUTxO]) for a given marketing push or IRL event
