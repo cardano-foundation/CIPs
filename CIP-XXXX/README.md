@@ -396,7 +396,7 @@ Asset incentive models without needlessly and constantly reinventing the wheel f
 By utilizing this framework, projects can have accurate, measurable analytics into the success of various real-world
 marketing and event efforts: Proof of Onboarding.
 
-# Path to Active
+## Path to Active
 
 ## Acceptance Criteria
 
