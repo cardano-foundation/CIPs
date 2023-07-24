@@ -78,7 +78,7 @@ Depending on the protocol registration method (see Rationale), browsers generall
 
 BIP-21 is limited to only features Bitcoin supports. A similar feature for Ethereum would, for example, also support gas as an extra parameter. BIP-21 is easily extensible but we have to take precaution to avoid different wallets having different implementations of these features as they become available on Cardano. To get an idea of some extra features that could be added, consider this (still under discussion) proposal for Ethereum: [EIP-681](https://eips.ethereum.org/EIPS/eip-681)
 
-### ABNF Grammar
+### Grammar & interpretation
 
 This top-level definition is mainly to allow switching to a particular protocol for each separately defined `authority`, with a payment link being the default:
 
@@ -124,7 +124,7 @@ proportion = *digit [ "." *digit ]
 
 For brevity, essential in many Internet contexts, `poolticker`  must be supported here in addition to the unambiguous `poolhexid`.
 
-##### Interpretation of `proportion`:
+##### Interpretation of `proportion`
 
 * If only one stake pool is specified, any proportion is meaningless and ignored.
 * If all stake pools have a numerical proportion, each component of the resulting stake distribution will have the same ratio as the provided `proportion` to the sum of all the propotions.
