@@ -208,7 +208,7 @@ including:
 }
 ```
 
-#### _Faucet URL + Unique Code_
+##### _Faucet URL + Unique Code_
 - URI: ```web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=NFTxLV2023```
 - Faucet URL: ```https://claim.hosky.io```
 - POST JSON Data:
