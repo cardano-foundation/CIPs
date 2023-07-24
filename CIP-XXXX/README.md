@@ -185,7 +185,7 @@ _Version 1 Examples:_
 <!-- A Cardano Claim URI with a campaign-specific code and optional user_id argument -->
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=NFTxLV2023&user_id=Idjiot1337">Get your $HOSKY!</a>
 ```
-## Wallet Requests
+### Wallet Requests
 
 Light wallets that detect and support `web+cardano` URIs as well as mobile wallets who detect either a QR code or other
 link with this format should parse the URI and send a `POST` request to the specified URL containing a JSON payload
