@@ -241,7 +241,7 @@ on Swagger!
 
 * [Version 1](https://app.swaggerhub.com/apis/CatastrophicCardano/FaucetAPI/1)
 
-### Successful Responses
+#### Successful Responses
 
 #### Valid (200)
 
