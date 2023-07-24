@@ -72,7 +72,7 @@ The protocol term (e.g. `//stake`) is called the _authority_ as defined in [Wiki
 
 `cardano:` is chosen over `ada:` because other projects that implement this standard tend to take the project name over the currency name (this makes sense if we consider this protocol as a generic way for interacting with the blockchain through wallets and dApps - as opposed to a simple payment system).
 
-Depending on the protocol registration method (see next section), browsers generally enforce a `web+` or `ext+` prefix for non-whitelisted protocols (note: `bitcoin:` was whitelisted; see [registerProtocolHandler > Permitted schemes](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/registerProtocolHandler#permitted_schemes)). The prefix `ext+` is recommended for extensions, but not mandatory (see [protocol_handlers](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/protocol_handlers)).
+Depending on the protocol registration method (see Rationale), browsers generally enforce a `web+` or `ext+` prefix for non-whitelisted protocols (note: `bitcoin:` was whitelisted; see [registerProtocolHandler > Permitted schemes](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/registerProtocolHandler#permitted_schemes)). The prefix `ext+` is recommended for extensions, but not mandatory (see [protocol_handlers](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/protocol_handlers)).
 
 ### Considerations for payment link query string
 
