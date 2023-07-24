@@ -404,7 +404,7 @@ marketing and event efforts: Proof of Onboarding.
 - [ ] Open source an MVP example of token faucet server-side code
 - [ ] Receive feedback and iterate based on community feedback
 
-## Implementation Plan
+### Implementation Plan
 
 In order to encourage adoption of this standard the authors commit to execute a functional a minimum viable product
 proof of concept demonstration in partnership between Adam Dean, HOSKY Token, and VESPR wallet. This real-world
