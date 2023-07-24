@@ -259,7 +259,7 @@ First Successful Request
 }
 ```
 
-#### Valid Queued (201)
+##### Valid Queued (201)
 
 Subsequent Successful Request (Address + Code Match) prior to token distribution
 
