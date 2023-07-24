@@ -63,7 +63,6 @@ Examples:
 <a href="web+cardano://stake?c94e6fe1123bf111b77b57994bcd836af8ba2b3aa72cfcefbec2d3d4">Stake with us</a>
 <a href="web+cardano://stake?POOL1=3.14159&POOL2=2.71828">Split between our 2 related pools</a>
 <a href="web+cardano://stake?COSD">Choose our least saturated pool</a>
-<a href="web+cardano://stake?COSD">Choose our least saturated pool</a>
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=consensus2023">Claim $HOSKY</a>
 ```
 
