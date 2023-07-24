@@ -71,7 +71,7 @@ Examples:
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.nftxlv.com&code=ABC123&invoice=123456">Claim NFTxLV Commermorative NFT!</a>
 ```
 
-### ABNF Grammar
+#### ABNF Grammar
 
 * For a token claim URI (authority = `claim`), a versioning path, a `faucet_url` and a required `code`.
 * Additional query parameters may be provided and should be passed through to the provided `faucet_url` as-is.
