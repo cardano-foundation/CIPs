@@ -164,7 +164,7 @@ For background, see
 
 ### Rationale for payment links
 
-#### Why confine payment links to address and mount like BIP-21?
+#### Why confine payment links to address and amount like BIP-21?
 
 BIP-21 is limited to only features Bitcoin supports. A similar feature for Ethereum would, for example, also support gas as an extra parameter. BIP-21 is easily extensible but we have to take precaution to avoid different wallets having different implementations of these features as they become available on Cardano. To get an idea of some extra features that could be added, consider this (still under discussion) proposal for Ethereum: [EIP-681](https://eips.ethereum.org/EIPS/eip-681)
 
