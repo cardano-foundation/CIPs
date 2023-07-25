@@ -5,7 +5,8 @@ Category: Wallets
 Status: Proposed
 Authors:
   - Ryan Williams <ryan.williams@iohk.io>
-Implementors: []
+Implementors:
+  - Lace <https://www.lace.io/>
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/509
   - https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
@@ -23,13 +24,15 @@ These definitions extend
 [CIP-30 | Cardano dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)
 to provide support for
 [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md)
-focussed web-based stacks. Here we aim to support the requirements of the Conway
-Ledger era, this specification is based on the
+focussed web-based stacks. Here we aim to support the requirements of Ada
+Holders and DReps in the Conway Ledger era, this specification is based on the
 [Draft Conway Ledger Era Specification](https://github.com/input-output-hk/cardano-ledger/tree/master/eras/conway/test-suite/cddl-files).
 
 > **Note** This proposal assumes knowledge of the ledger governance model as
 > outlined within
 > [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
+
+### Acknowledgments
 
 <details>
   <summary><strong>Wallets and Tooling Hackathon</strong></summary>
@@ -45,6 +48,7 @@ insights:
 - Alex Apeldoorn - Lace
 - Michal Szorad - Yoroi
 - Javier Bueno - Yoroi
+- Ed Eykholt - Yoroi
 - Vladimir Volek - Five Binaries
 - Marek Mahut - Five Binaries
 - Markus Gufler - Cardano Foundation
@@ -56,12 +60,12 @@ insights:
 
 CIP-1694 introduces many new concepts, entities and actors to Cardano;
 describing their implementation at the ledger level. Yet, for most ecosystem
-participants low level details are abstracted away by tooling. This creates a
-need for such tooling to be able support the utilization of ledger features.
-This specification allows for creation of web-based tools for the utilization of
+participants low level details are abstracted away by tooling. Creating a need
+for such tooling, to allow the utilization of new ledger features. This
+specification allows for creation of web-based tools for the utilization of
 CIP-1694's governance features.
 
-Whilst CIP-30 facilitated the launch of dApp client development on Cardano, it's
+Whilst CIP-30 facilitated the launch of dApp development on Cardano, it's
 functionality is limited in scope. It was written well before the emergence of
 the Conway Ledger Era and thus lacks the required methods to support full user
 interaction. We believe that expecting existing CIP-30 implementors to upgrade
@@ -79,31 +83,25 @@ CIP-1694's governance design.
 We define the following section as an extension to the specification described
 within CIP-30.
 
-To access these functionalities a client application must present this CIP
-extension object:
-
-```ts
-{ "cip": 95 }
-```
-
-This extension object is provided during the initial handshake procedure as
-described within
-[CIP-30's Initial API](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cardanowalletnameenable-extensions-extension----promiseapi).
-
 > **Note** This specification will evolve as the proposed ledger governance
 > model matures.
 
 ### DRep Key
 
-// TODO: Move this into a separate CIP.
+// TODO: Move this into a more appropriate **separate** CIP.
 
-CIP-1694 does not define a derivation path for registered DRep credentials, here
-we propose the introduction of DRep Keys to act as DRep credentials for
-registered DReps.
+The Conway ledger era introduces a new _first class_ credential in
+[`voting_credential`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L321).
+This is used to identify registered DReps on-chain, via their certificates and
+votes.
 
-The methods described here should not be considered the only definitive method
-of generating DRep credentials. Rather these methods should be employed to
-derive keys for non-script registered DReps.
+CIP-1694 does not define a derivation path for these registered DRep
+credentials, here we propose the introduction of DRep Keys to be used as DRep
+`voting_credential`s for (non-script) registered DReps.
+
+The methods described here should not be considered the definitive method of
+generating DRep credentials. Rather these methods should be employed by wallets
+to derive keys for non-script registered DReps.
 
 #### Derivation
 
@@ -151,17 +149,56 @@ For hardware implementations:
 
 ### Data Types
 
+#### CIP-30 Inherited Data Types
+
 From
 [CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#data-types)
 we inherit:
 
-- [Address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#address).
-- [Bytes](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#bytes).
-- [cbor\<T>](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cbort).
-- [DataSignature](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#bytes).
-- [Extension](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#extension).
+##### [Address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#address)
 
-#### PubDRepKey
+A string representing an address in either bech32 format, or hex-encoded bytes.
+All return types containing `Address` must return the hex-encoded bytes format,
+but must accept either format for inputs.
+
+##### [Bytes](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#bytes)
+
+A hex-encoded string of the corresponding bytes.
+
+##### [cbor\<T>](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cbort)
+
+A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049)
+corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610)
+either inside of the
+[Shelley Multi-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl)
+or, if not present there, from the
+[CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
+This representation was chosen when possible as it is consistent across the
+Cardano ecosystem and widely used by other tools, such as
+[cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib),
+which has support to encode every type in the binary spec as CBOR bytes.
+
+##### [DataSignature](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#datasignature)
+
+```ts
+type DataSignature = {|
+  signature: cbor<COSE_Sign1>,
+  key: cbor<COSE_Key>,
+|};
+```
+
+##### [Extension](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#extension)
+
+An extension is an object with a single field `"cip"` that describe a CIP number
+extending the API (as a plain integer, without padding). For example:
+
+```ts
+{ "cip": 30 }
+```
+
+#### CIP-95 Data Types
+
+##### PubDRepKey
 
 ```ts
 type PubDRepKey = string;
@@ -170,7 +207,7 @@ type PubDRepKey = string;
 A hex-encoded string representing 32 byte Ed25519 DRep public key, as described
 in [DRep Key](#DRep-key).
 
-#### PubStakeKey
+##### PubStakeKey
 
 ```ts
 type PubStakeKey = string;
@@ -183,65 +220,23 @@ credential.
 
 This specification inherits all Error Types defined in CIP-30.
 
-// todo: add more + avoid collisions with CIP-62?
+// TODO: add more, once specification matured and avoid collisions with
+CIP-62?'s extended errors.
 
-#### Extended APIError
+### Governance Extension API
 
-Here we define extensions to
-[CIP-30's Error Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#error-types).
+These are the CIP-95 methods that should be returned as part of the API object.
 
-```ts
-type enum APIErrorCode {
- // CIP-30 error codes
- InvalidArgumentError = -5
- UnknownChoiceError = -6
- UnknownKey = -7
- InvalidKey = -8
-}
-
-interface APIError {
-  code: APIErrorCode,
-  info: string
-}
-```
-
-- `InvalidArgumentError` - Generic error for errors in the formatting of the
-  arguments.
-- `UnknownChoiceError` - client supplies an unknown choice in a `Vote`.
-- `UnknownKey` - client supplies an unknown public key (DRep or Stake) with the
-  expectation of signature.
-- `InvalidKey` - client supplies a public key that does not match another
-  supplied credential. This could be for DRep Keys not matching DRepID in
-  Retirement Certificate or, could be when the incorrect role is supplied in a
-  vote with a DRep key.
-
-##### APIError elements
-
-- `code`: The `APIErrorCode` which is being reported.
-- `info` - A human readable description of the error.
-
-#### Extended TxSignError
-
-Here we add additional error codes to CIP-30's
-[TxSignError](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#txsignerror).
+To access these functionalities a client application must present this CIP-95
+extension object:
 
 ```ts
-type enum TxSignErrorCode {
-  ProofGeneration = 1,
-  UserDeclined = 2,
-}
-
-interface TxSignError = {
-  code: TxSignErrorCode,
-  info: string,
-}
+{ "cip": 95 }
 ```
 
-- `ProofGeneration` - Raised when there is an error during witness/proof
-  generation.
-- `UserDeclined` - Raised when the user declined to sign one or many items.
-
-### Full Governance API
+This extension object is provided during the initial handshake procedure as
+described within
+[CIP-30's Initial API](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cardanowalletnameenable-extensions-extension----promiseapi).
 
 #### `api.getPubDRepKey(): Promise<PubDRepKey>`
 
@@ -250,9 +245,12 @@ Errors: `APIError`
 The connected wallet account provides the account's public DRep Key, derivation
 as described in [DRep Key](#DRep-key).
 
+These are used by the client to identify the user's on-chain CIP-1694
+interactions, i.e. if a user has registered to be a DRep.
+
 ##### Returns
 
-The wallet account's DRep Key.
+The wallet account's public DRep Key.
 
 #### `api.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
 
@@ -263,13 +261,13 @@ being used for staking), if the wallet tracks the keys that are used for
 governance then only those keys shall be returned.
 
 These are used by the client to identify the user's on-chain CIP-1694
-interactions. Here we allow for multiple stake credentials to provided at once
-for the case of
+interactions, i.e if a user has delegated to a DRep. Here we allow for multiple
+stake credentials to provided at once for the case of
 [multi-stake key wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0018).
 
 ##### Returns
 
-An array of the connected user's active stake keys.
+An array of the connected user's active public stake keys.
 
 #### `api.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
 
@@ -279,22 +277,24 @@ This endpoint requests the wallet to inspect and provide appropriate witnesses
 for a supplied transaction. The wallet should articulate this request from
 client application in a explicit and highly informative way.
 
-Here we supersede
-[CIP-30's `.signTx()`](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigntxtx-cbortransaction-partialsign-bool--false-promisecbortransaction_witness_set)
-and replace it. To allow signatures with `voting_credential` and recognition of
-Conway ledger era transaction fields and certificates.
+Here we add to the capabilities of
+[CIP-30's `.signTx()`](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigntxtx-cbortransaction-partialsign-bool--false-promisecbortransaction_witness_set).
+To allow signatures with `voting_credential` and recognition of Conway ledger
+era transaction fields and certificates.
 
-**CIP-30 is not descriptive** in what supporting implementors should be able to
-recognize and sign, we believe this adds unneeded ambiguity. For this extension
-we wish to remedy this by defining explicitly what wallets have to support.
+CIP-30 is **not** descriptive in what supporting wallets should be able to
+recognize and sign, we believe this adds considerable unneeded ambiguity. Thus
+for this extension we wish explicitly define what wallets have to be able to
+recognize and sign.
 
 ##### Expected Support
 
 As read from
 [cardano-ledger Conway _draft_ specification](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl).
 
-Supporting wallets should be able to correctly witness all certificates and data
-contained in transaction body, in any combination.
+Supporting wallets should be able to recognize, inspect and correctly witness
+all the following certificates and data contained in transaction body, in any
+combination.
 
 | Supported Pre-Conway Certificates |
 | --------------------------------- |
@@ -314,10 +314,14 @@ contained in transaction body, in any combination.
 | `reg_drep_cert`               |
 | `unreg_drep_cert`             |
 
-| Conway Transaction Field Data |
-| ----------------------------- |
-| `voting_procedure`            |
-| `proposal_procedure`          |
+| Supported Conway Transaction Field Data |
+| --------------------------------------- |
+| `voting_procedure`                      |
+| `proposal_procedure`                    |
+
+All other potential transaction field inclusions
+[0-18](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L54-#L69),
+should be able to be recognized and supported wallets.
 
 ##### Not Supported
 
@@ -341,8 +345,8 @@ certificates, when the CIP-95 flag is enabled they should not.
 ##### Returns
 
 The portions of the witness set that were signed as a result of this call are
-returned to encourage dApps to verify the contents returned by this endpoint
-while building the final transaction.
+returned. This encourages client apps to verify the contents returned by this
+endpoint before building the final transaction.
 
 ##### Errors
 
@@ -359,9 +363,9 @@ This endpoint requests the wallet to inspect and provide a signature for a
 supplied data. The wallet should articulate this request from client application
 in a explicit and highly informative way.
 
-Here we supersede
-[CIP-30's `.signData()`](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigndataaddr-address-payload-bytes-promisedatasignaturet)
-and replace it. To allow for signatures using `voting_credential`.
+Here we add to the capabilities of
+[CIP-30's `.signData()`](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigndataaddr-address-payload-bytes-promisedatasignaturet).
+To allow for signatures using `voting_credential`.
 
 This endpoint utilizes the
 [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md)
@@ -378,17 +382,19 @@ To construct an address for DRep Key, the client application should construct a
 [type 6 address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C8-L7C93).
 Using an appropriate
 [Network Tag](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L13)
-and a hash of the DRep Key.
+and a hash of a public DRep Key.
 
 // TODO: Change how to identify DRep Key?
 
-| Key         | Identifying `addr`                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+<!-- prettier-ignore-start -->
+| Key         | Identifying `addr` |
+| ----------- | ------------------ |
 | Payment Key | Address types: [0](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L1), [2](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L3), [4](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L5), [6](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C27-L7C72). |
-| Stake Key   | Address type: [14](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L10).                                                                                                                                                                                                                                                                                                                                    |
-| DRep Key    | Denoted by constructed of type [6](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C27-L7C72).                                                                                                                                                                                                                                                                                                            |
+| Stake Key   | Address type: [14](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L10). |
+| DRep Key    | Denoted by constructed of type [6](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C27-L7C72). |
+<!-- prettier-ignore-end -->
 
-These key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the
+These keys will be used to sign the `COSE_Sign1`'s `Sig_structure` with the
 following headers set:
 
 - `alg` (1) - must be set to `EdDSA` (-8)
@@ -444,10 +450,10 @@ application and wallet, then a subsequent _login_.
 
 #### Vote Delegation
 
-Assume a "DRep Aggregator/Explorer" specialized client app, who aggregates DRep
-metadata from DRep registration certificates and renders this metadata to show
-prospective delegators. Assume that connection to a users wallet has already
-been made via `cardano.{wallet-name}.enable({ "cip": 95})`.
+Assume a _DRep Aggregator and Delegation_ specialized client app, that
+aggregates DRep metadata from DRep registration certificates and renders this
+metadata to show prospective delegators. Assume that connection to a users
+wallet has already been made via `cardano.{wallet-name}.enable({ "cip": 95 })`.
 
 1. **Choose DRep:** User browses DReps and selects one which align's with their
    values to delegate too. It is up to the client application to choose and
@@ -463,42 +469,48 @@ been made via `cardano.{wallet-name}.enable({ "cip": 95})`.
 3. **Inspect and Sign:** The app passes the transaction to the wallet via
    `.signTx()`. The wallet inspects the content of the transaction, informing
    the user of the client app's intension. If the user confirms that they are
-   happy to sign, the wallet returns the appropriate witnesses.
+   happy to sign, the wallet returns the appropriate witnesses, of payment key
+   and stake key.
 4. **Submit:** The app will add the provided witnesses into the transaction body
    and then pass the witnessed transaction back to the wallet for submission via
    `.submitTx()`.
-5. **Feedback to user:** The wallet returns a `SubmittedTransaction` and the
-   client uses the `txHash` field to track the status of the transaction
-   on-chain, providing feedback to the user.
+5. **Feedback to user:** The wallet returns the submitted transaction's hash,
+   the app can use this to track the status of the transaction on-chain and
+   provide feedback to the user.
 
-// TODO: give example flow of DRep reg and Voting.
+#### DRep Registration
 
-<!-- #### DRep Registration
-
-Assume that connection has already been established via
-`cardano.{wallet-name}.enable({ "cip": 95})` to a DRep registration focussed
-client.
+Assume a _DRep Registration_ specialized client app, that allows people to
+register as a DRep. Assume that connection to a users wallet has already been
+made via `cardano.{wallet-name}.enable({ "cip": 95 })` and that the user is not
+a registered DRep.
 
 1. **User Indicates Intent:** User indicates to the client that they wish to
    register as a DRep. The client asks the user to provide metadata anchor, this
-   is bundled with DRepID the client derives from the wallets DRepKey provided
-   via `.getPubDRepKey()`.
-2. **Build Transaction**: The client application bundles the wallet's DRep ID
-   and metadata anchor into a DRep registration certificate. Using CIP-30
-   endpoints the client constructs a unsigned transaction and includes the DRep
-   certificates, before passing this to the wallet via
-   `.submitDRepRegistration()`.
-3. **Inspect, sign and submit:** The wallet inspects the content of the
-   transaction, showing the user associated certificate's DRepID, metadata
-   anchor and deposit amount. If the user confirm that they accepts this then
-   the wallet should sign and submit the transaction.
-4. **Feedback to user:** The wallet returns a `SubmittedTransaction` and the
-   client uses the `txHash` field to track the status of the transaction
-   on-chain, providing feedback to the user. -->
+   is bundled with DRepID the client generates from the wallet's public DRep Key
+   provided via `.getPubDRepKey()`.
+2. **Construct Registration**: The client application uses CIP-30 endpoints to
+   query the wallet's UTxO set and payment address. A DRep registration
+   certificate
+   ([`reg_drep_cert`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L275C6-L275C19))
+   is constructed by the app using the wallet's DRep ID and the provided
+   metadata anchor. A transaction is constructed to send 1 ADA to the wallet's
+   payment address with the certificate included in the transaction body.
+3. **Inspect and sign:** The app passes the transaction to the wallet via
+   `.signTx()`. The wallet inspects the content of the transaction, informing
+   the user of the client app's intension. If the user confirms that they are
+   happy to sign, the wallet returns the appropriate witnesses, of payment key
+   and DRep key (`voting_credential`).
+4. **Submit:** The app will add the provided witnesses into the transaction body
+   and then pass the witnessed transaction back to the wallet for submission via
+   `.submitTx()`.
+5. **Feedback to user:** The wallet returns the submitted transaction's hash,
+   the app can use this to track the status of the transaction on-chain and
+   provide feedback to the user.
+
+// TODO: give example flow for DRep Voting
 
 ## Rationale: how does this CIP achieve its goals?
-
-// TODO: redo and add in rationale from hackathon changes
 
 The principle aim for this design is to reduce the complexity for wallet
 implementors whilst maintaining backwards compatibility with CIP-30
@@ -531,7 +543,7 @@ combined functionality and would encourage wallet providers to pursue this. But
 we understand that this adds significant overhead to wallet designs, so we offer
 this API as an alternative.
 
-<!-- ### Why DReps and Ada Holders?
+### Why DReps and Ada Holders?
 
 This proposal only caters to two types of governance actor described in
 CIP-1694; Ada holders and DReps, this decision was three fold. Primarily, this
@@ -543,13 +555,22 @@ and SPOs) are identified by different credentials than Ada holders and DReps,
 making their integration in this specification complex. These alternative
 credentials are unlikely to be stored within standard wallet software which may
 interface with this API. Thirdly, Ada holders and DReps likely represent the
-majority of participants thus we aim to cast a wide net with this specification. -->
+majority of participants thus we aim to cast a wide net with this specification.
+
+// TODO: why not support CC certs / pool certs
 
 ### The Role of the Wallet
 
 The endpoints specified here aim to maintain the role of the wallet as: sharing
 public keys, transaction inspecting, transaction signing and transaction
 submission.
+
+#### Transaction Inspection
+
+// TODO: add in discussion from hacakthon + scope of this CIP is not wallet best
+practices
+
+#### Transaction Construction
 
 By not placing the burden of transaction construction onto the wallet, we move
 the application specific complexity from wallet implementations and onto
@@ -558,15 +579,14 @@ for wallet adoption. But this also helps in the creation of iterative updates,
 all wallet implementers do not need to update if the format of these
 transactions is adjusted during development.
 
-<!-- By placing the burden of submission onto wallets we prevent malicious clients
-from being able to censor which transactions are submitted to chain. This is of
-particular concern due to the potential political impact of transactions being
-handled by this API. We thus deem it necessary for wallets to bare this burden. -->
+Here we also benefit from imitating the existing flows which have been utilized
+by CIP-30 compliant systems. Reusing existing flows is beneficial for developer
+adoption as it enables straight forward code reuse.
 
 One argument against this design is that, if wallets are required to be able to
 inspect and thus understand these application specific transactions then they
-may as well build the transaction. For this reason I have placed this back into
-the [Open Questions](#open-questions).
+may as well build the transaction. Ultimately, we have taken the design decision
+to leave transaction construction to the applications.
 
 ### CIP-30 Reuse
 
@@ -574,6 +594,27 @@ Whilst CIP-30 facilitated the launch of dApp client development on Cardano, it's
 functionality is limited in scope. Although it does offer generic functions,
 these cannot satisfy the problem that this proposal tackles in a backwards
 compatible manner. Thus extending it's functionality is a necessity.
+
+#### Extension Design
+
+With this specification we chose to extend CIP-30's functionalities. There would
+be two competing designs to this approach. One; move to have this specification
+included within CIP-30. Two; deploy this specification as it's own standalone
+web-bridge.
+
+It would be undesirable to include this functionality within the base CIP-30 API
+because it would force all wallets supporting CIP-30 to support this API. This
+is undesirable because not all client apps or wallets will have the need or
+desire to support this specification.
+
+The reason we chose to not deploy this specification on its own is because it is
+unlikely that clients implementing this API will not want to also use the
+functionality offered by CIP-30. Additionally, CIP-30 offers a extensibility
+mechanism meaning that the initial handshake connection is defined and thus wont
+be needed to be defined within this specification.
+
+// TODO: another benefit is that users can choose if a client has access to
+  governance items or not.
 
 #### Backwards Compatibility
 
@@ -592,69 +633,46 @@ as this creates unpredictable wallet behavior for client applications. Such
 behavior was a primary motivator to introduce such an extendability mechanism to
 CIP-30.
 
-<!-- #### Functionality Differences
+#### Inheriting Endpoints
 
-In this proposal we specify the precise information that must be shown to the
-user at time of signature and submission for transactions. This is not possible
-with current CIP-30 implementations, rather CIP-30's
-[`.signTx()`](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apisigntxtx-cbortransaction-partialsign-bool--false-promisecbortransaction_witness_set)
-only requires that "must request the user's consent in an informative way".
+In this design we chose to extend the capabilities of CIP-30's `.signTx()` and
+`.signData()` rather than introducing new endpoints for signing and submission.
+This was a result of community discussion at the wallets and tooling hackathon.
+Originally we had individual endpoints for sign and submitting of DRep
+registration, DRep retirement, votes, governance actions and vote delegations.
 
-In the case of political transactions we think it should be explicit and
-unambiguous what information the user must be shown. This is to prevent
-politically motivated malicious client applications from attempting to sign and
-submit malicious transactions. -->
+Whilst individual endpoints seem like a simpler solution they would likely
+introduce more complexities for wallet implementors. As constraining what
+transactions an endpoint would require additional validation complexities and
+error handling from wallets. For example; what should a wallet do if it is
+passed a DRep registration certificate via `.signTx()`? should it witness or
+reject and only witness with a dedicated DRep registration endpoint?
 
-<!-- ### Explicit Singular Endpoints
+Furthermore individual restrictive endpoints limit how much can be done in a
+single transaction. These methods would not allow multiple certificates to be
+supplied at once. Thus client apps would be limited to a single governance
+artifact per transaction. This is limiting as it means users have to submit
+multiple transactions to achieve what is possible in one.
 
-// TODO: change to explain pivot
+// TODO: full conway feature set makes more sense.
 
-This API explicitly separates all our transaction inspect, sign and submit
-endpoints. A reasonable alternative to this could be to group endpoints together
-by which keys (stake or DRep) are needed to witness the
-certificate/transactions. Here we chose to avoid any potential complexity on the
-behalf of a wallet, to figure out what type of transaction/certificate they have
-to inspect. This in particularly important for cases of transactions containing
-multiple governance artifacts, for example: a vote, a governance action and DRep
-registration certificate in one transaction. By separating the signing and
-submission of each transaction/certificate we avoid the need for wallets to have
-to deal with such edge cases.
+#### CIP-95 as a Conway Flag
 
-One downside of this approach is that it limits how much can be done in a single
-transaction. These methods do not allow multiple certificates to be supplied at
-once. Thus users are limited to a single governance artifact per transaction.
-This is limiting as it means users have to submit multiple transactions to
-achieve what is possible in one. We do recognize this as a legitimate drawback
-of our design. Later CIPs which replace this one may choose a more compact
-design to allow such transactions, but for this we aim to keep wallet
-implementations more straight forward. -->
+By providing _updated_ CIP-30 endpoints we essentially use the CIP-95 extension
+object as a flag to signal to apps at connection time a wallet's compatibility
+with Conway leger era. This goes against how past ledger feature upgrades have
+rolled out. Rather in the past, existing CIP-30 implementors have just updated
+their implementations, we believe this to be an error prone approach. This
+undoubted introduces deltas between what a client application expects a wallet
+to be able to do and what it can do. There is no way for a client application to
+know what a wallet is capable of.
 
-### Extension Design
+Despite this we do not discourage CIP-30 implementors from updating their
+implementations to support Conway artifacts to `.signData()` and `.signTx()`.
+But if so they must support the CIP-95 object flag at connection time, so that
+clients are aware of this functionality.
 
-// TODO: add in explanation for replacing CIP30 endpoints
-
-With this specification we chose to extend CIP-30's functionalities. There would
-be two competing designs to this approach. One; move to have this specification
-included within CIP-30. Two; deploy this specification as it's own standalone
-web-bridge.
-
-It would be undesirable to include this functionality within the base CIP-30 API
-because it would force all wallets supporting CIP-30 to support this API. This
-is undesirable because not all client apps or wallet will have the need or
-desire to support this specification thus forcing cooperation would not
-desirable.
-
-The reason we chose to not deploy this specification on its own is because it is
-unlikely that clients implementing this API will not want to also use the
-functionality offered by CIP-30. Additionally, CIP-30 offers a extensibility
-mechanism meaning that the initial handshake connection is defined and thus wont
-be needed to be defined within this specification.
-
-- TODO: moves multi-stake key issues to wallet by reusing signTx
-- TODO: CIP95 extension tag clearly allows for dApps to know if these functions
-  are allowed
-
-<!-- ### DRep Key
+### DRep Key
 
 We chose to introduce the concept of a DRep Key, building on top of CIP-1694,
 this we see as a necessary step for wallet implementors. By setting a
@@ -663,7 +681,7 @@ seed phrase.
 
 With this definition we aim to standard for all ecosystem tooling to be able to
 derive DRep credentials from mnemonics. This brings the benefits ecosystem
-standards. -->
+standards.
 
 #### Why not reuse [CIP-36 Vote Keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#voting-key)?
 
@@ -687,6 +705,8 @@ the keys described here are used for more than just vote signing just the
 > **Note** The derivation path used for CIP-36 vote keys includes `1694` as the
 > `purpose`, this is a perhaps misleading reality and hints to the original
 > intension of using CIP-36 vote keys for Cardano's Voltaire.
+
+// TODO: add note derivation path change
 
 ### Multi-stake Key Support
 
@@ -712,7 +732,9 @@ generally prefer to use more advanced wallet tooling rather than relying on
 interaction with web-based stacks, thus it is not even certain DAOs would want
 to use such a standard.
 
-- TODO: why not support CC certs / pool certs
+#### Raw Keys
+
+// TODO: why raw keys, not encoded and not addresses
 
 ### Backwards Compatibility
 
@@ -767,7 +789,8 @@ for wallets implementing both APIs.
 
 - [ ] Resolve all [open questions](#open-questions).
 - [ ] The interface is implemented and supported by various wallet providers.
-- [ ] The interface is used by clients to interact with wallet providers.
+- [ ] The interface is used by client applications to interact with wallets to
+      allow users to engage with the Conway ledger design.
 
 ### Implementation Plan
 
@@ -780,7 +803,9 @@ for wallets implementing both APIs.
 - [x] Author to engage with wallet providers for feedback.
 - [x] Author to run a hackathon workshop with wallet providers.
   - In person and online hackathon run 2023.07.13, outcomes presented here.
-    TODO: add outcomes summary.
+  - See
+    [CIP-95 pull request comment](https://github.com/cardano-foundation/CIPs/pull/509#issuecomment-1636103821)
+    with summary.
 - [x] Author to provide a reference client application for wallet implementors
       to be able to test against.
   - See:
