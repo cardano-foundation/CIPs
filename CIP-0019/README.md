@@ -90,7 +90,7 @@ Header type (`t t t t . . . .`) | Payment Part     | Delegation Part
 (6) `0110....`                  | `PaymentKeyHash` | ø
 (7) `0111....`                  | `ScriptHash`     | ø
 
-- `PaymentKeyHash` and `StakeKeyHash` refers to `blake2b-224` hash digests of Ed25519 verification keys. How keys are obtained is out of the scope of this specification. Interested readers may look at [CIP-1852] for more details.
+- `PaymentKeyHash` and `StakeKeyHash` refer to `blake2b-224` hash digests of Ed25519 verification keys. How keys are obtained is out of the scope of this specification. Interested readers may look at [CIP-1852] for more details.
 
 - `ScriptHash` refer to `blake2b-224` hash digests of serialized monetary scripts. How scripts are constructed and serialized is out of the scope of this specification.
 
@@ -98,7 +98,7 @@ Header type (`t t t t . . . .`) | Payment Part     | Delegation Part
 
 #### Payment part
 
-Fundamentally, the first part of a Shelley address indicates the ownership of the funds associated with the address. We call it the **payment part**. Whoever owns the payment parts owns any funds at the address. As a matter of fact, in order to spend from an address, one must provide a witness attesting that the address can be spent. In the case of a `PubKeyHash`, it means providing a signature of the transaction body made with the signing key corresponding to the hashed public key (as well as the public key itself for verification). For monetary scripts, it means being able to provide the source script and meet the necessary conditions to validate the script. 
+Fundamentally, the first part of a Shelley address indicates the ownership of the funds associated with the address. We call it the **payment part**. Whoever owns the payment parts owns any funds at the address. As a matter of fact, in order to spend from an address, one must provide a witness attesting that the address can be spent. In the case of a `PaymentKeyHash`, it means providing a signature of the transaction body made with the signing key corresponding to the hashed public key (as well as the public key itself for verification). For monetary scripts, it means being able to provide the source script and meet the necessary conditions to validate the script. 
 
 #### Delegation part
 
