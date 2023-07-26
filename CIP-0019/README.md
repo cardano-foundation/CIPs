@@ -90,7 +90,7 @@ Header type (`t t t t . . . .`) | Payment Part     | Delegation Part
 (6) `0110....`                  | `PaymentKeyHash` | ø
 (7) `0111....`                  | `ScriptHash`     | ø
 
-- `PubKeyHash` and `StakeKeyHash` refers to `blake2b-224` hash digests of Ed25519 verification keys. How keys are obtained is out of the scope of this specification. Interested readers may look at [CIP-1852] for more details.
+- `PaymentKeyHash` and `StakeKeyHash` refers to `blake2b-224` hash digests of Ed25519 verification keys. How keys are obtained is out of the scope of this specification. Interested readers may look at [CIP-1852] for more details.
 
 - `ScriptHash` refer to `blake2b-224` hash digests of serialized monetary scripts. How scripts are constructed and serialized is out of the scope of this specification.
 
