@@ -782,6 +782,7 @@ for wallets implementing both APIs.
   - We can leave this for a future iteration.
 - Should there be a way for the optional sharing of governance state, from
   wallet to client?
+- How to represent DRep keys in signData endpoint?
 
 ## Path to Active
 
