@@ -80,11 +80,10 @@ This section outlines the high level format and requirements of this standard.
 - That content SHOULD be hosted on a content addressable storage medium, such as IPFS or Arweave, to ensure immutability and long term archival.
 - The hash included in the anchor MUST be a tagged hash, such as `SHA256:{hash}`
 
-<!--
+
 Open questions:
- - Should we pick a specific hash, instead of using a tagged hash?
- - what hashes are supported?
--->
+ - [ ] Should we pick a specific hash, instead of using a tagged hash?
+ - [ ] what hashes are supported?
 
 ### Versioning
 
@@ -117,7 +116,7 @@ In CIP-1694 (and likely any alternative or future evolution of it), there are a 
  - [DRep (Voter) Delegation](./cip-?.delegation.jsonld)
  - [Constitutional Committee Vote](./cip-?.cc-vote.jsonld)
 
-<!-- The above schemas aren't written yet; this is one of the areas I could use some help in, and I didn't want that to be a further impediment to me getting this draft out the door, as it's taken me long enough as it is -->
+
 
 Additionally, someone may wish to augment a previous piece of metadata with new information, divorced from the transaction that initially published it; this may be useful, for example, to provide additional arguments in favor of or against a proposal, provide translations to other languages, provide a layman's explanation of a highly technical document, etc.
 
@@ -129,6 +128,9 @@ NOTE: These actions are based on CIP-1694, but could be repurposed for any gover
 
 The rest of this document will provide a high level description of the properties described in each of the schemas above.
 
+TODO:
+ - [ ] The above schemas aren't written yet; this is one of the areas I could use some help in, and I didn't want that to be a further impediment to me getting this draft out the door, as it's taken me long enough as it is
+
 #### Common properties
 
 The following properties are considered common to all types of transactions, and the minimal set needed for "minimum viable governance":
@@ -138,7 +140,7 @@ The following properties are considered common to all types of transactions, and
    - Each object may have an address, a display name, and optionally a WC3 DID
    - Each address mentioned MUST sign the transaction
    - Tooling authors SHOULD validate these signatures; if absent or invalid, tooling authors SHOULD make this clear in the UI
-   <!-- Open to other suggestions for how to securely prove authenticity / endorsement -->
+   <!--  -->
  - Language: the ISO 639-1 that any prose in this metadata is written in
    - Tooling authors MAY provide automatic translation, but SHOULD make the original prose easily available
  - Justification
@@ -150,13 +152,19 @@ The following properties are considered common to all types of transactions, and
    - The purpose is to allow "additional updates", that aren't locked in by a hash
    - Tooling authors MAY fetch and parse this metadata according to this standard,
    - If so, Tooling authors MUST emphasize that this information is second-class, given that it might have changed
-  <!-- Types TBD; I was thinking something like "Blog", "Twitter Feed", "RSS", and "Metadata" -->
+  <!--  -->
+
+Open Questions:
+ - [ ] Open to other suggestions for how to securely prove authenticity / endorsement when capturing signatures / DIDs
+ - [ ] The 'type' of external updates is TBD; I was thinking something like "Blog", "Twitter Feed", "RSS", and "Metadata", (with the last one representing a document that can be consumed according to this spec) but it might not even be neccesary
 
 #### Specific fields
 
 This CIP currently doesn't standardize any fields specific to each type of transaction, beyond specifying a `@type` for each type of transaction.
 
 <!--
+Below are some other ideas that were brainstormed during the workshops, but didn't make it into this CIP:
+
 #### Governance Action
 
  - Authorship history
