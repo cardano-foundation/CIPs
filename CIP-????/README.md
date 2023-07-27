@@ -15,7 +15,6 @@ Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
-# CIP-????: Decentralized WebRTC dApp-Wallet Communication
 
 ## Abstract
 
