@@ -55,6 +55,10 @@ Note that this function aligns with the format of existing hash functions in Plu
 ## Rationale: how does this CIP achieve its goals?
 While the `keccak256` function might be implemented in on-chain scripts, doing so would be computationally unfeasible. 
 
+The library, cryptonite, is not implemented by and under control of the Plutus team. However, 
+* It is a library already used in the Cardano stack to expose SHA3, and can be considered as a trustworthy implementation. 
+* The function does not throw any exceptions as hash functions are defined to work with any ByteString input. It does not expect a particular particular structure. 
+* It's behaviour is predictable. As mentioned above, the cost of the function is linear with respect to the size of the message provided as input. This is the same behaviour that other hash functions exposed in plutus (blake, sha3) have.
 ## Path to Active
 This CIP may transition to active status once the Plutus version containing the `keccak_256` function is introduced 
 in a node release and becomes available on Mainnet.
