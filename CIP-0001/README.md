@@ -127,7 +127,7 @@ License: CC-BY-4.0
 
 ##### Repository Organization
 
-A CIP must be stored in a specific folder named after its number (4-digit, left-padded with `0`) and in a file called `README.md`. Before a number is assigned, use `????` or `XXXX` as a placeholder number (thus naming new folders as `CIP-????` or `CIP-XXXX`). After a number has been assigned, rename the folder.
+A CIP must be stored in a specific folder named after its number (4-digit, left-padded with `0`) and in a file called `README.md`. Before a number is assigned, use `????` or `XXXX` as a placeholder number (thus naming new folders as `CIP-????` or `CIP-XXXX`) or a brief, descriptive text string (e.g. `CIP-my-new-feature`). After a number has been assigned, rename the folder.
 
 Additional supporting files (such as diagrams, binary specifications, dialect grammars, JSON schemas etc.) may be added to the CIP's folder under freely chosen names.
 
