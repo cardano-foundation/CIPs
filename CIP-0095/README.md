@@ -198,6 +198,16 @@ extending the API (as a plain integer, without padding). For example:
 
 #### CIP-95 Data Types
 
+#### DRepID
+
+```ts
+type DRepID = string;
+```
+
+A hex-encoded string representing a registered DRep's ID which is a Blake2b-224
+hash digest of a 32 byte Ed25519 public key, as described in
+[CIP-1694 Registered DReps](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md?plain=1#L386).
+
 ##### PubDRepKey
 
 ```ts
@@ -218,10 +228,92 @@ credential.
 
 ### Error Types
 
-This specification inherits all Error Types defined in CIP-30.
+For the methods described in
+[Governance Extension API](#governance-extension-api), we inherent APIError,
+DataSignError and TxSignError from
+[CIP-30's Error Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#error-types).
 
-// TODO: add more, once specification matured and avoid collisions with
-CIP-62?'s extended errors.
+> **Note** We choose to reword some descriptions from CIP-30, to improve
+> clarity.
+
+#### [APIError](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apierror)
+
+We repurpose this error type from CIP-30, extending it's functionality. We
+extend the `Refused` error code to also include the case of the extension no
+longer being enabled.
+
+```ts
+APIErrorCode {
+	InvalidRequest: -1,
+	InternalError: -2,
+	Refused: -3,
+	AccountChange: -4,
+}
+type APIError {
+	code: APIErrorCode,
+	info: string
+}
+```
+
+- `InvalidRequest` - Inputs do not conform to this specification or are
+  otherwise invalid.
+- `InternalError` - An internal wallet error occurred during execution of this
+  API call.
+- `Refused` - The request was refused due to lack of access - e.g. wallet
+  disconnects or extension is no longer enabled.
+- `AccountChange` - The account has changed. The client application should call
+  `wallet.enable()` to reestablish connection to the new account. The wallet
+  should not ask for confirmation as the user was the one who initiated the
+  account change in the first place.
+
+#### [TxSignError](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#txsignerror)
+
+We repurpose this error type from CIP-30, extending it's functionality. We
+extend the `ProofGeneration` error code to also include cases where DRep secret
+key is not available. We also add one new error code `DepreciatedCertificate`.
+
+```ts
+TxSignErrorCode = {
+  ProofGeneration: 1,
+  UserDeclined: 2,
+  DepreciatedCertificate: 3,
+};
+type TxSignError = {
+  code: TxSignErrorCode;
+  info: String;
+};
+```
+
+- `ProofGeneration` - User has accepted the transaction sign, but the wallet was
+  unable to sign the transaction. This is because the wallet does have some of
+  the private keys required.
+- `UserDeclined` - User declined to sign the transaction.
+- `DepreciatedCertificate` - Returned regardless of user consent if the
+  transaction contains a depreciated certificate.
+
+#### [DataSignError](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#datasignerror)
+
+We repurpose this error type from CIP-30, extending it's functionality. We
+extend the `ProofGeneration` error code to also include cases where DRep secret
+key is not available.
+
+```ts
+DataSignErrorCode {
+	ProofGeneration: 1,
+	AddressNotPK: 2,
+	UserDeclined: 3,
+}
+type DataSignError = {
+	code: DataSignErrorCode,
+	info: String
+}
+```
+
+- `ProofGeneration` - Wallet could not sign the data; because the wallet does
+  not have the secret key to the associated with the address or DRep ID.
+- `AddressNotPK` - Address was not a P2PK address and thus had no SK associated
+  with it.
+- `UserDeclined` - User declined to sign the data.
 
 ### Governance Extension API
 
@@ -240,8 +332,6 @@ described within
 
 #### `api.getPubDRepKey(): Promise<PubDRepKey>`
 
-Errors: `APIError`
-
 The connected wallet account provides the account's public DRep Key, derivation
 as described in [DRep Key](#DRep-key).
 
@@ -252,9 +342,18 @@ interactions, i.e. if a user has registered to be a DRep.
 
 The wallet account's public DRep Key.
 
-#### `api.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
+##### Errors
 
-Errors: `APIError`
+<!-- prettier-ignore-start -->
+| Error Type   | Error Code       | Return Condition                                                                          |
+| ------------ | ---------------- | ----------------------------------------------------------------------------------------- |
+| `APIError`   | `InvalidRequest` | Returned if a input parameter is passed.                                                  |
+| `APIError`   | `InternalError`  | Returned if there is a generic internal error occurred during execution of this API call. |
+| `APIError`   | `Refused`        | Returned if there is a refusal, could be wallet disconnection or extension is revoked.    |
+| `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
+<!-- prettier-ignore-stop -->
+
+#### `api.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
 
 The connected wallet account's active public stake keys (with keys which are
 being used for staking), if the wallet tracks the keys that are used for
@@ -269,31 +368,35 @@ stake credentials to provided at once for the case of
 
 An array of the connected user's active public stake keys.
 
-#### `api.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
+##### Errors
 
-Errors: `APIError`, `TxSignError`
+<!-- prettier-ignore-start -->
+| Error Type   | Error Code       | Return Condition                                                                          |
+| ------------ | ---------------- | ----------------------------------------------------------------------------------------- |
+| `APIError`   | `InvalidRequest` | Returned if a input parameter is passed.                                                  |
+| `APIError`   | `InternalError`  | Returned if there is a generic internal error occurred during execution of this API call. |
+| `APIError`   | `Refused`        | Returned if there is a refusal, could be wallet disconnection or extension is revoked.    |
+| `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
+<!-- prettier-ignore-stop -->
+
+#### `api.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
 
 This endpoint requests the wallet to inspect and provide appropriate witnesses
 for a supplied transaction. The wallet should articulate this request from
 client application in a explicit and highly informative way.
 
-Here we add to the capabilities of
+Here we extend the capabilities of
 [CIP-30's `.signTx()`](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigntxtx-cbortransaction-partialsign-bool--false-promisecbortransaction_witness_set).
 To allow signatures with `voting_credential` and recognition of Conway ledger
 era transaction fields and certificates.
 
-CIP-30 is **not** descriptive in what supporting wallets should be able to
-recognize and sign, we believe this adds considerable unneeded ambiguity. Thus
-for this extension we wish explicitly define what wallets have to be able to
-recognize and sign.
-
-##### Expected Support
+##### Expected Inspection Support
 
 As read from
 [cardano-ledger Conway _draft_ specification](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl).
 
-Supporting wallets should be able to recognize, inspect and correctly witness
-all the following certificates and data contained in transaction body, in any
+Supporting wallets should be able to recognize and inspect
+all the following certificates and data contained in transaction bodies, in any
 combination.
 
 | Supported Pre-Conway Certificates |
@@ -301,18 +404,22 @@ combination.
 | `stake_registration`              |
 | `stake_deregistration`            |
 | `stake_delegation`                |
+| `pool_registration`               |
+| `pool_retirement`                 |
 
-| Supported Conway Certificates |
-| ----------------------------- |
-| `reg_cert`                    |
-| `unreg_cert`                  |
-| `vote_deleg_cert`             |
-| `stake_vote_deleg_cert`       |
-| `stake_reg_deleg_cert`        |
-| `vote_reg_deleg_cert`         |
-| `stake_vote_reg_deleg_cert`   |
-| `reg_drep_cert`               |
-| `unreg_drep_cert`             |
+| Supported Conway Certificates   |
+| ------------------------------- |
+| `reg_cert`                      |
+| `unreg_cert`                    |
+| `vote_deleg_cert`               |
+| `stake_vote_deleg_cert`         |
+| `stake_reg_deleg_cert`          |
+| `vote_reg_deleg_cert`           |
+| `stake_vote_reg_deleg_cert`     |
+| `reg_committee_hot_key_cert`    |
+| `unreg_committee_hot_key_cert`  |
+| `reg_drep_cert`                 |
+| `unreg_drep_cert`               |
 
 | Supported Conway Transaction Field Data |
 | --------------------------------------- |
@@ -321,26 +428,20 @@ combination.
 
 All other potential transaction field inclusions
 [0-18](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L54-#L69),
-should be able to be recognized and supported wallets.
+should be able to be recognized by supporting wallets.
 
-##### Not Supported
+##### Unsupported Inspection
 
-Without inspecting all CIP-30 implementations it is not possible to know what
-certifies they support, from surveying a couple implementors, the following is
-reasonable. Even if current CIP-30 implementations support the following
-certificates, when the CIP-95 flag is enabled they should not.
+In the Conway ledger era two certificate types are depreciated `genesis_key_delegation` and `move_instantaneous_rewards_cert`. If the wallet receives a transaction containing a depreciated certificate it should return a `TxSignError` with an error code of `DepreciatedCertificate`.
 
-| Unsupported Pre-Conway Certificates                      |
-| -------------------------------------------------------- |
-| `pool_registration`                                      |
-| `pool_retirement`                                        |
-| `genesis_key_delegation` (deprecated in Conway)          |
-| `move_instantaneous_rewards_cert` (deprecated in Conway) |
+| Unsupported Pre-Conway Certificates |
+| ----------------------------------- |
+| `genesis_key_delegation`            |
+| `move_instantaneous_rewards_cert`   |
 
-| Unsupported Conway Certificates |
-| ------------------------------- |
-| `reg_committee_hot_key_cert`    |
-| `unreg_committee_hot_key_cert`  |
+##### Expected Witness Support
+
+Although constitutional committee certificates and stake pool certificates should be able to be recognized they should not be able to be correctly witnessed by wallets. Wallet's should only support witnesses using Payment, Stake and DRep keys.
 
 ##### Returns
 
@@ -350,26 +451,36 @@ endpoint before building the final transaction.
 
 ##### Errors
 
-If `partialSign` is true, the wallet only tries to sign what it can. If
-`partialSign` is false and the wallet could not sign the entire transaction,
-`TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the
-user declined in either case it shall return the `UserDeclined` code.
+<!-- prettier-ignore-start -->
+| Error Type    | Error Code               | `partialSign`     | Return Condition                                                                                                                  |
+| ------------- | ------------------------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `APIError`    | `InvalidRequest`         | `true` or `false` | Returned if an erroneous parameter is passed, wrong type or too many etc.                                                         |
+| `APIError`    | `InternalError`          | `true` or `false` | Returned if there is a generic internal error occurred during execution of this API call.                                         |
+| `APIError`    | `Refused`                | `true` or `false` | Returned if there is a refusal, could be wallet disconnection or the extension is revoked.                                        |
+| `APIError`    | `AccountChange`          | `true` or `false` | Returned if wallet has changed account, meaning connection should be reestablished.                                               |
+| `TxSignError` | `ProofGeneration`        | `false`           | Returned if user has accepted transaction to sign, but the wallet is unable to sign because it does not have the required key(s). |
+| `TxSignError` | `UserDeclined`           | `true` or `false` | Returned if user has declined to sign the transaction.                                                                            |
+| `TxSignError` | `DepreciatedCertificate` | `true` or `false` | Returned regardless of user consent if the transaction contains a depreciated certificate.                                        |
+<!-- prettier-ignore-stop -->
 
-#### `api.signData(addr: Address, payload: Bytes): Promise<DataSignature>`
+If `partialSign` is `true`, the wallet only tries to sign what it can. If
+`partialSign` is `false` and the wallet could not sign the entire transaction,
+`TxSignError` shall be returned with the `ProofGeneration` code.
+
+#### `api.signData(addr: Address | DRepID, payload: Bytes): Promise<DataSignature>`
 
 Errors: `APIError`, `DataSignError`
 
-This endpoint requests the wallet to inspect and provide a signature for a
-supplied data. The wallet should articulate this request from client application
+This endpoint requests the wallet to inspect and provide a DataSignature for the supplied data. The wallet should articulate this request from client application
 in a explicit and highly informative way.
 
-Here we add to the capabilities of
+Here we extend the capabilities of
 [CIP-30's `.signData()`](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigndataaddr-address-payload-bytes-promisedatasignaturet).
-To allow for signatures using `voting_credential`.
+To allow for signatures using DRep keys. 
 
 This endpoint utilizes the
-[CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md)
-for standardization/safety reasons. It allows the dApp to request the user to
+[CIP-0008 | Message Signing](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md)
+for standardization/safety reasons. It allows the client app to request the user to
 sign a payload conforming to said spec.
 
 ##### Supported Credentials
@@ -378,20 +489,20 @@ Here we define how each key is identified by an `Address` in relation to
 [CIP-0019 | Cardano Addresses](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/README.md),
 these are all Shelley key-hash-based addresses.
 
+We allow for `DRepID` to be passed in the `addr` field to signal signature using the associated DRep key.
+
 To construct an address for DRep Key, the client application should construct a
 [type 6 address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C8-L7C93).
 Using an appropriate
 [Network Tag](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L13)
 and a hash of a public DRep Key.
 
-// TODO: Change how to identify DRep Key?
-
 <!-- prettier-ignore-start -->
 | Key         | Identifying `addr` |
 | ----------- | ------------------ |
 | Payment Key | Address types: [0](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L1), [2](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L3), [4](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L5), [6](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C27-L7C72). |
 | Stake Key   | Address type: [14](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L10). |
-| DRep Key    | Denoted by constructed of type [6](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C27-L7C72). |
+| DRep Key | [`DRepID`](#drepid) |
 <!-- prettier-ignore-end -->
 
 These keys will be used to sign the `COSE_Sign1`'s `Sig_structure` with the
@@ -422,11 +533,19 @@ hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 
 ##### Errors
 
-If the payment key for `addr` is not a P2Pk address then `DataSignError` will be
-returned with code `AddressNotPK`. `ProofGeneration` shall be returned if the
-wallet cannot generate a signature (i.e. the wallet does not own the requested
-payment private key), and `UserDeclined` will be returned if the user refuses
-the request.
+<!-- prettier-ignore-start -->
+
+| Error Type      | Error Code        | Return Condition                                                                                                               |
+| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `APIError`      | `InvalidRequest`  | Returned if a input parameter is passed.                                                                                       |
+| `APIError`      | `InternalError`   | Returned if there is a generic internal error occurred during execution of this API call.                                      |
+| `APIError`      | `Refused`         | Returned if there is a refusal, could be wallet disconnection or extension is revoked.                                         |
+| `APIError`      | `AccountChange`   | Returned if wallet has changed account, meaning connection should be reestablished.                                            |
+| `DataSignError` | `ProofGeneration` | Returned if user has accepted to sign, but wallet could not sign the data; because the wallet does not have the required keys. |
+| `DataSignError` | `AddressNotPK`    | Returned if Address was not a P2PK address and thus had no SK associated with it.                                              |
+| `DataSignError` | `UserDeclined`    | Returned if the user declined to sign the data.                                                                                |
+
+<!-- prettier-ignore-stop -->
 
 ### Examples of Flows
 
@@ -558,30 +677,31 @@ majority of participants thus we aim to cast a wide net with this specification.
 #### Unsupported Items
 
 In this specification we have placed explicit boundaries on what should not be
-supported with `.signTx()`. Those being
-[stake pool certificates](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L292-#L293),
-genesis key delegation, MIR certificates and
-[constitutional committee certificates](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L308-#L309).
+supported with `.signTx()`. Those being not witnessing
+[stake pool](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L292-#L293)
+or
+[constitutional committee](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L308-#L309),
+certificates and not inspecting genesis key delegation or MIR certificates.
 
 From speaking to CIP-30 implementors it seems reasonable that there does not
-existing implementations or motivation to support stake pool certificates via
-wallet web bridges. This is because stake pool operators much prefer the utility
-and security advantages not operating via light wallets. Due to the
-[Lack of Specificity](#lack-of-specificity) of CIP-30 we felt it necessary to
-explicitly state the lack of support in this extension.
-
-Genesis key delegation and move instantaneous reward certificates (see in
-[Shelley spec](https://github.com/input-output-hk/cardano-ledger/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl#L117#L118))
-are not supported here because they have been depreciated in the Conway Ledger
-Era. Furthermore, due to the lack of accessibility (require access to genesis
-keys) for these certificates it is extremely unlikely any CIP-30 implementations
-supported these.
+exist implementations or motivation to support witnessing stake pool
+certificates via wallet web bridges. This is because stake pool operators much
+prefer the utility and security advantages not operating via light wallets. Due
+to the [Lack of Specificity](#lack-of-specificity) of CIP-30 we felt it
+necessary to explicitly state the lack of support in this extension.
 
 [Constitutional committee certificates](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L308-#L309)
 are not supported by this specification's `.signTx()` for two reasons. First,
 this specification is only focussed on the need's of Ada holders and DReps.
 Secondly, the credentials used by the constitutional committee, are a hot and
 cold key setup. Hot and cold keys are not suited for standard light wallets.
+
+Genesis key delegation and move instantaneous reward certificates (see in
+[Shelley spec](https://github.com/input-output-hk/cardano-ledger/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl#L117#L118))
+are not supported here because they have been depreciated in the Conway ledger
+era. Furthermore, due to the lack of accessibility (require access to genesis
+keys) for these certificates it is extremely unlikely any CIP-30 implementations
+supported these.
 
 ### The Role of the Wallet
 
@@ -737,7 +857,8 @@ we chose to follow how a new key definition was done in
 by defining a new purpose of `1718'`. This was an oversight, as defining a new
 derivation purposes will likely have hardware wallet audit implications.
 
-// TODO: add note derivation path change
+// TODO: add note derivation path change when/if this is moved to a separate
+CIP.
 
 #### Why not reuse [CIP-36 Vote Keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#voting-key)?
 
@@ -868,6 +989,7 @@ straight forward for wallets implementing both APIs.
   - In person and online hackathon run 2023.07.13, outcomes presented here:
     [CIP-95 pull request comment](https://github.com/cardano-foundation/CIPs/pull/509#issuecomment-1636103821).
 - [ ] Resolve all [Open Questions](#open-questions).
+- [ ] Author to produce a set of test vectors for wallets to test against.
 
 ## Copyright
 
