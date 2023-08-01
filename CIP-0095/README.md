@@ -48,7 +48,7 @@ insights:
 - Alex Apeldoorn - Lace
 - Michal Szorad - Yoroi
 - Javier Bueno - Yoroi
-- Ed Eykholt - Yoroi
+- Ed Eykholt - Blocktrust
 - Vladimir Volek - Five Binaries
 - Marek Mahut - Five Binaries
 - Markus Gufler - Cardano Foundation
