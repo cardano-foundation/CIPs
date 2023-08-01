@@ -139,7 +139,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
 
 As mentioned above this metadata structure allows to have either one token or multiple tokens with also different policies in a single mint transaction. A third party tool can then fetch the token metadata seamlessly. It doesn't matter if the metadata includes just one token or multiple. The proceedure for the third party is always the same:
 
-1. Find the latest mint transaction with the label 721 in the metadata of the specific token
+1. Find the latest mint transaction with the label 721 in the metadata of the specific token that mints a positive amount of the token
 2. Lookup the 721 key
 3. Lookup the Policy Id of the token
 4. Lookup the Asset name of the token
@@ -147,7 +147,9 @@ As mentioned above this metadata structure allows to have either one token or mu
 
 ### Update metadata link for a specific token
 
-Using the latest mint transaction with the label 721 as valid metadata for a token allows to update the metadata link of this token. As soon as a new mint transaction is occurring including metadata with the label 721, the metadata link is considered updated and the new metadata should be used. This is only possible if the policy allows to mint or burn the same token again.
+Using the latest mint transaction with the label 721 as valid metadata for a token allows to update the metadata link of this token. As soon as a new mint transaction is occurring including metadata with the label 721 and a positive amount of the token, the metadata link is considered updated and the new metadata should be used. This is only possible if the policy allows to mint or burn the same token again.
+
+Since modern token policies or ledger rules should generally make burning of tokens permissionless, the metadata update is restricted to minting (as in positive amounts) transaction and excludes burning transactions explicitly.
 
 ## Backward Compatibility
 
