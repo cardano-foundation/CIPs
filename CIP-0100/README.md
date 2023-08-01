@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 100
 Title: Governance Metadata
 Category: Metadata
 Status: Proposed
