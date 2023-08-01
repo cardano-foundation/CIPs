@@ -66,6 +66,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0040 | [Collateral Output](./CIP-0040) | Active |
 | 0042 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
 | 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Proposed |
+| 0050 | [Pledge Leverage-Based Staking Rewards](./CIP-0050) | Proposed |
 | 0052 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 0054 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 0055 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
@@ -96,7 +97,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-07-18</i></p>
+<p align="right"><i>Last updated on 2023-08-01</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -109,7 +110,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0038? | [Arbitrary Script as Native Script Spending Conditions](https://github.com/cardano-foundation/CIPs/pull/309)
 | 0039? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
 | 0045? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
-| 0050? | [Pledge Leverage-Based Staking Rewards](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 0056? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 0062? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 0073? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
@@ -125,8 +125,11 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0095? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
+| 0098? | [Distributed Artifact Token Metadata](https://github.com/cardano-foundation/CIPs/pull/530) |
+| 0099? | [Proof of Onboarding](https://github.com/cardano-foundation/CIPs/pull/546) |
+| 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
 
-<p align="right"><i>Last updated on 2023-07-18</i></p>
+<p align="right"><i>Last updated on 2023-08-01</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -146,11 +149,10 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | #     | Title |
 | ----- | --- |
 | 0001? | [Metadata Discoverability and Trust](https://github.com/cardano-foundation/CIPs/pull/371) |
-| 0002? | [Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374) |
 | 0004? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
 | 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
 
-<p align="right"><i>Last updated on 2023-07-18</i></p>
+<p align="right"><i>Last updated on 2023-08-01</i></p>
 
 ## Stalled / Waiting For Authors
 
