@@ -264,7 +264,6 @@ In addition, we would like to thank all the attendees of the workshop that was h
 * N S
 * Kazuya
 * Daikon
-<details>
 
 <details>
   <summary><strong>2023 Tlaxcala, Mexico Workshop (01/06)</strong></summary>
