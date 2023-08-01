@@ -22,7 +22,7 @@ The proposed reward equation retains the function of $k$ for diminishing rewards
 
 > **Warning** <u>Conflict of Interest Declaration</u>
 >
-> The author is employed full time as a Research Assistant Professor in Nuclear Engineering at the University of Tennessee. The author earns no revenue from the Cardano ecosystem, does not operate a stake pool, is not seeking Cardano Foundation stakepool delegation support, is not seeking Catalyst funding support, and owns 24k ADA delegated to the THOR stake pool.
+> The author is employed full time as a Research Assistant Professor in Nuclear Engineering at the University of Tennessee. The author earns no revenue from the Cardano ecosystem, does not operate a stake pool, is not seeking Cardano Foundation stakepool delegation support, is not seeking Catalyst funding support, and owns 25k ADA delegated to the BALNC stake pool ($drliesenfelt).
 
 ## Motivation: why is this CIP necessary?
 
