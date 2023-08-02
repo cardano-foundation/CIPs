@@ -41,13 +41,13 @@ The Cardano network currently produces ~21,600 blocks per epoch with ~2400 group
 $Ref (1)$
 
 <p align="center">
- <img src="images/equation1.png" width="500">
+ <img src="./images/equation1.png" width="500">
 </p>
 
-![Figure 1](images/k-effective.png)
+![Figure 1](./images/k-effective.png)
 Figure 1. Historical k-effective from epoch 245 to present.
 
-![Figure 2](images/k-effective-table.png)
+![Figure 2](./images/k-effective-table.png)
 Figure 2. K-effective table.
 
 ### The Intent of (a0,k)
@@ -69,11 +69,11 @@ The analysis of the current reward formula in [4] equated 1 pool to 1 entity. In
 From “4.1 Our RSS construction” of “Reward Sharing Schemes for Stake Pools” [5] the current rewards equation is:
 
 $ Ref(2) $
-![Equations Set 2](images/equation2.png)
+![Equations Set 2](./images/equation2.png)
 
 where:
 
-<img src="images/equation2-supporting.png" width="250">
+<img src="./images/equation2-supporting.png" width="250">
 
 A natural choice is $β = 1/k$, where $k$ is the target number of pools, and $k,α$ are fixed parameters.
 
@@ -85,19 +85,19 @@ $α = a0 = 0.3$
 
 The $a0$ parameter represents the fraction of the rewards $(R/(1+a0))$ which are not paid out unless all of the stake is pledged. An $a0$ of 0.3 ensures that **1.0 - 1.0/(1.0+0.3) = 23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The $\sigma’ = min\\{σ,β\\}$ term enforces a reward limit based on $k$. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available at the stated network size.
 
-<img src="images/chart current equation a0 0.3 minfee 340.png">
+<img src="./images/chart current equation a0 0.3 minfee 340.png">
 
-<details><summary>If the minimum fee is 30</summary><img src="images/chart current equation a0 0.3 minfee 30.png"></details>
-<details><summary>If the minimum fee is 0</summary><img src="images/chart current equation a0 0.3 minfee 0.png"></details>
-<details><summary>If a0 is increased to 0.5</summary><img src="images/chart current equation a0 0.5 minfee 340.png"></details>
-<details><summary>If a0 is increased to 1.0</summary><img src="images/chart current equation a0 1.0 minfee 340.png"></details>
-<details><summary>If a0 is increased to 10.0</summary><img src="images/chart current equation a0 10.0 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.2</summary><img src="images/chart current equation a0 0.2 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.1</summary><img src="images/chart current equation a0 0.1 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.0</summary><img src="images/chart current equation a0 0.0 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.0 and minFee = 0</summary><img src="images/chart current equation a0 0.0 minfee 0.png"></details>
-<details><summary>If minFee is increaesd to 1000</summary><img src="images/chart current equation a0 0.3 minfee 1000.png"></details>
-<details><summary>If minFee is increaesd to 2000</summary><img src="images/chart current equation a0 0.3 minfee 2000.png"></details>
+<details><summary>If the minimum fee is 30</summary><img src="./images/chart current equation a0 0.3 minfee 30.png"></details>
+<details><summary>If the minimum fee is 0</summary><img src="./images/chart current equation a0 0.3 minfee 0.png"></details>
+<details><summary>If a0 is increased to 0.5</summary><img src="./images/chart current equation a0 0.5 minfee 340.png"></details>
+<details><summary>If a0 is increased to 1.0</summary><img src="./images/chart current equation a0 1.0 minfee 340.png"></details>
+<details><summary>If a0 is increased to 10.0</summary><img src="./images/chart current equation a0 10.0 minfee 340.png"></details>
+<details><summary>If a0 is decreased to 0.2</summary><img src="./images/chart current equation a0 0.2 minfee 340.png"></details>
+<details><summary>If a0 is decreased to 0.1</summary><img src="./images/chart current equation a0 0.1 minfee 340.png"></details>
+<details><summary>If a0 is decreased to 0.0</summary><img src="./images/chart current equation a0 0.0 minfee 340.png"></details>
+<details><summary>If a0 is decreased to 0.0 and minFee = 0</summary><img src="./images/chart current equation a0 0.0 minfee 0.png"></details>
+<details><summary>If minFee is increaesd to 1000</summary><img src="./images/chart current equation a0 0.3 minfee 1000.png"></details>
+<details><summary>If minFee is increaesd to 2000</summary><img src="./images/chart current equation a0 0.3 minfee 2000.png"></details>
 
 #### The Reality of (a0,k)
 
@@ -107,7 +107,7 @@ Another important determinant of the ability for small pools to compete with lar
 
 Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Stake) vs log(Leverage) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2200 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22.
 
-<img src="images/stake vs leverage current.png">
+<img src="./images/stake vs leverage current.png">
 
 In the original design, parameter $a0$ represented the influence the operator’s pledge had on the desirability of the pool. In other words, more pledge should mean the pool would be more desirable for stake delegation. However the current reward formula has not produced this effect. See Figure 2. With increasing pledge as a proportion of total stake there is little noticeable effect on rewards until very high pledge percentages. These very high pledge percentages are not attainable except by extremely large stakeholders. Furthermore having such a high pledge percentage would defeat the purpose of community staking since the pool would already be saturated when the maximum pledge benefit is earned.
 
@@ -182,7 +182,7 @@ Large differences between k-parameter and the k-effective of the network represe
 The proposed reward retains the function of $k$ for limiting rewards based on stake and introduces parameter $L$ for enforcing reward limits based on pledge leverage. The equation equally balances both reward parameters. The pledge leverage parameter $L$ is intended to range from 10,000.0 down to 1.0. An $L$ value of 100.0 would require pools to pledge 1.0% of stake and an $L$ of 1.0 would require all pools to be 100.0% pledged.
 
 <p align="center">
- <img src="images/equation3-newRewardEq.png" width="400">
+ <img src="./images/equation3-newRewardEq.png" width="400">
 </p>
 
 The new equation is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience the new equation enforces both egalitarian rewards and pledge-based Sybil resilience. A simple flat egalitarian yield ceiling with pledge leverage enforcement for Sybil defense has a profound psychological effect: Stakeholders know there is no way to game the system for yield, either individually or collectively with governance, and pledge is absolutely mandatory. Without any engineered bias Cardano decentralization would converge to the diversity of the underlying community, services, and stakeholder distribution. If this proposal is eventually adopted changes in community diversity, not changes in a formula or parameters, would change decentralization.
@@ -199,15 +199,15 @@ The new $L$ parameter will range from 10,000.0 to 1.0. The initial value of the 
 
 The proposed reward formula should be visualized on a linear(yield) vs log(saturation) scale independent of $k$. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of $L$ becomes obvious, pool saturation will be limited first by pledge amount and then eventually by $k$. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At $L=100.0$ to support a 100.0% saturated stake pool 1.0% pledge will be required.
 
-<img src="images/chart constant leverage L 100 minfee 30.png">
+<img src="./images/chart constant leverage L 100 minfee 30.png">
 
 ### The new reward equation without a minimum fee
 
-<img src="images/chart constant leverage L 100 minfee 0.png">
+<img src="./images/chart constant leverage L 100 minfee 0.png">
 
 ### The new reward equation zone
 
-<img src="images/stake vs leverage proposed.png">
+<img src="./images/stake vs leverage proposed.png">
 
 ### The yield ceiling
 
@@ -317,17 +317,17 @@ $bias = [0.00 - 0.95]$
 
 #### Proposed Unbiased Egalitarian Leverage Limiting Equation:
 
-<img src="images/equation4-newRewardsEq.png" width="300">
+<img src="./images/equation4-newRewardsEq.png" width="300">
 
-<img src="images/chart constant leverage L 100 minfee 0.png">
+<img src="./images/chart constant leverage L 100 minfee 0.png">
 
 #### Current RSS Equation Form:
 
-<img src="images/equation4-currentEq.png" width="400">
+<img src="./images/equation4-currentEq.png" width="400">
 
 #### CIP-7 Equation Form
 
-<img src="images/equation5-cip7-currentEq.png" width="500">
+<img src="./images/equation5-cip7-currentEq.png" width="500">
 
 Where equations and independent variables to test are:
 - Eq (1) CIP-7 Rewards: Legacy rewards equation with n-root curved pledge benefit
@@ -344,7 +344,7 @@ And the recommended testing permutations are:
 
 #### Linearly Biased Variation with a Leverage Limit:
 
-<img src="images/equation4-newRewardsEqBiased.png" width="400">
+<img src="./images/equation4-newRewardsEqBiased.png" width="400">
 
 - with $k = 150$, $bias=0.05$, and $L = 50$
 - with $k = 150$, $bias=0.05$, and $L = 100$
@@ -356,7 +356,7 @@ And the recommended testing permutations are:
 - with $k = 1000$, $bias=0.05$, and $L = 100$
 - with $k = 1000$, $bias=0.05$, and $L = 1000$
 
-<img src="images/chart constant leverage L 100 minfee 0 bias 0.05.png">
+<img src="./images/chart constant leverage L 100 minfee 0 bias 0.05.png">
 
 #### Linearly Biased Variation with a Diminishing Leverage Limit:
 
@@ -366,7 +366,7 @@ And the recommended testing permutations are:
 
 Mahmoud Nimer's proposed reward equation presented in the [Ada Link's Stakepool Pledge Influence in Stake Rewards Distribution Paper](https://github.com/ADA-Link/Papers/blob/main/Stakepool%20Pledge%20Influence%20in%20Stake%20Rewards%20Distribution.pdf) seeks to compare pool pledge to total network pool pledge, and reward pool pledge growth relative to stake pool size growth.
 
-<img src="images/equation8-nimer-adalink.png" width="400">
+<img src="./images/equation8-nimer-adalink.png" width="400">
 
 Where:
 * Eq (1) The Nimer Rewards Equation
