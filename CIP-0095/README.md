@@ -317,7 +317,10 @@ type DataSignError = {
 
 ### Governance Extension API
 
-These are the CIP-95 methods that should be returned as part of the API object.
+These are the CIP-95 methods that should be returned as part of the API object, namespaced by `cip95` without any leading zeros.
+
+For example:
+`api.cip95.getPubDRepKey()`
 
 To access these functionalities a client application must present this CIP-95
 extension object:
@@ -330,7 +333,7 @@ This extension object is provided during the initial handshake procedure as
 described within
 [CIP-30's Initial API](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cardanowalletnameenable-extensions-extension----promiseapi).
 
-#### `api.getPubDRepKey(): Promise<PubDRepKey>`
+#### `api.cip95.getPubDRepKey(): Promise<PubDRepKey>`
 
 The connected wallet account provides the account's public DRep Key, derivation
 as described in [DRep Key](#DRep-key).
@@ -353,7 +356,7 @@ The wallet account's public DRep Key.
 | `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
 <!-- prettier-ignore-stop -->
 
-#### `api.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
+#### `api.cip95.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
 
 The connected wallet account's active public stake keys (with keys which are
 being used for staking), if the wallet tracks the keys that are used for
@@ -379,7 +382,7 @@ An array of the connected user's active public stake keys.
 | `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
 <!-- prettier-ignore-stop -->
 
-#### `api.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
+#### `api.cip95.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
 
 This endpoint requests the wallet to inspect and provide appropriate witnesses
 for a supplied transaction. The wallet should articulate this request from
@@ -467,7 +470,7 @@ If `partialSign` is `true`, the wallet only tries to sign what it can. If
 `partialSign` is `false` and the wallet could not sign the entire transaction,
 `TxSignError` shall be returned with the `ProofGeneration` code.
 
-#### `api.signData(addr: Address | DRepID, payload: Bytes): Promise<DataSignature>`
+#### `api.cip95.signData(addr: Address | DRepID, payload: Bytes): Promise<DataSignature>`
 
 Errors: `APIError`, `DataSignError`
 
@@ -546,6 +549,10 @@ hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 | `DataSignError` | `UserDeclined`    | Returned if the user declined to sign the data.                                                                                |
 
 <!-- prettier-ignore-stop -->
+
+### Versioning of this proposal
+
+TODO: explain versioning approach
 
 ### Examples of Flows
 
