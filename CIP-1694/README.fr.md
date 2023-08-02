@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: 89bb166
+Revision: 729bf52
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -86,6 +86,346 @@ De plus, nous tenons à remercier tous les participants à l’atelier qui s’e
 * Sergio Sanchez Ferreros
 * Tim Harrison
 * Tsz Wai Wu
+</details>
+
+<details>
+  <summary><strong>2023 Mexico, Atelier du Mexique (20/05)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Mexico, au Mexique, le 20 mai 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Donovan Riaño
+* Cristian Jair Rojas
+* Victor Hernández
+* Ramón Aceves
+* Sergio Andrés Cortés
+* Isaías Alejandro Galván
+* Abigail Guzmán
+* Jorge Fernando Murguía
+* Luis Guillermo Santana
+
+</details>
+
+<details>
+  <summary><strong>2023 Buenos Aires, Atelier de l'Argentine (20/05)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Buenos Aires, Argentine le 20 mai 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Lucas Macchiavelli
+* Alejando Pestchanker
+* Juan Manuel Castro Pippo
+* Federico Weill
+* Jose Otegui
+* Mercedes Ruggeri
+* Mauro Andreoli
+* Elias Aires
+* Jorge Nasanovsky
+* Ulises Barreiro
+* Martin Ochoa
+* Facundo Lopez
+* Vanina Estrugo
+* Luca Pestchanker
+</details>
+
+<details>
+  <summary><strong>2023 Bogota, Atelier de Colombie (27/05)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Bogota, en Colombie, le 27 mai 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Alvaro Moncada
+* Jaime Andres Posada Castro
+* Jose Miguel De Gamboa
+* Nicolas Gomez
+* Luis Restrepo (Moxie)
+* Juanita Jaramillo R.
+* Daniel Vanegas
+* Ernesto Rafael Pabon Moreno
+* Carlos Eduardo Escobar
+* Manuel Fernando Briceño
+* Sebastian Pabon
+</details>
+
+<details>
+  <summary><strong>2023 Caracas, Atelier du Venezuela (27/05)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Caracas, Venezuela le 27 mai 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Jean Carlo Aguilar
+* Wilmer Varón
+* José Erasmo Colmenares
+* David Jaén
+* Félix Dávila
+* Yaneth Duarte
+* Nando Vitti
+* Wilmer Rojas
+* Andreina García
+* Carmen Galban
+* Osmarlina Agüero
+* Ender Linares
+* Carlos A. Palacios R
+* Dewar Rodríguez
+* Lennys Blanco
+* Francys García
+* Davidson Arenas
+</details>
+
+<details>
+  <summary><strong>2023 Manizales, Atelier de Colombie (27/05)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Manizales, en Colombie, le 27 mai 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Yaris Cruz
+* Yaneth Duarte
+* Ciro Gelvez
+* Kevin Chacon
+* Juan Sierra
+* Caue Chianca
+* Sonia Malagon
+* Facundo Ramirez
+* Hope R.
+</details>
+
+<details>
+  <summary><strong>2023 Kyoto et Fukuoka, Atelier du Japon (27/05 & 10/06 )</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Kyoto et à Fukuoka, au Japon, les 27 mai et 10 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Arimura
+* Hidemi
+* Nagamaru(SASApool)
+* shiodome47(SODMpool)
+* Wakuda(AID1pool)
+* Yuta(Yuki Oishi)
+* Andrew
+* BANCpool
+* Miyatake
+* Muen
+* Riekousagi
+* SMAN8(SA8pool)
+* Tatsuya
+* カッシー
+* 松
+* ポンタ
+* リサ
+* Mako
+* Ririco
+* ながまる
+* Baku
+* マリア
+* たりふん
+* JUNO
+* Kinoko
+* Chikara
+* ET
+* Akira555
+* Kent
+* Ppp
+* Shiodome47
+* Sam
+* ポール
+* Concon
+* Sogame
+* ハンド
+* Demi
+* Nonnon
+* banC
+* SMAN8(SA8pool)
+* りんむ
+* Kensin
+* りえこうさぎ
+* アダマンタイト
+* の/ゆすけ
+* MUEN
+* いちごだいふく
+* Ranket
+* A.yy
+* N S
+* Kazuya
+* Daikon
+</details>
+
+<details>
+  <summary><strong>2023 Tlaxcala, Atelier du Mexique (01/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Tlaxcala, au Mexique, le 1er juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Victor Hernández
+* Cristian Jair Rojas
+* Miriam Mejia
+* Josmar Cabañas
+* Lizbet Delgado
+* José Alberto Sánchez
+* Fátima Valeria Zamora
+* Julio César Montiel
+* Jesús Pérez
+* José Adrián López
+* Lizbeth Calderón
+* Zayra Molina
+* Nayelhi Pérez
+* Josué Armas
+* Diego Talavera
+* Darían Gutiérrez
+</details>
+
+<details>
+  <summary><strong>2023 Philadelphie, Atelier de Pennsylvanie (17/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Philadelphie, en Pennsylvanie, le 17 juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* NOODZ
+* Jarhead
+* Jenny Brito
+* Shepard
+* BONE Pool
+* type_biggie
+* FLAWWD
+* A.I. Scholars
+* Eddie
+* Joker
+* Lex
+* Jerome
+* Joey
+* SwayZ
+* Cara Mia
+* PHILLY 1694
+</details>
+
+<details>
+  <summary><strong>2023 Atelier de Santiago du Chili (17/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Santiago du Chili le 17 juin 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Rodrigo Oyarsun
+* Sebastián Aravena
+* Musashi Fujio
+* Geo Gavo
+* Lucía Escobar
+* Juan Cruz Franco
+* Natalia Rosa
+* Cristian M. García
+* Alejandro Montalvo
+</details>
+
+<details>
+  <summary><strong>2023 La Cumbre, Atelier d'Argentine (23/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à La Cumbre, Argentine le 23 juin 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Ulises Barreiro
+* Daniel F. Rodriguez
+* Dominique Gromez
+* Leandro Chialvo
+* Claudia Vogel
+* Guillermo Lucero
+* Funes, Brian Carrasco
+* Melisa Carrasco
+* Carlos Carrasco
+</details>
+
+<details>
+  <summary><strong>2023 La Plata, Atelier d'Argentine (23/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à La Plata, Argentine le 23 juin 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Mauro Andreoli
+* Rodolfo Miranda
+* Agustin Francella
+* Federico Sting
+* Elias Aires
+* Lucas Macchiavelli
+* Pablo Hernán Mazzitelli
+</details>
+
+<details>
+  <summary><strong>2023 Puerto Madryn, Atelier d'Argentine (23/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Puerto Madryn, en Argentine, le 23 juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Andres Torres Borda
+* Federico Ledesma Calatayud
+* Maximiliano Torres
+* Federico Prado
+* Domingo Torres
+* Floriana Pérez Barria
+* Martin Real
+* Florencia García
+* Roberto Neme
+</details>
+
+<details>
+  <summary><strong>2023 Séoul, Atelier de la Corée du Sud (24/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Séoul, en Corée du Sud, le 24 juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Oscar Hong (JUNGI HONG)
+* SPO_COOL (Kevin Kordano)
+* SPO_KTOP (KT OH)
+* WANG JAE LEE
+* JAE HYUN AN
+* INYOUNG MOON (Penny)
+* HOJIN JEON
+* SEUNG KYU BAEK
+* SA SEONG MAENG
+* JUNG MYEONG HAN
+* BRIAN KIM
+* JUNG HOON KIM
+* SEUNG WOOK JUNG (Peter)
+* HYUNG WOO PARK
+* EUN JAE CHOI
+* NA GYEONG KIM
+* JADEN CHOI
+</details>
+
+<details>
+  <summary><strong>2023 Sao Paulo, Atelier du Brésil (01/07)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Sao Paulo, au Brésil, le 1er juillet 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Otávio Lima
+* Rodrigo Pacini
+* Maria Carmo
+* Cauê Chianca
+* Daniela Alves
+* Jose Lins Dias
+* Felipe Barcelos
+* Rosana Melo
+* Johnny Oliveira
+* Lucas Ravacci
+* Cristofer Ramos
+* Weslei Menck
+* Leandro Tsutsumi
+* Izaias Pessoa
+* Gabriel Melo
+* Yuri Nabeshima
+* Alexandre Fernandes
+* Vinicius Ferreiro
+* Lucas Fernandes
+* Alessandro Benicio
+* Mario Cielho
+* Lory Fernandes Lima
+* Larissa Nogueira
+* Latam Cardano Community
+</details>
+
+<details>
+  <summary><strong>2023 Atelier virtuel du Brésil (04/07)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu au Brésil le 4 juillet 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Lincon Vidal
+* Thiago da Silva Nunes
+* Rodrigo Pacini
+* Livia Corcino de Albuquerque
+* Cauê Chianca 
+* Otávio Lima
 </details>
 
 ## Motivation : pourquoi ce CIP est-il nécessaire ?
