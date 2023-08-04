@@ -51,8 +51,6 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_shared_vk`   | CIP-1854's address verification key                | Ed25519 public key                 |
 | `addr_shared_xsk`  | CIP-1854's address extended signing key            | Ed25519-bip32 extended private key |
 | `addr_shared_xvk`  | CIP-1854's address extended verification key       | Ed25519 public key with chain code |
-| `drep_sk`          | CIP-0095's DRep vote signing key                   | Ed25519 private key                |
-| `drep_vk`          | CIP-0095's DRep vote verification key              | Ed25519 public key                 |
 | `gov_sk`           | Governance vote signing key                        | Ed25519 private key                |
 | `gov_vk`           | Governance vote verification key                   | Ed25519 public key                 |
 | `cvote_sk`         | CIP-36's vote signing key                          | Ed25519 private key                |
@@ -95,7 +93,6 @@ We define the following set of common prefixes with their corresponding semantic
 | `stake_vkh`        | Stake address verification key hash                | blake2b\_224 digest of a delegation verification key      |
 | `stake_shared_vkh` | Shared stake address verification key hash         | blake2b\_224 digest of a delegation verification key      |
 | `req_signer_vkh`   | Required signer verification key hash              | blake2b\_224 digest of a required signer verification key |
-| `drep_id`          | CIP-1694 DRep ID                                   | blake2b\_224 digest of a DRep's voting credential         |
 | `vrf_vkh`          | VRF verification key hash                          | blake2b\_256 digest of a VRF verification key             |
 | `datum`            | Output datum hash                                  | blake2b\_256 digest of output datum                       |
 | `script_data`      | Script data hash                                   | blake2b\_256 digest of script data                        |

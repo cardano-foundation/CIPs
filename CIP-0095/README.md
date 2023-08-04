@@ -552,7 +552,9 @@ hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 
 ### Versioning of this proposal
 
-TODO: explain versioning approach
+Whilst this CIP is in it's unmerged proposed state, it remains very fluid and substantial changes can happen, so I would advise against any implementation. Once more feedback is received, maturing this design I think implementations can safely emerge, alongside this proposal's merger into the CIPs repository. Once merged only small necessary changes should be made, ideally in backwards compatible fashion. 
+
+This, in tandem with, maturing implementations should move this proposal to an active state where only small backwards compatible changes can be made. If any large changes are needed once active then a new proposal should be made to replace this one. This I believe aligns with the (new) extendibility design of CIP-0030.
 
 ### Examples of Flows
 
@@ -847,6 +849,8 @@ clients are aware of this functionality.
 
 ### DRep Key
 
+// todo: once DRep CIP added
+
 We chose to introduce the concept of a DRep Key, building on top of CIP-1694,
 this we see as a necessary step for wallet implementors. By setting a
 (hierarchical) deterministic derivation path it enables restorability from a
@@ -863,9 +867,6 @@ we chose to follow how a new key definition was done in
 [CIP-36](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#derivation-path)
 by defining a new purpose of `1718'`. This was an oversight, as defining a new
 derivation purposes will likely have hardware wallet audit implications.
-
-// TODO: add note derivation path change when/if this is moved to a separate
-CIP.
 
 #### Why not reuse [CIP-36 Vote Keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#voting-key)?
 
