@@ -1315,7 +1315,7 @@ We solve the long-term participation problem by not allowing reward withdrawals
 (after the bootstrap phase) unless the stake is delegated to a DRep
 (including the two special cases, namely 'Abstain' and 'No confidence').
 
-## Changelog
+### Changelog
 
 ### Changes post Longmont workshop (March 2023)
 
