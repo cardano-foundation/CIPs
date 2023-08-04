@@ -357,7 +357,7 @@ In addition, we would like to thank all the attendees of the workshop that was h
 <details>
   <summary><strong>2023 Monterey, California Workshop (28/05)</strong></summary>
 
-In addition, we would like to thank all the attendees of the workshop that was held in Monterey, California on May 128th 2023 for their valuable contributions to this CIP, and for their active championing of Cardano's vision for minimal viable governance.  These include:
+In addition, we would like to thank all the attendees of the workshop that was held in Monterey, California on May 28th 2023 for their valuable contributions to this CIP, and for their active championing of Cardano's vision for minimal viable governance.  These include:
 
 * Shane Powser
 * Rodrigo Gomez
