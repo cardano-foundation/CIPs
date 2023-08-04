@@ -1359,7 +1359,7 @@ We solve the long-term participation problem by not allowing reward withdrawals
     on it (which presumably means it has gone through some process).
   * Include hash of (future) genesis configuration within HF proposal.
 
-### Changes post Edinburgh workshop (July 2023)
+#### Changes post Edinburgh workshop (July 2023)
 
 * Add proposal policy, which can control what treasury withdrawals and
   protocol parameter changes are allowed.
