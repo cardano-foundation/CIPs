@@ -1317,7 +1317,7 @@ We solve the long-term participation problem by not allowing reward withdrawals
 
 ### Changelog
 
-### Changes post Longmont workshop (March 2023)
+#### Changes post Longmont workshop (March 2023)
 
 * Thank the workshop attendees.
 * We have added Constitutional Committee term limits.
