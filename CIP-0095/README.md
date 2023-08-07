@@ -91,17 +91,12 @@ within CIP-30.
 // TODO: Move this into a more appropriate **separate** CIP.
 
 The Conway ledger era introduces a new _first class_ credential in
-[`voting_credential`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L329).
+[`voting_credential`](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L331).
 This is used to identify registered DReps on-chain, via their certificates and
 votes.
 
-CIP-1694 does not define a derivation path for these registered DRep
-credentials, here we propose the introduction of DRep Keys to be used as DRep
-`voting_credential`s for (non-script) registered DReps.
-
-The methods described here should not be considered the definitive method of
-generating DRep credentials. Rather these methods should be employed by wallets
-to derive keys for non-script registered DReps.
+Here we introduction of DRep Keys to be used to create `voting_credential`s for
+(non-script) registered DReps.
 
 #### Derivation
 
@@ -110,16 +105,13 @@ the
 [CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md)
 standard.
 
-To differentiate DRep credentials from other Cardano keys the derivation path
-must follow:
+To differentiate DRep keys from other Cardano keys the derivation path must
+follow:
 
-`m / 1694' / 1815' / account' / 1718 / address_index`
+`m / 1852' / 1815' / account' / 3 / address_index`
 
-> **Note** `1718` was the year that François-Marie adopted the pseudonym
-> Voltaire.
-
-We strongly suggest that a maximum of one set of DRep credentials should be
-associated with one wallet account, this can be achieved by only ever setting
+We strongly suggest that a maximum of one set of DRep keys should be associated
+with one wallet account, this can be achieved by only ever setting
 `address_index=0`. This avoids the need for DRep Key discovery.
 
 We believe the overhead that would be introduced by "multi-DRep" accounts is an
@@ -135,17 +127,19 @@ Bech32 prefixes of `drep_sk` and `drep_vk` should be used, as described in
 
 Examples of acceptable `keyType`s for supporting tools:
 
-| `keyType`                          | Description           |
-| ---------------------------------- | --------------------- |
-| `CIP95DRepSigningKey_ed25519`      | DRep Signing Key      |
-| `CIP95DRepVerificationKey_ed25519` | DRep Verification Key |
+| `keyType`                                   | Description           |
+| ------------------------------------------- | --------------------- |
+| `DRepSigningKey_ed25519`                    | DRep Signing Key      |
+| `DRepExtendedSigningKey_ed25519_bip32`      | DRep Signing Key      |
+| `DRepVerificationKey_ed25519`               | DRep Verification Key |
+| `DRepExtendedVerificationKey_ed25519_bip32` | DRep Verification Key |
 
 For hardware implementations:
 
-| `keyType`                          | Description                    |
-| ---------------------------------- | ------------------------------ |
-| `CIP95DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
-| `CIP95DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
+| `keyType`                     | Description                    |
+| ----------------------------- | ------------------------------ |
+| `DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
+| `DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
 
 ### Data Types
 
@@ -206,7 +200,7 @@ type DRepID = string;
 
 A hex-encoded string representing a registered DRep's ID which is a Blake2b-224
 hash digest of a 32 byte Ed25519 public key, as described in
-[CIP-1694 Registered DReps](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md?plain=1#L386).
+[CIP-1694 Registered DReps](https://github.com/cardano-foundation/CIPs/blob/430f64d3e86dd67903a6bf1e611c06e5343072f3/CIP-1694/README.md#registered-dreps).
 
 ##### PubDRepKey
 
@@ -317,10 +311,10 @@ type DataSignError = {
 
 ### Governance Extension API
 
-These are the CIP-95 methods that should be returned as part of the API object, namespaced by `cip95` without any leading zeros.
+<!-- These are the CIP-95 methods that should be returned as part of the API object, namespaced by `cip95` without any leading zeros.
 
 For example:
-`api.cip95.getPubDRepKey()`
+`api.cip95.getPubDRepKey()` -->
 
 To access these functionalities a client application must present this CIP-95
 extension object:
@@ -333,7 +327,7 @@ This extension object is provided during the initial handshake procedure as
 described within
 [CIP-30's Initial API](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cardanowalletnameenable-extensions-extension----promiseapi).
 
-#### `api.cip95.getPubDRepKey(): Promise<PubDRepKey>`
+#### `api.getPubDRepKey(): Promise<PubDRepKey>`
 
 The connected wallet account provides the account's public DRep Key, derivation
 as described in [DRep Key](#DRep-key).
@@ -356,7 +350,7 @@ The wallet account's public DRep Key.
 | `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
 <!-- prettier-ignore-stop -->
 
-#### `api.cip95.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
+#### `api.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
 
 The connected wallet account's active public stake keys (with keys which are
 being used for staking), if the wallet tracks the keys that are used for
@@ -382,7 +376,7 @@ An array of the connected user's active public stake keys.
 | `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
 <!-- prettier-ignore-stop -->
 
-#### `api.cip95.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
+#### `api.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
 
 This endpoint requests the wallet to inspect and provide appropriate witnesses
 for a supplied transaction. The wallet should articulate this request from
@@ -470,7 +464,7 @@ If `partialSign` is `true`, the wallet only tries to sign what it can. If
 `partialSign` is `false` and the wallet could not sign the entire transaction,
 `TxSignError` shall be returned with the `ProofGeneration` code.
 
-#### `api.cip95.signData(addr: Address | DRepID, payload: Bytes): Promise<DataSignature>`
+#### `api.signData(addr: Address | DRepID, payload: Bytes): Promise<DataSignature>`
 
 Errors: `APIError`, `DataSignError`
 
@@ -552,9 +546,18 @@ hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 
 ### Versioning of this proposal
 
-Whilst this CIP is in it's unmerged proposed state, it remains very fluid and substantial changes can happen, so I would advise against any implementation. Once more feedback is received, maturing this design I think implementations can safely emerge, alongside this proposal's merger into the CIPs repository. Once merged only small necessary changes should be made, ideally in backwards compatible fashion. 
+Whilst this CIP is in it's unmerged proposed state, it remains very fluid and
+substantial changes can happen, so I would advise against any implementation.
+Once more feedback is received, maturing this design I think implementations can
+safely emerge, alongside this proposal's merger into the CIPs repository. Once
+merged only small necessary changes should be made, ideally in backwards
+compatible fashion.
 
-This, in tandem with, maturing implementations should move this proposal to an active state where only small backwards compatible changes can be made. If any large changes are needed once active then a new proposal should be made to replace this one. This I believe aligns with the (new) extendibility design of CIP-0030.
+This, in tandem with, maturing implementations should move this proposal to an
+active state where only small backwards compatible changes can be made. If any
+large changes are needed once active then a new proposal should be made to
+replace this one. This I believe aligns with the (new) extendibility design of
+CIP-0030.
 
 ### Examples of Flows
 
@@ -590,7 +593,7 @@ wallet has already been made via `cardano.{wallet-name}.enable({ "cip": 95 })`.
 2. **Construct Delegation:** The client application uses CIP-30 endpoints to
    query the wallet's UTxO set and payment address. A DRep delegation
    certificate
-   ([`vote_deleg_cert`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L3016))
+   ([`vote_deleg_cert`](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L302))
    is constructed by the app using the chosen DRep's ID and wallet's stake
    credential. A transaction is constructed to send 1 ADA to the wallet's
    payment address with the certificate included in the transaction body.
@@ -620,7 +623,7 @@ a registered DRep.
 2. **Construct Registration**: The client application uses CIP-30 endpoints to
    query the wallet's UTxO set and payment address. A DRep registration
    certificate
-   ([`reg_drep_cert`](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L310))
+   ([`reg_drep_cert`](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L311))
    is constructed by the app using the wallet's DRep ID and the provided
    metadata anchor. A transaction is constructed to send 1 ADA to the wallet's
    payment address with the certificate included in the transaction body.
@@ -687,9 +690,9 @@ majority of participants thus we aim to cast a wide net with this specification.
 
 In this specification we have placed explicit boundaries on what should not be
 supported with `.signTx()`. Those being not witnessing
-[stake pool](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L292-#L293)
+[stake pool](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L292C1-L294C43)
 or
-[constitutional committee](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L308-#L309),
+[constitutional committee](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L309C1-L310C60),
 certificates and not inspecting genesis key delegation or MIR certificates.
 
 From speaking to CIP-30 implementors it seems reasonable that there does not
@@ -699,7 +702,7 @@ prefer the utility and security advantages not operating via light wallets. Due
 to the [Lack of Specificity](#lack-of-specificity) of CIP-30 we felt it
 necessary to explicitly state the lack of support in this extension.
 
-[Constitutional committee certificates](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L308-#L309)
+[Constitutional committee certificates](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L309C1-L310C60)
 are not supported by this specification's `.signTx()` for two reasons. First,
 this specification is only focussed on the need's of Ada holders and DReps.
 Secondly, the credentials used by the constitutional committee, are a hot and
