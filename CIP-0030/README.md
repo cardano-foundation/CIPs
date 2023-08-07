@@ -200,10 +200,11 @@ Upon start, dApp can explicitly request a list of additional functionalities the
 
 DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the `cardano.{walletName}.extensions` field of the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
 
-Extension's endpoints should be namespaced by `.cipXXXX.` with the returned `API` object. For example; CIP-300's endpoints should be accessed by:
+Extension's endpoints should be namespaced by `.cipXXXX.` with the returned `API` object. For example; CIP-1234's endpoints should be accessed by:
 
 ```ts
-api.cip300.endpoint()
+api.cip1234.endpoint1()
+api.cip1234.endpoint2()
 ```
 
 ##### Can extensions depend on other extensions?
