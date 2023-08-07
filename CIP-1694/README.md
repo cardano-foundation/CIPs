@@ -989,7 +989,7 @@ In addition, each action will include some elements that are specific to its typ
 |:-------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1. Motion of no-confidence                       | None                                                                                                                                                                                            |
 | 2. New committee/threshold                       | The set of verification key hash digests (members to be removed), a map of verification key hash digests to epoch numbers (new members and their term limit), and a fraction (quorum threshold) |
-| 3. Update to the Constitution or proposal policy | A hash digest of the Constitution and an optional script hash of the proposal policy                                                                                                            |
+| 3. Update to the Constitution or proposal policy | An anchor to the Constitution and an optional script hash of the proposal policy                                                                                                                |
 | 4. Hard-fork initiation                          | The new (greater) major protocol version                                                                                                                                                        |
 | 5. Protocol parameters changes                   | The changed parameters                                                                                                                                                                          |
 | 6. Treasury withdrawal                           | A map from stake credentials to a positive number of Lovelace                                                                                                                                   |
@@ -1250,7 +1250,7 @@ The DReps also vote, to represent the will of every stake holder.
 
 ### New Metadata structures
 
-The governance actions, the votes and the certificates use new metadata fields,
+The governance actions, the votes and the certificates and the Constitution use new metadata fields,
 in the form of URLs and integrity hashes
 (mirroring the metadata structure for stake pool registration).
 The metadata is used to provide context.
@@ -1375,6 +1375,7 @@ We solve the long-term participation problem by not allowing reward withdrawals
 * Add a section for a minimum AVS to 'Other Ideas'.
 * Rename some protocol parameters.
 * Rename `TALLY` to `GOV`.
+* Turn the Constitution into an anchor.
 * Rework which anchors are required and which are optional.
 * Clean up various inconsistencies and leftovers from older versions.
 
