@@ -442,7 +442,7 @@ to this CIP, and for their active championing of Cardano's vision for minimal vi
 * Thiago da Silva Nunes
 * Rodrigo Pacini
 * Livia Corcino de Albuquerque
-* Cauê Chianca 
+* Cauê Chianca
 * Otávio Lima
 </details>
 
@@ -876,7 +876,7 @@ Depending on the type of governance action, an action will thus be ratified when
 > As explained above, different stake distributions apply to DReps and SPOs.
 
 A successful motion of no-confidence, election of a new constitutional committee,
-a constitutional change or a hard-fork delays
+a constitutional change, or a hard-fork, delays
 ratification of all other governance actions until the first epoch after their enactment. This gives
 a new constitutional committee enough time to vote on current proposals, re-evaluate existing proposals
 with respect to a new constitution, and ensures that the in principle arbitrary semantic changes caused
@@ -1052,7 +1052,7 @@ The **governance group** consists of all the new protocol parameters that are in
 * DRep deposit amount (`drepDeposit`)
 * DRep activity period in epochs (`drepActivity`)
 * minimal constitutional committee size (`ccMinSize`)
-* maximum term length (in epochs) of the constitutional committee (`ccMaxTermLength`)
+* maximum term length (in epochs) for the constitutional committee members (`ccMaxTermLength`)
 
 <!-- TODO:
   - Decide on the initial values for the new governance parameters
@@ -1250,7 +1250,7 @@ The DReps also vote, to represent the will of every stake holder.
 
 ### New Metadata structures
 
-Both the governance actions and the votes use new metadata fields,
+The governance actions, the votes and the certificates use new metadata fields,
 in the form of URLs and integrity hashes
 (mirroring the metadata structure for stake pool registration).
 The metadata is used to provide context.
@@ -1320,12 +1320,11 @@ We solve the long-term participation problem by not allowing reward withdrawals
 #### Changes post Longmont workshop (March 2023)
 
 * Thank the workshop attendees.
-* We have added Constitutional Committee term limits.
-  The term is renewed each time they successfully elect a new committee.
+* We have added Constitutional Committee terms.
 * Two new "pre-defined" DRep options: abstain and no confidence.
 * New "Info" governance action.
 * Use the most recent DRep stake distribution for ratification.
-  This means that if every your DRep votes how you do not like,
+  This means that if ever your DRep votes how you do not like,
   you can immediately make yourself a DRep and vote how you want.
 * Escrow some ADA from the current treasury for potential future DRep
   incentives.
@@ -1342,7 +1341,7 @@ We solve the long-term participation problem by not allowing reward withdrawals
   tracking the last action ID of each type, and including this in
   the action.
 * No AVST.
-* Boost strap phase: Until X% of ADA is registered to vote or Y epochs
+* Bootstrap phase: Until X% of ADA is registered to vote or Y epochs
   have elapsed, only parameter changes and hard forks can happen.
   PP changes just need CC quorum, HFs need CC and SPOs.
   After the bootstrap phase, we put in place the incentive to keep low
@@ -1368,13 +1367,14 @@ We solve the long-term participation problem by not allowing reward withdrawals
   around. However, only new committee proposals that have been
   designed to build on top of that no confidence action can be
   enacted. If a new committee gets elected while some of those actions
-  haven't expired those actions can be ratified, but the new committee
+  haven't expired, those actions can be ratified but the new committee
   has to approve them.
 * All governance actions are enacted one epoch after they are ratified.
 * Move post-bootstrapping restrictions into 'Other Ideas'.
 * Add a section on different deposit amounts to 'Other Ideas'.
 * Add a section for a minimum AVS to 'Other Ideas'.
 * Rename some protocol parameters.
+* Rename `TALLY` to `GOV`.
 * Rework which anchors are required and which are optional.
 * Clean up various inconsistencies and leftovers from older versions.
 
@@ -1431,7 +1431,7 @@ The final ratification process is likely to be a blend of various ideas, such as
 
 #### Changes to the existing ledger rules
 
-* The `PPUP` transition rule will be rewritten and moved out of the `UTxO` rule and into the `LEDGER` rule as a new `TALLY` rule.
+* The `PPUP` transition rule will be rewritten and moved out of the `UTxO` rule and into the `LEDGER` rule as a new `GOV` rule.
 
   It will process and record the governance actions and votes.
 
