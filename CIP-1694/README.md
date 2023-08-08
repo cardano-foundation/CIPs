@@ -657,7 +657,7 @@ so the committee should plan for its own replacement if it wishes to avoid disru
 #### Proposal policy
 
 While the constitution is an informal, off-chain document, there will
-also an optional script that can enforce some guidelines. This script
+also be an optional script that can enforce some guidelines. This script
 acts to supplement the constitutional committee by restricting some
 proposal types. For example, if the community wishes to have some hard
 rules for the treasury that cannot be violated, a script that enforces
