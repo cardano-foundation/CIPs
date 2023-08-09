@@ -95,7 +95,7 @@ datum = #6.121([metadata, version, extra])
 
 #### 222 NFT Standard
 
-Besides the necessary standard for the `reference NFT` we're introducing four specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, rich fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
+Besides the necessary standard for the `reference NFT` we're introducing three specific token standards in this CIP. Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs, rich fungible tokens, etc. The first is the `222` NFT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label            | class        | description                                                          |
 | --------------------------- | ------------ | -------------------------------------------------------------------- |
@@ -329,91 +329,6 @@ We want to bring the metadata of the RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
-#### 500 Royalty Standard
-
-The fourth introduced standard is the `500` Royalty NFT standard with the registered `asset_name_label` prefix value
-
-| asset_name_label            | class        | description                                                          |
-| --------------------------- | ------------ | -------------------------------------------------------------------- |
-| 500                         | NFT          | Royalty NFT stored in a UTxO containing a datum with royalty information |
-
-##### Class
-
-The `royalty NFT` is an NFT (non-fungible token).
-
-##### Pattern
-
-The `royalty NFT` **must** have an identical `policy id` as the collection.
-
-The `asset name` **must** be `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0067/README.md) label `500` followed by the word "Royalty".
-
-Example:\
-`royalty NFT`: `(500)Royalty`\
-`reference NFT`: `(100)Test123`
-
-##### Metadata
-
-The royalty info datum is specified as follows (CDDL):
-
-```cddl
-big_int = int / big_uint / big_nint
-big_uint = #6.2(bounded_bytes)
-big_nint = #6.3(bounded_bytes)
-
-optional_big_int = #6.121([big_int]) / #6.122([])
-
-royalty_recipient = #6.121([
-              address,                    ; definition can be derived from: 
-                                          ; https://github.com/input-output-hk/plutus/blob/master/plutus-ledger-api/src/PlutusLedgerApi/V1/Address.hs#L31
-              int,                        ; variable fee ( calculation: ⌊1 / (fee / 10)⌋ ); integer division with precision 10
-              optional_big_int,           ; min fee (absolute value in lovelace)
-              optional_big_int,           ; max fee (absolute value in lovelace)
-            ])
-
-royalty_recipients = [ * royalty_recipient ]
-
-; version is of type int, we start with version 1
-version = 1  
-
-; Custom user defined plutus data.
-; Setting data is optional, but the field is required
-; and needs to be at least Unit/Void: #6.121([])
-extra = plutus_data
-
-royalty_info = #6.121([royalty_recipients, version, extra])
-```
-
-Example of onchain variable fee calculation:
-```
-; Given a royalty fee of 1.6% (0.016)
-
-; To store this in the royalty datum
-1 / (0.016 / 10) => 625
-
-; To read it back
-10 / 625 => 0.016
-```
-Because the computational complexity of Plutus primitives scales with size, this approach significantly minimizes resource consumption.
-
-To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the script address of a validator that ensures the specified fees are not arbitrarily changed, such as an always-fails validator.
-
-##### Retrieve metadata as 3rd party
-
-A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to lookup the royalties. The steps are
-
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty`
-2. Look up `royalty NFT` and find the output it's locked in.
-3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
-4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
-
-##### Retrieve metadata from a Plutus validator
-
-We want to bring the royalty metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` in the Plutus validator context. To do this we
-
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty` (off-chain)
-2. Look up `royalty NFT` and find the output it's locked in. (off-chain)
-3. Reference the output in the transaction. (off-chain)
-4. Verify validity of datum of the referenced output by checking if policy ID of `royalty NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
 ## Rationale
 
