@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: 729bf52
+Revision: 430f64d
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -129,6 +129,52 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 </details>
 
 <details>
+  <summary><strong>2023 Johannesburg, Atelier d'Afrique du Sud(25/05)</strong></summary>
+
+En outre, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Johannesburg, en Afrique du Sud, le 25 mai 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Celiwe Ngwenya
+* Bernard Sibanda
+* Dumo Mbobo
+* Shaolyn Dzwedere
+* Kunoshe Muchemwa
+* Siphiwe Mbobo
+* Lucas Sibindi
+* DayTapoya
+* Mdu Ngwenya
+* Lucky Khumalo
+* Skhangele Malinga
+* Joyce Ncube
+* Costa Katenhe
+* Bramwell Kasanga
+* Precious Abimbola
+* Ethel Q Tshuma
+* Panashe Sibanda
+* Radebe Tefo
+* Kaelo Lentsoe
+* Richmond Oppong
+* Israel Ncube
+* Sikhangele Malinga
+* Nana Safo
+* Ndaba Delsie
+* Collen Tshepang
+* Dzvedere Shaolyn
+* Thandazile Sibanda
+* Ncube Joyce
+* Lucas Sibindi
+* Pinky Ferro
+* Ishmael Ntuta
+* Khumalo Lucky
+* Fhulufelo
+* Thwasile Ngwenya
+* Kunashe Muchemwa
+* Dube Bekezela
+* Tinyiko Baloi
+* Dada Nomathemba
+</details>
+
+
+<details>
   <summary><strong>2023 Bogota, Atelier de Colombie (27/05)</strong></summary>
 
 De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Bogota, en Colombie, le 27 mai 2023 pour leurs précieuses contributions
@@ -187,6 +233,48 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 * Sonia Malagon
 * Facundo Ramirez
 * Hope R.
+</details>
+
+<details>
+  <summary><strong>2023 Addis-Abeba, Atelier d'Éthiopie (27/05 & 28/5)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Addis-Abeba, en Éthiopie, les 27 et 28 mai 2023 pour leurs précieuses contributions.
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Kaleb Dori
+* Eyassu Birru
+* Matthew Thornton
+* Tamir Kifle
+* Kirubel Tabu
+* Bisrat Miherete
+* Emmanuel Khatchadourian
+* Tinsae Teka
+* Yoseph Ephrem
+* Yonas Eshetu
+* Hanna Kaleab
+* Tinsae Teka
+* Robee Meseret
+* Matias Tekeste
+* Eyasu Birhanu
+* yonatan berihun
+* Nasrallah Hassan
+* Andinet Assefa
+* Tewodros Sintayehu
+* KIDUS MENGISTEAB
+* Djibril Konate
+* Nahom Mekonnen
+* Eyasu Birhanu
+* Eyob Aschenaki
+* Tinsae Demissie
+* Yeabsira Tsegaye
+* Tihitna Miroche
+* Mearaf Tadewos
+* Yab Mitiku
+* Habtamu Asefa
+* Dawit Mengistu
+* Nebiyu Barsula
+* Nebiyu Sultan
+* Nathan Samson
 </details>
 
 <details>
@@ -249,6 +337,24 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 </details>
 
 <details>
+  <summary><strong>2023 Monterey, Atelier de Californie (28/05)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Monterey, en Californie, le 28 mai 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Shane Powser
+* Rodrigo Gomez
+* Adam K. Dean
+* John C. Valdez
+* Kyle Solomon
+* Erick "Mag" Magnana
+* Bryant Austin
+* John Huthmaker
+* Ayori Selassie
+* Josh Noriega
+* Matthias Sieber
+</details>
+
+<details>
   <summary><strong>2023 Tlaxcala, Atelier du Mexique (01/06)</strong></summary>
 
 De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Tlaxcala, au Mexique, le 1er juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
@@ -269,6 +375,74 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 * Josué Armas
 * Diego Talavera
 * Darían Gutiérrez
+</details>
+
+<details>
+  <summary><strong>2023 Atelier virtuel LATAM (03/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier virtuel LATAM le 3 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Juan Sierra
+* @CaueChianca
+* Ernesto Rafael
+* Pabon Moreno
+* Sonia Malagon
+* Facundo Ramírez
+* Mercedes Ruggeri
+* Hope R.
+* Yaris Cruz
+* Yaneth Duarte
+* Ciro Gélvez
+* Kevin Chacon
+* Juanita Jaramillo
+* Sebastian Pabon
+</details>
+
+<details>
+  <summary><strong>2023 Worcester, Atelier du Massachusetts (08/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Worcester, Massachusetts le 8 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* CardanoSharp
+* Kenric Nelson
+* Matthias Sieber
+* Roberto Mayen
+* Ian Burzynski
+* omdesign
+* Chris Gianelloni
+</details>
+
+<details>
+  <summary><strong>2023 Chicago, Atelier d'Illinois (10/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Chicago, Illinois le 10 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Adam Rusch
+* Jose Martinez
+* Michael McNulty
+* Vanessa Villanueva Collao
+* Maaz Jedh
+</details>
+
+<details>
+  <summary><strong>2023 Atelier virtuel (12/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu virtuellement le 12 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Rojo Kaboti
+* Tommy Frey
+* Tevo Saks
+* Slate
+* UBIO OBU
+</details>
+
+<details>
+  <summary><strong>2023 Toronto, Atelier du Canada (15/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Toronto, au Canada, le 15 juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* John MacPherson
+* Lawrence Ley
 </details>
 
 <details>
@@ -312,6 +486,97 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 </details>
 
 <details>
+  <summary><strong>2023 Atelier virtuel (17/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu virtuellement le 17 juin 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Juana Attieh
+* Nadim Karam
+* Amir Azem
+* Rami Hanania
+* LALUL Stake Pool
+* HAWAK Stake Pool
+</details>
+
+<details>
+  <summary><strong>2023 Taipai, Atelier de Taïwan (18/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Taipai, Taiwan le 18 juin 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Michael Rogero
+* Ted Chen
+* Mic
+* Jeremy Firster 
+* Eric Tsai
+* Dylan Chiang
+* JohnsonCai
+* DavidCHIEN
+* Zach Gu
+* Jimmy WANG
+* JackTsai
+* Katherine Hung
+* Will Huang
+* Kwicil
+</details>
+
+<details>
+  <summary><strong>2023 Midgard Vikingcenter Horten, Atelier de Norvège (19/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Midgard Vikingcenter Horten, en Norvège, le 19 juin 2023 pour leurs précieuses contributions.
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Daniel D. Johnsen
+* Thomas Lindseth
+* Eystein Hansen
+* Gudbrand Tokerud 
+* Lally McClay
+* $trym
+* Arne Rasmussen
+* Lise WesselTVVIN
+* Bjarne 
+* Jostein Aanderaa
+* Ken-Erik Ølmheim
+* DimSum
+</details>
+
+<details>
+  <summary><strong>2023 Atelier Virtuel (19/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu virtuellement le 19 juin 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Nicolas Cerny
+* Nils Peuser
+* Riley Kilgore
+* Alejandro Almanza
+* Jenny Brito
+* John C. Valdez
+* Rhys
+* Thyme
+* Adam Rusch
+* Devryn
+</details>
+
+<details>
+  <summary><strong>2023 New York, Atelier de New York (20/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu dans la ville de New York, le 20 juin 2023 pour leurs précieuses contributions
+à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* John Shearing
+* Geoff Shearing
+* Daniela Balaniuc
+* SDuffy
+* Garry Golden
+* Newman
+* Emmanuel Batse
+* Ebae
+* Mojira
+</details>
+
+<details>
   <summary><strong>2023 La Cumbre, Atelier d'Argentine (23/06)</strong></summary>
 
 De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à La Cumbre, Argentine le 23 juin 2023 pour leurs précieuses contributions
@@ -326,6 +591,15 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 * Funes, Brian Carrasco
 * Melisa Carrasco
 * Carlos Carrasco
+</details>
+
+<details>
+  <summary><strong>2023 Minneapolis, Atelier du Minnesota (23/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Minneapolis, Minnesota le 23 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Stephanie King
+* Darlington Wleh
 </details>
 
 <details>
@@ -360,6 +634,54 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 </details>
 
 <details>
+  <summary><strong>2023 Accra,  Atelier du Ghana (24/06)</strong></summary>
+
+En outre, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Accra, au Ghana, le 24 juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Wada
+* Laurentine
+* Christopher A.
+* Nathaniel D.
+* Edufua
+* Michael
+* Augusta
+* Jeremiah
+* Boaz
+* Mohammed
+* Richmond O.
+* Ezekiel
+* Megan
+* Josue
+* Michel T.
+* Bineta
+* Afia O.
+* Mercy
+* Enoch
+* Kofi
+* Awura
+* Emelia
+* Richmond S.
+* Solomon
+* Phillip
+* Faakor
+* Manfo
+* Josh
+* Daniel
+* Mermose
+</details>
+
+<details>
+  <summary><strong>2023 Atelier Virtuel (24/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu virtuellement le 24 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Jonas Riise
+* Thomas Lindseth
+* André "Eilert" Eilertsen
+* Eystein Hansen
+</details>
+
+<details>
   <summary><strong>2023 Séoul, Atelier de la Corée du Sud (24/06)</strong></summary>
 
 De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Séoul, en Corée du Sud, le 24 juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
@@ -381,6 +703,65 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 * EUN JAE CHOI
 * NA GYEONG KIM
 * JADEN CHOI
+</details>
+
+<details>
+  <summary><strong>2023 Abu Dhabi, UAE Workshop (25/06)</strong></summary>
+
+En outre, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Abu Dhabi, Émirats arabes unis le 25 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Amir Azem
+* Ian Arden
+* Madina Abdibayeva
+* BTBF (Yu Kagaya)
+* محمد الظاهري
+* Tegegne Tefera
+* Rami Hanania
+* Tania Debs
+* Khalil Jad
+* Mohamed Jamal
+* Ruslan Yakubov
+* OUSHEK Mohamed eisa
+* Shehryar
+* Wael Ben Younes
+* Santosh Ray
+* Juana Attieh
+* Nadim Karam
+* DubaistakePool
+* HAWAK Pool
+* LALKUL Stake Pools
+</details>
+
+<details>
+  <summary><strong>2023 Williamsburg, Atelier de New York (25/06)</strong></summary>
+
+De plus, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Williamsburg, New York le 25 juin 2023 pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Pi
+* Joseph
+* Skyler
+* Forrest
+* Gabriel
+* Newman
+</details>
+
+<details>
+  <summary><strong>2023 Lagos, Atelier de Nigéria (28/06)</strong></summary>
+
+En outre, nous tenons à remercier tous les participants à l'atelier qui s'est tenu à Lagos, au Nigeria, le 28 juin 2023, pour leurs précieuses contributions à ce CIP et pour s'être fait champion actif de la vision de Cardano pour une gouvernance minimale viable. Ceux-ci inclus:
+
+* Jonah Benson
+* Augusta
+* Ubio Obu
+* Olumide Hrosuosegbe
+* Veralyn Chinenye
+* Ona Ohimer
+* William Ese
+* Ruth Usoro
+* William P
+* Esther Simi
+* Daniel Effiom
+* Akinkurai Toluwalase
 </details>
 
 <details>
