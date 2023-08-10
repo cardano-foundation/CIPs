@@ -887,7 +887,7 @@ by enacting a hard-fork do not have unintended consequences in combination with 
 The following table details the ratification requirements for each governance action scenario. The columns represent:
 
 * **Governance action type**<br/>
-  The type of governance action. Note that the protocol parameter updates are grouped into three categories.
+  The type of governance action. Note that the protocol parameter updates are grouped into four categories.
 
 * **Constitutional committee (abbrev. CC)**<br/>
   A value of ✓ indicates that the constitutional committee must approve this action.<br/>
