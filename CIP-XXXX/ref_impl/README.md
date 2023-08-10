@@ -22,15 +22,7 @@ In addition, this standard allows royalties to be split between multiple address
 
 ## Specification
 
-### Background
-
-This specification is largely based on [the royalty specification in Nebula](https://github.com/spacebudz/nebula/tree/main#royalty-info-specification), with a couple key departures:
-
-- The royalty token is recommended to be locked at a script address, rather than stored in the user's wallet. This encourages projects to guarantee royalties won't change by sending their royalties to an always-fails (or similar) script address, but still allows for creative royalty schemes and minimizes disruption to existing projects.
-
-- The policyId of the royalty NFT must match that of the reference NFT. This enables lookups based on the user token in the same way as is done for the tokens specified in the original CIP 68 standard.
-
-### 500 Royalty Standard
+### 500 Royalty Datum Standard
 
 The following defines the `500` Royalty NFT standard with the registered `asset_name_label` prefix value
 
@@ -52,7 +44,7 @@ Example:\
 `royalty NFT`: `(500)Royalty`\
 `reference NFT`: `(100)Test123`
 
-#### Metadata
+#### 500 Datum Metadata
 
 The royalty info datum is specified as follows (CDDL):
 
@@ -84,7 +76,7 @@ extra = plutus_data
 royalty_info = #6.121([royalty_recipients, version, extra])
 ```
 
-##### Example of onchain variable fee calculation:
+#### Example of onchain variable fee calculation:
 ```
 ; Given a royalty fee of 1.6% (0.016)
 
@@ -97,6 +89,25 @@ royalty_info = #6.121([royalty_recipients, version, extra])
 Because the computational complexity of Plutus primitives scales with size, this approach significantly minimizes resource consumption.
 
 To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the script address of a validator that ensures the specified fees are not arbitrarily changed, such as an always-fails validator.
+
+### Reference Datum Royalty Flag
+
+If not specified elsewhere in the token's datums, a malicious user could send transactions to a protocol which do not reference the royalty datum. For full assurances, a new optional flag should be added to the reference datum
+
+```
+extra = 
+	{
+		...
+
+		? royalty_included : big_int
+	}
+```
+
+- If the field is present and > 1 the validators must require a royalty input.
+- If the field is present and set to 0 the validators don't need to search for a royalty input.
+- If the field is not present, validators should accept a royalty input, but not require one.
+
+### Examples
 
 #### Retrieve metadata as 3rd party
 
@@ -119,6 +130,23 @@ We want to bring the royalty metadata of the NFT `d5e6bf0500378d4f0da4e8dde6bece
 ### Rationale
 
 The specification here is made to be as minimal as possible. This is done with expediency in mind and the expectation that additional changes to the specification may be made in the future. The sooner we have a standard established, the sooner we can make use of it. Rather than attempting to anticipate all use cases, we specify with forward-compatibility in mind.
+
+#### 500 Royalty Token Datum
+
+This specification is largely based on [the royalty specification in Nebula](https://github.com/spacebudz/nebula/tree/main#royalty-info-specification), with a couple key departures:
+
+- The royalty token is recommended to be locked at a script address, rather than stored in the user's wallet. This encourages projects to guarantee royalties won't change by sending their royalties to an always-fails (or similar) script address, but still allows for creative royalty schemes and minimizes disruption to existing projects.
+
+- The policyId of the royalty NFT must match that of the reference NFT. This enables lookups based on the user token in the same way as is done for the tokens specified in the original CIP 68 standard.
+
+#### Reference Datum Flag
+
+In addition to providing a way to create guaranteed royalties, this has several advantages:
+
+- Backwards Compatibility - Existing royalty implementations will still work, just not have the same assurances.
+- Minimal Storage Requirement - An optional boolean has about the smallest memory impact possible. This is especially important because it's attached to the - Reference NFT and will be set for each individual NFT.
+- Intra-Collection Utility - This already allows for minting a collection with some NFTs with royalties and some without. A future version of this standard will likely make use of this field to allow for multiple versions of royalties for even more granular control.
+
 
 ## Backward Compatibility
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
