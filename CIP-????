@@ -14,7 +14,16 @@ Relation: This effort will be presented for the Cardano Summit Hackathon 2023 [h
 ## DRAFT PRE-NOTE
 [Please note this is my first draft/attempt at proposing a CIP, so I am sorry if it reads a bit rough]
 As our solution combines several functions around a "Blueprint NFT" I will be splitting these functionalities later on based on community feedback and providing new simpler CIP suggestions where needed. 
-But for now, to get a "full" overview of what we are trying to achieve, I present them all under one.
+---------------------------------------------------------------------------
+| Suggestion on how to split this effort moving forward                   |
+|                                                                         |
+| * CIP-Blueprint NFT (product incentives through NFT + ext. metadata)    |
+| * CIP-NFT Ownership (incl AI generated NFT's & share)                   |
+| * CIP-FT function in NFT (a shift in handling of e-commerce products)   |
+| * CIP-Wallet Inheritance                                                |
+| * CIP-CC0 NFT (smart contract handling for open sharing/collaboration)  |
+---------------------------------------------------------------------------
+For now, to get a "full" overview of what we are trying to achieve, I present them all under one.
 
 As an overview, the points below are what we will be solving for our use-case for an Online Makerspace. (read; product incentives through NFT's)
 * *Blueprint NFT where we differentiate between;
@@ -80,15 +89,6 @@ A Hammer is a COMPONENT in an iteration for a new product (a hammer with a strin
 Makers currently earn their income from commercial on Youtube videos and refferal links to Amazon. By creating new incentive models for the Makers we allow for open collaboration directly connected with the manufacturing industry.
 The project connects to 10 out of the 17 UN SDG's
 
----------------------------------------------------------------------------
-| Suggestion on how to split this effort moving forward                   |
-|                                                                         |
-| * CIP-Blueprint NFT (product incentives through NFT + ext. metadata)    |
-| * CIP-NFT Ownership (incl AI generated NFT's & share)                   |
-| * CIP-FT function in NFT (a shift in handling of e-commerce products)   |
-| * CIP-Wallet Inheritance                                                |
-| * CIP-CC0 NFT (smart contract handling for open sharing/collaboration)  |
----------------------------------------------------------------------------
 ## Specification
 
 
