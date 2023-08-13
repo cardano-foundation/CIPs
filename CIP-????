@@ -26,7 +26,7 @@ As an overview, the points below are what we will be solving for our use-case fo
 * *Blueprint NFT as a distributed share (multiple owners)
 * *Blueprint CC0 NFT (i.e Decentralizing the Industry)
 * *Blueprint - Rapid Prototyping (Users can copy existing Blueprints into their own Blueprints and make small changes and publish it with their own iterations added, which will incentivize each effort accordingly)
-* *Blueprint NFT with FT added as products within Blueprints (i.e Consumer pays x everytime they run a code / mathematical equation etc. from the Blueprint)
+* *Blueprint NFT with FT added as products within Blueprints (i.e Consumer pays x everytime they run a code / mathematical equation etc. from the Blueprint) This will also be part of validating e-commerce and shopping online from honest actors and not copy-cats.
 * *Inheritance, as Blueprints will continue to generate income even if the Author(s) passes away, a smart contract around account inactivity is added, could also be used f.ex on hardware wallet on mobile phones if lost)
 
 Other functions towards physical Makerspaces / Organisations are left out of this proposal though they play a big part in enabling local collaboration.
@@ -80,9 +80,14 @@ A Hammer is a COMPONENT in an iteration for a new product (a hammer with a strin
 Makers currently earn their income from commercial on Youtube videos and refferal links to Amazon. By creating new incentive models for the Makers we allow for open collaboration directly connected with the manufacturing industry.
 The project connects to 10 out of the 17 UN SDG's
 
------------------------------------------
-| I need some help filling out the rest |
------------------------------------------
+---------------------------------------------------------------------------
+| Suggestion on how to split this effort moving forward                   |
+|                                                                         |
+| * CIP-Blueprint NFT (product incentives through NFT + ext. metadata)    |
+| * CIP-NFT Ownership (incl AI generated NFT's & share)                   |
+| * CIP-FT function in NFT (a shift in handling of e-commerce products)   |
+| * CIP-Wallet Inheritance                                                |
+---------------------------------------------------------------------------
 ## Specification
 
 
