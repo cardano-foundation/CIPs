@@ -1,0 +1,119 @@
+---
+CIP: ?
+Title: Blueprint NFT
+Authors: Roar Holte <roar.holte@youblob.com>
+Comments-URI: https://forum.cardano.org     [use optional tag: nft-blueprint]
+Discord: https://discord.gg/86UDyuPcnc
+Status: Draft
+Type: Standards
+Created: 2023-08-12
+License: CC-BY-4.0
+Requires: CIP25 & CIP86
+Relation: This effort will be presented for the Cardano Summit Hackathon 2023 [https://cardano.hackerearth.com/]
+---
+## DRAFT PRE-NOTE
+[Please note this is my first draft/attempt at proposing a CIP, so I am sorry if it reads a bit rough]
+As our solution combines several functions around a "Blueprint NFT" I will be splitting these functionalities later on based on community feedback and providing new simpler CIP suggestions where needed. 
+But for now, to get a "full" overview of what we are trying to achieve, I present them all under one.
+
+As an overview, the points below are what we will be solving for our use-case for an Online Makerspace. (read; product incentives through NFT's)
+* *Blueprint NFT where we differentiate between;
+* – Blueprint Author (i.e Artist - currently CIP-25/86 and earns a 5% incentive everytime the NFT is resold)
+* – Blueprint Team (several Artists/Authors collaborating, where the 5% incentive is split within the team)
+* – Blueprint Owner (new incentive models for ownerships around a NFT as they generate income)
+* - Blueprint Metadata (which products/components/tools are combined with what and in which step (how this is solved will later rely heavily on how AI operates))
+* *Blueprint AI incentives (who has ownership to what AI produces and sells in the future)
+* *Blueprint NFT as a distributed share (multiple owners)
+* *Blueprint CC0 NFT (i.e Decentralizing the Industry)
+* *Blueprint - Rapid Prototyping (Users can copy existing Blueprints into their own Blueprints and make small changes and publish it with their own iterations added, which will incentivize each effort accordingly)
+* *Blueprint NFT with FT added as products within Blueprints (i.e Consumer pays x everytime they run a code / mathematical equation etc. from the Blueprint)
+* *Inheritance, as Blueprints will continue to generate income even if the Author(s) passes away, a smart contract around account inactivity is added, could also be used f.ex on hardware wallet on mobile phones if lost)
+
+Other functions towards physical Makerspaces / Organisations are left out of this proposal though they play a big part in enabling local collaboration.
+Several functions are made to make it easier to operate an organiztion/makerspace and understand local innovation along with value generation by enabling such. ++
+
+## Material
+Whitepaper: https://www.youblob.com/whitepaper
+Videos: https://www.youtube.com/@youblobdotcom
+Beta release: https://www.youblob.com [test blueprint functionality]
+Mock-ups: https://www.figma.com/file/AnrAqPskGEO8CtpVio1R6Z/Youblob
+Dora BUIDL: https://dorahacks.io/buidl/6531
+Cardano Source code: https://bitbucket.org/youblob/ada/src/master/
+
+## Abstract
+
+A Blueprint NFT is a recipie on how to build something, can be a DIY project or a company explaining a use-case on their own products, as the Blueprint directly connects tools, products and materials used into the Bills Of Material in the Blueprint.
+Our main purpose is to enable new incentive models for Makers and their DIY projects, along with establishing new information channels back to the Industry.
+Once a Blueprint is converted to a Blueprint NFT, no more edits can be done on the converted Blueprint.
+
+## User Journey Pre-requisites;
+- Cardano native wallet (or Lace) implemented giving each User/Company/Organization a digital wallet and DID:identity upon registration.
+
+## User Journey
+- Manufacturer registers and sets their % revenue model on their products on what Makers can earn by using their products in Blueprints.
+- Maker registers and are able to post ideas and improvements through Blueprints by just linking products directly into their blueprint steps and giving explanations on its uses. 
+- By publishing a Blueprint the User becomes Blueprint Author and Blueprint Owner. If it was made through a collaborative effort as a Team, the initiator of the Blueprint is able to allocate % for each participating member, which will split the revenue model accordingly.
+- Manufacturer and everyone else is able to see all the different Blueprints connected to different products.
+- When a Consumer purchase products through a Blueprint, it provides a revenue stream back to the Blueprint Owner(s) based on the Manufacturer set % revenue model for each product.
+- As a Blueprint NFT Owner, I am able to put a price tag on my idea and sell it in the open space.
+- Purchasing a Blueprint NFT makes the buyer the new Blueprint Owner [100%] and will earn revenue from sales done through that Blueprint
+- We are currently looking in to having multiple owners, and convert the Blueprint NFT into a share, making purchases of a NFT similar to a stock [split Blueprint Owner 100% ownership] which should be fairly simple to implement. This will allow for ideas in the open space to have a fluid automated mechanic and present actual value of sharing ideas/collaborating over time.
+- Users are able to set an inheritance wallet through their profile along with time before it should be set in effect. [account inactivity of 1 - 3 years]. By default the inheritance wallet is set to the Youblob Treasury wallet that are used towards UN SDG, Makerspaces and Maker projects mainly in the undeveloped world to help them build and become sustainable. Users will get notification before the inheritance rule is set in effect.
+
+## Terminology
+To understand the Blueprint terminology (and how AI will operate) please understand that a PRODUCT can be MANY THINGS.
+Lets take the example of a SIMPLE Hammer consisting of a wooden handle and a steel head.
+- A manufacturer can sell a Hammer as a FINISHED PRODUCT
+- A Maker can explain how to CREATE a Hammer using wood and steel through a Blueprint
+- A Maker can use a Hammer as a TOOL in a Blueprint
+- Each COMPONENT of the hammer are also products, wood handle f.ex
+- A Maker can ITERATE on a hammer, adding new components and functionality to it (f.ex a G-Force sensor that show Force on each hit)
+- A Maker can REVERSE ENGINEER the hammer making it into something else based on amount of steel needed for the other effort.
+- A manufacturer will see all the different USE-CASES (as a Tool) and ITERATIONS (as a component) around the hammer
+Summary;
+A Hammer is a PRODUCT that can be sold or split into seperate parts
+A Hammer is a TOOL used to build other parts
+A Hammer is a COMPONENT in an iteration for a new product (a hammer with a string attached that rings a ship bell f.ex)
+
+
+## Motivation
+Makers currently earn their income from commercial on Youtube videos and refferal links to Amazon. By creating new incentive models for the Makers we allow for open collaboration directly connected with the manufacturing industry.
+The project connects to 10 out of the 17 UN SDG's
+
+-----------------------------------------
+| I need some help filling out the rest |
+-----------------------------------------
+## Specification
+
+
+
+## Metadata
+
+
+### Metadata JSON schema
+
+
+
+### Metadata example including the transaction metadata label
+
+
+## Rationale
+
+The format of the `content` field is required to be an array of 64 bytes chunks, as this is the maximum size of a JSON field in the Cardano ledger. 
+Tools, such as wallets, are required to recompose the content of the message.
+
+The current Cardano protocol parameter for maximum transaction size, that will hold the metadata, is around 16KB.
+
+## Backwards compatibility
+
+No backwards compatibility breaking changes are introduced.
+
+## Reference implementation
+
+We leave the decisions, such as what and how to display communication messages, up to downstream tools and wallets.
+
+ * For simple implementation reference, refer to [CIP12 communication tool examples](https://github.com/fivebinaries/cip-metadata-communication-example)
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
