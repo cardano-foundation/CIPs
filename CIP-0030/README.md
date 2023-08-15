@@ -156,7 +156,7 @@ type PaginateError = {|
 
 #### TxSendError
 
-```js
+```ts
 TxSendErrorCode = {
 	Refused: 1,
 	Failure: 2,
