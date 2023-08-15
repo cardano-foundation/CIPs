@@ -124,19 +124,27 @@ files_details =
   {
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
-    src : bounded_bytes ; UTF-8
+    src : uri,
     ; ... Additional properties are allowed
   }
 
 metadata = 
   {
     name : bounded_bytes, ; UTF-8
-    image : bounded_bytes, ; UTF-8
-    ? mediaType : bounded_bytes, ; UTF-8
+
+    ; The image URI must point to a resource with media type (mime type) `image/*`
+    ; (for example `image/png`, `image/jpeg`, `image/svg+xml`, etc.)
+    image : uri,
+
     ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
     ; ... Additional properties are allowed
   }
+
+; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
+; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
+; Data URLs (on-chain data) must comply to RFC2397.
+uri = bounded_bytes ; UTF-8
   
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
@@ -204,17 +212,19 @@ metadata =
     description : bounded_bytes, ; UTF-8
     ? ticker: bounded_bytes, ; UTF-8
     ? url: bounded_bytes, ; UTF-8
-    ? logo: uri,
     ? decimals: int
+
+    ; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
+    ; The logo URI must point to a resource with media type (mime type) `image/png`, `image/jpeg` or `image/svg+xml`.
+    ? logo: uri,
+
     ; ... Additional properties are allowed
   }
 
-; A URI as a UTF-8 encoded bytestring.
-; The URI scheme must be one of `https`, `ipfs` or `data`
-; Do not encode plain file payloads as URI.
-; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
-; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
-uri = bounded_bytes
+; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
+; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
+; Data URLs (on-chain data) must comply to RFC2397.
+uri = bounded_bytes ; UTF-8
 
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
@@ -277,27 +287,28 @@ files_details =
   {
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
-    src : bounded_bytes ; UTF-8
+    src : uri,
     ; ... Additional properties are allowed
   }
 
 metadata = 
   {
     name : bounded_bytes, ; UTF-8
-    image : bounded_bytes, ; UTF-8
-    ? mediaType : bounded_bytes, ; UTF-8
+
+    ; The image URI must point to a resource with media type (mime type) `image/*`
+    ; (for example `image/png`, `image/jpeg`, `image/svg+xml`, etc.)
+    image : uri,
+
     ? description : bounded_bytes, ; UTF-8
     ? decimals: int,
     ? files : [* files_details]
     ; ... Additional properties are allowed
   }
 
-; A URI as a UTF-8 encoded bytestring.
-; The URI scheme must be one of `https`, `ipfs` or `data`
-; Do not encode plain file payloads as URI.
-; 'logo' does not follow the explanation of the token-registry, it needs to be a valid URI and not a plain bytestring.
-; Only use the following media types: `image/png`, `image/jpeg`, `image/svg+xml`
-uri = bounded_bytes
+; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
+; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
+; Data URLs (on-chain data) must comply to RFC2397.
+uri = bounded_bytes ; UTF-8
 
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
@@ -354,9 +365,11 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 
 ## References
 
-- CIP-0025: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025
-- CIP-0031: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031
-- CIP-0067: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
+- [CIP 25 - Media NFT Metadata Standard](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025)
+- [CIP 31 - Reference inputs](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031)
+- [CIP 67 - Asset Name Label Registry](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067)
+- [RFC 3986 - Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986)
+- [RFC 2397 - The "data" URL scheme](https://datatracker.ietf.org/doc/html/rfc2397)
 
 ## Copyright
 
