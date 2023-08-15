@@ -109,7 +109,7 @@ An extension is an object with a single field `"cip"` that describes a CIP numbe
 
 #### APIError
 
-```js
+```ts
 APIErrorCode {
 	InvalidRequest: -1,
 	InternalError: -2,
