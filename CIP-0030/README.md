@@ -147,7 +147,7 @@ type DataSignError = {
 
 #### PaginateError
 
-```js
+```ts
 type PaginateError = {|
     maxSize: number,
 |};
