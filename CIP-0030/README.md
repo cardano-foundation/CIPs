@@ -101,7 +101,7 @@ Used to specify optional pagination for some API calls. Limits results to {limit
 
 An extension is an object with a single field `"cip"` that describes a CIP number extending the API (as a plain integer, without padding). For example:
 
-```js
+```ts
 { "cip": 30 }
 ```
 
