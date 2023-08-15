@@ -61,7 +61,7 @@ This representation was chosen when possible as it is consistent across the Card
 
 #### DataSignature
 
-```js
+```ts
 type DataSignature = {|
   signature: cbor\<COSE_Sign1>,
   key: cbor\<COSE_Key>,
