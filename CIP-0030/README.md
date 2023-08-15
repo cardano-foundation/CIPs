@@ -81,7 +81,7 @@ transaction_unspent_output = [
 
 then we define
 
-```js
+```ts
 type TransactionUnspentOutput = cbor<transaction_unspent_output>
 ```
 
