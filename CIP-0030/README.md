@@ -129,7 +129,7 @@ APIError {
 
 #### DataSignError
 
-```js
+```ts
 DataSignErrorCode {
 	ProofGeneration: 1,
 	AddressNotPK: 2,
