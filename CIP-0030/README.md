@@ -172,7 +172,7 @@ type TxSendError = {
 
 #### TxSignError
 
-```js
+```ts
 TxSignErrorCode = {
 	ProofGeneration: 1,
 	UserDeclined: 2,
