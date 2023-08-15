@@ -56,12 +56,12 @@ A hex-encoded string of the corresponding bytes.
 
 #### cbor\<T>
 
-A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Multi-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
+A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Multi-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md).
 This representation was chosen when possible as it is consistent across the Cardano ecosystem and widely used by other tools, such as [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib), which has support to encode every type in the binary spec as CBOR bytes.
 
 #### DataSignature
 
-```
+```ts
 type DataSignature = {|
   signature: cbor\<COSE_Sign1>,
   key: cbor\<COSE_Key>,
@@ -81,7 +81,7 @@ transaction_unspent_output = [
 
 then we define
 
-```
+```ts
 type TransactionUnspentOutput = cbor<transaction_unspent_output>
 ```
 
@@ -89,7 +89,7 @@ This allows us to use the output for constructing new transactions using it as a
 
 #### Paginate
 
-```
+```ts
 type Paginate = {|
   page: number,
   limit: number,
@@ -99,9 +99,9 @@ Used to specify optional pagination for some API calls. Limits results to {limit
 
 #### Extension
 
-An extension is an object with a single field `"cip"` that describe a CIP number extending the API (as a plain integer, without padding). For example:
+An extension is an object with a single field `"cip"` that describes a CIP number extending the API (as a plain integer, without padding). For example:
 
-```
+```ts
 { "cip": 30 }
 ```
 
@@ -109,7 +109,7 @@ An extension is an object with a single field `"cip"` that describe a CIP number
 
 #### APIError
 
-```
+```ts
 APIErrorCode {
 	InvalidRequest: -1,
 	InternalError: -2,
@@ -129,7 +129,7 @@ APIError {
 
 #### DataSignError
 
-```
+```ts
 DataSignErrorCode {
 	ProofGeneration: 1,
 	AddressNotPK: 2,
@@ -147,7 +147,7 @@ type DataSignError = {
 
 #### PaginateError
 
-```
+```ts
 type PaginateError = {|
     maxSize: number,
 |};
@@ -156,7 +156,7 @@ type PaginateError = {|
 
 #### TxSendError
 
-```
+```ts
 TxSendErrorCode = {
 	Refused: 1,
 	Failure: 2,
@@ -172,7 +172,7 @@ type TxSendError = {
 
 #### TxSignError
 
-```
+```ts
 TxSignErrorCode = {
 	ProofGeneration: 1,
 	UserDeclined: 2,
@@ -192,13 +192,13 @@ In order to initiate communication from webpages to a user's Cardano wallet, the
 
 #### cardano.{walletName}.enable({ extensions: Extension[] } = {}): Promise\<API>
 
-Errors: APIError
+Errors: `APIError`
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
 
 Upon start, dApp can explicitly request a list of additional functionalities they expect as a list of CIP numbers capturing those extensions. This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface. CIP-0030 provides a set of base interfaces that every wallet must support. Then, new functionalities are introduced via additional CIPs and may be all or partially supported by wallets.
 
-DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the `cardano.{walletName}.extensions` field of the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
+DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the response to `api.getExtensions()` in the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
 
 ##### Can extensions depend on other extensions?
 
@@ -219,7 +219,7 @@ No. It's up to wallet providers to decide which extensions they ought to support
 
 #### cardano.{walletName}.isEnabled(): Promise\<bool>
 
-Errors: APIError
+Errors: `APIError`
 
 Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.enable()` during the current session should succeed and return the `API` object.
 
@@ -245,7 +245,9 @@ Upon successful connection via `cardano.{walletName}.enable()`, a javascript obj
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
-#### api.getExtensions() : Promise\<Extension[]>
+#### api.getExtensions(): Promise\<Extension[]>
+
+Errors: `APIError`
 
 Retrieves the list of extensions enabled by the wallet. This may be influenced by the set of extensions requested in the initial `enable` request.
 
@@ -318,7 +320,7 @@ Requests that a user sign the unsigned portions of the supplied transaction. The
 
 Errors: `APIError`, `DataSignError`
 
-This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
+This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
 * `alg` (1) - must be set to `EdDSA` (-8)
 * `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
@@ -364,7 +366,7 @@ We use object as extensions for now to leave room for adding fields in the futur
 
 Extensions can be seen as a smart versioning scheme. Except that, instead of being a monotonically increasing sequence of numbers, they are multi-dimensional feature set that can be toggled on and off at will. This is a versioning "à-la-carte" which is useful in a context where:
 
-1. There are multiple concurrent standardization efforts on different fronts to accomodate a rapidly evolving ecosystem;
+1. There are multiple concurrent standardization efforts on different fronts to accommodate a rapidly evolving ecosystem;
 2. Not everyone agrees and has desired to support every existing standard;
 3. There's a need from an API consumer standpoint to clearly identify what features are supported by providers.
 
