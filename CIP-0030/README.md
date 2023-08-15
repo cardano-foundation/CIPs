@@ -89,7 +89,7 @@ This allows us to use the output for constructing new transactions using it as a
 
 #### Paginate
 
-```js
+```ts
 type Paginate = {|
   page: number,
   limit: number,
