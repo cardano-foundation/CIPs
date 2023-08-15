@@ -2,8 +2,9 @@
 CIP: 50
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0050/README.md
 Title: Recompensas de participación basadas en el apalancamiento de promesas
-Revision: NA
-Translators: Juan Montano DOT5
+Revision: 2022-05-29
+Translators:
+  - Juan Montano DOT5
 Language: es
 ---
 
