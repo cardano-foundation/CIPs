@@ -15,7 +15,7 @@ Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
-# CIP-????: Decentralized WebRTC dApp-Wallet Communication
+# CIP-0045: Decentralized WebRTC dApp-Wallet Communication
 
 ## Abstract
 
@@ -66,7 +66,7 @@ flowchart LR
     dApp-->|Share public key| Wallet 
 ```
 
-Deeplinks, Universal Links or even a QR code could be used to share the public key. The wallet app would query a list of trackers using the public key to establish the WebRTC connection. Once this has been done, the data is sent peer-to-peer via the WebRTC standard (e.g. to invoke RPC calls).
+Deep links, Universal Links, or even the clipboard could be utilized to share the identifier (public key) on the same device (in cases of a wallet based on web technology like Ionic). For sharing the identifier across different devices, QR codes would come into play. This method could be applied, for example, between a wallet mobile app and a dapp running on a PC, or vice versa. The wallet application would then initiate a query to a list of trackers using this distinct identifier in order to establish the WebRTC connection. After this process is completed, the data is transmitted peer-to-peer following the WebRTC standard, for instance, to invoke RPC calls.
 
 ```mermaid
 flowchart LR
@@ -88,6 +88,17 @@ flowchart LR
     Wallet<--Establish WebRTC data channel\n for peer to peer communication-->dApp
 ```
 
+#### CIP-0013 Compliant Identifiers
+
+The keys (public key and corresponding 64-byte secret key) are generated using a function that implements Ed25519. This function requires a (random) seed, which can also be stored and re-used to ensure that whenever a client employs a dApp or a Wallet, the same key pair is generated consistently, even if the browser or mobile app is restarted. The public key will be used as an identifier for the torrent-based peer discovery. When this identifier is shared through methods like QR codes or links, it needs to be compliant to the following Cardano Uri Scheme [(CIP-0013)](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013): 
+
+| [scheme]	    | [authority] |	[version]  |	[data]    |
+|---------------|-------------|------------|--------------|
+| web+cardano:  |	//connect |	/v1	       | ?identifier= | 
+
+```
+web+cardano://connect/v1?identifier=<public_key>
+```
 ### Proof of Concept 
 
 The idea of using WebTorrent trackers instead of signaling servers for peer discovery was already mentioned in [Aug 2018 by Chris McCormick](https://mccormick.cx/news/entries/on-self-hosting-and-decentralized-software):
