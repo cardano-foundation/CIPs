@@ -200,12 +200,15 @@ Upon start, dApp can explicitly request a list of additional functionalities the
 
 DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the `cardano.{walletName}.extensions` field of the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
 
-Extension's endpoints should be namespaced by `.cipXXXX.` with the returned `API` object, without any leading zeros. For example; CIP-0123's endpoints should be accessed by:
+It is at the extension author's discretion if they wish to separate their endpoints from the base API via namespacing. Although, it is highly recommend that authors do namespace all of their extensions. If namespaced, endpoints must be preceded by `.cipXXXX.` from the `API` object, without any leading zeros.
 
+For example; CIP-0123's endpoints should be accessed by:
 ```ts
 api.cip123.endpoint1()
 api.cip123.endpoint2()
 ```
+
+Authors should be careful when omitting namespacing. Omission should only be considered when creating endpoints to override those defined in this specification or other extensions. Even so when overriding; the new functionality should not prevent dApps from accessing past functionality thus overriding must ensure backwards compatibility.
 
 ##### Can extensions depend on other extensions?
 
@@ -377,7 +380,7 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 
 #### Namespacing Extension
 
-By explicitly namespacing each enabled extension we aim to improve the usability of extensions for dApps. This prevents possible polymorphism of extension endpoints, which should also improve complexity of wallet implementations.
+By encouraging the explicit namespacing of each extension we aim to improve the usability of extensions for dApps. By allowing special cases where namespacing can be dropped we maintain good flexibility in extension design.
 
 ## Path to Active
 
@@ -394,8 +397,8 @@ By explicitly namespacing each enabled extension we aim to improve the usability
 ### Implementation Plan
 
 - [x] Provide some reference implementation of wallet providers
-  - [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
-  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
+  - [Berry-Pool/nami-wallet](https://github.com/berry-pool/nami/blob/4d7539b2768464480a9cff53a2d66af9879f8534/src/pages/Content/injected.js)
+  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/f4eabb25eedd564821514059479835601f8073ab/packages/yoroi-connector/example-cardano/index.js)
 
 - [x] Provide some reference implementation of the dapp connector
   - [cardano-foundation/connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)
