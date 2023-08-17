@@ -15,7 +15,10 @@ Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
+<<<<<<< HEAD
 # CIP-0045: Decentralized WebRTC dApp-Wallet Communication
+=======
+>>>>>>> 57e0ad4094d21480c2255b36e20f06fb8df0436e
 
 ## Abstract
 
