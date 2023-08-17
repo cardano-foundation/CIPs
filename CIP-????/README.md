@@ -15,11 +15,6 @@ Created: 2022-11-29
 License: CC-BY-4.0
 ---
 
-<<<<<<< HEAD
-# CIP-0045: Decentralized WebRTC dApp-Wallet Communication
-=======
->>>>>>> 57e0ad4094d21480c2255b36e20f06fb8df0436e
-
 ## Abstract
 
 We want to introduce a decentralized communication method between dApps and wallets based on WebTorrent trackers and WebRTC. This CIP also contains a proof of concept implementation injecting the wallet rpc methods into the dApps global window object similar to [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030).
