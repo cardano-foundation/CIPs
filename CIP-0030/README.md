@@ -210,6 +210,8 @@ api.cip123.endpoint2()
 
 Authors should be careful when omitting namespacing. Omission should only be considered when creating endpoints to override those defined in this specification or other extensions. Even so when overriding; the new functionality should not prevent dApps from accessing past functionality thus overriding must ensure backwards compatibility.
 
+Any namespace omission needs to be fully justified via the proposal's Rationale section, with explanation to why it is necessary. Any potential backwards compatibility considerations should be noted to give wallets and dApps a clear unambiguous direction.
+
 ##### Can extensions depend on other extensions?
 
 Yes. Extensions may have other extensions as pre-requisite. Some newer extensions may also invalidate functionality introduced by earlier extensions. There's no particular rule or constraints in that regards. Extensions are specified as CIP, and will define what it entails to enable them.
@@ -220,7 +222,7 @@ Yes. They all are CIPs.
 
 ##### Can extensions add their own endpoints and/or error codes?
 
-Yes. Extensions may introduce new endpoints or error codes, and modify existing ones. Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
+Yes. Extensions may introduce new endpoints or error codes, and modify existing ones. Although, it is recommended that endpoints are namespaced. Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
 
 ##### Are wallet expected to implement all extensions?
 
