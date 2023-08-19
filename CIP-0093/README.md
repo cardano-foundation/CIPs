@@ -18,7 +18,7 @@ The proposed Cardano Improvement Proposal (CIP) outlines a conventional structur
 
 ## Motivation
 
-The cardano wallets have the ability to sign arbitrary piece of data as we can see in the [Message signing CIP-0008](/CIP-0008/README.md). All wallets implement the method ```api.signData(addr: Address, payload: Bytes): Promise<DataSignature>``` defined in [Cardano dApp-Wallet Web Bridge CIP-0030](/CIP-0030/README.md).
+The cardano wallets have the ability to sign arbitrary piece of data as we can see in the [Message signing CIP-0008](./CIP-0008/README.md). All wallets implement the method ```api.signData(addr: Address, payload: Bytes): Promise<DataSignature>``` defined in [Cardano dApp-Wallet Web Bridge CIP-0030](./CIP-0030/README.md).
 
 dApps generate arbritary payloads as byte arrays. These payloads are signed and included in the protected headers of the signatures. The wallets are responsible for showing the payload data to the user, who will proceed to sign or reject the payload. It's a common practice to encode a string or a JSON string but there isn't any standard for the way to construct and to show this data.
 
