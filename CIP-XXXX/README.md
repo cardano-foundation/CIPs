@@ -150,3 +150,30 @@ In addition to providing a way to create guaranteed royalties, this has several 
 
 ## Backward Compatibility
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
+
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [ ] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved with NFT projects to review any weaknesses or areas of improvement.
+- [ ] Guidelines and examples of publication of data as well as discovery and validation should be included as part of of criteria for acceptance.
+- [ ] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Reference Implementation](./ref_impl/)
+- [ ] Implementation and use demonstrated by the community: NFT Projects, Blockchain Explorers, Wallets, Marketplaces.
+
+### Implementation Plan
+
+1. Publish open source reference implementation and instructions related to the creation, storage and reading of royalty utxos.
+2. Implement in open source libraries and tooling such as [Lucid](https://github.com/spacebudz/lucid), [Blockfrost](https://github.com/blockfrost/blockfrost-backend-ryo), etc.
+3. Achieve additional "buy in" from existing community actors and implementors such as: blockchain explorers, token marketplaces, minting platforms, wallets.
+
+## References
+
+- CIP-0027: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0027
+- CIP-0031: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031
+- CIP-0067: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
+- CIP-0068: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
