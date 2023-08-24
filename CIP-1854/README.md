@@ -238,7 +238,7 @@ CC-BY-4.0
 [rfc8610]: https://tools.ietf.org/html/rfc8610
 [rfc8152]: https://tools.ietf.org/html/rfc8152
 [BIP-0032]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
-[CIP-5]: https://github.com/cardano-foundation/CIPs/tree/master/CIP5
+[CIP-5]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005
 [CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852
 [CIP-11]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011
 [ledger-spec.pdf]: https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf
