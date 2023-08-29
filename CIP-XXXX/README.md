@@ -1,6 +1,6 @@
 ---
-CIP: ????
-Title: Royalty Datum Metadata Standard
+CIP: ?
+Title: Royalty Datum Metadata
 Authors: Sam Delaney <sam@ikigaitech.org>
 Comments-URI:
 Status: Proposed
@@ -12,13 +12,13 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal makes use of the onchain metadata pattern established in CIP 68 to provide a way to store royalties with greater assurance and customizability.
+This proposal makes use of the onchain metadata pattern established in [CIP-0068][] to provide a way to store royalties with greater assurance and customizability.
 
 ## Motivation
 
-The inability to create trustless onchain royalty validation with CIP 27 is a major drawback to Cardano NFTs. The pattern defined in CIP 68 represents an opportunity to upgrade the standard to support onchain validation. This CIP aims to eliminate that drawback and demonstrate better support for developers, NFT creators, and NFT collectors, ultimately attracting dapps & NFT projects that would otherwise have taken their talents to another blockchain.
+The inability to create trustless onchain royalty validation with [CIP-0027][] is a major drawback to Cardano NFTs. The pattern defined in CIP-68 represents an opportunity to upgrade the standard to support onchain validation. This CIP aims to eliminate that drawback and demonstrate better support for developers, NFT creators, and NFT collectors, ultimately attracting dapps & NFT projects that would otherwise have taken their talents to another blockchain.
 
-In addition, this standard allows royalties to be split between multiple addresses, another limitation of the CIP 27 royalty schema. Future versions of this standard could  also easily support multiple royalty policies defined for a single collection, applied at the level of individual tokens.
+In addition, this standard allows royalties to be split between multiple addresses, another limitation of the CIP-27 royalty schema. Future versions of this standard could  also easily support multiple royalty policies defined for a single collection, applied at the level of individual tokens.
 
 ## Specification
 
@@ -38,7 +38,7 @@ The `royalty NFT` is an NFT (non-fungible token).
 
 The `royalty NFT` **must** have an identical `policy id` as the collection.
 
-The `asset name` **must** be `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0067/README.md) label `500` followed by the word "Royalty".
+The `asset name` **must** be `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067][] label `500` followed by the word "Royalty".
 
 Example:\
 `royalty NFT`: `(500)Royalty`\
@@ -111,11 +111,11 @@ extra =
 
 #### Retrieve metadata as 3rd party
 
-A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to lookup the royalties. The steps are
+A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalties. The steps are
 
 1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty`
 2. Look up `royalty NFT` and find the output it's locked in.
-3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
+3. Get the datum from the output and look up metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
 #### Retrieve metadata from a Plutus validator
@@ -137,7 +137,7 @@ This specification is largely based on [the royalty specification in Nebula](htt
 
 - The royalty token is recommended to be locked at a script address, rather than stored in the user's wallet. This encourages projects to guarantee royalties won't change by sending their royalties to an always-fails (or similar) script address, but still allows for creative royalty schemes and minimizes disruption to existing projects.
 
-- The policyId of the royalty NFT must match that of the reference NFT. This enables lookups based on the user token in the same way as is done for the tokens specified in the original CIP 68 standard.
+- The policyId of the royalty NFT must match that of the reference NFT. This enables lookups based on the user token in the same way as is done for the tokens specified in the original CIP-68 standard.
 
 #### Reference Datum Flag
 
@@ -167,13 +167,10 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 2. Implement in open source libraries and tooling such as [Lucid](https://github.com/spacebudz/lucid), [Blockfrost](https://github.com/blockfrost/blockfrost-backend-ryo), etc.
 3. Achieve additional "buy in" from existing community actors and implementors such as: blockchain explorers, token marketplaces, minting platforms, wallets.
 
-## References
-
-- CIP-0027: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0027
-- CIP-0031: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031
-- CIP-0067: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
-- CIP-0068: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068
-
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+[CIP-0027]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027
+[CIP-0067]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
+[CIP-0068]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068
