@@ -1,12 +1,13 @@
 ---
 CIP: ?
 Title: Royalty Datum Metadata
-Authors: Sam Delaney <sam@ikigaitech.org>
-Comments-URI:
+Authors: 
+ - Sam Delaney <sdelaney@ikigaitech.org>
+Discussions:
+ - https://github.com/ikigai-github/CIPs/pull/1
 Status: Proposed
-Type: Informational
+Category: Tokens
 Created: 2023-08-08
-Post-History:
 License: CC-BY-4.0
 ---
 
