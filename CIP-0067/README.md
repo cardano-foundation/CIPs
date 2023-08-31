@@ -18,7 +18,7 @@ As more assets are minted and different standards emerge to query data for these
 
 ## Specification
 
-To give issuers the option to classify assets, the `asset_name` MUST be prefixed with the following 4 binary encoded bytes:
+To give issuers the option to classify assets, the `asset_name` MUST be prefixed with 4 bytes encoding the following binary value:
 ```
 [ 0000 | 16 bits label_num | 8 bits checksum | 0000 ]
 ```
