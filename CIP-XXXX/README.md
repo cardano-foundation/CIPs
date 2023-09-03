@@ -35,7 +35,7 @@ type = TransactionSignatureRequest {|
 
 Used to represent a single transaction awaiting a user's signature. More details on {partialSign} can be found in [api.signTx](https://cips.cardano.org/cips/cip30/#apisigntxtxcbortransactionpartialsignboolfalsepromisecbortransactionwitnessset) defined in CIP-30.
 
-### api.signTxs(txs: TransactionSignatureRequest[]): Promise\<cbor\<transaction_witness_set>[]>
+### api.cip????.signTxs(txs: TransactionSignatureRequest[]): Promise\<cbor\<transaction_witness_set>[]>
 
 Errors: `APIError`, `TxSignError`
 
