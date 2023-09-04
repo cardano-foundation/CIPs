@@ -6,10 +6,16 @@ Status: Proposed
 Authors:
   - Ryan Williams <ryan.williams@iohk.io>
 Implementors:
+  - Eternl <https://eternl.io/>
   - Lace <https://www.lace.io/>
+  - NuFi <https://nu.fi/>
+  - Ryan Williams <ryan.williams@iohk.io>
+  - Typhon <https://typhonwallet.io/>
+  - Yoroi <https://yoroi-wallet.com/>
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/509
   - https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
+  - https://discord.com/channels/826816523368005654/1143258005354328156/1143272934966837309
 Created: 2022-02-24
 License: CC-BY-4.0
 ---
@@ -91,11 +97,11 @@ within CIP-30.
 // TODO: Move this into a more appropriate **separate** CIP.
 
 The Conway ledger era introduces a new _first class_ credential in
-[`voting_credential`](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L331).
+[`drep_credential`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L332).
 This is used to identify registered DReps on-chain, via their certificates and
 votes.
 
-Here we introduction of DRep Keys to be used to create `voting_credential`s for
+Here we introduction of DRep Keys to be used to create `drep_credential`s for
 (non-script) registered DReps.
 
 #### Derivation
@@ -384,7 +390,7 @@ client application in a explicit and highly informative way.
 
 Here we extend the capabilities of
 [CIP-30's `.signTx()`](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigntxtx-cbortransaction-partialsign-bool--false-promisecbortransaction_witness_set).
-To allow signatures with `voting_credential` and recognition of Conway ledger
+To allow signatures with `drep_credential` and recognition of Conway ledger
 era transaction fields and certificates.
 
 ##### Expected Inspection Support
@@ -396,32 +402,35 @@ Supporting wallets should be able to recognize and inspect
 all the following certificates and data contained in transaction bodies, in any
 combination.
 
-| Supported Pre-Conway Certificates |
-| --------------------------------- |
-| `stake_registration`              |
-| `stake_deregistration`            |
-| `stake_delegation`                |
-| `pool_registration`               |
-| `pool_retirement`                 |
+| Index | Supported Pre-Conway Certificates |
+| ----- | --------------------------------- |
+|   0   | `stake_registration`              |
+|   1   | `stake_deregistration`            |
+|   2   | `stake_delegation`                |
+|   3   | `pool_registration`               |
+|   4   | `pool_retirement`                 |
 
-| Supported Conway Certificates   |
-| ------------------------------- |
-| `reg_cert`                      |
-| `unreg_cert`                    |
-| `vote_deleg_cert`               |
-| `stake_vote_deleg_cert`         |
-| `stake_reg_deleg_cert`          |
-| `vote_reg_deleg_cert`           |
-| `stake_vote_reg_deleg_cert`     |
-| `reg_committee_hot_key_cert`    |
-| `unreg_committee_hot_key_cert`  |
-| `reg_drep_cert`                 |
-| `unreg_drep_cert`               |
+| Index | Supported Conway Certificates   |
+| ----- | ------------------------------- |
+|   5   | `reg_cert`                      |
+|   6   | `unreg_cert`                    |
+|   7   | `vote_deleg_cert`               |
+|   8   | `stake_vote_deleg_cert`         |
+|   9   | `stake_reg_deleg_cert`          |
+|  10   | `vote_reg_deleg_cert`           |
+|  11   | `stake_vote_reg_deleg_cert`     |
+|  12   | `auth_committee_hot_cert`       |
+|  13   | `resign_committee_cold_cert`    |
+|  14   | `reg_drep_cert`                 |
+|  15   | `unreg_drep_cert`               |
+|  16   | `update_drep_cert`              |
 
-| Supported Conway Transaction Field Data |
-| --------------------------------------- |
-| `voting_procedure`                      |
-| `proposal_procedure`                    |
+| Transaction Index | Supported Conway Transaction Field Data |
+| ----------------- | --------------------------------------- |
+|        19         | `voting_procedure`                      |
+|        20         | `proposal_procedure`                    |
+|        21         | `coin`         (current treasury value) |
+|        22         | `positive_coin`          (new donation) |
 
 All other potential transaction field inclusions
 [0-18](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L54-#L69),
@@ -431,14 +440,14 @@ should be able to be recognized by supporting wallets.
 
 In the Conway ledger era two certificate types are depreciated `genesis_key_delegation` and `move_instantaneous_rewards_cert`. If the wallet receives a transaction containing a depreciated certificate it should return a `TxSignError` with an error code of `DepreciatedCertificate`.
 
-| Unsupported Pre-Conway Certificates |
-| ----------------------------------- |
-| `genesis_key_delegation`            |
-| `move_instantaneous_rewards_cert`   |
+| Index | Unsupported Pre-Conway Certificates |
+| ----- | ----------------------------------- |
+|   5   | `genesis_key_delegation`            |
+|   6   | `move_instantaneous_rewards_cert`   |
 
 ##### Expected Witness Support
 
-Although constitutional committee certificates and stake pool certificates should be able to be recognized they should not be able to be correctly witnessed by wallets. Wallet's should only support witnesses using Payment, Stake and DRep keys.
+Although constitutional committee certificates and stake pool certificates should be able to be recognized they should not be able to be correctly witnessed by wallets following this API. Wallet's should only support witnesses using payment, stake and DRep keys.
 
 ##### Returns
 
@@ -547,16 +556,16 @@ hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 ### Versioning of this proposal
 
 Whilst this CIP is in it's unmerged proposed state, it remains very fluid and
-substantial changes can happen, so I would advise against any implementation.
-Once more feedback is received, maturing this design I think implementations can
-safely emerge, alongside this proposal's merger into the CIPs repository. Once
-merged only small necessary changes should be made, ideally in backwards
-compatible fashion.
+substantial changes can happen, so we would advise against any implementation.
+Once more feedback is received, maturing this design, implementations can safely
+emerge, alongside this proposal's merger into the CIPs repository. Once merged
+only small necessary changes should be made, ideally in backwards compatible
+fashion.
 
 This, in tandem with, maturing implementations should move this proposal to an
 active state where only small backwards compatible changes can be made. If any
 large changes are needed once active then a new proposal should be made to
-replace this one. This I believe aligns with the (new) extendibility design of
+replace this one. This we believe aligns with the (new) extendibility design of
 CIP-0030.
 
 ### Examples of Flows
@@ -593,7 +602,7 @@ wallet has already been made via `cardano.{wallet-name}.enable({ "cip": 95 })`.
 2. **Construct Delegation:** The client application uses CIP-30 endpoints to
    query the wallet's UTxO set and payment address. A DRep delegation
    certificate
-   ([`vote_deleg_cert`](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L302))
+   ([`vote_deleg_cert`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L303))
    is constructed by the app using the chosen DRep's ID and wallet's stake
    credential. A transaction is constructed to send 1 ADA to the wallet's
    payment address with the certificate included in the transaction body.
@@ -623,7 +632,7 @@ a registered DRep.
 2. **Construct Registration**: The client application uses CIP-30 endpoints to
    query the wallet's UTxO set and payment address. A DRep registration
    certificate
-   ([`reg_drep_cert`](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L311))
+   ([`reg_drep_cert`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L312))
    is constructed by the app using the wallet's DRep ID and the provided
    metadata anchor. A transaction is constructed to send 1 ADA to the wallet's
    payment address with the certificate included in the transaction body.
@@ -631,7 +640,7 @@ a registered DRep.
    `.signTx()`. The wallet inspects the content of the transaction, informing
    the user of the client app's intension. If the user confirms that they are
    happy to sign, the wallet returns the appropriate witnesses, of payment key
-   and DRep key (`voting_credential`).
+   and DRep key (`drep_credential`).
 4. **Submit:** The app will add the provided witnesses into the transaction body
    and then pass the witnessed transaction back to the wallet for submission via
    `.submitTx()`.
@@ -690,9 +699,9 @@ majority of participants thus we aim to cast a wide net with this specification.
 
 In this specification we have placed explicit boundaries on what should not be
 supported with `.signTx()`. Those being not witnessing
-[stake pool](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L292C1-L294C43)
+[stake pool](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L294C1-L295C43)
 or
-[constitutional committee](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L309C1-L310C60),
+[constitutional committee](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L310C1-L311C61),
 certificates and not inspecting genesis key delegation or MIR certificates.
 
 From speaking to CIP-30 implementors it seems reasonable that there does not
@@ -702,7 +711,7 @@ prefer the utility and security advantages not operating via light wallets. Due
 to the [Lack of Specificity](#lack-of-specificity) of CIP-30 we felt it
 necessary to explicitly state the lack of support in this extension.
 
-[Constitutional committee certificates](https://github.com/input-output-hk/cardano-ledger/blob/d42dbc00b27ff2731211b45f22cec172a070e3e6/eras/conway/test-suite/cddl-files/conway.cddl#L309C1-L310C60)
+[Constitutional committee certificates](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L310C1-L311C61)
 are not supported by this specification's `.signTx()` for two reasons. First,
 this specification is only focussed on the need's of Ada holders and DReps.
 Secondly, the credentials used by the constitutional committee, are a hot and
@@ -976,8 +985,9 @@ straight forward for wallets implementing both APIs.
     being a wallet web bridge.
 - <s>Should there be a way for the optional sharing of governance state, from
   wallet to client?</s>
-- How to represent DRep keys in signData endpoint?
 - Should DRep key be moved into CIP-1852?
+  - <s>Yes it will be moved to it's own CIP with reference added to
+    CIP-1852.</s>
 
 ## Path to Active
 
@@ -992,14 +1002,20 @@ straight forward for wallets implementing both APIs.
 - [x] Provide a public Discord channel for open discussion of this
       specification.
   - See
-    [`gov-wallet-cip`](https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983)
+    [`wallets-sanchonet`](https://discord.com/channels/826816523368005654/1143258005354328156/1143272934966837309)
     channel in the [IOG Technical Discord](https://discord.gg/inputoutput) under
-    the `🥑BUILD` section (to view you have to opt-in to the Builders group).
+    (to view you have to opt-in to the Sanchonet group in the start-here
+    channel).
 - [x] Author to engage with wallet providers for feedback.
 - [x] Author to run a hackathon workshop with wallet providers.
   - In person and online hackathon run 2023.07.13, outcomes presented here:
     [CIP-95 pull request comment](https://github.com/cardano-foundation/CIPs/pull/509#issuecomment-1636103821).
-- [ ] Resolve all [Open Questions](#open-questions).
+- [x] Resolve all [Open Questions](#open-questions).
+- [x] Author to provide test dApp to test against.
+  - See
+    [cip95-cardano-wallet-connector](https://github.com/Ryun1/cip95-cardano-wallet-connector/tree/master).
+- [x] Author to provide a reference implementation.
+  - See [cip95-demos-wallet](https://github.com/Ryun1/cip95-demos-wallet/).
 - [ ] Author to produce a set of test vectors for wallets to test against.
 
 ## Copyright
