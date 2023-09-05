@@ -1,5 +1,5 @@
 ---
-CIP: CIP-????
+CIP: CIP-0099
 Title: Proof of Onboarding
 Status: Proposed
 Category: Wallets
