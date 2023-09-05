@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 102
 Title: Royalty Datum Metadata
 Authors: 
  - Sam Delaney <sdelaney@ikigaitech.org>
