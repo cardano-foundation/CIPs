@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 101
 Title: Integration of `keccak256` into Plutus
 Status: Proposed
 Category: Plutus
