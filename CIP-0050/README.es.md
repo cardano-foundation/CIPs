@@ -1,13 +1,11 @@
 ---
 CIP: 50
-Título: Actualización de la descentralización de Shelley Voltaire 
-Autor: Michael Liesenfelt <michael.liesenfelt@gmail.com>
-Comments-URI: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
-Estado: Borrador
-Type: Standards
-Created: 2022-04-04
-Licencia: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
-Post-History: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685 https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
+Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0050/README.md
+Title: Recompensas de participación basadas en el apalancamiento de promesas
+Revision: 2022-05-29
+Translators:
+  - Juan Montano DOT5
+Language: es
 ---
 
 # Lista de Potenciales Revisores:
@@ -292,7 +290,7 @@ Esto mejorará rendimientos para la comunidad de delegadores y permitirá a mult
 Copyright 2022 Michael Liesenfelt
 
 Este CIP tiene licencia bajo [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
-Traducido en Español por: Juan Montano, DOT5 SPO
+
 # Declaración de Conflicto de Interés 
 
 El autor es empleado por tiempo completo como Profesor de Asistente en Investigación de Ingeniería Nuclear en la Universidad de Tennessee, recibe cero ganancias del ecosistema de Cardano, no opera ningún stake pool, y no busca apoyo de delegación de la Fundación de Cardano, tiene 23,000 ADA delegados a THOR stake pool.
