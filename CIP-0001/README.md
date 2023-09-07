@@ -158,7 +158,7 @@ Field          | Description
 `CIP`          | The CIP number (without leading 0)
 `Source`       | The canonical GitHub link to the original CIP document
 `Title`        | A translation of the CIP's title
-`Revision`     | The commit hash (8-10 first hex-digits) of the source (e.g. `12ab34cd`)
+`Revision`     | Whenever possible, the commit hash (7 first hex-digits, e.g. `12ab34c`) of the source in the main repository. If the source was not committed to the main repo, use the best known translation date in ISO format (if unknown, use the date posted in the translation's PR branch).
 `Translators`  | A list of translators names and email addresses (e.g. `John Doe <john.doe@email.domain>`)
 `Language`     | An [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) code of the target language (e.g. `fr`)
 
