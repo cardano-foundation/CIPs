@@ -48,8 +48,8 @@ Allowing for bulk signing of transactions can greatly improve user experience in
 
 ### Acceptance Criteria
 In order for this standard to be active, the following should be true:
-- [ ] Implemented by at least two wallets.
-- [ ] Adopted and used by at least one dApp or infrastructure tool to prove usability.
+- [x] Implemented by at least two wallets.
+- [x] Adopted and used by at least one dApp or infrastructure tool to prove usability.
 
 ### Implementation Plan
 Already implemented by dApp(s) and wallet(s).
