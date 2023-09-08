@@ -323,7 +323,7 @@ For example:
 `api.cip95.getPubDRepKey()` -->
 
 To access these functionalities a client application must present this CIP-95
-extension object:
+extension object, as part of the extensions object passed at enable time:
 
 ```ts
 { "cip": 95 }
@@ -356,20 +356,42 @@ The wallet account's public DRep Key.
 | `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
 <!-- prettier-ignore-stop -->
 
-#### `api.getActivePubStakeKeys(): Promise<PubStakeKey[]>`
+#### `api.getRegisteredPubStakeKeys(): Promise<PubStakeKey[]>`
 
-The connected wallet account's active public stake keys (with keys which are
-being used for staking), if the wallet tracks the keys that are used for
-governance then only those keys shall be returned.
+The connected wallet account's registered public stake keys. These keys may or may not control any Ada, but they must all have been registered via a stake key registration certificate.
 
-These are used by the client to identify the user's on-chain CIP-1694
-interactions, i.e if a user has delegated to a DRep. Here we allow for multiple
-stake credentials to provided at once for the case of
-[multi-stake key wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0018).
+If none of the wallets stake keys are registered then an empty array is returned.
+
+These keys can then be used by the client to identify the user's on-chain CIP-1694
+interactions, and also create vote delegation certificates which can be signed via `.signTx()`.
 
 ##### Returns
 
-An array of the connected user's active public stake keys.
+An array of the connected user's registered public stake keys.
+
+##### Errors
+
+<!-- prettier-ignore-start -->
+| Error Type   | Error Code       | Return Condition                                                                          |
+| ------------ | ---------------- | ----------------------------------------------------------------------------------------- |
+| `APIError`   | `InvalidRequest` | Returned if a input parameter is passed.                                                  |
+| `APIError`   | `InternalError`  | Returned if there is a generic internal error occurred during execution of this API call. |
+| `APIError`   | `Refused`        | Returned if there is a refusal, could be wallet disconnection or extension is revoked.    |
+| `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
+<!-- prettier-ignore-stop -->
+
+#### `api.getUnregisteredPubStakeKeys(): Promise<PubStakeKey[]>`
+
+The connected wallet account's unregistered public stake keys. These keys may or may not control any Ada. 
+
+If the wallet does not know the registration status of it's stake keys then it should return them as part of this call. If all of the wallets stake keys are registered then an empty array is returned.
+
+These keys can then be used by the client to identify the user's on-chain CIP-1694
+interactions, i.e if a user has delegated to a DRep.
+
+##### Returns
+
+An array of the connected user's unregistered stake keys.
 
 ##### Errors
 
@@ -553,7 +575,7 @@ hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
 
 <!-- prettier-ignore-stop -->
 
-### Versioning of this proposal
+### Versioning
 
 Whilst this CIP is in it's unmerged proposed state, it remains very fluid and
 substantial changes can happen, so we would advise against any implementation.
@@ -577,12 +599,13 @@ application and wallet, then a subsequent _login_.
 
 1. **Connection:** User indicates to the client their intent to connect, causing
    client offer a list of supported wallets, user selects their desired wallet.
-   The client will then invoke `.{wallet-name}.enable({ "cip": 95 })` from the
-   shared `cardano` namespace, ensuring to pass in the CIP-95 extension object.
+   The client will then invoke
+   `.{wallet-name}.enable({extensions: [{ "cip": 95 }]})` from the shared
+   `cardano` namespace, ensuring to pass in the CIP-95 extension object.
 2. **Wallet Confirmation:** The wallet indicates through its UI the clients
    intent to connect, the user should then grant permission.
-3. **Share Credentials:** The client invokes both `.getActivePubStakeKeys()` and
-   `.getPubDRepKey()`, causing the connected wallet to share relevant
+3. **Share Credentials:** The client invokes both `.getRegisteredPubStakeKeys()`
+   and `.getPubDRepKey()`, causing the connected wallet to share relevant
    credentials.
 4. **Chain Lookup:** The client uses a chain indexer to work out the governance
    state of the provided credentials. The results of the lookup are then shown
@@ -593,7 +616,8 @@ application and wallet, then a subsequent _login_.
 Assume a _DRep Aggregator and Delegation_ specialized client app, that
 aggregates DRep metadata from DRep registration certificates and renders this
 metadata to show prospective delegators. Assume that connection to a users
-wallet has already been made via `cardano.{wallet-name}.enable({ "cip": 95 })`.
+wallet has already been made via
+`cardano.{wallet-name}.enable({extensions: [{ cip: 95 }]})`.
 
 1. **Choose DRep:** User browses DReps and selects one which align's with their
    values to delegate too. It is up to the client application to choose and
@@ -622,8 +646,8 @@ wallet has already been made via `cardano.{wallet-name}.enable({ "cip": 95 })`.
 
 Assume a _DRep Registration_ specialized client app, that allows people to
 register as a DRep. Assume that connection to a users wallet has already been
-made via `cardano.{wallet-name}.enable({ "cip": 95 })` and that the user is not
-a registered DRep.
+made via `cardano.{wallet-name}.enable({extensions: [{ cip: 95 }]})` and that
+the user is not a registered DRep.
 
 1. **User Indicates Intent:** User indicates to the client that they wish to
    register as a DRep. The client asks the user to provide metadata anchor, this
@@ -861,7 +885,7 @@ clients are aware of this functionality.
 
 ### DRep Key
 
-// todo: once DRep CIP added
+// todo: move to DRep Key CIP
 
 We chose to introduce the concept of a DRep Key, building on top of CIP-1694,
 this we see as a necessary step for wallet implementors. By setting a
