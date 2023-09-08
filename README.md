@@ -89,6 +89,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
+| 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -97,7 +98,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-08-01</i></p>
+<p align="right"><i>Last updated on 2023-09-08</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -128,8 +129,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0098? | [Distributed Artifact Token Metadata](https://github.com/cardano-foundation/CIPs/pull/530) |
 | 0099? | [Proof of Onboarding](https://github.com/cardano-foundation/CIPs/pull/546) |
 | 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
+| 0102? | [Royalty Datum Metadata](https://github.com/cardano-foundation/CIPs/pull/551) |
 
-<p align="right"><i>Last updated on 2023-08-01</i></p>
+<p align="right"><i>Last updated on 2023-09-08</i></p>
 
 ## Cardano Problem Statements (CPS)
 
