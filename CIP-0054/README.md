@@ -191,7 +191,7 @@ This function will return a list of transaction hashes and metadata relating to 
 ```
 For simplicity, we do not include anything other than the txHash and the metadata – since any other relevant details about the transaction can always be encoded into the metadata, there is no need to over-complicate by including other transaction data like inputs, outputs or the date of the transaction etc. That is left for a potential future extension of the API to include more full GraphQL support.
 
-### cardano.nft.getTokens( string address, paginate: Paginate = undefined ) : Promise&lt;Object>
+### `cardano.nft.getTokens( string address, paginate: Paginate = undefined ) : Promise<Object>`
 
 Errors: `APIError`, `PaginateError`
 
