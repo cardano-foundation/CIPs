@@ -29,7 +29,7 @@ Currently, there is no way to sign multiple transactions in bulk, and the experi
 #### TransactionSignatureRequest
 
 ```ts
-type = TransactionSignatureRequest {|
+type TransactionSignatureRequest = {|
   cbor: cbor\<transaction>,
   partialSign: bool = false,
 |};
