@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: CIP-30 ext: Bulk transaction signing
+Title: Web-Wallet Bridge: Bulk transaction signing
 Category: Wallets
 Status: Proposed
 Authors:
