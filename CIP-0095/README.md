@@ -34,10 +34,6 @@ focussed web-based stacks. Here we aim to support the requirements of Ada
 Holders and DReps in the Conway Ledger era, this specification is based on the
 [Draft Conway Ledger Era Specification](https://github.com/input-output-hk/cardano-ledger/tree/master/eras/conway/test-suite/cddl-files).
 
-> **Note** This proposal assumes knowledge of the ledger governance model as
-> outlined within
-> [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
-
 ### Acknowledgments
 
 <details>
@@ -87,7 +83,8 @@ CIP-1694's governance design.
 ## Specification
 
 We define the following section as an extension to the specification described
-within CIP-30.
+within CIP-30. Although currently CIP-30 acts as the defacto Cardano dApp-wallet
+connector, this specification could be applied to similar standards.
 
 > **Note** This specification will evolve as the proposed ledger governance
 > model matures.
@@ -317,23 +314,19 @@ type DataSignError = {
 
 ### Governance Extension API
 
-<!-- These are the CIP-95 methods that should be returned as part of the API object, namespaced by `cip95` without any leading zeros.
+These are the CIP-95 methods that should be returned as part of the API object,
+namespaced by `cip95` without any leading zeros.
 
-For example:
-`api.cip95.getPubDRepKey()` -->
+For example: `api.cip95.getPubDRepKey()`
 
 To access these functionalities a client application must present this CIP-95
 extension object, as part of the extensions object passed at enable time:
 
 ```ts
-{ "cip": 95 }
+.enable({ extensions: [{ cip : 95 }]})
 ```
 
-This extension object is provided during the initial handshake procedure as
-described within
-[CIP-30's Initial API](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#cardanowalletnameenable-extensions-extension----promiseapi).
-
-#### `api.getPubDRepKey(): Promise<PubDRepKey>`
+#### `api.cip95.getPubDRepKey(): Promise<PubDRepKey>`
 
 The connected wallet account provides the account's public DRep Key, derivation
 as described in [DRep Key](#DRep-key).
@@ -380,7 +373,7 @@ An array of the connected user's registered public stake keys.
 | `APIError`   | `AccountChange`  | Returned if wallet has changed account, meaning connection should be reestablished.       |
 <!-- prettier-ignore-stop -->
 
-#### `api.getUnregisteredPubStakeKeys(): Promise<PubStakeKey[]>`
+#### `api.cip95.getUnregisteredPubStakeKeys(): Promise<PubStakeKey[]>`
 
 The connected wallet account's unregistered public stake keys. These keys may or may not control any Ada. 
 
@@ -495,7 +488,7 @@ If `partialSign` is `true`, the wallet only tries to sign what it can. If
 `partialSign` is `false` and the wallet could not sign the entire transaction,
 `TxSignError` shall be returned with the `ProofGeneration` code.
 
-#### `api.signData(addr: Address | DRepID, payload: Bytes): Promise<DataSignature>`
+#### `api.cip95.signData(addr: Address | DRepID, payload: Bytes): Promise<DataSignature>`
 
 Errors: `APIError`, `DataSignError`
 
@@ -845,6 +838,15 @@ as this creates unpredictable wallet behavior for client applications. Such
 behavior was a primary motivator to introduce such an extendability mechanism to
 CIP-30.
 
+#### Namespacing
+
+In this specification we have chosen to explicitly namespace all endpoint except
+`.signTx()` where we omit the namespacing. By not namespacing `.signTx()` we
+intend to offer client apps an override of the CIP-30 `.signTx()`. We chose to
+do this because this `.signTx()` extends the CIP-30 functionality in a backwards
+compatible way. All other endpoints are namespaced to avoid possible collisions
+with other future extensions.
+
 #### Inheriting Endpoints
 
 In this design we chose to extend the capabilities of CIP-30's `.signTx()` and
@@ -963,6 +965,20 @@ Furthermore, in this API we chose to return public keys over key-hashes or
 addresses. Again we believe wallets should just serve public key information and
 it is up to the application to encode and derive addresses as needed. This
 simplifies the overall design and makes implementations easier for wallets.
+
+### Splitting of Stake Key endpoint
+
+For stake keys we have chosen to implement two endpoints where wallets can share
+registered and unregistered stake keys. Originally we had a single endpoint
+which only allowed sharing of registered stake keys. This was problematic for
+wallets which had no registered stake keys, and thus the second endpoint was
+introduced.
+
+We chose to keep a single endpoint for DRep keys, although it would have been
+possible to introduce a second to allow for wallets to activity of their DRep
+keys. This was just for the simplicity of the API. Furthermore, due to the
+design of this proposal it is unlikely that wallets will implement methods to
+track a user's DRep state.
 
 ### Backwards Compatibility
 
