@@ -7,7 +7,7 @@ Authors:
     - Martín Schere
     - Ola Ahlman <ola.ahlman@tastenkunst.io>
 Implementors: 
-    - JPG Store
+    - JPG Store <https://www.jpg.store>
     - Eternl
     - Typhon
 Discussions:
