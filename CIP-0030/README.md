@@ -214,7 +214,7 @@ Any namespace omission needs to be fully justified via the proposal's Rationale 
 
 ##### Draft or Experimental Extensions
 
-Extensions that are draft, in development, or prototyped should not use extension naming nor should they use official namspacing until assigned a CIP number. Draft extension authors are free to test their implementation endpoints by using the [Experimental API](#experimental-api).
+Extensions that are draft, in development, or prototyped should not use extension naming nor should they use official namspacing until assigned a CIP number. Draft extension authors are free to test their implementation endpoints by using the [Experimental API](#experimental-api). Once a CIP number is assigned implementors should move functionality out of the experimental API.
 
 ##### Can extensions depend on other extensions?
 
