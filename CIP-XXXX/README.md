@@ -25,6 +25,7 @@ Currently, there is no way to sign multiple transactions in bulk, and the experi
 
 ## Specification
 
+### Data Types
 ### TransactionSignatureRequest
 
 ```
