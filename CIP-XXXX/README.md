@@ -8,7 +8,7 @@ Authors:
     - Andrew Westberg <andrewwestberg@gmail.com>
 Implementors: [Eternl, newm-chain]
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/588
 Created: 2023-09-03
 License: CC-BY-4.0
 ---
