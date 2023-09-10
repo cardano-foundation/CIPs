@@ -9,7 +9,7 @@ Authors:
 Implementors: 
     - JPG Store <https://www.jpg.store>
     - Eternl <https://eternl.io/>
-    - Typhon
+    - Typhon <https://typhonwallet.io/>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/443
     - https://github.com/cardano-foundation/CIPs/pull/587
