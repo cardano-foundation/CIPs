@@ -168,7 +168,7 @@ The fingerprint of the current token - in the case where we're rendering a child
  
 The content of the 721 key from the metadata json from the mint transaction of the current NFT - if we are rendering on behalf of a child NFT, this will be the metadata from the child NFT.
 
-### cardano.nft.getTransactions( string which,  paginate: Paginate = undefined ) : Promise&lt;Object>
+### `cardano.nft.getTransactions( string which,  paginate: Paginate = undefined ) : Promise<Object>`
 
 Errors: `APIError`, `PaginateError`
 
