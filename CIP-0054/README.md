@@ -215,7 +215,7 @@ This function will return a list of the tokens held by the address specified in 
 }
 ```
 
-### cardano.nft.getFileURL( string id = null, string fingerprint = null ) : Promise&lt;String>
+### `cardano.nft.getFileURL( string id = null, string fingerprint = null ) : Promise<String>`
 
 Errors: `APIError`
 
