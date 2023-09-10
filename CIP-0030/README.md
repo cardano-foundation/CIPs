@@ -214,20 +214,7 @@ Any namespace omission needs to be fully justified via the proposal's Rationale 
 
 ##### Draft or Experimental Extensions
 
-Extensions that are draft, in development, or prototyped should not use extension naming nor should they use official namspacing.
-
-Draft [Extension](#extension)s should instead be referred to as `"x-cip"`, and their number can be arbitrary and should not be expected to be unique. `"x-cip"` numbers should NOT be used with overlap official CIP or draft CIP assignments unless they are the draft extension for the respective CIP. Extensions without an officially assigned CIP number *MUST* use negative numbers until their proposal is officially assigned a number by the CIP process. Namespacing should use the associated `.x-cip`.
-
-For example a extension author (without an assigned number) could use:
-```ts
-{ "x-cip": -123 }
-```
-with namespaced endpoints accessed by:
-```ts
-api.x-cip-123.endpoint1()
-api.x-cip-123.endpoint2()
-``` 
-When a CIP is ratified, the wallet may continue to recognize the `"x-cip"` extension. In this example, the finalized extension CIP that replaces the draft would be `{ "cip": 123 }`. This will allow for a graceful transition from draft to official status of extensions. How long a wallet or dApp will recognize the draft or experimental extension object is up to the individual wallet and dApp.
+Extensions that are draft, in development, or prototyped should not use extension naming nor should they use official namspacing until assigned a CIP number. Draft extension authors are free to test their implementation endpoints by using the [Experimental API](#experimental-api).
 
 ##### Can extensions depend on other extensions?
 
@@ -396,13 +383,6 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 1. There are multiple concurrent standardization efforts on different fronts to accomodate a rapidly evolving ecosystem;
 2. Not everyone agrees and has desired to support every existing standard;
 3. There's a need from an API consumer standpoint to clearly identify what features are supported by providers.
-
-#### Draft Extensions
-
-The reason for using `"x-cip"` for drafts with an official number is to clearly distinguish between draft implementations and the official version. The official CIP can have differences from the final draft that both the dApp and wallet may need to accommodate. Avoiding using the official CIP extension until ratified disambiguates the draft process at the time of ratification.
-This clearly distinguishing between them prevents avoidable compatibility errors should the final draft and ratified CIP differ.
-
-If a wallet is requested to enable both the draft and ratified CIP, it should **ALWAYS** prefer the ratified CIP. For example, a wallet that supported both CIP-62 final and draft would only enable the final CIP-62 extension if the request was to enable `(extensions: {[{"x-cip":62}, {"cip":62}]})`.
 
 #### Namespacing Extensions
 
