@@ -57,6 +57,6 @@ In order for this standard to be active, the following should be true:
 Already implemented by dApp(s) and wallet(s).
 
 ## Copyright
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 
