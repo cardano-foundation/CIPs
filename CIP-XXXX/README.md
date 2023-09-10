@@ -8,7 +8,7 @@ Authors:
     - Ola Ahlman <ola.ahlman@tastenkunst.io>
 Implementors: 
     - JPG Store <https://www.jpg.store>
-    - Eternl
+    - Eternl <https://eternl.io/>
     - Typhon
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/443
