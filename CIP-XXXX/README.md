@@ -6,7 +6,9 @@ Status: Proposed
 Authors:
     - Ola Ahlman <ola.ahlman@tastenkunst.io>
     - Andrew Westberg <andrewwestberg@gmail.com>
-Implementors: [Eternl, newm-chain]
+Implementors:
+- Eternl <https://eternl.io/>
+- newm-chain <https://newm.io/>
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/588
 Created: 2023-09-03
