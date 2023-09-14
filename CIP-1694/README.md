@@ -845,7 +845,7 @@ A governance action is an on-chain event that is triggered by a transaction and 
 | 7. Info                                                       | An action that has no effect on-chain, other than an on-chain record                                                     |
 
 **Any Ada holder** can submit a governance action to the chain.
-They must provide a deposit of `govDeposit` Lovelace, which will be returned when the action is finalized
+They must provide a deposit of `govActionDeposit` Lovelace, which will be returned when the action is finalized
 (whether it is **ratified** or has **expired**).
 The deposit amount will be added to the _deposit pot_, similar to stake key deposits.
 It will also be counted towards the stake of the reward address it will be paid back to, to not reduce the submitter's voting power to vote on their own (and competing) actions.
@@ -1048,7 +1048,7 @@ The **technical group** consists of:
 The **governance group** consists of all the new protocol parameters that are introduced in this CIP:
 * governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$)
 * governance action maximum lifetime in epochs (`govActionLifetime`)
-* governance action deposit (`govDeposit`)
+* governance action deposit (`govActionDeposit`)
 * DRep deposit amount (`drepDeposit`)
 * DRep activity period in epochs (`drepActivity`)
 * minimal constitutional committee size (`ccMinSize`)
