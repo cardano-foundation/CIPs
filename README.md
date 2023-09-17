@@ -50,7 +50,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0022 | [Pool operator verification](./CIP-0022/) | Active |
 | 0023 | [Fair Min Fees](./CIP-0023/) | Proposed |
 | 0024 | [Non-Centralizing Rankings](./CIP-0024/) | Proposed |
-| 0025 | [Media NFT Metadata Standard](./CIP-0025/) | Active |
+| 0025 | [Media Token Metadata Standard](./CIP-0025/) | Active |
 | 0026 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 0027 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
 | 0028 | [Protocol Parameters (Alonzo Era)](./CIP-0028/) | Active |
