@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Web-Wallet Bridge: Account public key
+Title: Web-Wallet Bridge | Account public key
 Category: Wallets
 Status: Proposed
 Authors:
