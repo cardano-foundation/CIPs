@@ -93,7 +93,7 @@ Each CIP must begin with a YAML key:value style header preamble (also known as _
 Field          | Description
 ---            | ---
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
-`Title`        | A succinct and descriptive title.  If necessary, use a `|` delimiter to begin with an applicable classification (see [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)).
+`Title`        | A succinct and descriptive title.  If necessary, use a <code>&#124;</code> delimiter to begin with an applicable classification (see [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)).
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
 `Category`     | One of the registered [categories](#categories) covering one area of the ecosystem.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
