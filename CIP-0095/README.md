@@ -91,7 +91,8 @@ connector, this specification could be applied to similar standards.
 
 ### DRep Key
 
-// TODO: Move this into a more appropriate **separate** CIP.
+⚠ These definitions are an initial version of these keys, such definitions are
+to be moved to a new CIP. Once new CIP is published please view that CIP.
 
 The Conway ledger era introduces a new _first class_ credential in
 [`drep_credential`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L332).
