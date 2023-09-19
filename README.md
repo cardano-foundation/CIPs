@@ -89,6 +89,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
+| 0095 | [Web-Wallet Bridge | Governance](./CIP-0095) | Proposed |
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
@@ -98,7 +99,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-09-08</i></p>
+<p align="right"><i>Last updated on 2023-09-19</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -123,7 +124,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
 | 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
-| 0095? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
 | 0098? | [Distributed Artifact Token Metadata](https://github.com/cardano-foundation/CIPs/pull/530) |
@@ -131,7 +131,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
 | 0102? | [Royalty Datum Metadata](https://github.com/cardano-foundation/CIPs/pull/551) |
 
-<p align="right"><i>Last updated on 2023-09-08</i></p>
+<p align="right"><i>Last updated on 2023-09-19</i></p>
 
 ## Cardano Problem Statements (CPS)
 
