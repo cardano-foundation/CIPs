@@ -1,6 +1,6 @@
 ---
 CIP: 95
-Title: Cardano dApp-Wallet Web Bridge Governance Extension
+Title: Web-Wallet Bridge: Governance 
 Category: Wallets
 Status: Proposed
 Authors:
@@ -351,7 +351,7 @@ The wallet account's public DRep Key.
 
 #### `api.getRegisteredPubStakeKeys(): Promise<PubStakeKey[]>`
 
-The connected wallet account's registered public stake keys. These keys may or may not control any Ada, but they must all have been registered via a stake key registration certificate.
+The connected wallet account's registered public stake keys. These keys may or may not control any Ada, but they must all have been registered via a stake key registration certificate. This includes keys which the wallet knows are in the process of being registered (already included in a pending stake key registration certificate).
 
 If none of the wallets stake keys are registered then an empty array is returned.
 
@@ -375,7 +375,7 @@ An array of the connected user's registered public stake keys.
 
 #### `api.cip95.getUnregisteredPubStakeKeys(): Promise<PubStakeKey[]>`
 
-The connected wallet account's unregistered public stake keys. These keys may or may not control any Ada. 
+The connected wallet account's unregistered public stake keys. These keys may or may not control any Ada. This includes keys which the wallet knows are in the process of becoming unregistered (already included in a pending stake key unregistration certificate).
 
 If the wallet does not know the registration status of it's stake keys then it should return them as part of this call. If all of the wallets stake keys are registered then an empty array is returned.
 
@@ -1054,10 +1054,11 @@ straight forward for wallets implementing both APIs.
 - [x] Author to provide test dApp to test against.
   - See
     [cip95-cardano-wallet-connector](https://github.com/Ryun1/cip95-cardano-wallet-connector/tree/master).
-- [x] Author to provide a reference implementation.
+- [x] Author to provide a reference wallet implementation.
   - See [cip95-demos-wallet](https://github.com/Ryun1/cip95-demos-wallet/).
 - [ ] Author to produce a set of test vectors for wallets to test against.
-
+- [ ] Author to move DRep key definitions to a separate CIP.
+  
 ## Copyright
 
 This CIP is licensed under
