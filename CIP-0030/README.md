@@ -200,6 +200,22 @@ Upon start, dApp can explicitly request a list of additional functionalities the
 
 DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the response to `api.getExtensions()` in the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
 
+It is at the extension author's discretion if they wish to separate their endpoints from the base API via namespacing. Although, it is highly recommend that authors do namespace all of their extensions. If namespaced, endpoints must be preceded by `.cipXXXX.` from the `API` object, without any leading zeros.
+
+For example; CIP-0123's endpoints should be accessed by:
+```ts
+api.cip123.endpoint1()
+api.cip123.endpoint2()
+```
+
+Authors should be careful when omitting namespacing. Omission should only be considered when creating endpoints to override those defined in this specification or other extensions. Even so when overriding; the new functionality should not prevent dApps from accessing past functionality thus overriding must ensure backwards compatibility.
+
+Any namespace omission needs to be fully justified via the proposal's Rationale section, with explanation to why it is necessary. Any potential backwards compatibility considerations should be noted to give wallets and dApps a clear unambiguous direction.
+
+##### Draft or Experimental Extensions
+
+Extensions that are draft, in development, or prototyped should not use extension naming nor should they use official namspacing until assigned a CIP number. Draft extension authors are free to test their implementation endpoints by using the [Experimental API](#experimental-api). Once a CIP number is assigned implementors should move functionality out of the experimental API.
+
 ##### Can extensions depend on other extensions?
 
 Yes. Extensions may have other extensions as pre-requisite. Some newer extensions may also invalidate functionality introduced by earlier extensions. There's no particular rule or constraints in that regards. Extensions are specified as CIP, and will define what it entails to enable them.
@@ -210,7 +226,7 @@ Yes. They all are CIPs.
 
 ##### Can extensions add their own endpoints and/or error codes?
 
-Yes. Extensions may introduce new endpoints or error codes, and modify existing ones. Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
+Yes. Extensions may introduce new endpoints or error codes, and modify existing ones. Although, it is recommended that endpoints are namespaced. Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
 
 ##### Are wallet expected to implement all extensions?
 
@@ -370,6 +386,10 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 2. Not everyone agrees and has desired to support every existing standard;
 3. There's a need from an API consumer standpoint to clearly identify what features are supported by providers.
 
+#### Namespacing Extensions
+
+By encouraging the explicit namespacing of each extension we aim to improve the usability of extensions for dApps. By allowing special cases where namespacing can be dropped we maintain good flexibility in extension design.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -385,8 +405,8 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 ### Implementation Plan
 
 - [x] Provide some reference implementation of wallet providers
-  - [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
-  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
+  - [Berry-Pool/nami-wallet](https://github.com/berry-pool/nami/blob/4d7539b2768464480a9cff53a2d66af9879f8534/src/pages/Content/injected.js)
+  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/f4eabb25eedd564821514059479835601f8073ab/packages/yoroi-connector/example-cardano/index.js)
 
 - [x] Provide some reference implementation of the dapp connector
   - [cardano-foundation/connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)
