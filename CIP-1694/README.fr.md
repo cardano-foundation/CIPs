@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: 430f64d
+Revision: e35bedd
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -1703,7 +1703,7 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 * Supprimez la restriction « une action par type et par époque » en faveur du
   suivi du dernier ID d'action de chaque type, et de son inclusion
   dans l'action.
-*Pas d'AVST.
+* Pas d'AVST.
 * Phase d'amorçage : jusqu'à ce que X % des ADA soient inscrits pour voter ou que Y époques se
   soient écoulées, seuls les changements de paramètres et les hard forks peuvent se produire.
   Les changements du PP ont juste besoin du quorum CC, les HF ont besoin du CC et des SPOs.
