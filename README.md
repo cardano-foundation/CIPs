@@ -89,7 +89,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
-| 0095 | [Web-Wallet Bridge | Governance](./CIP-0095) | Proposed |
+| 0095 | [Web-Wallet Bridge - Governance](./CIP-0095) | Proposed |
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
