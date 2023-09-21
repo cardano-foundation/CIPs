@@ -291,7 +291,7 @@ When a CIP title *and* subject matter share a common element, begin the CIP titl
 
 > *Web-Wallet Bridge **-** Governance*
 
-CIP editors will help determine these common elements and, whenever necessary, rename both CIP document titles and PR titles accordingly.  The objective is to provide commonly recognisable names for developments of the same idea (e.g. multiple extensions to another CIP or scheme).
+CIP editors will help determine these common elements and, whenever necessary, rename both CIP document titles and PR titles accordingly.  The objective is to provide commonly recognisable names for similar developments (e.g. multiple extensions to another CIP or scheme).
 
 ##### 1.b. Authors seek feedback
 
