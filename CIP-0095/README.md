@@ -1,6 +1,6 @@
 ---
 CIP: 95
-Title: Web-Wallet Bridge | Governance 
+Title: Web-Wallet Bridge - Governance 
 Category: Wallets
 Status: Proposed
 Authors:
