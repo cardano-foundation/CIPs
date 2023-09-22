@@ -55,6 +55,7 @@ Here, `role` can be the following
 | External chain | `0`   | Same as defined in [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
 | Internal chain | `1`   | Same as defined in [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
 | Staking Key    | `2`   | See [CIP11](https://cips.cardano.org/cips/cip11)
+| DRep Key       | `3`   | See CIP-XXXX
 
 Wallets **MUST** implement this new scheme using the master node derivation algorithm from Icarus with sequential addressing (see [CIP3](https://cips.cardano.org/cips/cip3) for more information)
 

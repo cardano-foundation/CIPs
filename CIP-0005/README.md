@@ -51,8 +51,10 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_shared_vk`   | CIP-1854's address verification key                | Ed25519 public key                 |
 | `addr_shared_xsk`  | CIP-1854's address extended signing key            | Ed25519-bip32 extended private key |
 | `addr_shared_xvk`  | CIP-1854's address extended verification key       | Ed25519 public key with chain code |
-| `gov_sk`           | Governance vote signing key                        | Ed25519 private key                |
-| `gov_vk`           | Governance vote verification key                   | Ed25519 public key                 |
+| `drep_sk`          | CIP-1852’s DRep signing key                        | Ed25519 private key                |
+| `drep_vk`          | CIP-1852’s DRep verification key                   | Ed25519 public key                 |
+| `drep_xsk`         | CIP-1852’s DRep extended signing key               | Ed25519-bip32 extended private key |
+| `drep_xvk`         | CIP-1852’s DRep extended verification key          | Ed25519 public key with chain code |
 | `cvote_sk`         | CIP-36's vote signing key                          | Ed25519 private key                |
 | `cvote_vk`         | CIP-36's vote verification key                     | Ed25519 public key                 |
 | `kes_sk`           | KES signing key                                    | KES signing key                    |
@@ -105,6 +107,7 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_test`  | Testnet address       | Network tag, payment credential and optional stake credential |
 | `stake`      | Mainnet stake address | Network tag and stake credential                              |
 | `stake_test` | Testnet stake address | Network tag and stake credential                              |
+| `drep`       | DRep credential       | DRep credential                                               |
 
 ## Rationale: how does this CIP achieve its goals?
 
