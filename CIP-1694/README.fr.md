@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: 430f64d
+Revision: e35bedd
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -805,7 +805,7 @@ De plus, nous tenons à remercier tous les participants à l'atelier qui s'est t
 * Thiago da Silva Nunes
 * Rodrigo Pacini
 * Livia Corcino de Albuquerque
-* Cauê Chianca 
+* Cauê Chianca
 * Otávio Lima
 </details>
 
@@ -969,8 +969,6 @@ Le comité constitutionnel est considéré comme se trouvant à tout moment dans
 
 Dans un _état de non-confiance_, le comité actuel n’est plus en mesure de participer aux mesures de gouvernance
 et doivent être remplacés avant que toute mesure de gouvernance puisse être ratifiée (voir ci-dessous).
-Toutes les mesures de gouvernance en suspens sont abandonnées immédiatement après que le protocole entre dans un état de défiance,
-et ne sera pas promulguée.
 
 #### Clés du comité constitutionnel
 
@@ -1000,26 +998,34 @@ En particulier, il est possible d’élire un comité vide si la communauté sou
 Il y aura un nouveau paramètre du protocole pour la taille minimale du comité,
 lui-même un nombre non négatif.
 
-#### Limites de mandat
+#### Mandat
 
-Chaque comité constitutionnel nouvellement élu aura des limites de mandat par membre.
-Les limites par membre permettent un système de rotation, comme un tiers du comité
+Chaque comité constitutionnel nouvellement élu aura un mandat.
+Les mandats par membre permettent un système de rotation, par exemple un tiers du comité
 expirant chaque année.
 Les membres expirés ne peuvent plus voter.
 Le membre peut également volontairement démissionner plus tôt, ce qui sera marqué sur la chaîne comme un membre expiré.
 
 Le système entrera automatiquement dans un état de non-confiance lorsque le nombre de membres du comité
 non expirés tombe en dessous de la taille minimale du comité.
-Par exemple, un comité de taille cinq avec un quorum de trois et deux membres expirés peut encore
-passer des actions de gouvernance si tous les membres non expirés votent `Yes`.
+Par exemple, un comité de cinq membres avec un seuil de 3/5, une taille minimale de trois et deux membres expirés peut toujours
+adopter des mesures de gouvernance si deux membres non expirés votent `Yes`.
 Cependant, si un autre membre expire, le système entre dans un état de non-confiance,
 puisque les deux membres restants ne suffisent pas pour atteindre le quorum.
 
-La limite de durée maximale est un paramètre de protocole de gouvernance, spécifié sous la forme d'un nombre d'époques.
+La durée maximale du mandat est un paramètre du protocole de gouvernance, spécifié en nombre d'époques.
 Pendant un état de non-confiance, aucune action ne peut être ratifiée,
 le comité devrait donc prévoir son propre remplacement s'il souhaite éviter les perturbations.
 
-<!--------------------------- Comité constitutionnel ---------------------------->
+#### Politique de proposition
+
+Bien que la constitution soit un document informel hors chaîne, il y aura
+également un script facultatif qui pourra appliquer certaines directives. Ce scénario
+agit pour compléter le comité constitutionnel en restreignant certains
+types de propositions. Par exemple, si la communauté souhaite avoir des règles
+strictes pour la trésorerie qui ne peuvent être violées, un script qui applique
+ces règles peut être voté en tant que politique de proposition.
+
 <!---------------------------           DReps          -------------------------->
 
 ### Représentants délégués (DReps)
@@ -1031,7 +1037,7 @@ le comité devrait donc prévoir son propre remplacement s'il souhaite éviter l
 
 #### DReps prédéfinis
 
-Afin de participer à la gouvernance, chaque justificatif d’identité de mise doit être délégué à un DRep.
+Afin de participer à la gouvernance, un justificatif d’identité de mise doit être délégué à un DRep.
 Les détenteurs d’Ada délégueront généralement leurs droits de vote à un DRep enregistré
 qui voteront en leur nom. De plus, deux options DRep prédéfinies sont disponibles :
 
@@ -1047,14 +1053,10 @@ qui voteront en leur nom. De plus, deux options DRep prédéfinies sont disponib
 * `No Confidence`
 
   Si un détenteur d’Ada délègue à `No Confidence`, sa participation est comptée comme
-  un vote **non** sur toutes les mesures de gouvernance, à l’exception d’une « motion de non-confiance ».
-  Cela indique également qu’ils n’ont pas confiance dans le comité constitutionnel existant.
-
-  L’effet de la délégation de la `No Confidence` sur la chaîne est que cette participation *sera* considérée comme
-  une partie de la participation active de vote. Cela comptera comme un vote `Yes` sur chaque `No Confidence`
-  et un vote `No` à toutes les autres actions.
-  Il sert également de mesure directement vérifiable de la confiance des détenteurs d’Ada dans la constitution.
-  comité.
+  un vote `Yes` pour chaque action de `No Confidence` et un vote `No` pour toute autre action.
+  La participation déléguée *sera* considérée comme faisant partie de la participation au vote actif.
+  Il sert également de mesure directement vérifiable de la confiance des détenteurs d’Ada envers le comité
+  constitutionel.
 
 
 > **Note**
@@ -1069,14 +1071,14 @@ qui voteront en leur nom. De plus, deux options DRep prédéfinies sont disponib
 #### DReps enregistrés
 
 Dans Voltaire, les références de mise existantes seront
-en mesure de déléguer leur participation à des DReps inscrits à des fins de vote,
+en mesure de déléguer leur participation à des DReps à des fins de vote,
 en plus de la délégation actuelle aux pools de participation pour la production de blocs.
 La délégation DRep imitera les mécanismes de délégation de mise existants (via des certificats on-chain).
 De même, l’enregistrement des DReps imitera les mécanismes existants d’enregistrement des mise.
 De plus, les DReps inscrits devront voter régulièrement pour être toujours considérés comme actifs.
 Plus précisément, si un DRep ne soumet aucun vote pour `drepActivity` - plusieurs époques, le DRep est considéré comme inactif,
 où `drepActivity` est un nouveau paramètre de protocole.
-Les DReps inactifs ne comptent plus dans la participation active des votes.
+Les DReps inactifs ne comptent plus dans la participation active des votes, et peut redevenir actif durant un nombre `drepActivity` d'époques en votant sur n’importe quel actions de gouvernance.
 La raison pour laquelle les DReps sont marqués comme inactifs est que les DReps qui cessent de participer mais qui ont encore
 la mise qui leur est déléguée ne laisse finalement pas le système dans un état où aucune action de
 gouvernance peut passer.
@@ -1088,7 +1090,7 @@ Les DReps enregistrés sont identifiés par un justificatif d’identité qui pe
 
 Le condensé de hachage blake2b-224 d’une informations d’identification DRep sérialisées est appelé _DRep ID_.
 
-Les nouveaux types de certificats suivants seront ajoutés pour la gouvernance :
+Les nouveaux types de certificats suivants seront ajoutés pour les DReps :
 les certificats d’inscription DRep, les certificats de retraite DRep, et
 certificats de délégation de vote.
 
@@ -1098,7 +1100,6 @@ Les certificats d’inscription DRep comprennent :
 
 * un ID DRep
 * un dépôt
-* un justificatif de participation (pour le retour du dépôt)
 * une ancre en option
 
 Une **ancre** est une paire de :
@@ -1116,8 +1117,6 @@ Les applications clientes doivent toutefois effectuer les vérifications d’int
 Les certificats de retraite DRep comprennent :
 
 * un ID DRep
-* le numéro d’époque après lequel le DRep prendra sa retraite
-* une ancre en option
 
 Notez qu'un DRep est mis à la retraite dès que la chaîne accepte un certificat de retraite,
 et le dépôt est restitué dans le cadre de la transaction qui soumet le certificat de retrait
@@ -1129,7 +1128,6 @@ Les certificats de délégation de vote comprennent :
 
 * l’ID DRep auquel la participation doit être déléguée
 * les informations d’identification de mise pour le délégant
-* une ancre en option
 
 > **Note**
 >
@@ -1147,8 +1145,8 @@ Le système d’autorisation (c’est-à-dire quelles signatures sont requises p
 
 En plus de la distribution existante par délégation de mise et de la
 distribution par pool de participation, le grand livre déterminera désormais également la distribution de la mise par DRep.
-Cette répartition déterminera le montant de la mise soutenue par chaque
-vote `Yes` d’un DRep.
+Cette répartition déterminera le montant de la mise par laquelle chaque vote d'un DRep
+est soutenu.
 
 > **Warning**
 >
@@ -1156,7 +1154,7 @@ vote `Yes` d’un DRep.
 > récente version de la distribution de mise par DRep telle qu’elle est donnée sur la limite d’époque.
 >
 > Cela signifie que **pour tout sujet qui intéresse profondément les électeurs,
-> ils ont le temps de s’inscrire comme DRep et de voter directement**.
+> ils ont le temps de déléguer à eux-mêmes comme DRep et de voter directement**.
 > Cependant, cela signifie qu’il peut y avoir une différence entre la mise utilisé pour la production
 > de bloc et la mise utilisée pour voter à une époque donnée.
 
@@ -1166,8 +1164,8 @@ vote `Yes` d’un DRep.
 Il y aura une courte [phase d’amorçage] (#bootstrapping-phase) au cours de laquelle des récompenses seront gagnées
 pour la délégation de mise, etc. et peut être retiré à tout moment.
 Après cette phase, bien que des récompenses continueront d’être gagnées pour la délégation de blocs, etc., les comptes de récompense seront
-**empêché de retirer des récompenses** à moins que leurs informations d’identification de mise associées ne soient également déléguées à un DRep
-(prédéfini ou enregistré). Cela contribue à assurer une participation élevée et, par conséquent, une légitimité.
+**empêché de retirer des récompenses** à moins que leurs informations d’identification de mise associées ne soient également déléguées à un DRep.
+Cela contribue à assurer une participation élevée et, par conséquent, une légitimité.
 
 > **Note**
 >
@@ -1195,33 +1193,33 @@ Nous définissons sept types différents d'**actions de gouvernance**.
 Une action de gouvernance est un événement en chaîne qui est déclenché par une transaction et a une date limite après lequel il ne peut être promulgué.
 
 - Une action est dite **ratifiée** lorsqu’elle recueille suffisamment de votes en sa faveur (grâce aux règles et paramètres détaillés ci-dessous).
-- Une action qui ne recueille pas suffisamment de votes `Yes` avant sa date limite est dite **expirée**.
+- Une action qui ne parvient pas à être ratifiée avant sa date limite est dite **expirée**.
 - Une action qui a été ratifiée est dite **promulguée** une fois qu’elle a été activée sur le réseau.
 
-Qu’elles aient été ratifiées ou non, les actions peuvent toutefois être **abandonnées sans être adoptées** si, selon le cas :
-Par exemple, une motion de censure est adoptée.
 
-
-| Action                                                | Description |
-| :---                                                  | :--- |
-| 1. Motion de censure                                  | Une motion pour créer un _état de non-confiance_ au sein du comité constitutionnel actuel |
-| 2. Nouveau comité constitutionnel et/ou nouveau seuil | Modification des membres du comité constitutionnel et/ou de son seuil de signature et/ou limites de mandat|
-| 3. Mises à jour de la Constitution                    | Une modification de la Constitution off-chain, enregistrée en tant que hachage on-chain du document texte |
-| 4. Hard-Fork[^2] Initiation                           | Déclenche une mise à niveau non rétrocompatible du réseau ; Nécessite une mise à niveau logicielle préalable |
-| 5. Modifications des paramètres du protocole          | Toute modification **d’un ou de plusieurs** paramètres de protocole pouvant être mis à jour, à l’exclusion des modifications apportées aux versions majeures du protocole (« hard forks ») |
-| 6. Retraits de trésorerie                             | Mouvements du trésor, sous-classés en petits, moyens ou grands retraits (en fonction du montant de Lovelace à retirer). Les seuils pour les retraits de trésorerie sont examinés ci-dessous. |
-| 7. Infos                                              | Action qui n’a aucun effet sur la chaîne, autre qu’un enregistrement sur la chaîne. |
+| Action                                                | Description                                                                                                                                                   |
+| :-----------------------------------------------------| :-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1. Motion de censure                                  | Une motion pour créer un _état de non-confiance_ au sein du comité constitutionnel actuel                                                                     |
+| 2. Nouveau comité constitutionnel et/ou nouveau seuil | Modification des membres du comité constitutionnel et/ou de son seuil de signature et/ou limites de mandat                                                    |
+| 3. Mises à jour de la Constitution                    | Une modification de la Constitution off-chain, enregistrée en tant que hachage on-chain du document texte                                                     |
+| 4. Hard-Fork[^2] Initiation                           | Déclenche une mise à niveau non rétrocompatible du réseau ; Nécessite une mise à niveau logicielle préalable                                                  |
+| 5. Modifications des paramètres du protocole          | Tout changement **d’un ou de plus** paramètres de protocole pouvant être mis à jour, excluant les changements aux versions majeures du protocole (hard forks) |
+| 6. Retraits de trésorerie                             | Retraits de la trésorerie                                                                                                                                     |
+| 7. Infos                                              | Action qui n’a aucun effet sur la chaîne, autre qu’un enregistrement sur la chaîne.                                                                           |
 
 **Tout détenteur d’Ada** peut soumettre une action de gouvernance à la chaîne.
-Ils doivent fournir un dépôt de 'govDeposit' Lovelace, qui sera retourné lorsque l’action sera finalisée
-(s’il est **ratifié**, a été **abandonné**, ou **a expiré**).
+Ils doivent fournir un dépôt de `govActionDeposit` Lovelace, qui sera retourné lorsque l’action sera finalisée
+(s’il est **ratifié** ou **a expiré**).
 Le montant du dépôt sera ajouté au _pot de dépôt_, similaire aux dépôts clés de mise.
 Il sera également pris en compte dans la mise de l’adresse de récompense à laquelle il sera remboursé, afin de ne pas réduire le pouvoir de vote du déposant pour voter sur ses propres actions (et concurrentes).
 
+Si une politique de proposition est présente, la transaction doit inclure cette
+politique dans le témoin soit directement, soit via des entrées de référence,
+et toutes les autres exigences imposées par la politique de proposition doivent être
+satisfaites.
+
 Notez qu’une motion de non-confiance est une mesure extrême qui permet aux détenteurs d’Ada de révoquer le pouvoir
 qui a été accordé à l’actuel Comité constitutionnel.
-toute mesure de gouvernance en suspens, y compris celles que le comité a ratifiées ou celles qui seraient adoptées à cette époque;
-sera abandonnée si la motion est adoptée.
 
 > **Note**
 > Une **seule** action de gouvernance peut contenir **plusieurs** mises à jour des paramètres de protocole. De nombreux paramètres sont interconnectés et peuvent nécessiter d'être déplacés en synchronisme.
@@ -1233,14 +1231,15 @@ Différents types d'action de gouvernance ont des exigences de ratification diff
 à l’exception d’une initiative de hard fork, qui nécessite la ratification de tous les organes de gouvernance.
 Selon le type d’action de gouvernance, une action sera donc ratifiée lorsqu’une combinaison des éléments suivants se produit :
 
-* le comité constitutionnel approuve l’action (le nombre de membres qui votent 'Oui' atteint le seuil du comité constitutionnel)
-* les DReps approuvent l’action (la participation contrôlée par les DReps qui votent 'Oui' atteint un certain seuil de la mise totale active des votes)
-* les SPO approuvent l’action (la participation contrôlée par les SPO qui votent 'Oui' atteint un certain seuil par rapport à la mise totale des participants enregistrés)
+* le comité constitutionnel approuve l’action (le nombre de membres qui votent `Yes` atteint le seuil du comité constitutionnel)
+* les DReps approuvent l’action (la participation contrôlée par les DReps qui votent `Yes` atteint un certain seuil de la mise totale active des votes)
+* les SPO approuvent l’action (la participation contrôlée par les SPO qui votent `Yes` atteint un certain seuil par rapport à la mise totale des participants enregistrés)
 
 > **Warning**
 > Comme expliqué ci-dessus, différentes distributions de mise s’appliquent aux DReps et aux SPO.
 
-Une élection réussie d’un nouveau comité constitutionnel, un changement constitutionnel ou un hard fork retarde
+Une motion de non-confiance réussie, l'élection d'un nouveau comité constitutionnel,
+un changement constitutionnel, ou un hard fork, retarde
 la ratification de toutes les autres mesures de gouvernance jusqu’à la première époque suivant leur promulgation. Cela donne
 un nouveau comité constitutionnel suffisamment de temps pour voter sur les propositions actuelles, réévaluer les propositions existantes
 à l’égard d’une nouvelle constitution, et veille à ce que les changements sémantiques arbitraires de principe entraîné
@@ -1251,33 +1250,32 @@ en adoptant un hard-fork n’ont pas de conséquences imprévues en combinaison 
 Le tableau suivant détaille les exigences de ratification pour chaque scénario d’action de gouvernance. Les colonnes représentent :
 
 * **Type d’action de gouvernance**<br/>
- Type de mesure de gouvernance. Notez que les mises à jour des paramètres de protocole sont regroupées en trois catégories.
+ Type de mesure de gouvernance. Notez que les mises à jour des paramètres de protocole sont regroupées en quatre catégories.
 
 * **Comité constitutionnel (abréviation CC)**<br/>
  Une valeur de ✓ indique que le comité constitutionnel doit approuver cette action.<br/>
  Une valeur de - signifie que les votes du comité constitutionnel ne s’appliquent pas.
 
 * **DReps**<br/>
- Le seuil de vote DRep qui doit être atteint en pourcentage de la *mise de vote active*.<br/>
- Une valeur de - signifie que les votes DReps ne s’appliquent pas.
+Le seuil de vote DRep qui doit être atteint en pourcentage de la *participation de vote active*.
 
 * **SPO**<br/>
  Le seuil de vote SPO qui doit être atteint en pourcentage de la mise détenue par tous les pools de mise.<br/>
  Une valeur de - signifie que les votes SPO ne s’appliquent pas.
 
-| Type d’action de gouvernance                                                    | CC   | DReps    | SPOs     |
-| :---                                                                            | :--- | :---     | :---     |
-| 1. Motion de non-confiance                                                      | \-   | $P_1$    | $Q_1$    |
-| 2<sub>a</sub>. Nouveau comité/seuil (_état normal_)                             | \-   | $P_{2a}$ | $Q_{2b}$ |
-| 2<sub>b</sub>. Nouveau comité/seuil (_état de non-confiance_)                   | \-   | $P_{2b}$ | $Q_{2b}$ |
-| 3. Mise à jour de la Constitution                                               | ✓    | $P_3$    | \-       |
-| 4. Initiation du hard fork                                                      | ✓    | $P_4$    | $Q_4$    |
-| 5<sub>a</sub>. Modifications des paramètres de protocole, groupe réseau         | ✓    | $P_{5a}$ | \-       |
-| 5<sub>b</sub>. Modifications des paramètres du protocole, groupe économique     | ✓    | $P_{5b}$ | \-       |
-| 5<sub>c</sub>. Modifications des paramètres de protocole, groupe technique      | ✓    | $P_{5c}$ | \-       |
-| 5<sub>d</sub>. Modifications des paramètres de protocole, groupe de gouvernance | ✓    | $P_{5d}$ | \-       |
-| 6. Retrait du Trésor                                                            | ✓    | $P_6$    | \-       |
-| 7. Infos                                                                        | ✓    | $100$    | $100$    |
+| Type d’action de gouvernance                                                    | CC  | DReps    | SPOs     |
+|:--------------------------------------------------------------------------------|:----|:---------|:---------|
+| 1. Motion de non-confiance                                                      | \-  | $P_1$    | $Q_1$    |
+| 2<sub>a</sub>. Nouveau comité/seuil (_état normal_)                             | \-  | $P_{2a}$ | $Q_{2b}$ |
+| 2<sub>b</sub>. Nouveau comité/seuil (_état de non-confiance_)                   | \-  | $P_{2b}$ | $Q_{2b}$ |
+| 3. Mise à jour de la Constitution ou politique de proposition                   | ✓   | $P_3$    | \-       |
+| 4. Initiation du hard fork                                                      | ✓   | $P_4$    | $Q_4$    |
+| 5<sub>a</sub>. Modifications des paramètres de protocole, groupe réseau         | ✓   | $P_{5a}$ | \-       |
+| 5<sub>b</sub>. Modifications des paramètres du protocole, groupe économique     | ✓   | $P_{5b}$ | \-       |
+| 5<sub>c</sub>. Modifications des paramètres de protocole, groupe technique      | ✓   | $P_{5c}$ | \-       |
+| 5<sub>d</sub>. Modifications des paramètres de protocole, groupe de gouvernance | ✓   | $P_{5d}$ | \-       |
+| 6. Retrait du Trésor                                                            | ✓   | $P_6$    | \-       |
+| 7. Infos                                                                        | ✓   | $100$    | $100$    |
 
 Chacun de ces seuils est un paramètre de gouvernance.
 Les seuils initiaux devraient être choisis par la communauté Cardano dans son ensemble.
@@ -1310,17 +1308,13 @@ Les actions qui ont été ratifiées à l’époque actuelle sont classées par 
 
 1. Motion de non-confiance
 2. Nouveau comité/seuil
-3. Mises à jour de la Constitution
+3. Mises à jour de la Constitution ou politique de proposition
 4. Initiation du hard fork
 5. Modifications des paramètres du protocole
 6. Retraits du Trésor
 7. Infos
 
 > **Note** La promulgation des actions _Info_ est une action nulle, car elles n’ont aucun effet sur le protocole.
-
-Le succès de l’adoption d’une _Motion de non-confiance_ invalide *toutes* les autres actions de gouvernance **non encore adoptées** (qu’elles aient été ratifiées ou non),
-ce qui les rend immédiatement **abandonnés** sans jamais être promulgués.
-Les dépôts pour les actions abandonnées seront remboursés immédiatement.
 
 ##### Ordre de promulgation
 
@@ -1335,24 +1329,11 @@ Une fois ratifiée, des actions sont organisées en vue de leur promulgation.
 Toutes les actions de gouvernance soumises seront donc soit :
 
 1. **ratifié**, puis **promulgué**
-2. **abandonné** à la suite du succès d’une _Motion de non-confiance_
-3. ou **expirée** après un certain nombre d’époques
+2. ou **expirée** après un certain nombre d’époques
 
 Dans tous ces cas, les dépôts sont retournés immédiatement.
 
-Certaines actions seront promulguées _immédiatement_ (c’est-à-dire à la même limite d’époque qu’elles sont ratifiées), d’autres ne sont promulguées que _the boundary_ d’époque suivante.
-
-| Type d’action de gouvernance                 | Promulgation              |
-| :--                                          | :--                       |
-| 1. Motion de censure                         | Immédiat                  |
-| 2. Nouveau comité/seuil                      | Immédiat                  |
-| 3. Mise à jour de la Constitution            | Immédiat                  |
-| 4. Initiation à la hard fork                 | Prochaine limite d’époque |
-| 5. Modifications des paramètres du protocole | Prochaine limite d’époque |
-| 6. Retrait du Trésor                         | Immédiat                  |
-| 7. Infos                                     | Immédiat                  |
-
-<!-- TODO - diviser les paramètres du protocole en ceux qui affectent la séparation de validation en-tête / corps (afin que certains puissent être adoptés immédiatement)? -->
+Toutes les actions de gouvernance sont adoptées à la frontière de l'époque après leur ratification.
 
 #### Contenu
 
@@ -1360,25 +1341,22 @@ Chaque mesure de gouvernance comprendra les éléments suivants :
 
 * un montant de dépôt (enregistré puisque le montant du dépôt est un paramètre de protocole pouvant être mis à jour)
 * une adresse de récompense pour recevoir le dépôt lorsqu’il est remboursé
-* une ancre en option pour toutes les métadonnées nécessaires pour justifier l’action
+* une ancre pour toutes les métadonnées nécessaires pour justifier l’action
 * une valeur de condensé de hachage pour éviter les collisions avec des actions concurrentes du même type (comme décrit précédemment)
 
 <!-- TODO: Fournir une spécification CBOR dans l’annexe pour ces nouvelles entités sur la chaîne -->
 
 De plus, chaque action comprendra certains éléments spécifiques à son type :
 
-| Type d’action de gouvernance                 | Données supplémentaires                                                  |
-| :--                                          | :--                                                                      |
-| 1. Motion de non-confiance                   | Aucune                                                                   |
-| 2. Nouveau comité/seuil                      | L’ensemble des résumés de hachage de clé de vérification (membres à supprimer), une carte des résumés de hachage de clé de vérification aux numéros d'époque (nouveaux membres et leur limite de mandat) et une fraction (seuil de quorum) |
-| 3. Mise à jour de la Constitution            | Un condensé de hachage du document constitutionnel                       |
-| 4. Initiation du hard fork                   | La nouvelle version majeure du protocole                                 |
-| 5. Modifications des paramètres du protocole | Les paramètres modifiés                                                  |
-| 6. Retrait du Trésor                         | Une carte d’identification de mise à un nombre positif de Lovelace       |
-| 7. Infos                                     | Aucune                                                                   |
-
-> **Warning**
-> Pour les retraits de trésorerie, il y aura des seuils supérieurs et inférieurs sur le montant: le seuil de retrait est le montant **total** de Lovelace qui est retiré par l’action, et non le montant d’un retrait unique si l’action spécifie plus d’un retrait.
+| Type d’action de gouvernance                                  | Données supplémentaires                                                                                                                            |
+|:--------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1. Motion de non-confiance                                    | Aucune                                                                                                                                             |
+| 2. Nouveau comité/seuil                                       | L’ensemble des résumés de hachage de clé de vérification (membres à supprimer), une carte des résumés de hachage de clé de vérification aux numéros d'époque (nouveaux membres et leur limite de mandat) et une fraction (seuil de quorum)                                                                                                                               |
+| 3. Mise à jour de la Constitution ou politique de proposition | Un condensé de hachage du document constitutionnel                                                                                                 |
+| 4. Initiation du hard fork                                    | La nouvelle version majeure du protocole                                                                                                           |
+| 5. Modifications des paramètres du protocole                  | Les paramètres modifiés                                                                                                                            |
+| 6. Retrait du Trésor                                          | Une carte d’identification de mise à un nombre positif de Lovelace                                                                                 |
+| 7. Infos                                                      | Aucune                                                                                                                                             |
 
 > **Note**
 > La nouvelle version majeure du protocole doit être précisément supérieure d’une à la version actuelle du protocole.
@@ -1431,14 +1409,13 @@ Le **groupe technique** est composé de :
 * proportion de collatéral nécessaire pour les scripts (`collateralPercentage`)
 
 Le **groupe de gouvernance** comprend tous les nouveaux paramètres de protocole introduits dans ce CIP :
-* seuils de vote de gouvernance ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_6$, $P_7$, $Q_1$, $Q_{2b}$, $Q_4$)
-* limitation de la durée du mandat des comités constitutionnels
-* expiration des mesures de gouvernance
-* dépôt d’action de gouvernance (`govDeposit`)
+* seuils de vote de gouvernance ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$)
+* durée de vie maximale de l'action de gouvernance en époques (`govActionLifetime`)
+* dépôt d'action de gouvernance (`govActionDeposit`)
 * montant du dépôt DRep (`drepDeposit`)
-* période d’activité DRep (`drepActivity`)
-* taille minimale du comité constitutionnel
-* limite maximale du mandat (en époques) du comité constitutionnel
+* période d’activité DRep en époques (`drepActivity`)
+* taille minimale du comité constitutionnel (`ccMinSize`)
+* durée maximale du mandat (en époques) des membres du comité constitutionnel (`ccMaxTermLength`)
 
 <!-- À faire :
  - Décider des valeurs initiales des nouveaux paramètres de gouvernance
@@ -1463,7 +1440,6 @@ Chaque transaction de vote comprend les éléments suivants :
 
 Pour les SPO et les DReps, le nombre de votes exprimés (que ce soit 'Oui', 'Non' ou 'Abstention') est proportionnel au Lovelace qui leur est déléguée au moment où
 l’action est vérifiée pour ratification. Pour les membres du comité constitutionnel, chaque membre actuel du comité dispose d’un vote.
-Les votes des SPO ou des DReps non enregistrés comptent comme n’ayant aucune participation.
 
 > **Warning** Les votes 'Abstention' ne sont pas inclus dans la « participation active ».
 >
@@ -1473,7 +1449,7 @@ Les votes des SPO ou des DReps non enregistrés comptent comme n’ayant aucune 
 > Pour éviter toute confusion, nous n’utiliserons le mot 'Abstention' qu’à partir de maintenant pour signifier un vote en chaîne pour s’abstenir.
 
 Le témoin d’informations d’identification de gouvernance déclenchera les vérifications appropriées dans le registre conformément à la règle de registre « UTxOW » existante
-(c’est-à-dire une vérification de signature pour les clés de vérification, et une exécution de validateur avec un échangeur de vote spécifique et un nouvel objectif Plutus pour les scripts).
+(c’est-à-dire une vérification de signature pour les clés de vérification, et une exécution de validateur avec un rédempteur de vote spécifique et un nouvel objectif de script Plutus pour les scripts).
 
 Les votes peuvent être exprimés plusieurs fois pour chaque action de gouvernance par un seul témoin d’informations d’identification.
 Les votes correctement soumis remplacent tous les votes plus anciens pour les mêmes informations d’identification et le même rôle.
@@ -1506,7 +1482,7 @@ Nous définissons un certain nombre de nouveaux termes liés à la participation
 
 * Lovelace contenu dans une sortie de transaction est considéré comme **actif pour le vote** (c’est-à-dire qu’il forme la « participation de vote active ») :
   * Il contient une identification de mise enregistrée.
-  * L’accréditation de mise enregistrée a délégué ses droits de vote à un DRep enregistré.
+  * L’accréditation de mise enregistrée a délégué ses droits de vote à un DRep.
 * Par rapport à un certain pourcentage `P`, un seuil de vote DRep (SPO) **a été atteint** si la somme de la mise relative qui a été déléguée aux DReps (SPO)
  qui votent `Yes` à une mesure de gouvernance
  est au moins `P`.
@@ -1637,7 +1613,7 @@ Les DReps votent également, pour représenter la volonté de chaque partie pren
 
 ### Nouvelles structures de métadonnées
 
-Tant les actions de gouvernance que les votes utilisent de nouveaux champs de métadonnées,
+Les actions de gouvernance, les votes et les certificats et la Constitution utilisent de nouveaux champs de métadonnées,
 sous forme d’URL et de hachages d’intégrité
 (reflétant la structure des métadonnées pour l’enregistrement du pool de participation).
 Les métadonnées sont utilisées pour fournir un contexte.
@@ -1702,6 +1678,70 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 (après la phase bootstrap) sauf si la participation est déléguée à un DRep
 (y compris les deux cas particuliers, à savoir 'Abstention' et 'Non-confiance').
 
+### Journal des modifications
+
+#### Modifications après l'atelier Longmont (Mars 2023)
+
+* Remerciez les participants à l'atelier.
+* Nous avons ajouté les termes du Comité constitutionnel.
+* Deux nouvelles options DRep « prédéfinies » : abstention et non-confiance.
+* Nouvelle action de gouvernance « Info ».
+* Utilisez la distribution de participation DRep la plus récente pour la ratification.
+  Cela signifie que si jamais votre DRep vote comme vous ne l'aimez pas,
+  vous pouvez immédiatement vous faire un DRep et voter comme vous le souhaitez.
+* Récupérez une partie de l'ADA de la trésorerie actuelle pour d'éventuelles
+  incitations DRep futures.
+* Supprimez les actions de trésorerie à plusieurs niveaux au profit de quelque chose d'adaptatif
+  (le seuil du « Yes » dépendrait donc de :
+      1) combien d'ada,
+      2) quel est le montant de la mise de participation enregistrée, et peut-être
+      3) combien d'ada est libéré à chaque époque
+* Divisez les mises à jour des paramètres de protocole en quatre groupes :
+  réseau, économique, technique et gouvernemental.
+* La plupart des actions gouvernementales peuvent être promulguées (après ratification)
+  immédiatement. Tout sauf : les paramètres de protocole et les hard forks.
+* Supprimez la restriction « une action par type et par époque » en faveur du
+  suivi du dernier ID d'action de chaque type, et de son inclusion
+  dans l'action.
+* Pas d'AVST.
+* Phase d'amorçage : jusqu'à ce que X % des ADA soient inscrits pour voter ou que Y époques se
+  soient écoulées, seuls les changements de paramètres et les hard forks peuvent se produire.
+  Les changements du PP ont juste besoin du quorum CC, les HF ont besoin du CC et des SPOs.
+  Après la phase de bootstrap, nous mettons en place l'incitation à maintenir des
+  DReps bas, mais ce mécanisme se détend **automatiquement**.
+* Nouvel objectif de script plutus pour DReps.
+* Retraits multiples du Trésor en une seule époque.
+* Une section sur le problème récursif du "comment ratifier ce CIP".
+* Modifications apportées au protocole local de requête d'état.
+* Nouvelles idées, si le temps le permet :
+  * Pesez d'une manière ou d'une autre le vote des enjeux SPO par par le « pledge ».
+  * Les DReps peuvent spécifier quel autre DRep recevra ses délégants
+    au cas ou ils se retire.
+* Dépôt réduit pour action gouvernementale si un membre du CC
+  l'approuve (ce qui signifie probablement qu'il a suivi un certain processus).
+* Inclure le hachage de (future) configuration Genesis dans la proposition de HF.
+
+#### Modifications après l'atelier d'Édimbourg (Juillet 2023)
+
+* Ajoutez une politique de proposition, qui peut contrôler quels retraits de trésorerie et
+  modifications des paramètres de protocole sont autorisés.
+* Supprimer l'abandon des actions de gouvernance. Le seul effet que cela a est que si
+  une mesure de censure est adoptée, les actions restent
+  en place. Cependant, seules les nouvelles propositions du comité
+  conçues pour s’appuyer sur cette mesure de censure peuvent être
+  adoptées. Si un nouveau comité est élu alors que certaines de ces actions
+  n'ont pas expiré, ces actions peuvent être ratifiées mais le nouveau comité
+  doit les approuver.
+* All governance actions are enacted one epoch after they are ratified.
+* Déplacez les restrictions post-bootstrapping vers « Autres idées ».
+* Ajoutez une section sur les différents montants de dépôt à « Autres idées ».
+* Ajoutez une section pour un AVS minimum à « Autres idées ».
+* Renommez certains paramètres de protocole.
+* Renommez `TALLY` en `GOV`.
+* Transformez la Constitution en une ancre.
+* Retravaillez quelles ancres sont requises et lesquelles sont facultatives.
+* Nettoyez diverses incohérences et restes des anciennes versions.
+
 ## Chemin vers Actif
 
 ### Critères d’acceptation
@@ -1755,7 +1795,7 @@ Le processus de ratification finale sera probablement un mélange de diverses id
 
 #### Modifications apportées aux règles existantes du grand livre
 
-* La règle de transition `PPUP` sera réécrite et déplacée de la règle `UTxO` vers la règle `LEDGER` en tant que nouvelle règle `TALLY`.
+* La règle de transition `PPUP` sera réécrite et déplacée de la règle `UTxO` vers la règle `LEDGER` en tant que nouvelle règle `GOV`.
 
  Il traitera et enregistrera les actions de gouvernance et les votes.
 
@@ -1802,33 +1842,6 @@ Le calendrier de rotation du premier comité non-bootstrap pourrait être inclus
 Notez toutefois que, puisque le comité constitutionnelle ne vote jamais sur de nouveaux comités,
 il ne peut pas réellement imposer la rotation.
 
-#### Mesure de sécurité finale, post-amorçage
-
-Beaucoup de gens ont déclaré qu’ils croient que le taux de participation réel ne sera pas si important.
-comme une contrainte sur le débit du système.
-Nous pensons également que ce sera probablement le cas, mais lorsque la phase d’amorçage se terminera, nous
-mettrons en place une dernière mesure de sécurité temporaire (cela nous permettra également de justifier un faible montant de dépôt DRep).
-
-Pour les valeurs de $X$ et $Y$ qui restent à déterminer,
-dès que la phase bootstrap est terminée,
-lorsque nous calculons la distribution des mises des DReps pour la prochaine limite d’époque,
-nous ne considérerons _seulement_ que les DReps qui sont _soit_ dans le top $X$-many DReps classés par montant de mise,
-ou les DReps qui ont au moins $Y$ Lovelace.
-À chaque époque, la valeur de $X$ augmentera et la valeur de $Y$ diminuera,
-de sorte que finalement $X$ sera effectivement infini et $Y$ sera nul.
-Notez qu’il ne s’agit que d’une incitation et que rien n’empêche réellement les DRep de lancer leur
-vote (bien qu’il ne soit pas compté s’il ne répond pas aux exigences).
-
-Si la collectivité décide à un moment donné qu’il y a effectivement un problème de congestion,
-alors un hard fork pourrait être promulgué qui limite le nombre de DReps d’une manière plus restrictive.
-
-Les chiffres raisonnables pour la valeur initiale de $X$ sont probablement de 5,000 à 10,000.
-Les nombres raisonnables pour la valeur initiale de $Y$ sont probablement le nombre total de Lovelace
-divisé par la valeur initiale de $X$.
-
-Le mécanisme devrait être réglé de manière à assouplir à un rythme où la restriction est complètement éliminée après
-une période de six mois à un an.
-
 #### Autres idées / Questions ouvertes
 
 ##### Vote des SPO pondérés par les engagements
@@ -1860,6 +1873,28 @@ Nous pourrions réduire ce dépôt pour les propositions qui passent par un proc
 Cela serait marqué sur la chaîne par l’approbation d’au moins un membre du comité constitutionnel.
 L’inconvénient de cette idée est qu’elle donne plus de pouvoir au comité constitutionnel.
 
+##### Différents montants de dépôt pour différentes actions de gouvernance
+
+Plusieurs ateliers de ce CIP ont proposé d'introduire un montant de dépôt différent
+pour chaque type d'action de gouvernance. Il n’est pas clair
+si une majorité est favorable à cette idée, mais elle pourrait être
+envisagée s’il apparaît clairement que cela est nécessaire.
+
+##### Participation minimale de vote actif
+
+Comme garantie supplémentaire pour garantir que les actions de gouvernance ne peuvent pas être proposées
+juste avant un hard fork, être votées par un DRep avec une grande quantité
+de participation et être adoptées immédiatement, il pourrait y avoir une exigence
+supplémentaire selon laquelle un certain montant absolu fixe de participation
+doit voter « oui » sur l'action à adopter.
+
+Cela ne semble pas nécessaire dans la conception actuelle, puisque la participation de
+tous les DReps enregistrés se comporte comme un vote « non » jusqu'à ce qu'ils aient effectivement
+voté. Cela signifie que pour que ce scénario se produise, l’acteur malveillant
+doit au moins contrôler la fraction de la participation du DRep
+correspondant au seuil pertinent, auquel cas cela pourrait tout aussi bien être 
+considéré comme une action légitime.
+
 ##### Inclure le hachage de la (future) configuration de la genèse dans la proposition de hard-fork
 
 Certains hard-forks nécessitent de nouvelles configurations de genèse.
@@ -1886,6 +1921,33 @@ Nous pourrions imaginer trouver de meilleurs termes pour ces concepts.
 ##### Mouvements de trésorerie limitant les taux
 
 Rien n’empêche de retirer de l’argent du Trésor autre que les votes proposés et les seuils de vote. Étant donné que le Trésor Cardano est une composante tout à fait fondamentale de sa politique monétaire, nous pourrions imaginer appliquer (au niveau du protocole) le montant maximum qui peut être retiré du Trésor sur une période donnée.
+
+##### Mesure de sécurité finale, post-bootstrapping
+
+De nombreuses personnes ont déclaré qu'elles pensaient que le taux de participation réel ne serait pas si important
+qu'il constituerait une pression sur le débit du système.
+Nous pensons également que cela sera probablement le cas, mais lorsque la phase d'amorçage se terminera, nous pourrions
+mettre en place une dernière mesure de sécurité temporaire (cela nous permettra également de justifier un faible montant de dépôt DRep).
+
+Pour les valeurs de $X$ et $Y$ qui restent à déterminer,
+dès la fin de la phase bootstrapping,
+lorsque nous calculerons la distribution des enjeux DReps pour la prochaine limite d'époque,
+nous considérerons _uniquement_ les DReps qui sont _soit_ dans le les meilleurs $X$ - de nombreux DReps classés par montant de mise,
+ou les DReps qui ont au moins $Y$ Lovelace.
+À chaque époque, la valeur de $X$ _augmentera_ et la valeur de $Y$ diminuera,
+de sorte qu'à terme $X$ sera effectivement infini et $Y$ sera nul.
+Notez qu'il ne s'agit que d'une incitation et que rien n'empêche réellement un DRep d'exprimer
+son vote (même s'il ne sera pas pris en compte s'il ne répond pas aux exigences).
+
+Si la communauté décide à un moment donné qu’il y a effectivement un problème de congestion,
+alors un hard fork pourrait être adopté pour limiter le nombre de DReps de manière plus restrictive.
+
+Des chiffres raisonnables pour la valeur initiale de X$ sont probablement compris entre 5 000 et 10 000.
+Les nombres raisonnables pour la valeur initiale de $Y$ sont probablement le nombre total de Lovelace
+divisé par la valeur initiale de $X$.
+
+Le mécanisme devrait être assoupli à un rythme où la restriction serait complètement supprimée
+après une période de six mois à un an.
 
 ## Droit d’auteur
 
