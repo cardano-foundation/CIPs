@@ -54,6 +54,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
 - [Process](#process)
   - [1. Early Stage](#1-early-stages)
     - [1.a. Authors open a pull request](#1a-authors-open-a-pull-request)
+      - [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)
     - [1.b. Authors seek feedback](#1b-authors-seek-feedback)
   - [2. Editors' role](#2-editors-role)
     - [2.a. Triage in bi-weekly meetings](#2a-triage-in-bi-weekly-meetings)
@@ -92,7 +93,7 @@ Each CIP must begin with a YAML key:value style header preamble (also known as _
 Field          | Description
 ---            | ---
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
-`Title`        | A succinct and descriptive title
+`Title`        | A succinct and descriptive title.  If necessary, use a `-` delimiter to begin with an applicable classification (see [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)).
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
 `Category`     | One of the registered [categories](#categories) covering one area of the ecosystem.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
@@ -284,6 +285,13 @@ Proposals must be submitted to the [cardano-foundation/CIPs][Repository] reposit
 
 > **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
+###### Naming CIPs with similar subjects
+
+When a CIP title *and* subject matter share a common element, begin the CIP title with that common element and end it with the specifc portion, delimited with the `-` character.  Example (CIP-0095):
+
+> *Web-Wallet Bridge **-** Governance*
+
+CIP editors will help determine these common elements and, whenever necessary, rename both CIP document titles and PR titles accordingly.  The objective is to provide commonly recognisable names for similar developments (e.g. multiple extensions to another CIP or scheme).
 
 ##### 1.b. Authors seek feedback
 
