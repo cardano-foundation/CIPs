@@ -1,21 +1,35 @@
 ---
 CIP: 15
-Title: Catalyst Registration Transaction Metadata Format
-Authors: Sebastien Guillemot <sebastien@emurgo.io>, Rinor Hoxha <rinor.hoxha@iohk.io>, Mikhail Zabaluev <mikhail.zabaluev@iohk.io>
-Comments-URI: https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
+Title: Registration Transaction Metadata Format
+Category: Metadata
 Status: Active
-Type: Standards
+Authors:
+    - Sebastien Guillemot <sebastien@emurgo.io>, 
+    - Rinor Hoxha <rinor.hoxha@iohk.io>, 
+    - Mikhail Zabaluev <mikhail.zabaluev@iohk.io>
+Implementors:
+    - Daedalus <https://daedaluswallet.io/>,
+    - DcSpark <https://www.dcspark.io/>,
+    - Eternl <https://eternl.io/>,
+    - Flint <https://flint-wallet.com/>,
+    - Project Catalyst <https://projectcatalyst.io/>,
+    - Typhon <https://typhonwallet.io/>,
+    - Yoroi <https://yoroi-wallet.com/>
+Discussions:
+    - https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
+    - https://github.com/cardano-foundation/cips/pulls/58
 Created: 2020-01-05
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
-Cardano uses a sidechain for its treasury system. One needs to "register" to participate on this sidechain by submitting a registration transaction on the mainnet chain. This CIP details the registration transaction format.
+This CIP details a transaction metadata format, most notably used by Cardano's Project Catalyst for voter
+registrations.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
-Cardano uses a sidechain for its treasury system ("Catalyst"). One of the desirable properties of this sidechain is that even if its safety is compromised, it doesn't cause loss of funds on the main Cardano chain. To achieve this, instead of using your wallet's recovery phrase on the sidechain, we need to use a brand new "voting key".
+Cardano uses a sidechain for its treasury system (Project Catalyst). One of the desirable properties of this sidechain is that even if its' safety is compromised, it doesn't cause loss of funds on the main Cardano chain. To achieve this, instead of using your wallet's recovery phrase on the sidechain, we need to use a brand new "voting key".
 
 However, since 1 ADA = 1 vote, a user needs to associate their mainnet ADA to their new voting key. This can be achieved through a registration transaction.
 
@@ -29,15 +43,16 @@ We therefore need a registration transaction that serves three purposes:
 
 ### Voting key format
 
-A voting key is simply an ED25519 key. How this key is created is up to the wallet.
+A voting key is simply an ED25519 key. 
+How this key is created is up to the wallet, although it is not recommended that the wallet derives this key deterministic from a mnemonic used on Cardano.
 
 ### Associating stake with a voting key
 
-This method has been used since Fund 2.
+This method has been used since Catalyst's Fund 2.
 For future fund iterations, a new method making use of time-lock scripts may
 be introduced as described [below][future-development].
 
-Recall: Cardano uses the UTXO model so to completely associate a wallet's balance with a voting key (i.e. including enterprise addresses), we would need to associate every payment key to a voting key individually. Although there are attempts at this (see [CIP-0008]), the resulting data structure is a little excessive for on-chain metadata (which we want to keep small)
+Recall: Cardano uses the UTxO model so to completely associate a wallet's balance with a voting key (i.e. including enterprise addresses), we would need to associate every payment key to a voting key individually. Although there are attempts at this (see [CIP-0008]), the resulting data structure is a little excessive for on-chain metadata (which we want to keep small)
 
 Given the above, we choose to only associate staking keys with voting keys. Since most Cardano wallets only use base addresses for Shelley wallet types, in most cases this should perfectly match the user's wallet.
 
@@ -48,7 +63,8 @@ A Catalyst registration transaction is a regular Cardano transaction with a spec
 Notably, there should be four entries inside the metadata map:
 
 Voting registration example:
-```
+
+```cddl
 61284: {
   // voting_key - CBOR byte array
   1: "0xa6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663",
@@ -75,7 +91,7 @@ considered valid if the following conditions hold:
   this transaction is submitted to.
 
 To produce the signature field, the CBOR representation of a map containing
-a single entry with key 61284 and the registration metadata map in the
+a single entry with key `61284` and the registration metadata map in the
 format above is formed, designated here as `sign_data`.
 This data is signed with the staking key as follows: first, the
 blake2b-256 hash of `sign_data` is obtained. This hash is then signed
@@ -84,24 +100,28 @@ added to the transaction under key 61285 as a CBOR map with a single entry
 that consists of the integer key 1 and signature as obtained above as the byte array value.
 
 Signature example:
-```
+
+```cddl
 61285: {
   // signature - ED25119 signature CBOR byte array
   1: "0x8b508822ac89bacb1f9c3a3ef0dc62fd72a0bd3849e2381b17272b68a8f52ea8240dcc855f2264db29a8512bfcd522ab69b982cb011e5f43d0154e72f505f007"
 }
 ```
+### Changelog
 
-### Metadata schema
+Catalyst fund 3 added the `reward_address` inside the `key_registration` field.
 
-See the [schema file](./schema.cddl)
+Fund 4:
+- added the `nonce` field to prevent replay attacks;
+- changed the signature algorithm from one that signed `sign_data` directly
+  to signing the Blake2b hash of `sign_data` to accommodate memory-constrained hardware wallet devices.
 
-### Test vector
+It was planned that since Fund 4, `registration_signature` and the `staking_pub_key` entry inside the `key_registration` field will be deprecated.
+This has been deferred to a future revision of the protocol.
 
-See [test vector file](./test-vector.md)
+## Rationale: how does this CIP achieve its goals?
 
-### Rereference implementation
-
-[catalyst-registration-js](https://www.npmjs.com/package/@dcspark/catalyst-registration-js)
+The described metadata format allows for the association of a voting key with a stake credential on a Cardano network.
 
 ### Future development
 
@@ -112,20 +132,31 @@ with the staking key. Therefore, the `staking_pub_key` map entry
 and the `registration_signature` payload with key 61285 will no longer
 be required.
 
-## Changelog
+## Path to Active
 
-Fund 3 added the `reward_address` inside the `key_registration` field.
+### Acceptance Criteria
 
-Fund 4:
-- added the `nonce` field to prevent replay attacks;
-- changed the signature algorithm from one that signed `sign_data` directly
-  to signing the Blake2b hash of `sign_data` to accommodate memory-constrained hardware wallet devices.
+- [x] This metadata format is implemented by at least 3 wallets
+  - DcSpark <https://www.dcspark.io/>,
+  - Eternl <https://eternl.io/>,
+  - Flint <https://flint-wallet.com/>,
+  - Project Catalyst <https://projectcatalyst.io/>,
+  - Typhon <https://typhonwallet.io/>,
+  - Yoroi <https://yoroi-wallet.com/>
+- [x] This metadata format is used by Catalyst for at least 3 funds
+  - This format has been used up to and included Catalyst fund 10
 
-It was planned that since Fund 4, `registration_signature` and the `staking_pub_key` entry inside the `key_registration` field will be deprecated.
-This has been deferred to a future revision of the protocol.
+### Implementation Plan
+
+- [x] Author(s) to provide a schema cddl file
+  - See the [schema file](./schema.cddl)
+- [x] Author(s) to provide a test vectors file
+  -  See [test vector file](./test-vector.md)
+- [x] Author(s) to provide a npm package to support the creation of this metadata format
+  - [catalyst-registration-js](https://www.npmjs.com/package/@dcspark/catalyst-registration-js)
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
-[CIP-0008]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008
+[CIP-0008]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md
