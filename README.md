@@ -130,8 +130,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0099? | [Proof of Onboarding](https://github.com/cardano-foundation/CIPs/pull/546) |
 | 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
 | 0102? | [Royalty Datum Metadata](https://github.com/cardano-foundation/CIPs/pull/551) |
+| 0103? | [Web-Wallet Bridge - Bulk transaction signing](https://github.com/cardano-foundation/CIPs/pull/587) |
+| 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
 
-<p align="right"><i>Last updated on 2023-09-19</i></p>
+<p align="right"><i>Last updated on 2023-10-03</i></p>
 
 ## Cardano Problem Statements (CPS)
 
