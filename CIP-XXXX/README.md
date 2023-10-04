@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 103
 Title: Web-Wallet Bridge - Bulk transaction signing
 Category: Wallets
 Status: Proposed
