@@ -48,7 +48,7 @@ See [CIP-30 (Cardano dApp-Wallet Web Bridge) TxSignError](https://cips.cardano.o
 #### TxSendError
 See [CIP-30 (Cardano dApp-Wallet Web Bridge) TxSendError](https://cips.cardano.org/cips/cip30/#txsignerror)
 
-### api.cip????.signTxs(txs: TransactionSignatureRequest[]): Promise\<cbor\<transaction_witness_set>[]>
+### api.cip103.signTxs(txs: TransactionSignatureRequest[]): Promise\<cbor\<transaction_witness_set>[]>
 
 Errors: `APIError`, `TxSignError`
 
@@ -58,7 +58,7 @@ On sign error for any transaction in the array, no witnesses are to be returned.
 
 There are certain things that should be considered by wallets implementing this CIP, namely user visibility of what is signed. Though not explicitly specified in this CIP, as it would be up to the wallet to find a good solution, the wallet should make it clear to the user that multiple transactions are to be signed, and to give a clear overview/summary of what is signed. In addition to visibility, the wallet shall process the input transaction array in the same order as input parameter to allow transactions to be chained by accepting a previous transaction in the array to be used as input in a following transaction.
 
-### api.cip????.submitTxs(txs: cbor\<transaction>[]): Promise\<hash32[]>
+### api.cip103.submitTxs(txs: cbor\<transaction>[]): Promise\<hash32[]>
 
 Errors: `APIError`, `TxSendError`
 
