@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 104
 Title: Web-Wallet Bridge - Account public key
 Category: Wallets
 Status: Proposed
