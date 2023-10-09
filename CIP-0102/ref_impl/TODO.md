@@ -1,0 +1,5 @@
+- [ ] Create Specification
+- [ ] Select Onchain Language
+- [ ] Minting a CIP 102 compliant NFT with royalties
+- [ ] Reading a CIP 102 NFT’s royalties off chain
+- [ ] Reading and validating against CIP 102 NFT royalties on chain
