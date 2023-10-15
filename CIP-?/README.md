@@ -1,5 +1,5 @@
 ---
-CIP: [To be assigned]
+CIP: ?
 Title: Domain Address Resolving Standard
 Status: Proposed
 Category: Wallets
@@ -7,7 +7,6 @@ Authors:
   - Hinson Wong <hinson@cns.space>
 Implementors: []
 Discussions: https://github.com/cns-space/CIPs
-Solution-To: N/A
 Created: 2023-10-14
 License: CC-BY-4.0
 ---
@@ -56,25 +55,27 @@ As different domain projects emerge, the same prefix or suffix may be employed b
 
 This proposal embraces the decentralization property of a blockchain where it welcomes multiple domain name service that exists in the market without user experience competition at the infrastructure level. It ensures a user-friendly experience and allows users to make informed decisions in case of naming conflicts. It accommodates multiple projects with the same suffix in wallets while avoiding disputes and confusion, fostering the integration process of wallet and domain service.
 
-### Path to Active
+This approach could be applied in resolving other information as well in case of conflict. When there is no other specific CIP covering the particular domain information resolving mechanism, the similar approach with this CIP would by default covering the particular scope.
 
-#### Acceptance Criteria
+## Path to Active
+
+### Acceptance Criteria
 
 - At least 3 of wallets listed below agree with the approach
 
-  - Begin <https://begin.is/>
-  - Eternl <https://eternl.io/>
-  - Flint <https://flint-wallet.com/>
-  - GeroWallet <https://www.gerowallet.io/>
-  - Lace <https://www.lace.io/>
-  - Nami <https://namiwallet.io/>
-  - NuFi <https://nu.fi/>
-  - RayWallet <https://raywallet.io/>
-  - Yoroi <https://yoroi-wallet.com/>
+  - [ ] Begin <https://begin.is/>
+  - [ ] Eternl <https://eternl.io/>
+  - [ ] Flint <https://flint-wallet.com/>
+  - [ ] GeroWallet <https://www.gerowallet.io/>
+  - [ ] Lace <https://www.lace.io/>
+  - [ ] Nami <https://namiwallet.io/>
+  - [ ] NuFi <https://nu.fi/>
+  - [ ] RayWallet <https://raywallet.io/>
+  - [ ] Yoroi <https://yoroi-wallet.com/>
 
   > Initial list of wallet adapted from CIP30, other wallet providers could to request to add to the list.
 
-#### Implementation Plan
+### Implementation Plan
 
 - Every participating Cardano domain service provider provides an address resolver SDK.
 - Every participating Cardano domain service provider provides either a desired prefix or suffix.
@@ -87,10 +88,6 @@ This proposal embraces the decentralization property of a blockchain where it we
 | Cardano Name Service (CNS) | N/A    | `.ada` | https://github.com/cns-space/cns-resolver-sdk |
 |                            |        |        |                                               |
 |                            |        |        |                                               |
-
-## CIP Extendibility: Domain Information Resolving
-
-This approach could be applied in resolving other information as well in case of conflict. When there is no other specific CIP covering the particular domain information resolving mechanism, the similar approach with this CIP would by default covering the particular scope.
 
 ## Copyright
 
