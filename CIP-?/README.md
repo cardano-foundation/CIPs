@@ -81,8 +81,6 @@ This approach could be applied in resolving other information as well in case of
 - Every participating Cardano domain service provider provides either a desired prefix or suffix.
 - Wallet providers to execute and integrate with resolving address, domain service project to provide assistance.
 
-#### Participating Cardano Domain Service
-
 | Domain Service Project     | Prefix | Suffix | Link to Resolver SDK Repo                     |
 | -------------------------- | ------ | ------ | --------------------------------------------- |
 | Cardano Name Service (CNS) | N/A    | `.ada` | https://github.com/cns-space/cns-resolver-sdk |
