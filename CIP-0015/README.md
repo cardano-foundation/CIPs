@@ -38,7 +38,7 @@ This can be achieved through a voter registration transaction.
 We therefore need a voter registration transaction that serves three purposes:
 
 1. Registers a voting key to be included in the sidechain
-2. Associates mainnet Ada to this voting key
+2. Associates Mainnet ada to this voting key
 3. Declare an address to receive Catalyst voting rewards
 
 ## Specification
