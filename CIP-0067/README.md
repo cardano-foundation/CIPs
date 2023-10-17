@@ -1,9 +1,13 @@
 ---
 CIP: 67
 Title: Asset Name Label Registry
-Authors: Alessandro Konrad <alessandro.konrad@live.de>, Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Status: Proposed
-Type: Informational
+Category: Meta
+Authors: 
+  - Alessandro Konrad <alessandro.konrad@live.de>
+  - Thomas Vellekoop <thomas.vellekoop@iohk.io>
+Implementors:
+Discussions:
 Created: 2022-07-13
 License: CC-BY-4.0
 ---
@@ -90,9 +94,9 @@ These are the reserved `asset_name_label` values
 > "OPTIONAL" in this section are to be interpreted as described in
 > [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
-Those wishing to propose an addition to this registry MUST draft a new CIP describing the standard for implementing the
-token. Once the CIP has achieved the `Under Review` status the proposer SHALL make the necessary edits to 
-[registry.json](./registry.json). These changes SHOULD be submitted under a separate pull request against the CIP
+Those wishing to propose an addition to this registry **MUST** draft a new CIP describing the standard for implementing
+the token. Once the CIP has achieved the `Under Review` status the proposer **SHALL** make the necessary edits to 
+[registry.json](./registry.json). These changes **SHOULD** be submitted under a separate pull request against the CIP
 repository and include a brief description of the standard and a link to the CIP Pull Request describing implementation
 details.
 
