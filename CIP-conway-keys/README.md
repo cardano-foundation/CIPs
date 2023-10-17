@@ -47,9 +47,9 @@ By defining tooling standards, we enable greater interoperability between govern
 
 ## Specification
 
-### DRep Keys
+### Derivation
 
-#### Derivation
+#### DRep Keys
 
 Here we describe DRep key derivation as it pertains to Cardano wallets that follow the CIP-1852 standard.
 
@@ -63,9 +63,7 @@ We strongly recommend that a maximum of one set of DRep keys should be associate
 
 Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519 public DRep key (without chaincode) by creating a blake2b-224 hash digest of the key.
 
-### Constitutional Committee Cold Keys
-
-#### Derivation
+#### Constitutional Committee Cold Keys
 
 Here we describe constitutional committee cold key derivation as it pertains to Cardano wallets that follow the CIP-1852 standard.
 
@@ -75,9 +73,11 @@ To differentiate constitutional committee cold keys from other Cardano keys, we 
 
 We strongly recommend that a maximum of one set of constitutional committee cold keys should be associated with one wallet account, which can be achieved by setting `address_index=0`.
 
-### Constitutional Committee Hot Keys
+#### Constitutional Committee Cold Credential
 
-#### Derivation
+Tools and wallets can generate a constitutional committee cold credential (`committee_cold_credential`) from the Ed25519 public constitutional committee cold key (without chaincode) by creating a blake2b-224 hash digest of the key.
+
+#### Constitutional Committee Hot Keys
 
 Here we describe constitutional committee hot key derivation as it pertains to Cardano wallets that follow the CIP-1852 standard.
 
@@ -87,9 +87,17 @@ To differentiate constitutional committee hot keys from other Cardano keys, we d
 
 We strongly recommend that a maximum of one set of constitutional committee hot keys should be associated with one wallet account, which can be achieved by setting `address_index=0`.
 
-### Bech32 Encodings
+#### Constitutional Committee Hot Credential
 
-DRep Keys and DRep IDs should be encoded in Bech32 with the following prefixes:
+Tools and wallets can generate a constitutional committee hot credential (`committee_hot_credential`) from the Ed25519 public constitutional committee hot key (without chaincode) by creating a blake2b-224 hash digest of the key.
+
+### Bech32 Encoding
+
+These are also described in [CIP-0005 | Common Bech32 Prefixes](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md), but we include them here for completeness.
+
+#### DRep Keys
+
+DRep keys and DRep IDs should be encoded in Bech32 with the following prefixes:
 
 | Prefix     | Meaning                                   | Contents                           |
 | ---------- | ----------------------------------------- | ---------------------------------- |
@@ -99,29 +107,33 @@ DRep Keys and DRep IDs should be encoded in Bech32 with the following prefixes:
 | `drep_xvk` | CIP-1852’s DRep extended verification key | Ed25519 public key with chain code |
 | `drep`     | DRep credential                           | DRep credential                    |
 
+#### Constitutional Committee Cold Keys
+
 Constitutional cold keys and credential should be encoded in Bech32 with the following prefixes:
 
-| Prefix        | Meaning                                                               | Contents                  |
-| ------------- | --------------------------------------------------------------------- | ------------------------- |
-| `cc_cold_sk`  | CIP-1852’s constitutional committee cold signing key                  | Ed25519 private key       |
-| `cc_cold_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key       |
-| `cc_cold_xsk` | CIP-1852’s constitutional committee cold extended signing key         | Ed25519 private key       |
-| `cc_cold_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 private key       |
-| `cc_cold`     | Constitutional committee cold credential                              | committee cold credential |
+| Prefix        | Meaning                                                               | Contents                           |
+| ------------- | --------------------------------------------------------------------- | ---------------------------------- |
+| `cc_cold_sk`  | CIP-1852’s constitutional committee cold signing key                  | Ed25519 private key                |
+| `cc_cold_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                |
+| `cc_cold_xsk` | CIP-1852’s constitutional committee cold extended signing key         | Ed25519-bip32 extended private key |
+| `cc_cold_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code |
+| `cc_cold`     | Constitutional committee cold credential                              | committee cold credential          |
+
+#### Constitutional Committee Hot Keys
 
 Constitutional hot keys and credential should be encoded in Bech32 with the following prefixes:
 
-| Prefix        | Meaning                                                              | Contents                 |
-| ------------- | -------------------------------------------------------------------- | ------------------------ |
-| `cc_hot_sk`  | CIP-1852’s constitutional committee hot signing key                   | Ed25519 private key      |
-| `cc_hot_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key      |
-| `cc_hot_xsk` | CIP-1852’s constitutional committee hot extended signing key          | Ed25519 private key      |
-| `cc_hot_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 private key      |
-| `cc_hot`     | Constitutional committee hot credential                               | committee hot credential |
-
-These are also described in [CIP-0005 | Common Bech32 Prefixes](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md), but we include them here for completeness.
+| Prefix       | Meaning                                                               | Contents                           |
+| ------------ | --------------------------------------------------------------------- | ---------------------------------- |
+| `cc_hot_sk`  | CIP-1852’s constitutional committee hot signing key                   | Ed25519 private key                |
+| `cc_hot_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                |
+| `cc_hot_xsk` | CIP-1852’s constitutional committee hot extended signing key          | Ed25519-bip32 extended private key |
+| `cc_hot_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code |
+| `cc_hot`     | Constitutional committee hot credential                               | committee hot credential           |
 
 ### Tooling Definitions
+
+### DRep Keys
 
 Supporting tooling should clearly label these key pairs as "DRep Keys".
 
@@ -130,7 +142,7 @@ Examples of acceptable `keyType`s for supporting tools:
 | `keyType`                                   | Description                    |
 | ------------------------------------------- | ------------------------------ |
 | `DRepSigningKey_ed25519`                    | DRep Signing Key               |
-| `DRepExtendedSigningKey_ed25519_bip32`      | DRep ExtendedSigning Key       |
+| `DRepExtendedSigningKey_ed25519_bip32`      | DRep Extended Signing Key      |
 | `DRepVerificationKey_ed25519`               | DRep Verification Key          |
 | `DRepExtendedVerificationKey_ed25519_bip32` | DRep Extended Verification Key |
 
@@ -141,11 +153,48 @@ For hardware implementations:
 | `DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
 | `DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
 
-// todo CC keys
+#### Constitutional Committee Cold Keys
+
+Supporting tooling should clearly label these key pairs as "Constitutional Committee Cold Keys".
+
+Examples of acceptable `keyType`s for supporting tools:
+
+| `keyType`                                                    | Description                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------- |
+| `ConstitutionalCommitteeColdSigningKey_ed25519`              | Constitutional Committee Cold Signing Key               |
+| `ConstitutionalCommitteeColdExtendedSigningKey_ed25519`      | Constitutional Committee Cold Extended Signing Key      |
+| `ConstitutionalCommitteeColdVerificationKey_ed25519`         | Constitutional Committee Cold Verification Key          |
+| `ConstitutionalCommitteeColdExtendedVerificationKey_ed25519` | Constitutional Committee Cold Extended Verification Key |
+
+For hardware implementations:
+
+| `keyType`                                            | Description                                             |
+| ---------------------------------------------------- | ------------------------------------------------------- |
+| `ConstitutionalCommitteeColdHWSigningFile_ed25519`   | Hardware Constitutional Committee Cold Signing File     |
+| `ConstitutionalCommitteeColdVerificationKey_ed25519` | Hardware Constitutional Committee Cold Verification Key |
+
+#### Constitutional Committee Hot Keys
+
+Supporting tooling should clearly label these key pairs as "Constitutional Committee Hot Keys".
+
+| `keyType`                                                   | Description                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------ |
+| `ConstitutionalCommitteeHotSigningKey_ed25519`              | Constitutional Committee Hot Signing Key               |
+| `ConstitutionalCommitteeHotExtendedSigningKey_ed25519`      | Constitutional Committee Hot Extended Signing Key      |
+| `ConstitutionalCommitteeHotVerificationKey_ed25519`         | Constitutional Committee Hot Verification Key          |
+| `ConstitutionalCommitteeHotExtendedVerificationKey_ed25519` | Constitutional Committee Hot Extended Verification Key |
+
+For hardware implementations:
+
+| `keyType`                                           | Description                                            |
+| --------------------------------------------------- | ------------------------------------------------------ |
+| `ConstitutionalCommitteeHotHWSigningFile_ed25519`   | Hardware Constitutional Committee Hot Signing File     |
+| `ConstitutionalCommitteeHotVerificationKey_ed25519` | Hardware Constitutional Committee Hot Verification Key |
 
 ### Versioning
 
-// todo
+This CIP is not to be versioned using a traditional scheme, rather if any large technical changes are required then a new proposal must replace this one.
+Small changes can be made if they are completely backwards compatible with implementations, but this should be avoided.
 
 ## Rationale: how does this CIP achieve its goals?
 
