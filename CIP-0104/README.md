@@ -22,9 +22,9 @@ This CIP extends [CIP-30 (Cardano dApp-Wallet Web Bridge)](https://cips.cardano.
 Normally it's up to the wallet to handle the logic for utxo selection, derived addresses etc through the established CIP-30 api. Sometimes however, dApp needs greater control due to subpar utxo selection or other specific needs that can only be handled by chain lookup from derived address(es). This moves the control and complexity from wallet to dApp for those dApps that prefer this setup. A dApp has better control and can make a more uniform user experience. By exporting only the account public key, this gives read-only access to the dApp.
 
 ## Specification
-A new endpoint is added namespaced according to this cip extension number that returns the connected account extended public key as [cbor\<T>](https://cips.cardano.org/cips/cip30/#cbort) defined in CIP30.
+A new endpoint is added namespaced according to this cip extension number that returns the connected account extended public key as [`cbor<T>`](https://cips.cardano.org/cips/cip30/#cbort) defined in CIP30.
 
-### 1. api.cip104.getAccountPub(): Promise\<cbor\<Bip32PublicKey>>
+### 1. `api.cip104.getAccountPub(): Promise<cbor<Bip32PublicKey>>`
 
 Errors: APIError
 
