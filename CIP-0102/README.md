@@ -80,7 +80,7 @@ royalty_info = #6.121([royalty_recipients, version, extra])
 ```
 
 #### Example of onchain variable fee calculation:
-```
+```cddl
 ; Given a royalty fee of 1.6% (0.016)
 
 ; To store this in the royalty datum
