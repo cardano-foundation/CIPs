@@ -168,7 +168,7 @@ To keep metadata compatibility with changes coming in the future, we introduce a
 
 - [ ] Publish open source reference implementation and instructions related to the creation, storage and reading of royalty utxos.
 - [ ] Implement in open source libraries and tooling such as [Lucid](https://github.com/spacebudz/lucid), [Blockfrost](https://github.com/blockfrost/blockfrost-backend-ryo), etc.
-3. Achieve additional "buy in" from existing community actors and implementors such as: blockchain explorers, token marketplaces, minting platforms, wallets.
+- [ ] Achieve additional "buy in" from existing community actors and implementors such as: blockchain explorers, token marketplaces, minting platforms, wallets.
 
 ## Copyright
 
