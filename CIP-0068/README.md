@@ -2,7 +2,7 @@
 CIP: 68
 Title: Datum Metadata Standard
 Status: Proposed
-Category: Meta
+Category: Tokens
 Authors: 
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
