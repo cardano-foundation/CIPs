@@ -141,7 +141,7 @@ This specification is largely based on [the royalty specification in Nebula](htt
 
 - The policyId of the royalty NFT must match that of the reference NFT. This enables lookups based on the user token in the same way as is done for the tokens specified in the original CIP-68 standard.
 
-#### Reference Datum Flag
+### Reference Datum Flag
 
 In addition to providing a way to create guaranteed royalties, this has several advantages:
 
