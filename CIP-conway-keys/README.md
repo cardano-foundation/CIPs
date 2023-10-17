@@ -6,74 +6,86 @@ Authors:
   - Ryan Williams <ryan.williams@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+  - https://github.com/cardano-foundation/cips/pulls/597
 Created: 2023-09-22
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
-The Conway Ledger era introduces many new features to Cardano, notably features
-to support community governance via CIP-1694. This includes the introduction of
-a new first class credential; `drep_credential`.
+The Conway Ledger era introduces many new features to Cardano, notably features to support community governance via CIP-1694.
+This includes the introduction of the new first class credentials; `drep_credential`, `committee_cold_credential` and `committee_hot_credential`.
 
-We propose a HD wallet key derivation path for registered DReps to
-deterministically derive keys from which DRep credentials can be generated. Such
-keys are to be known as DRep keys, and here we define some accompanying tooling
-standards.
+We propose a HD wallet key derivation paths for registered DReps and constitutional committee members to deterministically derive keys from which credentials can be generated.
+Such keys are to be known as DRep keys, constitutional committee cold keys and constitutional committee hot keys.
+Here we define some accompanying tooling standards.
 
 > **Note** this proposal assumes knowledge of the Conway ledger design (see
-> [draft](https://github.com/input-output-hk/cardano-ledger/tree/master/eras/conway/test-suite/cddl-files))
+> [draft ledger specification](https://github.com/input-output-hk/cardano-ledger/tree/master/eras/conway/test-suite/cddl-files))
 > and
 > [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
 
 ## Motivation: why is this CIP necessary?
 
-In the Conway ledger era, DRep credentials allow registered DReps to be
-identified on-chain, in DRep registrations, retirements, votes, and also in vote
-delegations from normal ada holders.
+In the Conway ledger era, DRep credentials allow registered DReps to be identified on-chain, in DRep registrations, retirements, votes, and in vote delegations from ada holders.
+Whilst constitutional committee members can be recognized by their cold credentials within update committee governance actions, authorize hot credential certificate and resign cold key certificates.
+Constitutional committee hot credential can be observed within the authorize hot key certificate and votes.
 
-CIP-1694 terms these credentials as DRep IDs, which are either generated from
-blake2b-224 hash digests of Ed25519 public keys owned by the DRep, are script
-ids, or are pre-defined (Abstain/No Confidence, used for voting purposes only).
+CIP-1694 terms these DRep credentials as DRep IDs, which are either generated from blake2b-224 hash digests of Ed25519 public keys owned by the DRep, or are script hashes.
+Similarly, both the hot and cold credentials for constitutional committee members can be public key digests or script hashes.
 
-This CIP defines a standard way for wallets to derive DRep keys.
+This CIP defines a standard way for wallets to derive DRep and constitutional committee keys.
 
-Since it is best practice to use a single cryptographic key for a single
-purpose, we opt to keep DRep keys separate from other keys in Cardano.
+Since it is best practice to use a single cryptographic key for a single purpose, we opt to keep DRep keys separate from other keys in Cardano.
 
-By adding a path to the
-[CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md),
-we create an ecosystem standard for wallets to be able to derive DRep Keys. This
-enables DRep credential restorability from a wallet seed phrase.
+By adding three paths to the [CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md), we create an ecosystem standard for wallets to be able to derive DRep and constitutional committee keys.
+This enables DRep and constitutional committee credential restorability from a wallet seed phrase.
 
-Stakeholders for this proposal are wallets that follow the CIP-1852 standard and
-tool makers wishing to support DReps. This standard allows DReps to use
-alternative wallets whilst being able to be correctly identified. By defining
-tooling standards, we enable greater interoperability between
-governance-focussed tools.
+Stakeholders for this proposal are wallets that follow the CIP-1852 standard and tool makers wishing to support DReps and or constitutional committee members.
+This standard allows DReps and constitutional committee members to use alternative wallets whilst being able to be correctly identified.
+By defining tooling standards, we enable greater interoperability between governance-focussed tools.
 
 ## Specification
 
-### Derivation
+### DRep Keys
 
-Here we describe DRep Key derivation as it pertains to Cardano wallets that
-follow the CIP-1852 standard.
+#### Derivation
 
-To differentiate DRep keys from other Cardano keys, we define a new `role` index
-of `3`:
+Here we describe DRep key derivation as it pertains to Cardano wallets that follow the CIP-1852 standard.
+
+To differentiate DRep keys from other Cardano keys, we define a new `role` index of `3`:
 
 `m / 1852' / 1815' / account' / 3 / address_index`
 
-We strongly recommend that a maximum of one set of DRep keys should be
-associated with one wallet account, which can be achieved by setting
-`address_index=0`.
+We strongly recommend that a maximum of one set of DRep keys should be associated with one wallet account, which can be achieved by setting `address_index=0`.
 
-### DRep ID
+#### DRep ID
 
-Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519
-public DRep key (without chaincode) by creating a Blake2b_224 hash digest of the
-key.
+Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519 public DRep key (without chaincode) by creating a blake2b-224 hash digest of the key.
+
+### Constitutional Committee Cold Keys
+
+#### Derivation
+
+Here we describe constitutional committee cold key derivation as it pertains to Cardano wallets that follow the CIP-1852 standard.
+
+To differentiate constitutional committee cold keys from other Cardano keys, we define a new `role` index of `4`:
+
+`m / 1852' / 1815' / account' / 4 / address_index`
+
+We strongly recommend that a maximum of one set of constitutional committee cold keys should be associated with one wallet account, which can be achieved by setting `address_index=0`.
+
+### Constitutional Committee Hot Keys
+
+#### Derivation
+
+Here we describe constitutional committee hot key derivation as it pertains to Cardano wallets that follow the CIP-1852 standard.
+
+To differentiate constitutional committee hot keys from other Cardano keys, we define a new `role` index of `5`:
+
+`m / 1852' / 1815' / account' / 5 / address_index`
+
+We strongly recommend that a maximum of one set of constitutional committee hot keys should be associated with one wallet account, which can be achieved by setting `address_index=0`.
 
 ### Bech32 Encodings
 
@@ -87,9 +99,27 @@ DRep Keys and DRep IDs should be encoded in Bech32 with the following prefixes:
 | `drep_xvk` | CIP-1852’s DRep extended verification key | Ed25519 public key with chain code |
 | `drep`     | DRep credential                           | DRep credential                    |
 
-These are also described in
-[CIP-0005 | Common Bech32 Prefixes](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md),
-but we include them here for completeness.
+Constitutional cold keys and credential should be encoded in Bech32 with the following prefixes:
+
+| Prefix        | Meaning                                                               | Contents                  |
+| ------------- | --------------------------------------------------------------------- | ------------------------- |
+| `cc_cold_sk`  | CIP-1852’s constitutional committee cold signing key                  | Ed25519 private key       |
+| `cc_cold_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key       |
+| `cc_cold_xsk` | CIP-1852’s constitutional committee cold extended signing key         | Ed25519 private key       |
+| `cc_cold_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 private key       |
+| `cc_cold`     | Constitutional committee cold credential                              | committee cold credential |
+
+Constitutional hot keys and credential should be encoded in Bech32 with the following prefixes:
+
+| Prefix        | Meaning                                                              | Contents                 |
+| ------------- | -------------------------------------------------------------------- | ------------------------ |
+| `cc_hot_sk`  | CIP-1852’s constitutional committee hot signing key                   | Ed25519 private key      |
+| `cc_hot_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key      |
+| `cc_hot_xsk` | CIP-1852’s constitutional committee hot extended signing key          | Ed25519 private key      |
+| `cc_hot_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 private key      |
+| `cc_hot`     | Constitutional committee hot credential                               | committee hot credential |
+
+These are also described in [CIP-0005 | Common Bech32 Prefixes](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md), but we include them here for completeness.
 
 ### Tooling Definitions
 
@@ -111,54 +141,49 @@ For hardware implementations:
 | `DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
 | `DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
 
+// todo CC keys
+
+### Versioning
+
+// todo
+
 ## Rationale: how does this CIP achieve its goals?
+
+//todo update with CC
 
 ### Derivation
 
-By standardizing derivation, naming, and tooling conventions we primarily aim to
-enable wallet interoperability. By having a standard to generate DRep
-credentials from mnemonics, we allow wallets to always be able to discover a
-user’s governance activities.
+By standardizing derivation, naming, and tooling conventions we primarily aim to enable wallet interoperability.
+By having a standard to generate DRep credentials from mnemonics, we allow wallets to always be able to discover a user’s governance activities.
 
 #### Why add a new role to the 1852 path?
 
-This approach mirrors how stake keys were rolled out, see
-[CIP-0011 | Staking key chain for HD wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011/README.md).
-We deem this necessary since these credentials sit alongside each other in the
-Conway ledger design.
+This approach mirrors how stake keys were rolled out, see [CIP-0011 | Staking key chain for HD wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011/README.md).
+We deem this necessary since these credentials sit alongside each other in the Conway ledger design.
 
-The alternative would be to define a completely different derivation path, using
-a different index in the purpose field, similar to the specification outlined
-within
-[CIP-0036](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#derivation-path),
-but this could introduce complications with HW wallet implementations.
+The alternative would be to define a completely different derivation path, using a different index in the purpose field, similar to the specification outlined within [CIP-0036](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#derivation-path), but this could introduce complications with HW wallet implementations.
 
 #### Why not multi-DRep wallet accounts?
 
-We believe the overhead that would be introduced by multi-DRep accounts is an
-unjustified expense. Future iterations of this specification may expand on this,
-but at present this is seen as unnecessary. This avoids the need for DRep Key
-discovery.
+We believe the overhead that would be introduced by multi-DRep accounts is an unjustified expense. Future iterations of this specification may expand on this, but at present this is seen as unnecessary.
+This avoids the need for DRep Key discovery.
 
-We model this on how stake keys are generally handled by wallets. If required,
-another CIP could, of course, introduce a multi-DRep method.
+We model this on how stake keys are generally handled by wallets.
+If required, another CIP could, of course, introduce a multi-DRep method.
 
 ### Encoding
 
 #### Why not allow network tags?
 
-For simplicity, we have omitted network tags within the encoding. This is
-because we have modeled DRep IDs on stake pool operator IDs, which similarly do
-not include a network tag. The advantage of including a network tag would be to
-reduce the likelihood of mislabelling a DRep’s network of operation (eg Preview
-v Cardano mainnet).
+For simplicity, we have omitted network tags within the encoding.
+This is because we have modeled DRep IDs on stake pool operator IDs, which similarly do not include a network tag.
+The advantage of including a network tag would be to reduce the likelihood of mislabelling a DRep’s network of operation (eg Preview v Cardano mainnet).
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] The derivation path is used by three wallet implementers (software and/or
-      hardware).
+- [ ] The derivation path is used by three wallet implementers (software and/or hardware).
 - [ ] The tooling definitions are used across at least two tools.
 
 ### Implementation Plan
@@ -167,5 +192,4 @@ v Cardano mainnet).
 
 ## Copyright
 
-This CIP is licensed under
-[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
