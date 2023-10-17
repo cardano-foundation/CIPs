@@ -1,11 +1,11 @@
 ---
-CIP: ?
+CPS: ?
 Title: Domain Address Resolving Standard
 Status: Proposed
 Category: Wallets
 Authors:
   - Hinson Wong <hinson@cns.space>
-Implementors: []
+Proposed Solution: []
 Discussions: https://github.com/cns-space/CIPs
 Created: 2023-10-14
 License: CC-BY-4.0
@@ -13,13 +13,21 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal suggests a method for Cardano wallets to account for naming conflicts that arise when multiple projects use the same prefix or suffix, such as `$` and `.ada,` for domain names. The proposed solution allows users to choose their desired project when resolving names with colliding prefixes or suffixes.
+As the ecosystem emerges, more and more domain service projects entering Cardano. Currently noticeably there are 3 domain projects:
 
-## Motivation: why is this CIP necessary?
+1. `ADA Handle`
+2. `adadomains`
+3. `Cardano Name Service`
+
+Both `adadomains` and `Cardano Name Service` has chosen `.ada` as domain suffix. When proceeding with wallet integration on address resolving, one common issue faced is the ambiguity in resolving approach, which could lead to potentially serious loss of fund in sending fund to undesired recipients.
+
+The CPS is written up accordingly to suggest possible solution and open for discussion.
+
+## Problem
 
 As different domain projects emerge, the same prefix or suffix may be employed by different projects, leading to potential naming conflicts. One of the key features of blockchain domain service is to resolve a holder's address. Conflicting names would lead to the wallet's integration ambiguity in resolving. To address this, a community-aligned mechanism should be in place to enable users to select their preferred project when resolving names. This ensures a seamless user experience.
 
-## Specification
+## Use cases
 
 1.  **Naming Conflict Detection:**
 
@@ -90,31 +98,11 @@ As different domain projects emerge, the same prefix or suffix may be employed b
       > - For example, when user selected `Domain Service A` as default for `.ada`, even for `Resolve Case 2` as illustrated above, it would go with `Proceed Case 1` (to directly proceed with transaction) but not `Proceed Case 2` (to show user prompt).
     - Without user specification, there should always be an option prompting to user in case of domain name conflict.
 
-## Rationale: how does this CIP achieve its goals?
+## Goals
 
 This proposal embraces the decentralization property of a blockchain where it welcomes multiple domain name service that exists in the market without user experience competition at the infrastructure level. It ensures a user-friendly experience and allows users to make informed decisions in case of naming conflicts. It accommodates multiple projects with the same suffix in wallets while avoiding disputes and confusion, fostering the integration process of wallet and domain service.
 
 This approach could be applied in resolving other information as well in case of conflict. When there is no other specific CIP covering the particular domain information resolving mechanism, the similar approach with this CIP would by default covering the particular scope.
-
-## Path to Active
-
-### Acceptance Criteria
-
-- At least 3 of wallets listed below agree with the approach
-
-  - [ ] Begin <https://begin.is/>
-  - [ ] Eternl <https://eternl.io/>
-  - [ ] Flint <https://flint-wallet.com/>
-  - [ ] GeroWallet <https://www.gerowallet.io/>
-  - [ ] Lace <https://www.lace.io/>
-  - [ ] Nami <https://namiwallet.io/>
-  - [ ] NuFi <https://nu.fi/>
-  - [ ] RayWallet <https://raywallet.io/>
-  - [ ] Yoroi <https://yoroi-wallet.com/>
-
-  > Initial list of wallet adapted from CIP30, other wallet providers could to request to add to the list.
-
-### Implementation Plan
 
 - Every participating Cardano domain service provider provides an address resolver SDK.
 - Every participating Cardano domain service provider provides either a desired prefix or suffix.
@@ -125,6 +113,8 @@ This approach could be applied in resolving other information as well in case of
 | Cardano Name Service (CNS) | N/A    | `.ada` | https://github.com/cns-space/cns-resolver-sdk |
 |                            |        |        |                                               |
 |                            |        |        |                                               |
+
+## Open Questions
 
 ## Copyright
 
