@@ -97,7 +97,7 @@ To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the 
 
 If not specified elsewhere in the token's datums, a malicious user could send transactions to a protocol which do not reference the royalty datum. For full assurances, a new optional flag should be added to the reference datum
 
-```
+```cddl
 extra = 
 	{
 		...
