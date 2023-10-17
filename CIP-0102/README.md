@@ -3,7 +3,7 @@ CIP: 102
 Title: Royalty Datum Metadata
 Authors: 
  - Sam Delaney <sdelaney@ikigaitech.org>
- Implementors: []
+Implementors: []
 Discussions:
  - https://github.com/ikigai-github/CIPs/pull/1
  - https://github.com/cardano-foundation/CIPs/pull/551
@@ -80,6 +80,7 @@ royalty_info = #6.121([royalty_recipients, version, extra])
 ```
 
 #### Example of onchain variable fee calculation:
+
 ```cddl
 ; Given a royalty fee of 1.6% (0.016)
 
@@ -150,10 +151,9 @@ In addition to providing a way to create guaranteed royalties, this has several 
 - Minimal Storage Requirement - An optional boolean has about the smallest memory impact possible. This is especially important because it's attached to the - Reference NFT and will be set for each individual NFT.
 - Intra-Collection Utility - This already allows for minting a collection with some NFTs with royalties and some without. A future version of this standard will likely make use of this field to allow for multiple versions of royalties for even more granular control.
 
-
 ### Backward Compatibility
-To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
 
+To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
 
 ## Path to Active
 
