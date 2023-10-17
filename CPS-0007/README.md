@@ -1,6 +1,6 @@
 ---
 CPS: 7
-Title: Voltaire: Cardano Governance
+Title: Voltaire era Governance
 Status: Open
 Category: Ledger
 Authors: 
