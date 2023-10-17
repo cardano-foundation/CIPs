@@ -3,6 +3,7 @@ CIP: 102
 Title: Royalty Datum Metadata
 Authors: 
  - Sam Delaney <sdelaney@ikigaitech.org>
+ Implementors: []
 Discussions:
  - https://github.com/ikigai-github/CIPs/pull/1
  - https://github.com/cardano-foundation/CIPs/pull/551
