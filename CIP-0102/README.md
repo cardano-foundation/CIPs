@@ -133,7 +133,7 @@ We want to bring the royalty metadata of the NFT `d5e6bf0500378d4f0da4e8dde6bece
 
 The specification here is made to be as minimal as possible. This is done with expediency in mind and the expectation that additional changes to the specification may be made in the future. The sooner we have a standard established, the sooner we can make use of it. Rather than attempting to anticipate all use cases, we specify with forward-compatibility in mind.
 
-#### 500 Royalty Token Datum
+### 500 Royalty Token Datum
 
 This specification is largely based on [the royalty specification in Nebula](https://github.com/spacebudz/nebula/tree/main#royalty-info-specification), with a couple key departures:
 
