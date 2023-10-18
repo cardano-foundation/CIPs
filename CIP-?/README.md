@@ -6,7 +6,9 @@ Category: Wallets
 Authors:
   - Hinson Wong <hinson@cns.space>
 Proposed Solution: []
-Discussions: https://github.com/cns-space/CIPs
+Discussions: 
+- https://github.com/cns-space/CIPs
+- https://github.com/cardano-foundation/CIPs/pull/605
 Created: 2023-10-14
 License: CC-BY-4.0
 ---
