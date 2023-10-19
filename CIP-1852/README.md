@@ -17,7 +17,7 @@ Cardano extends the [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044
 
 ### Derivation style
 
-Cardano does not use [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki) but actually uses [BIP32-Ed25519](https://raw.githubusercontent.com/input-output-hk/adrestia/master/user-guide/static/Ed25519_BIP.pdf). The `-Ed25519` suffix is often dropped in practice (ex: we say the Byron release of Cardano supports [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) but in reality this is BIP44-Ed25519).
+Cardano does not use [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki) but actually uses [BIP32-Ed25519](https://input-output-hk.github.io/adrestia/static/Ed25519_BIP.pdf). The `-Ed25519` suffix is often dropped in practice (ex: we say the Byron release of Cardano supports [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) but in reality this is BIP44-Ed25519).
 
 The Byron implementation of Cardano uses `purpose = 44'` (note: this was already a slight abuse of notation because Cardano implements BIP44-Ed25519 and not standard BIP44).
 
