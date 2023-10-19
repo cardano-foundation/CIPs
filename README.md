@@ -127,13 +127,12 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 0098? | [Distributed Artifact Token Metadata](https://github.com/cardano-foundation/CIPs/pull/530) |
 | 0099? | [Proof of Onboarding](https://github.com/cardano-foundation/CIPs/pull/546) |
 | 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
 | 0103? | [Web-Wallet Bridge - Bulk transaction signing](https://github.com/cardano-foundation/CIPs/pull/587) |
 | 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
 
-<p align="right"><i>Last updated on 2023-10-17</i></p>
+<p align="right"><i>Last updated on 2023-10-18</i></p>
 
 ## Cardano Problem Statements (CPS)
 
