@@ -74,12 +74,18 @@ Efficient coin selection contributes to overall network performance, making Card
 
 ### Implementation
 
-How can we effectively implement and promote the specialized coin selection approach? What changes, enhancements, or protocols need to be adopted within the Cardano ecosystem to achieve this?
+1. How can we effectively implement and promote the specialized coin selection approach?
+2. What changes, enhancements, or protocols need to be adopted within the Cardano ecosystem to achieve this?
+3. Is there any community collective intelligence could gather for this area? Particularly, would engineers from Emurgo (who maintain the `cardano-serialization-lib`) and developer of `cardano-cardano-multiplatform-lib` got any form of insight to push forth the community progress?
 
 ### Developer Education
 
-How can developers be educated and informed about the new coin selection approach to ensure its successful adoption and integration into their projects?
+1. Is there any changes on application code itself with the improvement on coin selection algorithm?
+2. If so, how can developers be educated and informed about the new coin selection approach to ensure its successful adoption and integration into their projects?
 
 ### Community Consensus
 
-How can we gather and build consensus within the Cardano community regarding the proposed coin selection approach? What methods can be employed to ensure widespread acceptance and adoption?
+1. How can we gather and build consensus within the Cardano community regarding the proposed coin selection approach?
+2. Do we need any support from academia with formal proof to impose the standard?
+3. What methods can be employed to ensure widespread acceptance and adoption? Do we need endorsement from any of IOHK, CF or Emurgo?
+4. If academic formal research is not needed for this consensus, how can we set the bar for acceptable algorithm? Would there be core committee making the decision?
