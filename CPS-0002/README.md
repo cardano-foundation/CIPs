@@ -2,7 +2,7 @@
 CPS: 2
 Title: Coin Selection Approach for Post Native Tokens Era in Cardano
 Status: Open
-Category: Plutus
+Category: Wallets
 Authors:
   - Hinson Wong <wongkahinhinson@gmail.com>
   - Tsz Wai Wu <wu.tszwai@outlook.com>
