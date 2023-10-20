@@ -7,7 +7,7 @@ Authors:
     - Niels Mündler <niels@opshin.dev>
 Implementors: [Niels Mündler <niels@opshin.dev>]
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/608
 Created: 2023-10-20
 License: CC-BY-4.0
 ---
