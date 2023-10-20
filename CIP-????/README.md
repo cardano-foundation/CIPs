@@ -57,17 +57,26 @@ The following function describes how to compute `ustr(X)` for a type recursively
 ```
 ustr(bytes) := "bytes"
 ustr(integer) := "int"
-ustr(PlutusData) := "any"  // This covers the case where the structure of the object is now known from the perspective of the class, i.e. when any BuiltinData is allowed
-ustr(list) := "list"  // This covers the case where the type of the elements in the list are not known in advance
+// This covers the case where the structure of the object is now known from the perspective of the class, i.e. when any BuiltinData is allowed
+ustr(PlutusData) := "any"
+  // This covers the case where the type of the elements in the list are not known in advance
+ustr(list) := "list"
+
 ustr(list<X>) := "list<" + ustr(X) + ">
+
 ustr(map<X,Y>) := "map<" + ustr(X) + "," + ustr(Y) + ">"
+
 ustr(union<X,Y,...,Z>) := "union<" + ustr(X) + "," + ustr(Y) + "," + ... + "," + ustr(Y) + ">"
-ustr(constr(name)<id, fields[f1:X,f2:Y,...,fn:Z]>) := "cons[" + name + "](" + str(id) + ";" + f1 + ":" + ustr(X) + "," + f2 + ":" + ustr(Y) + "," + ... + "," + fn + ":" + ustr(Z) + ")"
+
+ustr(constr(name)<id, fields[f1:X,f2:Y,...,fn:Z]>) :=
+    "cons[" + name + "](" + str(id) + ";"
+    + f1 + ":" + ustr(X) + "," + f2 + ":" + ustr(Y) + "," + ... + "," + fn + ":" + ustr(Z) +
+    ")"
 ```
 
 Where `name` and `f1` to `fn` refer to the name of the record and the names of its fields respectively.
 Since the constructor id of a records is not known when computing its constructor id, the constructor id string is set to `_` for this computation.
-As an example, the constructor id of record `A` with fields `b` (record `B`, constructor id 5 with one integer field `i`) and `c` (integer) would result in `ustr(A) = ustr(constr(A)<_,fields[b:B,c:integer]>) = "cons[A](_;b:" + ustr(constr(B)<5,fields[i:integer]>) + ",c:int)" = "cons[A](_;b:cons[B](i:int),c:int)".
+As an example, the constructor id of record `A` with fields `b` (record `B`, constructor id 5 with one integer field `i`) and `c` (integer) would result in `ustr(A) = ustr(constr(A)<_,fields[b:B,c:integer]>) = "cons[A](_;b:" + ustr(constr(B)<5,fields[i:integer]>) + ",c:int)" = "cons[A](_;b:cons[B](i:int),c:int)"`.
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
@@ -98,6 +107,7 @@ Note that due to determinism, types defined this way can be supported in third p
 - Implementation in pycardano / OpShin. See the reference implementation [here](https://github.com/Python-Cardano/pycardano/pull/272).
 
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
 
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
+[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+
+
