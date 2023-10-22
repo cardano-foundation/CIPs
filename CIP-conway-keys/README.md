@@ -198,12 +198,10 @@ Small changes can be made if they are completely backwards compatible with imple
 
 ## Rationale: how does this CIP achieve its goals?
 
-//todo update with CC
-
 ### Derivation
 
 By standardizing derivation, naming, and tooling conventions we primarily aim to enable wallet interoperability.
-By having a standard to generate DRep credentials from mnemonics, we allow wallets to always be able to discover a user’s governance activities.
+By having a standard to generate DRep and constitutional committee credentials from mnemonics, we allow wallets to always be able to discover a user’s governance activities.
 
 #### Why add a new role to the 1852 path?
 
