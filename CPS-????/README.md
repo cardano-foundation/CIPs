@@ -1,6 +1,6 @@
 ---
-CPS: 2
-Title: Coin Selection Approach for Post Native Tokens Era in Cardano
+CPS: ?
+Title: Coin Selection Approach for Post Native Tokens Era
 Status: Open
 Category: Wallets
 Authors:
