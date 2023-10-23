@@ -2,6 +2,11 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type":"object",
     "properties": {
+      "version": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Off-chain schema version"
+      },
       "subject": {
         "type":"string",
         "minLength": 1,
@@ -25,7 +30,7 @@
       "categories": {
         "type":"array",
         "items": {
-          "type": "string",
+          "type": "string", 
           "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
         },
         "description": "One or more categories. Category MUST be one of the following schema definition."
@@ -201,7 +206,8 @@
       "link",
       "social",
       "categories",
-      "description"
+      "description",
+      "version"
     ]
   }
   
