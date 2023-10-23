@@ -31,7 +31,7 @@
         "type":"array",
         "items": {
           "type": "string", 
-          "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
+          "enum": ["DeFi", "Development", "Education", "Games", "Identity", "Marketplace", "NFT", "Other", "Security"]
         },
         "description": "One or more categories. Category MUST be one of the following schema definition."
       },
