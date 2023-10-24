@@ -6,8 +6,7 @@ Category: Wallets
 Authors:
   - Hinson Wong <wongkahinhinson@gmail.com>
   - Tsz Wai Wu <wu.tszwai@outlook.com>
-Proposed Solutions:
-  - []
+Proposed Solutions: []
 Discussions:
   - https://github.com/sidan-lab/CIPs/discussions
   - https://discord.gg/uznpyACq
