@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Coin Selection Approach for Post Native Tokens Era
+Title: Coin Selection Including Native Tokens
 Status: Open
 Category: Wallets
 Authors:
