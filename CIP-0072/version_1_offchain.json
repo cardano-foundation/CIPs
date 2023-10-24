@@ -22,7 +22,7 @@
         "type":"string",
         "description": "Website presenting a dApp.",
         "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-      },      
+      },
       "logo": {
         "type":"string",
         "description": "URL to the logo or the base64 encoded image."
@@ -30,10 +30,18 @@
       "categories": {
         "type":"array",
         "items": {
-          "type": "string", 
+          "type": "string",
           "enum": ["DeFi", "Development", "Education", "Games", "Identity", "Marketplace", "NFT", "Other", "Security"]
         },
         "description": "One or more categories. Category MUST be one of the following schema definition."
+      },
+      "screenshots": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+        },
+        "description": "Screenshots of DApp actual pages. We recommend to share screenshots from the dApp usage itself."
       },
       "social": {
         "type":"object",
@@ -56,6 +64,23 @@
           "discord": {
             "type":"string",
             "description": "An optional Discord link.",
+            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          },
+          "companyName": {
+            "type": "string",
+            "description": "Name of the company developing/maintaining the dApp",
+            "maxLength": 50
+          },
+          "companyEmail": {
+            "type": "string",
+            "description": "Email of the company developing/maintaining the dApp",
+            "maxLength": 150,
+            "format": "email"
+          },
+          "companyWebsite": {
+            "type": "string",
+            "description": "Website of the company developing/maintaining the dApp",
+            "maxLength": 200,
             "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
           }
         },
@@ -148,8 +173,8 @@
               "purposes":{
                 "type":"array",
                 "items": {
-                    "type": "string",
-                      "enum":["SPEND", "MINT"]
+                  "type": "string",
+                  "enum":["SPEND", "MINT"]
                 },
                 "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages)."
               },
@@ -210,4 +235,3 @@
       "version"
     ]
   }
-  
