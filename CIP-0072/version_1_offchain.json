@@ -16,16 +16,19 @@
       },
       "projectName": {
         "type":"string",
-        "description": "A project name, e.g. My dApp."
+        "description": "A project name, e.g. My dApp.",
+        "maxLength": 40
       },
       "link": {
         "type":"string",
         "description": "Website presenting a dApp.",
-        "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+        "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})",
+        "maxLength": 200
       },
       "logo": {
-        "type":"string",
-        "description": "URL to the logo or the base64 encoded image."
+        "type": "string",
+        "description": "URL to the logo. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 0.5 MB",
+        "maxLength": 1000
       },
       "categories": {
         "type":"array",
@@ -37,11 +40,14 @@
       },
       "screenshots": {
         "type": "array",
+        "maxItems": 10,
         "items": {
           "type": "string",
-          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
+          "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})",
+          "maxLength": 1000,
+          "description": "Minimum resolution: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB"
         },
-        "description": "Screenshots of DApp actual pages. We recommend to share screenshots from the dApp usage itself."
+        "description": "URLs to screenshots of DApp actual pages. We recommend to share screenshots from the dApp usage itself."
       },
       "social": {
         "type":"object",
