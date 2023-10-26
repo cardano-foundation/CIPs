@@ -66,21 +66,25 @@
           "companyWebsite": {
             "type": "string",
             "description": "Website of the company developing/maintaining the dApp",
+            "maxLength": 200,
             "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
           },
           "twitter": {
             "type":"string",
             "description": "An optional Twitter link.",
+            "maxLength": 200,
             "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
           },
           "github": {
             "type":"string",
             "description": "An optional Github link.",
+            "maxLength": 200,
             "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
           },
           "discord": {
             "type":"string",
             "description": "An optional Discord link.",
+            "maxLength": 200,
             "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
           }
         },
@@ -91,13 +95,13 @@
         "properties": {
           "short": {
             "type": "string",
-            "description": "Short dApp description (no less than 40 and no longer than 168 characters).",
+            "description": "Short dApp description.",
             "minLength": 40,
             "maxLength": 168
           },
           "long": {
             "type": "string",
-            "description": "An optional long dApp description (no less than 40 and no longer than 1008 characters).",
+            "description": "An optional long dApp description.",
             "minLength": 40,
             "maxLength": 1008
           }
