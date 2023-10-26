@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Domain Information Resolving Standard
+Title: Domain Name Resolution
 Status: Proposed
 Category: Wallets
 Authors:
