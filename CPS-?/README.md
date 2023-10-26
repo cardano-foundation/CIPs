@@ -2,7 +2,7 @@
 CPS: ?
 Title: Domain Name Resolution
 Status: Proposed
-Category: Wallets
+Category: Tools
 Authors:
   - Hinson Wong <hinson@cns.space>
 Proposed Solution: []
