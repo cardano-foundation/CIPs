@@ -241,11 +241,11 @@ The value of this keyword must be a boolean. If this keyword has boolean value f
 
 ##### `keys`
 
-The value of this keyword must be either another _Plutus Data Schema_. This keywords applies its subschema to all keys of the map.
+The value of this keyword must be another _Plutus Data Schema_. This keywords applies its subschema to all keys of the map.
 
 ##### `values`
 
-The value of this keyword must be either another _Plutus Data Schema_. This keywords applies its subschema to all values of the map.
+The value of this keyword must be another _Plutus Data Schema_. This keywords applies its subschema to all values of the map.
 
 ##### `maxItems`
 
