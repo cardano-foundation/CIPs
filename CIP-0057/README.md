@@ -395,7 +395,7 @@ Yet, whereas there's a notion of purpose on-chain that is tightly coupled to the
 - [x] Blueprints are produced by one or (ideally) more smart-contract frameworks on Cardano.
   - [x] Aiken (implemented)
   - [ ] Plu-ts (under way)
-  - [ ] ImperatorLang (under way) I
+  - [x] OpShin (implemented)
   - [ ] Helios (under consideration)
   - [ ] PlutusTx (?)
   - [ ] Plutarch (?)
@@ -405,6 +405,7 @@ Yet, whereas there's a notion of purpose on-chain that is tightly coupled to the
   - [x] [Aiken](https://aiken-lang.org/)
   - [x] [Mesh.js](https://meshjs.dev/)
   - [x] [Lucid](https://lucid.spacebudz.io/)
+  - [ ] [PyCardano](https://pycardano.readthedocs.io)
   - [ ] [Demeter](https://demeter.run/)
 
 ### Implementation Plan
