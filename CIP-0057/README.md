@@ -9,7 +9,7 @@ Authors:
 Implementors:
   - Aiken <https://aiken-lang.org>
   - Plu-Ts <https://github.com/HarmonicPool/plu-ts>
-  - ImperatorLang <https://github.com/ImperatorLang>
+  - OpShin <https://github.com/OpShin>
   - Lucid <https://lucid.spacebudz.io/>
   - Mesh.js <https://martify.io/>
 Discussions:
