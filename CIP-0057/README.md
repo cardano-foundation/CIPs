@@ -221,7 +221,7 @@ The value of "exclusiveMinimum" must be a integer, representing an exclusive low
 
 ##### `items`
 
-The value of this keyword must be either another _Plutus Data Schema_ or a list of _Plutus Data Schema_. When this keyword is a single schema, this keywords applies its subschema to all child instances of the list. When it is a list, then the list is expected to have exactly the same number of elements as specified by the keyword and each element must match against the schema corresponding to its position. The list variation is useful to represent product types such as tuples.
+The value of this keyword must be either another _Plutus Data Schema_ or a list of _Plutus Data Schema_. When this keyword is a single schema, it applies its subschema to all child instances of the list. When it is a list, then the list is expected to have exactly the same number of elements as specified by the keyword and each element must match against the schema corresponding to its position. The list variation is useful to represent product types such as tuples.
 
 ##### `maxItems`
 
@@ -241,11 +241,11 @@ The value of this keyword must be a boolean. If this keyword has boolean value f
 
 ##### `keys`
 
-The value of this keyword must be either another _Plutus Data Schema_. This keywords applies its subschema to all keys of the map.
+The value of this keyword must be another _Plutus Data Schema_. This keyword applies its subschema to all keys of the map.
 
 ##### `values`
 
-The value of this keyword must be either another _Plutus Data Schema_. This keywords applies its subschema to all values of the map.
+The value of this keyword must be another _Plutus Data Schema_. This keyword applies its subschema to all values of the map.
 
 ##### `maxItems`
 
