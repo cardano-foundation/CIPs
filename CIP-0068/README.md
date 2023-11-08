@@ -1,14 +1,22 @@
 ---
 CIP: 68
 Title: Datum Metadata Standard
-Status: Proposed
+Status: Active
 Category: Tokens
-Authors: 
+Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
-  - 
+  - Alessandro Konrad (SpaceBudz)
+  - 5Binaries (Blockfrost)
+  - Smaug (Pool.pm)
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/299
+  - https://github.com/cardano-foundation/CIPs/pull/359
+  - https://github.com/cardano-foundation/CIPs/pull/458
+  - https://github.com/cardano-foundation/CIPs/pull/471
+  - https://github.com/cardano-foundation/CIPs/pull/494
+  - https://github.com/cardano-foundation/CIPs/issues/520
 Created: 2022-07-13
 License: CC-BY-4.0
 ---
@@ -18,7 +26,7 @@ License: CC-BY-4.0
 This proposal defines a metadata standard for native assets making use of output datums not only for NFTs but any asset
 class.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 This proposal addresses a few shortcomings
 of [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025):
@@ -117,7 +125,7 @@ metadata =
   / [ * metadata ]
   / big_int
   / bounded_bytes
-  
+
 version = int
 
 ; Custom user defined plutus data.
@@ -129,6 +137,8 @@ datum = #6.121([metadata, version, extra])
 ```
 
 #### 222 NFT Standard
+
+> **Note** Since `version >= 1`
 
 Besides the necessary standard for the `reference NFT` we're introducing three specific token standards in this CIP.
 Note that the possibilities are endless here and more standards can be built on top of this CIP for FTs, other NFTs,
@@ -156,7 +166,7 @@ This is a low-level representation of the metadata, following closely the struct
 and values need to be converted into their respective byte's representation when creating the datum on-chain.
 
 ```
-files_details = 
+files_details =
   {
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
@@ -164,7 +174,7 @@ files_details =
     ; ... Additional properties are allowed
   }
 
-metadata = 
+metadata =
   {
     name : bounded_bytes, ; UTF-8
 
@@ -187,7 +197,9 @@ uri = bounded_bytes ; UTF-8
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
 
-datum = #6.121([metadata, 1, extra]) ; version 1
+datum = #6.121([metadata, version, extra])
+
+version = 1 / 2
 ```
 
 Example datum as JSON:
@@ -247,6 +259,8 @@ the Plutus validator context. To do this we
 
 #### 333 FT Standard
 
+> **Note** Since `version >= 1`
+
 The second introduced standard is the `333` FT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label | class | description                                                                                      |
@@ -274,7 +288,7 @@ when creating the datum on-chain.
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
 
-metadata = 
+metadata =
   {
     name : bounded_bytes, ; UTF-8
     description : bounded_bytes, ; UTF-8
@@ -298,8 +312,10 @@ uri = bounded_bytes ; UTF-8
 ; Setting data is optional, but the field is required
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
-  
-datum = #6.121([metadata, 1, extra]) ; version 1
+
+datum = #6.121([metadata, version, extra])
+
+version = 1 / 2
 ```
 
 Example datum as JSON:
@@ -359,6 +375,8 @@ Plutus validator context. To do this we
 
 #### 444 RFT Standard
 
+> **Warning** Since `version >= 2`
+
 The third introduced standard is the `444` Rich-FT standard with the registered `asset_name_label` prefix value
 
 | asset_name_label | class | description                                                                                                                                     |
@@ -389,7 +407,7 @@ decimals field added. All UTF-8 encoded keys and values need to be converted int
 when creating the datum on-chain.
 
 ```
-files_details = 
+files_details =
   {
     ? name : bounded_bytes, ; UTF-8
     mediaType : bounded_bytes, ; UTF-8
@@ -397,7 +415,7 @@ files_details =
     ; ... Additional properties are allowed
   }
 
-metadata = 
+metadata =
   {
     name : bounded_bytes, ; UTF-8
 
@@ -420,8 +438,10 @@ uri = bounded_bytes ; UTF-8
 ; Setting data is optional, but the field is required
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
-  
-datum = #6.121([metadata, 1, extra]) ; version 1
+
+datum = #6.121([metadata, version, extra])
+
+version = 2
 ```
 
 Example datum as JSON:
@@ -495,7 +515,7 @@ the Plutus validator context. To do this we
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and
    their asset names without the `asset_name_label` prefix match. (on-chain)
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 Without separation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be
 quite cumbersome as you would need to add the metadata everytime to the new output where the `user token` is sent to.
@@ -564,12 +584,20 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 
 ## Path to Active
 
+### Acceptance Criteria
+
 - [X] Agree on a binary encoding for asset name labels
   in [CIP-0067](https://github.com/cardano-foundation/CIPs/pull/298).
 - [X] Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
 - [X] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (
-  off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Implementation](./ref_impl/)
+  off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Implementation](./ref_impl)
 - [X] Open-source more practical implementations/projects which make use of this CIP.
+
+### Implementation Plan
+
+To keep metadata compatibility with changes coming in the future, we introduce
+a `version` field in the datum as an integer to increment. New asset classes or
+changes to the on-chain format must come with a version bump.
 
 ## References
 
@@ -579,7 +607,16 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 - [RFC 3986 - Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986)
 - [RFC 2397 - The "data" URL scheme](https://datatracker.ietf.org/doc/html/rfc2397)
 
+### Changelog
+
+#### version 1
+
+- NFT (222) & FT (333) asset classes
+
+#### version 2
+
+- Added new RFT asset class (444)
+
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
-
