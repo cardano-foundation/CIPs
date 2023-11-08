@@ -7,6 +7,7 @@ Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
+  - 
 Discussions:
 Created: 2022-07-13
 License: CC-BY-4.0
