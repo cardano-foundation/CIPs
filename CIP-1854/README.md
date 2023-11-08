@@ -75,7 +75,7 @@ m / purpose' / coin_type' / account_ix' / role / index
 ```
 
 
-To associate multi-signature keys to a wallet, we reserve however `purpose=1854'` to distinguish multisig wallets from standard wallets. The coin type remains `coin_type=1815'` to identify Ada as registered in [SLIP-0044]. The account index (`account_ix`) may vary across the whole hardened domain. `role=0` is used to identify payment keys, whereas `role=2` identifies stake keys. `role=1` is left unused for multisig wallets. Finally, the last `index` mary across the whole soft domain, but according to the following rules:
+To associate multi-signature keys to a wallet, we reserve however `purpose=1854'` to distinguish multisig wallets from standard wallets. The coin type remains `coin_type=1815'` to identify Ada as registered in [SLIP-0044]. The account index (`account_ix`) may vary across the whole hardened domain. `role=0` is used to identify payment keys, whereas `role=2` identifies stake keys. `role=1` is left unused for multisig wallets. Finally, the last `index` may vary across the whole soft domain, but according to the following rules:
 
 - Wallet must derive multisig key indexes sequentially, starting from 0 and up to 2^31-1
 - Wallet must prevent the creation of new multisig keys before past keys are seen in an on-chain script.
@@ -238,7 +238,7 @@ CC-BY-4.0
 [rfc8610]: https://tools.ietf.org/html/rfc8610
 [rfc8152]: https://tools.ietf.org/html/rfc8152
 [BIP-0032]: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
-[CIP-5]: https://github.com/cardano-foundation/CIPs/tree/master/CIP5
+[CIP-5]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005
 [CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852
 [CIP-11]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011
 [ledger-spec.pdf]: https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf

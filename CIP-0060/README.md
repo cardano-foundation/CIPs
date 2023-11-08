@@ -1,7 +1,7 @@
 ---
 CIP: 60
 Title: Music Token Metadata
-Authors: Andrew Westberg <awestberg@projectnewm.io>, Ryan Jones <rjones@projectnewm.io>, Justin Morgan <jusemorgan@gmail.com>, Ian Singer <tcl@fre5hmusic.com>, Anthony Eizmendiz <aeizmendiz@icloud.com>, Session Cruz <session@demu.pro>, Jimmy Londo <SickCityCleveland@gmail.com>, Gudbrand Tokerud <Gudbrand.tokerud@gmail.com>, Kevin St.Clair <kos1777@gmail.com>
+Authors: Andrew Westberg <awestberg@projectnewm.io>, Ryan Jones <rjones@projectnewm.io>, Justin Morgan <jusemorgan@gmail.com>, Ian Singer <tcl@fre5hmusic.com>, Anthony Eizmendiz <aeizmendiz@icloud.com>, Session Cruz <session@demu.pro>, Jimmy Londo <SickCityCleveland@gmail.com>, Gudbrand Tokerud <Gudbrand.tokerud@gmail.com>, Kevin St.Clair <kos1777@gmail.com>, Brandon Loyche <dsqise@gmail.com>, Andrew Donovan <adonovan23@gmail.com>
 Comments-URI: no comments yet
 Status: Active
 Type: Process

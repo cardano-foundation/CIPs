@@ -160,15 +160,15 @@ It is recommended that the Smart NFT API not be injected for every NFT – only 
 Although an asynchronous API is specified – so the data could be retrieved at the time when the NFT actually requests it – it is expected that in most instances the site which renders the NFT would gather the relevant transaction logs in advance, and inject them into the `<iframe>` sandbox at the point where the sandbox is created, so that the data is immediately available to the NFT without having to
 perform an HTTP request. 
 
-### cardano.nft.fingerprint: String
+### `cardano.nft.fingerprint: String`
 
 The fingerprint of the current token - in the case where we're rendering a child token, this will be the fingerprint of the child token. 
 
-### cardano.nft.metadata : Array
+### `cardano.nft.metadata : Array`
  
 The content of the 721 key from the metadata json from the mint transaction of the current NFT - if we are rendering on behalf of a child NFT, this will be the metadata from the child NFT.
 
-### cardano.nft.getTransactions( string which,  paginate: Paginate = undefined ) : Promise\<Object>
+### `cardano.nft.getTransactions( string which,  paginate: Paginate = undefined ) : Promise<Object>`
 
 Errors: `APIError`, `PaginateError`
 
@@ -191,7 +191,7 @@ This function will return a list of transaction hashes and metadata relating to 
 ```
 For simplicity, we do not include anything other than the txHash and the metadata – since any other relevant details about the transaction can always be encoded into the metadata, there is no need to over-complicate by including other transaction data like inputs, outputs or the date of the transaction etc. That is left for a potential future extension of the API to include more full GraphQL support.
 
-### cardano.nft.getTokens( string address, paginate: Paginate = undefined ) : Promise\<Object>
+### `cardano.nft.getTokens( string address, paginate: Paginate = undefined ) : Promise<Object>`
 
 Errors: `APIError`, `PaginateError`
 
@@ -215,7 +215,7 @@ This function will return a list of the tokens held by the address specified in 
 }
 ```
 
-### cardano.nft.getFileURL( string id = null, string fingerprint = null ) : Promise\<String>
+### `cardano.nft.getFileURL( string id = null, string fingerprint = null ) : Promise<String>`
 
 Errors: `APIError`
 

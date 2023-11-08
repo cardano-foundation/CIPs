@@ -50,7 +50,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0022 | [Pool operator verification](./CIP-0022/) | Active |
 | 0023 | [Fair Min Fees](./CIP-0023/) | Proposed |
 | 0024 | [Non-Centralizing Rankings](./CIP-0024/) | Proposed |
-| 0025 | [Media NFT Metadata Standard](./CIP-0025/) | Active |
+| 0025 | [Media Token Metadata Standard](./CIP-0025/) | Active |
 | 0026 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
 | 0027 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
 | 0028 | [Protocol Parameters (Alonzo Era)](./CIP-0028/) | Active |
@@ -66,6 +66,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0040 | [Collateral Output](./CIP-0040) | Active |
 | 0042 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
 | 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Proposed |
+| 0050 | [Pledge Leverage-Based Staking Rewards](./CIP-0050) | Proposed |
 | 0052 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 0054 | [Cardano Smart NFTs](./CIP-0054) | Draft |
 | 0055 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
@@ -86,7 +87,11 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0084 | [Cardano Ledger Evolution](./CIP-0084) | Active |
 | 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
+| 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
+| 0095 | [Web-Wallet Bridge - Governance](./CIP-0095) | Proposed |
+| 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
+| 0102 | [Royalty Datum Metadata](./CIP-0102) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -95,7 +100,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-07-02</i></p>
+<p align="right"><i>Last updated on 2023-10-17</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -108,7 +113,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0038? | [Arbitrary Script as Native Script Spending Conditions](https://github.com/cardano-foundation/CIPs/pull/309)
 | 0039? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
 | 0045? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
-| 0050? | [Shelley's Voltaire Decentralization Update](https://github.com/cardano-foundation/CIPs/pull/242) |
 | 0056? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 0062? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 0073? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
@@ -121,12 +125,14 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
 | 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
-| 0093? | [Authenticated Web3 HTTP requests](https://github.com/cardano-foundation/CIPs/pull/442) |
-| 0095? | [Cardano dApp-Wallet Web Bridge Governance Extension](https://github.com/cardano-foundation/CIPs/pull/509) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
+| 0099? | [Proof of Onboarding](https://github.com/cardano-foundation/CIPs/pull/546) |
+| 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
+| 0103? | [Web-Wallet Bridge - Bulk transaction signing](https://github.com/cardano-foundation/CIPs/pull/587) |
+| 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
 
-<p align="right"><i>Last updated on 2023-06-30</i></p>
+<p align="right"><i>Last updated on 2023-10-18</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -146,12 +152,10 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | #     | Title |
 | ----- | --- |
 | 0001? | [Metadata Discoverability and Trust](https://github.com/cardano-foundation/CIPs/pull/371) |
-| 0002? | [Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374) |
-| 0003? | [Smart Tokens](https://github.com/cardano-foundation/CIPs/pull/382) |
 | 0004? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
 | 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
 
-<p align="right"><i>Last updated on 2023-07-02</i></p>
+<p align="right"><i>Last updated on 2023-08-01</i></p>
 
 ## Stalled / Waiting For Authors
 
@@ -171,11 +175,12 @@ The following list contains proposals that have been under review and for which 
 
 ## Editors
 
-| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] |
-| ---                               | ---                                           | ---                            | ---                            |
+| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] |
+| ---                               | ---                                           | ---                            | ---                            | ---                             |
 
 [@KtorZ]: https://github.com/KtorZ
 [@SebastienGllmt]: https://github.com/SebastienGllmt
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
+[@Crypto2099]: https://github.com/Crypto2099
 

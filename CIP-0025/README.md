@@ -1,6 +1,6 @@
 ---
 CIP: 25
-Title: Media NFT Metadata Standard
+Title: Media Token Metadata Standard
 Authors: Alessandro Konrad <alessandro.konrad@live.de>, Smaug <smaug@pool.pm>
 Comments-URI:
 Status: Active
@@ -12,7 +12,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines an Media NFT Metadata Standard for Native Tokens.
+This proposal defines an Media Token Metadata Standard for Native Tokens.
 
 ## Motivation
 
@@ -36,7 +36,7 @@ This is the registered `transaction_metadatum_label` value
 
 | transaction_metadatum_label | description  |
 | --------------------------- | ------------ |
-| 721                         | NFT Metadata |
+| 721                         | Token Metadata |
 
 ### General structure
 
@@ -79,8 +79,8 @@ The structure allows for multiple token mints, also with different policies, in 
 - In version `1` the **`policy_id`** must be in text format for the key in the metadata map. In version `2` the the raw bytes of the **`policy_id`** are used.
 
 - The  **`name`** property is marked as required.
-- The **`image`** property is required and must be a valid [Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986) pointing to a resource with mime type `image/*`.  Note that this resource is used as thumbnail or the actual link if the NFT is an image (ideally <= 1MB). If the string representing the resource location is >64 characters, an array may be used in place of a simple JSON string type, which viewers will automatically concatenate to create a single URI.
-	- Please note that if distributed storage systems like IPFS or Arweave are used it is required to use a URI containing the respective scheme (e.g., `ipfs://` or `ar://`) and not merely the content identifier (CID) as NFT viewers may not be able to locate the file.
+- The **`image`** property is required and must be a valid [Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986) pointing to a resource with mime type `image/*`.  Note that this resource is used as thumbnail or the actual link if the token is an image (ideally <= 1MB). If the string representing the resource location is >64 characters, an array may be used in place of a simple JSON string type, which viewers will automatically concatenate to create a single URI.
+	- Please note that if distributed storage systems like IPFS or Arweave are used it is required to use a URI containing the respective scheme (e.g., `ipfs://` or `ar://`) and not merely the content identifier (CID) as token viewers may not be able to locate the file.
 		- Valid identifiers would include:
 			- `"https://cardano.org/favicon-32x32.png"`
 			- `"ipfs://QmbQDvKJeo2NgGcGdnUiUFibTzuKNK5Uij7jzmK8ZccmWp"`
@@ -139,7 +139,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
 
 As mentioned above this metadata structure allows to have either one token or multiple tokens with also different policies in a single mint transaction. A third party tool can then fetch the token metadata seamlessly. It doesn't matter if the metadata includes just one token or multiple. The proceedure for the third party is always the same:
 
-1. Find the latest mint transaction with the label 721 in the metadata of the specific token
+1. Find the latest mint transaction with the label 721 in the metadata of the specific token that mints a positive amount of the token
 2. Lookup the 721 key
 3. Lookup the Policy Id of the token
 4. Lookup the Asset name of the token
@@ -147,11 +147,13 @@ As mentioned above this metadata structure allows to have either one token or mu
 
 ### Update metadata link for a specific token
 
-Using the latest mint transaction with the label 721 as valid metadata for a token allows to update the metadata link of this token. As soon as a new mint transaction is occurring including metadata with the label 721, the metadata link is considered updated and the new metadata should be used. This is only possible if the policy allows to mint or burn the same token again.
+Using the latest mint transaction with the label 721 as valid metadata for a token allows to update the metadata link of this token. As soon as a new mint transaction is occurring including metadata with the label 721 and a positive amount of the token, the metadata link is considered updated and the new metadata should be used. This is only possible if the policy allows to mint or burn the same token again.
+
+Since modern token policies or ledger rules should generally make burning of tokens permissionless, the metadata update is restricted to minting (as in positive amounts) transaction and excludes burning transactions explicitly.
 
 ## Backward Compatibility
 
-To keep NFT metadata compatible with changes coming up in the future, we use the **`version`** property.
+To keep token metadata compatible with changes coming up in the future, we use the **`version`** property.
 A future version will introduce [schema.org](https://schema.org).
 
 ## References
