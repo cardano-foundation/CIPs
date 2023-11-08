@@ -2,7 +2,7 @@
 CIP: 68
 Title: Datum Metadata Standard
 Status: Proposed
-Category: Meta
+Category: Tokens
 Authors: 
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
@@ -227,7 +227,7 @@ Example datum as JSON:
 A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` they want
 to lookup. The steps are
 
-1. Construct `reference NFT`from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
+1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
@@ -339,7 +339,7 @@ Example datum as JSON:
 A third party has the following FT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(333)TestToken` they want
 to lookup. The steps are
 
-1. Construct `reference NFT`from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
+1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
@@ -477,7 +477,7 @@ Example datum as JSON:
 A third party has the following RFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(444)TestToken` they want
 to lookup. The steps are
 
-1. Construct `reference NFT`from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
+1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
