@@ -51,7 +51,7 @@ Stores and auditors should be able to follow the chain and find when a new dApp 
 
 ### **On-chain dApp Registration Certificate**
 
-The on-chain dApp registration certificate MUST follow canonical JSON and be serialised according to RFC 8785 (https://www.rfc-editor.org/rfc/rfc8785). This stipulation is to avoid any ambigiutines in the signature calculation.
+The on-chain dApp registration certificate MUST follow canonical JSON and be serialised according to RFC 8785 (https://www.rfc-editor.org/rfc/rfc8785).
 
 ```json
 {
@@ -63,12 +63,6 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
   "type": {
     "action": "REGISTER",
     "comment": "New release adding zapping support."
-  },
-  "signature": {
-   "r": "27159ce7d992c98fb04d5e9a59e43e75f77882b676fc6b2ccb8e952c2373da3e",
-   "s": "16b59ab1a9e349cd68d232f7652f238926dc24a2e435949ebe2e402a6557cfb4",
-   "algo": "Ed25519−EdDSA",
-   "pub": "b384b53d5fe9f499ecf088083e505f40d2a6c123bf7201608494fdb89a051b80"
   }
 }
 ```
@@ -86,8 +80,6 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
 *`rootHash`*: The blake2b-256 hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section. Please note that off-chain JSON must be converted into RFC 8765 canonical form before taking the hash!
 
 *`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
-
-*`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "rootHash", "metadata","type"]. Please note that a signature should be generated of blake2b-256 hash as a byte array, not as a hex represented string(!).
 
 ### On-chain Schemas
 
@@ -205,9 +197,9 @@ Release Name is a field, which dApp developers can use on top of Release Version
 At the begining neither on-chain, nor off-chain JSON has been following RFC 8785 (canonical JSON) but we reached a point that, due to consistency checks, we need to take hash of both on-chain and off-chain and this forced us to stipulate that both on-chain and off-chain metadata documents need to be converted
 according to RFC 8785 before taking a blake2b-256 hash of them.
 
-### On-Chain Signature Scope
+### Transaction Signature Scope
 
-On-chain part has a signature, which has a role to verify that a certain dApp owner made changes. In the initial version, a blake2b-256 signature was needed only for `rootHash` but following discussion, due to security concerns, decision has been made that the signature should attest the whole on-chain canonical JSON except signature field itself (because it would end up in an infinite recursion).
+As any transaction in cardano network has a signature, which has a role to verify that a certain dApp owner made changes.
 
 ### Who Is The Owner?
 

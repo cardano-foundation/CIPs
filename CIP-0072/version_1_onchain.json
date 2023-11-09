@@ -57,49 +57,12 @@
           "required":[
              "action"
           ]
-       },
-       "signature":{
-          "description":"Signature of the blake2b-256 hash of whole canonical (RFC 8785) JSON document (except signature property).",
-          "type":"object",
-          "properties":{
-             "r":{
-                "type":"string",
-                "description":"A hex representation of the R component of the signature.",
-                "minLength": 64,
-                "maxLength": 64,
-                "pattern":"^[0-9a-fA-F]{64}$"
-             },
-             "s":{
-                "type":"string",
-                "description":"A hex representation of the S component of the signature.",
-                "minLength": 64,
-                "maxLength": 64,
-                "pattern":"^[0-9a-fA-F]{64}$"
-             },
-             "algo":{
-               "const":"Ed25519-EdDSA"
-             },
-             "pub":{
-                "type":"string",
-                "description":"A hex representation of the public key.",
-                "minLength": 64,
-                "maxLength": 64,
-                "pattern":"^[0-9a-fA-F]{64}$"
-             }
-          },
-          "required":[
-             "r",
-             "s",
-             "algo",
-             "pub"
-          ]
        }
     },
     "required":[
        "subject",
        "rootHash",
-       "type",
-       "signature"
+       "type"
     ]
  }
  

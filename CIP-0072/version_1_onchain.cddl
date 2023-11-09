@@ -23,10 +23,3 @@ de-registration = {
   action: "DE_REGISTER",
   ? comment: string,
 }
-
-signature = {
-  r: string,
-  s: string,
-  algo: text .regexp "Ed25519-EdDSA",
-  pub: string,
-}
