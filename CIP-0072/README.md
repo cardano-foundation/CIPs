@@ -103,30 +103,42 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
 
 This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
 
-### Example
+### Example using links of images
 
 ```json
 {
-  "subject": "9SYAJPNN",
-  "projectName": "My Project",
-  "link": "https://myProject.app",
-  "logo": "https://myProject.app/logo.png",
-  "social": {
-    "github": "https://mywebsite.com",
-    "twitter": "https://twitter.com/my_dapp",
-    "website": "https://github.com/my_dapp"
-  },
-  "categories": ["Games"],
+  "version": "1.1.0",
+  "subject": "fedcba9876543210",
+  "projectName": "Super dApp",
+  "link": "https://www.supersdappplatform.com",
+  "logo": "https://www.supersdappplatform.com/logo.png",
+  "categories": ["Education", "Marketplace"],
+  "screenshots": [
+    "https://www.supersdappplatform.com/screenshot1.jpg",
+    "https://www.supersdappplatform.com/screenshot2.jpg"
+  ],
+  "social": [
+    {
+      "name": "Discord",
+      "link": "https://discord.gg/superdapp"
+    },
+    {
+      "name": "Reddit",
+      "link": "https://reddit.com/r/superdapp"
+    }
+  ],
   "description": {
-    "short": "A story rich game where choices matter. This game is very addictive to play :)"
+    "short": "Super dApp is revolutionizing the educational marketplace with blockchain technology."
   },
   "releases": [
     {
-      "releaseNumber": "1.0.0",
-      "releaseName": "V1",
+      "releaseNumber": "1.1.0-beta",
+      "releaseName": "Beta Release",
+      "securityVulnerability": false,
+      "comment": "Public beta release with new features and improvements.",
       "scripts": [
         {
-          "id": "PmNd6w",
+          "id": "script2",
           "version": 1
         }
       ]
@@ -134,16 +146,75 @@ This schema describes the minimum required fields for a store to be able to disp
   ],
   "scripts": [
     {
-      "id": "PmNd6w",
-      "name": "marketplace",
-      "purposes": ["SPEND"],
+      "id": "script2",
+      "name": "Beta Script",
+      "purposes": ["MINT"],
+      "type": "NATIVE",
+      "versions": [
+        {
+          "version": "0.1.0-alpha",
+          "plutusVersion": 2,
+          "scriptHash": "def456",
+          "contractAddress": "addr_test1v4..."
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Example using base64 images
+
+```json
+{
+  "version": "1.0.0",
+  "subject": "abcdef1234567890",
+  "projectName": "My dApp",
+  "link": "https://www.exampledapp.com",
+  "logo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAA...",
+  "categories": ["DeFi", "Games"],
+  "screenshots": [
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD..."
+  ],
+  "social": [
+    {
+      "name": "GitHub",
+      "link": "https://github.com/exampledapp"
+    },
+    {
+      "name": "Twitter",
+      "link": "https://twitter.com/exampledapp"
+    }
+  ],
+  "description": {
+    "short": "This is a short description of the dApp, giving an overview of its features and capabilities."
+  },
+  "releases": [
+    {
+      "releaseNumber": "1.0.0",
+      "releaseName": "Initial Release",
+      "securityVulnerability": false,
+      "comment": "First major release with all core features.",
+      "scripts": [
+        {
+          "id": "script1",
+          "version": 1
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "script1",
+      "name": "Example Script",
+      "purposes": ["SPEND", "MINT"],
       "type": "PLUTUS",
       "versions": [
         {
-          "version": 1,
+          "version": "1.0.0",
           "plutusVersion": 1,
-          "scriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
-          "contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
+          "scriptHash": "abc123"
         }
       ]
     }
