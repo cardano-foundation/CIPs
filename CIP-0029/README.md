@@ -27,7 +27,7 @@ The CBOR serialization format is given as a [CDDL specification in annexe](./pha
 
 ## JSON 
 
-The JSON format is given as a [JSON schema in annexe](./phiase-1-monetary-scripts.json). It is preferred in user interfaces such as command-lines or APIs, where some level of human inspection may be required. 
+The JSON format is given as a [JSON schema in annexe](./phase-1-monetary-scripts.json). It is preferred in user interfaces such as command-lines or APIs, where some level of human inspection may be required. 
 
 ## Notes
 

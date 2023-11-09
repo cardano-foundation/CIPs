@@ -54,6 +54,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
 - [Process](#process)
   - [1. Early Stage](#1-early-stages)
     - [1.a. Authors open a pull request](#1a-authors-open-a-pull-request)
+      - [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)
     - [1.b. Authors seek feedback](#1b-authors-seek-feedback)
   - [2. Editors' role](#2-editors-role)
     - [2.a. Triage in bi-weekly meetings](#2a-triage-in-bi-weekly-meetings)
@@ -78,7 +79,7 @@ Name                                            | Description
 Preamble                                        | Headers containing metadata about the CIP ([see below](#header-preamble)).
 Abstract                                        | A short (\~200 word) description of the proposed solution and the technical issue being addressed.
 Motivation: why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
-Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations.
+Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations. <br/><br/>This must include how the CIP should be versioned. Stipulating that the proposal must be superseded by another is valid versioning. Adequate description must be given to allow versioned alterations to be added without author oversight. <br/><br/> If a proposal defines structure of on-chain data it must include a CDDL schema.
 Rationale: how does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
 Path to Active                                  | Organised in two sub-sections (see [Path to Active](#path-to-active) for detail):<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>Either a plan to meet those criteria or `N/A` if not applicable.
 Copyright                                       | The CIP must be explicitly licensed under acceptable copyright terms ([see below](#licensing)).
@@ -92,7 +93,7 @@ Each CIP must begin with a YAML key:value style header preamble (also known as _
 Field          | Description
 ---            | ---
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
-`Title`        | A succinct and descriptive title
+`Title`        | A succinct and descriptive title.  If necessary, use a `-` delimiter to begin with an applicable classification (see [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)).
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
 `Category`     | One of the registered [categories](#categories) covering one area of the ecosystem.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
@@ -127,7 +128,7 @@ License: CC-BY-4.0
 
 ##### Repository Organization
 
-A CIP must be stored in a specific folder named after its number (4-digit, left-padded with `0`) and in a file called `README.md`. Before a number is assigned, use `????` as a placeholder number (thus naming new folders as `CIP-????`). After a number has been assigned, rename the folder.
+A CIP must be stored in a specific folder named after its number (4-digit, left-padded with `0`) and in a file called `README.md`. Before a number is assigned, a placeholder folder name should be used (e.g. `CIP-my-new-feature`). After a number has been assigned, rename the folder.
 
 Additional supporting files (such as diagrams, binary specifications, dialect grammars, JSON schemas etc.) may be added to the CIP's folder under freely chosen names.
 
@@ -158,7 +159,7 @@ Field          | Description
 `CIP`          | The CIP number (without leading 0)
 `Source`       | The canonical GitHub link to the original CIP document
 `Title`        | A translation of the CIP's title
-`Revision`     | The commit hash (8-10 first hex-digits) of the source (e.g. `12ab34cd`)
+`Revision`     | Whenever possible, the commit hash (7 first hex-digits, e.g. `12ab34c`) of the source in the main repository. If the source was not committed to the main repo, use the best known translation date in ISO format (if unknown, use the date posted in the translation's PR branch).
 `Translators`  | A list of translators names and email addresses (e.g. `John Doe <john.doe@email.domain>`)
 `Language`     | An [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) code of the target language (e.g. `fr`)
 
@@ -284,6 +285,13 @@ Proposals must be submitted to the [cardano-foundation/CIPs][Repository] reposit
 
 > **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
+###### Naming CIPs with similar subjects
+
+When a CIP title *and* subject matter share a common element, begin the CIP title with that common element and end it with the specifc portion, delimited with the `-` character.  Example (CIP-0095):
+
+> *Web-Wallet Bridge **-** Governance*
+
+CIP editors will help determine these common elements and, whenever necessary, rename both CIP document titles and PR titles accordingly.  The objective is to provide commonly recognisable names for similar developments (e.g. multiple extensions to another CIP or scheme).
 
 ##### 1.b. Authors seek feedback
 
