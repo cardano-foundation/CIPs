@@ -8,7 +8,7 @@ Authors:
 - Carl <vegas@hosky.io>
 - Alex Dochioiu <alex@dochioiu.com>
 Implementors:
-- VESPR Wallet
+- VESPR Wallet <https://www.vespr.xyz/>
 Discussions:
 - https://github.com/cardano-foundation/CIPs/pull/546
 Created: 2023-06-20
