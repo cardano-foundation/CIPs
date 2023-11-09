@@ -50,45 +50,20 @@
         "description": "URLs to screenshots of DApp actual pages. We recommend to share screenshots from the dApp usage itself."
       },
       "social": {
-        "type":"object",
-        "properties": {
-          "companyName": {
-            "type": "string",
-            "description": "Name of the company developing/maintaining the dApp",
-            "maxLength": 50
-          },
-          "companyEmail": {
-            "type": "string",
-            "description": "Email of the company developing/maintaining the dApp",
-            "maxLength": 150,
-            "format": "email"
-          },
-          "companyWebsite": {
-            "type": "string",
-            "description": "Website of the company developing/maintaining the dApp",
-            "maxLength": 200,
-            "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
-          },
-          "X.com": {
-            "type":"string",
-            "description": "An optional X.com link.",
-            "maxLength": 200,
-            "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
-          },
-          "github": {
-            "type":"string",
-            "description": "An optional Github link.",
-            "maxLength": 200,
-            "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
-          },
-          "discord": {
-            "type":"string",
-            "description": "An optional Discord link.",
-            "maxLength": 200,
-            "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The platform or resource identifier (GitHub, Website, X.com, etc)"
+            },
+            "link": {
+              "type": "string",
+              "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
+            }
           }
-        },
-        "required": ["companyWebsite"]
+        }
       },
       "description": {
         "type": "object",
