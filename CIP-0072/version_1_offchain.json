@@ -3,9 +3,9 @@
     "type":"object",
     "properties": {
       "version": {
-        "type": "integer",
-        "minimum": 1,
-        "description": "Off-chain schema version"
+        "type": "string",
+        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+        "description": "Off-chain schema version following Semantic Versioning"
       },
       "subject": {
         "type":"string",
@@ -26,9 +26,31 @@
         "maxLength": 200
       },
       "logo": {
-        "type": "string",
-        "description": "URL to the logo. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 0.5 MB",
-        "maxLength": 1000
+        "description": "Logo as a URL or encoded in base64. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB for base64.",
+        "anyOf": [
+          {
+            "type": "string",
+            "contentEncoding": "base64",
+            "oneOf": [
+              {
+                "contentMediaType": "image/png"
+              },
+              {
+                "contentMediaType": "image/jpeg"
+              },
+              {
+                "contentMediaType": "image/svg+xml"
+              }
+            ],
+            "maxLength": 1361000
+          },
+          {
+            "type": "string",
+            "format": "uri",
+            "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
+          }
+        ],
+        "maxLength": 1361000
       },
       "categories": {
         "type":"array",
@@ -42,12 +64,32 @@
         "type": "array",
         "maxItems": 10,
         "items": {
-          "type": "string",
-          "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
-          "maxLength": 1000,
-          "description": "Minimum resolution: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB"
+          "description": "Screenshots as URLs or encoded in base64. Minimum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
+          "anyOf": [
+            {
+              "type": "string",
+              "contentEncoding": "base64",
+              "oneOf": [
+                {
+                  "contentMediaType": "image/png"
+                },
+                {
+                  "contentMediaType": "image/jpeg"
+                },
+                {
+                  "contentMediaType": "image/svg+xml"
+                }
+              ],
+              "maxLength": 2722000
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
+            }
+          ]
         },
-        "description": "URLs to screenshots of DApp actual pages. We recommend to share screenshots from the dApp usage itself."
+        "description": "URLs to screenshots of DApp actual pages, or base64-encoded images. We recommend to share screenshots from the dApp usage itself."
       },
       "social": {
         "type": "array",
@@ -93,8 +135,8 @@
             "properties": {
               "releaseNumber": {
                 "type": "string",
-                "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\\+([0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*))?$",
-                "description": "Semver compatible release number (major.minor.patch) or (major.minor.patch-some_text) e.g. 1.2.3 or 1.1.1-alpha"
+                "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+                "description": "Semver compatible release number (major.minor.patch)"
               },
               "releaseName": {
                 "type": "string",
@@ -167,9 +209,10 @@
                   {
                     "type":"object",
                     "properties":{
-                      "version":{
-                        "type":"integer",
-                        "description":"Script version, monotonically increasing."
+                      "version": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+                        "description": "Script version following Semantic Versioning"
                       },
                       "plutusVersion":{
                         "type":"integer",
