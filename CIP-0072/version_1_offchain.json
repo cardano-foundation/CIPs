@@ -21,7 +21,7 @@
       },
       "link": {
         "type":"string",
-        "description": "Website presenting a dApp.",
+        "description": "A link a dApp or a website presenting a DApp",
         "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
         "maxLength": 200
       },
@@ -32,7 +32,7 @@
       },
       "companyEmail": {
         "type":"string",
-        "description": "Email of the dApp developer",
+        "description": "Contact email of the company behind the dApp",
         "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
         "maxLength": 200
       },
@@ -87,7 +87,7 @@
           ],
           "maxLength": 2722000
         },
-        "description": "URLs to screenshots of DApp actual pages, or base64-encoded images. We recommend to share screenshots from the dApp usage itself."
+        "description": "Screenshots of the DApp encoded in base64. We recommend to share screenshots from the dApp usage itself."
       },
       "social": {
         "type": "array",
@@ -122,7 +122,7 @@
           }
         },
         "required": [
-          "short"
+          "long"
         ]
       },
       "releases": {
@@ -254,6 +254,7 @@
       "companyEmail",
       "companyWebsite",
       "social",
+      "logo",
       "categories",
       "description",
       "version"
