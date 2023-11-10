@@ -19,11 +19,11 @@ Certification Standard Level 0 is the first level of the certification standard.
 
 ## Documentation
 
-The developer should follow CIP-0052 guidelines and provide the auditors with the relevant information to perform the audit. 
+No hard requirement is needed for Level 0. However, the developer should follow CIP-0052 guidelines and provide the auditors with the relevant information to perform the audit. 
 
 ## Audit process
 
-The auditor should follow CIP-0052 guidelines for the audit process.
+No hard requirement is needed for Level 0. However, the auditor should follow CIP-0052 guidelines for the audit process.
 
 ## Certificate
 
