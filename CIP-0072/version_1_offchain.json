@@ -25,29 +25,36 @@
         "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
         "maxLength": 200
       },
+      "companyName": {
+        "type":"string",
+        "description": "Company name",
+        "maxLength": 100
+      },
+      "companyEmail": {
+        "type":"string",
+        "description": "Email of the dApp developer",
+        "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "maxLength": 200
+      },
+      "companyWebsite": {
+        "type":"string",
+        "description": "Website of the company behind the dApp.",
+        "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+        "maxLength": 200
+      },
       "logo": {
-        "description": "Logo as a URL or encoded in base64. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB for base64.",
-        "anyOf": [
+        "description": "Logo encoded in base64. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB",
+        "type": "string",
+        "contentEncoding": "base64",
+        "oneOf": [
           {
-            "type": "string",
-            "contentEncoding": "base64",
-            "oneOf": [
-              {
-                "contentMediaType": "image/png"
-              },
-              {
-                "contentMediaType": "image/jpeg"
-              },
-              {
-                "contentMediaType": "image/svg+xml"
-              }
-            ],
-            "maxLength": 1361000
+            "contentMediaType": "image/png"
           },
           {
-            "type": "string",
-            "format": "uri",
-            "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
+            "contentMediaType": "image/jpeg"
+          },
+          {
+            "contentMediaType": "image/svg+xml"
           }
         ],
         "maxLength": 1361000
@@ -64,30 +71,21 @@
         "type": "array",
         "maxItems": 10,
         "items": {
-          "description": "Screenshots as URLs or encoded in base64. Minimum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
-          "anyOf": [
+          "description": "Screenshots encoded in base64. Minimum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
+          "type": "string",
+          "contentEncoding": "base64",
+          "oneOf": [
             {
-              "type": "string",
-              "contentEncoding": "base64",
-              "oneOf": [
-                {
-                  "contentMediaType": "image/png"
-                },
-                {
-                  "contentMediaType": "image/jpeg"
-                },
-                {
-                  "contentMediaType": "image/svg+xml"
-                }
-              ],
-              "maxLength": 2722000
+              "contentMediaType": "image/png"
             },
             {
-              "type": "string",
-              "format": "uri",
-              "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
+              "contentMediaType": "image/jpeg"
+            },
+            {
+              "contentMediaType": "image/svg+xml"
             }
-          ]
+          ],
+          "maxLength": 2722000
         },
         "description": "URLs to screenshots of DApp actual pages, or base64-encoded images. We recommend to share screenshots from the dApp usage itself."
       },
@@ -252,6 +250,9 @@
       "subject",
       "projectName",
       "link",
+      "companyName",
+      "companyEmail",
+      "companyWebsite",
       "social",
       "categories",
       "description",

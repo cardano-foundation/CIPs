@@ -103,67 +103,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
 
 This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
 
-### Example using links of images
-
-```json
-{
-  "version": "1.1.0",
-  "subject": "fedcba9876543210",
-  "projectName": "Super dApp",
-  "link": "https://www.supersdappplatform.com",
-  "logo": "https://www.supersdappplatform.com/logo.png",
-  "categories": ["Education", "Marketplace"],
-  "screenshots": [
-    "https://www.supersdappplatform.com/screenshot1.jpg",
-    "https://www.supersdappplatform.com/screenshot2.jpg"
-  ],
-  "social": [
-    {
-      "name": "Discord",
-      "link": "https://discord.gg/superdapp"
-    },
-    {
-      "name": "Reddit",
-      "link": "https://reddit.com/r/superdapp"
-    }
-  ],
-  "description": {
-    "short": "Super dApp is revolutionizing the educational marketplace with blockchain technology."
-  },
-  "releases": [
-    {
-      "releaseNumber": "1.1.0-beta",
-      "releaseName": "Beta Release",
-      "securityVulnerability": false,
-      "comment": "Public beta release with new features and improvements.",
-      "scripts": [
-        {
-          "id": "script2",
-          "version": 1
-        }
-      ]
-    }
-  ],
-  "scripts": [
-    {
-      "id": "script2",
-      "name": "Beta Script",
-      "purposes": ["MINT"],
-      "type": "NATIVE",
-      "versions": [
-        {
-          "version": "0.1.0-alpha",
-          "plutusVersion": 2,
-          "scriptHash": "def456",
-          "contractAddress": "addr_test1v4..."
-        }
-      ]
-    }
-  ]
-}
-```
-
-### Example using base64 images
+### Example
 
 ```json
 {
@@ -171,6 +111,9 @@ This schema describes the minimum required fields for a store to be able to disp
   "subject": "abcdef1234567890",
   "projectName": "My dApp",
   "link": "https://www.exampledapp.com",
+  "companyName": "Amazing dApp Inc.",
+  "companyEmail": "contact@myamazingdapp.com",
+  "companyWebsite": "https://www.myamazingdapp.com",
   "logo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAA...",
   "categories": ["DeFi", "Games"],
   "screenshots": [
