@@ -15,8 +15,6 @@ Created: 2023-06-20
 License: CC-BY-4.0
 ---
 
-> Current Version: 1
-
 ## Abstract
 
 Since at least 2021 when Cardano entered the Mary Era and implemented Native Assets, projects and creators building on
@@ -39,14 +37,6 @@ By leveraging the power of Cardano-specific URIs (CIP-13) and the modern technol
 wallets we can provide a framework for Cardano projects to attend real world events, incentivize or reward attendees via
 their Native Assets, and have facts and figures to help support and analyze the impact that their attendance had (Proof
 of Onboarding).
-
-Furthermore, the aforementioned "paper wallet" technique has many drawbacks including:
-* The person(s) responsible for generating the paper wallets at some point have access to the seed phrases generated, leading to a potential security vulnerability
-* Projects would need to preload these wallets with funds/tokens; this makes it difficult and/or impossible to reliably know how many of the paper wallets were ever actually claimed
-* For those wallets that go forever unclaimed, this essentially creates a permanent "burn" of both Lovelace and the native assets of the project; less than ideal
-
-We feel that this is necessary as a CIP in order to minimize friction for new projects while maximizing compatibility
-across the wide spectrum of Cardano wallets.
 
 ## Specification
 
@@ -74,7 +64,7 @@ Examples:
 #### ABNF Grammar
 
 * For a token claim URI (authority = `claim`), a versioning path, a `faucet_url` and a required `code`.
-* Additional query parameters may be provided and should be passed through to the provided `faucet_url` as-is.
+* Additional query parameters may be provided and should be passed through to the provided `faucet_url` without modification.
 
 ``` 
 cardanourn = "web+cardano:" claimtokenref
@@ -88,16 +78,13 @@ claimcode = "code=" text
 
 #### Token Claim URI Queries
 
-Token Claim URIs must include a path indicating protocol version and at minimum a `faucet_url` argument pointing to the
-faucet hosted and maintained by the project.
-
 **All arguments for Token Claim URIs should be URL-encoded**
 
 ***Version 1 URIs***
 
-Version 1 URIs must include a `faucet_url` and a `code` as required parameters. URIs may include additional arguments to
-suit the needs of the project's faucet API.
+Version 1 URIs must include a `faucet_url` and a `code` as required parameters. 
 
+URIs may include additional arguments to suit the needs of the project's faucet API.
 
 #### Handling Token Claim URI Queries
 
@@ -130,7 +117,12 @@ JSON POST Data:
 
 The wallet should always send the recipient address in bech32 format. If a particular token faucet implementation wishes
 to restrict or limit access to their faucet based on staking key or individual wallet address, this should be handled at
-the wallet end.
+the server end.
+
+**Supported Addresses**
+
+* Shelley-era `enterprise` address consisting of only a payment key
+* Shelley-era `staking` address consisting of a payment and staking key
 
 ##### Note on the `code` field
 
@@ -185,6 +177,7 @@ _Version 1 Examples:_
 <!-- A Cardano Claim URI with a campaign-specific code and optional user_id argument -->
 <a href="web+cardano://claim/v1?faucet_url=https%3A%2F%2Fclaim.hosky.io&code=NFTxLV2023&user_id=Idjiot1337">Get your $HOSKY!</a>
 ```
+
 ### Wallet Requests
 
 Light wallets that detect and support `web+cardano` URIs as well as mobile wallets who detect either a QR code or other
@@ -387,11 +380,29 @@ of 429 or this status response should be considered as a rate limiting response.
 Implementations should of course be prepared to handle situations where a server is non-responsive for any reason and
 be prepared to handle any other, non-specified error codes including 500 codes.
 
+### Versioning & Modification Rules
+
+If there is sufficient justification in the future for modification of this standard to the point that a "Version 2"
+would be necessary, those changes MUST be submitted as a new, separate CIP to this repository and follow all applicable
+CIP standards for acceptance. Examples of "major" changes that might justify a new version of this CIP include:
+fundamentally altering the URI structure, adding or removing a **required** field, or any other non-backwards compatible
+changes to the [Process Flow](#process-flow).
+
+Minor changes for grammar, clarity, or functionality that fall within the scope of "Version 1" of this document may be
+made by editing this document directly. Such changes include: grammatical or exposition changes to improve readability
+or clarity of communication, improvements to documented code examples, additional or optional server response information,
+etc.
+
 ## Rationale: How does this CIP achieve its goals?
 
 By creating a well-defined standard for both a CIP-13 URI scheme and the expected API response(s) we can create a
 framework that both wallets and projects can utilize to encourage and onboard new users into the ecosystem via Native
 Asset incentive models without needlessly and constantly reinventing the wheel for each product or project.
+
+Furthermore, the aforementioned "paper wallet" technique has many drawbacks including:
+* The person(s) responsible for generating the paper wallets at some point have access to the seed phrases generated, leading to a potential security vulnerability
+* Projects would need to preload these wallets with funds/tokens; this makes it difficult and/or impossible to reliably know how many of the paper wallets were ever actually claimed
+* For those wallets that go forever unclaimed, this essentially creates a permanent "burn" of both Lovelace and the native assets of the project; less than ideal
 
 By utilizing this framework, projects can have accurate, measurable analytics into the success of various real-world
 marketing and event efforts: Proof of Onboarding.
@@ -401,30 +412,24 @@ marketing and event efforts: Proof of Onboarding.
 ### Acceptance Criteria
 
 - [X] Demonstrate a working MVP
-- [ ] Open source an MVP example of token faucet server-side code
-- [ ] Receive feedback and iterate based on community feedback
+- [X] Open source an MVP example of token faucet [server-side code](https://github.com/HOSKYToken/poo-genericClaim)
+- [X] Receive feedback and iterate based on community feedback
 
 ### Implementation Plan
 
-In order to encourage adoption of this standard the authors commit to execute a functional a minimum viable product
+In order to encourage adoption of this standard the authors commit to execute a functional minimum viable
 proof of concept demonstration in partnership between Adam Dean, HOSKY Token, and VESPR wallet. This real-world
 implementation should give us important insight on whether the system requires additional modifications or changes.
 
 From there we will do our best to engage with other teams and projects in the ecosystem to encourage and support
 adoption of this standard on a larger scale.
 
-## Acceptance & Implementation Actions
+## Implementation Actions
 
-1. The Proof of Onboarding protocol was demonstrated via MVP during the Edinburgh, Scotland, UK CIP-1694 workshop hosted
-   by IOG in July 2023. This MVP demonstrated that the protocol works as described in this CIP and the overall feedback
-   from participants has been positive. This MVP was executed in collaboration with VESPR mobile Cardano wallet, HOSKY
-   token project, and Adam Dean as the distributor and architect of the specification.
-   1. [X] VESPR Mobile Wallet as of the time of this writing has support for Version 1 of the Proof of Onboarding Protocol
-      and is freely available for the use of any and all projects.
-   2. [ ] HOSKY Token project is working on finalizing and releasing a working, open source MVP for the software needed
-      to be run by the distributing project that will support fungible and non-fungible tokens or any combination thereof.
-   3. [ ] Adam Dean is in talks with additional wallet providers to bring P.O.O. support to more platforms as well as
-      working on open source tooling to facilitate ease of implementation for other projects.
+1. [X] VESPR Mobile Wallet supports the Proof of Onboarding Protocol and is freely available for the use of any and all projects.
+2. [X] HOSKY Project has released an open source server-side implementation software that may be used as a proof of concept for any interested projects.
+3. [X] Multiple projects at multiple, global events have successfully deployed Proof of Onboarding.
+4. [ ] Onboard additional wallet providers, server/service providers, and redemption methods.
 
 ## Copyright
 
