@@ -3,8 +3,8 @@ CIP: ???
 Title: Cardano dApp-MutlisigWallet Web Bridge
 Status: Proposed
 Category: Wallets
-Authors: Leo
-  - 
+Authors: 
+  - Leo
 Implementors:
   - BroClan <https://broclan.io/>
 Discussions:
