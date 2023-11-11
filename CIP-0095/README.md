@@ -911,7 +911,7 @@ derivation purposes will likely have hardware wallet audit implications.
 
 CIP-36 defines derivation path for a key pair to be used within CIP-36 style
 governance. The most notable user of this standard is
-[Project Catalyst](projectcatalyst.io), where CIP-36 vote keys are used to sign
+[Project Catalyst](https://projectcatalyst.io), where CIP-36 vote keys are used to sign
 vote transactions for the Jormungandr side-chain.
 
 One suggestion is to reuse this key pair instead of defining a new key pair in

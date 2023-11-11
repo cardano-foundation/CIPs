@@ -19,4 +19,10 @@
     "class": "RFT",
     "description": "CIP-0068 - Datum Metadata Standard (444 sub standard)"
   },
+  {
+    "asset_name_label": 500,
+    "class": "NFT",
+    "description": "CIP-0102 - Datum Metadata Standard (500 sub standard)",
+    "documentation": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0102"
+  }
 ]

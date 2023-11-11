@@ -9,7 +9,7 @@ Authors:
 Implementors:
   - Aiken <https://aiken-lang.org>
   - Plu-Ts <https://github.com/HarmonicPool/plu-ts>
-  - ImperatorLang <https://github.com/ImperatorLang>
+  - OpShin <https://github.com/OpShin>
   - Lucid <https://lucid.spacebudz.io/>
   - Mesh.js <https://martify.io/>
 Discussions:
@@ -221,7 +221,7 @@ The value of "exclusiveMinimum" must be a integer, representing an exclusive low
 
 ##### `items`
 
-The value of this keyword must be either another _Plutus Data Schema_ or a list of _Plutus Data Schema_. When this keyword is a single schema, this keywords applies its subschema to all child instances of the list. When it is a list, then the list is expected to have exactly the same number of elements as specified by the keyword and each element must match against the schema corresponding to its position. The list variation is useful to represent product types such as tuples.
+The value of this keyword must be either another _Plutus Data Schema_ or a list of _Plutus Data Schema_. When this keyword is a single schema, it applies its subschema to all child instances of the list. When it is a list, then the list is expected to have exactly the same number of elements as specified by the keyword and each element must match against the schema corresponding to its position. The list variation is useful to represent product types such as tuples.
 
 ##### `maxItems`
 
@@ -241,11 +241,11 @@ The value of this keyword must be a boolean. If this keyword has boolean value f
 
 ##### `keys`
 
-The value of this keyword must be either another _Plutus Data Schema_. This keywords applies its subschema to all keys of the map.
+The value of this keyword must be another _Plutus Data Schema_. This keyword applies its subschema to all keys of the map.
 
 ##### `values`
 
-The value of this keyword must be either another _Plutus Data Schema_. This keywords applies its subschema to all values of the map.
+The value of this keyword must be another _Plutus Data Schema_. This keyword applies its subschema to all values of the map.
 
 ##### `maxItems`
 
@@ -395,16 +395,17 @@ Yet, whereas there's a notion of purpose on-chain that is tightly coupled to the
 - [x] Blueprints are produced by one or (ideally) more smart-contract frameworks on Cardano.
   - [x] Aiken (implemented)
   - [ ] Plu-ts (under way)
-  - [ ] ImperatorLang (under way) I
+  - [x] OpShin (implemented)
   - [ ] Helios (under consideration)
   - [ ] PlutusTx (?)
   - [ ] Plutarch (?)
   - [ ] Scalus (?)
 
-- [x] There exists one or (ideally) more tools leveraging the blueprints
+- [x] There exist one or (ideally) more tools leveraging the blueprints
   - [x] [Aiken](https://aiken-lang.org/)
   - [x] [Mesh.js](https://meshjs.dev/)
   - [x] [Lucid](https://lucid.spacebudz.io/)
+  - [ ] [PyCardano](https://pycardano.readthedocs.io)
   - [ ] [Demeter](https://demeter.run/)
 
 ### Implementation Plan
