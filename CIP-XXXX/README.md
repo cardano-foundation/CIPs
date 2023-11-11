@@ -5,8 +5,7 @@ Status: Proposed
 Category: Wallets
 Authors: 
   - Leo
-Implementors:
-  - BroClan <https://broclan.io/>
+Implementors: NA
 Discussions:
 Created: 2023-10-12
 License: CC-BY-4.0
