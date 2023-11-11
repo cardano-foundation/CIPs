@@ -399,9 +399,6 @@ By encouraging the explicit namespacing of each extension we aim to improve the 
 
 - [ ] Provide some reference implementation of wallet providers
   - [leo42/BroClanWallet]
-
-
-
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
