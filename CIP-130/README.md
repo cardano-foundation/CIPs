@@ -21,7 +21,7 @@ This document describes a webpage-based communication bridge allowing webpages (
 
 In order to facilitate future dApp development, we will need a way for dApps to communicate with multisig wallets, given the unique complexities of native script based address special provisions need to be made to make the connector compatible with them.  
 
-Specifically apps building transactions need to be able and get the following information from the wallet:
+Specifically apps building transactions need to be able to get the following information from the wallet:
 - Script descriptor 
 - Script Requirements list 
 - Collateral donator (since native script based addresses cannot provide collateral for transactions)
