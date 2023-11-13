@@ -159,12 +159,12 @@ Supporting tooling should clearly label these key pairs as "Constitutional Commi
 
 Examples of acceptable `keyType`s for supporting tools:
 
-| `keyType`                                                    | Description                                             |
-| ------------------------------------------------------------ | ------------------------------------------------------- |
-| `ConstitutionalCommitteeColdSigningKey_ed25519`              | Constitutional Committee Cold Signing Key               |
-| `ConstitutionalCommitteeColdExtendedSigningKey_ed25519`      | Constitutional Committee Cold Extended Signing Key      |
-| `ConstitutionalCommitteeColdVerificationKey_ed25519`         | Constitutional Committee Cold Verification Key          |
-| `ConstitutionalCommitteeColdExtendedVerificationKey_ed25519` | Constitutional Committee Cold Extended Verification Key |
+| `keyType`                                                          | Description                                             |
+| ------------------------------------------------------------------ | ------------------------------------------------------- |
+| `ConstitutionalCommitteeColdSigningKey_ed25519`                    | Constitutional Committee Cold Signing Key               |
+| `ConstitutionalCommitteeColdExtendedSigningKey_ed25519_bip32`      | Constitutional Committee Cold Extended Signing Key      |
+| `ConstitutionalCommitteeColdVerificationKey_ed25519`               | Constitutional Committee Cold Verification Key          |
+| `ConstitutionalCommitteeColdExtendedVerificationKey_ed25519_bip32` | Constitutional Committee Cold Extended Verification Key |
 
 For hardware implementations:
 
