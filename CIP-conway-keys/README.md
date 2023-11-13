@@ -203,27 +203,30 @@ Small changes can be made if they are completely backwards compatible with imple
 By standardizing derivation, naming, and tooling conventions we primarily aim to enable wallet interoperability.
 By having a standard to generate DRep and constitutional committee credentials from mnemonics, we allow wallets to always be able to discover a user’s governance activities.
 
-#### Why add a new role to the 1852 path?
+#### Why add a new roles to the 1852 path?
 
 This approach mirrors how stake keys were rolled out, see [CIP-0011 | Staking key chain for HD wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011/README.md).
 We deem this necessary since these credentials sit alongside each other in the Conway ledger design.
 
-The alternative would be to define a completely different derivation path, using a different index in the purpose field, similar to the specification outlined within [CIP-0036](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#derivation-path), but this could introduce complications with HW wallet implementations.
+The alternative would be to define a completely different derivation paths, using a different index in the purpose field, similar to the specification outlined within [CIP-0036](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#derivation-path), but this could introduce complications with HW wallet implementations.
 
-#### Why not multi-DRep wallet accounts?
+#### Why not multi-DRep/CC wallet accounts?
 
-We believe the overhead that would be introduced by multi-DRep accounts is an unjustified expense. Future iterations of this specification may expand on this, but at present this is seen as unnecessary.
-This avoids the need for DRep Key discovery.
+We believe the overhead that would be introduced by multi-DRep accounts or multi-constitutional-committee is an unjustified expense.
+Future iterations of this specification may expand on this, but at present this is seen as unnecessary.
+This avoids the need for DRep, cc hot or cc cold key discovery.
 
 We model this on how stake keys are generally handled by wallets.
-If required, another CIP could, of course, introduce a multi-DRep method.
+If required, another CIP could, of course, introduce a multi-DRep/CC method.
 
 ### Encoding
 
 #### Why not allow network tags?
 
 For simplicity, we have omitted network tags within the encoding.
-This is because we have modeled DRep IDs on stake pool operator IDs, which similarly do not include a network tag.
+This is because we have modeled DRep IDs and CC credentials on stake pool operator IDs, which similarly do not include a network tag.
+
+
 The advantage of including a network tag would be to reduce the likelihood of mislabelling a DRep’s network of operation (eg Preview v Cardano mainnet).
 
 ## Path to Active
