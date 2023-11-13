@@ -22,7 +22,7 @@
       "link": {
         "type":"string",
         "description": "A link a dApp or a website presenting a DApp",
-        "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+        "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
         "maxLength": 200
       },
       "companyName": {
@@ -39,7 +39,7 @@
       "companyWebsite": {
         "type":"string",
         "description": "Website of the company behind the dApp.",
-        "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+        "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
         "maxLength": 200
       },
       "logo": {
@@ -100,7 +100,7 @@
             },
             "link": {
               "type": "string",
-              "pattern": "((https?|ftp|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
+              "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])"
             }
           }
         }
