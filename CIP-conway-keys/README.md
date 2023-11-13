@@ -177,12 +177,12 @@ For hardware implementations:
 
 Supporting tooling should clearly label these key pairs as "Constitutional Committee Hot Keys".
 
-| `keyType`                                                   | Description                                            |
-| ----------------------------------------------------------- | ------------------------------------------------------ |
-| `ConstitutionalCommitteeHotSigningKey_ed25519`              | Constitutional Committee Hot Signing Key               |
-| `ConstitutionalCommitteeHotExtendedSigningKey_ed25519`      | Constitutional Committee Hot Extended Signing Key      |
-| `ConstitutionalCommitteeHotVerificationKey_ed25519`         | Constitutional Committee Hot Verification Key          |
-| `ConstitutionalCommitteeHotExtendedVerificationKey_ed25519` | Constitutional Committee Hot Extended Verification Key |
+| `keyType`                                                         | Description                                            |
+| ----------------------------------------------------------------- | ------------------------------------------------------ |
+| `ConstitutionalCommitteeHotSigningKey_ed25519`                    | Constitutional Committee Hot Signing Key               |
+| `ConstitutionalCommitteeHotExtendedSigningKey_ed25519_bip32`      | Constitutional Committee Hot Extended Signing Key      |
+| `ConstitutionalCommitteeHotVerificationKey_ed25519`               | Constitutional Committee Hot Verification Key          |
+| `ConstitutionalCommitteeHotExtendedVerificationKey_ed25519_bip32` | Constitutional Committee Hot Extended Verification Key |
 
 For hardware implementations:
 
