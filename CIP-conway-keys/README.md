@@ -21,7 +21,7 @@ Such keys are to be known as DRep keys, constitutional committee cold keys and c
 Here we define some accompanying tooling standards.
 
 > **Note** this proposal assumes knowledge of the Conway ledger design (see
-> [draft ledger specification](https://github.com/input-output-hk/cardano-ledger/tree/master/eras/conway/test-suite/cddl-files))
+> [draft ledger specification](https://github.com/input-output-hk/cardano-ledger/blob/d2d37f706b93ae9c63bff0ff3825d349d0bd15df/eras/conway/impl/cddl-files/conway.cddl))
 > and
 > [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
 
@@ -31,12 +31,12 @@ In the Conway ledger era, DRep credentials allow registered DReps to be identifi
 Whilst constitutional committee members can be recognized by their cold credentials within update committee governance actions, authorize hot credential certificate and resign cold key certificates.
 Constitutional committee hot credential can be observed within the authorize hot key certificate and votes.
 
-CIP-1694 terms these DRep credentials as DRep IDs, which are either generated from blake2b-224 hash digests of Ed25519 public keys owned by the DRep, or are script hashes.
-Similarly, both the hot and cold credentials for constitutional committee members can be public key digests or script hashes.
+CIP-1694 terms these DRep credentials as DRep IDs, which are either generated from blake2b-224 hash digests of Ed25519 public keys owned by the DRep, or are script hash-based.
+Similarly, both the hot and cold credentials for constitutional committee members can be generated from public key digests or script hashes.
 
 This CIP defines a standard way for wallets to derive DRep and constitutional committee keys.
 
-Since it is best practice to use a single cryptographic key for a single purpose, we opt to keep DRep keys separate from other keys in Cardano.
+Since it is best practice to use a single cryptographic key for a single purpose, we opt to keep DRep and committee keys separate from other keys in Cardano.
 
 By adding three paths to the [CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md), we create an ecosystem standard for wallets to be able to derive DRep and constitutional committee keys.
 This enables DRep and constitutional committee credential restorability from a wallet seed phrase.
