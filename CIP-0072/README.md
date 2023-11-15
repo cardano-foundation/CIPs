@@ -83,11 +83,11 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
 
 ### On-chain Schemas
 
-[On-chain CDDL for registration / de-registration (Version 1)](./version_1_onchain.cddl)
+[On-chain CDDL for registration / de-registration (Version 1.0.0)](./version_1.0.0_onchain.cddl)
 
 which also can be expressed using JSON schema:
 
-[dApp on-chain certificate JSON Schema (Version 1)](./version_1_onchain.json)
+[dApp on-chain certificate JSON Schema (Version 1.0.0)](./version_1.0.0_onchain.json)
 
 ### Metadata Label
 
@@ -99,7 +99,7 @@ When submitting the transaction metadata pick the following value for `transacti
 
 The dApp Registration certificate itself doesn't enforce a particular structure to the metadata you might fetch off-chain. However, we recommend that you use the following structure:
 
-[Off-chain dApp Registration certificate schema (Version 1)](./version_1_offchain.json)
+[Off-chain dApp Registration certificate schema (Version 1)](./version_1.0.0_offchain.json)
 
 This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
 
