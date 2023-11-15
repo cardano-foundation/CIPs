@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 8
 Title: Domain Name Resolution
 Status: Proposed
 Category: Tools
