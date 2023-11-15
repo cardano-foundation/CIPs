@@ -131,8 +131,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
 | 0103? | [Web-Wallet Bridge - Bulk transaction signing](https://github.com/cardano-foundation/CIPs/pull/587) |
 | 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
+| 0105? | [Conway Era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/pull/597) |
 
-<p align="right"><i>Last updated on 2023-10-18</i></p>
+<p align="right"><i>Last updated on 2023-11-14</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -154,8 +155,10 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0001? | [Metadata Discoverability and Trust](https://github.com/cardano-foundation/CIPs/pull/371) |
 | 0004? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
 | 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
+| 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
+| 0009? | [Coin Selection Including Native Tokens](https://github.com/cardano-foundation/CIPs/pull/611) |
 
-<p align="right"><i>Last updated on 2023-08-01</i></p>
+<p align="right"><i>Last updated on 2023-11-14</i></p>
 
 ## Stalled / Waiting For Authors
 
