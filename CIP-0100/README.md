@@ -46,6 +46,33 @@ This Cardano Improvement Proposal (CIP) introduces a standardized and flexible m
   - Matthias Bankort
   - All Edinburgh Workshop attendees
 </details>
+<details>
+  <summary><strong>Second Workshop</strong></summary>
+
+  The following people helped with the third draft during the online workshop held on 2023-11-02.
+
+  - Mike Susko
+  - Thomas Upfield
+  - Lorenzo Bruno
+  - Ryan Williams
+  - Nils Peuser
+  - Santiago Carmuega
+  - Nick Ulrich
+  - Ep Ep
+
+</details>
+
+<details>
+  <summary><strong>Third Workshop</strong></summary>
+
+  The following people helped with the third draft during the online workshop held on 2023-11-10.
+
+  - Adam Dean
+  - Rhys Morgan
+  - Thomas Upfield
+  - Marcel Baumberg
+
+</details>
 
 ## Motivation
 
@@ -78,143 +105,115 @@ This section outlines the high level format and requirements of this standard.
 - This document SHOULD include `@context` and `@type` fields below to aid in interpretation of the document.  
 - The JSON document SHOULD be formatted for human readability, for the sake of anyone who is manually perusing the metadata.
 - That content SHOULD be hosted on a content addressable storage medium, such as IPFS or Arweave, to ensure immutability and long term archival.
-- The hash included in the anchor MUST be a tagged hash, such as `SHA256:{hash}`
+- As per an update to CIP-1694, the hash included in the anchor MUST be a tagged hash, such as `blake2b-256:{hash}`
+- For the purposes of hashing and signature validation, we should use the [canonical RDF triplet representation](https://www.w3.org/TR/rdf-canon/), as outlined in the JSON-LD specification.
 
-
-Open questions:
- - [ ] Should we pick a specific hash, instead of using a tagged hash?
- - [ ] what hashes are supported?
+Open question:
+ - [ ] is rdf-canon sufficient for our needs? @Santiago
 
 ### Versioning
 
 [JSON-LD](https://json-ld.org/) is a standard for describing interconnected JSON documents that use a shared vocabulary.
 
+<!-- Maybe (in another CIP) define a URI standard for cardano transactions / blocks; ex cardano://tx/{txId} -->
+<!-- CIP-13 could be a good standard for these URIs? -->
+
 In a JSON-LD document, every field is uniquely tied to some globally unique identifier by means of an Internationalized Resource Identifier (IRI). Different machine-consumers can then know that they agree on the interpretation of these fields.
 
 The shared vocabulary of fields is standardized within the scope of a document via a `@context` field. This allows a compositional / extensible approach to versioning, similar to the recent changes to [CIP-0030](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md). Rather than specifying a version number and forcing competing standards to compete for what the "next" version number will include, instead a wide variety of standards are allowed and encouraged. Tool authors MAY support those which are the most beneficial or common. This creates an organic, collaborative evolution of the standard.
+
+Note: Any URI's in the @context field SHOULD be content-addressable and robustly hosted; losing access to the schema is less dangerous than losing access to the metadata itself, but should still prefer strong and immutable storage options for the preservation of context.
 
  - A governance metadata document MAY include a `@context` field.
  - A governance metadata document MAY include a `@type` field, referring to a specific type of document from the included `@context`s. 
  - The `@context` field, if included, MUST be a valid JSON-LD @context field; the basics are described below. 
    - It MAY be a string, in which case it MUST be the IRI of a jsonld document describing the shared vocabulary to assume when interpreting the document.
-   - It MAY be an object, where each key refers to a property name, and the value refers to the IRI describing how that field should be interpreted.
-   - It MAY be an array, including multiple contexts, which are processed in order.
+   - It MAY be an object, where each key refers to a property name, and the value is either an IRI to a schema describing that field, or an object with that definition inlined.
+   - It MAY be an array, including multiple contexts, which are merged in order with a "most-recently-defined-wins" mechanism.
    - For a full understanding of the @context field, refer to the [JSON-LD specification](https://www.w3.org/TR/json-ld/).
- - If the metadata document is missing the `@context` field, it will be assumed to refer to [./cip-?.common.jsonld]
+ - Each IRI in the `@context` field SHOULD refer to a schema hosted via a robust, content addressable, and immutable storage medium such as IPFS, Arweave, etc.
+ - If the metadata document is missing the `@context` field, it will be assumed to refer to [./cip-100.common.jsonld]
  - Future CIPs may standardize common contexts, and SHOULD attempt to reuse common terminology and SHOULD avoid naming collisions.
  - Tool authors MAY choose which contexts to support, but MUST make a best effort to display the metadata in the presence of unrecognized context, up to and including gracefully falling back to a raw display of the JSON document.
 
+**Extensions to the governance metadata standard can take one of two forms**:
+- CIP-100 itself can be updated through the normal CIP process to provide additional clarity on any concepts that are giving people trouble with adoption, or to correct inaccuracies.
+- A new CIP, defining a new vocabulary for a specific use case.
+
 ### Governance Transaction Types
 
-In CIP-1694 (and likely any alternative or future evolution of it), there are a number of certificates that can be attached to a transaction pertaining to governance; each of these is equipped with an "anchor", which can refer to an external document. This CIP provides the following JSON-LD schemas intended to represent a fairly minimal set of properties and types for each type of transaction:
+In CIP-1694 (and likely any alternative or future evolution of it), there are a number of certificates that can be attached to a transaction pertaining to governance; each of these is equipped with an "anchor", which can refer to an external document. This CIP provides the following JSON-LD schema intended to represent a fairly minimal vocabulary :
 
- - [Common Definitions](./cip-?.common.jsonld)
- - [Governance Action](./cip-?.action.jsonld)
- - [DRep (Voter) Registration](./cip-?.registration.jsonld)
- - [DRep (Voter) Retirement](./cip-?.retirement.jsonld)
- - [DRep (Voter) Vote](./cip-?.vote.jsonld)
- - [DRep (Voter) Delegation](./cip-?.delegation.jsonld)
- - [Constitutional Committee Vote](./cip-?.cc-vote.jsonld)
-
-
+ - [Common Definitions](./cip-100.common.jsonld)
 
 Additionally, someone may wish to augment a previous piece of metadata with new information, divorced from the transaction that initially published it; this may be useful, for example, to provide additional arguments in favor of or against a proposal, provide translations to other languages, provide a layman's explanation of a highly technical document, etc.
 
-To this end, this CIP reserves [metadatum label 1694](../CIP-0010/README.md) for publishing these kinds of augments on-chain. This CIP also provides a special JSON-LD schema specifically for these documents:
+These can, in theory, be published anywhere, but to aide in discoverability for indexing tools, we explicitly call out the Cardano blockchain as a convenient "public square" in which to publish this metadata.
 
- - [Augmentation](./cip-?.augmentation.jsonld)
+To this end, this CIP reserves [metadatum label 1694](../CIP-0010/README.md) for publishing these kinds of augments on-chain. This CIP also provides a minimal JSON-LD schema specifically for these documents, though the vocabulary may be extended in the same way that any other json-ld context can be extended:
 
-NOTE: These actions are based on CIP-1694, but could be repurposed for any governance CIP with minimal changes.
+ - [Augmentation](./cip-100.augmentation.jsonld)
 
 The rest of this document will provide a high level description of the properties described in each of the schemas above.
-
-TODO:
- - [ ] The above schemas aren't written yet; this is one of the areas I could use some help in, and I didn't want that to be a further impediment to me getting this draft out the door, as it's taken me long enough as it is
 
 #### Common properties
 
 The following properties are considered common to all types of transactions, and the minimal set needed for "minimum viable governance":
 
- - Authors: The primary contributors and authors for this metadata document
-   - An array of objects
-   - Each object may have an address, a display name, and optionally a WC3 DID
-   - Each address mentioned MUST sign the transaction
-   - Tooling authors SHOULD validate these signatures; if absent or invalid, tooling authors SHOULD make this clear in the UI
-   <!--  -->
- - Language: the ISO 639-1 that any prose in this metadata is written in
-   - Tooling authors MAY provide automatic translation, but SHOULD make the original prose easily available
- - Justification
-   - Freeform text that explains *why* this proposal / vote / registration / retirement is being proposed / made / etc.
-   - Tooling authors MAY emphasize that this justification represents the view of the authors only
- - External updates
-   - A array of objects
-   - Each object may have a URL, and a type
-   - The purpose is to allow "additional updates", that aren't locked in by a hash
-   - Tooling authors MAY fetch and parse this metadata according to this standard,
-   - If so, Tooling authors MUST emphasize that this information is second-class, given that it might have changed
-  <!--  -->
+- hash-algorithm: The algorithm used to hash the document for the purposes of the on-chain anchor; currently only supports blake2b-256
+- authors: The primary contributors and authors for this metadata document
+  - An array of objects
+  - Each object MAY have a display name
+  - Each object MUST have one or more witnesses
+  - Each witness may define a context, describing the manner in which the document has been witnessed
+  - A default witness scheme is described in a later section
+  - Tooling authors SHOULD validate these witnesses; if absent or invalid, tooling authors SHOULD make this clear in the UI
+- body: The material contents of the document, separate for the purposes of signing
+  - justification
+    - Freeform text that explains *why* this proposal / vote / registration / retirement is being proposed / made / etc.
+    - Tooling authors MAY emphasize that this justification represents the view of the authors only
+  - external-updates
+    - A array of objects
+    - Each object can have a context defining how to interpret it
+    - by default, assumed to just be a title and a URL
+    - The purpose is to allow "additional updates", that aren't written yet
+    - Tooling authors MAY fetch and parse this metadata according to this standard,
+    - If so, Tooling authors MUST emphasize that this information is second-class, given that it might have changed
+
+An example jsonld specification for the above context is specified in
+ - [cip-100.common.jsonld](./cip-100.common.jsonld)
+
+Additionally, we highlight the following concepts native to json-ld that are useful in the context of governance metadata:
+ - [@language](https://www.w3.org/TR/json-ld11/#string-internationalization)
+  - The `@context` field SHOULD specify a `@language` property, which is an ISO 639-1 language string, to define a default language for the whole document
+  - Specific sub-fields can specify different languages
+  - The `@context` field may specify a `@container` property set to `@language`, in which case the property becomes a map with different translations of the property
+  - Tooling authors MAY provide automatic translation, but SHOULD make the original prose easily available
 
 Open Questions:
- - [ ] Open to other suggestions for how to securely prove authenticity / endorsement when capturing signatures / DIDs
- - [ ] The 'type' of external updates is TBD; I was thinking something like "Blog", "Twitter Feed", "RSS", and "Metadata", (with the last one representing a document that can be consumed according to this spec) but it might not even be neccesary
+ - [ ] Investigate whether the activity-pub / activity-streams is appropriate for external updates @Nils
+ - [ ] @santicmaru and I are still working on the jsonld files
 
-#### Specific fields
+### Hashing and Signatures
 
-This CIP currently doesn't standardize any fields specific to each type of transaction, beyond specifying a `@type` for each type of transaction.
+When publishing a governance action, the certificate has an "anchor", defined as a URI and a hash of the content at the URI.
 
-<!--
-Below are some other ideas that were brainstormed during the workshops, but didn't make it into this CIP:
+For CIP-100 compliant metadata, the hash in the anchor should be the blake2b-256 hash of the "Canonized" form of the document. This canonicalization is to remove ambiguities in serialization format and ensure that all consumers arrive at the same hash. The canonicalization algorithm for JSON-LD is specified [here](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/).
 
-#### Governance Action
+A metadata has a number of authors, each of which MUST authenticate their endorsement of the document in some way.
 
- - Authorship history
-  - First draft written timestamp
-  - Other drafts / timestamps (reference)
-  - Final draft timestamp
- - Time and materials budget
- - Time limit / sensitivity information
-   - Urgent hardfork to fix a bug
-   - Payout deadline
- 
- - Proposal-type specific proposals
-   - No Confidence
-   - New CC
-   - Constitution
-   - Protocol Parameters
-    - Simulation data
-   - Treasury Payout
-    - category 
-    - payment target information (if different from author)
-      (Including signature)
-   - Info
-     - Content
+This is left extensible, through the use of a new context, but for the purposes of this CIP alone, a default scheme is defined.
 
-#### DRep Registration
+Each author should have one or more witnesses. The witness will be an object with an algorithm (set to ed25519), a public key (set to an ed25519 public key), and a signature.
 
- - Platform / Values
- - DID / Social Media / Website
- - Group / Organization
- - Stake Pool information?
+The signature is the ed5519 signature using the attached public key, of the hash of the canonical form of the `body` field of the document. This is to separate the certifiable material from the non-certifiable material.
 
-#### DRep Retirement
-
- - Recommended Replacement
-   - Who do you suggest your delegators delegate to in your stead?
- - Press release? (is this just justification?)
- - "I'll come back if ___"
- - "This is in protest of {governance action}"
-
-#### Vote Casting
-
- - 
-
-#### Vote Delegation
-
- - 
-
-#### Cast Constitutional Committee Vote
-
- -  -->
+Open Questions:
+ - [ ] Should we leverage https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.jsonld in any way, or other DID specifications?
+   - Frankly, the whole DID space seems to make things way more complicated than it needs to be heh
+ - [ ] What is the exact procedure for canonicalizing the body?
+   - We can't just pluck the body field from the JSON, unless we say it inherits the context from the original document
+   - There's not a clear way to extract the subset of an object from the canonical format
 
 ### Best Practices
 
@@ -233,12 +232,6 @@ This section outlines a number of other best practices for tools and user experi
  - If the content is self-hosted, you SHOULD take care to warn the user about changing the content
    - For example, you CAN detect well-known content-addressable file storage platforms such as IPFS or Arweave, and display an extra warning if the content is not hosted on one of those
 
-<!--
-Notes from workshop:
- - Markus wants to think deeply about pool metadata, and the notion of extended metadata and if there are lessons we can learn from that
- - Should we have a notion of where to find "addendums", which might change / be added; we can't update this metadata because it will change the hash, but we can have a type of data that is "less permanent" for example revisions, new information that comes to light, a DRep has their mind changed on a vote, etc.
--->
-
 ## Rationale: how does this CIP achieve its goals?
 
 Here are the goals this CIP seeks to achieve, and the rationale for how this specific solution accomplishes them:
@@ -246,7 +239,7 @@ Here are the goals this CIP seeks to achieve, and the rationale for how this spe
  - Standardize a format for rich metadata related to cardano governance
    - Standardizing on JSON-LD provides an industry standard, yet highly flexible format for effectively arbitrary structured data
  - Standardize a minimal and uncontroversial set of fields to support "Minimal Viable Governance"
-   - This CIP fully specifies the Authors, Language, Justification, and External Updates fields
+   - This CIP specifies a minimal number of fields: hash-algorithm, authors, justification, external-updates, and @language
    - Each of these fields is essential for the global accessibility of this data, and enables tooling that promotes a well-informed voting populace
  - Leave that format open to extension and experimentation
    - JSON-LD has, built in, a mechanism for extending and experimenting with new field types

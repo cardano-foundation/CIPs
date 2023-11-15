@@ -1,0 +1,18 @@
+{
+    "@context": {
+        "hash-algorithm": "",
+        "authors": {
+            "@container": "@set",
+            "@type": ""
+        },
+        "body": {
+            "@context": {
+                "justification": "",
+                "external-updates": {
+                    "@container": "@set",
+                    "@type": ""
+                },
+            }
+        }
+    }
+}
