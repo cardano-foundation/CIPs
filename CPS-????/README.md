@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 9
 Title: Coin Selection Including Native Tokens
 Status: Open
 Category: Wallets
