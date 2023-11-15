@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 105
 Title: Conway Era Key Chains for HD Wallets
 Status: Proposed
 Authors:

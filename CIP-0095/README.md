@@ -157,7 +157,7 @@ type PubDRepKey = string;
 ```
 
 A hex-encoded string representing 32 byte Ed25519 DRep public key, as described
-in CIP-XXXX.
+in [CIP-0105 | Conway Era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
 
 ##### PubStakeKey
 
@@ -274,7 +274,7 @@ extension object, as part of the extensions object passed at enable time:
 #### `api.cip95.getPubDRepKey(): Promise<PubDRepKey>`
 
 The connected wallet account provides the account's public DRep Key, derivation
-as described in CIP-XXXX.
+as described in [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
 
 These are used by the client to identify the user's on-chain CIP-1694
 interactions, i.e. if a user has registered to be a DRep.

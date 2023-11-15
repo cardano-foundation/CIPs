@@ -54,10 +54,10 @@ Here, `role` can be the following
 | ---                               | ----- | ------------
 | External chain                    | `0`   | Same as defined in [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
 | Internal chain                    | `1`   | Same as defined in [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
-| Staking Key                       | `2`   | See [CIP11](https://cips.cardano.org/cips/cip11)
-| DRep Key                          | `3`   | See CIP-XXXX
-| Constitutional Committee Cold Key | `4`   | See CIP-XXXX
-| Constitutional Committee Hot Key  | `5`   | See CIP-XXXX
+| Staking Key                       | `2`   | See [CIP-0011](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011/README.md)
+| DRep Key                          | `3`   | See [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md)
+| Constitutional Committee Cold Key | `4`   | See [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md)
+| Constitutional Committee Hot Key  | `5`   | See [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md)
 
 Wallets **MUST** implement this new scheme using the master node derivation algorithm from Icarus with sequential addressing (see [CIP3](https://cips.cardano.org/cips/cip3) for more information)
 
