@@ -6,6 +6,7 @@ Category: Metadata
 Authors: 
   - Bruno Martins <bruno.martins@iohk.io>
   - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
+  - Daniel Main <daniel.main@iohk.io>
 Implementors: ["Lace Wallet dApp Store", "DappsOnCardano dApp Store"]
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/355
@@ -83,11 +84,11 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
 
 ### On-chain Schemas
 
-[On-chain CDDL for registration / de-registration (Version 1.0.0)](./version_1.0.0_onchain.cddl)
+[On-chain CDDL for registration / de-registration (Version 2.0.0)](./version_2.0.0_onchain.cddl)
 
 which also can be expressed using JSON schema:
 
-[dApp on-chain certificate JSON Schema (Version 1.0.0)](./version_1.0.0_onchain.json)
+[dApp on-chain certificate JSON Schema (Version 2.0.0)](./version_2.0.0_onchain.json)
 
 ### Metadata Label
 
@@ -99,7 +100,7 @@ When submitting the transaction metadata pick the following value for `transacti
 
 The dApp Registration certificate itself doesn't enforce a particular structure to the metadata you might fetch off-chain. However, we recommend that you use the following structure:
 
-[Off-chain dApp Registration certificate schema (Version 1)](./version_1.0.0_offchain.json)
+[Off-chain dApp Registration certificate schema (Version 2)](./version_2.0.0_offchain.json)
 
 This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
 
@@ -260,10 +261,6 @@ some app that can attest validity and conformance to JSON schema - dApp Registra
 ### Scripts / Releases Fields Are Not Required
 
 We made a decision to change the schema so that scripts and releases are no longer required. This could help to get initial registration from dApp developers faster and some stores simply do not require dApps to add their scripts in order to be listed.
-
-### Schema Version
-
-We discussed and analyzed idea of schema version and or even whole CIP version. It turns out that CIP is already versioned by CIP-??? where ??? is version number. During this CIP being in `PROPOSED` state we reserve our right to make small changes to the schema / document, after CIP becomes active, it will require a new CIP. This is the current process, which other CIPs are also following.
 
 ### Tags
 
