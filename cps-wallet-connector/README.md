@@ -7,7 +7,7 @@ Authors:
     - Ryan Williams <ryan.williams@iohk.io>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/619
 Created: 2023-07-28
 ---
 
@@ -42,7 +42,7 @@ For wallets, connectors should be secure, extendable and should not expect walle
 #### 1. Secure connection
 Security should remain of paramount concern within web 3.
 Connection standards must strive to above all not compromise the security of wallets or dApps.
-Connection standards should be aware of potential impacts of standard security vunrabilities, such as man-in-middle attacks.
+Connection standards should be aware of potential impacts of standard security vulnerabilities, such as man-in-middle attacks.
 Furthermore, standards should seek to be censorship resistant, by an ecosystem offering multiple connection standards we move in this direction.
 
 #### 2. Secure API
@@ -59,7 +59,7 @@ APIs should allow for an expressive range of information to be exchanged.
 Generally communication should be allowed two ways.
 
 #### 5. Versioned
-Connection standards and APIs should be explicitly versioned.
+Connection standards and APIs should be explicitly versioned to clearly allow upgrades.
 Furthermore, ideally APIs should allow for optional extendability to facilitate specialization.
 Clear scope of versions / extensions.
 
@@ -72,19 +72,32 @@ APIs, at a base level, should focus on preserving the base role of the wallet of
 
 Here we will add context to the current state of Cardano's wallet connectors. 
 
-#### Cardano Wallet-Web Bridge history
-- Lack of ecosystem cohesion around Role of the Wallet
-- Reactive standard following other ecosystems
-- Combination of connection and API in one standard
-- CIP-30
-- CIP-13 URI schemes
+#### Cardano Wallet-Web Bridge History
+[CIP-30](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md) is *the* fundamental wallet connector standard for Cardano.
+This standard has facilitated the emergence of dApp development on Cardano by defining both a connection standard and an API.
+It is, to date, the only wallet connector standard to see wide adoption in the ecosystem.
+Using an injected Javascript object for communication between wallets and web-based stacks.
+
+Since its' authoring CIP-30 has seen continued iteration, with changes to its API common. 
+
+- CIP-13
 - CIP-45
 - CIP-90
+
+##### CIP-30 Alternatives
+- CIP-45
+- CIP-90
+
+##### CIP-30 Extensions
+- CIP-62
 - CIP-95
 - CIP-103
 - CIP-104 -- impact of sharing account public key?
 
 #### Historical Issues
+- Lack of ecosystem cohesion around Role of the Wallet
+- Reactive standard following other ecosystems
+- Combination of connection and API in one standard
 - CIP-30 - Limited scope
 - CIP-30 - Lack of versioning
 - CIP-30 - injected object limiting
