@@ -6,8 +6,12 @@ Status: Proposed
 Authors:
 
 - Adam Dean <adam@crypto2099.io>
-  Implementors: N/A
-  Discussions: https://github.com/cardano-foundation/cips/pull/467
+  Implementors:
+-
+
+Discussions:
+
+- https://github.com/cardano-foundation/cips/pull/467
   Created: 2023-02-27
   License: CC-BY-4.0
 
@@ -99,15 +103,14 @@ This CIP aims to ensure metadata "correctness" on two different fronts.
 1. **Actual Data Correctness**
     - This CIP utilizes a strongly-typed, numerically indexed data structure that should minimize common errors and
       omissions observed in less strictly-typed standards. Parsers of the data presented within the scope of this
-      standard
-      should ignore any non-specified or non-conforming data.
+      standard should ignore any non-specified or non-conforming data.
 2. **Data Provenance**
     - Specifically in the context of correctness via proving provenance of the metadata, this CIP aims to address
       correctness via the same data witness standards utilized by CIP-26 although with a slightly modified data
       structure.
       Currently existing solutions for things like NFT Project verification standards rely on trust methods such as
-      publish a special message on your website, send us a DM from your Twitter account, and other less secure means of
-      validating provenance of the data.
+      publishing a special message on your website, send us a DM from your Twitter account, and other less secure means
+      of validating provenance of the data.
 
 #### Trust
 
@@ -118,39 +121,65 @@ validation while decreasing the need for trust outside the scope of the on-chain
 
 ## Specification
 
-Where applicable the 0 (zero) index of all specification documents is reserved for an optional semantic version
+Where applicable the 0 (zero) index of all specification documents is reserved for an optional integer version
 identifier to enable future extensions to this and CIP-specific sub-standards.
 
 A numeric-indexed structure is used to support required and optional fields in a format that is compatible with both
 CBOR and JSON transport formats with minimal changes to the data structure and to minimize the possibility of
 misspelling or capitalization issues.
 
+### Modification and Extension of This Standard
+
+This standard is likely to need frequent extension and modification, particularly relating to
+[CIP-Specific Information](#6-cip-specific-information). Any group or individual wishing to extend or modify this
+standard
+MUST comply to the following criteria:
+
+- [ ] New CIPs SHOULD achieve the `Active` status prior to being included and documented in this directory after
+  undergoing the
+  regular community feedback and review process.
+- [ ] Any change or modification to `required` fields in the root standard or a CIP's specific details MUST be written
+  as a new `version`, MUST increment the version number by `1`, and MUST include new, versioned documentation for
+  the CIP while leaving previous version documentation intact for backwards compatibility.
+- [ ] Submissions for addition to this CIP MUST be made via a separate, dedicated pull request against this repository
+  so that the format and documentation pertaining to CIP-88 specifically can undergo community review and feedback
+  prior to inclusion here.
+- [ ] Whenever possible, extensions to this CIP SHOULD attempt to introduce new indices and object definitions without
+  changing or modifying existing data structures to enable new functionality and existing implementations to operate
+  until newer standards can be adopted and enhance functionality rather than change it.
+- [ ] New CIP submissions MUST follow the same paradigms and documentation examples as those found within the
+  [CIPs](./CIPs) directory including:
+    - [ ] a README.md document describing the fields, values, and rationale
+    - [ ] a CBOR CDDL specification file
+    - [ ] a JSON format schema file (_optional_)
+    - [ ] a JSON example file showing all defined fields (_optional_)
+
 ### Registration Metadata Format
 
-`Version: 1.0.0`
+`Version: 1`
 
-| Index | Name                                                 | Type   | Required | Notes                                                        |
-|-------|------------------------------------------------------|--------|----------|--------------------------------------------------------------|
-| 0     | Version                                              | String | No       |                                                              |
-| 1     | [Registration Payload](#registration-payload-object) | Map    | Yes      | Object describing and providing details for the token policy | 
-| 2     | [Registration Witness](#registration-witness-array)  | Array  | Yes      | Array of witness signatures used to validate the payload     |
+| Index | Name                                                 | Type  | Required | Notes                                                        |
+|-------|------------------------------------------------------|-------|----------|--------------------------------------------------------------|
+| 0     | Version                                              | UInt  | Yes      |                                                              |
+| 1     | [Registration Payload](#registration-payload-object) | Map   | Yes      | Object describing and providing details for the token policy | 
+| 2     | [Registration Witness](#registration-witness-array)  | Array | Yes      | Array of witness signatures used to validate the payload     |
 
 ### Registration Payload Object
 
-The Token Registration Payload Object (TRPO) consists of 4 required fields and then optional, additional fields to
-provide additional context and information as part of the registration payload. The top-level metadata label of **867**
-has been chosen for the purposes of this standard.
+The Token Registration Payload Object (TRPO) consists of 4 required fields and optional additional fields to
+provide context and information. The top-level metadata label of **867** has been chosen for the purposes of this
+standard.
 
 #### Fields
 
-| Index | Name                                | Type  | Required | Notes/Examples                                                                                                                                                                                                                                    |
-|-------|-------------------------------------|-------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | Scope                               | Array | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
-| 2     | Feature Set                         | Array | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
-| 3     | Validation Method                   | Array | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
-| 4     | Nonce                               | UInt  | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
-| 5     | Oracle URI                          | Array | No       | Reserved for future use, URI to an informational oracle API for this policy                                                                                                                                                                       |
-| 6     | [CIP Details](#cip-specific-fields) | Array | No       | If one or more of the CIPs addressed in the Feature Set have additionally defined metadata, it may be added here                                                                                                                                  |
+| Index | Name                                        | Type   | Required | Notes/Examples                                                                                                                                                                                                                                    |
+|-------|---------------------------------------------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | Scope                                       | Array  | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
+| 2     | Feature Set                                 | Array  | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
+| 3     | Validation Method                           | Array  | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
+| 4     | Nonce                                       | UInt   | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
+| 5     | Oracle URI                                  | Array  | No       | Reserved for future use, URI to an informational oracle API for this policy                                                                                                                                                                       |
+| 6     | [CIP Details](#6--cip-specific-information) | Object | No       | If one or more of the CIPs addressed in the Feature Set have additionally defined metadata, it may be added here                                                                                                                                  |
 
 The following fields are required in all token registration submissions.
 
@@ -172,6 +201,9 @@ etc.) should the specification become adopted and the community desire to expand
 
 #### 2. Feature Set
 
+The _Feature Set_ is a simple array of unsigned integer values representing the CIP standards that should be applied to
+the subject scope.
+
 **Example:**
 
 `[25, 27]`
@@ -185,17 +217,20 @@ representing the method and additional entries providing additional context to t
 
 ***Proposed Validation Methods***
 
-| ID  | Type                   | Format                  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-|-----|------------------------|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0   | Ed25519 Key Signature  | `[0]`                   | The most basic and simplistic approach to signing and validation. In this case the Registration Witness object could contain one or more pubkey + signed witness objects. The payload to be signed should be the hex-encoded CBOR representation of the Registration Payload object.                                                                                                                                                       |
-| 1   | Beacon/Reference Token | `[1, [h'policyId',h'']` | Similar to the approach utilized by [CIP-27](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027). We could attach this metadata during a mint transaction for a specially formatted token under the policy ID in question. CIP-27 uses a "nameless" token that has an empty "Asset ID" for example. This may be a validation method that lends itself better to supporting token projects that are minted via Smart Contract. |
+| ID  | Type                   | Format                              | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|-----|------------------------|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0   | Ed25519 Key Signature  | `[0]`                               | The most basic and simplistic approach to signing and validation. In this case the Registration Witness object could contain one or more pubkey + signed witness objects. The payload to be signed should be the hex-encoded CBOR representation of the Registration Payload object.                                                                                                                                                       |
+| 1   | Beacon/Reference Token | `[1, [h'<policyId>',h'<assetId>']]` | Similar to the approach utilized by [CIP-27](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027). We could attach this metadata during a mint transaction for a specially formatted token under the policy ID in question. CIP-27 uses a "nameless" token that has an empty "Asset ID" for example. This may be a validation method that lends itself better to supporting token projects that are minted via Smart Contract. |
 
 **Examples:**
 
 `[0]`,
-`[1, [h'policyId',h'']`
+`[1, [h'<policyId>',h'<assetId']]`
 
 #### 4. Nonce
+
+The nonce value is utilized to prevent a replay attack vector. The nonce value should be an unsigned integer value that
+is always at least one greater than the previously registered value.
 
 **Example:**
 
@@ -219,384 +254,38 @@ This entry, if present, should be a CIP ID indexed object containing additional 
 When and where possible the CIP-Specific registration should follow the CBOR-like declaration syntax to ensure that
 the content is well-formed and easily parseable.
 
-| CIP | Name                | CDDL                                              | Rationale                       |
-|-----|---------------------|---------------------------------------------------|---------------------------------|
-| 25  | NFT Metadata        | [CIP-25_v1.0.0.cddl](cddl/cip/CIP-25_v1.0.0.cddl) | [CIP-25](CIPs/CIP-25/README.md) |
-| 26  | FT Information      | [CIP-26_v1.0.0.cddl](cddl/cip/CIP-26_v1.0.0.cddl) | [CIP-26](CIPs/CIP-26/README.md) |
-| 27  | NFT Royalties       | [CIP-27_v1.0.0.cddl](cddl/cip/CIP-27_v1.0.0.cddl) | [CIP-27](CIPs/CIP-27/README.md) |
-| 48  | Metadata References | [CIP-48_v1.0.0.cddl](cddl/cip/CIP-48_v1.0.0.cddl) | [CIP-48](CIPs/CIP-48/README.md) |
-| 60  | Music NFT Metadata  | [CIP-60_v1.0.0.cddl](cddl/cip/CIP-60_v1.0.0.cddl) | [CIP-60](CIPs/CIP-60/README.md) |
-| 68  | NFT Metadata        | [CIP-68_v1.0.0.cddl](cddl/cip/CIP-68_v1.0.0.cddl) | [CIP-68](CIPs/CIP-68/README.md) |
+| CIP | Name                          | Version | Status | CDDL                                     | Rationale           |
+|-----|-------------------------------|---------|--------|------------------------------------------|---------------------|
+| 25  | Token Metadata                | 1       | Active | [CIP25_v1.cddl](CIPs/0025/CIP25_v1.cddl) | [CIP-25](CIPs/0025) |
+| 26  | Fungible Token Information    | 1       | Active | [CIP26_v1.cddl](CIPs/0026/CIP26_v1.cddl) | [CIP-26](CIPs/0026) |
+| 27  | Token Royalties               | 1       | Active | [CIP27_v1.cddl](CIPs/0027/CIP27_v1.cddl) | [CIP-27](CIPs/0027) |
+| 48  | Metadata References           | 1       | Draft  | [CIP48_v1.cddl](CIPs/0048/CIP48_v1.cddl) | [CIP-48](CIPs/0048) |
+| 60  | Music Token Metadata          | 1       | Draft  | [CIP60_v1.cddl](CIPs/0060/CIP60_v1.cddl) | [CIP-60](CIPs/0060) |
+| 68  | Datum Token Metadata          | 1       | Active | [CIP68_v1.cddl](CIPs/0068/CIP68_v1.cddl) | [CIP-68](CIPs/0068) |
+| 86  | Token Metadata Update Oracles | 1       | Active | [CIP86_v1.cddl](CIPs/0086/CIP86_v1.cddl) | [CIP-86](CIPs/0086) |
 
+***Note: CIP-0068 Tokens***
+
+Due to a lack of clarity in the original language of CIP-0068, standards for fungible, non-fungible, and "rich" fungible
+tokens have been added to the core standard. To accommodate for this, projects should use the CIP-68 data when using the
+`222` (NFT) or `444` (RFT) tokens for top-level project information. Projects utilizing the `333` (FT) style tokens
+should utilize the CIP-26 data structure to provide fungible token context.
 
 ***Beacon Token Registration***
 
 Where applicable to a specific CIP, the CIP-specific registration may refer to a "beacon token". This is standardized
 in this CIP as a two-element array consisting of the hex-encoded policy ID and asset ID of the token to be used as a
-beacon token for the purposes of smart contract interactions.
-
-##### CIP-Specific Fields
-
-| index | name                | type   | required | notes                             |
-|-------|---------------------|--------|----------|-----------------------------------|
-| 25    | NFT Project         | Object | No       | CIP-25 NFT Project details        |
-| 26    | FT Project          | Object | No       | CIP-26 FT Project details         |
-| 27    | NFT Royalties       | Object | No       | CIP-27 NFT Royalty details        |
-| 48    | Metadata References | Object | No       | CIP-48 Metadata Reference details |
-| 60    | Music NFT Project   | Object | No       | CIP-60 Music NFT details          |
-| 68    | NFT Project         | Object | No       | CIP-68 NFT Project details        |
-
-**Example:**
-
-```cbor
-{
-    867: {
-        0: "1.0.0",
-        1: {
-            6: {
-                25: {
-                    0: "1.5.7",
-                    1: {...details...}
-                },
-                27: {...}
-            }
-        },
-        2: [...]
-    }
-}
-```
-
-##### CIP-25 & CIP-68: Non-Fungible Tokens / Policy Information
-
-`Version: 1.0.0`
-
-***CIP-25 & CIP-68 Top-Level Object Fields***
-
-Both CIP-25 and CIP-68 are specifications describing a standard for storing and retrieving NFT metadata from the chain.
-To this end, we have given them the same data structure although each will utilize their own numerical index in the
-feature set and CIP-Specific details section of the registration.
-
-These sections may be separated in the future if the respective CIPs diverge in terms of the data or information that
-may be useful to provide about one format or the other diverge in the future.
-
-| index | name                | type   | required | notes                                                                                                                                      |
-|-------|---------------------|--------|----------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | Version             | String | No       | Default: "1.0.0", which version of this specification is in use                                                                            |
-| 1     | NFT Project Details | Object | No       | Provide additional context and information about this particular NFT "Collection" for consumption by marketplaces, explorers, and wallets. |
-
-See [CIP25](CIP-25) for a description of a non-fungible token project policy registration.
-([CIP25.json](CIP-25/CIP25.json) as an example, [CIP25.schema.json](CIP-25/CIP25.schema.json) for schema documentation).
-
-The information registered here is helpful to aggregator services and marketplaces, it applies equally to
-both CIP-25 and CIP-68 metadata standards. A project utilizing one or the other should reference this documentation and
-include the relevant information under index #6, prefixed by the number of the CIP (25 or 68) depending upon the
-metadata format.
-
-***NFT Project Details Fields***
-
-| index | name                | type     | required | notes                                                                                                                                                                                                                                                                                  |
-|-------|---------------------|----------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | Collection Name     | String   | Yes      | The "Collection" name that applies specifically to the tokens minted under this policy.                                                                                                                                                                                                |
-| 1     | Description         | Array    | No       | An array of strings containing a brief "description" of this project                                                                                                                                                                                                                   |
-| 2     | Project Image       | UriArray | No       | An array of strings describing a URI to a "profile image" that may be used for this project.                                                                                                                                                                                           |
-| 3     | Project Banner      | UriArray | No       | An array of strings describing a URI to a "banner image" that may be used for this project.                                                                                                                                                                                            |
-| 4     | NSFW Flag           | 0 or 1   | No       | "Not Safe for Work" flag. Do the assets within this project contain sensitive material that may not be suitable for all audiences and should potentially be obfuscated or hidden. 0 = no sensitive content, "Safe for Work"; 1 = sensitive content, "Not Safe for Work"                |
-| 5     | Social Media        | Array    | No       | A structured array of social media handles for the project. Each entry of the array should be itself an array. The first entry should be a string containing the "name" of the social media platform. The second entry should be an array describing the URI to the social media site. |
-| 6     | Project/Artist Name | String   | No       | If this policy is part of a larger project or series from a specific artist or project, this field can be used to contain that name.                                                                                                                                                   |
-
-**CIP-25 Example:**
-
-```cbor 
-{
-  25: {
-    0: "1.0.0",
-    1: {
-      0: "Cool NFT Project",
-      1: [
-        "This is a description of my project",
-        "longer than 64 characters so broken up into a string array"
-      ],
-      2: [
-        "https://",
-        "static.coolnftproject.io",
-        "/images/icon.png"
-      ],
-      3: [
-        "https://",
-        "static.coolnftproject.io",
-        "/images/banner1.jpg"
-      ],
-      4: 0,
-      5: [
-        [
-          "twitter",
-          [
-            "https://",
-            "twitter.com/spacebudzNFT"
-          ]
-        ],
-        [
-          "discord",
-          [
-            "https://",
-            "discord.gg/spacebudz"
-          ]
-        ]
-      ],
-      6: "Virtua Metaverse"
-    }
-  }
-}
-```
-
-**CIP-68 Example:**
-
-```cbor 
-{
-  68: {
-    0: "1.0.0",
-    1: {
-      0: "SpaceBudz v2",
-      1: [
-        "This is a description of my project",
-        "longer than 64 characters so broken up into a string array"
-      ],
-      2: [
-        "https://",
-        "static.coolnftproject.io",
-        "/images/icon.png"
-      ],
-      3: [
-        "https://",
-        "static.coolnftproject.io",
-        "/images/banner1.jpg"
-      ],
-      4: 0,
-      5: [
-        [
-          "twitter",
-          [
-            "https://",
-            "twitter.com/spacebudzNFT"
-          ]
-        ],
-        [
-          "discord",
-          [
-            "https://",
-            "discord.gg/spacebudz"
-          ]
-        ]
-      ],
-      6: "SpaceBudz"
-    }
-  }
-}
-```
-
-##### CIP-26: Fungible Tokens / Monetary Policy
-
-`Version: 1.0.0`
-
-***CIP-26 Top-Level Object Fields***
-
-| index | name            | type                   | required | notes                                                                                     |
-|-------|-----------------|------------------------|----------|-------------------------------------------------------------------------------------------|
-| 0     | Version         | String                 | No       | Default: "1.0.0", which version of this specification is in use                           |
-| 1     | Fungible Tokens | Array\<Token Details\> | No       | An array of one or more fungible token registration objects covered by this registration. |
-
-See [CIP26](CIP-26) for a description of a fungible token specific registration ([CIP26.json](CIP-26/CIP26.json) as an
-example, [CIP26.schema.json](CIP-26/CIP26.schema.json) for schema documentation). This information can replace the
-information currently housed in
-the [Cardano Token Registry](https://github.com/cardano-foundation/cardano-token-registry) and is based on the format
-currently used in those registrations along with a few additional fields.
-
-Because it is possible that multiple fungible tokens could be minted under a single Policy ID, the format for CIP-26
-tokens is slightly different. Here we include an array of fungible token details inside of an array to enable multiple
-tokens under the same policy to be registered in a single transaction.
-
-**Example:**
-
-```cbor
-{
-    867: {
-        0: "1.0.0",
-        1: {
-            6: {
-                26: {
-                    0: "1.0.0",
-                    1: [
-                        [...Fungible Token Details...],
-                        [...Fungible Token 2 Details...]
-                    ]
-                }
-            }
-        },
-        2: [...]
-    }
-}
-```
-
-***Token Details Fields***
-
-| index | name                 | type     | required | notes                                                                                                                                                                                                                 |
-|-------|----------------------|----------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | Subject              | Array    | Yes      | An array identifying the specific token being registered. The first entry should be the hex-encoded Policy ID and the second entry should be the hex-encoded Asset ID of the token.                                   |
-| 1     | Token Name           | String   | Yes      | The full "display name" of the token.                                                                                                                                                                                 |
-| 2     | Description          | Array    | Yes      | A description for the token. This should be an array of zero or more strings.                                                                                                                                         |
-| 3     | Token Ticker         | String   | No       | A short "ticker" identifier for the token. Usually 1 to 5 characters.                                                                                                                                                 |
-| 4     | Token Decimals       | UInt     | No       | How many decimal places this token should be treated as having to create a "whole unit". Default is 0. e.g. Lovelace has 6 decimal places                                                                             |
-| 5     | Token Website        | UriArray | No       | An array describing the URI to a website for the token.                                                                                                                                                               |
-| 6     | Token Image          | UriArray | No       | An array describing the URI to a thumbnail image to be used for the token. Recommended 64px by 64px resolution, transparent background PNG file.                                                                      |
-| 7     | Financial Disclosure | Array    | No       | To be used in a *to be written* CIP. This array should provide a URI to a formatted financial disclosure document as well as a SHA256 checksum hash of the file contents.                                             |
-| 8     | Beacon Token         | Array    | No       | An array identifying a token to be used as a "beacon token" for the project. Purposes and format TBD. This token would be used as a reference input in smart contracts and provide context and data via inline datum. |
-
-**Example:**
-
-```cbor
-{
-  26: {
-    0: "1.0.0",
-    1: [
-      {
-        0: [
-          "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
-          "7370616365636f696e73"
-        ],
-        1: "spacecoins",
-        2: [
-          "the OG Cardano community token",
-          "-",
-          "whatever you do, your did it!",
-          "",
-          "Learn more at https://spacecoins.io!"
-        ],
-        3: "SPACE",
-        4: 0,
-        5: ["https://","spacecoins.io"],
-        6: [
-          "ipfs://",
-          "bafkreib3e5u4am2btduu5s76rdznmqgmmrd4l6xf2vpi4vzldxe25fqapy"
-        ],
-        7: [
-          [
-            "ipfs://",
-            "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly"
-          ],
-          "3507afe1daf05498d764dce55e8ba41e4acecd5bf42606ac2b8b7dc2eb0c305e"
-        ],
-        8: [
-          "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
-          "7370616365636f696e74"
-        ]
-      }
-    ]
-  }
-}
-```
-
-##### CIP-27: Cardano NFT Royalty Information
-
-`Version: 1.0.0`
-
-***CIP-27 Top-Level Object Fields***
-
-| index | name            | type   | required | notes                                                           |
-|-------|-----------------|--------|----------|-----------------------------------------------------------------|
-| 0     | Version         | String | No       | Default: "1.0.0", which version of this specification is in use |
-| 1     | Royalty Details | Object | No       | An object detailing the project royalties as defined in CIP-27  |
-
-***Royalty Details Fields***
-
-| index | name              | type   | required | notes                                                                                                           |
-|-------|-------------------|--------|----------|-----------------------------------------------------------------------------------------------------------------|
-| 1     | Rate              | String | Yes      | This should be a floating point number between 0.000000 - 1.000000 representing the rate of royalties requested |
-| 2     | Recipient Address | Array  | Yes      | This should be an array containing a single address in BECH32 format to be paid royalties                       |
-| 3     | Reference Token   | Array  | No       | Not formally part of CIP-27 (as of this writing)                                                                |
-| 4     | Datum Format      | *      | No       | Not formally part of CIP-27 (as of this writing)                                                                |
-
-**Notes:**
-
-Two fields are defined here which are not formally part of the CIP-27 specification as of the time of this writing.
-A pointer to a "Beacon" or Reference Token that may utilize an inline datum format to inject information into smart
-contracts and a Datum Format which would enable marketplaces to pay royalties to a smart contract address allowing for
-greater royalty flexibility. Making further argument for the presence or lack thereof of these data points in CIP-27 is
-outside the scope of this CIP.
-
-**Example (CBOR):**
-
-```cbor 
-{
-  27: {
-    0: "1.0.0",
-    1: {
-      1: "0.05",
-      2: [
-        "addr_test1qqp7uedmne8vjzue66hknx87jspg56qhkm4gp6ahyw7kaahevmtcux",
-        "lpy25nqhaljc70094vfu8q4knqyv6668cvwhsq64gt89"
-      ],
-      3: [
-        "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
-        "7370616365636f696e73"
-      ],
-      4: {
-        0,
-        ""
-      }
-    }
-  }
-}
-```
-
-##### CIP-48: Metadata References Standard
-
-CIP-48 has been proposed to extend on-chain metadata formats to support "references" which could be:
-
-1. Shared/Repeated pieces of content
-2. Pointers or References to other on-chain information
-
-CIP-88 could help support the definition and standardization of the reference definitions at a top-level, allowing
-references declared within individual token metadata to be easily identified and replaced.
-
-***CIP-48: Top-Level Object Fields***
-
-| index | name              | type   | required | notes                                                          |
-|-------|-------------------|--------|----------|----------------------------------------------------------------|
-| 0     | Version           | String | No       | Default "1.0.0", which version of this specification is in use |
-| 1     | Reference Details | Object | No       | An object detailing CIP-48 references in use                   |
-
-***Reference Details Fields***
-
-| index | name       | type  | required | notes                  |
-|-------|------------|-------|----------|------------------------|
-| 1     | References | Array | No       | An array of References |
-
-***Reference Fields***
-
-| index | name    | type   | required | notes                                                                                                                 |
-|-------|---------|--------|----------|-----------------------------------------------------------------------------------------------------------------------|
-| 0     | Name    | String | Yes      | A case sensitive path identifier for this reference                                                                   |
-| 1     | Type    | Enum   | Yes      | An enum of accepted types of references which may include direct payloads or pointers to other sources of information |
-| 2     | Payload | Object | Yes      | A "Reference Payload" object containing the information to be substituted in place of the reference                   |
-
-**TODO: Expand Support for CIP-48**
-
-##### CIP-60: Music NFT Standard
-
-`Version: 1.0.0`
-
-The author of this CIP lacks a technical understanding of the many informational fields specific to the music industry
-which are found in CIP-60. The co-authors of CIP-60 are invited and asked to help in defining which fields may be better
-suited to a top-level informational scope.
-
-**TODO: Expand Support for CIP-60**
+beacon token for the purposes of smart contract interactions. e.g. `[
+h'<policy_id>',
+h'<asset_id>'
+]`
 
 **Multiple Feature Set Example (CBOR):**
 
 ```cbor 
 {
   25: {
-    0: "1.0.0",
+    0: 1,
     1: {
       0: "Cool NFT Project",
       1: [
@@ -634,7 +323,7 @@ suited to a top-level informational scope.
     }
   },
   27: {
-    0: "1.0.0",
+    0: 1,
     1: {
       1: "0.05",
       2: [
@@ -648,7 +337,7 @@ suited to a top-level informational scope.
 
 ### Registration Witness Array
 
-### (Native Scripts)
+#### (Native Scripts)
 
 The Witness Array included in the on-chain metadata should consist of an array of arrays with two elements, the public
 key hash of the signing key (as included in the native script) and the signed key witness. If a script requires multiple
@@ -679,7 +368,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
 ```cbor
 {
   867: {
-    0: "1.0.0",
+    0: 1,
     1: {
       1: h'00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae',
       2: [
@@ -694,7 +383,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
       ],
       6: {
         25: {
-          0: "1.0.0",
+          0: 1,
           1: {
             0: "Cool NFT Project",
             1: [
@@ -732,7 +421,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
           }
         },
         27: {
-          0: "1.0.0",
+          0: 1,
           1: {
             1: "0.05",
             2: [
@@ -757,12 +446,12 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
 }
 ```
 
-### Example FT Token Registration Metadata
+### Example Fungible Token Registration Metadata
 
 ```cbor
 {
   867: {
-    0: "1.0.0",
+    0: 1,
     1: {
       1: h'00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae',
       2: [
@@ -776,7 +465,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
       ],
       6: {
         26: {
-          0: "1.0.0",
+          0: 1,
           1: [
             {
               0: [
@@ -846,18 +535,18 @@ utility, and standards evolve.
 
 ### Acceptance Criteria
 
-- [ ] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved
+- [X] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved
   with token projects (both NFT and FT) to review any weaknesses or areas of improvement.
 - [ ] Guidelines and examples of publication of data as well as discovery and validation should be included as part of
-  of criteria for acceptance.
-- [ ] Specifications should be updated to be written in both JSON Schema and CBOR CDDL format for maximum compatibility.
+  criteria for acceptance.
+- [X] Specifications should be updated to be written in both JSON Schema and CBOR CDDL format for maximum compatibility.
 - [ ] Implementation and use demonstrated by the community: Token Projects, Blockchain Explorers, Wallets,
   Marketplaces/DEXes.
 
 #### TO-DO ACCEPTANCE ACTIONS ####
 
-- [ ] Convert schema specifications to CDDL format
-- [ ] Publish instructions and tooling for publication and verification
+- [ ] Publish instructions and tooling for publication and verification of certificates
+- [ ] Develop standard for validation of Smart Contract minted tokens
 
 ### Implementation Plan
 

@@ -1,9 +1,0 @@
-; CIP-0025: NFT Metadata Standard
-; Version: 1.0.0
-
-string = text .size (0..64)
-
-cip25-details = {
-    ? 0 : string,               ; version
-    1 : nft-project-details     ; CIP-0025 NFT Project Details
-}

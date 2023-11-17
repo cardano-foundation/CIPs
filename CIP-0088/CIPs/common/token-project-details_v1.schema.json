@@ -1,0 +1,86 @@
+{
+  "title": "Project Details",
+  "description": "Describe top-level details about the NFT Project",
+  "type": "object",
+  "properties": {
+    "0": {
+      "title": "Policy Name",
+      "description": "The collection name for NFTs minted under this policy",
+      "type": "string",
+      "maxLength": 64
+    },
+    "1": {
+      "title": "Policy Description",
+      "description": "Description for the NFT project",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 64
+      }
+    },
+    "2": {
+      "title": "Project Image",
+      "description": "Project icon image URI",
+      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/common/uri-array.schema.json"
+    },
+    "3": {
+      "title": "Project Banner Image",
+      "description": "Project banner image URI",
+      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/common/uri-array.schema.json"
+    },
+    "4": {
+      "title": "Not Safe for Work Flag",
+      "description": "Flag whether the NFTs in the policy contain sensitive content that may not be suitable for all audiences",
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "5": {
+      "title": "Social Media URIs",
+      "description": "An object containing links to social media profiles for the project",
+      "type": "array",
+      "items": {
+        "title": "Project Social Network URI",
+        "$ref": "#/$defs/socialMediaUri"
+      }
+    },
+    "6": {
+      "title": "Project Name",
+      "description": "The name of the project creating this collection",
+      "type": "string",
+      "maxLength": 64
+    }
+  },
+  "required": [
+    "0"
+  ],
+  "$defs": {
+    "socialMediaUri": {
+      "title": "Social Media URI",
+      "type": "array",
+      "minItems": 2,
+      "items": [
+        {
+          "title": "Social Network Name",
+          "description": "The name of the social network",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "examples": [
+            "Twitter",
+            "X",
+            "Discord",
+            "Website"
+          ]
+        },
+        {
+          "title": "Social Network Link",
+          "description": "A URI Array pointing to the social network resource",
+          "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/common/uri-array.schema.json"
+        }
+      ]
+    }
+  }
+}
