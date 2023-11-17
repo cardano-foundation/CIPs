@@ -7,7 +7,7 @@ Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/620
     - [Cardano Working Groups Discord server](https://discord.gg/XFjAzsQyaM)
 Created: 2023-11-14
 License: CC-BY-4.0
