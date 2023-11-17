@@ -102,7 +102,7 @@ The dApp Registration certificate itself doesn't enforce a particular structure 
 
 [Off-chain dApp Registration certificate schema (Version 2)](./version_2.0.0_offchain.json)
 
-This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
+This schema describes the minimum required fields for a store to be able to display and validate your dApp.
 
 ### Example
 
