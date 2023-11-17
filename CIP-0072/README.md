@@ -50,9 +50,7 @@ Stores and auditors should be able to follow the chain and find when a new dApp 
 - **`integrity`**: The dApp's off-chain metadata should match the metadata **anchored** on-chain.
 - **`trust`**: The dApp's certificate should be signed by a trusted entity. It's up to the store/auditor to decide which entities are trusted and they should maintain and publish their own list of trusted entities. Although this entities might be well known, it's not the responsibility of this CIP to maintain this list. These entities could be directly associated with developer/publisher or not.
 
-### **On-chain dApp Registration Certificate**
-
-The on-chain dApp registration certificate MUST follow canonical JSON and be serialised according to RFC 8785 (https://www.rfc-editor.org/rfc/rfc8785).
+### **On-chain dApp Registration**
 
 ```json
 {
