@@ -120,7 +120,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0077? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 0079? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
 | 0087? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
-| 0088? | [Native Asset Policy Registration/Information Certificates](https://github.com/cardano-foundation/CIPs/pull/467) |
+| 0088? | [Token Policy Registration](https://github.com/cardano-foundation/CIPs/pull/467) |
 | 0089? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
 | 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
@@ -133,7 +133,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
 | 0105? | [Conway Era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/pull/597) |
 
-<p align="right"><i>Last updated on 2023-11-14</i></p>
+<p align="right"><i>Last updated on 2023-11-18</i></p>
 
 ## Cardano Problem Statements (CPS)
 
