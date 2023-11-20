@@ -1246,7 +1246,7 @@ that has been granted to the current constitutional committee.
 
 Governance actions are **ratified** through on-chain voting actions.
 Different kinds of governance actions have different ratification requirements but always involve **two of the three** governance bodies,
-with the exception of a hard-fork initiation, which requires ratification by all governance bodies.
+with the exception of a hard-fork initiation and security-relevant protocol parameters, which requires ratification by all governance bodies.
 Depending on the type of governance action, an action will thus be ratified when a combination of the following occurs:
 
 * the constitutional committee approves of the action (the number of members who vote `Yes` meets the threshold of the constitutional committee)
@@ -1292,6 +1292,7 @@ The following table details the ratification requirements for each governance ac
 | 5<sub>b</sub>. Protocol parameter changes, economic group         | ✓  | $P_{5b}$ | \-       |
 | 5<sub>c</sub>. Protocol parameter changes, technical group        | ✓  | $P_{5c}$ | \-       |
 | 5<sub>d</sub>. Protocol parameter changes, governance group       | ✓  | $P_{5d}$ | \-       |
+| 5<sub>e</sub>. Protocol parameter changes, security group         | \- | \-       | $Q_{5e}$ |
 | 6. Treasury withdrawal                                            | ✓  | $P_6$    | \-       |
 | 7. Info                                                           | ✓  | $100$    | $100$    |
 
@@ -1399,6 +1400,11 @@ the maximum threshold of all the groups involved will apply to any given such go
 The _network_,  _economic_ and _technical_ parameter groups collect existing protocol parameters that were introduced during the Shelley, Alonzo and Babbage eras.
 In addition, we introduce a new _governance_ group that is specific to the new governance parameters that will be introduced by CIP-1694.
 
+There will also be a special _security_ group. Any protocol parameter
+is assigned to exactly one regular group, but all protocol parameters
+that interact with the security guarantees of the system belong to the
+security group as well.
+
 The **network group** consists of:
 * maximum block body size (`maxBBSize`)
 * maximum transaction size (`maxTxSize`)
@@ -1434,6 +1440,17 @@ The **governance group** consists of all the new protocol parameters that are in
 * DRep activity period in epochs (`drepActivity`)
 * minimal constitutional committee size (`ccMinSize`)
 * maximum term length (in epochs) for the constitutional committee members (`ccMaxTermLength`)
+
+The **security group** consists of:
+* `maxBBSize`
+* `maxTxSize`
+* `maxBHSize`
+* `maxValSize`
+* `maxBlockExUnits`
+* `minFeeA`
+* `minFeeB`
+* `coinsPerUTxOByte`
+* `govActionDeposit`
 
 <!-- TODO:
   - Decide on the initial values for the new governance parameters
@@ -1759,6 +1776,10 @@ We solve the long-term participation problem by not allowing reward withdrawals
 * Turn the Constitution into an anchor.
 * Rework which anchors are required and which are optional.
 * Clean up various inconsistencies and leftovers from older versions.
+
+#### Security-relevant changes
+
+* Guard security-relevant changes behind SPO votes.
 
 ## Path to Active
 
