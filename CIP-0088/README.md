@@ -5,8 +5,7 @@ Category: Tokens
 Status: Proposed
 Authors:
 - Adam Dean <adam@crypto2099.io>
-Implementors:
--
+Implementors: []
 Discussions:
 - https://github.com/cardano-foundation/cips/pull/467
 Created: 2023-02-27
