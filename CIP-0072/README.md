@@ -57,7 +57,10 @@ Stores and auditors should be able to follow the chain and find when a new dApp 
   "subject": "b37aabd81024c043f53a069c91e51a5b52e4ea399ae17ee1fe3cb9c44db707eb",
   "rootHash": "7abcda7de6d883e7570118c1ccc8ee2e911f2e628a41ab0685ffee15f39bba96",
   "metadata": [
-    "https://foundation.app/my_dapp_7abcda.json"
+    "https://foundation.app/my_dapp_7abcda/tart/",
+    "7abcda7de6d883e7570118c1ccc8ee2e91",
+    "e4ea399ae17ee1fe3cb9c44db707eb/",
+    "offchain.json"
   ],
   "type": {
     "action": "REGISTER",
@@ -78,7 +81,7 @@ Stores and auditors should be able to follow the chain and find when a new dApp 
 
 *`rootHash`*: The blake2b-256 hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section. Please note that off-chain JSON must be converted into RFC 8765 canonical form before taking the hash!
 
-*`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
+*`metadata`*: Chunks of URLs that make up the dApp's metadata are arranged in an array to accommodate the 64-character limit per chunk, allowing for the support of longer URLs. The metadata itself is a JSON object compatible with RFC 8785, containing detailed information about the dApp
 
 ### On-chain Schemas
 
