@@ -144,7 +144,7 @@ This schema describes the minimum required fields for a store to be able to disp
       "scripts": [
         {
           "id": "script1",
-          "version": 1
+          "version": "1.0.0"
         }
       ]
     }
