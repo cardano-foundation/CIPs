@@ -51,7 +51,8 @@ License: CC-BY-4.0
         * [signTransaction()](#signtransactiontxhash-hexstring-accountid-accountid-outerwitnesses-cborwitnessset-promisecborwitnessset)
         * [submitTransaction()](#submittransactiontxhash-hexstring-accountid-accountid-promisehexstring)
         * [isTransactionAccepted()](#istransactionacceptedtxhash-hexstring-promisenumber)
-        * [signData()](#signdatapayload-hexstring-accountid-accountid-withstakingkey-boolean-promisedatasignature)
+        * [signData()](#signdatapayload-hexstring-accountid-accountid-withstakekey-boolean-promisedatasignature)
+    * [Example](#example)
   * [Rationale: how does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
   * [Path to Active](#path-to-active)
     * [Acceptance Criteria](#acceptance-criteria)
@@ -116,7 +117,7 @@ Or a description of a delegation transaction to a certain pool:
     certificates: [{
         type: "stakeDelegation",
         stakeKeyId: 0,
-        poolId: "660f2b816e90e4e826daebf33357d76ab89414f88d57dd7d9f7898fe",
+        poolHash: "660f2b816e90e4e826daebf33357d76ab89414f88d57dd7d9f7898fe"
     }]
 }
 ```
@@ -240,7 +241,7 @@ A structure describing user certificates in the Cardano network.
 ```ts
 type Certificate = {
     type: "stakeRegistration" | "stakeDeregistration" | "stakeDelegation",
-    stakingKeyId: number,
+    stakeKeyId: number,
     poolHash?: HexString
 };
 ```
@@ -249,7 +250,7 @@ type Certificate = {
 
   Takes one of three preset values, describing the type of the certificate, and is mandatory.<br><br>
 
-* **`stakingKeyId`**
+* **`stakeKeyId`**
 
   Indicates the user's staking key number in the derivation path. To ensure the key belongs to the user, we only inform the wallet of its ordinal number. By default, for wallets without multi-delegation, it is 0.<br><br>
 
@@ -298,7 +299,7 @@ type OuterUTxO = {
 
   Accordingly, contains its index.
 
-  > **Note:** that there are no "#" symbols here, which can be found in the usual notation of hash#index.    
+  > **Note:** that there are no "#" symbols here, which can be found in the usual notation of hash#index.
 
 * **`value`**
 
@@ -450,7 +451,7 @@ type TransactionScript = {
   Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL DataHash, necessary for working with smart contracts. Optional.<br><br>
 
 * **`validFrom`**
-  
+
   Describes the slot from which the interval begins, during which the transaction can be submitted successfully. Optional.  It can be set to `"auto"` or omitted if not required.<br><br>
 
 * **`validUntil`**
@@ -632,7 +633,7 @@ interface CardanoWalletAPI {
     signTransaction(txHash: HexString, accountId: AccountId, outerWitnesses?: cbor<WitnessSet>): Promise<cbor<WitnessSet>>;
     submitTransaction(txHash: HexString, accountId: AccountId): Promise<HexString>;
     isTransactionAccepted(txHash: HexString): Promise<number>;
-    signData(payload: HexString, accountId: AccountId, withStakingKey: boolean): Promise<DataSignature>;
+    signData(payload: HexString, accountId: AccountId, withStakeKey: boolean): Promise<DataSignature>;
 }
 ```
 <br>
@@ -704,7 +705,7 @@ interface CardanoWalletAPI {
 * **Return Value:**
 
     * `Promise<void>`
-      
+
       Since this endpoint serves a notification function, there is nothing to return. It's enough to simply wait for the wallet's response. Either way, the session is over.<br><br>
 
 * **Errors([full list](#errors)):**
@@ -906,12 +907,12 @@ interface CardanoWalletAPI {
     * Refused;<br><br>
 
 
-##### `signData(payload: HexString, accountId: AccountId, withStakingKey: boolean): Promise<DataSignature>`
+##### `signData(payload: HexString, accountId: AccountId, withStakeKey: boolean): Promise<DataSignature>`
 
 * **Description:**
   This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses.
 
-   This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set: 
+  This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
     * `alg` (1) - must be set to `EdDSA` (-8)
     * `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
@@ -926,9 +927,9 @@ interface CardanoWalletAPI {
     * `accountId: AccountId`
 
       The [identifier of the account](#accountid) for which the DApp is requesting the payload signing. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.
-    
-    * `withStakingKey: boolean`
-      Indicates whether the wallet should use one of the `stakingKey` for signing. If `false` is passed, the wallet should select a `paymentKey` to sign the `payload`.<br><br>
+
+    * `withStakeKey: boolean`
+      Indicates whether the wallet should use one of the `stakeKey` for signing. If `false` is passed, the wallet should select a `paymentKey` to sign the `payload`.<br><br>
 
 * **Return Value:**
     * `Promise<DataSignature>`
@@ -941,6 +942,80 @@ interface CardanoWalletAPI {
     * DeclinedByUser;
     * BadAccountId;
     * Refused;<br><br>
+
+
+### Example
+
+```js
+// We will work in the testnet
+const networkMagic = 1;
+const walletName = 'Some awesome cardano wallet with long name';
+
+// Minimal function for working with transactions, without special checks
+async function performTransaction(txScript, networkMagic, walletName) {
+    // select the wallet
+    const cBridge  = window.cardano[walletName].cipNNNN;
+    try {
+        // Connect to the wallet, create a transaction, request signing, then submit it and close the session
+        const accountData = await cBridge.connect(networkMagic);
+        const builtTx = await cBridge.buildTransaction(txScript, accountData.accountId);
+        const signedTx = await cBridge.signTransaction(builtTx.txHash, accountData.accountId);
+        await cBridge.submitTransaction(builtTx.txHash, accountData.accountId);
+        await cBridge.disconnect(accountData.accountId);
+    } catch (error) {
+        // Error handling
+        console.error(error);
+    }
+}
+```
+```js
+// Here is an example of a transaction script that sends the user 5 ada from the Dapp account.
+// Note, the output is the same amount as the input, assuming that the user, not the DApp, should cover the commission
+let txScript =  {
+    inputs: [{
+        hash: "1c32527089b7a226021c6829518d7284283e3c91b9820362f0c5aed0ad5e5074",
+        index: 0,
+        value: {
+            lovelaces: 5000000
+        }
+    }],
+    outputs: [{
+        value: {
+            lovelaces: 5000000
+        },
+        address: "auto"
+    }]   
+};
+performTransaction(txScript, networkMagic, walletName);
+```
+```js
+// Now let's send a little funds from the user's wallet to some address:
+txScript = {
+    outputs:[{
+        address: "addr_test1qpy486p7jhq933kay7rf78jz2j6k5ya7u95nnnjetgj9r02dp276p7j8023vmum9wu8gp7q54f3rjke45j0klk3pmwvsgyx4n7",
+        value: {
+            lovelaces: 1000000
+        }
+    }]
+};
+performTransaction(txScript, networkMagic, walletName);
+```
+```js
+// And ask the user's wallet to delegate:
+txScript = {
+    certificates: [{
+        type: "stakeDelegation",
+        stakeKeyId: 0,
+        poolHash: "660f2b816e90e4e826daebf33357d76ab89414f88d57dd7d9f7898fe",
+    }]
+};
+performTransaction(txScript, networkMagic, walletName);
+```
+Of course, we are not obliged to connect and disconnect every time, and this is just an example. Ideally, we should connect at the beginning of the session, work, and optionally finish it sometime later, instead of doing a full cycle on each transaction.
+
+At the same time, we are not required to use low-level libraries to solve simple tasks. It's sufficient to just generate JSONs.
+
+For more complex tasks related to working with smart contracts, the DApp should use more low-level solutions for generating redeemers and dataHashes. However, this will be part of the DApp's direct logic, necessary for its operation, rather than redundant logic that mimics a full-fledged wallet with coinSelection algorithms, etc. In other words, the complexity of the code will simply correspond to the complexity of the task.
 
 ## Rationale: how does this CIP achieve its goals?
 
