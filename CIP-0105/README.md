@@ -61,7 +61,7 @@ We strongly recommend that a maximum of one set of DRep keys should be associate
 
 #### DRep ID
 
-Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519 public DRep key (without chaincode) by creating a blake2b-224 hash digest of the key.
+Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519 public DRep key (without chaincode) by creating a blake2b-224 hash digest of the key and serializing the keyhash in an array prepended by an integer value of `0`.
 
 #### Constitutional Committee Cold Keys
 
@@ -75,7 +75,7 @@ We strongly recommend that a maximum of one set of constitutional committee cold
 
 #### Constitutional Committee Cold Credential
 
-Tools and wallets can generate a constitutional committee cold credential (`committee_cold_credential`) from the Ed25519 public constitutional committee cold key (without chaincode) by creating a blake2b-224 hash digest of the key.
+Tools and wallets can generate a constitutional committee cold credential (`committee_cold_credential`) from the Ed25519 public constitutional committee cold key (without chaincode) by creating a blake2b-224 hash digest of the key and serializing the keyhash in an array prepended by an integer value of `0`.
 
 #### Constitutional Committee Hot Keys
 
@@ -89,7 +89,7 @@ We strongly recommend that a maximum of one set of constitutional committee hot 
 
 #### Constitutional Committee Hot Credential
 
-Tools and wallets can generate a constitutional committee hot credential (`committee_hot_credential`) from the Ed25519 public constitutional committee hot key (without chaincode) by creating a blake2b-224 hash digest of the key.
+Tools and wallets can generate a constitutional committee hot credential (`committee_hot_credential`) from the Ed25519 public constitutional committee hot key (without chaincode) by creating a blake2b-224 hash digest of the key and serializing the keyhash in an array prepended by an integer value of `0`..
 
 ### Bech32 Encoding
 
