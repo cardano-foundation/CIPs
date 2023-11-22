@@ -12,7 +12,6 @@ Created: 2023-07-28
 ---
 
 ## Abstract
-
 Wallets are a foundational element of web 3, being the primary interface between users and blockchains.
 Wallet-web bridges allow users to connect their wallet to web-based stacks, allowing a wide range of specialized experiences.
 
@@ -63,13 +62,11 @@ Connection standards and APIs should be explicitly versioned to clearly allow up
 Furthermore, ideally APIs should allow for optional extendability to facilitate specialization.
 Clear scope of versions / extensions.
 
-#### 6. Preserve role of wallet
+#### 6. Respect the role of wallet
 APIs should be written to have a clear scope, understanding the potential strains placed on wallet providers.
-APIs, at a base level, should focus on preserving the base role of the wallet of controlling cryptographic operations.
+APIs, at a base level, should focus on preserving the base [role of the wallet](#clear-role-of-wallet).
 
 ### Context
-// todo
-
 Here we will add context to the current state of Cardano's wallet connectors. 
 
 #### Cardano Wallet-Web Bridge History
@@ -77,16 +74,14 @@ Here we will add context to the current state of Cardano's wallet connectors.
 This standard has facilitated the emergence of dApp development on Cardano by defining both a connection standard and an API.
 It is, to date, the only wallet connector standard to see wide adoption in the ecosystem.
 Using an injected Javascript object for communication between wallets and web-based stacks.
-
-Since its' authoring CIP-30 has seen continued iteration, with changes to its API common. 
-
-- CIP-13
-- CIP-45
-- CIP-90
+Since its' authoring CIP-30 has seen continued iteration, with changes to its API.
 
 ##### CIP-30 Alternatives
-- CIP-45
-- CIP-90
+Since CIP-30's authoring there have only been two other competing standards, in CIP-45 | Decentralized WebRTC dApp-Wallet Communication ([#395](https://github.com/cardano-foundation/CIPs/pull/395)) and CIP-90 | Extendable dApp-Wallet Web Bridge ([#462](https://github.com/cardano-foundation/CIPs/pull/462/)).
+Although neither of of this standards have seen wide adoption.
+
+Although not a direct competitor, CIP-13 could be seen as an alternative standard.
+This standard
 
 ##### CIP-30 Extensions
 - CIP-62
