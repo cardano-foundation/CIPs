@@ -32,6 +32,7 @@ License: CC-BY-4.0
       * [Certificate](#certificate)
       * [Mint](#mint)
       * [OuterUTxO](#outerutxo)
+      * [Datum](#datum)
       * [Movement](#movement)
       * [Delegation](#delegation)
       * [Metadata](#metadata)
@@ -278,7 +279,6 @@ type Mint = {
 
   Contains an array of [`nativeToken`](#nativetoken), describing the tokens that will be minted or burned. If we plan to burn tokens, the `amount` should be negative.<br><br>
 
-
 #### `OuterUTxO`
 
 A structure describing an external UTxO that should be included by the wallet in a future transaction. Note that this refers to an external UTxO, which does not belong to the current wallet. For example, a smart contract's UTxO. It is assumed that the signature for it will also be provided externally.
@@ -287,7 +287,7 @@ A structure describing an external UTxO that should be included by the wallet in
 type OuterUTxO = {
     hash: HexString,
     index: number,
-    value: AssetBundle
+    value: AssetBundle,    
 };
 ```
 
@@ -305,6 +305,32 @@ type OuterUTxO = {
 
   Describes the [assets](#assetbundle) associated with this UTxO. Since this is a UTxO not belonging to the wallet, we must inform it of these details to enable the calculation of change.<br><br>
 
+#### `Datum`
+
+The structure describing the data passed along with the transaction output, necessary for working with smart contracts. Note that it has 2 alternative forms: `hash` and `inline`.
+
+```ts
+Datum: {
+    type: "hash";
+    data: cbor<DataHash>;
+} | {
+    type: "inline";
+    data: cbor<PlutusData>;
+}
+```
+
+* **`type`**
+
+  Specifies the type of data being transmitted. It can be either a `hash` or an `inline` representation. Depending on it, the content of the `data` field changes. <br><br>
+
+* **`data`**
+
+  Contains the transmitted data.
+
+  If the `hash` type was previously specified, then it contains a [CBOR](#cbort)-serialized hex-encoded `CDDL dataHash` object, calculated for a PlutusData.
+  If the `inline` type was previously specified, then it contains a [CBOR](#cbort)-serialized hex-encoded `CDDL PlutusData` object itself.<br><br>
+
+
 #### `Movement`
 
 A structure describing the movement of value in the Cardano network.
@@ -313,7 +339,7 @@ A structure describing the movement of value in the Cardano network.
 type Movement = {
     value: AssetBundle,
     address?: AddressString | Auto,
-    dataHash?: cbor<DataHash>
+    datum?: Datum
 };
 ```
 
@@ -325,9 +351,9 @@ type Movement = {
 
   Must contain a bech32 or base58 [address](#addressstring) of the receiver. If omitted or `"auto"`, it means the wallet can choose which address to make it to (for example, a change address).<br><br>
 
-* **`dataHash`**
+* **`datum`**
+  Contains data for smart contract operation, or their hash. Can be omitted.
 
-  Contains a [CBOR](#cbort)-serialized hex-encoded dataHash object, calculated for a PlutusData if needed for transaction. May be ommited.<br><br>
 
 #### `Delegation`
 
@@ -374,7 +400,7 @@ A structure describing the required additional signatures for a transaction.
 type RequiredSign = {
     inner: boolean,
     keyType: "payment" | "stake",
-    keyHash: cbor<Ed25519KeyHash>  
+    keyHash: cbor<Ed25519KeyHash>
 };
 ```
 
@@ -984,7 +1010,7 @@ let txScript =  {
             lovelaces: 5000000
         },
         address: "auto"
-    }]   
+    }]
 };
 performTransaction(txScript, networkMagic, walletName);
 ```
