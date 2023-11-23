@@ -287,7 +287,7 @@ A structure describing an external UTxO that should be included by the wallet in
 type OuterUTxO = {
     hash: HexString,
     index: number,
-    value: AssetBundle,    
+    value: AssetBundle  
 };
 ```
 
@@ -311,11 +311,11 @@ The structure describing the data passed along with the transaction output, nece
 
 ```ts
 Datum: {
-    type: "hash";
-    data: cbor<DataHash>;
+    type: "hash",
+    data: cbor<DataHash>
 } | {
-    type: "inline";
-    data: cbor<PlutusData>;
+    type: "inline",
+    data: cbor<PlutusData>
 }
 ```
 
