@@ -352,7 +352,8 @@ type Movement = {
   Must contain a bech32 or base58 [address](#addressstring) of the receiver. If omitted or `"auto"`, it means the wallet can choose which address to make it to (for example, a change address).<br><br>
 
 * **`datum`**
-  Contains data for smart contract operation, or their hash. Can be omitted.
+
+  Contains [data](#datum) for smart contract operation, or their hash. Can be omitted.<br><br>
 
 
 #### `Delegation`
