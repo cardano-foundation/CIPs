@@ -222,7 +222,7 @@ A structure describing the value being transferred in the Cardano network.
 ```ts
 type AssetBundle = {
     lovelaces: BigIntString,
-    nativeTokens?: NativeToken[]
+    nativeTokens?: NativeToken[] | null
 };
 ```
 
@@ -232,7 +232,7 @@ type AssetBundle = {
 
 * **`nativeTokens`**
 
-  Is an array of [`NativeToken`](#nativetoken), optional. If the presence of tokens is not implied, it can be equal to an empty array, or omitted.<br><br>
+  Is an array of [`NativeToken`](#nativetoken), optional. If the presence of tokens is not implied, it can be set to `null`, or omitted.<br><br>
 
 
 #### `Certificate`
@@ -243,7 +243,7 @@ A structure describing user certificates in the Cardano network.
 type Certificate = {
     type: "stakeRegistration" | "stakeDeregistration" | "stakeDelegation",
     stakeKeyId: number,
-    poolHash?: HexString
+    poolHash?: HexString | null
 };
 ```
 
@@ -257,7 +257,7 @@ type Certificate = {
 
 * **`poolHash`**
 
-  Points to the [hexadecimal](#hexstring) representation of the stakepool identifier, optional. Do not confuse it with `bech32 poolId`!<br><br>
+  Points to the [hexadecimal](#hexstring) representation of the stakepool identifier. It's optional - it can be set to `null`, or omitted. Do not confuse it with `bech32 poolId`!<br><br>
 
 
 #### `Mint`
@@ -339,7 +339,7 @@ A structure describing the movement of value in the Cardano network.
 type Movement = {
     value: AssetBundle,
     address?: AddressString | Auto,
-    datum?: Datum
+    datum?: Datum | null
 };
 ```
 
@@ -353,7 +353,7 @@ type Movement = {
 
 * **`datum`**
 
-  Contains [data](#datum) for smart contract operation, or their hash. Can be omitted.<br><br>
+  Contains [data](#datum) for smart contract operation, or their hash. It's optional - it can be set to `null`, or omitted.<br><br>
 
 
 #### `Delegation`
@@ -428,12 +428,12 @@ type TransactionScript = {
     inputs?: OuterUTxO[] | Auto,
     outputs?: Movement[] | Auto,
     collateralNeeded: boolean | Auto,
-    certificates?: Certificate[],
-    mintings?: Mint[],
-    metadata?: {body: Metadata[], hash?: HexString | Auto},
-    additionalSigns?: RequiredSign[],
-    scriptDataHash?: cbor<ScriptDataHash>,
-    dataHash?: cbor<DataHash>,
+    certificates?: Certificate[] | null,
+    mintings?: Mint[] | null,
+    metadata?: {body: Metadata[], hash?: HexString | Auto} | null,
+    additionalSigns?: RequiredSign[] | null,
+    scriptDataHash?: cbor<ScriptDataHash> | null,
+    dataHash?: cbor<DataHash> | null,
     validFrom?: BigIntString | Auto,
     validUntil?: BigIntString | Auto
 };
@@ -453,17 +453,17 @@ type TransactionScript = {
 
 * **`certificates`**
 
-  Describes [certificates](#certificate) that should be added to the transaction. It may contain an empty array or be omitted if not required.<br><br>
+  Describes [certificates](#certificate) that should be added to the transaction. It's optional - it can be set to `null`, or omitted.<br><br>
 
 * **`mintings`**
 
-  Describes [minting](#mint) and burning operations within the current transaction.<br><br>
+  Describes [minting](#mint) and burning operations within the current transaction. It's optional - it can be set to `null`, or omitted.
 
   >**Note:** if you create a new token, you must add it to `outputs` to specify the destination address. You must also specify the minimum required amount of lovelaces for it there. If you do not provide Inputs for this, the wallet will have to provide them on behalf of the user. If you are burning an existing user token, you are not required to specify `outputs`, as this is part of change management, which should be handled by the wallet. It may contain an empty array or be omitted if not required.
 
 * **`metadata`**
 
-  An object describing a set of [metadata](#metadata) that you want to include in the transaction. It may contain an empty array or be omitted if not required.
+  An object describing a set of [metadata](#metadata) that you want to include in the transaction. It's optional - it can be set to `null`, or omitted.
   
   Consists of two fields:
   
@@ -482,15 +482,15 @@ type TransactionScript = {
 
 * **`additionalSigns`**
 
-  Describes an array of additional signatures [required](#requiredsign) beyond the mandatory ones (associated with UTxO or certificates). It may contain an empty array or be omitted if not required.<br><br>
+  Describes an array of additional signatures [required](#requiredsign) beyond the mandatory ones (associated with UTxO or certificates). It's optional - it can be set to `null`, or omitted..<br><br>
 
 * **`scriptDataHash`**
 
-  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL ScriptDataHash, necessary for working with smart contracts. Optional.<br><br>
+  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL ScriptDataHash, necessary for working with smart contracts. It's optional - it can be set to `null`, or omitted.<br><br>
 
 * **`dataHash`**
 
-  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL DataHash, necessary for working with smart contracts. Optional.<br><br>
+  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL DataHash, necessary for working with smart contracts. It's optional - it can be set to `null`, or omitted.<br><br>
 
 * **`validFrom`**
 
@@ -582,7 +582,7 @@ It is assumed that errors will be transmitted in the form of ErrorMessage:
 ```ts
 type ErrorMessage = {
     error: Error,
-    message?: string
+    message?: string | null
 }
 ```
 
@@ -592,7 +592,7 @@ type ErrorMessage = {
 
 * **`message?: string`**
 
-  Optional free-form accompanying text for ease of debugging. Optional.<br><br>
+  Optional free-form accompanying text for ease of debugging. It's optional - it can be set to `null`, or omitted.<br><br>
 
 ### Bridge API
 
