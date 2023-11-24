@@ -430,7 +430,7 @@ type TransactionScript = {
     collateralNeeded: boolean | Auto,
     certificates?: Certificate[],
     mintings?: Mint[],
-    metadata?: {body: Metadata[], hash?: HexString | "auto"},
+    metadata?: {body: Metadata[], hash?: HexString | Auto},
     additionalSigns?: RequiredSign[],
     scriptDataHash?: cbor<ScriptDataHash>,
     dataHash?: cbor<DataHash>,
@@ -475,9 +475,9 @@ type TransactionScript = {
   
   * `hash`
   
-    Describes an explicitly specified [hash](#hexstring) of the metadata, that will be included in the txBody. This is an optional parameter - it can be set to 'auto', or omitted if you want the wallet to calculate the required hash itself.
+    Describes an explicitly specified [hash](#hexstring) of the metadata, that will be included in the txBody. This is an optional parameter - it can be set to "auto", or omitted if you want the wallet to calculate the required hash itself.
     
-    > **Note:** `hash` is not required to be associated with the provided `body` at the time of **signing**. If `hash` does not refer to `body`, we expect that the DApp providing such a data set plans to replace the `body` just before sending the transaction. This can be useful, for example, for organizing NFT lotteries. <br><br>
+    > **Note:** `hash` is not required to be associated with the provided `body` at the time of **signing**. If `hash` does not refer to `body`, we expect that the DApp providing such a data set plans to replace the `body` just before sending the transaction. This can be useful, for example, for organizing NFT lotteries.
     
 
 * **`additionalSigns`**
