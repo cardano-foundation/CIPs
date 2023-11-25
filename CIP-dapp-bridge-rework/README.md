@@ -25,6 +25,7 @@ License: CC-BY-4.0
       * [HexString](#hexstring)
       * [base58](#base58)
       * [AddressString](#addressstring)
+      * [LocalString](#localstring)
       * [AccountEra](#accountera)
       * [AccountId](#accountid)
       * [NativeToken](#nativetoken)
@@ -35,6 +36,7 @@ License: CC-BY-4.0
       * [Datum](#datum)
       * [Movement](#movement)
       * [Delegation](#delegation)
+      * [Metadatum](#metadatum)
       * [Metadata](#metadata)
       * [RequiredSign](#requiredsign)
       * [TransactionScript](#transactionscript)
@@ -172,6 +174,34 @@ A base58-encoded hexadecimal value. Typically used for Byron addresses.<br><br>
 #### `AddressString`
 
 A string representing an address in either bech32 or base58 format. Not CBOR!<br><br>
+
+#### `LocalString`
+
+_**Array**_ of objects describing a set of localizations of the same text, intended for the wallet user.
+
+```ts
+type LocalString = {
+  local: string,
+  body: string
+}[];
+```
+
+* **`local`**
+  
+  A string containing the locale code in the format [ISO-639.1](https://en.wikipedia.org/wiki/ISO_639-1).
+  
+  > **Note:** The DApp is not obliged to provide messages in languages it does not support.
+  
+* **`body`**
+
+  A string containing the localized text of the message. It is important that all `body` within one `LocalString` contain the same information. <br><br>
+
+The logic for working with `LocalString` is as follows:
+
+1. If a `LocalString` consisting of only one element is passed to the wallet, it is displayed "as is".
+2. If a `LocalString` consisting of several elements is passed to the wallet, the wallet should choose the one whose `local` is most suitable for the user.
+3. If the `LocalString` does not contain a localization suitable for the user, the wallet may choose any other localization it considers "default". In most cases, this will likely be "en". <br><br>
+
 
 #### `AccountEra`
 
@@ -374,24 +404,48 @@ type Delegation = {
 * **`stakeKeyId`**
   Contains the index number of the staking key used in delegation.<br><br>
 
-#### `Metadata`
+#### `Metadatum`
 
-A structure describing the metadata of a transaction in the Cardano network.
+A structure describing the metadata unit of a transaction in the Cardano network.
 
 ```ts
-type Metadata = {
-    metadatum: JSON,
+type Metadatum = {
+    datum: JSON,
     schema: number
 };
 ```
 
-* **`metadatum`**
+* **`datum`**
 
   Contains custom [JSON](#json).<br><br>
 
 * **`schema`**
 
   Indicates the number of the "schema", in most cases, it is acceptable to specify 0.<br><br>
+  
+#### `Metadata`
+
+An structure describing a set of [metadata](#metadatum) that you want to include in the transaction.
+ 
+```ts
+type Metadata = {
+  body: Metadata[],
+  hash?: HexString | Auto
+};
+```
+
+* **`body`**
+
+  Describes the directly transmitted set of [metadata](#metadatum). This is a mandatory field for this object.
+  
+  > **Note:** The data provided here are not included in the txBody; they will be included in the auxularyData section of the created transaction. 
+
+* **`hash`**
+
+  Describes an explicitly specified [hash](#hexstring) of the metadata, that will be included in the txBody. This is an optional field - it can be set to "auto", or omitted if you want the wallet to calculate the required hash itself.
+  
+  > **Note:** `hash` is not required to be associated with the provided `body` at the time of **signing**. If `hash` does not refer to `body`, we expect that the DApp providing such a data set plans to replace the `body` just before sending the transaction. This can be useful, for example, for organizing NFT lotteries.
+
 
 #### `RequiredSign`
 
@@ -430,12 +484,14 @@ type TransactionScript = {
     collateralNeeded: boolean | Auto,
     certificates?: Certificate[] | null,
     mintings?: Mint[] | null,
-    metadata?: {body: Metadata[], hash?: HexString | Auto} | null,
+    metadata?: Metadata | null,
     additionalSigns?: RequiredSign[] | null,
     scriptDataHash?: cbor<ScriptDataHash> | null,
     dataHash?: cbor<DataHash> | null,
     validFrom?: BigIntString | Auto,
-    validUntil?: BigIntString | Auto
+    validUntil?: BigIntString | Auto,
+    message?: LocalString | null,
+    draft: boolean
 };
 ```
 
@@ -463,22 +519,7 @@ type TransactionScript = {
 
 * **`metadata`**
 
-  An object describing a set of [metadata](#metadata) that you want to include in the transaction. It's optional - it can be set to `null`, or omitted.
-  
-  Consists of two fields:
-  
-  * `body`
-  
-    Describes the directly transmitted set of [metadata](#metadata). This is a mandatory field for this object.
-    
-    > **Note:** The data provided here are not included in the txBody; they will be included in the auxularyData section of the created transaction. 
-  
-  * `hash`
-  
-    Describes an explicitly specified [hash](#hexstring) of the metadata, that will be included in the txBody. This is an optional parameter - it can be set to "auto", or omitted if you want the wallet to calculate the required hash itself.
-    
-    > **Note:** `hash` is not required to be associated with the provided `body` at the time of **signing**. If `hash` does not refer to `body`, we expect that the DApp providing such a data set plans to replace the `body` just before sending the transaction. This can be useful, for example, for organizing NFT lotteries.
-    
+  Describes a set of metadata that must be included in the transaction. It's optional - it can be set to `null`, or omitted.
 
 * **`additionalSigns`**
 
@@ -499,6 +540,24 @@ type TransactionScript = {
 * **`validUntil`**
 
   Describes the slot at which the interval ends, during which the transaction can be submitted successfully. Optional.  It can be set to `"auto"` or omitted if not required.<br><br>
+  
+* **`message`**
+
+  Contains a localized (if possible) message that can be shown to the user when creating a transaction to clarify its purpose or to enhance security. For example, "make sure that a certain confirmation code in the wallet and the code in the DApp are the same." Or "this is a transaction intended for such-and-such action." It's optional - it can be set to `null`, or omitted.<br><br>
+  
+* **`draft`**
+
+  A flag indicating whether the wallet assembling the transaction from this script should "reserve" the selected involved UTxOs to prevent their reuse in other scripts. If `true` - it should. If `false` - no.<br><br>
+
+  Examples:
+
+  1. If a DApp plans to create a chain of transactions, it would be interested in ensuring that the UTxOs selected by the wallet for the first transaction are not included in the second for some reason.<br><br>
+
+  2. A DApp sends a script to the wallet in order to use the received transaction not for sending but, for example, to obtain the used `inputs`, `withdrawal`, and already calculated `change` and `fee`, with the aim of subsequently combining several transactions from different users into one. In this case, the DApp will pass to the wallet the `inputs` selected by it explicitly. If they have already been "reserved" after a previous request, this will be an obstacle.<br><br>
+
+  > **Note:** if UTxOs were not "reserved," there is no guarantee that this will not change between calls for one reason or another! However, this applies not only to this CIP but to the specifics of wallet operation in general.
+
+
 
 #### `DataSignature`
 
