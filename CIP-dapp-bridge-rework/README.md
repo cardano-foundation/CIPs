@@ -13,6 +13,8 @@ License: CC-BY-4.0
 
 <!-- TOC -->
   * [Abstract](#abstract)
+    * [What is it?](#what-is-it)
+    * [What is not?](#what-is-not)
   * [Motivation: why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
   * [Specification](#specification)
     * [The main idea](#the-main-idea)
@@ -67,6 +69,14 @@ License: CC-BY-4.0
 
 This document describes the reevaluation of the existing approach to connecting Cardano DApps and wallets, as detailed in CIP-30. Its purpose is to simplify the integration of ecosystem products for both sides, and also to ease the development of DApps themselves by simplifying the process without losing any capabilities.
 The new approach still relies on code injection, but offers a more transparent API. The main idea is that a DApp should not perform the functions of a wallet.
+
+### What is it?
+
+It's automation, lowering the barrier to entry, separation of responsibilities, and scaling the complexity of development.
+
+### What is not?
+
+It's not "getting rid of CBOR", not transferring all functions to the wallet, not replacing everything with JSON.
 
 ## Motivation: why is this CIP necessary?
 
@@ -519,7 +529,7 @@ type TransactionScript = {
 
 * **`metadata`**
 
-  Describes a set of metadata that must be included in the transaction. It's optional - it can be set to `null`, or omitted.
+  Describes a set of metadata that must be included in the transaction. It's optional - it can be set to `null`, or omitted. <br><br>
 
 * **`additionalSigns`**
 
@@ -543,7 +553,7 @@ type TransactionScript = {
   
 * **`message`**
 
-  Contains a localized (if possible) message that can be shown to the user when creating a transaction to clarify its purpose or to enhance security. For example, "make sure that a certain confirmation code in the wallet and the code in the DApp are the same." Or "this is a transaction intended for such-and-such action." It's optional - it can be set to `null`, or omitted.<br><br>
+  Contains a localized (if possible) [message](#localstring) that can be shown to the user when creating a transaction to clarify its purpose or to enhance security. For example, "make sure that a certain confirmation code in the wallet and the code in the DApp are the same." Or "this is a transaction intended for such-and-such action." It's optional - it can be set to `null`, or omitted.<br><br>
   
 * **`draft`**
 
