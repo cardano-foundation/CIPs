@@ -129,7 +129,7 @@ Submits a transaction to the wallet for signing. The wallet should check that th
 
 If the transaction contains hidden metadata, the wallet should not submit the transaction when it is ready, but return it to the dApp when the dApp calls the `getCompletedTx` function.
 
-#### api.getCompletedTx(txId: hash32): Promise\<cbor\<transaction>,cbor<transaction_witness_set>>
+#### api.getCompletedTx(txId: hash32): Promise\[<cbor\<transaction>,cbor<transaction_witness_set>>]
 
 Errors: `APIError`, `CompletedTxError`
 
