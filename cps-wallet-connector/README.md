@@ -23,6 +23,41 @@ This problem statement is concerned with the issues surrounding Cardano's curren
 These interfaces are difficult to define and historically have been even harder to iterate upon.
 We wish to provide a comprehensive catalog of the current offerings; and their drawbacks to be able to make suggestions on future standards.
 
+### Acknowledgments
+
+<details>
+  <summary><strong>First workshop - 2023-11-27</strong></summary>
+
+  I would like to thank those that contributed to the first workshop hosted by Adam Dean and Ryan Williams.
+  - George Flerovsky
+  - Beatrice Anihiri
+  - Denis Kalinin
+  - Evgenii Lisitskii
+  - George APEX Pool
+  - George Humphreys
+  - Hernán Rajchert
+  - Jack Rousian
+  - Joshua Marchand
+  - Ken Fritschy
+  - Ken-Erik Ølmheim
+  - Leo H
+  - Marcel Baumberg
+  - Martynas Kazlaukas
+  - Michael Chappell
+  - Mircea Hasegan
+  - Nicolas Ayotte
+  - Rhys Bartels-Wallet
+  - Robert Phair
+  - Rodolpho Ribeiro
+  - Steven Johnson
+  - Teodora Sevastru Lunn
+  - Thomas Lindseth
+  - Thomas Upfield
+  - Vladimir Kalnitsky
+
+</details>
+
+
 ## Problem
 <!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
 
