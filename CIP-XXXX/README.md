@@ -1,5 +1,5 @@
 ---
-CIP: 0087
+CIP: ????
 Title: Integer-ByteString conversions
 Category: Plutus
 Status: Proposed
