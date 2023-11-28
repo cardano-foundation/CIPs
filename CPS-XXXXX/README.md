@@ -7,7 +7,7 @@ Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/625
     - `#wallet-connectors` in CIP editors Discord: https://discord.gg/tkp6r6ESJR
 Created: 2023-11-27
 ---
