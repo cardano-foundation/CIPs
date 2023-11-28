@@ -28,12 +28,12 @@ We wish to provide a comprehensive catalog of the current offerings; and their d
 <details>
   <summary><strong>First workshop - 2023-11-27</strong></summary>
 
-  I would like to thank those that contributed to the first workshop hosted by Adam Dean and Ryan Williams.
-  - George Flerovsky
+  I would like to thank those that contributed to the first workshop hosted by Adam Dean and Ryan Williams ([see presentation slides with notes](https://docs.google.com/presentation/d/1lXw1yMf-Hyp1eVfaFnbTV9897r6pZEd6zpvLNMqT3cI/)).
   - Beatrice Anihiri
   - Denis Kalinin
   - Evgenii Lisitskii
   - George APEX Pool
+  - George Flerovsky
   - George Humphreys
   - Hernán Rajchert
   - Jack Rousian
@@ -96,6 +96,7 @@ Generally communication should be allowed two ways.
 Connection standards and APIs should be explicitly versioned to clearly allow upgrades.
 Furthermore, ideally APIs should allow for optional extendability to facilitate specialization.
 Clear scope of versions / extensions.
+- Should consider tiers of wallet - can be tricky to see adoption for dApps, dApss prefer lowest denominator.
 
 #### 6. Respect the role of wallet
 APIs should be written to have a clear scope, understanding the potential strains placed on wallet providers.
@@ -126,13 +127,11 @@ This standard
 
 #### Historical Issues
 - Lack of ecosystem cohesion around Role of the Wallet
-- Reactive standard following other ecosystems
 - Combination of connection and API in one standard
-- CIP-30 - Limited scope
-- CIP-30 - Lack of versioning
-- CIP-30 - injected object limiting
-- Lack of ecosystem focus, wallet expected to do a lot
-- Look at the issues on Github
+- Lack of ecosystem focus, wallet expected to do a lot -> not clearly defined what the role is
+- Encouraged emulated wallets
+- Typescript APIs limiting
+- No way for dApp to subscribe to wallet events
 
 #### Solutions
 - CIP-30 - extendibility mechanism
@@ -173,6 +172,26 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 Whilst most wallet softwares generally offer a users a range of features, at their core all wallets are primarily concerned with the management of cryptographic operations.
 The majority of wallets build on this by using a chain indexer, so information related to the wallets crypto credentials can be gathered and presented to users.
 Any operation beyond core cryptographic functions should be considered to be optionally extra by wallets and thus not included in base connector standards.
+
+#### Types of Wallet
+No-data - just base crypto (i.e. HWWs) 
+- places all management of UTxOs on dApps (could be applied for Voltaire - just approve votes, not care about UTxOs)
+- Could just share root public key -> so dApp discovers addresses
+- All wallets! - the most inclusive. Is interesting for future applications.
+- Embedded wallets?
+- script wallets?
+- Can just be library
+Own-data - knows about it’s own data (used addresses, utxos, etc.)
+- Two sources of truth problem (CIP30)
+- Hard to draw the lines between these
+Full-data - can index chain for any information
+- (Could add expense to wallet providers)
+- dApps can ask wallet for any chain info
+- Single source of truth
+- Gives users the ability to choose source of truth
+- Adam; User able to bring their own data - running local node etc.
+- Data API to be out of scope for this CPS.
+- Probably not historical state, but certainly ledger state
 
 ### Strive for interoperable and extensible APIs
 Design APIs which are interoperable between connection standards and wallet types.
