@@ -6,6 +6,7 @@ Category: Metadata
 Authors: 
   - Bruno Martins <bruno.martins@iohk.io>
   - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
+  - Daniel Main <daniel.main@iohk.io>
 Implementors: ["Lace Wallet dApp Store", "DappsOnCardano dApp Store"]
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/355
@@ -49,26 +50,21 @@ Stores and auditors should be able to follow the chain and find when a new dApp 
 - **`integrity`**: The dApp's off-chain metadata should match the metadata **anchored** on-chain.
 - **`trust`**: The dApp's certificate should be signed by a trusted entity. It's up to the store/auditor to decide which entities are trusted and they should maintain and publish their own list of trusted entities. Although this entities might be well known, it's not the responsibility of this CIP to maintain this list. These entities could be directly associated with developer/publisher or not.
 
-### **On-chain dApp Registration Certificate**
-
-The on-chain dApp registration certificate MUST follow canonical JSON and be serialised according to RFC 8785 (https://www.rfc-editor.org/rfc/rfc8785). This stipulation is to avoid any ambigiutines in the signature calculation.
+### **On-chain dApp Registration**
 
 ```json
 {
   "subject": "b37aabd81024c043f53a069c91e51a5b52e4ea399ae17ee1fe3cb9c44db707eb",
   "rootHash": "7abcda7de6d883e7570118c1ccc8ee2e911f2e628a41ab0685ffee15f39bba96",
   "metadata": [
-    "https://foundation.app/my_dapp_7abcda.json"
+    "https://foundation.app/my_dapp_7abcda/tart/",
+    "7abcda7de6d883e7570118c1ccc8ee2e91",
+    "e4ea399ae17ee1fe3cb9c44db707eb/",
+    "offchain.json"
   ],
   "type": {
     "action": "REGISTER",
     "comment": "New release adding zapping support."
-  },
-  "signature": {
-   "r": "27159ce7d992c98fb04d5e9a59e43e75f77882b676fc6b2ccb8e952c2373da3e",
-   "s": "16b59ab1a9e349cd68d232f7652f238926dc24a2e435949ebe2e402a6557cfb4",
-   "algo": "Ed25519−EdDSA",
-   "pub": "b384b53d5fe9f499ecf088083e505f40d2a6c123bf7201608494fdb89a051b80"
   }
 }
 ```
@@ -83,19 +79,17 @@ The on-chain dApp registration certificate MUST follow canonical JSON and be ser
   - *`REGISTER`*: The certificate is asserting that the dApp is registered for the first time or is providing an update.
   - *`DE_REGISTER`*: The certificate is asserting that the dApp is deprecated / archived. So, no further dApp's on-chain update is expected.
 
-*`rootHash`*: The hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section. Please note that off-chain JSON must be converted into RFC 8765 canonical form before taking the hash!
+*`rootHash`*: The blake2b-256 hash of the entire offchain metadata tree object. This hash is used by clients to verify the integrity of the metadata tree object. When reading a metadata tree object, the client should calculate the hash of the object and compare it with the `rootHash` property. If the two hashes don't match, the client should discard the object. The metadata tree object is a JSON object that contains the dApp's metadata. The metadata tree object is described in the next section. Please note that off-chain JSON must be converted into RFC 8765 canonical form before taking the hash!
 
-*`metadata`*: An array of links to the dApp's metadata. The metadata is a JSON compatible RFC 8785 object that contains the dApp's metadata.
-
-*`signature`*: The signature of the certificate. The publishers generate the signature is by first turning on-chain JSON into a canonical form (RFC 8765), hashing it with blake2b-256 and generating a signature of the hash. Stores / clients can verify the signature by repeating the process, they can use the public key to verify the signature of the certificate. Fields used for canonical JSON: ["subject", "rootHash", "metadata","type"]. Please note that a signature should be generated of blake2b-256 hash as a byte array, not as a hex represented string(!).
+*`metadata`*: Chunks of URLs that make up the dApp's metadata are arranged in an array to accommodate the 64-character limit per chunk, allowing for the support of longer URLs. The metadata itself is a JSON object compatible with RFC 8785, containing detailed information about the dApp
 
 ### On-chain Schemas
 
-[On-chain CDDL for registration / de-registration (Version 1)](./version_1_onchain.cddl)
+[On-chain CDDL for registration / de-registration (Version 2.0.0)](./version_2.0.0_onchain.cddl)
 
 which also can be expressed using JSON schema:
 
-[dApp on-chain certificate JSON Schema (Version 1)](./version_1_onchain.json)
+[dApp on-chain certificate JSON Schema (Version 2.0.0)](./version_2.0.0_onchain.json)
 
 ### Metadata Label
 
@@ -107,51 +101,65 @@ When submitting the transaction metadata pick the following value for `transacti
 
 The dApp Registration certificate itself doesn't enforce a particular structure to the metadata you might fetch off-chain. However, we recommend that you use the following structure:
 
-[Off-chain dApp Registration certificate schema (Version 1)](./version_1_offchain.json)
+[Off-chain dApp Registration certificate schema (Version 2)](./version_2.0.0_offchain.json)
 
-This schema describes the minimum required fields for a store to be able to display and validate your dApp. You can add any other fields you want to the metadata, but we recommend that you use at least the ones described above.
+This schema describes the minimum required fields for a store to be able to display and validate your dApp.
 
 ### Example
 
 ```json
 {
-  "subject": "9SYAJPNN",
-  "projectName": "My Project",
-  "link": "https://myProject.app",
-  "logo": "https://myProject.app/logo.png",
-  "social": {
-    "github": "https://mywebsite.com",
-    "twitter": "https://twitter.com/my_dapp",
-    "website": "https://github.com/my_dapp"
-  },
-  "categories": ["Games"],
+  "version": "1.0.0",
+  "subject": "abcdef1234567890",
+  "projectName": "My dApp",
+  "link": "https://www.exampledapp.com",
+  "companyName": "Amazing dApp Inc.",
+  "companyEmail": "contact@myamazingdapp.com",
+  "companyWebsite": "https://www.myamazingdapp.com",
+  "logo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAA...",
+  "categories": ["DeFi", "Games"],
+  "screenshots": [
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD..."
+  ],
+  "social": [
+    {
+      "name": "GitHub",
+      "link": "https://github.com/exampledapp"
+    },
+    {
+      "name": "Twitter",
+      "link": "https://twitter.com/exampledapp"
+    }
+  ],
   "description": {
-    "short": "A story rich game where choices matter. This game is very addictive to play :)"
+    "short": "This is a short description of the dApp, giving an overview of its features and capabilities."
   },
   "releases": [
     {
       "releaseNumber": "1.0.0",
-      "releaseName": "V1",
+      "releaseName": "Initial Release",
+      "securityVulnerability": false,
+      "comment": "First major release with all core features.",
       "scripts": [
         {
-          "id": "PmNd6w",
-          "version": 1
+          "id": "script1",
+          "version": "1.0.0"
         }
       ]
     }
   ],
   "scripts": [
     {
-      "id": "PmNd6w",
-      "name": "marketplace",
-      "purposes": ["SPEND"],
+      "id": "script1",
+      "name": "Example Script",
+      "purposes": ["SPEND", "MINT"],
       "type": "PLUTUS",
       "versions": [
         {
-          "version": 1,
+          "version": "1.0.0",
           "plutusVersion": 1,
-          "scriptHash": "711dcb4e80d7cd0ed384da5375661cb1e074e7feebd73eea236cd68192",
-          "contractAddress": "addr1wywukn5q6lxsa5uymffh2esuk8s8fel7a0tna63rdntgrysv0f3ms"
+          "scriptHash": "abc123"
         }
       ]
     }
@@ -205,9 +213,9 @@ Release Name is a field, which dApp developers can use on top of Release Version
 At the begining neither on-chain, nor off-chain JSON has been following RFC 8785 (canonical JSON) but we reached a point that, due to consistency checks, we need to take hash of both on-chain and off-chain and this forced us to stipulate that both on-chain and off-chain metadata documents need to be converted
 according to RFC 8785 before taking a blake2b-256 hash of them.
 
-### On-Chain Signature Scope
+### Transaction Signature Scope
 
-On-chain part has a signature, which has a role to verify that a certain dApp owner made changes. In the initial version, a blake2b-256 signature was needed only for `rootHash` but following discussion, due to security concerns, decision has been made that the signature should attest the whole on-chain canonical JSON except signature field itself (because it would end up in an infinite recursion).
+As any transaction in cardano network has a signature, which has a role to verify that a certain dApp owner made changes.
 
 ### Who Is The Owner?
 
@@ -254,10 +262,6 @@ some app that can attest validity and conformance to JSON schema - dApp Registra
 ### Scripts / Releases Fields Are Not Required
 
 We made a decision to change the schema so that scripts and releases are no longer required. This could help to get initial registration from dApp developers faster and some stores simply do not require dApps to add their scripts in order to be listed.
-
-### Schema Version
-
-We discussed and analyzed idea of schema version and or even whole CIP version. It turns out that CIP is already versioned by CIP-??? where ??? is version number. During this CIP being in `PROPOSED` state we reserve our right to make small changes to the schema / document, after CIP becomes active, it will require a new CIP. This is the current process, which other CIPs are also following.
 
 ### Tags
 

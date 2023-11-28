@@ -11,7 +11,6 @@ on-chain_metadata = {
   rootHash: sig_256,
   metadata: [+ string] / [+ string / [+ string]],
   type: registration / de-registration,
-  signature: signature,
 }
 
 registration = {
@@ -22,11 +21,4 @@ registration = {
 de-registration = {
   action: "DE_REGISTER",
   ? comment: string,
-}
-
-signature = {
-  r: string,
-  s: string,
-  algo: text .regexp "Ed25519-EdDSA",
-  pub: string,
 }
