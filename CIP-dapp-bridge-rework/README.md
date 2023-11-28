@@ -1155,13 +1155,13 @@ This CIP addresses the issues described in the `Motivation` section:
 
 ### Acceptance Criteria
 
-- [] The interface is implemented and supported by various wallet providers.
-- [] The interface is used by DApps to interact with wallet providers.
+- [ ] The interface is implemented and supported by various wallet providers.
+- [ ] The interface is used by DApps to interact with wallet providers.
 
 ### Implementation Plan
 
-- [] Provide some reference implementation of wallet providers
-- [] Provide some reference implementation of the dapp connector
+- [ ] Provide some reference implementation of wallet providers
+- [ ] Provide some reference implementation of the dapp connector
 
 ## Copyright
 
