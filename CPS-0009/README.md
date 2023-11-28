@@ -49,6 +49,12 @@ Users and applications frequently engage in native token transactions, making ef
 
 Decentralized applications and DeFi projects require efficient coin selection to maintain the performance and cost-effectiveness of their transactions.
 
+### Example Implementation
+Some real world use cases of the coin selection algorithm taking Native Token into account is listed below:
+1. [UTxO utils of Cardano in WASM](https://www.npmjs.com/package/cardano-utxo-wasm)
+2. Cardano Wallet (link to be supplied)
+3. [cardano-multiplatform-lib](https://github.com/dcSpark/cardano-multiplatform-lib)
+
 ### Network Scalability
 
 Efficient coin selection contributes to network scalability by reducing the size and complexity of transactions, ensuring smooth and rapid processing.
