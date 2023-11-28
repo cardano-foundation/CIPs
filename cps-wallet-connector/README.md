@@ -46,7 +46,7 @@ We wish to provide a comprehensive catalog of the current offerings; and their d
   - Michael Chappell
   - Mircea Hasegan
   - Nicolas Ayotte
-  - Rhys Bartels-Wallet
+  - Rhys Bartels-Waller
   - Robert Phair
   - Rodolpho Ribeiro
   - Steven Johnson
