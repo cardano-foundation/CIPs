@@ -33,58 +33,68 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Keys
 
-| Prefix             | Meaning                                            | Contents                           |
-| ---                | ---                                                | ---                                |
-| `acct_sk`          | CIP-1852's account private key                     | Ed25519 private key                |
-| `acct_vk`          | CIP-1852's account public key                      | Ed25519 public key                 |
-| `acct_xsk`         | CIP-1852's extended account private key            | Ed25519-bip32 extended private key |
-| `acct_xvk`         | CIP-1852's extended account public key             | Ed25519 public key with chain code |
-| `acct_shared_sk`   | CIP-1854's account private key                     | Ed25519 private key                |
-| `acct_shared_vk`   | CIP-1854's account public key                      | Ed25519 public key                 |
-| `acct_shared_xsk`  | CIP-1854's extended account private key            | Ed25519-bip32 extended private key |
-| `acct_shared_xvk`  | CIP-1854's extended account public key             | Ed25519 public key with chain code |
-| `addr_sk`          | CIP-1852's address signing key                     | Ed25519 private key                |
-| `addr_vk`          | CIP-1852's address verification key                | Ed25519 public key                 |
-| `addr_xsk`         | CIP-1852's address extended signing key            | Ed25519-bip32 extended private key |
-| `addr_xvk`         | CIP-1852's address extended verification key       | Ed25519 public key with chain code |
-| `addr_shared_sk`   | CIP-1854's address signing key                     | Ed25519 private key                |
-| `addr_shared_vk`   | CIP-1854's address verification key                | Ed25519 public key                 |
-| `addr_shared_xsk`  | CIP-1854's address extended signing key            | Ed25519-bip32 extended private key |
-| `addr_shared_xvk`  | CIP-1854's address extended verification key       | Ed25519 public key with chain code |
-| `gov_sk`           | Governance vote signing key                        | Ed25519 private key                |
-| `gov_vk`           | Governance vote verification key                   | Ed25519 public key                 |
-| `cvote_sk`         | CIP-36's vote signing key                          | Ed25519 private key                |
-| `cvote_vk`         | CIP-36's vote verification key                     | Ed25519 public key                 |
-| `kes_sk`           | KES signing key                                    | KES signing key                    |
-| `kes_vk`           | KES verification key                               | KES verification key               |
-| `policy_sk`        | CIP-1855's policy private key                      | Ed25519 private key                |
-| `policy_vk`        | CIP-1855's policy public key                       | Ed25519 public key                 |
-| `pool_sk`          | Pool operator signing key                          | Ed25519 private key                |
-| `pool_vk`          | Pool operator verification key                     | Ed25519 public key                 |
-| `root_sk`          | CIP-1852's root private key                        | Ed25519 private key                |
-| `root_vk`          | CIP-1852's root public key                         | Ed25519 public key                 |
-| `root_xsk`         | CIP-1852's extended root private key               | Ed25519-bip32 extended private key |
-| `root_xvk`         | CIP-1852's extended root public key                | Ed25519 public key with chain code |
-| `root_shared_sk`   | CIP-1854's root private key                        | Ed25519 private key                |
-| `root_shared_vk`   | CIP-1854's root public key                         | Ed25519 public key                 |
-| `root_shared_xsk`  | CIP-1854's extended root private key               | Ed25519-bip32 extended private key |
-| `root_shared_xvk`  | CIP-1854's extended root public key                | Ed25519 public key with chain code |
-| `stake_sk`         | CIP-1852's stake address signing key               | Ed25519 private key                |
-| `stake_vk`         | CIP-1852's stake address verification key          | Ed25519 public key                 |
-| `stake_xsk`        | CIP-1852's extended stake address signing key      | Ed25519-bip32 extended private key |
-| `stake_xvk`        | CIP-1852's extended stake address verification key | Ed25519 public key with chain code |
-| `stake_shared_sk`  | CIP-1854's stake address signing key               | Ed25519 private key                |
-| `stake_shared_vk`  | CIP-1854's stake address verification key          | Ed25519 public key                 |
-| `stake_shared_xsk` | CIP-1854's extended stake address signing key      | Ed25519-bip32 extended private key |
-| `stake_shared_xvk` | CIP-1854's extended stake address verification key | Ed25519 public key with chain code |
-| `vrf_sk`           | VRF signing key                                    | VRF signing key                    |
-| `vrf_vk`           | VRF verification key                               | VRF verification key               |
+| Prefix             | Meaning                                                               | Contents                           |
+| ---                | ---                                                                   | ---                                |
+| `acct_sk`          | CIP-1852's account private key                                        | Ed25519 private key                |
+| `acct_vk`          | CIP-1852's account public key                                         | Ed25519 public key                 |
+| `acct_xsk`         | CIP-1852's extended account private key                               | Ed25519-bip32 extended private key |
+| `acct_xvk`         | CIP-1852's extended account public key                                | Ed25519 public key with chain code |
+| `acct_shared_sk`   | CIP-1854's account private key                                        | Ed25519 private key                |
+| `acct_shared_vk`   | CIP-1854's account public key                                         | Ed25519 public key                 |
+| `acct_shared_xsk`  | CIP-1854's extended account private key                               | Ed25519-bip32 extended private key |
+| `acct_shared_xvk`  | CIP-1854's extended account public key                                | Ed25519 public key with chain code |
+| `addr_sk`          | CIP-1852's address signing key                                        | Ed25519 private key                |
+| `addr_vk`          | CIP-1852's address verification key                                   | Ed25519 public key                 |
+| `addr_xsk`         | CIP-1852's address extended signing key                               | Ed25519-bip32 extended private key |
+| `addr_xvk`         | CIP-1852's address extended verification key                          | Ed25519 public key with chain code |
+| `addr_shared_sk`   | CIP-1854's address signing key                                        | Ed25519 private key                |
+| `addr_shared_vk`   | CIP-1854's address verification key                                   | Ed25519 public key                 |
+| `addr_shared_xsk`  | CIP-1854's address extended signing key                               | Ed25519-bip32 extended private key |
+| `addr_shared_xvk`  | CIP-1854's address extended verification key                          | Ed25519 public key with chain code |
+| `cc_cold_sk`       | CIP-1852’s constitutional committee cold signing key                  | Ed25519 private key                |
+| `cc_cold_vk`       | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                |
+| `cc_cold_xsk`      | CIP-1852’s constitutional committee cold extended signing key         | Ed25519-bip32 extended private key |
+| `cc_cold_xvk`      | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code |
+| `cc_hot_sk`        | CIP-1852’s constitutional committee hot signing key                   | Ed25519 private key                |
+| `cc_hot_vk`        | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                |
+| `cc_hot_xsk`       | CIP-1852’s constitutional committee hot extended signing key          | Ed25519-bip32 extended private key |
+| `cc_hot_xvk`       | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code |
+| `cvote_sk`         | CIP-36's vote signing key                                             | Ed25519 private key                |
+| `cvote_vk`         | CIP-36's vote verification key                                        | Ed25519 public key                 |
+| `drep_sk`          | CIP-1852’s DRep signing key                                           | Ed25519 private key                |
+| `drep_vk`          | CIP-1852’s DRep verification key                                      | Ed25519 public key                 |
+| `drep_xsk`         | CIP-1852’s DRep extended signing key                                  | Ed25519-bip32 extended private key |
+| `drep_xvk`         | CIP-1852’s DRep extended verification key                             | Ed25519 public key with chain code |
+| `kes_sk`           | KES signing key                                                       | KES signing key                    |
+| `kes_vk`           | KES verification key                                                  | KES verification key               |
+| `policy_sk`        | CIP-1855's policy private key                                         | Ed25519 private key                |
+| `policy_vk`        | CIP-1855's policy public key                                          | Ed25519 public key                 |
+| `pool_sk`          | Pool operator signing key                                             | Ed25519 private key                |
+| `pool_vk`          | Pool operator verification key                                        | Ed25519 public key                 |
+| `root_sk`          | CIP-1852's root private key                                           | Ed25519 private key                |
+| `root_vk`          | CIP-1852's root public key                                            | Ed25519 public key                 |
+| `root_xsk`         | CIP-1852's extended root private key                                  | Ed25519-bip32 extended private key |
+| `root_xvk`         | CIP-1852's extended root public key                                   | Ed25519 public key with chain code |
+| `root_shared_sk`   | CIP-1854's root private key                                           | Ed25519 private key                |
+| `root_shared_vk`   | CIP-1854's root public key                                            | Ed25519 public key                 |
+| `root_shared_xsk`  | CIP-1854's extended root private key                                  | Ed25519-bip32 extended private key |
+| `root_shared_xvk`  | CIP-1854's extended root public key                                   | Ed25519 public key with chain code |
+| `stake_sk`         | CIP-1852's stake address signing key                                  | Ed25519 private key                |
+| `stake_vk`         | CIP-1852's stake address verification key                             | Ed25519 public key                 |
+| `stake_xsk`        | CIP-1852's extended stake address signing key                         | Ed25519-bip32 extended private key |
+| `stake_xvk`        | CIP-1852's extended stake address verification key                    | Ed25519 public key with chain code |
+| `stake_shared_sk`  | CIP-1854's stake address signing key                                  | Ed25519 private key                |
+| `stake_shared_vk`  | CIP-1854's stake address verification key                             | Ed25519 public key                 |
+| `stake_shared_xsk` | CIP-1854's extended stake address signing key                         | Ed25519-bip32 extended private key |
+| `stake_shared_xvk` | CIP-1854's extended stake address verification key                    | Ed25519 public key with chain code |
+| `vrf_sk`           | VRF signing key                                                       | VRF signing key                    |
+| `vrf_vk`           | VRF verification key                                                  | VRF verification key               |
 
 ### Hashes
 
-| Prefix             | Meaning                                            | Contents                                                 |
-| ---                | ---                                                | ---                                                      |
-| `asset`            | Fingerprint of a native asset for human comparison | See [CIP-0014]                                           |
+| Prefix             | Meaning                                            | Contents                                                  |
+| ---                | ---                                                | ---                                                       |
+| `asset`            | Fingerprint of a native asset for human comparison | See [CIP-0014]                                            |
 | `pool`             | Pool operator verification key hash (pool ID)      | blake2b\_224 digest of an operator verification key       |
 | `script`           | Script hash                                        | blake2b\_224 digest of a serialized transaction script    |
 | `addr_vkh`         | Address verification key hash                      | blake2b\_224 digest of a payment verification key         |
@@ -99,12 +109,15 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Miscellaneous
 
-| Prefix       | Meaning               | Contents                                                      |
-| ---          | ---                   | ---                                                           |
-| `addr`       | Mainnet address       | Network tag, payment credential and optional stake credential |
-| `addr_test`  | Testnet address       | Network tag, payment credential and optional stake credential |
-| `stake`      | Mainnet stake address | Network tag and stake credential                              |
-| `stake_test` | Testnet stake address | Network tag and stake credential                              |
+| Prefix       | Meaning                                  | Contents                                                      |
+| ---          | ---                                      | ---                                                           |
+| `addr`       | Mainnet address                          | Network tag, payment credential and optional stake credential |
+| `addr_test`  | Testnet address                          | Network tag, payment credential and optional stake credential |
+| `cc_cold`    | Constitutional committee cold credential | committee cold credential                                     |
+| `cc_hot`     | Constitutional committee hot credential  | committee hot credential                                      |
+| `drep`       | DRep credential                          | DRep credential                                               |
+| `stake`      | Mainnet stake address                    | Network tag and stake credential                              |
+| `stake_test` | Testnet stake address                    | Network tag and stake credential                              |
 
 ## Rationale: how does this CIP achieve its goals?
 

@@ -89,62 +89,6 @@ connector, this specification could be applied to similar standards.
 > **Note** This specification will evolve as the proposed ledger governance
 > model matures.
 
-### DRep Key
-
-⚠ These definitions are an initial version of these keys, such definitions are
-to be moved to a new CIP. Once new CIP is published please view that CIP.
-
-The Conway ledger era introduces a new _first class_ credential in
-[`drep_credential`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L332).
-This is used to identify registered DReps on-chain, via their certificates and
-votes.
-
-Here we introduction of DRep Keys to be used to create `drep_credential`s for
-(non-script) registered DReps.
-
-#### Derivation
-
-Here we describe DRep Key derivation as it attains to Cardano wallets who follow
-the
-[CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md)
-standard.
-
-To differentiate DRep keys from other Cardano keys the derivation path must
-follow:
-
-`m / 1852' / 1815' / account' / 3 / address_index`
-
-We strongly suggest that a maximum of one set of DRep keys should be associated
-with one wallet account, this can be achieved by only ever setting
-`address_index=0`. This avoids the need for DRep Key discovery.
-
-We believe the overhead that would be introduced by "multi-DRep" accounts is an
-unjustified expense. Future iterations of this specification may expand on this,
-but at present this is seen as unnecessary.
-
-#### Tooling
-
-Supporting tooling should clearly label these key pairs as "CIP-95 DRep Keys".
-
-Bech32 prefixes of `drep_sk` and `drep_vk` should be used, as described in
-[CIP-0005](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md).
-
-Examples of acceptable `keyType`s for supporting tools:
-
-| `keyType`                                   | Description           |
-| ------------------------------------------- | --------------------- |
-| `DRepSigningKey_ed25519`                    | DRep Signing Key      |
-| `DRepExtendedSigningKey_ed25519_bip32`      | DRep Signing Key      |
-| `DRepVerificationKey_ed25519`               | DRep Verification Key |
-| `DRepExtendedVerificationKey_ed25519_bip32` | DRep Verification Key |
-
-For hardware implementations:
-
-| `keyType`                     | Description                    |
-| ----------------------------- | ------------------------------ |
-| `DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
-| `DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
-
 ### Data Types
 
 #### CIP-30 Inherited Data Types
@@ -213,7 +157,7 @@ type PubDRepKey = string;
 ```
 
 A hex-encoded string representing 32 byte Ed25519 DRep public key, as described
-in [DRep Key](#DRep-key).
+in [CIP-0105 | Conway Era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
 
 ##### PubStakeKey
 
@@ -330,7 +274,7 @@ extension object, as part of the extensions object passed at enable time:
 #### `api.cip95.getPubDRepKey(): Promise<PubDRepKey>`
 
 The connected wallet account provides the account's public DRep Key, derivation
-as described in [DRep Key](#DRep-key).
+as described in [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
 
 These are used by the client to identify the user's on-chain CIP-1694
 interactions, i.e. if a user has registered to be a DRep.
@@ -885,50 +829,6 @@ Despite this we do not discourage CIP-30 implementors from updating their
 implementations to support Conway artifacts to `.signData()` and `.signTx()`.
 But if so they must support the CIP-95 object flag at connection time, so that
 clients are aware of this functionality.
-
-### DRep Key
-
-// todo: move to DRep Key CIP
-
-We chose to introduce the concept of a DRep Key, building on top of CIP-1694,
-this we see as a necessary step for wallet implementors. By setting a
-(hierarchical) deterministic derivation path it enables restorability from a
-seed phrase.
-
-With this definition we aim to standard for all ecosystem tooling to be able to
-derive DRep credentials from mnemonics. This brings the benefits ecosystem
-standards.
-
-#### Derivation Path
-
-When choosing the derivation path there were a few possible options. Initially
-we chose to follow how a new key definition was done in
-[CIP-36](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#derivation-path)
-by defining a new purpose of `1718'`. This was an oversight, as defining a new
-derivation purposes will likely have hardware wallet audit implications.
-
-#### Why not reuse [CIP-36 Vote Keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#voting-key)?
-
-CIP-36 defines derivation path for a key pair to be used within CIP-36 style
-governance. The most notable user of this standard is
-[Project Catalyst](https://projectcatalyst.io), where CIP-36 vote keys are used to sign
-vote transactions for the Jormungandr side-chain.
-
-One suggestion is to reuse this key pair instead of defining a new key pair in
-DRep key. The benefits to this would be that it is easier for users and tools to
-manage a single key pair to be used for any projects following the CIP-36
-standard and for use in this API. This would mean a single key could be used to
-sign Catalyst votes and CIP-1694 DRep votes.
-
-Reusing keys comes with the downside of possible confusion for users and
-tooling. This is why we have attempted to assign the DRep keys clear and
-explicit naming and usage to avoid confusion with CIP-36 vote keys. Furthermore,
-the keys described here are used for more than just vote signing just the
-"CIP-36 vote key" naming may be a cause of confusion.
-
-> **Note** The derivation path used for CIP-36 vote keys includes `1694` as the
-> `purpose`, this is a perhaps misleading reality and hints to the original
-> intension of using CIP-36 vote keys for Cardano's Voltaire.
 
 ### Multi-stake Key Support
 
