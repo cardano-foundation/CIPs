@@ -43,7 +43,7 @@ Every light wallet has its own backend infrastructure: functioning of the browse
 
 In the past, users have encountered problems with ability to submit transactions due to limited mempool capacity, which resulted in some wallets providing a way to configure custom [tx-submit-api](https://github.com/blinklabs-io/tx-submit-api) endpoints - but this only covers transaction submission.
 
-Tight coupling between wallets and query layers results in unnecessary economic burden imposed on wallets, and forces them to make opinionated choices (of query layer provider) that could be delegated to the end user, similarly to how it is done in Metamask with RPC provider selection.
+Tight coupling between wallets and query layers results in unnecessary economic burden imposed on wallets, and forces them to make opinionated choices (of query layer provider) that could otherwise be delegated to the end user, similarly to how it is done in Metamask with RPC provider selection.
 
 The economic burden, in turn, results in discouraging of innovation in the wallet ecosystem, because there is a very strong pressure to keep wallet standards minimal coming from wallet providers.
 
