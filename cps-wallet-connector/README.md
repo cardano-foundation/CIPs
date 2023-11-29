@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 10
 Title: Wallet Connectors
 Status: Open
 Category: Wallets
