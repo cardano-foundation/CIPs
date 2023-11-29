@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Cardano Wallet Connectors
+Title: Wallet Connectors
 Status: Open
 Category: Wallets
 Authors:
