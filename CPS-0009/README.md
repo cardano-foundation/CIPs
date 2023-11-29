@@ -66,6 +66,10 @@ Efficient coin selection contributes to network scalability by reducing the size
 
 The primary goal of this CPS is to establish a specialized coin selection approach for transactions involving native tokens in Cardano. This approach should prioritize necessary tokens, improve transaction efficiency, and minimize the impact of native token inclusion on transaction size.
 
+### Consider change and fees
+
+In Cardano, there is somewhat of a cyclic dependency between UTxO selection, change output and fees. It would be extremely helpful if some consensus was reached on how to handle this part of transaction building. Since the most naive approach essentially requires rebuilding the transaction several times, there is potential to significantly reduce latency in dapps with a more efficient approach.
+
 ### Streamlined Transactions
 
 By optimizing coin selection, we aim to streamline Cardano transactions, reducing their size and complexity while preserving the integrity of native token operations.
