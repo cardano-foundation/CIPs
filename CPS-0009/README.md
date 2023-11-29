@@ -54,6 +54,7 @@ Some real world use cases of the coin selection algorithm taking Native Token in
 1. [UTxO utils of Cardano in WASM](https://www.npmjs.com/package/cardano-utxo-wasm)
 2. Cardano Wallet (link to be supplied)
 3. [cardano-multiplatform-lib](https://github.com/dcSpark/cardano-multiplatform-lib)
+4. [RoundTable](https://github.com/ADAOcommunity/round-table)
 
 ### Network Scalability
 
