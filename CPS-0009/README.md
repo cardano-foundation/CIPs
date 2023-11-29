@@ -89,7 +89,7 @@ Efficient coin selection contributes to overall network performance, making Card
 
 1. How can we effectively implement and promote the specialized coin selection approach?
 2. What changes, enhancements, or protocols need to be adopted within the Cardano ecosystem to achieve this?
-3. Is there any community collective intelligence could gather for this area? Particularly, would engineers from Emurgo (who maintain `cardano-serialization-lib`) and developers of `cardano-cardano-multiplatform-lib` have any form of insight to push forth community progress?
+3. Is there any community collective intelligence could gather for this area? Particularly, would engineers from Emurgo (who maintain `cardano-serialization-lib`) and developers of `cardano-multiplatform-lib` have any form of insight to push forth community progress?
 
 ### Developer Education
 
