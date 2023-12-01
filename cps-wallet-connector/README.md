@@ -74,7 +74,7 @@ For wallets, connectors should be secure, extendable and should not expect walle
 ### Core Concerns
 
 #### 1. Secure connection
-Security should remain of paramount concern within web 3.
+Security should remain of paramount concern within Web3.
 Connection standards must strive to above all not compromise the security of wallets or dApps.
 Connection standards should be aware of potential impacts of standard security vulnerabilities, such as man-in-middle attacks.
 Furthermore, standards should seek to be censorship resistant, by an ecosystem offering multiple connection standards we move in this direction.
