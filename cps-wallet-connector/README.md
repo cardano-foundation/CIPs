@@ -68,7 +68,7 @@ Ineffective dApp-connectors can cause a range of issues for wallets, dApp develo
 Due to the nature of these connections there can often be unforeseen impacts of small design decisions.
 
 For users, connectors should be widely supported across platforms, secure and decentralized.
-For dApps, connectors should be expressive and extendable.
+For dApps, connectors should be reliable, provide stable and rich APIs.
 For wallets, connectors should be secure, extendable and should not expect wallet's to go beyond their standard activities.
 
 ### Core Concerns
