@@ -2,7 +2,7 @@
 CPS: ?
 Title: ADA token supply exhaustion
 Status: Open
-Category: Token
+Category: Ledger
 Authors:
   - xezon
 Proposed Solutions:
