@@ -24,8 +24,8 @@ People within and above the working age are expected to participate in economic 
 
 By year 2050 we estimate a population of
 
-- 2.01 Billion of 14 and younger
-- 7.00 Billion of 15 and older
+* 2.01 Billion of 14 and younger
+* 7.00 Billion of 15 and older
 
 Source: https://ourworldindata.org/age-structure
 
@@ -67,17 +67,17 @@ Assuming 1% of ADA tokens are lost every year over 100 years, then the maximum s
 45000000000 * ( ( 1 + ( -0.01 / 1 ) ) ^ (1 * 100) ) = 16471455357
 ```
 
-Maximum supply after 100 years and 1% deflation: 16,471,455,357 ADA
-Maximum supply after 200 years and 1% deflation: 6,029,085,368 ADA
-Maximum supply after 300 years and 1% deflation: 2,206,840,233 ADA
-Maximum supply after 400 years and 1% deflation: 807,774,897 ADA
-Maximum supply after 500 years and 1% deflation: 295,671,736 ADA
+* Maximum supply after 100 years and 1% deflation: 16,471,455,357 ADA
+* Maximum supply after 200 years and 1% deflation: 6,029,085,368 ADA
+* Maximum supply after 300 years and 1% deflation: 2,206,840,233 ADA
+* Maximum supply after 400 years and 1% deflation: 807,774,897 ADA
+* Maximum supply after 500 years and 1% deflation: 295,671,736 ADA
 
-Maximum supply after 100 years and 2% deflation: 5,967,880,015 ADA
-Maximum supply after 200 years and 2% deflation: 791,457,597 ADA
-Maximum supply after 300 years and 2% deflation: 104,962,755 ADA
-Maximum supply after 400 years and 2% deflation: 13,920,113 ADA
-Maximum supply after 500 years and 2% deflation: 1,846,079 ADA
+* Maximum supply after 100 years and 2% deflation: 5,967,880,015 ADA
+* Maximum supply after 200 years and 2% deflation: 791,457,597 ADA
+* Maximum supply after 300 years and 2% deflation: 104,962,755 ADA
+* Maximum supply after 400 years and 2% deflation: 13,920,113 ADA
+* Maximum supply after 500 years and 2% deflation: 1,846,079 ADA
 
 It is just a matter of time until the ADA token can no longer be divided for an ever growing number of participants and requirements. It may take many decades or centuries to unfold, but it is inevitable. This ultimately also means there is a cap on the absolute adoption that the Cardano network can ever achieve through the native ADA token. Once the ADA supply exhaustion point is hit, small transactions can no longer be made with the ADA token and network users need to look for workarounds or alternatives.
 
@@ -86,10 +86,11 @@ It is just a matter of time until the ADA token can no longer be divided for an 
 The deflation problem is exacerbated by distribution inequalities. Naturally earlier ADA owners will hold larger portions of the total ADA supply and an ever larger number of newer network participants will deal with an ever decreasing portion of ADA tokens.
 
 In 2023-11-30,
-the 10 largest ADA addresses owned 8.63% of the total ADA supply.
-the 20 largest ADA addresses owned 10.32% of the total ADA supply.
-the 50 largest ADA addresses owned 15.04% of the total ADA supply.
-the 100 largest ADA addresses owned 20.71% of the total ADA supply.
+
+* the 10 largest ADA addresses owned 8.63% of the total ADA supply.
+* the 20 largest ADA addresses owned 10.32% of the total ADA supply.
+* the 50 largest ADA addresses owned 15.04% of the total ADA supply.
+* the 100 largest ADA addresses owned 20.71% of the total ADA supply.
 
 Source: https://www.coincarp.com/currencies/cardano/richlist/
 
