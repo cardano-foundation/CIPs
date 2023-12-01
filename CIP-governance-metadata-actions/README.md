@@ -16,7 +16,7 @@ License: CC-BY-4.0
 The conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md), with the addition of many new on-chain governance artifacts.
 Some of these artifacts support the linking off-chain metadata, as a way to provide context.
 
-The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) standard provides a base framework for how all governance metadata should be formed and handled.
+The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) standard provides a base framework for how all off-chain governance metadata should be formed and handled.
 But this is intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
 
 This proposal aims to provided a specification for off-chain metadata which gives context to governance actions, building on from the CIP-100 framework.
@@ -24,6 +24,12 @@ Without a sufficiently detailed standard for governance actions we introduce the
 Furthermore a lack of such standards risks preventing interoperability between tools, to the detriment of user experiences.
 
 ## Motivation: why is this CIP necessary?
+Blockchains are poor choices to act as content databases.
+This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events.
+By only supplying an onchain hash of the off-chain we ensure correctness of data whilst minimizing the amount of data posted to the chain.
+
+When observing from the chain level, tooling can only observe the content of the governance action and it's anchor.
+
 Motivation for voters:
 - The onchain information for GAs is very limited, it is the WHAT/HOW and not the WHY.
 - Possible undermine governance is WHY is not supplied
@@ -79,6 +85,7 @@ This proposal should not be versioned, to update this standard a new CIP should 
 
 ### Open Questions
 - Should fields be optional or compulsory?
+- How do the above fields relate to the CIP-100 justification field?
 
 ## Path to Active
 
@@ -88,8 +95,8 @@ This proposal should not be versioned, to update this standard a new CIP should 
 
 ### Implementation Plan
 Solicitation of feedback
-- [ ] Run X online workshops to gather insights from stakeholders
-- [ ] Seek community answers on all [Open Questions](#open-questions)
+- [ ] Run X online workshops to gather insights from stakeholders.
+- [ ] Seek community answers on all [Open Questions](#open-questions).
 Implementation
 - [ ] Author to provide reference implementation in a dApp form.
 - [ ] Author to provide example metadata.
