@@ -16,7 +16,7 @@ Wallets are a foundational element of Web3, being the primary interface between 
 Wallet-web bridges allow users to connect their wallet to web-based stacks, allowing a wide range of specialized experiences.
 
 Wallet web-bridge standards consist of two parts; connection standard and API.
-With the connection standard defining how the wallet and dApp initiate communication, this could be over injected Javascript object, WebRTC, WebTorrent, etc.
+With the connection standard defining how the wallet and dApp initiate communication, for example it could be over injected Javascript object.
 The API defines what communications look like between the dApp and wallet post connection.
 
 This problem statement is concerned with the issues surrounding Cardano's current and future wallet-web bridges.
