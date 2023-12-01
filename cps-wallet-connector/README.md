@@ -12,7 +12,7 @@ Created: 2023-07-28
 ---
 
 ## Abstract
-Wallets are a foundational element of web 3, being the primary interface between users and blockchains.
+Wallets are a foundational element of Web3, being the primary interface between users and blockchains.
 Wallet-web bridges allow users to connect their wallet to web-based stacks, allowing a wide range of specialized experiences.
 
 Wallet web-bridge standards consist of two parts; connection standard and API.
