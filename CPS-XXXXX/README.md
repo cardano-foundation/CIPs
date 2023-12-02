@@ -7,6 +7,7 @@ Authors:
   - xezon
 Proposed Solutions:
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/630
 Created: 2023-11-30
 ---
 
