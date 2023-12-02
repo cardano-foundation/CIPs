@@ -86,7 +86,7 @@ Furthermore if an operation requires the wallet to use a secret, the user should
 
 #### 3. Range of supported connection
 Connection standards should ideally support a wide range of wallets and dApp platforms.
-For example, connection which are accessible via desktop or mobile devices should be prioritized more so than those which only support one platform.
+This means we shouldn't assume software environment (e.g. JavaScript in the browser) and define the APIs using schema languages widely used in language-agnostic contexts.
 
 #### 4. Expressive API
 APIs should allow for an expressive range of information to be exchanged.
