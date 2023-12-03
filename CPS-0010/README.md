@@ -13,15 +13,15 @@ Created: 2023-07-28
 
 ## Abstract
 Wallets are a foundational element of Web3, being the primary interface between users and blockchains.
-Wallet-web bridges allow users to connect their wallet to web-based stacks, allowing a wide range of specialized experiences.
+Wallet connectors allow users to connect their wallet to web-based stacks, allowing a wide range of specialized experiences.
 
-Wallet web-bridge standards consist of two parts; connection standard and API.
-With the connection standard defining how the wallet and dApp initiate communication, for example it could be over injected Javascript object.
+Wallet connector standards consist of two parts; connection standard and API.
+With the connection standard defining how the wallet and dApp initiate communication, for example using an injected Javascript object.
 The API defines what communications look like between the dApp and wallet post connection.
 
-This problem statement is concerned with the issues surrounding Cardano's current and future wallet-web bridges.
+This problem statement is concerned with the issues surrounding Cardano's current and future wallet connectors.
 These interfaces are difficult to define and historically have been even harder to iterate upon.
-We wish to provide a comprehensive catalog of the current offerings; and their drawbacks to be able to make suggestions on future standards.
+We wish to provide a comprehensive catalogue of the current offerings and their drawbacks to be able to make suggestions on future standards.
 
 ### Acknowledgments
 
@@ -61,40 +61,42 @@ We wish to provide a comprehensive catalog of the current offerings; and their d
 ## Problem
 <!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
 
-The core motivation of this document is to catalog the current state of Cardano's wallet connectors, discuss their flaws and identify keys concerns for future connector authors to be aware of.
-We hope that by discussing the issues we will inspire the next generation of Cardano wallet connectors so that the ecosystem can grow beyond it's first iterations.
+The core motivation of this document is to outline the current state of Cardano's wallet connectors, discuss their flaws, and identify key concerns for future connector authors to be aware of.
+We hope that by discussing the issues, we will inspire the next generation of Cardano wallet connectors so that the ecosystem can grow beyond its first connector iterations.
 
-Ineffective dApp-connectors can cause a range of issues for wallets, dApp developers and thus users.
-Due to the nature of these connections there can often be unforeseen impacts of small design decisions.
+Ineffective connectors can cause a range of issues for wallets, dApp developers, and thus users.
+Due to the nature of these connections, there can often be unforeseen impacts of small design decisions.
 
-For users, connectors should be widely supported across platforms, secure and decentralized.
-For dApps, connectors should be reliable, provide stable and rich APIs.
-For wallets, connectors should be secure, extendable and should not expect wallet's to go beyond their standard activities.
+For users, connectors should offer secure and reliable compatibility with a wide range of dApps.
+For dApps, connectors should be reliable, provide stable and rich APIs
+For wallets, connectors should be secure and extendable, and you should not expect wallets to go beyond their standard activities.
 
 ### Core Concerns
 
 #### 1. Secure connection
 Security should remain of paramount concern within Web3.
-Connection standards must strive to above all not compromise the security of wallets or dApps.
-Connection standards should be aware of potential impacts of standard security vulnerabilities, such as man-in-middle attacks.
-Furthermore, standards should seek to be censorship resistant, by an ecosystem offering multiple connection standards we move in this direction.
+Connection standards must strive to, above all, not compromise the security of wallets or dApps.
+Connection standards should be aware of the potential impacts of standard security vulnerabilities, such as man-in-the-middle attacks.
+Furthermore, standards should seek to be censorship-resistant, and by offering an ecosystem of multiple connection standards, we move in this direction.
 
 #### 2. Secure API
 The security of the API itself should again remain paramount.
 This means that no secret information should ever be allowed to leave the wallet.
-Furthermore if an operation requires the wallet to use a secret, the user should always be made aware. 
+Furthermore, if an operation requires the wallet to use a secret, the user should always be made aware.
+
+// question: telling wallets what to show users the place of the connector? 
 
 #### 3. Range of supported connection
 Connection standards should ideally support a wide range of wallets and dApp platforms.
-This means we shouldn't assume software environment (e.g. JavaScript in the browser) and define the APIs using schema languages widely used in language-agnostic contexts.
+This means we shouldn't assume a software environment (e.g., JavaScript in the browser) and define the APIs using schema languages widely used in language-agnostic contexts.
 
 #### 4. Expressive API
 APIs should allow for an expressive range of information to be exchanged.
-Generally communication should be allowed two ways.
+Communication should be expressive in both directions.
 
 #### 5. Versioned
 Connection standards and APIs should be explicitly versioned to clearly allow upgrades.
-Furthermore, ideally APIs should allow for optional extendability to facilitate specialization.
+Furthermore, ideally, APIs should allow for optional extendability to facilitate specialization.
 Clear scope of versions / extensions.
 - Should consider tiers of wallet - can be tricky to see adoption for dApps, dApss prefer lowest denominator.
 
@@ -103,14 +105,13 @@ APIs should be written to have a clear scope, understanding the potential strain
 APIs, at a base level, should focus on preserving the base [role of the wallet](#clear-role-of-wallet).
 
 ### Context
-Here we will add context to the current state of Cardano's wallet connectors. 
 
-#### Cardano Wallet-Web Bridge History
+#### Cardano Connector History
 [CIP-30](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md) is *the* fundamental wallet connector standard for Cardano.
 This standard has facilitated the emergence of dApp development on Cardano by defining both a connection standard and an API.
 It is, to date, the only wallet connector standard to see wide adoption in the ecosystem.
-Using an injected Javascript object for communication between wallets and web-based stacks.
-Since its' authoring CIP-30 has seen continued iteration, with changes to its API.
+Using an injected Javascript object for communication between wallets and web-based stacks
+Since its' authoring, CIP-30 has seen continued iteration with changes to its API.
 
 ##### CIP-30 Alternatives
 Since CIP-30's authoring there have only been two other competing standards, in CIP-45 | Decentralized WebRTC dApp-Wallet Communication ([#395](https://github.com/cardano-foundation/CIPs/pull/395)) and CIP-90 | Extendable dApp-Wallet Web Bridge ([#462](https://github.com/cardano-foundation/CIPs/pull/462/)).
