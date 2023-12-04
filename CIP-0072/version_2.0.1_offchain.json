@@ -46,7 +46,7 @@
         "description": "Logo encoded in base64. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB",
         "type": "string",
         "contentEncoding": "base64",
-        "oneOf": [
+        "anyOf": [
           {
             "contentMediaType": "image/png"
           },
