@@ -77,7 +77,6 @@ For wallets, connectors should be secure and extendable, and you should not expe
 Security should remain of paramount concern within Web3.
 Connection standards must strive to, above all, not compromise the security of wallets or dApps.
 Connection standards should be aware of the potential impacts of standard security vulnerabilities, such as man-in-the-middle attacks.
-Furthermore, standards should seek to be censorship-resistant, and by offering an ecosystem of multiple connection standards, we move in this direction.
 
 #### 2. Secure API
 The security of the API itself should again remain paramount.
@@ -93,6 +92,7 @@ This means we shouldn't assume a software environment (e.g., JavaScript in the b
 #### 4. Expressive API
 APIs should allow for an expressive range of information to be exchanged.
 Communication should be expressive in both directions.
+APIs should be language agnostic.
 
 #### 5. Versioned
 Connection standards and APIs should be explicitly versioned to clearly allow upgrades.
@@ -117,8 +117,7 @@ Since its' authoring, CIP-30 has seen continued iteration with changes to its AP
 Since CIP-30's authoring there have only been two other competing standards, in CIP-45 | Decentralized WebRTC dApp-Wallet Communication ([#395](https://github.com/cardano-foundation/CIPs/pull/395)) and CIP-90 | Extendable dApp-Wallet Web Bridge ([#462](https://github.com/cardano-foundation/CIPs/pull/462/)).
 Although neither of of this standards have seen wide adoption.
 
-Although not a direct competitor, CIP-13 could be seen as an alternative standard.
-This standard
+Although not a direct competitor, CIP-13 could be seen as an alternative standard, which fits some wallet connection niches.
 
 ##### CIP-30 Extensions
 - CIP-62
@@ -170,21 +169,43 @@ Goals may also contain requirements for the project. For example, they may inclu
 
 Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
 ### Clear Role of Wallet
-Whilst most wallet softwares generally offer a users a range of features, at their core all wallets are primarily concerned with the management of cryptographic operations.
+Whilst most wallet softwares generally offer a users a range of features, at their core all wallets are concerned with the management of cryptographic operations.
 The majority of wallets build on this by using a chain indexer, so information related to the wallets crypto credentials can be gathered and presented to users.
-Any operation beyond core cryptographic functions should be considered to be optionally extra by wallets and thus not included in base connector standards.
+Any operation beyond core cryptographic functions should be considered to be optionally extra by wallets.
 
-#### Types of Wallet
-No-data - just base crypto (i.e. HWWs) 
-- places all management of UTxOs on dApps (could be applied for Voltaire - just approve votes, not care about UTxOs)
-- Could just share root public key -> so dApp discovers addresses
-- All wallets! - the most inclusive. Is interesting for future applications.
+By only expecting wallet to support cryptographic operations we define a universal rule for all wallet connectors.
+This means at a minimum all dApps can expect from wallets during connection is cryptographic operations.
+Although, dApps should be able to request additional functionalities on connection if they wish.
+
+This does not mean that all connections must support cryptographic operations.
+
+#### Types of Connection
+Forwarding the idea of minimal expected functionality, we define three types of wallet-connection and what is expected to be their roles within connection.
+
+##### No-Data
+A no-data wallet is the bare minimum type of wallet, which is only able to perform basic cryptographic operations i.e. hardware wallets.
+
+No-data core-cryptographic functions using Ed25519 keys:
+- Generate and share public keys
+- Sign with secret keys
+
+These connections would rely on dApps to derive addresses, find UTxOs and build transactions.
+
+We intend to impose the smallest set of minimum expected functionality.
+By keeping the bar to entry low for wallet implementors we aim to be as inclusive as possible.
+
 - Embedded wallets?
 - script wallets?
 - Can just be library
+
+##### Own-Data
+A own-data wallet 
+
 Own-data - knows about it’s own data (used addresses, utxos, etc.)
 - Two sources of truth problem (CIP30)
 - Hard to draw the lines between these
+
+##### Full-Data
 Full-data - can index chain for any information
 - (Could add expense to wallet providers)
 - dApps can ask wallet for any chain info
