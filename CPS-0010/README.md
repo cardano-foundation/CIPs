@@ -83,7 +83,7 @@ The security of the API itself should again remain paramount.
 This means that no secret information should ever be allowed to leave the wallet.
 Furthermore, if an operation requires the wallet to use a secret, the user should always be made aware.
 
-// question: telling wallets what to show users the place of the connector? 
+// question: telling wallets what to show users the place of the connector?
 
 #### 3. Range of supported connection
 Connection standards should ideally support a wide range of wallets and dApp platforms.
@@ -194,24 +194,60 @@ These connections would rely on dApps to derive addresses, find UTxOs and build 
 We intend to impose the smallest set of minimum expected functionality.
 By keeping the bar to entry low for wallet implementors we aim to be as inclusive as possible.
 
+#### Types of Wallet by Query Layer configuration
+
+All wallet standards can be divided into three groups based on a single criterion: what data they provide to dApps via the API endpoint.
+
+This division is important because each of the groups allows for different dApp architectures.
+
+Note that the groups are nested: every wallet is a no-data wallet and every full-data wallet is also an own-data wallet.
+
+##### No-data wallets
+
+No-data wallets do not provide data queries and are only concerned with cryptographic operations (e.g. hardware wallets).
+All management of UTxOs is placed on dApps side.
+No-data wallets can use multiple addresses, but they do not allow to query for available UTxOs and do not indicate which of the addresses are actually used on-chain.
+
+This design ensures that they can function without a query layer and thus without runtime infrastructure needed.
+
+![diagram showing wallet and dApp architecture for no-data wallets](./no-data-wallet.drawio.png)
+
+- Could just share root public key -> so dApp discovers addresses
+- All wallets! - the most inclusive. Is interesting for future applications.
+
+TBD:
+
 - Embedded wallets?
 - script wallets?
-- Can just be library
+- Can be just a library?
 
-##### Own-Data
-A own-data wallet 
+##### Own-data wallets
 
-Own-data - knows about it’s own data (used addresses, utxos, etc.)
+Own-data wallets provide chain queries related to users' own data and wallet state (users' addresses and utxos).
+CIP-30 falls into this category.
+
+![diagram showing possible wallet and dApp architecture for own-data wallets](./own-data-wallet.drawio.png)
+
+TBD:
+
 - Two sources of truth problem (CIP30)
 - Hard to draw the lines between these
 
-##### Full-Data
-Full-data - can index chain for any information
+##### Full-data wallets
+
+Full-data wallets allow to query blockchain data outside of user's scope (i.e. anything not covered by own-data wallets).
+
+Depending on dApp needs, full-data wallets open a way to implement fully-functional dApps that use non-local blockchain data without the need for the developer to maintain dApp backend infrastructure.
+
+![diagram showing possible wallet and dApp architecture for full-data wallets](./full-data-wallet.drawio.png)
+
+TBD:
+
 - (Could add expense to wallet providers)
-- dApps can ask wallet for any chain info
-- Single source of truth
-- Gives users the ability to choose source of truth
-- Adam; User able to bring their own data - running local node etc.
+- dApps can ask wallet for chain info outside of scope of user's addresses
+- Enables "single source of truth" architecture: no need to work around data inconsistency between two query layers
+- Gives dApp developers the ability to choose source of truth
+- May allow users to bring their own data - e.g. running local node, thus alleviating the need to trust the wallet backend
 - Data API to be out of scope for this CPS.
 - Probably not historical state, but certainly ledger state
 
@@ -234,7 +270,7 @@ Utilize the collective knowledge of CIPs and open source development.
 - many types of platform
 - Should / can a universal connector be pursued whilst maintaining other properties
 
-### Can a universal API be pursued?  
+### Can a universal API be pursued?
 - should we pursue fully connection standard agnostic APIs?
 - or should some connection types only support some APIs?
 
