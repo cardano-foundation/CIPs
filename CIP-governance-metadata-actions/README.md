@@ -41,6 +41,7 @@ Furthermore a lack of such standards risks preventing interoperability between t
   - Kenric Nelson
   - Kevin Hammond
   - Lorenzo Bruno
+  - Mike Susko
   - Rhys Morgan
   - Eric Alton
   - Samuel Leathers
