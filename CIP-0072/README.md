@@ -101,7 +101,7 @@ When submitting the transaction metadata pick the following value for `transacti
 
 The dApp Registration certificate itself doesn't enforce a particular structure to the metadata you might fetch off-chain. However, we recommend that you use the following structure:
 
-[Off-chain dApp Registration certificate schema (Version 2)](./version_2.0.0_offchain.json)
+[Off-chain dApp Registration certificate schema (Version 2)](./version_2.0.1_offchain.json)
 
 This schema describes the minimum required fields for a store to be able to display and validate your dApp.
 
