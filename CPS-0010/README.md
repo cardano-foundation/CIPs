@@ -95,8 +95,7 @@ APIs should be language agnostic.
 #### 5. Versioned
 Connection standards and APIs should be explicitly versioned to clearly allow upgrades.
 Furthermore, ideally, APIs should allow for optional extendability to facilitate specialization.
-Clear scope of versions / extensions.
-- Should consider tiers of wallet - can be tricky to see adoption for dApps, dApss prefer lowest denominator.
+Versions and extensions should have clearly defined scopes.
 
 #### 6. Respect the role of wallet
 APIs should be written to have a clear scope, understanding the potential strains placed on wallet providers.
@@ -177,28 +176,13 @@ Although, dApps should be able to request additional functionalities on connecti
 
 This does not mean that all connections must support cryptographic operations.
 
-#### Types of Connection
-Forwarding the idea of minimal expected functionality, we define three types of wallet-connection and what is expected to be their roles within connection.
-
-##### No-Data
-A no-data wallet is the bare minimum type of wallet, which is only able to perform basic cryptographic operations i.e. hardware wallets.
-
-No-data core-cryptographic functions using Ed25519 keys:
-- Generate and share public keys
-- Sign with secret keys
-
-These connections would rely on dApps to derive addresses, find UTxOs and build transactions.
-
-We intend to impose the smallest set of minimum expected functionality.
-By keeping the bar to entry low for wallet implementors we aim to be as inclusive as possible.
-
 #### Types of Wallet by Query Layer configuration
 
-All wallet standards can be divided into three groups based on a single criterion: what data they provide to dApps via the API endpoint.
+All possible wallet standards can be divided into three groups based on a single criterion: what data they provide to dApps via the API endpoint.
 
 This division is important because each of the groups allows for different dApp architectures.
 
-Note that the groups are nested: every wallet is a no-data wallet and every full-data wallet is also an own-data wallet.
+Note that the groups are nested: every wallet is a no-data wallet and every full-data wallet is also an own-data wallet if we look at the dApp architectures they enable.
 
 ##### No-data wallets
 
@@ -206,18 +190,12 @@ No-data wallets do not provide data queries and are only concerned with cryptogr
 All management of UTxOs is placed on dApps side.
 No-data wallets can use multiple addresses, but they do not allow to query for available UTxOs and do not indicate which of the addresses are actually used on-chain.
 
-This design ensures that they can function without a query layer and thus without runtime infrastructure needed.
+These wallets may even rely on dApps to derive addresses, by sharing the root public key.
+
 
 ![diagram showing wallet and dApp architecture for no-data wallets](./no-data-wallet.drawio.png)
 
-- Could just share root public key -> so dApp discovers addresses
-- All wallets! - the most inclusive. Is interesting for future applications.
-
-TBD:
-
-- Embedded wallets?
-- script wallets?
-- Can be just a library?
+This design ensures that wallets can function without a query layer and thus without runtime infrastructure needed.
 
 ##### Own-data wallets
 
@@ -226,28 +204,25 @@ CIP-30 falls into this category.
 
 ![diagram showing possible wallet and dApp architecture for own-data wallets](./own-data-wallet.drawio.png)
 
-TBD:
+This architecture has two major issues:
 
-- Two sources of truth problem (CIP30)
-- Hard to draw the lines between these
+- **Unclear separation of concerns** - while wallets provide certain functions for dApp developers, they have no means to enforce their use, and naturally some developers opt to using their own query layers when they see fit, with consequences that are hard to predict. For example, the wallet may not allow signing a transaction that consumes an UTxO it considers "locked".
+
+- **Two sources of truth problem** - on Cardano, every running node has its own opinion on the set of currently unspent transaction outputs. Only [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency) is guaranteed. Any dApp that interacts with an own-data wallet has to deal with the inconsistency between local `cardano-node`-based query layer and light wallet query layer, especially when dApp workflow involves sending multiple interactions with the wallet in quick succession. For example, a wallet may refuse to sign a transaction containing an UTxO it does not (yet) know about.
+
+Even if we enforce clear separation of concerns in the standards, e.g. by stating that sending a transaction bypassing the wallet is not allowed, the problem of two sources of truth will remain.
 
 ##### Full-data wallets
 
 Full-data wallets allow to query blockchain data outside of user's scope (i.e. anything not covered by own-data wallets).
 
-Depending on dApp needs, full-data wallets open a way to implement fully-functional dApps that use non-local blockchain data without the need for the developer to maintain dApp backend infrastructure.
-
 ![diagram showing possible wallet and dApp architecture for full-data wallets](./full-data-wallet.drawio.png)
 
-TBD:
+Depending on dApp needs, full-data wallets open a way to implement fully-functional dApps that use non-local blockchain data without the need for the developer to maintain dApp backend infrastructure. As a result, more decentralized and censorship-resistant architectures become possible: a dApp can be distributed as a set of files, and deployed to IPFS or static hosting websites.
 
-- (Could add expense to wallet providers)
-- dApps can ask wallet for chain info outside of scope of user's addresses
-- Enables "single source of truth" architecture: no need to work around data inconsistency between two query layers
-- Gives dApp developers the ability to choose source of truth
-- May allow users to bring their own data - e.g. running local node, thus alleviating the need to trust the wallet backend
-- Data API to be out of scope for this CPS.
-- Probably not historical state, but certainly ledger state
+Full-data wallets enable "single source of truth" architecture: no need to work around data inconsistency between two query layers.
+
+They are more expensive to operate due to higher query layer requirements, but the risks could be lowered by letting query layer providers and wallet developers be separate entities. That would also allow the end users to choose query layer providers they trust more rather than being forced to trust wallet's infrastructure as well as code, and, optionally, use their own query layer deployments, thus alleviating the need to trust any external wallet backend while enjoying the usual interface.
 
 ### Strive for interoperable and extensible APIs
 Design APIs which are interoperable between connection standards and wallet types.
