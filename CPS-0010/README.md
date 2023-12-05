@@ -81,9 +81,6 @@ Connection standards should be aware of the potential impacts of standard securi
 #### 2. Secure API
 The security of the API itself should again remain paramount.
 This means that no secret information should ever be allowed to leave the wallet.
-Furthermore, if an operation requires the wallet to use a secret, the user should always be made aware.
-
-// question: telling wallets what to show users the place of the connector?
 
 #### 3. Range of supported connection
 Connection standards should ideally support a wide range of wallets and dApp platforms.
