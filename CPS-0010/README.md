@@ -5,6 +5,7 @@ Status: Open
 Category: Wallets
 Authors:
     - Ryan Williams <ryan.williams@iohk.io>
+    - Vladimir Kalnitsky <vladimir@mlabs.city>
 Proposed Solutions: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/619
