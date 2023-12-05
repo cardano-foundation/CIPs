@@ -1,13 +1,9 @@
 # Minting a CIP 102 compliant NFT with royalties
 
-## Minting Policy
+## Timelocked Minting Policy
 - Checks
-  - Reference NFT created
-  - User NFT created
-  - Royalty NFT created (optionally?)
-  - Royalty datum is valid
-  - Reference datum is valid
-  - User datum is valid
+  - Owner has signed tx
+  - Tx validity window is before MP deadline
 
 ## Validators
 
@@ -24,7 +20,7 @@
 		- address
 
 ## Offchain
-
+- Constructs well formed CIP-68 & CIP-102 Datums
 - Sends reference NFT & datum to arbitrary address
 - Sends royalty NFT & datum to
 	- arbitrary address
