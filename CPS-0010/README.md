@@ -236,17 +236,30 @@ Utilize the collective knowledge of CIPs and open source development.
 ## Open Questions
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
-// todo
+### Should we provide historical data in full-data wallets?
+
+Historical data includes (but is not limited to):
+
+- metadata and contents of past transactions
+- spent transaction outputs
+- past epoch metadata
+- past stake delegations
 
 ### Can a universal connector be pursued?
-- many types of wallet
-- many types of platform
-- Should / can a universal connector be pursued whilst maintaining other properties
+
+Every wallet connector that simply adds functionality on top of another standard can be considered a valid implementation of the base standard.
+If the set of standards is designed in a way that allows for extensions without conflicts, then a superset of all standards can be considered a universal connector. How to make it possible to clearly define a "universal connector" and whether it is useful at all remains to be seen.
 
 ### Can a universal API be pursued?
-- should we pursue fully connection standard agnostic APIs?
-- or should some connection types only support some APIs?
+
+Platform differences are a concern: by using specifications that do not rely on assumptions about data transfer methods, software environment or programming language, it is possible to create a standard that is truly reusable across platforms.
+
+There are many types of dApp architectures enabled by different wallet types, but there is no requirement to use the APIs provided by wallets, so dApps that use simpler standards should still remain functional when used with their extensions.
+
+Does that open a way to define a universal API?
 
 ### How interoperable can standards be with those of other ecosystems?
-- What are the priorities for this ecosystem?
-- other than Cardano crypto
+
+Cardano is sufficiently different from most of the blockchains that aim to unify their wallet standards.
+
+What options do we have for integration with Cardano sidechains, rollups, hardforks, private testnets, etc.?
