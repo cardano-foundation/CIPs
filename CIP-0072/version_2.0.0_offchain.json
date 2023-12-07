@@ -2,6 +2,11 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type":"object",
     "properties": {
+      "version": {
+        "type": "string",
+        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+        "description": "Off-chain schema version following Semantic Versioning"
+      },
       "subject": {
         "type":"string",
         "minLength": 1,
@@ -11,69 +16,115 @@
       },
       "projectName": {
         "type":"string",
-        "description": "A project name, e.g. My dApp."
+        "description": "A project name, e.g. My dApp.",
+        "maxLength": 40
       },
       "link": {
         "type":"string",
-        "description": "Website presenting a dApp.",
-        "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-      },      
-      "logo": {
+        "description": "A link a dApp or a website presenting a DApp",
+        "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+        "maxLength": 200
+      },
+      "companyName": {
         "type":"string",
-        "description": "URL to the logo or the base64 encoded image."
+        "description": "Company name",
+        "maxLength": 100
+      },
+      "companyEmail": {
+        "type":"string",
+        "description": "Contact email of the company behind the dApp",
+        "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "maxLength": 200
+      },
+      "companyWebsite": {
+        "type":"string",
+        "description": "Website of the company behind the dApp.",
+        "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+        "maxLength": 200
+      },
+      "logo": {
+        "description": "Logo encoded in base64. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB",
+        "type": "string",
+        "contentEncoding": "base64",
+        "oneOf": [
+          {
+            "contentMediaType": "image/png"
+          },
+          {
+            "contentMediaType": "image/jpeg"
+          },
+          {
+            "contentMediaType": "image/svg+xml"
+          }
+        ],
+        "maxLength": 1361000
       },
       "categories": {
         "type":"array",
         "items": {
           "type": "string",
-          "enum":["Games", "DeFi", "Gambling", "Exchanges", "Collectibles", "Marketplaces", "Social", "Other"]
+          "enum": ["DeFi", "Development", "Education", "Games", "Identity", "Marketplace", "NFT", "Other", "Security"]
         },
         "description": "One or more categories. Category MUST be one of the following schema definition."
       },
-      "social": {
-        "type":"object",
-        "properties": {
-          "website": {
-            "type":"string",
-            "description": "dApps website link.",
-            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-          },
-          "twitter": {
-            "type":"string",
-            "description": "An optional Twitter link.",
-            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-          },
-          "github": {
-            "type":"string",
-            "description": "An optional Github link.",
-            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-          },
-          "discord": {
-            "type":"string",
-            "description": "An optional Discord link.",
-            "pattern": "(https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\/\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
-          }
+      "screenshots": {
+        "type": "array",
+        "maxItems": 10,
+        "items": {
+          "description": "Screenshots encoded in base64. Minimum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
+          "type": "string",
+          "contentEncoding": "base64",
+          "oneOf": [
+            {
+              "contentMediaType": "image/png"
+            },
+            {
+              "contentMediaType": "image/jpeg"
+            },
+            {
+              "contentMediaType": "image/svg+xml"
+            }
+          ],
+          "maxLength": 2722000
         },
-        "required": ["website"]
+        "description": "Screenshots of the DApp encoded in base64. We recommend to share screenshots from the dApp usage itself."
+      },
+      "social": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The platform or resource identifier (GitHub, Website, X.com, etc)"
+            },
+            "link": {
+              "type": "string",
+              "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+              "maxLength": 200
+            }
+          }
+        }
       },
       "description": {
         "type": "object",
         "properties": {
           "short": {
             "type": "string",
-            "description": "Short dApp description (no less than 40 and no longer than 168 characters).",
+            "description": "Short dApp description.",
             "minLength": 40,
             "maxLength": 168
           },
           "long": {
             "type": "string",
-            "description": "An optional long dApp description (no less than 40 and no longer than 1008 characters).",
+            "description": "An optional long dApp description.",
             "minLength": 40,
             "maxLength": 1008
           }
         },
         "required": [
-          "short"
+          "short",
+          "long"
         ]
       },
       "releases": {
@@ -84,8 +135,8 @@
             "properties": {
               "releaseNumber": {
                 "type": "string",
-                "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\\+([0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*))?$",
-                "description": "Semver compatible release number (major.minor.patch) or (major.minor.patch-some_text) e.g. 1.2.3 or 1.1.1-alpha"
+                "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+                "description": "Semver compatible release number (major.minor.patch)"
               },
               "releaseName": {
                 "type": "string",
@@ -109,7 +160,8 @@
                         "type": "string"
                       },
                       "version": {
-                        "type": "integer"
+                        "type": "string",
+                        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
                       }
                     },
                     "required": [
@@ -143,8 +195,8 @@
               "purposes":{
                 "type":"array",
                 "items": {
-                    "type": "string",
-                      "enum":["SPEND", "MINT"]
+                  "type": "string",
+                  "enum":["SPEND", "MINT"]
                 },
                 "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages)."
               },
@@ -158,9 +210,10 @@
                   {
                     "type":"object",
                     "properties":{
-                      "version":{
-                        "type":"integer",
-                        "description":"Script version, monotonically increasing."
+                      "version": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+                        "description": "Script version following Semantic Versioning"
                       },
                       "plutusVersion":{
                         "type":"integer",
@@ -199,9 +252,15 @@
       "subject",
       "projectName",
       "link",
+      "companyName",
+      "companyEmail",
+      "companyWebsite",
       "social",
+      "logo",
       "categories",
-      "description"
-    ]
-  }
-  
+      "screenshots",
+      "description",
+      "version"
+    ],
+    "additionalProperties": false
+}
