@@ -413,10 +413,13 @@ builtinByteStringToInteger True (consByteString 0x01 (consByteString 0x01
 ```
 
 We also describe properties that any `builtinByteStringToInteger` implementation 
-must have. Throughout, `i` is not negative, and `0 <= w8 <= 255`.
+must have. Throughout, `i` is not negative, `0 <= w8 <= 255`, and `bs` is not
+empty.
 
-1. `builtinByteStringToInteger b (builtinIntegerToByteString b k i) = i`
+1. `builtinByteStringToInteger b (builtinIntegerToByteString b 0 i) = i`
 2. `builtinByteStringToInteger b (consByteString w8 emptyByteString) = w8`
+3. `builtinIntegerToByteString b (lengthOfByteString bs) (builtinByteStringToInteger b bs) =
+   bs`
 
 ## Rationale: how does this CIP achieve its goals?
 
