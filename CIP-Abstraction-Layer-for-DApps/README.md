@@ -1,10 +1,10 @@
 ---
 CIP: ????
-Title: Cardano dApp-Wallet Web Bridge
+Title: Web-Wallet Bridge - Abstraction Layer for DApps
 Status: Proposed
 Category: Wallets
 Authors:
-  - Fell-x27
+  - Denis Kalinin (Fell-x27)
 Implementors: N/A
 Discussions: N/A
 Created: 2023-11-21
@@ -37,6 +37,7 @@ License: CC-BY-4.0
       * [OuterUTxO](#outerutxo)
       * [Datum](#datum)
       * [Movement](#movement)
+      * [Withdrawal](#withdrawal)
       * [Delegation](#delegation)
       * [Metadatum](#metadatum)
       * [Metadata](#metadata)
@@ -44,9 +45,7 @@ License: CC-BY-4.0
       * [TransactionScript](#transactionscript)
       * [DataSignature](#datasignature)
     * [Errors](#errors)
-    * [Bridge API](#bridge-api)
-      * [Code injection](#code-injection)
-      * [CardanoBridge](#cardanobridge)
+    * [Abstraction Layer API](#abstraction-layer-api)
       * [CardanoWalletAPI](#cardanowalletapi)
         * [connect()](#connectnetworkmagic-number-accountid-accountid-promiseaccountid)
         * [disconnect()](#disconnectaccountid-accountid-promisevoid)
@@ -82,23 +81,25 @@ It's not "getting rid of CBOR", not transferring all functions to the wallet, no
 
 This CIP addresses several issues that complicate the development of the Cardano ecosystem with the current integration standard:
 
-1. **Complexity in Writing Client-Side Logic for DApps**: As they essentially need to implement their own wallet each time, including algorithms for coin selection, UTxO management, UTxO validation, TX building, etc. They shouldn't be doing this. There is already a separately written wallet that connects to their application for this purpose. <br><br>
+1. **Complexity in Writing Client-Side Logic for DApps**: As they essentially need to implement their own wallet each time, including algorithms for coin selection, UTxO management, UTxO validation, TX building, etc. They shouldn't be doing this. There is already a separately written wallet that connects to their application for this purpose. 
 
-2. **Integration Difficulties**: This implies complicating the internal logic of wallets, adding endpoints for importing transactions, writing logic for checks/validation of foreign transactions, etc. This could be avoided if the transaction was created and processed natively by the wallet.<br><br>
+2. **Integration Difficulties**: This implies complicating the internal logic of wallets, adding endpoints for importing transactions, writing logic for checks/validation of foreign transactions, etc. This could be avoided if the transaction was created and processed natively by the wallet.
 
-3. **Privacy Issues**: Currently, the wallet must pass all information to the DApp, including the UTxO set and full addresses on one hand, and trust the user's funds to the transaction building code inside the DApp on the other. This is not obvious to the user, and in case of problems, they will blame the wallet developers.<br><br>
+3. **Privacy Issues**: Currently, the wallet must pass all information to the DApp, including the UTxO set and full addresses on one hand, and trust the user's funds to the transaction building code inside the DApp on the other. This is not obvious to the user, and in case of problems, they will blame the wallet developers.
 
-4. **Current Role of Wallets**: At present, the wallet is essentially just a synchronization point for the client side of the DApp with the blockchain. Yes, it generates user signatures, but, for example, if we use a HW-wallet, then the task of the SW-wallet is reduced to 'submit tx'. This is an incorrect design of communication.<br><br>
+4. **Current Role of Wallets**: At present, the wallet is essentially just a synchronization point for the client side of the DApp with the blockchain. Yes, it generates user signatures, but, for example, if we use a HW-wallet, then the task of the SW-wallet is reduced to 'submit tx'. This is an incorrect design of communication.
 
-5. **Scalable Complexity**: Currently, the integration standard implies that the complexity of the solution on the DApp side **must be** unjustifiably high even for elementary things that do not require knowledge of CBOR, CDDL, or an understanding of the difference between bech32 and base58.<br><br>
+5. **Scalable Complexity**: Currently, the integration standard implies that the complexity of the solution on the DApp side **must be** unjustifiably high even for elementary things that do not require knowledge of CBOR, CDDL, or an understanding of the difference between bech32 and base58.
 
-6. **Reducing Dependencies**: Currently, all DApps developers **must** operate only with CBOR-CDDL entities, making them dependent on third-party libraries such as `cardano_serialization_lib`, and forcing them to integrate these libraries into their projects. This complicates the logic, increases the size of the loaded page, necessitates keeping up with updates, etc., thereby increasing the number of failure factors in the application's logic.<br><br>
+6. **Reducing Dependencies**: Currently, all DApps developers **must** operate only with CBOR-CDDL entities, making them dependent on third-party libraries such as `cardano_serialization_lib`, and forcing them to integrate these libraries into their projects. This complicates the logic, increases the size of the loaded page, necessitates keeping up with updates, etc., thereby increasing the number of failure factors in the application's logic.
 
-7. **Lack of abstraction**: The Cardano ecosystem is actively developing, especially in everything related to Plutus. DApps struggle to keep up with the innovations. Because of this, we encounter a heavy inconsistency in approaches. For example, this concerns everything related to collaterals at the moment. Cardano has long allowed making their use transparent and convenient for the user, but not all DApps support these approaches, forcing wallets to "reserve collateral UTxO" and somehow integrate this into UX. Moreover, the very fact that the DApp operates the collateral, and not the wallet (which only offers collateral but without guarantees that it will be used), makes the user vulnerable.<br><br>
+7. **Lack of abstraction**: The Cardano ecosystem is actively developing, especially in everything related to Plutus. DApps struggle to keep up with the innovations. Because of this, we encounter a heavy inconsistency in approaches. For example, this concerns everything related to collaterals at the moment. Cardano has long allowed making their use transparent and convenient for the user, but not all DApps support these approaches, forcing wallets to "reserve collateral UTxO" and somehow integrate this into UX. Moreover, the very fact that the DApp operates the collateral, and not the wallet (which only offers collateral but without guarantees that it will be used), makes the user vulnerable.
 
-8. **Security**: Currently, DApps are given too much responsibility in the formation of transactions. This could potentially become an attack vector on a user who is confident in their security. Besides the risk of leaking wallet data, including addresses, there is a possibility that a DApp could form a malware transaction. This transaction might include fields not checked by the wallet but still obtain all necessary signatures. For example, the user could unknowingly become part of a criminal scheme or lose funds.<br><br>
+8. **Security**: Currently, DApps are given too much responsibility in the formation of transactions. This could potentially become an attack vector on a user who is confident in their security. Besides the risk of leaking wallet data, including addresses, there is a possibility that a DApp could form a malware transaction. This transaction might include fields not checked by the wallet but still obtain all necessary signatures. For example, the user could unknowingly become part of a criminal scheme or lose funds.
 
-9. **Trustful system**: While blockchain is inherently a trustless system, it seems very odd when a wallet unconditionally trusts all user data to a third party at the first request.<br><br>
+9. **Trustful system**: While blockchain is inherently a trustless system, it seems very odd when a wallet unconditionally trusts all user data to a third party at the first request.
+
+10. **One DApp - one account**: Currently, CIP-30 restricts a user to using only one account when interacting with a DApp. This limitation constrains developers in their capabilities and can create inconvenience for the user.
 
 By solving these problems, we will lower the entry barrier for DApp developers into the ecosystem, while simultaneously enhancing the security of the end-user who has entrusted their funds to a wallet, but should not trust their management to just any application they encounter. The wallet will act as a black box, and the DApp as an extension of its UI, not a replacement of its engine.
 
@@ -106,10 +107,28 @@ Additionally, this approach will simplify the integration of wallets and DApps f
 
 ## Specification
 
+These definitions extend the 
+[CIP-30 | Cardano dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)
+to provide a more abstract and developer-friendly interface for interactions between wallets and DApps.
+
+
 ### The main idea
-The main idea is to delegate as many operations as possible to the wallet, which are its core functions. This will greatly simplify the lives of DApps developers. It will also normalize the transaction pipeline, which is currently highly intermingled between the DApp and the wallet.
-We are moving away from imperative interaction with the wallet towards a declarative approach, where the DApp does not have to assemble the transaction itself; it should be sufficient to **describe** the desired outcome. Just as a regular wallet user is not required to delve into all the details - they simply specify the address, amount, and press a button. This is literally why software wallets exist.
-For example, here is a description of a transaction sending 1 ada to some address in the testnet:
+The main idea is to delegate as many operations as possible to the wallet, which are its core functions. However, at the same time, maintain full control over the transaction pipeline from the DApp's side by increasing the expressiveness and the level of abstraction of the bridge API. This will greatly simplify the lives of DApps developers. It will also normalize the transaction pipeline, which is currently highly intermingled between the DApp and the wallet.
+
+
+We are moving away from imperative interaction with the wallet towards a declarative approach, where the DApp does not have to assemble the transaction itself; it should be sufficient to **describe** the desired actions. Just as a regular wallet user is not required to delve into all the details - they simply specify the address, amount, and press a button. This is literally why software wallets exist.
+
+We already have a precedent for such an interaction - the way Ledger communicates with a software wallet. It's an example that a simple JSON is enough to describe a transaction. But the Ledger's protocol has a very low-level implementation. If we make it high-level, we'll get a system that relieves DApps from headaches, and wallets no longer have to look back at them in terms of implementing new Cardano features.
+
+Any technological ecosystem operates by the same rules as actual ecosystems. We have a chain of providers and consumers from the lowest level of abstraction to the highest.
+
+For example: 
+`network -> node -> dbsync -> wallet -> dapp -> user`
+
+From left to right, we provide data with an increase in the level of abstraction at each step, from right to left, we provide feedback, with a decrease in the level of abstraction at each step.
+
+
+For example, here is a **full description** of a transaction sending 1 ada to some address in the testnet:
 
 ```
 {
@@ -122,7 +141,7 @@ For example, here is a description of a transaction sending 1 ada to some addres
 }
 ```
 
-Or a description of a delegation transaction to a certain pool:
+Or a **full description** of a delegation transaction to a certain pool:
 
 
 ```
@@ -136,7 +155,7 @@ Or a description of a delegation transaction to a certain pool:
 ```
 
 
-This is quite enough. The DApp shouldn't have to calculate change, fees, select inputs, withdrawal rewards and so on. It just needs to **tell the wallet what result it needs**.
+This is quite enough. The DApp shouldn't have to calculate change, fees, select inputs, withdrawal rewards and so on if not needed. It just needs to **tell the wallet what result it needs**.
 Let's understand how this works.
 
 ### Data Types
@@ -159,31 +178,31 @@ Technically, it's not a type, but just a string constant "auto" passed instead o
 #### `cbor<T>`
 
 A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Multi-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md).
-This representation was chosen when possible as it is consistent across the Cardano ecosystem and widely used by other tools, such as [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib), which has support to encode every type in the binary spec as CBOR bytes.<br><br>
+This representation was chosen when possible as it is consistent across the Cardano ecosystem and widely used by other tools, such as [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib), which has support to encode every type in the binary spec as CBOR bytes.
 
 #### `JSON`
 
-[JavaScript Object Notation](https://json-schema.org/draft/2020-12/json-schema-core) is a lightweight data-interchange format that is easy for humans to read and write, and easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language and is commonly used for transmitting data in web applications and for storing configuration settings.<br><br>
+[JavaScript Object Notation](https://json-schema.org/draft/2020-12/json-schema-core) is a lightweight data-interchange format that is easy for humans to read and write, and easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language and is commonly used for transmitting data in web applications and for storing configuration settings.
 
 #### `URI`
 
-A URI image (e.g. data URI base64 or other) for img src for the wallet which can be used inside the dApp for the purpose of asking the user which wallet they would like to connect with.<br><br>
+A URI image (e.g. data URI base64 or other) for img src for the wallet which can be used inside the dApp for the purpose of asking the user which wallet they would like to connect with.
 
 #### `BigIntString`
 
-A BigInt number, stored as a string value. For example, the amount of something. It may be negative (e.g., for token burning).<br><br>
+A BigInt number, stored as a string value. For example, the amount of something. It may be negative (e.g., for token burning).
 
 #### `HexString`
 
-Byte data, converted to hex and stored as a string value. For example, the hash of something. Note, this is not the same as cbor<T>, although there is no difference in representation between them, there is a difference at the level of context and use cases!<br><br>
+Byte data, converted to hex and stored as a string value. For example, the hash of something. Note, this is not the same as cbor<T>, although there is no difference in representation between them, there is a difference at the level of context and use cases!
 
 #### `base58`
 
-A base58-encoded hexadecimal value. Typically used for Byron addresses.<br><br>
+A base58-encoded hexadecimal value. Typically used for Byron addresses.
 
 #### `AddressString`
 
-A string representing an address in either bech32 or base58 format. Not CBOR!<br><br>
+A string representing an address in either bech32 or base58 format. Not CBOR!
 
 #### `LocalString`
 
@@ -196,21 +215,19 @@ type LocalString = {
 }[];
 ```
 
-* **`local`**
-  
+* **`local`** 
   A string containing the locale code in the format [ISO-639.1](https://en.wikipedia.org/wiki/ISO_639-1).
   
-  > **Note:** The DApp is not obliged to provide messages in languages it does not support.
-  
 * **`body`**
-
-  A string containing the localized text of the message. It is important that all `body` within one `LocalString` contain the same information. <br><br>
+  A string containing the localized text of the message. It is important that all `body` within one `LocalString` contain the same information. 
+  
+> **Note:** The DApp is not obliged to provide messages in languages it does not support.
 
 The logic for working with `LocalString` is as follows:
 
 1. If a `LocalString` consisting of only one element is passed to the wallet, it is displayed "as is".
 2. If a `LocalString` consisting of several elements is passed to the wallet, the wallet should choose the one whose `local` is most suitable for the user.
-3. If the `LocalString` does not contain a localization suitable for the user, the wallet may choose any other localization it considers "default". In most cases, this will likely be "en". <br><br>
+3. If the `LocalString` does not contain a localization suitable for the user, the wallet may choose any other localization it considers "default". In most cases, this will likely be "en". 
 
 
 #### `AccountEra`
@@ -223,11 +240,15 @@ type AccountEra = "Byron" | "Shelley";
 
 #### `AccountId`
 
-An arbitrary string that serves as the identifier of the wallet account connected to the DApp, formed by the wallet according to its own rules. The main point is that the wallet understands what is required of it when it receives this identifier in a request.
+An arbitrary string that serves as the identifier of the wallet account connected to the DApp, formed by the wallet according to its own rules. The main point is that the wallet understands what is required of it when it receives this identifier in a request. A wallet application can contain multiple wallets, and each wallet can have multiple accounts. This solution allows for the separation of requests between wallet accounts and connecting multiple accounts to a single DApp.
+
 
 ```ts
 type AccountId = string;
 ```
+
+> **Note:** This is not a derivation path; it's an account identifier that the wallet application operates with. It can have an arbitrary format; these are data that are passed from the wallet to the DApp and back 'as is'. For example, in the case of `cardano-wallet`, it could be a combination of `wallet_id` and `account_number`.
+
 
 #### `NativeToken`
 
@@ -244,15 +265,15 @@ type NativeToken = {
 
 * **`policyId`**
 
-  Contains the [hexadecimal](#hexstring) representation of the asset's `policyID`.<br><br>
+  Contains the [hexadecimal](#hexstring) representation of the asset's `policyID`.
 
 * **`name`**
 
-  Contains the [hexadecimal](#hexstring) representation of the asset's `name`. If absent, the value should be set to `null`.<br><br>
+  Contains the [hexadecimal](#hexstring) representation of the asset's `name`. If absent, the value should be set to `null`.
 
 * **`amount`**
 
-  Contains the quantity of the asset [without a decimal part](#bigintstring). That is, if we want to describe 1 token with a decimal part of 6 digits, the amount should be set to 1,000,000, i.e., 1 * 10^6. Setting the value to 1 would be equivalent to 0.000001!<br><br>
+  Contains the quantity of the asset [without a decimal part](#bigintstring). That is, if we want to describe 1 token with a decimal part of 6 digits, the amount should be set to 1,000,000, i.e., 1 * 10^6. Setting the value to 1 would be equivalent to 0.000001!
 
 
 #### `AssetBundle`
@@ -261,18 +282,18 @@ A structure describing the value being transferred in the Cardano network.
 
 ```ts
 type AssetBundle = {
-    lovelaces: BigIntString,
+    lovelaces: BigIntString,    
     nativeTokens?: NativeToken[] | null
 };
 ```
 
 * **`lovelaces`**
 
-  The amount of ada, in [lovelaces](#bigintstring).<br><br>
+  The amount of ada, in [lovelaces](#bigintstring).
 
 * **`nativeTokens`**
 
-  Is an array of [`NativeToken`](#nativetoken), optional. If the presence of tokens is not implied, it can be set to `null`, or omitted.<br><br>
+  Is an array of [`NativeToken`](#nativetoken), optional. If the presence of tokens is not implied, it can be set to `null`, or omitted.
 
 
 #### `Certificate`
@@ -289,15 +310,15 @@ type Certificate = {
 
 * **`type`**
 
-  Takes one of three preset values, describing the type of the certificate, and is mandatory.<br><br>
+  Takes one of three preset values, describing the type of the certificate, and is mandatory.
 
 * **`stakeKeyId`**
 
-  Indicates the user's staking key number in the derivation path. To ensure the key belongs to the user, we only inform the wallet of its ordinal number. By default, for wallets without multi-delegation, it is 0.<br><br>
+  Indicates the user's staking key number in the derivation path. To ensure the key belongs to the user, we only inform the wallet of its ordinal number. By default, for wallets without multi-delegation, it is 0.
 
 * **`poolHash`**
 
-  Points to the [hexadecimal](#hexstring) representation of the stakepool identifier. It's optional - it can be set to `null`, or omitted. Do not confuse it with `bech32 poolId`!<br><br>
+  Points to the [hexadecimal](#hexstring) representation of the stakepool identifier. It's optional - it can be set to `null`, or omitted. Do not confuse it with `bech32 poolId`!
 
 
 #### `Mint`
@@ -313,11 +334,11 @@ type Mint = {
 
 * **`nativeScript`**
 
-  Contains a [CBOR](#cbort)-serialized hex-encoded NativeScript associated with the tokens being created.<br><br>
+  Contains a [CBOR](#cbort)-serialized hex-encoded NativeScript associated with the tokens being created.
 
 * **`tokens`**
 
-  Contains an array of [`nativeToken`](#nativetoken), describing the tokens that will be minted or burned. If we plan to burn tokens, the `amount` should be negative.<br><br>
+  Contains an array of [`nativeToken`](#nativetoken), describing the tokens that will be minted or burned. If we plan to burn tokens, the `amount` should be negative.
 
 #### `OuterUTxO`
 
@@ -333,7 +354,7 @@ type OuterUTxO = {
 
 * **`hash`**
 
-  Contains the [hash](#hexstring) of the UTxO.<br><br>
+  Contains the [hash](#hexstring) of the UTxO.
 
 * **`index`**
 
@@ -343,7 +364,7 @@ type OuterUTxO = {
 
 * **`value`**
 
-  Describes the [assets](#assetbundle) associated with this UTxO. Since this is a UTxO not belonging to the wallet, we must inform it of these details to enable the calculation of change.<br><br>
+  Describes the [assets](#assetbundle) associated with this UTxO. Since this is a UTxO not belonging to the wallet, we must inform it of these details to enable the calculation of change.
 
 #### `Datum`
 
@@ -361,14 +382,14 @@ Datum: {
 
 * **`type`**
 
-  Specifies the type of data being transmitted. It can be either a `hash` or an `inline` representation. Depending on it, the content of the `data` field changes. <br><br>
+  Specifies the type of data being transmitted. It can be either a `hash` or an `inline` representation. Depending on it, the content of the `data` field changes. 
 
 * **`data`**
 
   Contains the transmitted data.
 
   If the `hash` type was previously specified, then it contains a [CBOR](#cbort)-serialized hex-encoded `CDDL dataHash` object, calculated for a PlutusData.
-  If the `inline` type was previously specified, then it contains a [CBOR](#cbort)-serialized hex-encoded `CDDL PlutusData` object itself.<br><br>
+  If the `inline` type was previously specified, then it contains a [CBOR](#cbort)-serialized hex-encoded `CDDL PlutusData` object itself.
 
 
 #### `Movement`
@@ -385,15 +406,32 @@ type Movement = {
 
 * **`value`**
 
-  Represents an instance of [`AssetBundle`](#assetbundle).<br><br>
+  Represents an instance of [`AssetBundle`](#assetbundle).
 
 * **`address`**
 
-  Must contain a bech32 or base58 [address](#addressstring) of the receiver. If omitted or `"auto"`, it means the wallet can choose which address to make it to (for example, a change address).<br><br>
+  Must contain a bech32 or base58 [address](#addressstring) of the receiver. If omitted or `"auto"`, it means the wallet can choose which address to make it to (for example, a change address).
 
 * **`datum`**
 
-  Contains [data](#datum) for smart contract operation, or their hash. It's optional - it can be set to `null`, or omitted.<br><br>
+  Contains [data](#datum) for smart contract operation, or their hash. It's optional - it can be set to `null`, or omitted.
+
+
+#### `Withdrawal`
+A structure describing reward withdrawals.
+
+```ts
+type Withdrawal = {
+	amount: BigIntString,
+	stakeKeyId: number
+}
+```
+
+* **`amount`**
+  The amount of ada, in [lovelaces](#bigintstring).
+
+* **`stakeKeyId`**
+  Contains the index number of the staking key used in delegation.
 
 
 #### `Delegation`
@@ -409,10 +447,10 @@ type Delegation = {
 
 * **`poolHash`**
 
-  Points to the [hexadecimal](#hexstring) representation of the stakepool identifier, optional. Do not confuse it with `bech32 poolId`!<br><br>
+  Points to the [hexadecimal](#hexstring) representation of the stakepool identifier, optional. Do not confuse it with `bech32 poolId`!
 
 * **`stakeKeyId`**
-  Contains the index number of the staking key used in delegation.<br><br>
+  Contains the index number of the staking key used in delegation.
 
 #### `Metadatum`
 
@@ -427,11 +465,11 @@ type Metadatum = {
 
 * **`datum`**
 
-  Contains custom [JSON](#json).<br><br>
+  Contains custom [JSON](#json).
 
 * **`schema`**
 
-  Indicates the number of the "schema", in most cases, it is acceptable to specify 0.<br><br>
+  Indicates the number of the "schema", in most cases, it is acceptable to specify 0.
   
 #### `Metadata`
 
@@ -471,15 +509,15 @@ type RequiredSign = {
 
 * **`inner`**
 
-  Indicates whether this signature is client-side. If `true`, it means that the wallet must provide it during the signing phase. If `false`, the wallet only needs to add the requirement for its presence.<br><br>
+  Indicates whether this signature is client-side. If `true`, it means that the wallet must provide it during the signing phase. If `false`, the wallet only needs to add the requirement for its presence.
 
 * **`keyType`**
 
-  This field is usually required if `inner` equals `true`, and it indicates the type of key to guide the wallet on which address chain to look for it.<br><br>
+  This field is usually required if `inner` equals `true`, and it indicates the type of key to guide the wallet on which address chain to look for it.
 
 * **`keyHash`**
 
-  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL Ed25519KeyHash, for which we are requesting a signature.<br><br>
+  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL Ed25519KeyHash, for which we are requesting a signature.
 
 #### `TransactionScript`
 
@@ -491,6 +529,7 @@ Our task is to explain to the wallet **what we want as a result**, not **what it
 type TransactionScript = {
     inputs?: OuterUTxO[] | Auto,
     outputs?: Movement[] | Auto,
+    withdrawals?: Withdrawal[] | Auto,
     collateralNeeded: boolean | Auto,
     certificates?: Certificate[] | null,
     mintings?: Mint[] | null,
@@ -500,26 +539,30 @@ type TransactionScript = {
     dataHash?: cbor<DataHash> | null,
     validFrom?: BigIntString | Auto,
     validUntil?: BigIntString | Auto,
-    message?: LocalString | null,
+    message?: LocalString | null,    
     draft: boolean
 };
 ```
 
 * **`inputs`**
 
-  Describes **external** [inputs](#outerutxo) of the transaction that we would like to include. Note, we **should not** specify UTxO directly related to the user's wallet here, as UTxO management is the responsibility of the wallet. Typically, additional inputs provided directly by the DApp are listed here. If the transaction only implies the use of the user's UTxO, the section can be set to `"auto"`, omitted or contain an empty array.<br><br>
+  Describes **external** [inputs](#outerutxo) of the transaction that we would like to include. Note, we **should not** specify UTxO directly related to the user's wallet here, as UTxO management is the responsibility of the wallet. Typically, additional inputs provided directly by the DApp are listed here. If the transaction only implies the use of the user's UTxO, the section can be set to `"auto"`, omitted or contain an empty array.
 
 * **`outputs`**
 
-  Describes **explicit** [outputs](#movement) of the transaction, if required. Note, this only concerns those transaction outputs that reflect our intentions. Implicit outputs, such as change, are not our responsibility, as change management is the wallet's duty. If the transaction does not contain explicit outputs (e.g., a delegation transaction), the field can be set to `"auto"`, omitted or contain an empty array.<br><br>
+  Describes **explicit** [outputs](#movement) of the transaction, if required. Note, this only concerns those transaction outputs that reflect our intentions. Implicit outputs, such as change, are not our responsibility, as change management is the wallet's duty. If the transaction does not contain explicit outputs (e.g., a delegation transaction), the field can be set to `"auto"`, omitted or contain an empty array.
+
+* **`withdrawals`**
+
+  An array of [`Withdrawal`](#withdrawal) objects, describing the reward withdrawals, if needed. Optional. It can be set to `"auto"` or omitted if not required.
 
 * **`collateralNeeded`**
 
-  Informs the wallet whether it needs to add a collateral input for the transaction or not. The decision on which specific input to use is made by the wallet.<br><br>
+  Informs the wallet whether it needs to add a collateral input for the transaction or not. The decision on which specific input to use is made by the wallet.
 
 * **`certificates`**
 
-  Describes [certificates](#certificate) that should be added to the transaction. It's optional - it can be set to `null`, or omitted.<br><br>
+  Describes [certificates](#certificate) that should be added to the transaction. It's optional - it can be set to `null`, or omitted.
 
 * **`mintings`**
 
@@ -529,41 +572,41 @@ type TransactionScript = {
 
 * **`metadata`**
 
-  Describes a set of metadata that must be included in the transaction. It's optional - it can be set to `null`, or omitted. <br><br>
+  Describes a set of metadata that must be included in the transaction. It's optional - it can be set to `null`, or omitted. 
 
 * **`additionalSigns`**
 
-  Describes an array of additional signatures [required](#requiredsign) beyond the mandatory ones (associated with UTxO or certificates). It's optional - it can be set to `null`, or omitted..<br><br>
+  Describes an array of additional signatures [required](#requiredsign) beyond the mandatory ones (associated with UTxO or certificates). It's optional - it can be set to `null`, or omitted..
 
 * **`scriptDataHash`**
 
-  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL ScriptDataHash, necessary for working with smart contracts. It's optional - it can be set to `null`, or omitted.<br><br>
+  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL ScriptDataHash, necessary for working with smart contracts. It's optional - it can be set to `null`, or omitted.
 
 * **`dataHash`**
 
-  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL DataHash, necessary for working with smart contracts. It's optional - it can be set to `null`, or omitted.<br><br>
+  Contains a [CBOR](#cbort)-serialized hex-encoded representation of CDDL DataHash, necessary for working with smart contracts. It's optional - it can be set to `null`, or omitted.
 
 * **`validFrom`**
 
-  Describes the slot from which the interval begins, during which the transaction can be submitted successfully. Optional.  It can be set to `"auto"` or omitted if not required.<br><br>
+  Describes the slot from which the interval begins, during which the transaction can be submitted successfully. Optional.  It can be set to `"auto"` or omitted if not required.
 
 * **`validUntil`**
 
-  Describes the slot at which the interval ends, during which the transaction can be submitted successfully. Optional.  It can be set to `"auto"` or omitted if not required.<br><br>
+  Describes the slot at which the interval ends, during which the transaction can be submitted successfully. Optional.  It can be set to `"auto"` or omitted if not required.
   
 * **`message`**
 
-  Contains a localized (if possible) [message](#localstring) that can be shown to the user when creating a transaction to clarify its purpose or to enhance security. For example, "make sure that a certain confirmation code in the wallet and the code in the DApp are the same." Or "this is a transaction intended for such-and-such action." It's optional - it can be set to `null`, or omitted.<br><br>
-  
+  Contains a localized (if possible) [message](#localstring) that can be shown to the user when creating a transaction to clarify its purpose or to enhance security. For example, "make sure that a certain confirmation code in the wallet and the code in the DApp are the same." Or "this is a transaction intended for such-and-such action." It's optional - it can be set to `null`, or omitted.  
+
 * **`draft`**
 
-  A flag indicating whether the wallet assembling the transaction from this script should "reserve" the selected involved UTxOs to prevent their reuse in other scripts. If `true` - it should. If `false` - no.<br><br>
+  A flag indicating whether the wallet assembling the transaction from this script should "reserve" the selected involved UTxOs to prevent their reuse in other scripts. If `true` - it should. If `false` - no.
 
   Examples:
 
-  1. If a DApp plans to create a chain of transactions, it would be interested in ensuring that the UTxOs selected by the wallet for the first transaction are not included in the second for some reason.<br><br>
+  1. If a DApp plans to create a chain of transactions, it would be interested in ensuring that the UTxOs selected by the wallet for the first transaction are not included in the second for some reason.
 
-  2. A DApp sends a script to the wallet in order to use the received transaction not for sending but, for example, to obtain the used `inputs`, `withdrawal`, and already calculated `change` and `fee`, with the aim of subsequently combining several transactions from different users into one. In this case, the DApp will pass to the wallet the `inputs` selected by it explicitly. If they have already been "reserved" after a previous request, this will be an obstacle.<br><br>
+  2. A DApp sends a script to the wallet in order to use the received transaction not for sending but, for example, to obtain the used `inputs`, `withdrawal`, and already calculated `change` and `fee`, with the aim of subsequently combining several transactions from different users into one. In this case, the DApp will pass to the wallet the `inputs` selected by it explicitly. If they have already been "reserved" after a previous request, this will be an obstacle.
 
   > **Note:** if UTxOs were not "reserved," there is no guarantee that this will not change between calls for one reason or another! However, this applies not only to this CIP but to the specifics of wallet operation in general.
 
@@ -583,7 +626,7 @@ type DataSignature = {
 
 * **`signature`**
 
-  Contains the digital signature itself as a [CBOR](#cbort)-serialized hex-encoded representation of `CDDL COSE_Sign1`.<br><br>
+  Contains the digital signature itself as a [CBOR](#cbort)-serialized hex-encoded representation of `CDDL COSE_Sign1`.
 
 * **`key`**
 
@@ -592,11 +635,11 @@ type DataSignature = {
     * `kid` (2) - Optional, if present must be set to the same value as in the `COSE_Sign1` specified above.
     * `alg` (3) - must be set to `EdDSA` (-8)
     * `crv` (-1) - must be set to `Ed25519` (6)
-    * `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`<br><br>
+    * `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
 * **`address`**
 
-  Contains the [textual](#addressstring) representation of the address, the key of which was used to form the signature - the wallet should select it independently.<br><br>
+  Contains the [textual](#addressstring) representation of the address, the key of which was used to form the signature - the wallet should select it independently.
 
 ### Errors
 
@@ -619,31 +662,31 @@ Let's take a closer look at the errors:
 
 * **`UnsupportedNetwork`**
 
-  The wallet may throw this error if the DApp tries to connect to a network not supported by the wallet.<br><br>
+  The wallet may throw this error if the DApp tries to connect to a network not supported by the wallet.
 
 * **`DeclinedByUser`**
 
-  The operation requested was cancelled by the user.<br><br>
+  The operation requested was cancelled by the user.
 
 * **`BadAccountId`**
 
-  The AccountId to which the DApp is referring in its request is unavailable for some reason.<br><br>
+  The AccountId to which the DApp is referring in its request is unavailable for some reason.
 
 * **`BadTransactionScript`**
 
-  The description of the transaction that the DApp requested from the wallet does not meet the TransactionScript type.<br><br>
+  The description of the transaction that the DApp requested from the wallet does not meet the TransactionScript type.
 
 * **`BadTxHash`**
 
-  The transaction hash passed in the request refers to a transaction that is unknown to the wallet.<br><br>
+  The transaction hash passed in the request refers to a transaction that is unknown to the wallet.
 
 * **`SubmitError`**
 
-  The request to send the transaction ended with an error.<br><br>
+  The request to send the transaction ended with an error.
 
 * **`Refused`**
 
-  The request was rejected by the wallet for some reason. For example - your DApp has been blocked by the user.<br><br>
+  The request was rejected by the wallet for some reason. For example - your DApp has been blocked by the user.
 
 
 It is assumed that errors will be transmitted in the form of ErrorMessage:
@@ -657,77 +700,26 @@ type ErrorMessage = {
 
 * **`error: Error`**
 
-  The actual "error code".<br><br>
+  The actual "error code".
 
 * **`message?: string`**
 
-  Optional free-form accompanying text for ease of debugging. It's optional - it can be set to `null`, or omitted.<br><br>
+  Optional free-form accompanying text for ease of debugging. It's optional - it can be set to `null`, or omitted.
 
-### Bridge API
+### Abstraction Layer API
+These are the CIP-??? methods that should be returned as part of the API object,
+namespaced by `cip???` without any leading zeros.
 
-In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
+For example: `api.cip???.connect()`
 
-
-####  `Code injection`
-
-The interface of the DApp bridge is quite succinct and describes the minimal necessary level of interaction that ensures both parties have sufficient functionality. At the same time, it "protects" them from each other and allows for mutual control of honesty.
-There is no main and subordinate here, just two parties, each performing their role.
-
-Each element will be described in detail below.
-
-CIP-0030 suggested implementing an object in the DApp space at the path `window.cardano.{walletName}`, but this does not provide enough flexibility, as we are essentially reserving the entire namespace for the DApp bridge.
-In this regard, it is proposed to add another level of nesting - `cip????`, where `????` is the number of the implemented standard.
+To access these functionalities a client application must present this CIP-???
+extension object, as part of the extensions object passed at enable time:
 
 ```ts
-window.cardano.{walletName}.cip???? = CardanoBridge;
+.enable({ extensions: [{ cip : ??? }]})
 ```
 
-> **Note:** Naturally, this document should specify the CIP number of this CIP, but as long as it is not assigned, "????" will appear.
-
-
-#### `CardanoBridge`
-
-Wallet connector to DApp.
-
-```ts
-type CardanoBridge = {
-    cip: number,
-    walletName: string,
-    walletIcon: URI,
-    api: CardanoWalletAPI
-}
-```
-
-Fields:
-
-* **`cip: number`**
-
-  Contains the number of the CIP implemented by this bridge. Its sole purpose is to simplify integration, especially in a dynamic mode, if the bridge-object was created separately:
-
-  ```js
-  window.cardano.{walletName}.{CardanoBridge.cip} = CardanoBridge;
-  ```
-
-* **`walletName: string`**
-
-  Serves essentially the same purpose as the `cip` field:
-
-  ```js
-  window.cardano.{CardanoBridge.walletName}.{CardanoBridge.cip} = CardanoBridge;
-  ```
-
-  > **Note:** The `walletName: string` field is just a bit of abstract sugar. Since the key in the object can be **any string**, there is no sense in separating the wallet name at the injection point and the wallet name inside the bridge-object.
-  Additionally, this helps avoid confusion when these names differ and encourages DApp developers not to hardcode wallets, but to read them directly from `window.cardano`, as the name is not a set of eternally static bytes. It can change over time.
-
-
-
-* **`walletIcon: URI`**
-
-  Logo or icon of the wallet in a[ browser-friendly format](#uri).<br><br>
-
-* **`api: CardanoWalletAPI`**
-
-  The object that directly implements the wallet API interface. The interface [description](#cardanowalletapi) is below.<br><br>
+> **Note:** Naturally, this document should specify the CIP number of this CIP, but as long as it is not assigned, "???" will appear.
 
 
 #### `CardanoWalletAPI`
@@ -749,7 +741,7 @@ interface CardanoWalletAPI {
 ```
 <br>
 
-##### `connect(networkMagic: number, accountId?: AccountId): Promise<AccountId>`
+##### `connect(networkMagic: number, accountId?: AccountId): Promise<{ accountId: AccountId, accountEra: AccountEra, stakeKeysCount: number }>`
 
 * **Description:**
     * A method that initiates the connection of the wallet to the DApp. This is where everything starts. We must pass the `networkMagic` to the wallet, so it knows exactly which network the DApp operates in and can respond correctly.
@@ -765,7 +757,7 @@ interface CardanoWalletAPI {
         1. The operation of the DApp now does not depend on what the user is doing in the wallet, as it can directly interact with the necessary account;
         2. The wallet can track which DApps have authorization for which accounts, manage them, and revoke if necessary;
 
-    * **It is mandatory** to call this method before starting operations to obtain the wallet's authorization for further operations;<br><br>
+    * **It is mandatory** to call this method before starting operations to obtain the wallet's authorization for further operations;
 
 * **Parameters:**
     * `networkMagic: number`
@@ -774,7 +766,7 @@ interface CardanoWalletAPI {
 
     * `accountId?: AccountId`
 
-      The [identifier of the account](#accountid) to which the DApp wants to connect if it is already known, optional. Note that the wallet is not obliged to connect the DApp to this particular account. Sometimes this may not be possible. However, providing an "incorrect" `accountId` will **not cause an error return** at this stage.<br><br>
+      The [identifier of the account](#accountid) to which the DApp wants to connect if it is already known, optional. Note that the wallet is not obliged to connect the DApp to this particular account. Sometimes this may not be possible. However, providing an "incorrect" `accountId` will **not cause an error return** at this stage.
 
 * **Return Value:**
     * ` Promise<{ accountId: AccountId, accountEra: AccountEra, stakeKeysCount: number }>`
@@ -793,34 +785,34 @@ interface CardanoWalletAPI {
 
         * **`stakeKeysCount`**
 
-          The number of staking keys associated with the account.<br><br>
+          The number of staking keys associated with the account.
 
 
 * **Errors([full list](#errors)):**
     * UnsupportedNetwork
     * DeclinedByUser
-    * Refused<br><br>
+    * Refused
 
 ##### `disconnect(accountId: AccountId): Promise<void>`
 
 * **Description:**
     * A method informing the wallet that the DApp wants to disconnect. For example, the user pressed the corresponding button in the DApp interface.
     * The wallet can now revoke the DApp's authorization for the specified account and send an error if the DApp tries to access it without requesting `Connect()` first.
-    * The DApp is not obliged to explicitly disconnect from the wallet. This is just an option to improve UX and add the possibility of two-way response to user actions in the DApp.<br><br>
+    * The DApp is not obliged to explicitly disconnect from the wallet. This is just an option to improve UX and add the possibility of two-way response to user actions in the DApp.
 
 * **Parameters:**
     * `accountId: AccountId`
 
-      The [identifier of the account](#accountid) from which the DApp wants to disconnect.<br><br>
+      The [identifier of the account](#accountid) from which the DApp wants to disconnect.
 
 * **Return Value:**
 
     * `Promise<void>`
 
-      Since this endpoint serves a notification function, there is nothing to return. It's enough to simply wait for the wallet's response. Either way, the session is over.<br><br>
+      Since this endpoint serves a notification function, there is nothing to return. It's enough to simply wait for the wallet's response. Either way, the session is over.
 
 * **Errors([full list](#errors)):**
-    * Does not return errors.<br><br>
+    * Does not return errors.
 
 
 ##### `getBalance(accountId: AccountId): Promise<AssetBundle>`
@@ -829,12 +821,12 @@ interface CardanoWalletAPI {
     * A method that requests the balance of a specific account from the wallet. Note that this is not a list of UTxOs, but the actual balance. It is assumed that the wallet will form it independently and return it as a single object.
     * The DApp should understand that the data provided might be intentionally incorrect. It's worth noting that even a list of UTxOs wouldn't guarantee that it belongs to a specific wallet.
     * This approach gives the wallet the opportunity to finely tune the exposed balance.
-    * Note, the `AssetBundle` type includes not just `ada` but also `nativeTokens`!<br><br>
+    * Note, the `AssetBundle` type includes not just `ada` but also `nativeTokens`!
 
 * **Parameters:**
     * `accountId: AccountId`
 
-      The [identifier of the account](#accountid) whose balance the DApp wants to request. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.<br><br>
+      The [identifier of the account](#accountid) whose balance the DApp wants to request. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.
 
 * **Return Value:**
     * `Promise<AssetBundle>`
@@ -843,35 +835,35 @@ interface CardanoWalletAPI {
 
         * Wallets with automatic reward withdrawals may add the amount of rewards to the ada amount if they deem it necessary;
         * The wallet is not obliged to disclose the full balance, this applies to both the amount of ada and the set of tokens;
-        * The balance is returned as a single value, as if it belonged to one UTxO, without breakdowns into groups of tokens, etc. It has a purely informational role, so the DApp knows what it is dealing with.<br><br>
+        * The balance is returned as a single value, as if it belonged to one UTxO, without breakdowns into groups of tokens, etc. It has a purely informational role, so the DApp knows what it is dealing with.
 
 
 * **Errors([full list](#errors)):**
     * DeclinedByUser;
     * BadAccountId;
-    * Refused;<br><br>
+    * Refused;
 
 
 ##### `getDelegation(accountId: AccountId): Promise<Delegation[]>`
 
 * **Description:**
     * A method requesting the delegation status of a specific account.
-    * Remember, Byron accounts cannot participate in delegation!<br><br>
+    * Remember, Byron accounts cannot participate in delegation!
 
 * **Parameters:**
     * `accountId: AccountId`
 
-      The [identifier of the account](#accountid) whose delegation status the DApp wants to request. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.<br><br>
+      The [identifier of the account](#accountid) whose delegation status the DApp wants to request. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.
 
 * **Return Value:**
     * `Promise<Delegation[]>`
 
-      An array of [`Delegation`](#delegation), containing a list of the latest registered delegations for the specified account. That is, if the wallet is in the process of transitioning from pool "A" to pool "B", the wallet should indicate pool "B" in its response.<br><br>
+      An array of [`Delegation`](#delegation), containing a list of the latest registered delegations for the specified account. That is, if the wallet is in the process of transitioning from pool "A" to pool "B", the wallet should indicate pool "B" in its response.
 
 * **Errors([full list](#errors)):**
     * DeclinedByUser;
     * BadAccountId;
-    * Refused;<br><br>
+    * Refused;
 
 
 ##### `buildTransaction(tx: TransactionScript, accountId: AccountId): Promise<{ transaction: cbor<Transaction>; txHash: HexString }>`
@@ -885,7 +877,7 @@ interface CardanoWalletAPI {
         * The DApp can review the other components of the transaction to ensure they match what it requested, if needed;
         * The DApp can generate the necessary signatures from its side, if needed;
         * The wallet should create a transaction that would satisfy all the requirements in the submitted request, if possible;
-        * The wallet should **save the created transaction**, as it will be needed later;<br><br>
+        * The wallet should **save the created transaction**, as it will be needed later;
 
 * **Parameters:**
     * `tx: TransactionScript`
@@ -894,21 +886,21 @@ interface CardanoWalletAPI {
 
     * `accountId: AccountId`
 
-      The [identifier of the account](#accountid) for which the DApp is requesting the transaction. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.<br><br>
+      The [identifier of the account](#accountid) for which the DApp is requesting the transaction. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.
 
 * **Return Value:**
     * `Promise<{ transaction: cbor<Transaction>; txHash: HexString }>`
 
       An object containing fields:
         * `transaction: cbor<Transaction>` - [CBOR](#cbort)-serialized hex-encoded representation of `CDDL Transaction`;
-        * `txHash: HexString` - a string containing the [hash](#hexstring) of the created transaction;<br><br>
+        * `txHash: HexString` - a string containing the [hash](#hexstring) of the created transaction;
 
 
 * **Errors([full list](#errors)):**
     * DeclinedByUser;
     * BadAccountId;
     * BadTransactionScript;
-    * Refused;<br><br>
+    * Refused;
 
 ##### `signTransaction(txHash: HexString, accountId: AccountId, outerWitnesses?: cbor<WitnessSet>): Promise<cbor<WitnessSet>>`
 
@@ -933,7 +925,7 @@ interface CardanoWalletAPI {
 
     * `outerWitnesses?: cbor<WitnessSet>`
 
-      [CBOR](#cbort)-serialized hex-encoded representation of `CDDL WitnessSet`, containing signatures generated by the DApp side, if necessary. This is an optional parameter.<br><br>
+      [CBOR](#cbort)-serialized hex-encoded representation of `CDDL WitnessSet`, containing signatures generated by the DApp side, if necessary. This is an optional parameter.
 
 * **Return Value:**
     * `Promise<cbor<WitnessSet>>`
@@ -953,14 +945,14 @@ interface CardanoWalletAPI {
 
       Wallets, in this scenario, receive a reduction in load.
 
-      However, of course, the option to send the transaction through the wallet will still remain.<br><br>
+      However, of course, the option to send the transaction through the wallet will still remain.
 
 
 * **Errors([full list](#errors)):**
     * DeclinedByUser;
     * BadAccountId;
     * BadTxHash;
-    * Refused;<br><br>
+    * Refused;
 
 
 
@@ -968,7 +960,6 @@ interface CardanoWalletAPI {
 
 * **Description:**
     * A method that allows the DApp to request the wallet to send a previously assembled and signed transaction;
-      <br>
 
       >**Note:** The method's parameters do not include the transaction itself, but only its hash, implying that the transaction is saved in the wallet. This way, we protect the user from the transaction being substituted by the DApp, assuming both parties already have an identical copy of it.
 
@@ -979,18 +970,18 @@ interface CardanoWalletAPI {
 
     * `accountId: AccountId`
 
-      The [identifier of the account](#accountid) for which the DApp is requesting the transaction submitting. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.<br><br>
+      The [identifier of the account](#accountid) for which the DApp is requesting the transaction submitting. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.
 
 * **Return Value:**
     * `Promise<HexString>`
 
-      The [hash](#hexstring) of the sent transaction, if the sending was successful. It should match the hash passed as an argument.<br><br>
+      The [hash](#hexstring) of the sent transaction, if the sending was successful. It should match the hash passed as an argument.
 
 * **Errors([full list](#errors)):**
     * DeclinedByUser;
     * BadTxHash;
     * SubmitError;
-    * Refused;<br><br>
+    * Refused;
 
 
 ##### `isTransactionAccepted(txHash: HexString): Promise<number>`
@@ -998,12 +989,12 @@ interface CardanoWalletAPI {
 * **Description:**
     * A method that allows the DApp to request the wallet for the status of a transaction by its hash;
 
-      If the hash of the requested transaction does not belong to the list of wallet transactions, the wallet has the right to return an error, or -1;<br><br>
+      If the hash of the requested transaction does not belong to the list of wallet transactions, the wallet has the right to return an error, or -1;
 
 * **Parameters:**
     * `txHash: HexString`
 
-      The [hash](#hexstring) of the transaction for which the status is requested;<br><br>
+      The [hash](#hexstring) of the transaction for which the status is requested;
 
 * **Return Value:**
     * `Promise<number>`
@@ -1011,11 +1002,11 @@ interface CardanoWalletAPI {
       A value describing the `depth` of the transaction in the blockchain, i.e., the number of blocks on top of the block in which it was added:
         * `-1`, if the transaction is still in the mempool;
         * `0`, if the current block is the block in which the requested transaction was added;
-        * `n` in all other cases;<br><br>
+        * `n` in all other cases;
 
 * **Errors([full list](#errors)):**
     * BadTxHash;
-    * Refused;<br><br>
+    * Refused;
 
 
 ##### `signData(payload: HexString, accountId: AccountId, withStakeKey: boolean): Promise<DataSignature>`
@@ -1027,7 +1018,7 @@ interface CardanoWalletAPI {
 
     * `alg` (1) - must be set to `EdDSA` (-8)
     * `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
-    * `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag<br><br>
+    * `"address"` - must be set to the raw binary bytes of the address as per the binary spec, without the CBOR binary wrapper tag
 
 * **Parameters:**
     * `payload: HexString`
@@ -1040,19 +1031,19 @@ interface CardanoWalletAPI {
       The [identifier of the account](#accountid) for which the DApp is requesting the payload signing. **Must** match the one provided by the wallet upon connection. Otherwise, the wallet is entitled to disconnect with an error.
 
     * `withStakeKey: boolean`
-      Indicates whether the wallet should use one of the `stakeKey` for signing. If `false` is passed, the wallet should select a `paymentKey` to sign the `payload`.<br><br>
+      Indicates whether the wallet should use one of the `stakeKey` for signing. If `false` is passed, the wallet should select a `paymentKey` to sign the `payload`.
 
 * **Return Value:**
     * `Promise<DataSignature>`
 
       An object containing the [signature, public key, and associated address](#datasignature).
 
-      Note that in this case, the address is chosen by the wallet, not the DApp.<br><br>
+      Note that in this case, the address is chosen by the wallet, not the DApp.
 
 * **Errors([full list](#errors)):**
     * DeclinedByUser;
     * BadAccountId;
-    * Refused;<br><br>
+    * Refused;
 
 
 ### Example
@@ -1081,7 +1072,7 @@ async function performTransaction(txScript, networkMagic, walletName) {
 ```
 ```js
 // Here is an example of a transaction script that sends the user 5 ada from the Dapp account.
-// Note, the output is the same amount as the input, assuming that the user, not the DApp, should cover the commission
+// Note, the output is the same amount as the input, assuming that the user, not the DApp, should cover the fee
 let txScript =  {
     inputs: [{
         hash: "1c32527089b7a226021c6829518d7284283e3c91b9820362f0c5aed0ad5e5074",
@@ -1132,24 +1123,25 @@ For more complex tasks related to working with smart contracts, the DApp should 
 
 This CIP addresses the issues described in the `Motivation` section:
 
-1. **Complexity in Writing Client-Side Logic for DApps**: The minimal amount of code required for DApp to interact with the wallet has been dramatically reduced.<br><br>
+1. **Complexity in Writing Client-Side Logic for DApps**: The minimal amount of code required for DApp to interact with the wallet has been dramatically reduced.
 
-2. **Integration Difficulties**: The interaction between DApp and wallet is now easily mapped onto the logic of the wallet's interaction with the end user. Declarative rather than imperative.<br><br>
+2. **Integration Difficulties**: The interaction between DApp and wallet is now easily mapped onto the logic of the wallet's interaction with the end user. Declarative rather than imperative.
 
-3. **Privacy Issues**: The wallet is no longer obliged to disclose all information and decides for itself what data can be published and what cannot. Now it is responsible for managing UTxO and other crucial aspects, as it should be.<br><br>
+3. **Privacy Issues**: The wallet is no longer obliged to disclose all information and decides for itself what data can be published and what cannot. Now it is responsible for managing UTxO and other crucial aspects, as it should be.
 
-4. **Current Role of Wallets**: The wallet now acts as a wallet, not a "submit endpoint," and the DApp acts as its client, not a substitute.<br><br>
+4. **Current Role of Wallets**: The wallet now acts as a wallet, not a "submit endpoint," and the DApp acts as its client, not a substitute.
 
-5. **Scalable Complexity**: The complexity of the code on the DApp side now precisely matches the complexity of the tasks it solves. Nothing superfluous.<br><br>
+5. **Scalable Complexity**: The complexity of the code on the DApp side now precisely matches the complexity of the tasks it solves. Nothing superfluous.
 
-6. **Reducing Dependencies**: DApp developers are no longer required to use libraries for working with Cardano CDDL to interact with the wallet, if there is no need for them. The pipeline has become smooth and sequential, reducing the number of failure points.<br><br>
+6. **Reducing Dependencies**: DApp developers are no longer required to use libraries for working with Cardano CDDL to interact with the wallet, if there is no need for them. The pipeline has become smooth and sequential, reducing the number of failure points.
 
-7. **Lack of abstraction**: DApps no longer need to adapt to every low-level change in Cardano. They now have an **abstraction layer** that solves this problem once and for all.<br><br>
+7. **Lack of abstraction**: DApps no longer need to adapt to every low-level change in Cardano. They now have an **abstraction layer** that solves this problem once and for all.
 
-8. **Security**: The creation of transactions is now fully controlled by the user's wallet and does not leave its confines. Users can be confident that third parties are not involved in managing their funds.<br><br>
+8. **Security**: The creation of transactions is now fully controlled by the user's wallet and does not leave its confines. Users can be confident that third parties are not involved in managing their funds.
 
-9. **Trustful system**: Users no longer have to trust DApps and can safely connect their wallets to new applications without the risk of misuse on their part.<br><br>
+9. **Trustful system**: Users no longer have to trust DApps and can safely connect their wallets to new applications without the risk of misuse on their part.
 
+10. **One DApp - One Account**: This standard allows DApps to use multiple accounts of a single wallet simultaneously.
 
 ## Path to Active
 
