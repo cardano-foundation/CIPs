@@ -16,8 +16,8 @@ Created: 2023-07-28
 Wallets are a foundational element of Web3, being the primary interface between users and blockchains.
 Wallet connectors allow users to connect their wallet to web-based stacks, allowing a wide range of specialized experiences.
 
-Wallet connector standards consist of two parts; connection standard and API.
-With the connection standard defining how the wallet and dApp initiate communication, for example using an injected Javascript object.
+Wallet connector standards consist of two parts: the connection standard and the API.
+The connection standard defines how the wallet and dApp initiate communication, for example, using an injected Javascript object.
 The API defines what communications look like between the dApp and wallet post connection.
 
 This problem statement is concerned with the issues surrounding Cardano's current and future wallet connectors.
@@ -29,7 +29,7 @@ We wish to provide a comprehensive catalogue of the current offerings and their 
 <details>
   <summary><strong>First workshop - 2023-11-27</strong></summary>
 
-  I would like to thank those that contributed to the first workshop hosted by Adam Dean and Ryan Williams ([see presentation slides with notes](https://docs.google.com/presentation/d/1lXw1yMf-Hyp1eVfaFnbTV9897r6pZEd6zpvLNMqT3cI/)).
+  I would like to thank those that contributed to the first workshop hosted by Adam Dean and Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
   - Beatrice Anihiri
   - Denis Kalinin
   - Evgenii Lisitskii
@@ -58,18 +58,26 @@ We wish to provide a comprehensive catalogue of the current offerings and their 
 
 </details>
 
+<details>
+  <summary><strong>Second workshop - 2023-12-08</strong></summary>
+
+  I would like to thank those that contributed to the second workshop hosted by Adam Dean and Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
+  - Alex Dochioiu
+  - George APEX Pool
+  - Mark Byers
+  - Leo H
+
+</details>
 
 ## Problem
-<!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
-
 The core motivation of this document is to outline the current state of Cardano's wallet connectors, discuss their flaws, and identify key concerns for future connector authors to be aware of.
 We hope that by discussing the issues, we will inspire the next generation of Cardano wallet connectors so that the ecosystem can grow beyond its first connector iterations.
 
 Ineffective connectors can cause a range of issues for wallets, dApp developers, and thus users.
-Due to the nature of these connections, there can often be unforeseen impacts of small design decisions.
+Due to the nature of these connections, there can often be unforeseen impacts from small design decisions.
 
 For users, connectors should offer secure and reliable compatibility with a wide range of dApps.
-For dApps, connectors should be reliable, provide stable and rich APIs
+For dApps, connectors should be reliable and provide stable and rich APIs.
 For wallets, connectors should be secure and extendable, and you should not expect wallets to go beyond their standard activities.
 
 ### Core Concerns
@@ -80,12 +88,13 @@ Connection standards must strive to, above all, not compromise the security of w
 Connection standards should be aware of the potential impacts of standard security vulnerabilities, such as man-in-the-middle attacks.
 
 #### 2. Secure API
-The security of the API itself should again remain paramount.
+The security of the API itself should again remain eminent.
 This means that no secret information should ever be allowed to leave the wallet.
 
 #### 3. Range of supported connection
-Connection standards should ideally support a wide range of wallets and dApp platforms.
+Connection standards should support a wide range of wallets and dApp platforms.
 This means we shouldn't assume a software environment (e.g., JavaScript in the browser) and define the APIs using schema languages widely used in language-agnostic contexts.
+With the base-level connections only offering an indication of supported APIs bidirectionally.
 
 #### 4. Expressive API
 APIs should allow for an expressive range of information to be exchanged.
@@ -94,8 +103,7 @@ APIs should be language agnostic.
 
 #### 5. Versioned
 Connection standards and APIs should be explicitly versioned to clearly allow upgrades.
-Furthermore, ideally, APIs should allow for optional extendability to facilitate specialization.
-Versions and extensions should have clearly defined scopes.
+Furthermore, ideally, APIs should allow for optional extendability to facilitate specialization of connection.
 
 #### 6. Respect the role of wallet
 APIs should be written to have a clear scope, understanding the potential strains placed on wallet providers.
@@ -115,8 +123,11 @@ Since CIP-30's authoring there have only been two other competing standards, in 
 Although neither of of this standards have seen wide adoption.
 
 Although not a direct competitor, CIP-13 could be seen as an alternative standard, which fits some wallet connection niches.
+Where information is being transmitted to a wallet, to perform an action, using a novel URI scheme.
 
 ##### CIP-30 Extensions
+The CIP-30 extendibility mechanism was introduced as a novel versioning scheme.
+
 - CIP-62
 - CIP-95
 - CIP-103
