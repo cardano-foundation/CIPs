@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Cardano URI Scheme Extensions
+Title: URI Scheme - Block and transaction objects
 Status: Proposed
 Category: Tools
 Authors:
