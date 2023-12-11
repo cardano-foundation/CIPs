@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This Cardano Improvement Proposal (CIP) introduces a standardized and flexible metadata format for governance actions in the Cardano ecosystem. While the ledger does not enforce the structure of metadata, providing a standard for metadata will enable better tooling, improved interoperability, and more consistent display across wallets, blockchain explorers, and other tools. This CIP aims to strike a balance between flexibility and structure to facilitate high-quality tooling, without limiting expressivity with regards to user expression.
+This Cardano Improvement Proposal (CIP) introduces a standardized and flexible metadata format for governance events in the Cardano ecosystem. While the ledger does not enforce the structure of metadata, providing a standard for metadata will enable better tooling, improved interoperability, and more consistent display across wallets, blockchain explorers, and other tools. This CIP aims to strike a balance between flexibility and structure to facilitate high-quality tooling, without limiting expressivity with regards to user expression.
 
 ### Acknowledgements
 
@@ -105,18 +105,12 @@ This section outlines the high level format and requirements of this standard.
 - This document SHOULD include `@context` and `@type` fields below to aid in interpretation of the document.  
 - The JSON document SHOULD be formatted for human readability, for the sake of anyone who is manually perusing the metadata.
 - That content SHOULD be hosted on a content addressable storage medium, such as IPFS or Arweave, to ensure immutability and long term archival.
-- As per an update to CIP-1694, the hash included in the anchor MUST be a tagged hash, such as `blake2b-256:{hash}`
+- The hash in the anchor MUST be the hash of the canonicalized form of the metadata document, using the hashing algorithm specified in the `hashAlgorithm` field. Currently only blake2b-256 is supported.
 - For the purposes of hashing and signature validation, we should use the [canonical RDF triplet representation](https://www.w3.org/TR/rdf-canon/), as outlined in the JSON-LD specification.
-
-Open question:
- - [ ] is rdf-canon sufficient for our needs? @Santiago
 
 ### Versioning
 
 [JSON-LD](https://json-ld.org/) is a standard for describing interconnected JSON documents that use a shared vocabulary.
-
-<!-- Maybe (in another CIP) define a URI standard for cardano transactions / blocks; ex cardano://tx/{txId} -->
-<!-- CIP-13 could be a good standard for these URIs? -->
 
 In a JSON-LD document, every field is uniquely tied to some globally unique identifier by means of an Internationalized Resource Identifier (IRI). Different machine-consumers can then know that they agree on the interpretation of these fields.
 
@@ -132,88 +126,100 @@ Note: Any URI's in the @context field SHOULD be content-addressable and robustly
    - It MAY be an array, including multiple contexts, which are merged in order with a "most-recently-defined-wins" mechanism.
    - For a full understanding of the @context field, refer to the [JSON-LD specification](https://www.w3.org/TR/json-ld/).
  - Each IRI in the `@context` field SHOULD refer to a schema hosted via a robust, content addressable, and immutable storage medium such as IPFS, Arweave, etc.
- - If the metadata document is missing the `@context` field, it will be assumed to refer to [./cip-100.common.jsonld]
+ - If the metadata document is missing the `@context` field, it will be assumed to refer to [./cip-0100.common.jsonld]
  - Future CIPs may standardize common contexts, and SHOULD attempt to reuse common terminology and SHOULD avoid naming collisions.
  - Tool authors MAY choose which contexts to support, but MUST make a best effort to display the metadata in the presence of unrecognized context, up to and including gracefully falling back to a raw display of the JSON document.
 
 **Extensions to the governance metadata standard can take one of two forms**:
-- CIP-100 itself can be updated through the normal CIP process to provide additional clarity on any concepts that are giving people trouble with adoption, or to correct inaccuracies.
-- A new CIP, defining a new vocabulary for a specific use case.
+- CIP-0100 itself can be updated through the normal CIP process to provide additional clarity on any concepts that are giving people trouble with adoption, or to correct inaccuracies.
+- A new CIP, which defines new JSON-LD vocabulary to extend this one, which seeks broad adoption.
+- A new context document, used in the wild, but not officially standardized, and which doesn't seek broad adoption.
 
-### Governance Transaction Types
+### Hosting
 
-In CIP-1694 (and likely any alternative or future evolution of it), there are a number of certificates that can be attached to a transaction pertaining to governance; each of these is equipped with an "anchor", which can refer to an external document. This CIP provides the following JSON-LD schema intended to represent a fairly minimal vocabulary :
+In CIP-1694 (and likely any alternative or future evolution of it), there are a number of certificates that can be attached to a transaction pertaining to governance; each of these is equipped with an "anchor", which is a URI at which can be found additional metadata.
 
- - [Common Definitions](./cip-100.common.jsonld)
+While this metadata can be published anywhere, external hosting may be unavailable to some users. Therefore, we recognize the transaction metadata as an effective tool for a "common town square" for hosting and discoverability, and reserve [metadatum label 1694](../CIP-0010/README.md) for publishing governance related metadata on-chain.
 
-Additionally, someone may wish to augment a previous piece of metadata with new information, divorced from the transaction that initially published it; this may be useful, for example, to provide additional arguments in favor of or against a proposal, provide translations to other languages, provide a layman's explanation of a highly technical document, etc.
+With the help of [CIP-?](https://github.com/cardano-foundation/CIPs/pull/635), the anchor can then refer to the metadata of another transaction, or even the metadata of the transaction being published itself.
 
-These can, in theory, be published anywhere, but to aide in discoverability for indexing tools, we explicitly call out the Cardano blockchain as a convenient "public square" in which to publish this metadata.
+When published on-chain, the CBOR encoding of this metadata, when published on-chain, follows [the standard convention](https://developers.cardano.org/docs/get-started/cardano-serialization-lib/transaction-metadata/#json-conversion) used for converting JSON to CBOR in transaction metadata.
 
-To this end, this CIP reserves [metadatum label 1694](../CIP-0010/README.md) for publishing these kinds of augments on-chain. This CIP also provides a minimal JSON-LD schema specifically for these documents, though the vocabulary may be extended in the same way that any other json-ld context can be extended:
+### Augmentations
 
- - [Augmentation](./cip-100.augmentation.jsonld)
+Additionally, someone may wish to augment a previous piece of metadata with new information, divorced from the transaction that initially published it; this may be useful, for example, provide additional arguments in favor of or against a proposal, provide translations to other languages, provide a layman's explanation of a highly technical document, etc.
 
-The rest of this document will provide a high level description of the properties described in each of the schemas above.
+These use the same format, but leverage the `references` field to point to the documents that they wish to extend.
 
-#### Common properties
+These can, in theory, be published anywhere, but the use of metadatum label 1694 mentioned above is particularly useful in this case.
+
+### Context and Schema
+
+We expect a rich ecosystem of CIPs to emerge defining different extensions, so this CIP provides only an initial base-line MVP of fields, defined in the following JSON-LD and JSON Schema files:
+
+ - [JSON-LD Context](./cip-0100.common.jsonld)
+ - [JSON Schema](./cip-0100.common.schema.json)
+
+The rest of this document will provide a high level description of how these fields should be interpreted
+
+### High level description
 
 The following properties are considered common to all types of transactions, and the minimal set needed for "minimum viable governance":
 
-- hash-algorithm: The algorithm used to hash the document for the purposes of the on-chain anchor; currently only supports blake2b-256
-- authors: The primary contributors and authors for this metadata document
+- `hashAlgorithm`: The algorithm used to hash the document for the purposes of the on-chain anchor; currently only supports blake2b-256
+- `authors`: The primary contributors and authors for this metadata document
   - An array of objects
-  - Each object MAY have a display name
-  - Each object MUST have one or more witnesses
-  - Each witness may define a context, describing the manner in which the document has been witnessed
-  - A default witness scheme is described in a later section
-  - Tooling authors SHOULD validate these witnesses; if absent or invalid, tooling authors SHOULD make this clear in the UI
-- body: The material contents of the document, separate for the purposes of signing
-  - justification
-    - Freeform text that explains *why* this proposal / vote / registration / retirement is being proposed / made / etc.
-    - Tooling authors MAY emphasize that this justification represents the view of the authors only
-  - external-updates
+  - Each object MAY have a `name` property, which serves as a display name
+  - Each object MUST have a `witness` field, which contains a signature of the `body` of the document
+  - The witness may define a `@context`, describing the manner in which the document has been witnessed
+  - A default witness scheme context is described in a later section
+  - Tooling authors SHOULD validate witnesses they understand
+  - If witnesses aren't validated, tooling authors SHOULD emphasize this to the user
+  - If absent or invalid, tooling authors SHOULD make this clear to the user
+- `body`: The material contents of the document, separate for the purposes of signing
+  - `references`
+    - An array of objects
+    - Each object specifies a `@type`, which is either "GovernanceMetadata" or "Other"
+    - Each object specifies a `label`, which serves as a human readable display name
+    - Each object specifies a `uri`; when the type is set to "GovernanceMetadata", the URI should point to another CIP-0100 compliant document
+  - `comment`
+    - Freeform text attached to the metadata; richer structures for justifying the transaction this is attached to is left to future CIPs
+    - Tooling authors SHOULD emphasize that these comments represent the *authors* views, and may contain bias.
+  - `externalUpdates`
     - A array of objects
-    - Each object can have a context defining how to interpret it
-    - by default, assumed to just be a title and a URL
-    - The purpose is to allow "additional updates", that aren't written yet
+    - Each object can have a `@context` defining how to interpret it
+    - by default, assumed to just be an object with a `title` and `uri` field
+    - The purpose is to allow "additional updates", that aren't written yet, such as a blog or RSS feed
     - Tooling authors MAY fetch and parse this metadata according to this standard,
     - If so, Tooling authors MUST emphasize that this information is second-class, given that it might have changed
 
-An example jsonld specification for the above context is specified in
- - [cip-100.common.jsonld](./cip-100.common.jsonld)
-
 Additionally, we highlight the following concepts native to json-ld that are useful in the context of governance metadata:
  - [@language](https://www.w3.org/TR/json-ld11/#string-internationalization)
-  - The `@context` field SHOULD specify a `@language` property, which is an ISO 639-1 language string, to define a default language for the whole document
-  - Specific sub-fields can specify different languages
-  - The `@context` field may specify a `@container` property set to `@language`, in which case the property becomes a map with different translations of the property
-  - Tooling authors MAY provide automatic translation, but SHOULD make the original prose easily available
-
-Open Questions:
- - [ ] Investigate whether the activity-pub / activity-streams is appropriate for external updates @Nils
- - [ ] @santicmaru and I are still working on the jsonld files
+   - The `@context` field SHOULD specify a `@language` property, which is an ISO 639-1 language string, to define a default language for the whole document
+   - Specific sub-fields can specify different languages
+   - The `@context` field may specify a `@container` property set to `@language`, in which case the property becomes a map with different translations of the property
+   - Tooling authors MAY provide automatic translation, but SHOULD make the original prose easily available
 
 ### Hashing and Signatures
 
 When publishing a governance action, the certificate has an "anchor", defined as a URI and a hash of the content at the URI.
 
-For CIP-100 compliant metadata, the hash in the anchor should be the blake2b-256 hash of the "Canonized" form of the document. This canonicalization is to remove ambiguities in serialization format and ensure that all consumers arrive at the same hash. The canonicalization algorithm for JSON-LD is specified [here](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/).
+For CIP-0100 compliant metadata, the hash in the anchor should be the blake2b-256 hash of the "Canonized" form of the full document. This canonicalization is to remove ambiguities in serialization format and ensure that all consumers arrive at the same hash. The canonicalization algorithm for JSON-LD is specified [here](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/).
 
 A metadata has a number of authors, each of which MUST authenticate their endorsement of the document in some way.
 
-This is left extensible, through the use of a new context, but for the purposes of this CIP alone, a default scheme is defined.
+This is left extensible, through the use of a new context, but for the purposes of this CIP, we provide a simple scheme.
 
-Each author should have one or more witnesses. The witness will be an object with an algorithm (set to ed25519), a public key (set to an ed25519 public key), and a signature.
+Each author should have a witness. The witness will be an object with an `witnessAlgorithm` (set to ed25519), a `publicKey` (set to a base-16 encoded ed25519 public key), and a `signature`, set to the base-16 encoded signature of the body field.
 
-The signature is the ed5519 signature using the attached public key, of the hash of the canonical form of the `body` field of the document. This is to separate the certifiable material from the non-certifiable material.
+Because the overall document may change, it is neccesary to hash a subset of the document that is known before any signatures are collected. This is the motivation behind the `body` field.
 
-Open Questions:
- - [ ] Should we leverage https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.jsonld in any way, or other DID specifications?
-   - Frankly, the whole DID space seems to make things way more complicated than it needs to be heh
- - [ ] What is the exact procedure for canonicalizing the body?
-   - We can't just pluck the body field from the JSON, unless we say it inherits the context from the original document
-   - There's not a clear way to extract the subset of an object from the canonical format
+The signature is an ed5519 signature using the attached public key, and the payload set to the blake2b-256 hash of the `body` field. Specifically, this field is canonicalized in the following way.
+- Canonicalize the whole document according to [this](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/) specification.
+- Identify the node-ID of the `body` node
+- Filter the canonicalized document to include the body node, and all its descendents
+- Ensure the file ends in a newline
+- Hash the resulting file with blake2b-256
 
 ### Best Practices
 
@@ -260,6 +266,14 @@ The following alternatives were considered, and rejected:
  - CBOR or other machine encoding
   - The metadata in question, despite being proliferous, is not expected to to be an undue storage burden; It's not, for example, video data, or storing billions of records.
   - It is more important, then, that the metadata be human readable, so that tooling authors have the option to show this data in its raw format to a user, and for it to be loosely understandable even by non-technical users.
+
+## Test Vectors
+
+An example document with an inline context is provided in [this](./example.json) example JSON file.
+
+Canonicalization should produce the following blak2b-256 hash:
+
+34cbb91e044cbd1dbda9e5aa542a74e712d23d0bf151c436c52920dcac03629c
 
 ## Path to Active
 

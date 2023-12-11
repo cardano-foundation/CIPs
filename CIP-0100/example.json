@@ -1,0 +1,59 @@
+{
+    "@context": {
+        "@language": "en-us",
+        "Proposal": "https://cips.cardano.org/cip/CIP-0100#Proposal",
+        "hashAlgorithm": "https://cips.cardano.org/cip/CIP-0100#hashAlgorithm",
+        "body": {
+            "@id": "https://cips.cardano.org/cip/CIP-0100#body",
+            "@context": {
+                "references": {
+                    "@id": "https://cips.cardano.org/cip/CIP-0100#references",
+                    "@container": "@set",
+                    "@context": {
+                        "GovernanceMetadata": "https://cips.cardano.org/cip/CIP-0100#GovernanceMetadataReference",
+                        "Other": "https://cips.cardano.org/cip/CIP-0100#OtherReference",
+                        "label": "https://cips.cardano.org/cip/CIP-0100#reference-label",
+                        "uri": "https://cips.cardano.org/cip/CIP-0100#reference-uri"
+                    }
+                },
+                "comment": "https://cips.cardano.org/cip/CIP-0100#comment",
+                "externalUpdates": {
+                    "@id": "https://cips.cardano.org/cip/CIP-0100#externalUpdates",
+                    "@context": {
+                        "title": "https://cips.cardano.org/cip/CIP-0100#update-title",
+                        "uri": "https://cips.cardano.org/cip/CIP-0100#update-uri"
+                    }
+                }
+            }
+        },
+        "authors": {
+            "@id": "https://cips.cardano.org/cip/CIP-0100#authors",
+            "@container": "@set",
+            "@context": {
+                "did": "@id",
+                "name": "http://xmlns.com/foaf/0.1/name",
+                "witness": {
+                    "@id": "https://cips.cardano.org/cip/CIP-0100#witness",
+                    "@context": {
+                        "witnessAlgorithm": "https://cips.cardano.org/cip/CIP-0100#witnessAlgorithm",
+                        "publicKey": "https://cips.cardano.org/cip/CIP-0100#publicKey",
+                        "signature": "https://cips.cardano.org/cip/CIP-0100#signature"
+                    }
+                }
+            }
+        }
+    },
+    "hashAlgorithm": "blake2b-224",
+    "authors": [
+      { "name": "Pi Lanningham", "witness": { "witnessAlgorithm": "ed25519", "publicKey": "46e4db7f87497ba232977ccd591b3d040316b155e8c60e3ea49176c03fa269de", "signature": "abcd"}}
+    ],
+    "body": {
+      "references": [
+        { "@type": "Other", "label": "CIP-100", "uri": "https://cips.cardano.org/cip/CIP-0100" }
+      ],
+      "comment": "This is a test vector for CIP-100",
+      "externalUpdates": [
+        { "title": "Blog", "uri": "https://314pool.com" }
+      ]
+    }
+  }
