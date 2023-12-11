@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: ADA token supply exhaustion
+Title: Ada token supply exhaustion
 Status: Open
 Category: Ledger
 Authors:
