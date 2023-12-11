@@ -242,13 +242,14 @@ while its most-significant-last representation would be
 [ 0x80, 0xC2, 0x01 ]
 ```
 
-For `0`, we define both its most-significant-first and most-significant-last
-representation as `[ 0x00 ]` (that is, one zero byte).
+For `0`, in line with the above definition, both its most-significant-first and
+most-significant-last representation is `[]` (that is, the empty
+`BuiltinByteString`).
 
 To represent any given non-negative `BuiltinInteger` `i` as above, we require 
 a minimum number of base-256 digits. For positive `i`, this is 
 $\max \\{1, \lceil \log_{256}(\texttt{i}) \rceil \\}$; for `i = 0`, we define this to be
-$1$. We can choose to represent `i` with more digits than this minimum, by the
+$0$. We can choose to represent `i` with more digits than this minimum, by the
 use of _padding_. Let $k$ be the minimum number of digits to represent `i`, and
 let $j$ be a positive number: to represent `i` using $k + j$ digits in the
 most-significant-first encoding, we set the first $j$ bytes of the encoding as
@@ -281,8 +282,8 @@ specify (and name) them below:
 
 1. Whether the most-significant-first encoding should be used. This is the
    _endianness argument_, which has type `BuiltinBool`.
-2. The minimum number of digits required in the output. This is the _padding
-   argument_, which has type `BuiltinInteger`.
+2. The number of bytes required in the output (if such a requirement exists).
+   This is the _length argument_, which has type `BuiltinInteger`.
 3. The `BuiltinInteger` to convert. This is the _input_.
 
 If the input is negative, `builtinIntegerToByteString` fails. In this case, the
@@ -292,31 +293,37 @@ resulting error message must specify _at least_ the following information:
   and
 * What negative `BuiltinInteger` was passed as the input.
 
-If the input is `0`, and the padding argument is positive,
-`builtinIntegerToByteString` returns the `BuiltinByteString` consisting of a
-number of zero bytes equal to the padding argument. If the padding argument is
-not positive, `builtinIntegerToByteString` instead returns the
-`BuiltinByteString` consisting of a single zero byte.
-
-If the input is positive, and the padding argument is also positive, let `d` be
-the minimum number of digits required to represent the input (as per the
-representation described above). If `d` is greater than the padding argument,
+If the length argument is outside the closed interval $(0, 2^23 - 1)$,
 `builtinIntegerToByteString` fails. In this case, the resulting error message
 must specify _at least_ the following information:
 
+* That `builtinIntegerToByteString` failed due to an invalid length argument;
+  and
+* What `BuiltinInteger` was passed as the length argument.
+
+If the input is `0`, `builtinIntegerToByteString` returns the
+`BuiltinByteString` consisting of a number of zero bytes equal to the length
+argument.
+
+If the input is positive, and the length argument is also positive, let `d` be
+the minimum number of digits required to represent the input (as per the
+representation described above). If `d` is greater than the length argument,
+`builtinIntegerToByteString` fails. In this case, the resulting error message
+must specify _at least_ the following information: 
+
 * That `builtinIntegerToByteString` failed due to the requested length being
   insufficient for the input;
-* What `BuiltinInteger` was passed as the padding argument; and
+* What `BuiltinInteger` was passed as the length argument; and
 * What `BuiltinInteger` was passed as the input.
 
-If `d` is equal to, or greater, than the padding argument,
+If `d` is equal to, or greater, than the length argument,
 `builtinIntegerToByteString` returns the `BuiltinByteString` encoding the input.
 This will be the most-significant-first encoding if the endianness argument is
 `True`, or the most-significant-last encoding if the endianness argument is
 `False`. The resulting `BuiltinByteString` will be padded to the length
 specified by the padding argument if necessary. 
 
-If the input is positive, and the padding argument is not positive,
+If the input is positive, and the length argument is zero,
 `builtinIntegerToByteString` returns the `BuiltinByteString` encoding the input.
 Its length will be minimal (that is, no padding will be done). If the endianness
 argument is `True`, the result will use the most-significant-first encoding, and
@@ -328,23 +335,27 @@ below:
 
 ```haskell
  -- fails due to negative input
-builtinIntegerToByteString False 0 (-1)
+builtinIntegerToByteString False 0 (-1) -- => ERROR
 -- endianness argument doesn't affect this case
-builtinIntegerToByteString True 0 (-1)
--- padding argument doesn't affect this case
-builtinIntegerToByteString False 100 (-1)
+builtinIntegerToByteString True 0 (-1) -- => ERROR
+-- length argument doesn't affect this case
+builtinIntegerToByteString False 100 (-1) -- => ERROR
 -- zero case, no padding
-builtinIntegerToByteString False 0 0 -- => [ 0x00 ]
+builtinIntegerToByteString False 0 0 -- => []
 -- endianness argument doesn't affect this case
-builtinIntegerToByteString True 0 0 -- => [ 0x00 ]
--- padding argument adds more zeroes, but endianness doesn't matter
+builtinIntegerToByteString True 0 0 -- => []
+-- length argument adds more zeroes, but endianness doesn't matter
 builtinIntegerToByteString False 5 0 -- => [ 0x00, 0x00, 0x00, 0x00, 0x00 ]
 builtinIntegerToByteString True 5 0 -- => [ 0x00, 0x00, 0x00, 0x00, 0x00 ]
+-- length argument too large (2^29)
+builtinIntegerToByteString False 536870912 0 -- => ERROR
+-- endianness doesn't affect this case
+builtinIntegerToByteString True 536870912 0 -- => ERROR
 -- fails due to insufficient digits (404 needs 2)
 builtinIntegerToByteString False 1 404
 -- endianness argument doesn't affect this case
 builtinIntegerToByteString True 1 404
--- zero padding argument is exactly the same as requesting exactly the right
+-- zero length argument is exactly the same as requesting exactly the right
 -- digit count
 builtinIntegerToByteString False 2 404 -- => [ 0x94, 0x01 ] 
 builtinIntegerToByteString False 0 404 -- => [ 0x94, 0x01 ]
@@ -358,13 +369,16 @@ builtinIntegerToByteString True 5 404 -- => [ 0x00, 0x00, 0x00, 0x01, 0x94 ]
 ```
 
 We also describe properties that any implementation of `builtinByteString` must
-have. Throughout, `i` is not negative, and `k` is positive.
+have. Throughout, `i` is not negative, `d` is in the closed interval $(0, 2^29 -
+1)$, `k` is in the closed interval $(1, 2^29 - 1)$, and `0 <= j < k`.
 
-1. `lengthOfByteString (builtinIntegerToByteString e 0 i) > 0`
-2. `lengthOfByteString (builtinIntegerToByteString e k i) = k`
-3. `indexByteString (builtinIntegerToByteString False d i) 0 = remainderInteger
+1. `lengthOfByteString (builtinIntegerToByteString e d 0) = d`
+2. `indexByteString (builtinIntegerToByteString e k 0) j = 0`
+3. `lengthOfByteString (builtinIntegerToByteString e 0 i) > 0`
+4. `lengthOfByteString (builtinIntegerToByteString e k i) = k`
+5. `indexByteString (builtinIntegerToByteString False k i) 0 = remainderInteger
    i 256`
-4. `let result = builtinIntegerToByteString True d i in indexByteString result
+6. `let result = builtinIntegerToByteString True d i in indexByteString result
    (lengthOfByteString result - 1) = remainderInteger i 256`
 
 ## `builtinByteStringToInteger`
@@ -376,12 +390,8 @@ name, these below:
    _stated endianness argument_, which has type `BuiltinBool`.
 2. The `BuiltinByteString` to convert. This is the _input_.
 
-If the input is the empty `BuiltinByteString`, `builtinByteString` to integer
-fails. In this case, the resulting error message must specify that
-`builtinByteStringToInteger` failed because it was asked to convert the empty
-`BuiltinByteString`.
-
-If the input is non-empty, `builtinByteStringToInteger` produces the
+If the input is the empty `BuiltinByteString`, `builtinByteStringToInteger`
+returns 0. If the input is non-empty, `builtinByteStringToInteger` produces the
 `BuiltinInteger` encoded by the input. The encoding is treated as
 most-significant-first if the stated endianness argument is `True`, and
 most-significant-last if the stated endianness argument is `False`. The input
@@ -391,10 +401,10 @@ We give some examples of the intended behaviour of `builtinByteStringToInteger`
 below:
 
 ```haskell
--- fails due to empty input
-builtinByteStringToInteger False emptyByteString
+-- empty input gives zero
+builtinByteStringToInteger False emptyByteString => 0
 -- stated endianness argument doesn't affect this case
-builtinByteStringToInteger True emptyByteString
+builtinByteStringToInteger True emptyByteString => 0
 -- if all the bytes are the same, stated endianness argument doesn't matter
 builtinByteStringToInteger False (consByteString 0x01 (consByteString 0x01
 emptyByteString) -- => 257
@@ -413,8 +423,7 @@ builtinByteStringToInteger True (consByteString 0x01 (consByteString 0x01
 ```
 
 We also describe properties that any `builtinByteStringToInteger` implementation 
-must have. Throughout, `i` is not negative, `0 <= w8 <= 255`, and `bs` is not
-empty.
+must have. Throughout, `i` is not negative and `0 <= w8 <= 255`.
 
 1. `builtinByteStringToInteger b (builtinIntegerToByteString b 0 i) = i`
 2. `builtinByteStringToInteger b (consByteString w8 emptyByteString) = w8`
@@ -434,13 +443,11 @@ where endianness and padding matter, and when they don't.
 
 ### Alternative possibilities
 
-As part of this proposal, we considered several alternative possibilities:
+As part of this proposal, we considered two alternative possibilities:
 
-1. Use the [CIP-0058][cip-0058] versions of these operations;
-2. Have a uniform treatment of the padding argument for
-   `builtinIntegerToByteString` (always minimum or always maximum);
-3. Allowing `builtinByteStringToInteger` to accept the empty `BuiltinByteString`
-   as an argument.
+1. Use the [CIP-0058][cip-0058] versions of these operations; and
+2. Have a uniform treatment of the length argument for
+   `builtinIntegerToByteString` (always minimum or always maximum).
 
 [CIP-0058][cip-0058] defines a sizeable collection of bitwise primitive
 operations for Plutus Core, mostly for use over `BuiltinByteString`s. As part of
@@ -461,63 +468,45 @@ if using only Plutus Core primitives. Thus, we consider these implementations to
 be a good attempt, but not suited to even their intended use, much less more
 general applications.
 
-An alternative possibility for the padding argument of
+An alternative possibility for the length argument of
 `builtinIntegerToByteString` would be to treat the argument as either a minimum,
 or a maximum, rather than our more hybrid approach. Specifically, for any input
 `i`, let `d` be the minimum number of digits required to represent `i` as per
-the description of our representation, and let `k` be the padding argument.
+the description of our representation, and let `k` be the length argument.
 Then:
 
-* The _minimum padding argument_ approach would produce a result of size 
-  $\min \\{ \texttt{d}, \texttt{k} \\}$; that is, if the padding argument is
+* The _minimum length argument_ approach would produce a result of size 
+  $\min \\{ \texttt{d}, \texttt{k} \\}$; that is, if the length argument is
   smaller than the minimum required digits, the minimum would be used instead.
-* The _maximum padding argument_ approach would produce a result of size `k`,
+* The _maximum length argument_ approach would produce a result of size `k`,
   and would error if $\texttt{d} > \texttt{k}$.
 
-Both the minimum padding argument, and the maximum padding argument, approaches
-have merits. The maximum padding argument in particular is useful for Case 2:
+Both the minimum length argument, and the maximum length argument, approaches
+have merits. The maximum length argument approach in particular is useful for Case 2:
 in such a setting, we already know the maximum size of
 any element's representation, and if we somehow ended up with a larger
-representation than this, it would be a mistake, which the maximum padding
-argument would catch immediately. For the minimum padding argument, the
+representation than this, it would be a mistake, which the maximum length
+argument would catch immediately. For the minimum length argument approach, the
 advantage would be more for Case 1: where the length of the
 representation is not known (and the user isn't particularly concerned anyway).
 In such a situation, the user could pass any argument and know that the
 conversion would still work.
 
 However, both of these approaches have disadvantages as well. The minimum
-padding argument approach would be more tedious to use with Case 2, as each 
+length argument approach would be more tedious to use with Case 2, as each 
 conversion would require a size check of the resulting
 `BuiltinByteString`. While this is not expensive, it is annoying, and given the
 complexity of the constructions that would be built atop of any finite field
 implementations, it feels unreasonable to require this from users. Likewise, the
-maximum padding argument is unreasonable for situations like Case 1: the only
+maximum length argument approach is unreasonable for situations like Case 1: the only
 way to establish how many digits would be required involves performing an
 integer logarithm in base 256, which is inefficient and error-prone. Our hybrid
-approach gives the benefits of both the minimum padding argument and maximum
-padding argument approaches, without the downsides of either: we observe that,
-for situations like Case 1, the padding argument would be `0` in practically all
-cases, which is a value that would not be useful under the maximum padding
-argument approach (no `BuiltinInteger` has a representation of zero size). This
-observation allows our approach to work equally well for both Case 1 and 2, with
-minimal friction.
-
-There is some argument to allow `builtinByteStringToInteger` to allow the empty
-`BuiltinByteString` as an argument to be converted. Typically, the result is
-suggested to be `0` in such a case. This has some justification: if you view the
-`builtinByteStringToInteger` procedure as a fold-with-accumulation over the
-digits of the representation, this uses the additive monoidal structure of
-`BuiltinInteger`, which has `0` as a neutral element. However, we believe that
-allowing the empty `BuiltinByteString` to be converted is a little strange: what
-exactly is the meaning of a number with no digits at all? The fact we could
-perform the 'reconstruction' with a fold is an implementation detail, rather
-than an inherent property. Additionally, there is no `BuiltinInteger` that
-produces an empty `BuiltinByteString` encoding, while any non-empty
-`BuiltinByteString` theoretically represents _some_ `BuiltinInteger` in the
-representation scheme we describe above. Lastly, it seems like a strange choice
-to accept such an input: if anything, if someone wants to convert an empty
-`BuiltinByteString` into a `BuiltinInteger`, this is a mistake rather than
-intentional. Thus, we believe it is better to not allow this conversion.
+approach gives the benefits of both the minimum length argument and maximum
+length argument approaches, without the downsides of either: we observe that,
+for situations like Case 1, the length argument would be `0` in practically all
+cases, which is a value that would not be useful in any situation where the maximum 
+length argument approach would be used. This observation allows our approach to work 
+equally well for both Case 1 and 2, with minimal friction.
 
 ## Path to Active
 
