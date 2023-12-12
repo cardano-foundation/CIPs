@@ -45,7 +45,7 @@ web+cardano://transaction/self/metadata/1694
 We extend the grammar from CIP-0013 with two new authorities:
 
 ```
-authorityref = (stakepoolref | blockref | transactionref | otherref)
+authorityref = (... | blockref | transactionref)
 ```
 
 #### Block queries
