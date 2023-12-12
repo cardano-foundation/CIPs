@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 107
 Title: URI Scheme - Block and transaction objects
 Status: Proposed
 Category: Tools
