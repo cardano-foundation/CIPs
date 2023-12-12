@@ -267,7 +267,7 @@ The following alternatives were considered, and rejected:
   - The metadata in question, despite being proliferous, is not expected to to be an undue storage burden; It's not, for example, video data, or storing billions of records.
   - It is more important, then, that the metadata be human readable, so that tooling authors have the option to show this data in its raw format to a user, and for it to be loosely understandable even by non-technical users.
 
-## Test Vectors
+### Test Vectors
 
 An example document with an inline context is provided in [this](./example.json) example JSON file.
 
