@@ -48,6 +48,10 @@
     "description": "CIP-72: dApp registration & Discovery"
   },
   {
+    "transaction_metadataum_label": 1694,
+    "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
+  },
+  {
     "transaction_metadatum_label": 1870,
     "description": "Open Badges v2.0 compliant metadata"
   },

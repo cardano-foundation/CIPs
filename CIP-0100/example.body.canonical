@@ -1,0 +1,9 @@
+_:c14n0 <https://cips.cardano.org/cip/CIP-0100#update-title> "Blog"@en-us .
+_:c14n0 <https://cips.cardano.org/cip/CIP-0100#update-uri> "https://314pool.com"@en-us .
+_:c14n2 <https://cips.cardano.org/cip/CIP-0100#body> _:c14n5 .
+_:c14n3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://cips.cardano.org/cip/CIP-0100#OtherReference> .
+_:c14n3 <https://cips.cardano.org/cip/CIP-0100#reference-label> "CIP-100"@en-us .
+_:c14n3 <https://cips.cardano.org/cip/CIP-0100#reference-uri> "https://cips.cardano.org/cip/CIP-0100"@en-us .
+_:c14n5 <https://cips.cardano.org/cip/CIP-0100#comment> "This is a test vector for CIP-100"@en-us .
+_:c14n5 <https://cips.cardano.org/cip/CIP-0100#externalUpdates> _:c14n0 .
+_:c14n5 <https://cips.cardano.org/cip/CIP-0100#references> _:c14n3 .
