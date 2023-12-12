@@ -1,0 +1,15 @@
+; CIP-0027: NFT Royalty Standard
+; Version: 1
+
+address = [+ string]        ; The address to receive royalties in BECH32 format
+string = text .size (0..64)
+
+royalty-details = {
+    1 : string              ; Rate as floating point string ("0.000001" .. "1.000000")
+    2 : address             ; Royalty receipt address
+}
+
+cip27-details = {
+    ? 0 : string,           ; Version
+    1 : royalty-details     ; Royalty detail information
+}

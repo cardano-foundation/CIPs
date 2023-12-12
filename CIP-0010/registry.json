@@ -33,7 +33,11 @@
   },
   {
     "transaction_metadatum_label": 839,
-    "description": "Agora - Proposal creation metadata"
+    "description": "Agora - Proposal creation metadata"    
+  },
+  {
+    "transaction_metadatum_label": 867,
+    "description": "CIP-0088 - Token Policy Registration Standard"
   },
   {
     "transaction_metadatum_label": 888,

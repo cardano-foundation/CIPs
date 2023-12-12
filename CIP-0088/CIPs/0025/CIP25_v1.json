@@ -1,0 +1,40 @@
+{
+  "25": {
+    "0": 1,
+    "1": {
+      "0": "SpaceBudz",
+      "1": [
+        "10,000 SpaceBudz are out there.",
+        "Where will your SpaceBudz take you?"
+      ],
+      "2": [
+        "https://",
+        "static.spacebudz.io",
+        "/images/logo.png"
+      ],
+      "3": [
+        "https://",
+        "static.spacebudz.io",
+        "/images/banner.jpg"
+      ],
+      "4": 0,
+      "5": [
+        [
+          "twitter",
+          [
+            "https://",
+            "twitter.com/spacebudzNFT"
+          ]
+        ],
+        [
+          "discord",
+          [
+            "https://",
+            "discord.gg/spacebudz"
+          ]
+        ]
+      ],
+      "6": "SpaceBudz"
+    }
+  }
+}
