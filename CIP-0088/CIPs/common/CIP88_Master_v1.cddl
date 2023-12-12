@@ -25,25 +25,6 @@ uri = {
     + uri.path
 }
 
-; NFT Project Details
-;
-; Provide top-level information about NFT projects that can be useful to marketplaces and explorers
-
-social-media-uri = {
-    string,                      ; social media channel name
-    uri                          ; social media URI
-}
-
-nft-project-details = {
-    0 : string,                  ; Collection Name
-    ? 1 : [* string],            ; Description
-    ? 2 : uri,                   ; Project Image
-    ? 3 : uri,                   ; Project Banner
-    ? 4 : 0 / 1,                 ; NSFW Flag (1 = true, 0 = false)
-    ? 5 : [* social-media-uri],  ; Project social media
-    ? 6 : string                 ; Project/Artist Name
-}
-
 ; CIP Details
 ;
 ; CIP-Specific details should each be documented in their own versioned file for historic compatibility and future-proofing
@@ -65,8 +46,9 @@ cip-details = {
 ; Each registration should begin with a scope declaring the type of object being registered
 
 token-scope = {
-    0,                  ; scope identifier
-    bytes .size (28)    ; Token Policy ID
+    0,                      ; scope identifier
+    bytes .size (28),       ; Token Policy ID
+    [+ bytes .size (1..64)] ; Token Policy Hex
 }
 
 ; Validation Methods
@@ -91,8 +73,8 @@ scope-details = {
 }
 
 witness = {
-    bytes, ; Public Key
-    bytes  ; Signature
+    bytes .size (32), ; Public Key
+    bytes .size (64)  ; Signature
 }
 
 witnesses = [+ witness]

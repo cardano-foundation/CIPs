@@ -29,10 +29,10 @@ Cardano.
 
 ***Example 1: The Cardano Token Registry***
 
-Many Fungible Token (FT) projects require special treatment of their NAs such as decimal places for proper display and
-formatting, project information, and token logo. As it stands, these projects must currently register via a GitHub
-repository ([Cardano Token Registry](https://github.com/cardano-foundation/cardano-token-registry)) in order to have
-their token properly appear in wallets. This GitHub repository is currently managed by the Cardano Foundation (CF).
+Many Fungible Token (FT) projects require special treatment of their native assets such as decimal places for proper
+display and formatting, project information, and token logo. As it stands, these projects must currently register via a
+GitHub repository ([Cardano Token Registry](https://github.com/cardano-foundation/cardano-token-registry)) in order to
+have their token properly appear in wallets. This GitHub repository is currently managed by the Cardano Foundation (CF).
 While there is no reason to believe that the CF would take any malicious or nefarious action, forcing token projects to
 register in this fashion introduces a point of centralization, _potential_ gate keeping, and ultimately reliance on the
 interaction of a 3rd party (the human at CF responsible for merging pull requests) in order for projects to register, or
@@ -127,8 +127,7 @@ misspelling or capitalization issues.
 
 This standard is likely to need frequent extension and modification, particularly relating to
 [CIP-Specific Information](#6-cip-specific-information). Any group or individual wishing to extend or modify this
-standard
-MUST comply to the following criteria:
+standard MUST comply to the following criteria:
 
 - [ ] New CIPs SHOULD achieve the `Active` status prior to being included and documented in this directory after
   undergoing the
@@ -186,13 +185,19 @@ etc.) should the specification become adopted and the community desire to expand
 
 **Scopes**
 
-| ID  | Scope         | Format             |
-|-----|---------------|--------------------|
-| 0   | Token Project | `[0, h'policyID']` |
+| ID  | Scope         | Format                             |
+|-----|---------------|------------------------------------|
+| 0   | Native Script | `[0, h'policyID', [h'policyHex']]` |
+
+0. **Native Scripts**: Native scripts should be specified as an array with the first entry indicating the type (Native
+Script), the second entry indicating the script hash (Policy ID) and the third entry consisting of an array with one or
+more 64-byte strings constituting the hex-encoded CBOR representation of the Native Script itself. In this way, CIP-88
+registration may be submitted on-chain prior to any tokens being minted and can be used by validators to confirm the
+legitimacy of the certificate without any secondary information source.
 
 **Example:**
 
-`[0, h'00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae']`
+`[0, h'3668b628d7bd0cbdc4b7a60fe9bd327b56a1902e89fd01251a34c8be', h'8200581c4bdb4c5017cdcb50c001af21d2488ed2e741df55b252dd3ab2482050']`
 
 #### 2. Feature Set
 
@@ -220,7 +225,7 @@ representing the method and additional entries providing additional context to t
 **Examples:**
 
 `[0]`,
-`[1, [h'<policyId>',h'<assetId']]`
+`[1, [h'<policyId>',h'<assetId>']]`
 
 #### 4. Nonce
 
@@ -335,9 +340,8 @@ h'<asset_id>'
 #### (Native Scripts)
 
 The Witness Array included in the on-chain metadata should consist of an array of arrays with two elements, the public
-key hash of the signing key (as included in the native script) and the signed key witness. If a script requires multiple
-signatures, enough signatures to meet the criteria of the script should be included and required for proper validation
-of an updated token registration.
+key of the signing key and the signed key witness. If a script requires multiple signatures, enough signatures to meet
+the criteria of the script should be included and required for proper validation of an updated token registration.
 
 The signing payload should be the hex-encoded Token Registration Payload Object.
 
@@ -346,8 +350,8 @@ The signing payload should be the hex-encoded Token Registration Payload Object.
 ```cbor
 [
   [
-    h'e97316c52c85eab276fd40feacf78bc5eff74e225e744567140070c3j',
-    h'bytestringsignature'
+    h'02b76ae694ce6549d4a20dce308bc7af7fa5a00c7d82b70001e044e596a35deb',
+    h'23d0614301b0d554def300388c2e36b702a66e85432940f703a5ba93bfb1659a0717962b40d87523c507ebe24efbb12a2024bb8b14441785a93af00276a32e08'
   ],
   [
     h'26bacc7b88e2b40701387c521cd0c50d5c0cfa4c6c6d7f0901395757',
@@ -365,7 +369,11 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
   867: {
     0: 1,
     1: {
-      1: h'00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae',
+      1: [
+        0, 
+        h'3668b628d7bd0cbdc4b7a60fe9bd327b56a1902e89fd01251a34c8be', 
+        h'8200581c4bdb4c5017cdcb50c001af21d2488ed2e741df55b252dd3ab2482050'
+      ],
       2: [
         25,
         27
@@ -429,8 +437,8 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
     },
     2: [
       [
-        h'e97316c52c85eab276fd40feacf78bc5eff74e225e744567140070c3j',
-        h'firstWitnessByteString'
+        h'02b76ae694ce6549d4a20dce308bc7af7fa5a00c7d82b70001e044e596a35deb',
+        h'23d0614301b0d554def300388c2e36b702a66e85432940f703a5ba93bfb1659a0717962b40d87523c507ebe24efbb12a2024bb8b14441785a93af00276a32e08'
       ],
       [
         h'26bacc7b88e2b40701387c521cd0c50d5c0cfa4c6c6d7f0901395757',
@@ -448,7 +456,11 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
   867: {
     0: 1,
     1: {
-      1: h'00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae',
+      1: [
+        0, 
+        h'3668b628d7bd0cbdc4b7a60fe9bd327b56a1902e89fd01251a34c8be', 
+        h'8200581c4bdb4c5017cdcb50c001af21d2488ed2e741df55b252dd3ab2482050'
+      ],
       2: [
         26
       ],
@@ -464,8 +476,8 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
           1: [
             {
               0: [
-                "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
-                "7370616365636f696e73"
+                h"d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
+                h"7370616365636f696e73"
               ],
               1: "spacecoins",
               2: [
@@ -493,8 +505,8 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
                 "3507afe1daf05498d764dce55e8ba41e4acecd5bf42606ac2b8b7dc2eb0c305e"
               ],
               8: [
-                "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
-                "7370616365636f696e74"
+                h"d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
+                h"7370616365636f696e74"
               ]
             }
           ]
@@ -503,8 +515,8 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
     },
     2: [
       [
-        h'e97316c52c85eab276fd40feacf78bc5eff74e225e744567140070c3j',
-        h'witnessByteString'
+        h'02b76ae694ce6549d4a20dce308bc7af7fa5a00c7d82b70001e044e596a35deb',
+        h'23d0614301b0d554def300388c2e36b702a66e85432940f703a5ba93bfb1659a0717962b40d87523c507ebe24efbb12a2024bb8b14441785a93af00276a32e08'
       ]
     ]
   }
