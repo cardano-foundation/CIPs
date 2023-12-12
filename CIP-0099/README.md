@@ -9,6 +9,7 @@ Authors:
 - Alex Dochioiu <alex@dochioiu.com>
 Implementors:
 - VESPR Wallet <https://www.vespr.xyz/>
+- Yoroi Wallet <https://yoroi-wallet.com/>
 Discussions:
 - https://github.com/cardano-foundation/CIPs/pull/546
 Created: 2023-06-20
@@ -417,19 +418,11 @@ marketing and event efforts: Proof of Onboarding.
 
 ### Implementation Plan
 
-In order to encourage adoption of this standard the authors commit to execute a functional minimum viable
-proof of concept demonstration in partnership between Adam Dean, HOSKY Token, and VESPR wallet. This real-world
-implementation should give us important insight on whether the system requires additional modifications or changes.
-
-From there we will do our best to engage with other teams and projects in the ecosystem to encourage and support
-adoption of this standard on a larger scale.
-
-## Implementation Actions
-
-1. [X] VESPR Mobile Wallet supports the Proof of Onboarding Protocol and is freely available for the use of any and all projects.
-2. [X] HOSKY Project has released an open source server-side implementation software that may be used as a proof of concept for any interested projects.
-3. [X] Multiple projects at multiple, global events have successfully deployed Proof of Onboarding.
-4. [ ] Onboard additional wallet providers, server/service providers, and redemption methods.
+- [X] VESPR Mobile Wallet supports the Proof of Onboarding Protocol.
+- [X] Yoroi Mobile Wallet supports the Proof of Onboarding Protocol.
+- [X] HOSKY Project has released an open source server-side implementation software that may be used as a proof of concept for any interested projects.
+- [X] Multiple projects at multiple, global events have successfully deployed Proof of Onboarding.
+- [X] Onboard additional wallet providers, server/service providers, and redemption methods.
 
 ## Copyright
 
