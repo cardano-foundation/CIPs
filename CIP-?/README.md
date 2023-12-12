@@ -85,8 +85,7 @@ For grammar reference, see:
 
 ## Rationale: how does this CIP achieve its goals?
 
-This CIP defines a canonical format for URIs referencing four new Cardano objects: blocks, transactions, transaction metadata, and specific tags within the transaction metadata. It utilizes existing cardano standards (CIP-0013) and industry standards (URIs), minimizing the number of new concepts that a developer nees learn. By utilizing URIs, it creates a natural path to integration with existing tools, such as browsers. And finally, it allows a canonical URI for these objects, such as storing CIP-100 metadata on-chain, and referring to it in the anchor field.
-
+This CIP defines a canonical format for URIs referencing four new Cardano objects: blocks, transactions, transaction metadata, and specific tags within the transaction metadata. It utilizes existing cardano standards (CIP-0013) and industry standards (URIs), minimizing the number of new concepts that a developer needs to learn. By utilizing URIs, it creates a natural path to integration with existing tools, such as browsers. And finally, it allows a canonical URI for these objects, such as storing CIP-100 metadata on-chain, and referring to it in the anchor field.
 ## Path to Active
 
 ### Acceptance Criteria
