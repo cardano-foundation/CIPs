@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 108
 Title: Governance Metadata - Governance Actions
 Category: Metadata
 Status: Proposed
