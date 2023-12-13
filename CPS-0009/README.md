@@ -67,6 +67,10 @@ The primary goal of this CPS is to establish a specialized coin selection approa
 
 In Cardano, there is somewhat of a cyclic dependency between UTxO selection, change output and fees. It would be extremely helpful if some consensus was reached on how to handle this part of transaction building. Since the most naïve approach essentially requires rebuilding the transaction several times, there is potential to significantly reduce latency in DApps with a more efficient approach.
 
+### Useful change outputs
+
+CIP-2 also selects inputs in order to generate "useful" change outputs. This will be a significantly more complex problem when native tokens are considered, but will significantly improve the collective efficiency of transaction generation in wallets.
+
 ### Streamlined Transactions
 
 By optimizing coin selection, we aim to streamline Cardano transactions, reducing their size and complexity while preserving the integrity of native token operations.
