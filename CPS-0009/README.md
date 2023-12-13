@@ -25,15 +25,11 @@ The integration of native tokens in Cardano transactions has brought both opport
 
 Cardano transactions involving native tokens often require attaching a minUTxO value (lovelace) to the transaction. In scenarios where multiple tokens are associated with a single UTxO, selecting such UTxOs as inputs can lead to inefficient transactions. This inefficiency arises from the increased transaction size due to token information, potentially impacting the decentralized applications and network performance.
 
-### 2. Prioritizing Necessary Tokens
+### 2. Streamlining the Selection Process
 
-To improve the efficiency of Cardano transactions, there is a need to prioritize the selection of necessary tokens while excluding unnecessary ones. This prioritization will help reduce the inflation of transaction sizes, making them more streamlined and cost-effective.
+Streamlining the selection process is crucial. Enhancements should be made to the selection algorithms to ensure that, even in complex scenarios, the coin selection process remains efficient and doesn't compromise the user experience.
 
-### 3. Streamlining the Selection Process
-
-In addition to token prioritization, streamlining the selection process is crucial. Enhancements should be made to the selection algorithms to ensure that, even in complex scenarios, the coin selection process remains efficient and doesn't compromise the user experience.
-
-### 4. Compatibility with Serialization Libraries
+### 3. Compatibility with Serialization Libraries
 
 The largest off-chain serialization library, `cardano-serialization-lib`, still follows a modified version of the [CIP-2 standard](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0002/README.md), which was established in the pre-native token era. There's a need to ensure that the proposed coin selection approach remains compatible with existing serialization libraries, making it accessible to a wider range of developers and applications.
 
