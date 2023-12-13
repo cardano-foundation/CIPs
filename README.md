@@ -134,8 +134,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
 | 0106? | [Web-Wallet Bridge - Mutlisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
 | 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
+| 0108? | [Governance Metadata - Governance Actions](https://github.com/cardano-foundation/CIPs/pull/632) |
 
-<p align="right"><i>Last updated on 2023-12-12</i></p>
+<p align="right"><i>Last updated on 2023-12-13</i></p>
 
 ## Cardano Problem Statements (CPS)
 
