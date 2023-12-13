@@ -35,7 +35,7 @@ In addition to token prioritization, streamlining the selection process is cruci
 
 ### 4. Compatibility with Serialization Libraries
 
-The largest off-chain serialization library, `cardano-serialization-lib`, still follows a modified version of the CIP-2 standard, which was established in the pre-native token era. There's a need to ensure that the proposed coin selection approach remains compatible with existing serialization libraries, making it accessible to a wider range of developers and applications.
+The largest off-chain serialization library, `cardano-serialization-lib`, still follows a modified version of the [CIP-2 standard](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0002/README.md), which was established in the pre-native token era. There's a need to ensure that the proposed coin selection approach remains compatible with existing serialization libraries, making it accessible to a wider range of developers and applications.
 
 While CIP-2 certainly works well in an environment where native assets such as tokens and NFTs don't exist, it has been expanded upon differently by each serialization library, with their own custom solutions to select for tokens. It would be useful to once again have some standard for coin selection that is trusted by the community.
 
