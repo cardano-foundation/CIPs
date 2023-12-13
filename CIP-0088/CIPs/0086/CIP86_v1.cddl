@@ -1,0 +1,10 @@
+; CIP-86: Token Metadata Update Oracles Standard
+; Version: 1
+
+address = bytes
+
+cip86-details = {
+    ? 0: uint,     ; version
+      1: address   ; main address (an address capable of providing a new address to be used for updates per CIP-0086)
+      2: address   ; update address (the address to monitor for metadata updates per CIP-0086)
+}
