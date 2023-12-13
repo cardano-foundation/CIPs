@@ -1,6 +1,6 @@
 ---
-CIP: ???
-Title: Cardano dApp-MutlisigWallet Web Bridge (CIP-30 extencion)
+CIP: 106
+Title: Web-Wallet Bridge - Mutlisig wallets
 Status: Proposed
 Category: Wallets
 Authors: 
