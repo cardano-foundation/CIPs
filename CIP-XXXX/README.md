@@ -293,7 +293,7 @@ resulting error message must specify _at least_ the following information:
   and
 * What negative `BuiltinInteger` was passed as the input.
 
-If the length argument is outside the closed interval $(0, 2^23 - 1)$,
+If the length argument is outside the closed interval $(0, 2^{29} - 1)$,
 `builtinIntegerToByteString` fails. In this case, the resulting error message
 must specify _at least_ the following information:
 
@@ -369,8 +369,8 @@ builtinIntegerToByteString True 5 404 -- => [ 0x00, 0x00, 0x00, 0x01, 0x94 ]
 ```
 
 We also describe properties that any implementation of `builtinByteString` must
-have. Throughout, `i` is not negative, `d` is in the closed interval $(0, 2^29 -
-1)$, `k` is in the closed interval $(1, 2^29 - 1)$, and `0 <= j < k`.
+have. Throughout, `i` is not negative, `d` is in the closed interval $(0, 2^{29} -
+1)$, `k` is in the closed interval $(1, 2^{29} - 1)$, and `0 <= j < k`.
 
 1. `lengthOfByteString (builtinIntegerToByteString e d 0) = d`
 2. `indexByteString (builtinIntegerToByteString e k 0) j = 0`
