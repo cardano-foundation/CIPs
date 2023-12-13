@@ -165,8 +165,8 @@ See justification and explanations provided with each API endpoint.
 	
 ### Implementation Plan
 
-- [ ] Provide some reference implementation of wallet providers
-	- [leo42/BroClanWallet](#pending)
+- [x] Provide some reference implementation of wallet providers
+	- [leo42/BroClanWallet](#completed)
 
 ## Copyright
 
