@@ -23,7 +23,7 @@ The integration of native tokens in Cardano transactions has brought both opport
 
 ### 1. Need for Efficient Coin Selection
 
-Cardano transactions involving native tokens often require attaching a minUTxO value (lovelace) to the transaction. In scenarios where multiple tokens are associated with a single UTxO, selecting such UTxOs as inputs can lead to inefficient transactions. This inefficiency arises from the increased transaction size due to token information, potentially impacting the decentralized applications and network performance.
+Cardano transactions involving native tokens require attaching a minUTxO value (lovelace) to the transaction. In scenarios where multiple tokens are associated with a single UTxO, selecting such UTxOs as inputs can lead to inefficient transactions. This inefficiency arises from the increased transaction size due to token information, potentially impacting the decentralized applications and network performance.
 
 ### 2. Streamlining the Selection Process
 
