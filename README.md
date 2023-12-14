@@ -87,9 +87,12 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0084 | [Cardano Ledger Evolution](./CIP-0084) | Active |
 | 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
+| 0088 | [Token Policy Registration](./CIP-0088) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
 | 0095 | [Web-Wallet Bridge - Governance](./CIP-0095) | Proposed |
+| 0099 | [Proof of Onboarding](./CIP-0099) | Active |
+| 0100 | [Governance Metadata](./CIP-0100) | Proposed |
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0102 | [Royalty Datum Metadata](./CIP-0102) | Proposed |
 | 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
@@ -101,7 +104,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-11-28</i></p>
+<p align="right"><i>Last updated on 2023-12-12</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -121,19 +124,19 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0077? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 0079? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
 | 0087? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
-| 0088? | [Token Policy Registration](https://github.com/cardano-foundation/CIPs/pull/467) |
 | 0089? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
 | 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
 | 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 0099? | [Proof of Onboarding](https://github.com/cardano-foundation/CIPs/pull/546) |
-| 0100? | [Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) |
 | 0103? | [Web-Wallet Bridge - Bulk transaction signing](https://github.com/cardano-foundation/CIPs/pull/587) |
 | 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
+| 0106? | [Web-Wallet Bridge - Mutlisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
+| 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
+| 0108? | [Governance Metadata - Governance Actions](https://github.com/cardano-foundation/CIPs/pull/632) |
 
-<p align="right"><i>Last updated on 2023-11-28</i></p>
+<p align="right"><i>Last updated on 2023-12-13</i></p>
 
 ## Cardano Problem Statements (CPS)
 
