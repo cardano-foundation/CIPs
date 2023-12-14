@@ -35,6 +35,10 @@ The largest off-chain serialization library, `cardano-serialization-lib`, still 
 
 While CIP-2 certainly works well in an environment where native assets such as tokens and NFTs don't exist, it has been expanded upon differently by each serialization library, with their own custom solutions to select for tokens. It would be useful to once again have some standard for coin selection that is trusted by the community.
 
+### 4. Min UTxO Value for change with tokens
+
+CIP-2 doesn't consider `minUTxOValue` in the change output with tokens, if a pure ADA change output cannot be created that reaches the `minUTxOValue`, it is possible to simply increase the fees paid for the transaction by that small amount to balance the transaction. This, however, doesn't work when tokens are involved, any tokens in the transaction inputs MUST be included in the change output.
+
 ## Use Cases
 
 ### Native Token Transactions
