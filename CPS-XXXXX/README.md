@@ -51,10 +51,13 @@ Another downside of tight coupling between wallets and query layers is that, unl
 
 ### Centralization and Ecosystem Risks
 
-Inability to interchange query layer providers results in vendor lock-in. Query layer providers are disincentivized to opensource their infrastructure setup or provide a competitive service.
+Inability to interchange query layer providers results in vendor lock-in. Query layer providers are disincentivized to opensource their infrastructure setup or provide a competitive service. Dependency on a fixed set of entities to run the infrastructure makes it easier for adversaries to attack dApps by taking over the infrastructure.
 
 ## Use cases
 
+- Wallets want to provide their end users with ability to run custom query layer software
+- dApp developers want to avoid vendor lock-in
+- New Cardano infrastructure providers want to join pools of interchangeable query layer suppliers, instead of replicating or deploying one of the many competing products
 
 ## Goals
 
