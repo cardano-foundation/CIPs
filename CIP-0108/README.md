@@ -16,10 +16,10 @@ License: CC-BY-4.0
 The conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md), with the addition of many new on-chain governance artifacts.
 Some of these artifacts support the linking off-chain metadata, as a way to provide context.
 
-The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/pull/556) standard provides a base framework for how all off-chain governance metadata should be formed and handled.
+The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) standard provides a base framework for how all off-chain governance metadata should be formed and handled.
 But this is intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
 
-This proposal aims to provided a specification for off-chain metadata which gives context to governance actions, building on from the CIP-100 framework.
+This proposal aims to provide a specification for off-chain metadata vocabulary can be used to give context to governance actions, CIP-100.
 Without a sufficiently detailed standard for governance actions we introduce the possibility to undermine voters ability to adequately assess governance actions.
 Furthermore a lack of such standards risks preventing interoperability between tools, to the detriment of user experiences.
 
@@ -49,6 +49,22 @@ Furthermore a lack of such standards risks preventing interoperability between t
 
 </details>
 
+<details>
+  <summary><strong>Governance Metadata Working Group - Workshop #2 2023-12-14</strong></summary>
+
+  I would like to thank those that contributed to the Governance Metadata Working Group Workshop #2 hosted by Ryan Williams ([see presentation slides with notes](https://docs.google.com/presentation/d/1tFsyQnONjwyTm7zKrnxxedzWsoonO6-8vXw5vYzB3qs)).
+
+  Thank you to the co-host:
+  - Adam Dean
+
+  Thank you to the participants:
+  - Mark Byers
+  - Nils Codes
+
+  Thank you to the bots that joined also.
+
+</details>
+
 ## Motivation: why is this CIP necessary?
 Blockchains are poor choices to act as content databases.
 This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events.
@@ -70,7 +86,7 @@ Although there are seven types of governance action defined via CIP-1694, we foc
 We leave room for future standards to refine and specialize further to cater more specific for each type of governance action.
 
 ### Extended Vocabulary
-The following properties extend the vocably of [CIP-100's body field](https://github.com/Quantumplation/CIPs/blob/2382cf0c69a11ee1bd53c48a2dbb19c5759515f5/CIP-0100/README.md?plain=1#L171C1-L181C116).
+The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100).
 
 #### Title
 - This should be a sentence which should act as a human readable identifier for the GA.
@@ -99,21 +115,26 @@ The following properties extend the vocably of [CIP-100's body field](https://gi
 - For some GAs this section SHOULD to be very long.
 - This should include any recommendations made by relevant organizations or committees.
 
+#### References
+- set of: index, title, URI, hash (optional nice-to-have)
+- Can link to Intersect working groups discussions
+- Ability to add more verifiably correct information.
+
 ### Versioning
 This proposal should not be versioned, to update this standard a new CIP should be proposed.
-Although through the JSON-LD mechanism further CIPs can add to the fields defined here.
+Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary,
 
 ## Rationale: how does this CIP achieve its goals?
-
-// todo
-
 - base standard, good for MVP, makes this more straight forward to implement and support for all.
 - want to start simple with this proposal - MVG.
 - fields based on the CIP process with the specification and most of the header removed.
+- want to build in "layers of investigation" for voters, enforced via character limit on fields. 
 
 ### Open Questions
-- Should fields be optional or compulsory?
-- How do the above fields relate to the CIP-100 justification field?
+- <s>Should fields be optional or compulsory?</s>
+  - Title, abstract, motivation and rationale should be compulsory as they should be very important to the ability 
+- How much vocabulary can be extended to other onchain events?
+- How to integrate custom set of HTML tags? to allow formatting of longer text fields. 
 
 ## Path to Active
 
