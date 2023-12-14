@@ -369,17 +369,24 @@ builtinIntegerToByteString True 5 404 -- => [ 0x00, 0x00, 0x00, 0x01, 0x94 ]
 ```
 
 We also describe properties that any implementation of `builtinByteString` must
-have. Throughout, `i` is not negative, `d` is in the closed interval $(0, 2^{29} -
-1)$, `k` is in the closed interval $(1, 2^{29} - 1)$, and `0 <= j < k`.
+have. Throughout, `q` is not negative, `p` is positive, `d` is in the closed
+interval $(0, 2^{29} - 1)$, `k` is in the closed interval $(1, 2^{29} - 1)$, 
+`0 <= j < k`, and `1 <= r <= 255`. We also define `singleton x = consByteString
+x emptyByteString`.
 
 1. `lengthOfByteString (builtinIntegerToByteString e d 0) = d`
 2. `indexByteString (builtinIntegerToByteString e k 0) j = 0`
-3. `lengthOfByteString (builtinIntegerToByteString e 0 i) > 0`
-4. `lengthOfByteString (builtinIntegerToByteString e k i) = k`
-5. `indexByteString (builtinIntegerToByteString False k i) 0 = remainderInteger
-   i 256`
-6. `let result = builtinIntegerToByteString True d i in indexByteString result
-   (lengthOfByteString result - 1) = remainderInteger i 256`
+3. `lengthOfByteString (builtinIntegerToByteString e 0 p) > 0`
+4. `builtinIntegerToByteString False 0 (multiplyInteger p 256) = consByteString 0
+   (builtinIntegerToByteString False 0 p)`
+5. `builtinIntegerToByteString True 0 (multiplyInteger p 256) = appendByteString
+   (builtinIntegerToByteString True 0 p) (singleton 0)`
+6. `builtinIntegerToByteString False 0 (plusInteger (multiplyInteger q 256) r) =
+   appendByteString (builtinIntegerToByteString False 0 r)`
+   (builtinIntegerToByteString False 0 q)`
+7. `builtinIntegerToByteString True 0 (plusInteger (multiplyInteger q 256) r) =
+   appendByteString (builtinIntegerToByteString False 0 q)
+   (builtinIntegerToByteString False 0 r)`
 
 ## `builtinByteStringToInteger`
 
@@ -423,9 +430,9 @@ builtinByteStringToInteger True (consByteString 0x01 (consByteString 0x01
 ```
 
 We also describe properties that any `builtinByteStringToInteger` implementation 
-must have. Throughout, `i` is not negative and `0 <= w8 <= 255`.
+must have. Throughout, `q` is not negative and `0 <= w8 <= 255`.
 
-1. `builtinByteStringToInteger b (builtinIntegerToByteString b 0 i) = i`
+1. `builtinByteStringToInteger b (builtinIntegerToByteString b 0 q) = q`
 2. `builtinByteStringToInteger b (consByteString w8 emptyByteString) = w8`
 3. `builtinIntegerToByteString b (lengthOfByteString bs) (builtinByteStringToInteger b bs) =
    bs`
