@@ -89,7 +89,7 @@ class Simulator:
         max_user_lifetime = 72 - 16
         # Max working age population, estimated by year 2050: https://ourworldindata.org/age-structure
         # Randomize max user count to random
-        max_user_count = random.uniform(500_000_000, 7_000_000_000)
+        max_user_count = random.uniform(50_000_000, 7_000_000_000)
 
         while 1:
             # Initial population was 9,912
@@ -97,15 +97,17 @@ class Simulator:
             # So population grew by around 280% a year: 9912 users * (2.8 ^ 5y)
             # Using this trajectory, we randomize with + - 50% year over year.
             user_growth_percent_in_year = random.uniform(230, 330)
-            user_growth_min_percent_in_year = 20
+            # At a minimum new users grow/shrink by this much.
+            user_growth_min_percent_in_year = random.uniform(-10, 20)
             # There needs to be a user growth decay because it cannot grow exponentially forever. Speculative.
             user_growth_decay_in_year = 0.95
             # Total units lost. Speculative.
             lost_unit_percent_in_year = random.uniform(0, 2)
             # Units sent from one user bucket to the next. Generous amount and range.
-            sent_unit_percent_in_year = random.uniform(30, 70)
+            sent_unit_percent_in_year = random.uniform(10, 99)
             # Older users trickle down less. Simulates the rich accumulating wealth. Speculative.
-            sent_unit_decay_in_year = 0.95 # 0.95^56 = 0.05
+            # Extreme: 0.95^56=0.05, 0.98^56=0.32
+            sent_unit_decay_in_year = random.uniform(0.95, 1.0)
             # Supply stake is around 60% to 70% according to chart in https://cexplorer.io/epoch
             supply_stake_percent_in_year = random.uniform(60, 70)
 
@@ -151,8 +153,9 @@ class Simulator:
 
             # Lose units. Fairly distributed.
             for n in range(len(user_buckets)):
-                user_buckets[n].units *= (1 - (lost_unit_percent_in_year / 100))
-                user_buckets[n].units = int(user_buckets[n].units)
+                lost_units = int(user_buckets[n].units * (lost_unit_percent_in_year / 100))
+                user_buckets[n].units -= lost_units
+                total_units -= lost_units
 
             # Do new users have enough units to work with?
             average_units = int(user_buckets[-1].units / user_buckets[-1].users)
