@@ -120,7 +120,7 @@ Since its' authoring, CIP-30 has seen continued iteration with changes to its AP
 
 ##### CIP-30 Alternatives
 Since CIP-30's authoring there have only been two other competing standards, in CIP-45 | Decentralized WebRTC dApp-Wallet Communication ([#395](https://github.com/cardano-foundation/CIPs/pull/395)) and CIP-90 | Extendable dApp-Wallet Web Bridge ([#462](https://github.com/cardano-foundation/CIPs/pull/462/)).
-Although neither of of this standards have seen wide adoption.
+Neither of these standards have seen wide adoption.
 
 Although not a direct competitor, CIP-13 could be seen as an alternative standard, which fits some wallet connection niches.
 Where information is being transmitted to a wallet, to perform an action, using a novel URI scheme.
@@ -177,11 +177,11 @@ Goals may also contain requirements for the project. For example, they may inclu
 
 Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
 ### Clear Role of Wallet
-Whilst most wallet softwares generally offer a users a range of features, at their core all wallets are concerned with the management of cryptographic operations.
-The majority of wallets build on this by using a chain indexer, so information related to the wallets crypto credentials can be gathered and presented to users.
-Any operation beyond core cryptographic functions should be considered to be optionally extra by wallets.
+Whilst most software wallets generally offer users a range of features, at their core all wallets are concerned with the management of cryptographic operations.
+The majority of wallets build on this by using a chain indexer, so information related to wallets' crypto credentials can be gathered and presented to users.
+Any operation beyond core cryptographic functions should be considered optional by wallets.
 
-By only expecting wallet to support cryptographic operations we define a universal rule for all wallet connectors.
+By only expecting wallets to support cryptographic operations we define a universal rule for all wallet connectors.
 This means at a minimum all dApps can expect from wallets during connection is cryptographic operations.
 Although, dApps should be able to request additional functionalities on connection if they wish.
 
@@ -225,7 +225,7 @@ Even if we enforce clear separation of concerns in the standards, e.g. by statin
 
 ##### Full-data wallets
 
-Full-data wallets allow to query blockchain data outside of user's scope (i.e. anything not covered by own-data wallets).
+Full-data wallets allow querying blockchain data outside of user's scope (i.e. anything not covered by own-data wallets).
 
 ![diagram showing possible wallet and dApp architecture for full-data wallets](./full-data-wallet.drawio.png)
 
@@ -233,7 +233,7 @@ Depending on dApp needs, full-data wallets open a way to implement fully-functio
 
 Full-data wallets enable "single source of truth" architecture: no need to work around data inconsistency between two query layers.
 
-They are more expensive to operate due to higher query layer requirements, but the risks could be lowered by letting query layer providers and wallet developers be separate entities. That would also allow the end users to choose query layer providers they trust more rather than being forced to trust wallet's infrastructure as well as code, and, optionally, use their own query layer deployments, thus alleviating the need to trust any external wallet backend while enjoying the usual interface.
+They are more expensive to operate due to higher query layer requirements, but the risks could be lowered by letting query layer providers and wallet developers be separate entities. That would also allow the end users to choose query layer providers they trust more, rather than being forced to trust wallet's infrastructure as well as code, and, optionally, use their own query layer deployments, thus alleviating the need to trust any external wallet backend while enjoying the usual interface.
 
 ### Strive for interoperable and extensible APIs
 Design APIs which are interoperable between connection standards and wallet types.
