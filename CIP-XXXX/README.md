@@ -4,6 +4,8 @@ Title: Modular Exponentiation Built-in for Plutus Core
 Status: Proposed
 Category: Plutus
 Authors:
+    - Kenneth MacKenzie <kenneth.mackenzie@iohk.io>
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Created: 2023-10-5
