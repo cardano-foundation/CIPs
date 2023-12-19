@@ -53,7 +53,7 @@ That said, in the context of multiplicative inversion, a negative exponent can b
 
 $$
 \begin{equation}
-b^{-e}\; (\bmod{m}) := (b^{-1})^{e} (\bmod{m})
+b^{-e} (\bmod{m}) := (b^{-1})^{e} (\bmod{m})
 \end{equation}
 $$
 
