@@ -37,7 +37,7 @@ A nonexclusive list of cryptographic protocols that use a field and would benefi
 Modular exponentiation is mathematically defined as the equivalence relation
 
 $$
-a \equiv b^{e}\; (\bmod{m})
+a \equiv b^{e} (\bmod{m})
 $$
 
 Here we have that the base $b$ is an integer, the exponent $e$ a non-negative integer and the modulus $m$ a positive integer. To be more specific, we want $e$ to be larger or equal to zero, and $m$ is larger than zero. This is because what we are effectively doing, is multiplying $e$ copies of $b$ and a modulo reduction by $m$. In this context, multiplying a negative number of copies of $b$ has no definition.
@@ -45,7 +45,7 @@ Here we have that the base $b$ is an integer, the exponent $e$ a non-negative in
 
 $$
 \begin{equation}
-a \equiv \underbrace{(b \times b \times ... \times b)}_{e \textrm{ times}}\; (\bmod{m} )
+a \equiv \underbrace{(b \times b \times ... \times b)}_{e \textrm{ times}} (\bmod{m} )
 \end{equation}
 $$
 
@@ -53,7 +53,7 @@ That said, in the context of multiplicative inversion, a negative exponent can b
 
 $$
 \begin{equation}
-b^{-e}\; (\bmod{m}) := (b^{-1})^{e}\; (\bmod{m})
+b^{-e}\; (\bmod{m}) := (b^{-1})^{e} (\bmod{m})
 \end{equation}
 $$
 
