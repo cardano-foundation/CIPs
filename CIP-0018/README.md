@@ -39,8 +39,8 @@ In more details, we require that beyond the first stake key (index = 0), all reg
 1. Stake keys must be derived sequentially, from 0 and onwards.
 1. Every stake key registration must be accompanied by a matching delegation certificate. 
 1. Every registration transaction must create a special output of exactly `minUTxOValue` Ada such that its address is an enterprise address with a single **payment part** using the stake key hash of the next available stake key of the wallet to be registered after processing the registration transaction. 
-> **Note** The `minUTxOValue` is fixed by the protocol. It is defined as part of the Shelley genesis and can be updated via on-chain protocol updates. At the moment, this equals 1 Ada on the mainnet. 
 1. Unless no key beyond the first one is registered, every registration transaction must consume the special UTxO stake key pointer corresponding to the previous key registration (resp. de-registration) for that wallet.
+> **Note** The `minUTxOValue` is fixed by the protocol. It is defined as part of the Shelley genesis and can be updated via on-chain protocol updates. At the moment, this equals 1 Ada on the mainnet. 
 
 #### Example
 
