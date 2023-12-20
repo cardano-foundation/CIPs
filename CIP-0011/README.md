@@ -85,7 +85,7 @@ Blockchains like Ethereum does not use the UTXO model and instead uses the [*Acc
 
 ### Implementation Plan
 
-- [x] This method of key derivation has been agreed as canonical and made available to all wallet providers beginning with the Shelley Ledger era.
+- [x] This method of key derivation has been agreed as canonical and made available to all wallet providers beginning with the Shelley ledger era.
 
 ## Copyright
 
