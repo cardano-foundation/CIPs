@@ -28,7 +28,7 @@ Stake pool owners and their delegates lack an on-chain communication standard be
 
 ### Terminology
 
-We define two types of communication metadata, which are distinguished by transaction metadata label as defined in [CIP-0010](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/README.md) (Transaction metadata label registry):
+We define two types of communication metadata, which are distinguished by transaction metadata label as defined in [CIP-0010: Transaction metadata label registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/README.md):
 
  * *Message board communication* is a type of metadata that has been included in an on-chain transaction between two base addresses associated with a stake pool operator owner address. Given the onetime fee for this communication, we are considering this as a message board of a stake pool, as it also enables delegates to easier access historical metadata communication.
 
