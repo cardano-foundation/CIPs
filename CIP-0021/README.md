@@ -32,7 +32,7 @@ To ensure interoperability, SW wallets and other tools working with HW wallets s
 
 Certain transaction elements, described as allowed in this document, might not be supported by some HW wallets. Support also depends on HW wallet firmware or app versions. If transaction signing fails for a transaction which is built according to this specification, make sure to check the documentation of the HW wallet you are using.
 
-_It might take some time for recent Cardano ledger spec changes to be implemented for HW wallets. Thus it might happen that further restrictions might apply on top of the restrictions mentioned in this CIP until the changes are implemented on HW wallets._
+> **Note:** It might take some time for recent Cardano ledger spec changes to be implemented for HW wallets. Thus it might happen that further restrictions might apply on top of the restrictions mentioned in this CIP until the changes are implemented on HW wallets.
 
 ### Canonical CBOR serialization format
 
@@ -80,11 +80,11 @@ Unless mentioned otherwise in this CIP, optional empty lists and maps must not b
 
 A new, "post Alonzo", output format has been introduced in the Babbage era which uses a map instead of an array to store the output data. For now, both the "legacy" (array) and "post Alonzo" (map) output formats are supported by HW wallets but we encourage everyone to migrate to the "post Alonzo" format as support for the "legacy" output format might be removed in the future. Both formats can be mixed within a single transaction, both in outputs and in the collateral return output.
 
-_Legacy outputs_
+##### Legacy outputs
 
 Outputs containing no multi-asset tokens must be serialized as a simple tuple, i.e. `[address, coin, ?datum_hash]` instead of `[address, [coin, {}], ?datum_hash]`.
 
-_Post Alonzo outputs_
+##### Post Alonzo outputs
 
 If the `data` of `datum_option` is included in an output, it must not be empty. `script_ref` (reference script) must also not be empty if it is included in an output.
 
