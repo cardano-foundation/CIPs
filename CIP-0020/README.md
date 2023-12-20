@@ -33,7 +33,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This describes a basic JSON schema to add messages/comments/memos as transaction metadata by using the metadatum label **674**,
+This describes a basic JSON schema to add messages/comments/memos as transaction metadata by using the metadatum label **674**:
 allowing informational, commerical, or any other text to be included in a transaction on the Cardano blockchain.
 
 ## Motivation: why is this CIP necessary?
