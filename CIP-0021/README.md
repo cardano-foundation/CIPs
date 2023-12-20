@@ -78,7 +78,7 @@ Unless mentioned otherwise in this CIP, optional empty lists and maps must not b
 
 #### Outputs
 
-A new, "post Alonzo", output format has been introduced in the Babbage era which uses a map instead of an array to store the output data. For now, both the "legacy" (array) and "post Alonzo" (map) output formats are supported by HW wallets but we encourage everyone to migrate to the "post Alonzo" format as support for the "legacy" output format might be removed in the future. Both formats can be mixed within a single transaction, both in outputs and in the collateral return output.
+A new, "post Alonzo", output format has been introduced in the Babbage ledger era which uses a map instead of an array to store the output data. For now, both the "legacy" (array) and "post Alonzo" (map) output formats are supported by HW wallets but we encourage everyone to migrate to the "post Alonzo" format as support for the "legacy" output format might be removed in the future. Both formats can be mixed within a single transaction, both in outputs and in the collateral return output.
 
 ##### Legacy outputs
 
@@ -168,7 +168,7 @@ Tools interacting with HW wallets might need to be updated in order to continue 
 
 ### Acceptance Criteria
 
-- [x] Confirmation (by default if no ongoing incompatibilities) since Alonzo era that this interoperability between software and hardware wallets has been generally achieved.
+- [x] Confirmation (by default if no ongoing incompatibilities) since Alonzo ledger era that this interoperability between software and hardware wallets has been generally achieved.
 
 ### Implementation Plan
 
