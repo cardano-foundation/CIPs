@@ -360,12 +360,12 @@ the meaning of any protocol parameters.
 
 ### Acceptance Criteria
 
-- [x] The Shelley Ledger era is activated.
+- [x] The Shelley ledger era is activated.
 - [x] Documented parameters are in operational use by Cardano Node and Ledger.
 
 ### Implementation Plan
 
-- [x] Original and subsequent Ledger era parameters are deemed correct by working groups at IOG.
+- [x] Original (Shelley) and subsequent ledger era parameters are deemed correct by working groups at IOG.
 
 ## Copyright
 
