@@ -1,9 +1,13 @@
 ---
 CIP: 16
 Title: Cryptographic Key Serialisation Formats
-Authors: Luke Nadur <luke.nadur@iohk.io>
-Comments-URI: https://github.com/cardano-foundation/CIPs/pull/57
-Status: Active
+Status: Proposed
+Category: Tools
+Authors:
+  - Luke Nadur <luke.nadur@iohk.io>
+Implementors: []
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/57
 Type: Standards
 Created: 2020-12-21
 License: Apache-2.0
@@ -127,6 +131,18 @@ and
 already utilize the more compact 96-byte format, we opt to define that as the
 standard.
 
+## Path to Active
+
+### Acceptance Criteria
+
+- [ ] Confirm, for at least one pair of applications from different developers:
+  - [ ] an application which _serializes_ keys according to this standard.
+  - [ ] an application which _deserializes_ keys according to this standard.
+
+### Implementation Plan
+
+- [ ] Provide a working reference implementation.
+
 ## Copyright
 
-This CIP is licensed under Apache-2.0.
+This CIP is licensed under [Apache-2.0][https://www.apache.org/licenses/LICENSE-2.0].
