@@ -1,9 +1,15 @@
 ---
 CIP: 21
 Title: Transaction requirements for interoperability with hardware wallets
-Authors: Gabriel Kerekes <gabriel.kerekes@vacuumlabs.com>, Rafael Korbas <rafael.korbas@vacuumlabs.com>, Jan Mazak <jan.mazak@vacuumlabs.com>
 Status: Active
-Type: Informational
+Category: Wallets
+Authors:
+  - Gabriel Kerekes <gabriel.kerekes@vacuumlabs.com>
+  - Rafael Korbas <rafael.korbas@vacuumlabs.com>
+  - Jan Mazak <jan.mazak@vacuumlabs.com>
+Implementors: NA
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/107
 Created: 2021-06-15
 License: CC-BY-4.0
 ---
@@ -12,7 +18,7 @@ License: CC-BY-4.0
 
 This CIP describes all the restrictions applicable to Cardano transactions which need to be signed by hardware wallets.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Due to certain limitations of hardware (abbrev. HW) wallets, especially very small memory and a limited set of data types supported by Ledger, HW wallets are not able to process all valid transactions which are supported by Cardano nodes.
 
@@ -41,15 +47,15 @@ See the RFC for details.
 
 ### Transaction body
 
-**Unsupported entries**
+#### Unsupported entries
 
 The transaction body entry `6 : update` must not be included.
 
-**Integers**
+#### Integers
 
 HW wallets support at most `int64` for signed integers and `uint64` for unsigned integers i.e. larger integers are not supported overall. Additionally, any integer value must fit in the appropriate type.
 
-**Numbers of transaction elements**
+#### Numbers of transaction elements
 
 The number of the following transaction elements individually must not exceed `UINT16_MAX`, i.e. 65535:
 
@@ -66,11 +72,11 @@ The number of the following transaction elements individually must not exceed `U
 - reference inputs in transaction body
 - the total number of witnesses
 
-**Optional empty lists and maps**
+#### Optional empty lists and maps
 
 Unless mentioned otherwise in this CIP, optional empty lists and maps must not be included as part of the transaction body or its elements.
 
-**Outputs**
+#### Outputs
 
 A new, "post Alonzo", output format has been introduced in the Babbage era which uses a map instead of an array to store the output data. For now, both the "legacy" (array) and "post Alonzo" (map) output formats are supported by HW wallets but we encourage everyone to migrate to the "post Alonzo" format as support for the "legacy" output format might be removed in the future. Both formats can be mixed within a single transaction, both in outputs and in the collateral return output.
 
@@ -82,11 +88,11 @@ _Post Alonzo outputs_
 
 If the `data` of `datum_option` is included in an output, it must not be empty. `script_ref` (reference script) must also not be empty if it is included in an output.
 
-**Multiassets**
+#### Multiassets
 
 Since multiassets (`policy_id` and `asset_name`) are represented as maps, both need to be sorted in accordance with the specified canonical CBOR format. Also, an output or the mint field must not contain duplicate `policy_id`s and a policy must not contain duplicate `asset_name`s.
 
-**Certificates**
+#### Certificates
 
 Certificates of type `genesis_key_delegation` and `move_instantaneous_rewards_cert` are not supported and must not be included.
 
@@ -107,7 +113,7 @@ Certificate stake credentials must be:
 - only script hashes in multi-sig transactions.
 (There is no restriction for transactions involving Plutus.)
 
-**Withdrawals**
+#### Withdrawals
 
 Since withdrawals are represented as a map of reward accounts, withdrawals also need to be sorted in accordance with the specified canonical CBOR format. A transaction must not contain duplicate withdrawals.
 
@@ -116,7 +122,7 @@ Withdrawal reward accounts must be:
 - only based on script hashes in multi-sig transactions.
 (There is no restriction for transactions involving Plutus.)
 
-**Auxiliary data**
+#### Auxiliary data
 
 HW wallets do not serialize auxiliary data because of their complex structure. They only include the given auxiliary data hash in the transaction body. The only exception is Catalyst voting registration because it requires a signature computed by the HW wallet.
 
@@ -128,7 +134,7 @@ In this exceptional case, auxiliary data must be encoded in their "tuple" format
 
 The `auxiliary_scripts` must be an array of length 0.
 
-## Reasoning
+## Rationale: how does this CIP achieve its goals?
 
 ### Canonical CBOR serialization format
 
@@ -138,30 +144,38 @@ The specified canonical CBOR format is consistent with how certain other data ar
 
 ### Transaction body
 
-**Multiassets**
+#### Multiassets
 
 Allowing duplicate `policy_id`s (or `asset_name`s) might lead to inconsistencies between what is displayed to the user and how nodes and other tools might interpret the duplicate keys, i.e. all policies (or asset names) would be shown to the user, but nodes and other tools might eventually interpret only a single one of them.
 
-**Certificates**
+#### Certificates
 
 Combining withdrawals and pool registration certificates isn't allowed because both are signed by staking keys by pool owners. If it was allowed to have both in a transaction then the witness provided by a pool owner might inadvertently serve as a witness for a withdrawal for the owner's account.
 
-**Withdrawals**
+#### Withdrawals
 
 Similarly to multiassets, allowing duplicate withdrawals might lead to inconsistencies between what is displayed to the user and how nodes and other tools might interpret the duplicate keys.
 
-**Auxiliary data**
+#### Auxiliary data
 
 The specified auxiliary data format was chosen in order to be compatible with other Cardano tools, which mostly use this serialization format.
 
-## Backwards compatibility
+### Backwards compatibility
 
 Tools interacting with HW wallets might need to be updated in order to continue being compatible with HW wallets because of canonical CBOR serialization format, which is being enforced since multi-sig support.
 
-## Tools
+## Path to Active
 
-[`cardano-hw-interop-library`](https://github.com/vacuumlabs/cardano-hw-interop-lib) or [`cardano-hw-cli'](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library) can be used to validate or transform transactions into a HW wallet compatible format if possible.
+### Acceptance Criteria
+
+- [x] Confirmation (by default if no ongoing incompatibilities) since Alonzo era that this interoperability between software and hardware wallets has been generally achieved.
+
+### Implementation Plan
+
+- [x] Tools exist which can be used to validate or transform transactions into a HW wallet compatible format if possible:
+  - [x] [`cardano-hw-interop-library`](https://github.com/vacuumlabs/cardano-hw-interop-lib) 
+  - [x] [`cardano-hw-cli'](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library) 
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
