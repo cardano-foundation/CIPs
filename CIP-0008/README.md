@@ -427,12 +427,14 @@ This specification provides no means of Revocation.
 - [x] There exist one or more implementations in commonly used development libraries:
   - [x] [Mesh](https://meshjs.dev/about/cips)
   - [x] `@emurgo/cardano-message-signing-asmjs`
+- [x] There exist CLI Tools supporting creation and verification of signed messages:
+  - [x] [cardano-signer](https://github.com/gitmachtl/cardano-signer)
 - [x] There exist one or more implementations in web sites and other tools:
   - [x] SundaeSwap Governance voting
 
 ### Implementation Plan
 
-- [x] Make this standard available as well-supported means of message signing across Cardano wallets and dApps.
+- [x] Make this standard available as well-supported means of message signing across Cardano wallets, dApps, and CLI tools.
 - [x] Support this standard in a usable reference implemtation ([`@emurgo/cardano-message-signing-asmjs`](https://www.npmjs.com/package/@emurgo/cardano-message-signing-asmjs)).
 
 ## Copyright
