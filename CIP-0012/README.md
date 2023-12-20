@@ -113,7 +113,7 @@ No backwards compatibility breaking changes are introduced.
 ### Acceptance Criteria
 
  * [ ] Indications that more than one wallet or backend supports this standard, including:
-   * [ ] Yoroi (pending as per [Implement CIP12 to Yoroi backends](https://www.lidonation.com/en/proposals/implement-cip12-to-yoroi-backends))
+   * [ ] Yoroi (in progress from [Implement CIP12 to Yoroi backends](https://www.lidonation.com/en/proposals/implement-cip12-to-yoroi-backends))
 
 ### Implementation Plan
 
