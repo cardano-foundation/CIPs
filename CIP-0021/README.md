@@ -45,11 +45,17 @@ Transactions must be serialized in line with suggestions from [Section 3.9 of CB
 
 See the RFC for details.
 
+### Tags in sets
+
+Conway introduced optional 258 tags in certain items that are considered sets semantically but encoded as arrays in CBOR. HW wallets will support this optional encoding, but it must be consistent across the transaction: either there are no tags 258 in sets, or there are such tags everywhere (as described in the CDDL specification).
+
 ### Transaction body
 
 #### Unsupported entries
 
-The transaction body entry `6 : update` must not be included.
+The following transaction body entries must not be included:
+* `6 : update`
+* `20 : proposal procedures`
 
 #### Integers
 
@@ -72,9 +78,13 @@ The number of the following transaction elements individually must not exceed `U
 - reference inputs in transaction body
 - the total number of witnesses
 
+For voting procedures, it is only allowed to include a single voter with a single voting procedure.
+
 #### Optional empty lists and maps
 
 Unless mentioned otherwise in this CIP, optional empty lists and maps must not be included as part of the transaction body or its elements.
+
+Since Conway, the [CDDL specification](https://github.com/intersectmbo/cardano-ledger/tree/master/eras/conway/impl/cddl-files) is stricter, so many arrays are now treated as non-empty sets, and some maps are required to be non-empty. HW wallets enforce this in many cases.
 
 #### Outputs
 
@@ -94,33 +104,35 @@ Since multiassets (`policy_id` and `asset_name`) are represented as maps, both n
 
 #### Certificates
 
-Certificates of type `genesis_key_delegation` and `move_instantaneous_rewards_cert` are not supported and must not be included.
+Certificates of the following types are not supported and must not be included:
+* `genesis_key_delegation`
+* `move_instantaneous_rewards_cert`
+* `stake_vote_deleg_cert`
+* `stake_reg_deleg_cert`
+* `vote_reg_deleg_cert`
+* `stake_vote_reg_deleg_cert`
 
 If a transaction contains a pool registration certificate, then it must not contain:
 
 - any other certificate;
 - any withdrawal;
 - mint entry;
-- any output containing datum hash;
+- any output containing datum, datum hash or reference script;
 - script data hash;
 - any collateral input;
-- any required signer.
+- any required signer;
+- collateral return output;
+- total collateral;
+- reference inputs;
+- voting procedures;
+- treasury value;
+- donation value.
 
 It is allowed to arbitrarily combine other supported certificate types.
-
-Certificate stake credentials must be:
-- only key hashes in ordinary (single-sig) transactions;
-- only script hashes in multi-sig transactions.
-(There is no restriction for transactions involving Plutus.)
 
 #### Withdrawals
 
 Since withdrawals are represented as a map of reward accounts, withdrawals also need to be sorted in accordance with the specified canonical CBOR format. A transaction must not contain duplicate withdrawals.
-
-Withdrawal reward accounts must be:
-- only based on key hashes in ordinary (single-sig) transactions;
-- only based on script hashes in multi-sig transactions.
-(There is no restriction for transactions involving Plutus.)
 
 #### Auxiliary data
 
@@ -144,6 +156,20 @@ The specified canonical CBOR format is consistent with how certain other data ar
 
 ### Transaction body
 
+#### Credentials
+
+Generally, HW wallets require that any key hash credential (and withdrawal address too) is given by the derivation path of the key (otherwise the user will not be aware that the key belongs to his wallet). This does not apply to Plutus transactions where HW wallets instead aim for maximum flexibility at the cost of users being potentially misled. (It is very hard to foresee how Plutus script authors would use various transaction elements and any restriction applied by HW wallets might break a use case which is otherwise perfectly sound and safe.)
+
+When signing a transaction, Ledger and Trezor use a _transaction signing mode_ that describes upfront what the intent is
+(the software wallet is responsible for choosing an appropriate mode). The transaction is then validated according to the mode.
+There are, in principle, four options:
+* _Stake pool registration transaction_. Stake pool registration certificates are signed on their own, the transaction should contain nothing that is not necessary.
+* _Ordinary transaction_. Credentials must be given as key paths.
+* _Multisig transaction_. Credentials must be script hashes; only [multisig keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1854/README.md) are allowed.
+* _Plutus transaction_. The only mode that allows elements related to running Plutus scripts (script data hash etc.). No extra restrictions on transaction elements or their combinations. The drawback is that more is shown to the user (e.g. witnesses are not hidden as in ordinary transactions). Please only use this mode if no other mode is sufficient.
+
+This brief description does not aim to capture the full complexity of signing modes; always verify that transactions you aim to construct are supported by other tools you will rely on (hardware wallets, software wallets, command-line tools like [`cardano-hw-cli`](https://github.com/vacuumlabs/cardano-hw-cli) etc.).
+
 #### Multiassets
 
 Allowing duplicate `policy_id`s (or `asset_name`s) might lead to inconsistencies between what is displayed to the user and how nodes and other tools might interpret the duplicate keys, i.e. all policies (or asset names) would be shown to the user, but nodes and other tools might eventually interpret only a single one of them.
@@ -160,10 +186,6 @@ Similarly to multiassets, allowing duplicate withdrawals might lead to inconsist
 
 The specified auxiliary data format was chosen in order to be compatible with other Cardano tools, which mostly use this serialization format.
 
-### Backwards compatibility
-
-Tools interacting with HW wallets might need to be updated in order to continue being compatible with HW wallets because of canonical CBOR serialization format, which is being enforced since multi-sig support.
-
 ## Path to Active
 
 ### Acceptance Criteria
@@ -174,7 +196,7 @@ Tools interacting with HW wallets might need to be updated in order to continue 
 
 - [x] Tools exist which can be used to validate or transform transactions into a HW wallet compatible format if possible:
   - [x] [`cardano-hw-interop-library`](https://github.com/vacuumlabs/cardano-hw-interop-lib) 
-  - [x] [`cardano-hw-cli'](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library) 
+  - [x] [`cardano-hw-cli`](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library) 
 
 ## Copyright
 
