@@ -79,7 +79,7 @@ The solution is scalable to any desired royalty percentage.  It is easy to work 
 
 - [x] Support of this standard by multiple significant NFT related platforms.
 - [x] Implementation in libraries supporting NFT minting, including:
-  - [x] Mesh [Minting Royalty Token](https://meshjs.dev/apis/transaction/minting#mintingRoyaltyToken)
+  - [x] Mesh ([Minting Royalty Token](https://meshjs.dev/apis/transaction/minting#mintingRoyaltyToken))
 
 ### Implementation Plan
 
