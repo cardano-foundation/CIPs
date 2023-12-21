@@ -72,7 +72,7 @@ TODO: should there be a dedicated production for datum-hash-or-datum? Does it ne
 ## Rationale: how does this CIP achieve its goals?
 
 The key idea of this proposal is simply to restore the conceptually straightforward situation where datums are attached to outputs.
-Historically, this was the way that the EUTXO model was designed, and switching to datum hashes on outputs was done to avoid bloating UTXO entries, which at that time (pre-multiasset) were constant-size (see Chakravarty, Manuel MT, et al. <cite>The extended UTXO model</cite> page 7).
+Historically, this was the way that the EUTXO model was designed, and switching to datum hashes on outputs was done to avoid bloating UTXO entries, which at that time (pre-multiasset) were constant-size (see [^1] page 7).
 
 Now that we have variable-sized UTXO entries and the accounting to support them, we can restore inline datums.
 
@@ -178,3 +178,5 @@ Hence we choose both option 1s and do _not_ provide backwards compatibility for 
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+[^1]: Chakravarty, Manuel M. T. et al., "The extended UTXO model"
