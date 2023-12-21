@@ -77,13 +77,13 @@ The solution is scalable to any desired royalty percentage.  It is easy to work 
 
 ### Acceptance Criteria
 
-- [x] Support of this standard by multiple significant NFT related platforms.
+- [x] Support of royalty distribution according to this standard by multiple significant NFT related platforms.
 - [x] Implementation in libraries supporting NFT minting, including:
   - [x] Mesh ([Minting Royalty Token](https://meshjs.dev/apis/transaction/minting#mintingRoyaltyToken))
 
 ### Implementation Plan
 
-- [x] Incorporate input from many Cardano NFT related entiries, including:
+- [x] Incorporate input from many Cardano NFT related entities, including:
   - [x] Artano
   - [x] BuffyBot
   - [x] CNFT.io
