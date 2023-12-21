@@ -1044,6 +1044,9 @@ proposal types. For example, if the community wishes to have some hard
 rules for the treasury that cannot be violated, a script that enforces
 these rules can be voted in as the proposal policy.
 
+The proposal policy applies only to protocol parameter update and
+treasury withdrawal proposals.
+
 <!---------------------------           DReps          ------------------------>
 
 ### Delegated representatives (DReps)
@@ -1292,14 +1295,30 @@ The following table details the ratification requirements for each governance ac
 | 5<sub>b</sub>. Protocol parameter changes, economic group         | ✓  | $P_{5b}$ | \-       |
 | 5<sub>c</sub>. Protocol parameter changes, technical group        | ✓  | $P_{5c}$ | \-       |
 | 5<sub>d</sub>. Protocol parameter changes, governance group       | ✓  | $P_{5d}$ | \-       |
-| 5<sub>e</sub>. Protocol parameter changes, security group         | \- | \-       | $Q_{5e}$ |
 | 6. Treasury withdrawal                                            | ✓  | $P_6$    | \-       |
 | 7. Info                                                           | ✓  | $100$    | $100$    |
 
-Each of these thresholds is a governance parameter.
+Each of these thresholds is a governance parameter. There is one
+additional threshold, `Q5`, related to security relevant protocol
+parameters, which is explained below.
 The initial thresholds should be chosen by the Cardano community as a whole.
 The two thresholds for the Info action are set to 100% since setting it any lower
 would result in not being able to poll above the threshold.
+
+Some parameters are relevant to security properties of the system. Any
+proposal attempting to change such a parameter requires an additional
+vote of the SPOs, with the threshold `Q5`.
+
+The security relevant protocol parameters are:
+* `maxBBSize`
+* `maxTxSize`
+* `maxBHSize`
+* `maxValSize`
+* `maxBlockExUnits`
+* `minFeeA`
+* `minFeeB`
+* `coinsPerUTxOByte`
+* `govActionDeposit`
 
 > **Note**
 > It may make sense for some or all thresholds to be adaptive with respect to the Lovelace that is actively registered to vote.
@@ -1400,11 +1419,6 @@ the maximum threshold of all the groups involved will apply to any given such go
 The _network_,  _economic_ and _technical_ parameter groups collect existing protocol parameters that were introduced during the Shelley, Alonzo and Babbage eras.
 In addition, we introduce a new _governance_ group that is specific to the new governance parameters that will be introduced by CIP-1694.
 
-There will also be a special _security_ group. Any protocol parameter
-is assigned to exactly one regular group, but all protocol parameters
-that interact with the security guarantees of the system belong to the
-security group as well.
-
 The **network group** consists of:
 * maximum block body size (`maxBBSize`)
 * maximum transaction size (`maxTxSize`)
@@ -1440,17 +1454,6 @@ The **governance group** consists of all the new protocol parameters that are in
 * DRep activity period in epochs (`drepActivity`)
 * minimal constitutional committee size (`ccMinSize`)
 * maximum term length (in epochs) for the constitutional committee members (`ccMaxTermLength`)
-
-The **security group** consists of:
-* `maxBBSize`
-* `maxTxSize`
-* `maxBHSize`
-* `maxValSize`
-* `maxBlockExUnits`
-* `minFeeA`
-* `minFeeB`
-* `coinsPerUTxOByte`
-* `govActionDeposit`
 
 <!-- TODO:
   - Decide on the initial values for the new governance parameters
