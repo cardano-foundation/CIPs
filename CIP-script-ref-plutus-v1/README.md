@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Despite making up less than half the transactions on Cardano, Plutus v1 scripts occupy around 60% of the block space. Increasing the space available to blocks is risky, as it impacts the block propagation time. This proposal puts forth a simple way to reduce this strain.
+Despite making up less than half the transactions on Cardano, Plutus v1 scripts make up 90% of the space dedicated to scripts (around 60% of the total block space). Increasing the space available to blocks is risky, as it impacts the block propagation time. This proposal puts forth a simple way to reduce this strain.
 
 ## Motivation: why is this CIP necessary?
 
