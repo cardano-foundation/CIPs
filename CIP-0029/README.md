@@ -37,12 +37,6 @@ The JSON format is given as a [JSON schema in annexe](./phase-1-monetary-scripts
 
 - Scripts may contain unbounded integers! Implementation parsing them, either from CBOR or JSON shall be prepared to handle possible big integers (>= 2^64).
 
-## Rationale: how does this CIP achieve its goals?
-
-- The preimage for computing script hashes is prefixed with `\x00` to distinguish them from phase-2 monetary scripts (a.k.a Plutus Script) which are then prefixed with `\x01`. This is merely a discriminator tag.
-
-- The current JSON format is based off the cardano-cli's format which has been used widely for minting tokens and is likely the most widely accepted format at the moment.
-
 ### Test Vectors
 
 ```yaml
@@ -93,6 +87,12 @@ The JSON format is given as a [JSON schema in annexe](./phase-1-monetary-scripts
   cbor:
     "00830302838200581c000000000000000000000000000000000000000000000000000000008200581c000000000000000000000000000000000000000000000000000000018200581c00000000000000000000000000000000000000000000000000000002"
 ```
+
+## Rationale: how does this CIP achieve its goals?
+
+- The preimage for computing script hashes is prefixed with `\x00` to distinguish them from phase-2 monetary scripts (a.k.a Plutus Script) which are then prefixed with `\x01`. This is merely a discriminator tag.
+
+- The current JSON format is based off the cardano-cli's format which has been used widely for minting tokens and is likely the most widely accepted format at the moment.
 
 ## Path to Active
 
