@@ -136,7 +136,7 @@ There is also some overlap with [CIP-0006](https://github.com/cardano-foundation
 
 ### Acceptance Criteria
 
-- [x] Current Tools that have implemented, or are implementing, this proposal:
+- [x] Tools that have implemented, or are implementing, this proposal:
   - [x] [CNCLI](https://github.com/AndrewWestberg/cncli)
   - [x] [JorManager](https://bitbucket.org/muamw10/jormanager/)
   - [x] [StakePoolOperator Scripts](https://github.com/gitmachtl/scripts)
