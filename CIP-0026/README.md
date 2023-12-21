@@ -50,6 +50,8 @@ Unlike some (un)popular opinions suggest, a blockchain is a poor choice for a co
 
 This specification covers some parts of a bigger system likely involving multiple components. What part is being implemented and by who is considered out of the scope of this specification. We however envision a setup in which users have access to a client application (a.k.a the wallet), which itself is able to connect to some remote server. We assume the server to also offer a user-interface (either via a graphical user-interface or a application programming interface) for accepting content. 
 
+> **Note** The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
+
 ### Hash Function
 
 There are several places in this document where we need an arbitrary hash function. We will  henceforth refer to this simply as “hash”. The hash function MUST be **Blake2b-256** (unless explicitly said otherwise). The hash of a string is the hash of the bytes of the string according to its encoding.
