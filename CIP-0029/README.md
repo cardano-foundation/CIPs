@@ -99,7 +99,7 @@ The JSON format is given as a [JSON schema in annexe](./phase-1-monetary-scripts
 ### Acceptance Criteria
 
 - [x] There exist official software releases supporting this serialization format:
-  - [x] [cardano-cli](https://github.com/input-output-hk/cardano-node/tree/master/cardano-cli)
+  - [x] [cardano-cli](https://github.com/IntersectMBO/cardano-cli)
   - [x] [cardano-api](https://github.com/IntersectMBO/cardano-api)
 
 ### Implementation Plan
