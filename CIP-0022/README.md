@@ -130,7 +130,7 @@ Verification SUCCESS!
 
 Implementing this simplifies and commonizes the process for verifying that a pool operator is who they say they are in 3rd party systems. Having a common way of verify pool operators also allows simple integration into pool management tools.
 
-There is also some overlap with [CIP-006](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0006/README.md#extended-metadata---flexible-but-validable) and the `rawdata-sign` command although it specifies generating a new key instead of utilizing the pool's existing `vrf.skey` to sign like this proposal.
+There is also some overlap with [CIP-0006](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0006/README.md#extended-metadata---flexible-but-validable) and the `rawdata-sign` command although it specifies generating a new key instead of utilizing the pool's existing `vrf.skey` to sign like this proposal.
 
 ## Path to Active
 
