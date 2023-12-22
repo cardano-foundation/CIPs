@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-The pledge should be used to calculate the saturation point of a pool: setting a maximum delegation proportional to their total pledge.
+The pledge should be used to calculate the saturation point of a pool: setting a maximum delegation proportional to pledge.
 
 ## Motivation: why is this CIP necessary?
 
