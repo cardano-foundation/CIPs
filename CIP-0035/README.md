@@ -1,9 +1,16 @@
 ---
 CIP: 35
 Title: Changes to Plutus Core
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Status: Active
 Category: Meta
+Authors:
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors: NA
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/215
+  - https://github.com/cardano-foundation/CIPs/pull/428
+  - https://github.com/cardano-foundation/CIPs/pull/437
+  - https://github.com/cardano-foundation/CIPs/pull/484
 Created: 2022-02-09
 License: CC-BY-4.0
 ---
