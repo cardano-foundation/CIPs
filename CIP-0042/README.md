@@ -9,7 +9,6 @@ Authors:
 Implementors: NA
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/218
-Type: Standards Track
 Created: 2022-02-09
 License: Apache-2.0
 
