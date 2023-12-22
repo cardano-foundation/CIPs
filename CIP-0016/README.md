@@ -145,4 +145,4 @@ standard.
 
 ## Copyright
 
-This CIP is licensed under [Apache-2.0][https://www.apache.org/licenses/LICENSE-2.0].
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
