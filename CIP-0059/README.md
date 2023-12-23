@@ -114,8 +114,6 @@ Since this is an issue of language, we will strive to use consistent language go
 
 ## Path to Active
 
-## Path to Active
-
 ### Acceptance Criteria
 
 - [x] Terminology has met with positive response from community.
