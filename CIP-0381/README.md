@@ -495,7 +495,7 @@ IOG internal. PR open for Plutus bindings https://github.com/input-output-hk/plu
 
 ### Implementation Plan
 
-- [ ] Confirmation from IOG Plutus Team that CIP-0035 Processes(https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#processes) for changes to Plutus have been satisfied.
+- [ ] Confirmation from IOG Plutus Team that [CIP-0035 Processes](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#processes) for changes to Plutus have been satisfied.
 
 ## Copyright
 
