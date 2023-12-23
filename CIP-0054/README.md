@@ -237,7 +237,7 @@ In tandem with the additional metadata, we also define a standard for the Javasc
 
 ### Acceptance Criteria
 
-- [ ] Identify at least 1 pair of wallets, minting services, CLIs, or software utilities from separate vendors which:
+- [ ] Identify at least 1 pair of wallets, minting services, CLIs, or software utilities from separate providers which:
   - [ ] create NFTs according to this proposed standard
   - [ ] render NFTs according to this proposed standard
 
