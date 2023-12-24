@@ -80,7 +80,7 @@ The `role` can however be extending with new roles so long as they have no overl
 
 ### Implementation Plan
 
-- [x] Common acceptance of above Motivation, Rationale and Specification during the planning of Cardano's Shelley release.
+- [x] Common agreement on the above Motivation, Rationale and Specification during the planning of Cardano's Shelley release.
 
 ## Copyright
 
