@@ -64,7 +64,7 @@ There are two (incompatible) implementations of BIP32-Ed25519 in Cardano:
 1) HD Random (notably used initially in Daedalus)
 2) HD Sequential (notably used initially in Icarus)
 
-The difference is explained in more detail in [CIP3](https://cips.cardano.org/cips/cip3)
+The difference is explained in more detail in [CIP3](../CIP-0003).
 
 ### Future extensions
 
