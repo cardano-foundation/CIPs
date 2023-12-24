@@ -1,6 +1,6 @@
 ---
 CIP: 40
-Title: Explicit Collateral Output
+Title: Collateral Output
 Status: Active
 Category: Ledger
 Authors:

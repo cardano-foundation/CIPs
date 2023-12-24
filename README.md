@@ -63,7 +63,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0035 | [Plutus Core Evolution](./CIP-0035) | Active |
 | 0036 | [Catalyst/Voltaire Registration Transaction Metadata Format](./CIP-0036) | Proposed |
 | 0037 | [Dynamic Saturation Based on Pledge](./CIP-0037) | Proposed |
-| 0040 | [Explicit Collateral Output](./CIP-0040) | Active |
+| 0040 | [Collateral Output](./CIP-0040) | Active |
 | 0042 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
 | 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Proposed |
 | 0050 | [Pledge Leverage-Based Staking Rewards](./CIP-0050) | Proposed |
