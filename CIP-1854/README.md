@@ -1,12 +1,13 @@
 ---
 CIP: 1854
 Title: Multi-signatures HD Wallets
-Status: Proposed
+Status: Active
 Category: Wallets
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Pawel Jakubas <pawel.jakubas@iohk.io>
-Implementors: []
+Implementors
+  - Round Table wallet
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/69
 Created: 2021-02-23
@@ -221,11 +222,12 @@ A Formal Specification of the Cardano Ledger | https://github.com/input-output-h
 
 ### Acceptance Criteria
 
-- [ ] Document at least one case of a community adopted CIP-1852 compliant multisig wallet.
+- [x] Document at least one case of a community adopted CIP-1852 compliant multisig wallet:
+  - [x] [Round Table wallet](https://round-table.vercel.app)
 
 ### Implementation Plan
 
-- [ ] Provide a reference implementation.
+- [x] Community developed reference implementation: [github:ADAOcommunity/round-table](https://github.com/ADAOcommunity/round-table)
 
 ## Copyright
 
