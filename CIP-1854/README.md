@@ -84,20 +84,20 @@ We can summarize the various paths and their respective domain in the following 
 | ---       | ---         | ---                | ---        | ---             |
 | `1854'`   | `1815'`     | `[2^31 .. 2^32-1]` | `0` or `2` | `[0 .. 2^31-1]` |
 
-### Examples
+#### Examples
 
 - `m/1854’/1815’/0’/0/0`
 - `m/1854’/1815’/0’/2/14`
 - `m/1854’/1815’/0’/2/42`
 - `m/1854’/1815’/0’/0/1337`
 
-## User-facing encoding
+### User-facing encoding
 
 Multi-signatures payment verification and signing keys (`role=0`) with chain code should be presented bech32-encoded using `addr_shared_xvk` and `addr_shared_xsk` prefixes respectively, as specified in [CIP-5]. When represented without chain-code, `addr_shared_vk` and `addr_shared_sk` should be used instead.
 
 Similarly we use `stake_shared_xvk`, `stake_shared_xsk`, `stake_shared_vk` and `stake_shared_sk` for multi-signatures stake verification and signing keys (`role=2`).
 
-### Examples
+#### Examples
 
 ```yaml=
 - base16: | 
