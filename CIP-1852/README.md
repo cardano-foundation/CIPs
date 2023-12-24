@@ -64,11 +64,11 @@ There are two (incompatible) implementations of BIP32-Ed25519 in Cardano:
 1) HD Random (notably used initially in Daedalus)
 2) HD Sequential (notably used initially in Icarus)
 
-The difference is explained in more detail in [CIP3](../CIP-0003).
+The difference is explained in more detail in [CIP-0003](../CIP-0003).
 
 ### Future extensions
 
-As a general pattern, new wallet schemes should use a different purpose if they intend to piggy-back on the same structure but for a different use-case (see for instance [CIP-1854](https://cips.cardano.org/cips/cip1854)).
+As a general pattern, new wallet schemes should use a different purpose if they intend to piggy-back on the same structure but for a different use-case (see for instance [CIP-1854](../CIP-1854)).
 
 The `role` can however be extending with new roles so long as they have no overlapping semantic with existing roles. If they do, then they likely fall into the first category of extension and would better be done via a new purpose.
 
