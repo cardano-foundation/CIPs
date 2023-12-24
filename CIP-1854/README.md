@@ -6,7 +6,7 @@ Category: Wallets
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Pawel Jakubas <pawel.jakubas@iohk.io>
-Implementors
+Implementors:
   - Round Table wallet
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/69
