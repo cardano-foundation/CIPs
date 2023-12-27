@@ -5,7 +5,7 @@ Status: Active
 Category: Metadata
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/34
   - https://forum.cardano.org/t/cip10-transaction-metadata-label-registry/41746
