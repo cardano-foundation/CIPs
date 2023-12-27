@@ -5,7 +5,7 @@ Status: Active
 Category: Meta
 Authors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/215
   - https://github.com/cardano-foundation/CIPs/pull/428
