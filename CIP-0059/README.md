@@ -5,7 +5,7 @@ Status: Active
 Category: Meta
 Authors:
   - Jared Corduan <jared.corduan@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/274
 Created: 2022-06-09
