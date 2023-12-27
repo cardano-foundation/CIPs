@@ -7,7 +7,7 @@ Authors:
   - Gabriel Kerekes <gabriel.kerekes@vacuumlabs.com>
   - Rafael Korbas <rafael.korbas@vacuumlabs.com>
   - Jan Mazak <jan.mazak@vacuumlabs.com>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/107
 Created: 2021-06-15
