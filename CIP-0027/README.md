@@ -6,7 +6,7 @@ Category: Tokens
 Authors:
   - Huth S0lo <john@digitalsyndicate.io>
   - TheRealAdamDean <adam@crypto2099.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://forum.cardano.org/t/cip-royalties/68599
   - https://github.com/cardano-foundation/CIPs/pull/116
