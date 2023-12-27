@@ -6,7 +6,7 @@ Category: Tokens
 Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Smaug <smaug@pool.pm>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://forum.cardano.org/t/cip-nft-metadata-standard/45687
   - https://www.reddit.com/r/CardanoDevelopers/comments/mkhlv8/nft_metadata_standard/
