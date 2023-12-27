@@ -8,7 +8,7 @@ Authors:
   - John Lotoski <john.lotoski@iohk.io>
   - Michael Bishop <michael.bishop@iohk.io>
   - David Arnold <david.arnold@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/96
   - https://github.com/cardano-foundation/CIPs/pull/194
