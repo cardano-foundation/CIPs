@@ -5,7 +5,7 @@ Status: Proposed
 Category: Plutus
 Authors:
   - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/220
   - https://github.com/cardano-foundation/CIPs/pull/506
