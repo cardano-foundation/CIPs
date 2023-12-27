@@ -5,7 +5,7 @@ Status: Active
 Category: Ledger
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/78
 Created: 2020-03-25
