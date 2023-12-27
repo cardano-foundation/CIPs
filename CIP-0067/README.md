@@ -6,7 +6,7 @@ Category: Tokens
 Authors: 
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
  - https://github.com/cardano-foundation/CIPs/pull/298
  - https://github.com/cardano-foundation/CIPs/pull/586
