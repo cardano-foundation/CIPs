@@ -6,7 +6,7 @@ Category: Tokens
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Rodney Lorrimar <rodney.lorrimar@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/64
 Created: 2020-02-01
