@@ -6,7 +6,7 @@ Category: Wallets
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
   - Matthias Benkort <matthias.benkort@iohk.io>
-Implementors: NA
+Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/33
   - https://forum.cardano.org/t/staking-key-chain-for-hd-wallets/41857
