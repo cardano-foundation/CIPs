@@ -89,7 +89,7 @@ This re-registration of the main metadata file with the `extData.vkey` and the t
 
 ## Rationale: how does this CIP achieve its goals?
 
-In the following we describe a first minimal version of the extended JSON file format
+In the following we describe a first minimal version of the extended JSON file format.
 
 Since this extended metadata file can be updated at any time by the pool operator, a **serial number** is useful for consuming applications and services to identify updates.
 
