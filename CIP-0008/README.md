@@ -7,7 +7,7 @@ Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
 Implementors:
   - Mesh <https://meshjs.dev/>
-  - CardanoBallot
+  - Cardano Ballot <https://github.com/cardano-foundation/cf-cardano-ballot>
   - SundaeSwap voting
   - emurgo/cardano-message-signing-asmjs
 Discussions:
