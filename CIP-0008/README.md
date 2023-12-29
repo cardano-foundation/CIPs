@@ -293,7 +293,7 @@ The public key SHOULD NOT contain any chaincode information, as it could comprom
 
 ### Requirements
 
-On top being usable for all cases mentioned in *Motivation*, we also desire the following to ensure it works well with hardware wallets:
+On top being usable for all cases mentioned in [Motivation](#motivation-why-is-this-cip-necessary), we also desire the following to ensure it works well with hardware wallets:
 
 - E1 - Low runtime memory environment
 - E2 - Low app size environment (cannot implement every cryptographic algorithm on the device or app size would be too big)
