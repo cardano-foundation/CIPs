@@ -6,7 +6,7 @@ Category: Tools
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
 Implementors:
-  - Mesh
+  - Mesh <https://meshjs.dev/>
   - CardanoBallot
   - SundaeSwap voting
   - emurgo/cardano-message-signing-asmjs
