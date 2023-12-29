@@ -9,7 +9,7 @@ Implementors:
   - Mesh <https://meshjs.dev/>
   - Cardano Ballot <https://github.com/cardano-foundation/cf-cardano-ballot>
   - SundaeSwap governance <https://governance.sundaeswap.finance/>
-  - emurgo/cardano-message-signing-asmjs
+  - Emurgo <https://www.emurgo.io/>
 Discussions:
   - https://github.com/Emurgo/EmIPs/pull/5
   - https://forum.cardano.org/t/message-signing-specification/41032
