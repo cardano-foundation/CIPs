@@ -166,7 +166,7 @@ _Optional to consider for the implementer:_
 
 ### Acceptance Criteria
 
-- [x] There exist a variety of wallet-based, dApp, and CLI implementations of this standard, developed by a a wide variety of providers, in wide, regular use.
+- [x] There exist a variety of wallet-based, dApp, and CLI implementations of this standard, developed by a a wide variety of providers, and is in regular use.
 
 ### Implementation Plan
 
