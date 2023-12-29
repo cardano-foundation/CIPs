@@ -86,6 +86,8 @@ We deem this to be an acceptable and fairly minor consequence but encourage exis
 
 ### Implementation Plan
 
+- [ ] Update this proposal to account for the Conway Ledger era, which brings new types of certificates for registering stake keys.
+
 - [ ] Develop the proposed Reference Implementation as suggested when this CIP was originally published (see Discussion link in header for history).
 - [ ] Contact wallet and dApp representatives in the community to develop and maintain interest in their support for this specification.
 
