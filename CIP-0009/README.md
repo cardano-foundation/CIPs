@@ -6,7 +6,7 @@ Category: Ledger
 Authors:
   - Kevin Hammond <kevin.hammond@iohk.io>
 Implementors:
-  - IOG
+  - IOG <https://iog.io/>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/45
 Created: 2021-01-29
