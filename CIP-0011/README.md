@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Starting with the Shelley hardfork, Cardano makes use of both the *UTXO model* and the *account model*. To support both transaction models from the same master key, we allocate a new chain for [CIP-1852][]
+Starting with the Shelley hardfork, Cardano makes use of both the *UTXO model* and the *account model*. To support both transaction models from the same master key, we allocate a new chain for [CIP-1852]().
 
 ## Motivation: why is this CIP necessary?
 
@@ -27,7 +27,7 @@ Generally it's best to only use a cryptographic key for a single purpose, and so
 
 > **Note** The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
 
-Recall that [CIP-1852][] specifies the following derivation path:
+Recall that [CIP-1852]() specifies the following derivation path:
 
 ```
 m / purpose' / coin_type' / account' / chain / address_index
@@ -85,7 +85,7 @@ Blockchains like Ethereum does not use the UTXO model and instead uses the [*Acc
 
 ### Implementation Plan
 
-- [x] This method of key derivation has been agreed as canonical and has been included in [CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano][CIP-1852].
+- [x] This method of key derivation has been agreed as canonical and has been included in [CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano](CIP-1852).
 - [x] This method of key derivation has been supported by all wallet and tool providers beginning with the Shelley ledger era.
 
 ## Copyright
