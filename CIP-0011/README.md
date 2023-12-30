@@ -81,7 +81,7 @@ Blockchains like Ethereum does not use the UTXO model and instead uses the [*Acc
 
 ### Acceptance Criteria
 
-- [x] All notable wallet providers follow this method of key derivation.
+- [x] All notable wallet and tooling providers follow this method of key derivation.
 
 ### Implementation Plan
 
