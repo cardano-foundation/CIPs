@@ -90,6 +90,6 @@ Blockchains like Ethereum does not use the UTXO model and instead uses the [*Acc
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 [CIP-1852]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md
