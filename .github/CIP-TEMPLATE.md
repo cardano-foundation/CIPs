@@ -46,7 +46,7 @@ It must also explain how the proposal affects the backward compatibility of exis
 <!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 
 ### Implementation Plan
-<!-- A plan to meet those criteria Or `N/A` if not applicable. -->
+<!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
 
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
