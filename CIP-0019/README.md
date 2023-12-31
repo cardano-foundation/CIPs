@@ -220,7 +220,7 @@ As stated in [Motivation](#motivation-why-is-this-cip-necessary) this CIP is pro
 
 ### Reference Implementation(s)
 
-- [input-output-hk/cardano-addresses (Byron & Shelley)](https://github.com/input-output-hk/cardano-addresses)
+- [IntersectMBO/cardano-addresses (Byron & Shelley)](https://github.com/IntersectMBO/cardano-addresses)
 
 - [input-output-hk/cardano-ledger-specs (Byron)](https://github.com/input-output-hk/cardano-ledger-specs/blob/d5eaac6c4b21a8e69dc3a5503a72e3c3bfde648e/byron/ledger/impl/src/Cardano/Chain/Common/Address.hs)
 
