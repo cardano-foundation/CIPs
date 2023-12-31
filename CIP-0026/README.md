@@ -7,7 +7,8 @@ Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
   - Polina Vinogradova <polina.vinogradova@iohk.io>
-Implementors: []
+Implementors:
+  - cardano-token-registry <https://github.com/cardano-foundation/cardano-token-registry>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/112
 Created: 2021-08-10
