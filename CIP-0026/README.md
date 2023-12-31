@@ -483,7 +483,8 @@ See [Special Case: Phase-1 Monetary Policies](#special-case--phase--1-monetary-p
 
 ### Acceptance Criteria
 
-- [ ] Document commercial or community implementations of any of the use cases described above.
+- [x] Document commercial or community implementations of any of the use cases described above.
+  - [cardano-token-registry](https://github.com/cardano-foundation/cardano-token-registry)
 
 ### Implementation Plan
 
