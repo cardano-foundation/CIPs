@@ -5,7 +5,8 @@ Category: Plutus
 Status: Proposed
 Authors:
     - Koz Ross <koz@mlabs.city>
-    - Ilia Rodionov <ilia@mlabs.city> 
+    - Ilia Rodionov <ilia@mlabs.city>
+    - Jeff Cheah <jeff@mlabs.city>
 Implementors:
     - Koz Ross <koz@mlabs.city>
 Discussions:
@@ -233,13 +234,13 @@ For example, consider the number `123_456`. Its base-256 form is
 Therefore, its most-significant-first representation would be
 
 ```
-[ 0x01, 0xC2, 0x80 ]
+[ 0x01, 0xE2, 0x40 ]
 ```
 
 while its most-significant-last representation would be
 
 ```
-[ 0x80, 0xC2, 0x01 ]
+[ 0x40, 0xE2, 0x01 ]
 ```
 
 For `0`, in line with the above definition, both its most-significant-first and
