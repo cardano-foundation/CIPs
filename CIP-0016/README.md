@@ -1,11 +1,14 @@
 ---
 CIP: 16
 Title: Cryptographic Key Serialisation Formats
-Status: Proposed
+Status: Active
 Category: Tools
 Authors:
   - Luke Nadur <luke.nadur@iohk.io>
-Implementors: []
+Implementors:
+  - jcli <https://github.com/input-output-hk/catalyst-core/tree/main/src/jormungandr/jcli>
+  - cardano-signer <https://github.com/gitmachtl/cardano-signer>
+  - cardano-serialization-lib <https://github.com/Emurgo/cardano-serialization-lib>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/57
 Type: Standards
@@ -135,13 +138,14 @@ standard.
 
 ### Acceptance Criteria
 
-- [ ] Confirm, for at least one pair of applications from different developers:
-  - [ ] an application which _serializes_ keys according to this standard.
-  - [ ] an application which _deserializes_ keys according to this standard.
+- [x] Confirm support by applications and tools from different developers:
+  - [x] [jcli](https://github.com/input-output-hk/catalyst-core/tree/main/src/jormungandr/jcli)
+  - [x] [cardano-signer](https://github.com/gitmachtl/cardano-signer)
+  - [x] [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib)
 
 ### Implementation Plan
 
-- [ ] Provide a working reference implementation.
+N/A
 
 ## Copyright
 
