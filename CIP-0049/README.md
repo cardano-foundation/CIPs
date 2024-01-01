@@ -5,7 +5,7 @@ Status: Proposed
 Category: Plutus
 Authors:
   - Koz Ross <koz@mlabs.city>
-  - Michael Peyton-Jones (michael.peyton-jones@iohk.io)
+  - Michael Peyton-Jones <michael.peyton-jones@iohk.io>
   - Iñigo Querejeta Azurmendi (querejeta.azurmendi@iohk.io)
 Implementors:
   - MLabs
