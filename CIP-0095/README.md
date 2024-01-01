@@ -1,6 +1,6 @@
 ---
 CIP: 95
-Title: Web-Wallet Bridge - Conway Era
+Title: Web-Wallet Bridge - Conway ledger era
 Category: Wallets
 Status: Active
 Authors:
