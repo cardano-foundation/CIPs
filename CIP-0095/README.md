@@ -1,16 +1,16 @@
 ---
 CIP: 95
-Title: Web-Wallet Bridge - Governance 
+Title: Web-Wallet Bridge - Conway Era
 Category: Wallets
 Status: Active
 Authors:
-  - Ryan Williams <ryan.williams@intersectmbo.org>
+  - Ryan Williams <ryan.williams@iohk.org>
 Implementors:
   - Eternl <https://eternl.io/>
   - GeroWallet <https://gerowallet.io>
   - Lace <https://www.lace.io/>
   - NuFi <https://nu.fi/>
-  - Ryan Williams <ryan.williams@intersectmbo.org>
+  - Ryan Williams <ryan.williams@iohk.org>
   - Typhon <https://typhonwallet.io/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
