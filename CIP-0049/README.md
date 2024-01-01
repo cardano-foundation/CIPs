@@ -1,7 +1,7 @@
 ---
 CIP: 49
 Title: ECDSA and Schnorr signatures in Plutus Core
-Status: Proposed
+Status: Active
 Category: Plutus
 Authors:
   - Koz Ross <koz@mlabs.city>
@@ -188,8 +188,8 @@ On-chain, this requires a hard fork.
 ### Acceptance Criteria
 
 - [x] Include tests of functionality with implementation.
-- [ ] Satisfaction of CIP-0035 requirements ([Additions to the Plutus Core Builtins](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#additions-to-the-plutus-core-builtins)) including:
-  - [ ] Costing: cannot be done by MLabs due to limitations in how costing is calculated, so will be done by the Plutus Core team.
+- [x] Satisfaction of CIP-0035 requirements ([Additions to the Plutus Core Builtins](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#additions-to-the-plutus-core-builtins)) including costing.
+- [x] Inclusion of SECP in Plutus core ([as of Valentine hard fork](https://docs.cardano.org/cardano-testnet/about/secp/)).
 
 ### Implementation Plan
 
