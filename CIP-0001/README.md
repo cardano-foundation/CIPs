@@ -442,7 +442,7 @@ This CIP is licensed under [CC-BY-4.0][].
 [Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [CIP-0035]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035
-[CIP-0084]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035
+[CIP-0084]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084
 [CIP-9999]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-9999
 [CIP-TEMPLATE.md]: https://github.com/cardano-foundation/CIPs/tree/master/.github/CIP-TEMPLATE.md
 [CODE_OWNERS]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
