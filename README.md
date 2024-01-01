@@ -90,7 +90,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0088 | [Token Policy Registration](./CIP-0088) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
-| 0095 | [Web-Wallet Bridge - Conway Era](./CIP-0095) | Active |
+| 0095 | [Web-Wallet Bridge - Conway ledger era](./CIP-0095) | Active |
 | 0099 | [Proof of Onboarding](./CIP-0099) | Active |
 | 0100 | [Governance Metadata](./CIP-0100) | Proposed |
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
