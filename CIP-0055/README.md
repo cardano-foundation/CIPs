@@ -10,7 +10,7 @@ Implementors:
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/265
 Created: 2022-05-19
-License: CC-BY-4.0
+License: Apache-2.0
 ---
 
 ## Abstract
@@ -110,4 +110,4 @@ in protocol parameter updates.
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
