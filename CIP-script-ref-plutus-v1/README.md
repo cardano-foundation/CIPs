@@ -28,78 +28,43 @@ However, despite consisting of less than half of the transactions being posted t
 
 This problem isn't going away: while protocols may migrate to new Plutus v2 or v3 scripts, these old protocols will exist forever. Liquidity locked in these scripts, sometimes permanently, will mean that there is always an arbitrage opportunity that incentivizes a large portion of the block to be occupied by continually republishing these v1 scripts.
 
+> Historical Note: At the time that the babbage hardfork happened, the belief was that Plutus v2 would be attractive enough to encourage migration of that traffic. In practice, this simply isn't true, and circumstances like locked liquidity were unforseen.
+
 Additionally, raising the block size is considered incredibly sensitive, as it impacts block propagation times.
 
 A simple, backwards compatible mechanism for plutus v1 protocols to satisfy the script witness requirement, without changing the script context and causing breaking changes for Plutus v1 scripts, would alleviate quite literally millions of dollars worth of storage requirements, user pain, and developer frustration.
 
 ## Specification
 
-Currently, the relevant parts of the transaction body CDDL are produced below:
+We propose relaxing the ledger rule that fails Plutus v1 scripts in transactions that have reference inputs, and to construct a script context that excludes reference inputs.
 
-```
-transaction =
-  [ transaction_body
-  , transaction_witness_set
-  ...
-  ]
-
-transaction_body =
-  { 0 : set<transaction_input>             ; inputs
-  ...
-  , ? 7 : auxiliary_data_hash
-  ...
-  , ? 11 : script_data_hash
-  ...
-  , ? 13 : nonempty_set<transaction_input> ; collateral inputs
-  ...
-  , ? 18 : nonempty_set<transaction_input> ; reference inputs
-  }
-
-post_alonzo_transaction_output =
-  {
-  ...
-  , ? 3 : script_ref   ; script reference
-  }
-
-transaction_witness_set =
-  {
-  , ? 3: [* plutus_v1_script ]
-  ...
-  , ? 6: [* plutus_v2_script ]
-  , ? 7: [* plutus_v3_script ]
-  }
-```
-
-In order to satisfy the script witness requirement for some input locked by script hash H, you must either:
- - Include a script that hashes to H in the `transaction_witness_set`, in fields 3, 6, or 7
- - Include an input in field 18 of the transaction body (reference inputs), which refers to an input with `script_ref` set to a script that hashes to H
-
-Because of the use of the reference inputs, this will cause the construction of the plutus v1 script context to fail, as it has no backwards compatible way to expose these reference inputs to the script context.
-
-However, the `transaction_witness_set` is not exposed directly to the script context.
-
-So, we propose adding a new field for script references, as follows:
-
-```
-transaction_witness_set =
-  {
-  , ? 3: [* plutus_v1_script ]
-  ...
-  , ? 6: [* plutus_v2_script ]
-  , ? 7: [* plutus_v3_script ]
-  , ? 8: [* transaction_input ]
-  }
-```
-
-These inputs are not visible as reference inputs to the script context, and are *only* used to satisfy the script witness criteria. The node will look up each input referenced in `transaction_input`, and use any scripts found in the `script_ref` field, hash them, and use those scripts when it comes to evaluating whether each input can be spent.
+The ledger rule shouldn't change in other ways: for example, Plutus v1 scripts should still fail in the presence of inline datums or reference scripts on spent transaction inputs.
 
 ## Rationale: how does this CIP achieve its goals?
 
-This approach would immediately allow all major plutus v1 dApps to reduce their transaction sizes dramatically. Some napkin math for both Sundae and Minswap shows that this would cut around 85% of the transaction size for each transaction; Considering 90% of the space taken by by blocks is taken up by Plutus v1 scripts, this would have a massive impact on chain load.
+The main concern with this relates to backwards compatibility. The ledger makes very strong commitments regarding the behavior of scripts: any observable change represents a risk that there is some script out there that will either be unspendable when it should be, or spendable when it should not be.
 
-This may initially receive push-back because it admittedly has a "hacky" aesthetic; It feels like introducing multiple ways to accomplish the same thing, and adds a wrinkle to the specification of the transaction body.
+Because of this, any such change which violates this must satisfy a burden of proof with regards to both the benefits and the risks. This was in fact considered [in the original CIP](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031#how-should-we-present-the-information-to-scripts), and at the time, it was decided that the justification would likely not meet that high bar.
 
-However, it is hard to overstate the long-term positive impact that this change could have for real users of the Cardano blockchain. Unless there is a very material drawback or attack vector for this change, I believe that many would agree that the aesthetic awkwardness is vastly outweighed by this real world impact.
+Thus, as a rationale for this CIP, we repeat that analysis, hopefully with a different conclusion.
+
+In terms of benefit, this approach would immediately allow all major plutus v1 dApps to reduce their transaction sizes dramatically. Some napkin math for both Sundae and Minswap shows that this would cut around 85% of the transaction size for each transaction; Considering the portion of block space currently taken up by Plutus v1 scripts, this represents a significant savings.
+
+It is hard to overstate the long-term positive impact that this change could have for real users of the Cardano blockchain.
+
+In terms of the risks, there are four main risks to consider:
+
+ - Funds that should be spendable are suddenly not spendable;
+ 
+   In this case, a user could simply continue to use the existing witness mechanism to provide the scripts, and those funds become spendable again.
+
+ - Funds that should not be spendable are suddenly spendable;
+ 
+   In this case, it is very hard to imagine a scenario where this would be true that isn't crafted intentionally. It would have to be some script that was dependent on the transaction fee being above a certain threshold, which is already a dangerous assumption to make given the updatable protocol parameters. In other instances (such as the change to how the minimum UTXO output is calculated) this kind of risk hasn't been an obstacle.
+
+ - The execution units change, without changing the outcome, resulting in a different cost for the user;
+
+   In this case, the cost would only go down, and it is again hard to imagine a scenario where this is at material risk of violating some protocols integrity in a way that is not already compromised.
 
 ## Path to Active
 
