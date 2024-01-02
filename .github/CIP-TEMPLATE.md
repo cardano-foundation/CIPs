@@ -52,7 +52,7 @@ It must also explain how the proposal affects the backward compatibility of exis
 <!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
 
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
+<!-- The CIP must be explicitly licensed under acceptable copyright terms.  Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header:
 
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
-[Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
+<!-- This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). -->
+<!-- This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0). -->
