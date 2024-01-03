@@ -1,6 +1,6 @@
 ---
 CPS: ????
-Title: Lack of builtin data structures with good asymptotic performance in Plutus Core
+Better builtin data structures in Plutus
 Status: Proposed
 Category: Plutus
 Authors:
