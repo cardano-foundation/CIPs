@@ -10,6 +10,7 @@ Discussions:
  - https://twitter.com/SmaugPool/status/1737454984147390905
  - https://twitter.com/Quantumplation/status/1737704936089985339
  - https://twitter.com/SmaugPool/status/1737814894710231161
+ - https://github.com/IntersectMBO/cardano-ledger/issues/3965
 Created: 2023-12-20
 License: CC-BY-4.0
 ---
@@ -24,7 +25,7 @@ Despite making up less than half the transactions on Cardano, Plutus v1 scripts 
 
 Plutus v2 introduced a way to publish scripts on-chain, and *reference* those scripts to satisfy the witness requirement. However, because this was done via a new field on the transaction (i.e. "Reference Inputs"), which shows up in the script context, this feature is not backwards compatible with Plutus v1.
 
-However, despite consisting of less than half of the transactions being posted to the blockchain in late 2023, the bytes taken up by constantly re-publishing the same Plutus v1 scripts is nearly 60% of each block. Put another way, of the 151gb it takes to represent the 6 year history of the chain, roughly 60 gb of that (nearly 40%) can be attributed to the wasted space from repeating the same scripts in the last 2 years.
+However, despite consisting of less than half of the transactions being posted to the blockchain in late 2023, the bytes taken up by constantly re-publishing the same Plutus v1 scripts is nearly 60% of each block. Put another way, of the 151gb it takes to represent the 6 year history of the chain, roughly 60 gb of that (nearly 40%) can be attributed to the wasted space from repeating the same scripts in the last 2 years. This analysis was further confirmed by IOG in [this](https://github.com/IntersectMBO/cardano-ledger/issues/3965) issue.
 
 This problem isn't going away: while protocols may migrate to new Plutus v2 or v3 scripts, these old protocols will exist forever. Liquidity locked in these scripts, sometimes permanently, will mean that there is always an arbitrage opportunity that incentivizes a large portion of the block to be occupied by continually republishing these v1 scripts.
 
@@ -66,6 +67,8 @@ In terms of the risks, there are four main risks to consider:
 
    In this case, the cost would only go down, and it is again hard to imagine a scenario where this is at material risk of violating some protocols integrity in a way that is not already compromised.
 
+Given the parallel plans to include reference scripts in the cost of the transaction, outlined [here](https://github.com/IntersectMBO/cardano-ledger/issues/3952), further mitigates these concerns.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -76,7 +79,10 @@ In terms of the risks, there are four main risks to consider:
 
 ### Implementation Plan
 
-- [ ] 
+- [ ] Update the formal Agda specification
+- [ ] Implement [minFeeRefScriptCoinsPerByte] or similar approach, as described [here](https://github.com/IntersectMBO/cardano-ledger/issues/3952)
+- [ ] Update the implementation [here](https://github.com/IntersectMBO/cardano-ledger/blob/fdc366df654fc02b1668012342732d41eaa099fe/eras/babbage/impl/src/Cardano/Ledger/Babbage/TxInfo.hs#L94-L97)
+ - [ ] Update property based tests to cover these scenarios
 
 ## Copyright
 
