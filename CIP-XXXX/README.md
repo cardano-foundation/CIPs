@@ -85,9 +85,14 @@ onchain). However, the `verifyEd25519Signature` primitive can only accept
 `BuiltinByteString`s as messages to verify. Thus, we have a problem: how to
 include the placed bid into the bid message to be verified?
 
+More generally, constructing messages to sign usually consists of 
+concatenating together some primitives represented as `BuiltinByteString`s. 
+We currently have a way to do this for (some) strings using `encodeUtf8`, 
+but no way to do this for `BuiltinInteger`s.
+
 ### Case 2: finite fields
 
-[Finite fields][finite field], also known as Galois fields, are a common
+[Finite fields][finite-field], also known as Galois fields, are a common
 algebraic structure in cryptographic constructions. Many, if not most, common
 constructions in cryptography use finite fields as their basis, including
 [Curve25519][curve-25519], [Curve448][curve-448] and the [Pasta
@@ -353,9 +358,9 @@ builtinIntegerToByteString False 536870912 0 -- => ERROR
 -- endianness doesn't affect this case
 builtinIntegerToByteString True 536870912 0 -- => ERROR
 -- fails due to insufficient digits (404 needs 2)
-builtinIntegerToByteString False 1 404
+builtinIntegerToByteString False 1 404 -- => ERROR
 -- endianness argument doesn't affect this case
-builtinIntegerToByteString True 1 404
+builtinIntegerToByteString True 1 404 -- => ERROR
 -- zero length argument is exactly the same as requesting exactly the right
 -- digit count
 builtinIntegerToByteString False 2 404 -- => [ 0x94, 0x01 ] 
@@ -369,7 +374,7 @@ builtinIntegerToByteString False 5 404 -- => [ 0x94, 0x01, 0x00, 0x00, 0x00 ]
 builtinIntegerToByteString True 5 404 -- => [ 0x00, 0x00, 0x00, 0x01, 0x94 ]
 ```
 
-We also describe properties that any implementation of `builtinByteString` must
+We also describe properties that any implementation of `builtinIntegerToByteString` must
 have. Throughout, `q` is not negative, `p` is positive, `d` is in the closed
 interval $(0, 2^{29} - 1)$, `k` is in the closed interval $(1, 2^{29} - 1)$, 
 `0 <= j < k`, and `1 <= r <= 255`. We also define `singleton x = consByteString
