@@ -7,7 +7,8 @@ Authors:
   - Giacomo Pasini <giacomo.pasini@iohk.io>
   - Kevin Hammond <kevin.hammond@iohk.io>
   - Mark Stopka <mark.stopka@perlur.cloud>
-Implementors: []
+Implementors:
+  - cardano-signer <https://github.com/gitmachtl/cardano-signer>
 Discussions:
   - https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
   - https://github.com/cardano-foundation/CIPs/pull/188
