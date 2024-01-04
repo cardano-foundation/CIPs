@@ -4,7 +4,7 @@ Title: Cardano Delegation Portfolio
 Status: Proposed
 Category: Tools
 Authors:
-  - Matthias Benkort <matthias.benkort@iohk.io>
+  - Matthias Benkort <matthias.benkort@cardanofoundation.org>
 Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/82
