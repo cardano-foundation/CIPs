@@ -35,6 +35,8 @@ A nonexclusive list of cryptographic protocols that use a field and would benefi
 2. Onchain public key aggregation for Schnorr over SECP256k1: effectively, this aggregation is the point addition of the two keys on the curve, which requires one reciprocal in the SECP256k1 base field (using a 256 bit prime).
 3. A more interoperable interface for the BLS-12-381 built-ins: currently, the BLS-12-381 built-ins only expose a compressed version of a point, containing the `x` coordinate and some marked bits to describe how one can find the corresponding `y` in the base field. This calculation of finding `y` requires modular exponentiation in the field.
 
+For completeness and an historic perspective, the above functionality can also be attained by a new built-in function that performs normal exponentiation, after which one can reduce with the already present built-in function `ModInteger`. In the creation of this CIP, this possibility was discussed but put aside. This method has the flaw that the intermediate value of these integers is not bound. Meaning that memory consumption is not efficient for practical use in this setting.
+
 ## Specification
 Modular exponentiation is mathematically defined as the equivalence relation
 
@@ -67,7 +69,7 @@ With the above, we define a new Plutus built-in function with the following type
 ```hs
 modularExponentiation :: Integer -> Integer -> Integer -> Integer
 ```
-here the first argument is the base, the second the exponent and the third the modulus. As mentioned above, the behavior of this function is that it fails if the modulus is not a positive integer, or if the inverse of the base does not exist for a negative exponent. For the lower level implementation, we propose the usage of the `integerPowMod` function in the `GHC-bignum` packages. This function has the desired functionality, is optimized, and is easy to integrate in the plutus stack.
+here the first argument is the base, the second the exponent and the third the modulus. As mentioned above, the behavior of this function is that it fails if the modulus is not a positive integer, or if the inverse of the base does not exist for a negative exponent. For the lower level implementation, we propose the usage of the `integerPowMod` function in the `ghc-bignum` packages. This function has the desired functionality, is optimized, and is easy to integrate in the plutus stack.
 
 ### Cost model
 The computational impact of modular exponentiation is complexified by it having three arguments. That said, observe that the integers used can always be bound by the modulus. Preliminary [benchmarks](https://github.com/perturbing/expFast-bench) on the time consumption of this `integerPowMod` function show that it can be costed constant in the size of its first argument (the base) and linear in the other two.
@@ -83,6 +85,7 @@ We consider the following criteria to be essential for acceptance:
 
 * The PR for this functionality is merged in the Plutus repository.
 * This PR must include tests, demonstrating that it behaves as the specification requires in this CIP.
+* A benchmarked use case is implemented in the Plutus repository, demonstrating that realistic use of this primitive does, in fact, provide major cost savings.
 
 ### Implementation Plan
 
