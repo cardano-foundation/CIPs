@@ -130,7 +130,7 @@ Benchmarking and costing `serialiseData` was done in [this PR](https://github.co
 
 - [x] Using the existing _sizing metric_ for `Data`, determine a costing function (using existing tooling / benchmarks? TBD)
 - [x] The Plutus team updates plutus to add the built-in to PlutusV1 and PlutusV2 and uses a suitable cost function
-- [ ] The binary format of `Data` is documented and embraced as an interface within `plutus`.
+- [x] The binary format of `Data` is documented and embraced as an interface within `plutus`. (see [cardano-ledger's CDDL specification](https://github.com/IntersectMBO/cardano-ledger/blob/faa40b812511bfb6592cdfbdd85fe560cbcaed43/eras/babbage/impl/cddl-files/babbage.cddl#L306-L311))
 
 ## Copyright
 
