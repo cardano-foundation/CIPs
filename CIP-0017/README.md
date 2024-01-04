@@ -1,7 +1,7 @@
 ---
 CIP: 17
 Title: Cardano Delegation Portfolio
-Status: Proposed
+Status: Inactive (abandoned for lack of interest)
 Category: Tools
 Authors:
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>
