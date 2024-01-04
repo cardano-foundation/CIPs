@@ -236,8 +236,11 @@ The purpose of this CIP mainly consists of two parts. It addresses the current l
 - [x] A library should be build to make it easy from dAPP and wallet side to implement the proposed communication method
 - [x] The library target should be browser to avoid the need of manual polyfills
 - [x] Mobile testing on different devices and operating systems needs to be done with a special focus to the wallet app running in background mode
-- [ ] Potential security issues and attack vectors need to be discussed in detail
-- [ ] A full reference implementation is needed to test if the entire user flow and at the same time provide this as a how-to for developers
+- [x] Potential security issues and attack vectors need to be discussed in detail
+    1. We discussed potential security issues in the [CIP discussion](https://github.com/cardano-foundation/CIPs/pull/395#issuecomment-1669460822) and we
+      implement an identicon solutin, but it is obviously an never ending task      
+- [x] A full reference implementation is needed to test if the entire user flow and at the same time provide this as a how-to for developers
+    1. Has been implemented here https://github.com/fabianbormann/cip-0045-demo-implementation
 
 ### Implementation Plan
 
@@ -246,10 +249,15 @@ The purpose of this CIP mainly consists of two parts. It addresses the current l
     1. A check for mobile/desktop environment
     2. Depending on the environment provide interfaces for CIP-0030 / and / or CIP-?
     3. Add a full implementation of the server/client side code above to define a communication standard similar to CIP-0030 (getRewardAddresses, signData, signTx, ...)
-- [ ] Start discussions about security gaps within the proposed method with various developers and also look for research papers
+- [x] Start discussions about security gaps within the proposed method with various developers and also look for research papers
 - [x] Check if the wallet app also reacts to rpc calls in background mode on Android
 - [x] Check if the wallet app also reacts to rpc calls in background mode on iOS
-- [ ] Implement the library within an example dApp and [boost wallet](https://github.com/boost-pool/boost-wallet)
+- [x] Implement the library within an example dApp:
+    1. Implemented in Cardano Ballot for the [summit voting 2023](https://voting.summit.cardano.org/)
+    2. Implemented by (SundeaSwap)[https://www.youtube.com/watch?v=mRpXIh-DyYM]
+    3. Implemented into the [cardano-connect-with-wallet core and react library](https://github.com/cardano-foundation/cardano-connect-with-wallet/tree/main)
+    4. Implemented in [walkinwallet](https://walkinwallet.com/) 
+      
 
 ### Updates
 
