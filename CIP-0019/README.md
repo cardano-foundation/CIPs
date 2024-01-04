@@ -216,7 +216,7 @@ testnet:
 ```
 ## Rationale: how does this CIP achieve its goals?
 
-As stated in [Motivation](#motivation-why-is-this-cip-necessary) this CIP is provided for informational purposes regarding a single deliberate design.
+As stated in [Motivation](#motivation-why-is-this-cip-necessary) this CIP is provided for informational purposes regarding a single deliberate design. Further rationale and motivation for this design are available in the [Design Specification for Delegation and Incentives in Cardano - Section 3.2 :: Addresses & Credentials ](https://github.com/intersectmbo/cardano-ledger/releases/latest/download/shelley-delegation.pdf).
 
 ### Reference Implementation(s)
 
