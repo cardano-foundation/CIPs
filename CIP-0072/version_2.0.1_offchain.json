@@ -43,7 +43,7 @@
         "maxLength": 200
       },
       "logo": {
-        "description": "Logo encoded in base64. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB",
+        "description": "Logo encoded in base64. Maximum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB",
         "type": "string",
         "contentEncoding": "base64",
         "anyOf": [
@@ -71,7 +71,7 @@
         "type": "array",
         "maxItems": 10,
         "items": {
-          "description": "Screenshots encoded in base64. Minimum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
+          "description": "Screenshots encoded in base64. Maximum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
           "type": "string",
           "contentEncoding": "base64",
           "anyOf": [
