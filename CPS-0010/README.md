@@ -260,7 +260,7 @@ APIs should be developed via the CIP process, whereby CIPs will each define thei
 Implementing the API support should be fully at the discretion of the wallet providers.
 Although at connection time dApps should be free to request as many APIs as they wish, they should not rely on the implementation of optional APIs beyond APIs implemented in [No-data Wallets](#no-data-wallets).
 
-### 3. Version
+### 3. Support Versioning
 Versioning standards should be utilized by connection standard and API authors.
 APIs should inherit the novel versioning utilized for CIP-30 extensions.
 Connection standards should be free to employ any versioning scheme they wish.
