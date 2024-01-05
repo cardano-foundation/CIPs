@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Wallet Transaction Caching
-Status: Active
+Status: Proposed
 Category: Wallets
 Authors:
     - Josh Marchand <josh@securitybot.info>
