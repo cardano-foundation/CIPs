@@ -1,11 +1,11 @@
 ---
 CIP: 1853
 Title: HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano
-Status: Active
+Status: Proposed
 Category: Wallets
 Authors:
   - Rafael Korbas <rafael.korbas@vacuumlabs.com>
-Implementors: N/A
+Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/56
   - https://forum.cardano.org/t/stake-pool-cold-keys-hd-derivation/43360
@@ -61,7 +61,7 @@ We chose hardened derivation at the usecase index as there is no incentive to mi
 
 ### Acceptance Criteria
 
-- [x] Standardisation of this derivation path among three wallets as of the Shelley ledger era.
+- [ ] Standardisation of this derivation path among all wallets as of the Shelley ledger era.
 
 ### Implementation Plan
 
