@@ -4,8 +4,8 @@ Title: Multi-signatures HD Wallets
 Status: Active
 Category: Wallets
 Authors:
-  - Matthias Benkort <matthias.benkort@iohk.io>
-  - Pawel Jakubas <pawel.jakubas@iohk.io>
+  - Matthias Benkort <matthias.benkort@cardanofoundation.org>
+  - Pawel Jakubas <pawel.jakubas@cardanofoundation.org>
 Implementors:
   - Round Table wallet
 Discussions:
