@@ -163,7 +163,7 @@ A similar novel solution would be required for the current full node wallets to 
 This is not not great as non-web-based wallets (and their users) are unable to utilize the benefits of Cardano's web 3.
 
 ##### Undefined Behavior
-The overall the descriptions of CIP-30 behavior are brief leading to many potential cases of undefined behavior.
+The overall descriptions of CIP-30 behavior are brief, leading to many potential cases of undefined behavior.
 
 For example; should the results of `.getUtxos()` include UTxOs the wallet wishes to reserve/not spend? or include UTxOs the wallet knows are in the process of being spent? how should these reserved/pending UTxOs factor into the result of `.getBalance()`?
 Such behavior is unclear and thus different wallets will implement behavior differently, leading to inconsistent experiences for dApps and users.
