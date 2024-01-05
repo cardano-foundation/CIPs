@@ -8,8 +8,6 @@ Authors:
   - Pawel Jakubas <pawel.jakubas@cardanofoundation.org>
 Implementors:
   - Round Table wallet
-  - Daedalus 
-  - Yoroi
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/69
 Created: 2021-02-23
