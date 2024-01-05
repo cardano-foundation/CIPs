@@ -146,7 +146,7 @@ Often resulting in errors during dApp-wallet communication, degrading usability.
 ##### Unclear Responsibilities
 CIP-30 does not provide rationale to what should be the concern of the wallet and clients.
 
-The knock-on effects of this are XXX
+The knock-on effect of this is uncertainty regarding the direction future CIP-30 development should follow.
 
 ##### Language Dependent
 CIP-30's connection standard and API is defined using Typescript.
