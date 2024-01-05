@@ -288,7 +288,7 @@ Fund 11:
   - See the [schema file](./schema.cddl).
 - [x] Authors to provide CDDL schema file.
   - See [test vector file](./test-vector.md).
-- [ ] Authors to test this format for security and compatibility with existing Catalyst infrastructure.
+- [x] Authors to test this format for security and compatibility with existing Catalyst infrastructure.
 
 
 ## Copyright
