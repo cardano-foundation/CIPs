@@ -143,10 +143,15 @@ These changes resulted in diverging implementations and thus broken compatibilit
 At connection time there would be no way to tell which version of CIP-30 the wallet had implemented.
 Often resulting in errors during dApp-wallet communication, degrading usability.
 
+- has resulted in emulated wallets, as dApp devs test per wallet implementation, if better versioned this shouldnt be needed
+
 ##### Unclear Responsibilities
 CIP-30 does not provide rationale to what should be the concern of the wallet and clients.
 
 The knock-on effect of this is uncertainty regarding the direction future CIP-30 development should follow.
+
+##### Limited Scope
+- is a base connector
 
 ##### Language Dependent
 CIP-30's connection standard and API is defined using Typescript.
@@ -251,7 +256,7 @@ The impact of any data leaving the wallet should be discussed, especially for th
 Although security tolerances are at an implementors discretion, the potential negative impact on the ecosystem should be taken into account by authors.
 
 ### 2. Provide Interoperable, Optional and Extensible APIs
-Future API standards should be connection standard agnostic.
+Future API standards should be connection agnostic as well as stack standard agnostic.
 Meaning API CIP-1234 should work if connection has been initiated via CIP-30 connection or CIP-45, or CIP-4321.
 
 API standards should exist within an extensible framework, whereby specific connections can be permissioned and specialized.
@@ -259,6 +264,8 @@ APIs should be developed via the CIP process, whereby CIPs will each define thei
 
 Implementing the API support should be fully at the discretion of the wallet providers.
 Although at connection time dApps should be free to request as many APIs as they wish, they should not rely on the implementation of optional APIs beyond APIs implemented in [No-data Wallets](#no-data-wallets).
+
+- minimal connection is who am i, what do i support
 
 ### 3. Support Versioning
 Versioning standards should be utilized by connection standard and API authors.
