@@ -12,8 +12,6 @@ Created: 2023-12-22
 License: CC-BY-4.0
 ---
 
-# CIP-? Wallet Transaction Caching
-
 ## Abstract
 
 This CIP extends [CIP-0030 Cardano dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030/) and [CIP-0103? | Web-Wallet Bridge - Bulk Transaction Signing](https://github.com/cardano-foundation/CIPs/pull/587) to allow wallets to provide a complete and accurate summary of transactions that spend outputs that don't exist on chain yet when possible, and clearly communicate to the user risks when they cannot.
