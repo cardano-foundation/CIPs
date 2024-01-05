@@ -1,14 +1,14 @@
 ---
 CIP: 1855
 Title: Forging policy keys for HD Wallets
-Status: Active
+Status: Proposed
 Category: Wallets
 Authors:
   - Samuel Leathers <samuel.leathers@iohk.io>
   - John Lotoski <john.lotoski@iohk.io>
   - Michael Bishop <michael.bishop@iohk.io>
   - David Arnold <david.arnold@iohk.io>
-Implementors: N/A
+Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/96
   - https://github.com/cardano-foundation/CIPs/pull/194
@@ -98,7 +98,7 @@ A Formal Specification of the Cardano Ledger | https://github.com/input-output-h
 
 ### Acceptance Criteria
 
-- [x] [Confirmed](https://github.com/cardano-foundation/CIPs/pull/256#issue-1232625012) this standard is used by all desktop, light and hardware wallets operating in the Cardano ecosystem.
+- [ ] Standardisation of this derivation path among three wallets as of the Shelley ledger era.
 
 ### Implementation Plan
 
