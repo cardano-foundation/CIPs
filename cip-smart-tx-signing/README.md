@@ -5,7 +5,7 @@ Status: Proposed
 Category: Wallets
 Authors:
     - Josh Marchand <josh@securitybot.info>
-Implementors: N/A
+Implementors: []
 Discussions:
  - https://github.com/cardano-foundation/CIPs/pull/733
 Created: 2023-12-22
