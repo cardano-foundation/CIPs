@@ -160,7 +160,7 @@ This is convenient for browser extension wallets and web-based client stacks, bu
 
 One consequence of this is that mobile wallets are thus required to reimplement web browsers in their applications, which is wasted effort.
 A similar novel solution would be required for the current full node wallets to be able to utilize CIP-30 compatible dApps.
-This is not not great as non-web-based wallets (and their users) are unable to utilize the benefits of Cardano's web 3.
+This is not great as non-web-based wallets (and their users) are unable to utilize the benefits of Cardano's web3.
 
 ##### Undefined Behavior
 The overall descriptions of CIP-30 behavior are brief, leading to many potential cases of undefined behavior.
