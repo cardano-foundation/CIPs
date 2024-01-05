@@ -250,7 +250,7 @@ The impact of any data leaving the wallet should be discussed, especially for th
 
 Although security tolerances are at an implementors discretion, the potential negative impact on the ecosystem should be taken into account by authors.
 
-### 2. Interoperable, Optional and Extensible APIs
+### 2. Provide Interoperable, Optional and Extensible APIs
 Future API standards should be connection standard agnostic.
 Meaning API CIP-1234 should work if connection has been initiated via CIP-30 connection or CIP-45, or CIP-4321.
 
