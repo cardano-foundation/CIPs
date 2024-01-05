@@ -175,7 +175,7 @@ This adds unneeded complexity, making iterating on connection or API more diffic
 
 ##### No event listener
 The CIP-30 API and connector is purely based on synchronous and asynchronous calls made by the client dApp.
-This prevents useful advantages of event-based design, such as dApps subscribing wallets sharing state update events.
+This prevents useful advantages of event-based design, such as dApps subscribing to state update events emitted by wallets.
 
 #### CIP-30 Iteration Improvements
 CIP-30 has seen some efforts to address its flaws.
