@@ -7,7 +7,7 @@ Authors:
     - Josh Marchand <josh@securitybot.info>
 Implementors: N/A
 Discussions:
- - N/A
+ - https://github.com/cardano-foundation/CIPs/pull/733
 Created: 2023-12-22
 License: CC-BY-4.0
 ---
