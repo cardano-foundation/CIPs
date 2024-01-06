@@ -363,3 +363,5 @@ Historical data includes (but is not limited to):
 - spent transaction outputs
 - past epoch metadata
 - past stake delegations
+
+To what extent should we make historical data available to dApps?
