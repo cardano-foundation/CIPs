@@ -5,7 +5,7 @@ Status: Active
 Category: Wallets
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
-  - Matthias Benkort <matthias.benkort@iohk.io>
+  - Matthias Benkort <matthias.benkort@cardanofoundation.org>
 Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/33
