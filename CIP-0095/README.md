@@ -10,7 +10,7 @@ Implementors:
   - GeroWallet <https://gerowallet.io>
   - Lace <https://www.lace.io/>
   - NuFi <https://nu.fi/>
-  - Ryan Williams <ryan.williams@iohk.org>
+  - Ryan Williams <ryan.williams@iohk.io>
   - Typhon <https://typhonwallet.io/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
