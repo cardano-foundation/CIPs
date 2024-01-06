@@ -142,19 +142,19 @@ Supporting tooling should clearly label these key pairs as "DRep Keys".
 
 Examples of acceptable `keyType`s for supporting tools:
 
-| `keyType`                                   | Description                    |
-| ------------------------------------------- | ------------------------------ |
-| `DRepSigningKey_ed25519`                    | DRep Signing Key               |
-| `DRepExtendedSigningKey_ed25519_bip32`      | DRep Extended Signing Key      |
-| `DRepVerificationKey_ed25519`               | DRep Verification Key          |
-| `DRepExtendedVerificationKey_ed25519_bip32` | DRep Extended Verification Key |
+| `keyType`                                   | Description                                       |
+| ------------------------------------------- | ------------------------------------------------- |
+| `DRepSigningKey_ed25519`                    | Delegate Representative Signing Key               |
+| `DRepExtendedSigningKey_ed25519_bip32`      | Delegate Representative Extended Signing Key      |
+| `DRepVerificationKey_ed25519`               | Delegate Representative Verification Key          |
+| `DRepExtendedVerificationKey_ed25519_bip32` | Delegate Representative Extended Verification Key |
 
 For hardware implementations:
 
-| `keyType`                     | Description                    |
-| ----------------------------- | ------------------------------ |
-| `DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
-| `DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
+| `keyType`                     | Description                                       |
+| ----------------------------- | ------------------------------------------------- |
+| `DRepHWSigningFile_ed25519`   | Hardware Delegate Representative Signing File     |
+| `DRepVerificationKey_ed25519` | Hardware Delegate Representative Verification Key |
 
 #### Constitutional Committee Cold Keys
 
