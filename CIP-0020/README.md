@@ -33,10 +33,10 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP describes a basic JSON schema to add messages/comments/memos as transaction metadata by using the metadatum label **674**.
-Adding **informational text, invoice-numbers or similar** to a transaction on the cardano blockchain.
+This describes a basic JSON schema to add messages/comments/memos as transaction metadata by using the metadatum label **674**:
+allowing informational, commerical, or any other text to be included in a transaction on the Cardano blockchain.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 We have the utilities on the cardano blockchain now since the introduction of the "allegra-era". A simple consens about adding messages, comments or memos to transactions is still missing.
 So the CIP authors came together to form a first implementation of this. It is straight and simple, additional keys and content can be added later.
@@ -132,8 +132,7 @@ The number of theses **message-strings** must be at least one for a single messa
 **CNTools**:<br>
 ![image](https://user-images.githubusercontent.com/47434720/130353491-fc0f3a69-1937-4e72-b680-c04cc069b5c4.png)
 
-
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 This design is simple, so many tools on the cardano blockchain can implement it easily. The array type was choosen to have consistency, no need to switch between a string or
 an array format, or testing against a string or array format. Updates in the future are possible, like adding a versioning key `"ver":`, adding a key `"utxo":` to provide specific data for every tx-out#idx in the transaction, adding the `"enc":` key like for encrypted messages, making subarrays in the message-strings, etc. But for now, we need a common agreement to provide general messages/comments/memos with this CIP. The starting design war choosen as simple as possible to keep the additional transaction fees as low as possible.
@@ -163,7 +162,17 @@ _Optional to consider for the implementer:_
 * For message creation both single-line and multi-line input should be considered valid. The wallet/tool isn't required to support multi-line input.
 * Message display in explorers/wallets should however preferably support multi-line messages even if it only supports single-line on creation. Not a requirement but should at least indicate that there are more data if only the first line is displayed. Maybe a link to explorer etc in the case it's not possible to solve in UI in a good way.
 
-The implementation format in this CIP should be the ground base for transaction messages/comments/memos and should be respected by creator-/sender-implementations as well as in wallet-/receiver-/display-implementations.
+## Path to Active
+
+### Acceptance Criteria
+
+- [x] There exist a variety of wallet-based, dApp, and CLI implementations of this standard, developed by a a wide variety of providers, and is in regular use.
+
+### Implementation Plan
+
+As per the first two Discussion links:
+- [x] The format in this CIP has been the ground base for supporting transaction messages / comments / memos.
+- [x] The format and its interpretation have been considered and implemented by both creator/sender implementations and wallet/receiver/display implementations.
 
 ## Copyright
 
