@@ -4,7 +4,7 @@ Title: Web-Wallet Bridge - Conway ledger era
 Category: Wallets
 Status: Active
 Authors:
-  - Ryan Williams <ryan.williams@iohk.org>
+  - Ryan Williams <ryan.williams@iohk.io>
 Implementors:
   - Eternl <https://eternl.io/>
   - GeroWallet <https://gerowallet.io>
