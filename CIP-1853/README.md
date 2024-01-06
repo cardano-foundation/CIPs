@@ -5,7 +5,8 @@ Status: Proposed
 Category: Wallets
 Authors:
   - Rafael Korbas <rafael.korbas@vacuumlabs.com>
-Implementors: []
+Implementors:
+    - Vacuum Labs <https://vacuumlabs.com/>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/56
   - https://forum.cardano.org/t/stake-pool-cold-keys-hd-derivation/43360
