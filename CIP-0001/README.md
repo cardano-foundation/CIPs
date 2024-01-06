@@ -169,7 +169,7 @@ Field          | Description
 
 ##### Versioning
 
-CIPs must indicate how the defined Specification is versioned.  **Note** this does not apply to the CIP text, of which annotated change logs are automatically generated and available through the GitHub UI as a history of CIP files and directories.
+CIPs must indicate how the defined Specification is versioned.  **Note** this does not apply to the CIP text, for which annotated change logs are automatically generated and available through the GitHub UI as a history of CIP files and directories.
 
 Authors are free to describe any approach to versioning that allows versioned alterations to be added without author oversight.  Stipulating that the proposal must be superseded by another is also considered to be valid versioning.
 
