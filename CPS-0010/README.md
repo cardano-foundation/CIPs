@@ -69,6 +69,20 @@ We wish to provide a comprehensive catalogue of the current offerings and their 
 
 </details>
 
+<details>
+  <summary><strong>Third workshop - 2024-01-06</strong></summary>
+
+  We would like to thank those that contributed to the third workshop hosted by Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
+  - Brent
+  - Ishita Verma
+  - Jonathan Kelly
+  - Leo H
+  - Nick Ulrich
+  - NOODZ
+  - Vladimir Kalnitsky
+
+</details>
+
 ## Problem
 The motivation for this document is to outline the current state of Cardano's wallet connectors, discuss their flaws, and identify key concerns for future connector authors to be aware of.
 We hope that by discussing the issues, we will inspire the next generation of Cardano wallet connectors so that the ecosystem can grow beyond its first connector iterations.
@@ -181,6 +195,9 @@ This adds unneeded complexity, making iterating on connection or API more diffic
 ##### No event listener
 The CIP-30 API and connector is purely based on synchronous and asynchronous calls made by the client dApp.
 This prevents useful advantages of event-based design, such as dApps subscribing to state update events emitted by wallets.
+
+##### Encouraged Centralizing of Query layers
+- Effectively encourages centralization of query layer providers
 
 #### CIP-30 Iteration Improvements
 CIP-30 has seen some efforts to address its flaws.
@@ -333,6 +350,8 @@ That would also allow the end users to choose query layer providers they trust m
 ### 5. Minimize Growing Pains
 The pain caused by uprooting all CIP-30 implementations should not be underestimated.
 Thus, future standards should work to minimize the potential pain, be it by support CIP-30 implementations in a legacy mode.
+
+- Could achieve via providing a lib to translate the old interface to new one
 
 ## Open Questions
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
