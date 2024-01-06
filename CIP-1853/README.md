@@ -62,6 +62,7 @@ We chose hardened derivation at the usecase index as there is no incentive to mi
 ### Acceptance Criteria
 
 - [ ] Standardisation of this derivation path among three wallets as of the Shelley ledger era.
+    - Ledger App Cardano <https://github.com/LedgerHQ/app-cardano>
 
 ### Implementation Plan
 
