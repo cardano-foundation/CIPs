@@ -354,7 +354,7 @@ Cardano is sufficiently different from most of the blockchains that aim to unify
 What options do we have for integration with Cardano sidechains, rollups, hardforks, private testnets, etc.?
 
 ### How can we effectively police API scope?
-- how can we prevent spams of overlapping APIs
+How can we prevent duplication of functionality and make sure different APIs do not overlap?
 
 #### Should we provide historical data in full-data wallets?
 Historical data includes (but is not limited to):
