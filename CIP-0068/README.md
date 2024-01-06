@@ -593,14 +593,6 @@ right constraints and rules since this CIP solely defines the interface to keep 
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
 
-### References
-
-- [CIP 25 - Media NFT Metadata Standard](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025)
-- [CIP 31 - Reference inputs](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031)
-- [CIP 67 - Asset Name Label Registry](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067)
-- [RFC 3986 - Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986)
-- [RFC 2397 - The "data" URL scheme](https://datatracker.ietf.org/doc/html/rfc2397)
-
 ## Path to Active
 
 ### Acceptance Criteria
@@ -616,6 +608,14 @@ changes to the on-chain format.
 - [X] Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
 - [X] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (
   off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Implementation](./ref_impl)
+
+## References
+
+- [CIP 25 - Media NFT Metadata Standard](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025)
+- [CIP 31 - Reference inputs](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031)
+- [CIP 67 - Asset Name Label Registry](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067)
+- [RFC 3986 - Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986)
+- [RFC 2397 - The "data" URL scheme](https://datatracker.ietf.org/doc/html/rfc2397)
 
 ## Copyright
 
