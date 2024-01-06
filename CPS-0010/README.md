@@ -347,7 +347,6 @@ Platform differences are a concern: by using specifications that do not rely on 
 There are many types of dApp architectures enabled by different wallet types, but there is no requirement to use the APIs provided by wallets, so dApps that use simpler standards should still remain functional when used with their extensions.
 
 Does that open a way to define a universal API?
-- what language
 
 ### How interoperable can standards be with those of other ecosystems?
 Cardano is sufficiently different from most of the blockchains that aim to unify their wallet standards.
