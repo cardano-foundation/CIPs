@@ -61,7 +61,7 @@ We chose hardened derivation at the usecase index as there is no incentive to mi
 
 ### Acceptance Criteria
 
-- [ ] Standardisation of this derivation path among all wallets as of the Shelley ledger era.
+- [ ] Standardisation of this derivation path among three wallets as of the Shelley ledger era.
 
 ### Implementation Plan
 
