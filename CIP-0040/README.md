@@ -1,18 +1,24 @@
 ---
 CIP: 40
-Title: Explicit Collateral Output
-Authors: Sebastien Guillemot <seba@dcspark.io>, Jared Corduan <jared.corduan@iohk.io>, Andre Knispel <andre.knispel@iohk.io>
+Title: Collateral Output
 Status: Active
-Type: Standards
+Category: Ledger
+Authors:
+  - Sebastien Guillemot <seba@dcspark.io>
+  - Jared Corduan <jared.corduan@iohk.io>
+  - Andre Knispel <andre.knispel@iohk.io>
+Implementors: N/A
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/216
 Created: 2022-02-10
 License: CC-BY-4.0
 ---
 
-# Abstract
+## Abstract
 
-This document describes adding a new output type to transactions called Collateral Outputs
+This document describes adding a new output type to transactions called Collateral Outputs.
 
-# Motivation
+## Motivation: why is this CIP necessary?
 
 As of Alonzo, transactions that call Plutus smart contracts are required to put up collateral to cover the potential cost of smart contract execution failure. Inputs used as collateral have the following properties:
 
@@ -31,7 +37,7 @@ However,
 - Restriction #1 is problematic because hardcore dApp users rarely have UTXO entries that do not contain any tokens. To combat this, wallets have created a special wallet-dependent "collateral" UTXO to reserve for usage of collateral for dApps which is not a great UX.
 - Restriction #6 is problematic because wallets want to protect users from signing transactions with large collateral as they cannot verify whether or not the transaction will fail when submitted (especially true for hardware wallets)
 
-# Specification
+## Specification
 
 If phrase-2 verification fails, we can send outputs to a special output marked as the collateral output.
 
@@ -55,10 +61,22 @@ However, if collateral output is specified, then
 2. Collateral output needs to be balanced according to `sum(collateral_input) = sum(collateral_output) + collateral_consumed`
 Where `collateral_consumed` is equal to the old formula (`quot (txfee txb * (collateralPercent pp)) 100`). Note that when collateral is consumed, any certificate, etc. in the transaction is ignored so they have no impact on the change calculation.
 
-## Self-contained balancing
+## Rationale: how does this CIP achieve its goals?
+
+### Self-contained balancing
 
 Some use-cases like hardware wallets, who do not have access to the content of the collateral inputs, cannot easily check if the collateral is balanced. Similar to how we specify an explicit fee as part of the transaction body to tackle this problem, the transaction body also needs a new field that explicitly specified how much collateral will be consumed in the case of phase-2 validation failure.
 
+## Path to Active
+
+### Acceptance Criteria
+
+- [x] Fully implemented in Cardano as of the Vasil protocol upgrade.
+
+### Implementation Plan
+
+- [x] Passes all Ledger team requirements for desirability and feasibility.
+
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
