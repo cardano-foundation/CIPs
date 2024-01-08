@@ -1,6 +1,5 @@
 {
     "@context": {
-        "Proposal": "https://cips.cardano.org/cip/CIP-0100#Proposal",
         "hashAlgorithm": "https://cips.cardano.org/cip/CIP-0100#hashAlgorithm",
         "body": {
             "@id": "https://cips.cardano.org/cip/CIP-0100#body",
@@ -9,8 +8,8 @@
                     "@id": "https://cips.cardano.org/cip/CIP-0100#references",
                     "@container": "@set",
                     "@context": {
-                        "GovernanceMetadata": "https://cips.cardano.org/cip/CIP-0100#GovernanceMetadataReference",
-                        "Other": "https://cips.cardano.org/cip/CIP-0100#OtherReference",
+                        "governanceMetadata": "https://cips.cardano.org/cip/CIP-0100#GovernanceMetadataReference",
+                        "other": "https://cips.cardano.org/cip/CIP-0100#OtherReference",
                         "label": "https://cips.cardano.org/cip/CIP-0100#reference-label",
                         "uri": "https://cips.cardano.org/cip/CIP-0100#reference-uri"
                     }
