@@ -109,15 +109,18 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Miscellaneous
 
-| Prefix       | Meaning                                  | Contents                                                      |
-| ---          | ---                                      | ---                                                           |
-| `addr`       | Mainnet address                          | Network tag, payment credential and optional stake credential |
-| `addr_test`  | Testnet address                          | Network tag, payment credential and optional stake credential |
-| `cc_cold`    | Constitutional committee cold credential | committee cold credential                                     |
-| `cc_hot`     | Constitutional committee hot credential  | committee hot credential                                      |
-| `drep`       | DRep credential                          | DRep credential                                               |
-| `stake`      | Mainnet stake address                    | Network tag and stake credential                              |
-| `stake_test` | Testnet stake address                    | Network tag and stake credential                              |
+| Prefix           | Meaning                                               | Contents                                                      |
+| ---              | ---                                                   | ---                                                           |
+| `addr`           | Mainnet address                                       | Network tag, payment credential and optional stake credential |
+| `addr_test`      | Testnet address                                       | Network tag, payment credential and optional stake credential |
+| `cc_cold`        | Constitutional committee key based cold credential    | committee key based cold credential                           |
+| `cc_cold_script` | Constitutional committee script based cold credential | committee script based cold credential                        |
+| `cc_hot`         | Constitutional committee key based hot credential     | committee key based hot credential                            |
+| `cc_hot_script`  | Constitutional committee script based hot credential  | committee script based hot credential                         |
+| `drep`           | DRep key based credential                             | DRep key based credential                                     |
+| `drep_script`    | DRep script based credential                          | DRep script based credential                                  |
+| `stake`          | Mainnet stake address                                 | Network tag and stake credential                              |
+| `stake_test`     | Testnet stake address                                 | Network tag and stake credential                              |
 
 ## Rationale: how does this CIP achieve its goals?
 
