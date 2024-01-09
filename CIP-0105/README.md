@@ -114,13 +114,13 @@ DRep keys and DRep IDs should be encoded in Bech32 with the following prefixes:
 
 Constitutional cold keys and credential should be encoded in Bech32 with the following prefixes:
 
-| Prefix        | Meaning                                                               | Contents                           |
-| ------------- | --------------------------------------------------------------------- | ---------------------------------- |
-| `cc_cold_sk`  | CIP-1852’s constitutional committee cold signing key                  | Ed25519 private key                |
-| `cc_cold_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                |
-| `cc_cold_xsk` | CIP-1852’s constitutional committee cold extended signing key         | Ed25519-bip32 extended private key |
-| `cc_cold_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code |
-| `cc_cold`     | Constitutional committee cold credential                              | committee cold credential          |
+| Prefix        | Meaning                                                               | Contents                            |
+| ------------- | --------------------------------------------------------------------- | ----------------------------------  |
+| `cc_cold_sk`  | CIP-1852’s constitutional committee cold signing key                  | Ed25519 private key                 |
+| `cc_cold_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                 |
+| `cc_cold_xsk` | CIP-1852’s constitutional committee cold extended signing key         | Ed25519-bip32 extended private key  |
+| `cc_cold_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code  |
+| `cc_cold`     | Constitutional committee key based cold credential                    | committee key based cold credential |
 
 #### Constitutional Committee Hot Keys
 
@@ -132,7 +132,7 @@ Constitutional hot keys and credential should be encoded in Bech32 with the foll
 | `cc_hot_vk`  | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                |
 | `cc_hot_xsk` | CIP-1852’s constitutional committee hot extended signing key          | Ed25519-bip32 extended private key |
 | `cc_hot_xvk` | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code |
-| `cc_hot`     | Constitutional committee hot credential                               | committee hot credential           |
+| `cc_hot`     | Constitutional committee key based hot credential                     | committee key based hot credential |
 
 ### Tooling Definitions
 
