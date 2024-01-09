@@ -23,18 +23,19 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 ## Specification
 
 - A new tag of 778 is proposed for this implementation. The 778 tag compliments [CIP-0027](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027)'s 777 tag.
-- Any unlocked policy can write initial or updated royalties tags to a new token.
-- The royalties tags are to be written to an unnamed token, using the policy to be used for the intended Cardano Assets.
-- The latest minted set of instructions will always be honored. This allows a Cardano Asset maker to change the royalties at a future date.
-- Within this created asset will be the metadata for royalties distributions.  It will use a tag of 778, and then have two or more tags to identify the percentages of future sales requested as resale fees, and the payment addresses to forward those royalties to. The first set of two tags will be "rate" and "addr". Any additional tag sets will repeat after the first set of two tags, starting with "rate2" and "addr2", with sequentially increasing numbers for each added set.
-- The "rate*" key tags can be any floating point value from 0.0 to 1.0, to represent between 0 and 100 percent. For example, a 12.5 percent royalty would be represented with "rate": "0.125".
-- The "addr*" key tags can be string values, or an array. It is to include a single payment address. By allowing for an array, the payment address can exceed the per line 64 character limitation. This payment address could be part of a smart contract, which should allow for greater flexibility of royalties distributions, controlled by the asset creator.
+- Any unlocked policy can write initial or updated resale fees tags to a new token.
+- The resale fees tags are to be written to an unnamed token, using the policy to be used for the intended Cardano Assets.
+- The latest minted set of instructions will always be honored. This allows a Cardano Asset maker to change the resale fees at a future date.
+- Within this created asset will be the metadata for resale fees distributions.  It will use a tag of 778, and then have two or more tags to identify the percentages of future sales requested as resale fees, and the payment addresses to forward those resale fees to. The first set of two tags will be "rate" and "addr". Any additional tag sets will repeat after the first set of two tags, starting with "rate2" and "addr2", with sequentially increasing numbers for each added set.
+- The "rate*" key tags can be any floating point value from 0.0 to 1.0, to represent between 0 and 100 percent. For example, a 12.5 percent resale fee would be represented with "rate": "0.125".
+- The "addr*" key tags can be string values, or an array. It is to include a single payment address. By allowing for an array, the payment address can exceed the per line 64 character limitation. This payment address could be part of a smart contract, which should allow for greater flexibility of resale fees distributions, controlled by the asset creator.
 - It is encouraged to burn the 778 token after minting, so that it does not add to the total asset count of the policy.
 - When referenced by [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088), the [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088) registration information will take priority over any previously minted CIP-0127 tags, allowing for resale fee information to be updated even after the minting policy has locked.
 
 
 ### Example JSON with string
 
+```
 {
 	"778": {
 		"rate": "0.025",
@@ -45,9 +46,11 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 		"addr3": "addr1j6gqjsy6xgzjye7hq8hksuw1mylqmuqjsq7j182je9h2kn7ah5aj"
 	}
 }
+```
 
 ### Example JSON with array
 
+```
 {
 	"778": {
 		"rate": "0.025",
@@ -62,17 +65,18 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 		]
 	}
 }
+```
 
 ### Process Flow
 
 **Initial Process:**
 1) Create policy for planned assets.
-2) Mint no name token with community standard royalties metadata.
+2) Mint no name token with community standard resale fees metadata.
 3) Burn no name token to free up UTxO (recommended, but not required).
 4) Mint planned assets using this same policy.
 
 **Update Process (only if policy remains unlocked):**
-1) Mint new no name token with community standard royalties metadata under the same policy as the initial process.
+1) Mint new no name token with community standard resale fees metadata under the same policy as the initial process.
 2) Burn new no name token to free up UTxO (recommended, but not required).
 
 ## Rationale: How does this CIP achieve its goals?
@@ -89,7 +93,7 @@ When referenced by [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/ma
 
 ### Acceptance Criteria
 
-- [ ] Support of royalty distribution according to this standard by multiple significant marketplaces.
+- [ ] Support of resale fee distribution according to this standard by multiple significant marketplaces.
 
 ### Implementation Plan
 
