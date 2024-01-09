@@ -108,7 +108,7 @@ DRep keys and DRep IDs should be encoded in Bech32 with the following prefixes:
 | `drep_vk`  | CIP-1852’s DRep verification key          | Ed25519 public key                 |
 | `drep_xsk` | CIP-1852’s DRep extended signing key      | Ed25519-bip32 extended private key |
 | `drep_xvk` | CIP-1852’s DRep extended verification key | Ed25519 public key with chain code |
-| `drep`     | DRep credential                           | DRep credential                    |
+| `drep`     | DRep key based credential                 | DRep key based credential          |
 
 #### Constitutional Committee Cold Keys
 
