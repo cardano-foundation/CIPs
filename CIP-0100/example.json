@@ -1,42 +1,42 @@
 {
     "@context": {
         "@language": "en-us",
-        "hashAlgorithm": "https://cips.cardano.org/cip/CIP-0100#hashAlgorithm",
+        "hashAlgorithm": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashAlgorithm",
         "body": {
-            "@id": "https://cips.cardano.org/cip/CIP-0100#body",
+            "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#body",
             "@context": {
                 "references": {
-                    "@id": "https://cips.cardano.org/cip/CIP-0100#references",
+                    "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#references",
                     "@container": "@set",
                     "@context": {
-                        "governanceMetadata": "https://cips.cardano.org/cip/CIP-0100#GovernanceMetadataReference",
-                        "other": "https://cips.cardano.org/cip/CIP-0100#OtherReference",
-                        "label": "https://cips.cardano.org/cip/CIP-0100#reference-label",
-                        "uri": "https://cips.cardano.org/cip/CIP-0100#reference-uri"
+                        "governanceMetadata": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#GovernanceMetadataReference",
+                        "other": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference",
+                        "label": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label",
+                        "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri"
                     }
                 },
-                "comment": "https://cips.cardano.org/cip/CIP-0100#comment",
+                "comment": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#comment",
                 "externalUpdates": {
-                    "@id": "https://cips.cardano.org/cip/CIP-0100#externalUpdates",
+                    "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#externalUpdates",
                     "@context": {
-                        "title": "https://cips.cardano.org/cip/CIP-0100#update-title",
-                        "uri": "https://cips.cardano.org/cip/CIP-0100#update-uri"
+                        "title": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#update-title",
+                        "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#update-uri"
                     }
                 }
             }
         },
         "authors": {
-            "@id": "https://cips.cardano.org/cip/CIP-0100#authors",
+            "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#authors",
             "@container": "@set",
             "@context": {
                 "did": "@id",
                 "name": "http://xmlns.com/foaf/0.1/name",
                 "witness": {
-                    "@id": "https://cips.cardano.org/cip/CIP-0100#witness",
+                    "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#witness",
                     "@context": {
-                        "witnessAlgorithm": "https://cips.cardano.org/cip/CIP-0100#witnessAlgorithm",
-                        "publicKey": "https://cips.cardano.org/cip/CIP-0100#publicKey",
-                        "signature": "https://cips.cardano.org/cip/CIP-0100#signature"
+                        "witnessAlgorithm": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#witnessAlgorithm",
+                        "publicKey": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#publicKey",
+                        "signature": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#signature"
                     }
                 }
             }
@@ -48,7 +48,7 @@
     ],
     "body": {
       "references": [
-        { "@type": "other", "label": "CIP-100", "uri": "https://cips.cardano.org/cip/CIP-0100" }
+        { "@type": "other", "label": "CIP-100", "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md" }
       ],
       "comment": "This is a test vector for CIP-100",
       "externalUpdates": [
