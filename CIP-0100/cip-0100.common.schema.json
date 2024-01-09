@@ -29,7 +29,7 @@
             "description": "The hash algorithm used to authenticate this document externally",
             "type": "string",
             "enum": [
-                "blake2b-224"
+                "blake2b-256"
             ]
         },
         "Author": {
