@@ -42,7 +42,7 @@
             }
         }
     },
-    "hashAlgorithm": "blake2b-224",
+    "hashAlgorithm": "blake2b-256",
     "authors": [
       { "name": "Pi Lanningham", "witness": { "witnessAlgorithm": "ed25519", "publicKey": "46e4db7f87497ba232977ccd591b3d040316b155e8c60e3ea49176c03fa269de", "signature": "abcd"}}
     ],
