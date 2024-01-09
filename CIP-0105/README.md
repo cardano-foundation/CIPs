@@ -1,7 +1,8 @@
 ---
 CIP: 105
-Title: Conway Era Key Chains for HD Wallets
+Title: Conway era Key Chains for HD Wallets
 Status: Proposed
+Category: Wallets
 Authors:
   - Ryan Williams <ryan.williams@iohk.io>
 Implementors: []
@@ -21,7 +22,7 @@ Such keys are to be known as DRep keys, constitutional committee cold keys and c
 Here we define some accompanying tooling standards.
 
 > **Note** this proposal assumes knowledge of the Conway ledger design (see
-> [draft ledger specification](https://github.com/input-output-hk/cardano-ledger/blob/d2d37f706b93ae9c63bff0ff3825d349d0bd15df/eras/conway/impl/cddl-files/conway.cddl))
+> [draft ledger specification](https://github.com/IntersectMBO/cardano-ledger/blob/d2d37f706b93ae9c63bff0ff3825d349d0bd15df/eras/conway/impl/cddl-files/conway.cddl))
 > and
 > [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
 
@@ -229,15 +230,18 @@ If required, another CIP could, of course, introduce a multi-DRep/CC method.
 For simplicity, we have omitted network tags within the encoding.
 This is because we have modeled DRep IDs and CC credentials on stake pool operator IDs, which similarly do not include a network tag.
 
-
 The advantage of including a network tag would be to reduce the likelihood of mislabelling a DRep’s network of operation (eg Preview v Cardano mainnet).
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] The derivation path is used by three wallet implementers (software and/or hardware).
-- [ ] The tooling definitions are used across at least two tools.
+- [x] The DRep derivation path is used by three wallet/tooling implementations.
+  - [Nufi](https://assets.nu.fi/extension/sanchonet/nufi-cwe-sanchonet-latest.zip)
+  - [Lace](https://chromewebstore.google.com/detail/lace-sanchonet/djcdfchkaijggdjokfomholkalbffgil?hl=en)
+  - [Yoroi](https://chrome.google.com/webstore/detail/yoroi-nightly/poonlenmfdfbjfeeballhiibknlknepo/related)
+  - [demos wallet](https://github.com/Ryun1/cip95-demos-wallet)
+- [ ] The consitutional committee derivation paths are used by two implementations.
 
 ### Implementation Plan
 
