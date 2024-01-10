@@ -70,6 +70,7 @@
       "screenshots": {
         "type": "array",
         "maxItems": 10,
+        "minItems": 1,
         "items": {
           "description": "Screenshots encoded in base64. Maximum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
           "type": "string",
@@ -91,6 +92,7 @@
       },
       "social": {
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {
