@@ -17,7 +17,7 @@ License: CC-BY-4.0
 ## Abstract
 This CIP proposes an extension of the current plutus functions to provide support for the efficient calculation of modular exponentiation with inverses.
 
-## Motivation:
+## Motivation: why is this CIP necessary?
 Modular exponentiation is a cornerstone operation in numerous cryptographic protocols. The availability of such a function directly within Plutus will provide a more efficient and reliable means to perform this crucial computation. Therefore, the integration of such a Plutus core built-in is imperative to enhance cryptographic functionalities within the ecosystem.
 
 More concretely, the key area where this function would contribute is that of finite field arithmetic, which is a basis for elliptic curves. In this context, a finite field is a set of integers modulo a prime number `p`. On this set, we have the basic operations of addition, multiplication, additive inversion (negation) and the multiplicative inversion (reciprocal), all reduced modulo the prime number `p`.
