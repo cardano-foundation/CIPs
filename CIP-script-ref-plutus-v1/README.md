@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 110
 Title: Plutus v1 Script References
 Status: Active
 Category: Plutus
