@@ -1,5 +1,5 @@
 ---
-CIP: XX
+CIP: 109
 Title: Modular Exponentiation Built-in for Plutus Core
 Status: Proposed
 Category: Plutus
