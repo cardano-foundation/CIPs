@@ -65,6 +65,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0037 | [Dynamic Saturation Based on Pledge](./CIP-0037) | Proposed |
 | 0040 | [Collateral Output](./CIP-0040) | Active |
 | 0042 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
+| 0045 | [Decentralized WebRTC dApp-Wallet Communication](./CIP-0045) | Active |
 | 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Proposed |
 | 0050 | [Pledge Leverage-Based Staking Rewards](./CIP-0050) | Proposed |
 | 0052 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
@@ -104,7 +105,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2023-12-12</i></p>
+<p align="right"><i>Last updated on 2024-01-09</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -116,7 +117,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | ----- | --- |
 | 0038? | [Arbitrary Script as Native Script Spending Conditions](https://github.com/cardano-foundation/CIPs/pull/309)
 | 0039? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
-| 0045? | [Decentralized WebRTC dApp-Wallet Communication](https://github.com/cardano-foundation/CIPs/pull/395) |
 | 0056? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 0062? | [Governance API for dApp Connectors](https://github.com/cardano-foundation/CIPs/pull/296) |
 | 0073? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
@@ -135,8 +135,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0106? | [Web-Wallet Bridge - Mutlisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
 | 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
 | 0108? | [Governance Metadata - Governance Actions](https://github.com/cardano-foundation/CIPs/pull/632) |
+| 0109? | [Modular Exponentiation Built-in for Plutus Core](https://github.com/cardano-foundation/CIPs/pull/641) |
+| 0110? | [Plutus v1 compatible script references](https://github.com/cardano-foundation/CIPs/pull/679) |
 
-<p align="right"><i>Last updated on 2023-12-13</i></p>
+<p align="right"><i>Last updated on 2024-01-09</i></p>
 
 ## Cardano Problem Statements (CPS)
 
