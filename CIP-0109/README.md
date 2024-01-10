@@ -9,7 +9,8 @@ Authors:
     - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
-    - IOG
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Created: 2023-10-5
 License: CC-BY-4.0
 ---
