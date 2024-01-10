@@ -1,11 +1,11 @@
 ---
 CIP: 110
 Title: Plutus v1 Script References
-Status: Active
+Status: Proposed
 Category: Plutus
 Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
-Implementors: N/A
+Implementors: []
 Discussions:
  - https://twitter.com/SmaugPool/status/1737454984147390905
  - https://twitter.com/Quantumplation/status/1737704936089985339
@@ -14,8 +14,6 @@ Discussions:
 Created: 2023-12-20
 License: CC-BY-4.0
 ---
-
-# CIP-?: Plutus v1
 
 ## Abstract
 
