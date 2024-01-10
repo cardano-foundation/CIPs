@@ -442,8 +442,8 @@ The choice of a code of conduct follows other popular open source initiatives. I
 
 ### Implementation Plan
 
-- [ ] Rework existing draft CIPs to adopt this new format and process. In particular, CIPs affecting enlisted projects should be brought to the attention of the respective project maintainers.
-- [ ] Possibly, edit / align old CIPs preambles and sections to at least reflect also this new format.
+- [x] Rework existing draft CIPs to adopt this new format and process. In particular, CIPs affecting enlisted projects should be brought to the attention of the respective project maintainers.
+- [x] Edit / align old CIPs preambles and sections to at least reflect also this new format.
 
 ## Copyright
 
