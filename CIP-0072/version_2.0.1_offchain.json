@@ -87,9 +87,9 @@
             "contentMediaType": "image/svg+xml"
           }
         ],
+        "pattern": "^(data:image\\/png;base64,|data:image\\/jpeg;base64,|data:image\\/svg\\+xml;base64,)[a-zA-Z0-9\\+/]*={0,2}$",
         "maxLength": 2722000
       },
-      "pattern": "^(data:image\\/png;base64,|data:image\\/jpeg;base64,|data:image\\/svg\\+xml;base64,)[a-zA-Z0-9\\+/]*={0,2}$",
       "description": "Screenshots of the DApp encoded in base64. We recommend to share screenshots from the dApp usage itself."
     },
     "social": {
