@@ -963,7 +963,7 @@ As discussed above, the Constitution is not yet defined and its content is out o
 ### The constitutional committee
 
 We define a _constitutional committee_ which represents a set of individuals or entities
-(each associated with a pair of Ed25519 credentials) that are collectively responsible for **ensuring that the Constitution is respected**.
+(each associated with a Ed25519 or native or Plutus script credential) that are collectively responsible for **ensuring that the Constitution is respected**.
 
 Though it **cannot be enforced on-chain**, the constitutional committee is **only** supposed to vote
 on the constitutionality of governance actions (which should thus ensure the long-term sustainability of the blockchain) and should be replaced
@@ -1024,12 +1024,17 @@ expiring every year.
 Expired members can no longer vote.
 Member can also willingly resign early, which will be marked on-chain as an expired member.
 
-The system will automatically enter a state of no-confidence when the number of non-expired
-committee members falls below the minimal size of the committee.
-For example, a committee of size five with a threshold of 3/5 a minimum size of three and two expired members can still
+If the number of non-expired committee members falls below the minimal
+size of the committee, the constitutional committee will be unable to
+ratify governance actions. This means that only governance actions
+that don't require votes from the constitutional committee can still
+be ratified.
+
+For example, a committee of size five with a threshold of 3/5 a minimum size
+of three and two expired members can still
 pass governance actions if two non-expired members vote `Yes`.
-However, if one more member expires then the system enters a state of no-confidence,
-since the two remaining members are not enough to meet quorum.
+However, if one more member expires then the constitutional committee becomes
+unable to ratify any more governance actions.
 
 The maximum term is a governance protocol parameter, specified as a number of epochs.
 During a state of no-confidence, no action can be ratified,
@@ -1319,6 +1324,7 @@ The security relevant protocol parameters are:
 * `minFeeB`
 * `coinsPerUTxOByte`
 * `govActionDeposit`
+* `minFeeRefScriptsCoinsPerByte`
 
 > **Note**
 > It may make sense for some or all thresholds to be adaptive with respect to the Lovelace that is actively registered to vote.
@@ -1780,9 +1786,12 @@ We solve the long-term participation problem by not allowing reward withdrawals
 * Rework which anchors are required and which are optional.
 * Clean up various inconsistencies and leftovers from older versions.
 
-#### Security-relevant changes
+#### Security-relevant changes and other fixes
 
 * Guard security-relevant changes behind SPO votes.
+* The system does not enter a state of no confidence with insufficient
+  active CC members, the CC just becomes unable to act.
+* Clarify that CC members can use any kind of credential.
 
 ## Path to Active
 
