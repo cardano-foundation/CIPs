@@ -84,3 +84,4 @@ Non-goals:
 - What's the best approach to specifying address formats in json-schema format?
 - Should the schema be concerned with different representations of addresses (bech32 vs. hex)?
 - How can we programmatically or manually test the constructed schema file?
+- How to encode long integer arithmetic? Some JSON encoding implementations simply refuse to handle long integers, e.g. [CSL](https://github.com/Emurgo/cardano-serialization-lib/blob/4a35ef11fd5c4931626c03025fe6f67743a6bdf9/rust/src/plutus.rs#L1370).
