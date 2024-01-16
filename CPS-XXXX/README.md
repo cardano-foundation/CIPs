@@ -7,7 +7,7 @@ Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/742
 Created: 2024-01-10
 ---
 
