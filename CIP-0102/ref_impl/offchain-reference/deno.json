@@ -1,6 +1,7 @@
 {
   "tasks": {
     "generate-wallet": "deno run --allow-net --allow-read --allow-env --allow-write utils/generate-wallet.js",
-	"print-utxos": "deno run --allow-net --allow-read --allow-env --allow-write utils/print-utxos.ts"
+    "print-utxos": "deno run --allow-net --allow-read --allow-env --allow-write utils/print-utxos.ts",
+    "playground": "deno run --allow-net --allow-read --allow-env --allow-write index.ts"
   }
 }
