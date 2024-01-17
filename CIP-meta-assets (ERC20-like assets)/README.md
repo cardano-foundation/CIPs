@@ -408,6 +408,10 @@ It must also explain how the proposal affects the backward compatibility of exis
 ### Implementation Plan
 <!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
 
+- [x] [PoC implementation](https://github.com/HarmonicLabs/erc20-like)
+- [x] [showcase transactions](https://github.com/HarmonicLabs/erc20-like)
+- [ ] wallet implementation 
+
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
 
