@@ -1251,7 +1251,7 @@ Depending on the type of governance action, an action will thus be ratified when
 
 * the constitutional committee approves of the action (the number of members who vote `Yes` meets the threshold of the constitutional committee)
 * the DReps approve of the action (the stake controlled by the DReps who vote `Yes` meets a certain threshold of the total active voting stake)
-* the SPOs approve of the action (the stake controlled by the SPOs who vote `Yes` meets a certain threshold over the total registered voting stake)
+* the SPOs approve of the action (the stake controlled by the SPOs who vote `Yes` meets a certain threshold over the total delegated active stake for the epoch)
 
 > **Warning**
 > As explained above, different stake distributions apply to DReps and SPOs.
