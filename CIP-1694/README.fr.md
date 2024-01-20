@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: e35bedd
+Revision: c33536c
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -1233,7 +1233,7 @@ Selon le type d’action de gouvernance, une action sera donc ratifiée lorsqu�
 
 * le comité constitutionnel approuve l’action (le nombre de membres qui votent `Yes` atteint le seuil du comité constitutionnel)
 * les DReps approuvent l’action (la participation contrôlée par les DReps qui votent `Yes` atteint un certain seuil de la mise totale active des votes)
-* les SPO approuvent l’action (la participation contrôlée par les SPO qui votent `Yes` atteint un certain seuil par rapport à la mise totale des participants enregistrés)
+* les SPO approuvent l’action (la participation contrôlée par les SPO qui votent `Yes` atteint un certain seuil par rapport à la mise active totale déléguée pour l'époque)
 
 > **Warning**
 > Comme expliqué ci-dessus, différentes distributions de mise s’appliquent aux DReps et aux SPO.
