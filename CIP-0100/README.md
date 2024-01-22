@@ -162,6 +162,16 @@ We expect a rich ecosystem of CIPs to emerge defining different extensions, so t
 
 The rest of this document will provide a high level description of how these fields should be interpreted
 
+### HTML Tags
+
+For downstream tooling we define a reduced supported set of HTML tags which can be included in freefrom text fields.
+
+| Tag      | Description |
+| ---      | ----------- |
+| `<b>`    | bold        |
+| `<i>`    | italicized  |
+| `<code>` | code        |
+
 ### High level description
 
 The following properties are considered common to all types of transactions, and the minimal set needed for "minimum viable governance":
@@ -180,8 +190,12 @@ The following properties are considered common to all types of transactions, and
   - `references`
     - An array of objects
     - Each object specifies a `@type`, which is either "GovernanceMetadata" or "Other"
+    - Each object specifies a unique integer `index` field value which increases without gaps from `0`. This is to act as a unique referable ID which can be mentioned in via other fields
     - Each object specifies a `label`, which serves as a human readable display name
     - Each object specifies a `uri`; when the type is set to "GovernanceMetadata", the URI should point to another CIP-0100 compliant document
+    - Each object MAY have a OPTIONAL `uriHash` object.
+      - Each object MUST have a `hashAlgo` field. To indicate what hashing algorithm is being used.
+      - Each object MUST have a `hash` field. To show the hash digest of the content at the URI.
   - `comment`
     - Freeform text attached to the metadata; richer structures for justifying the transaction this is attached to is left to future CIPs
     - Tooling authors SHOULD emphasize that these comments represent the *authors* views, and may contain bias.
