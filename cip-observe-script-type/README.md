@@ -65,7 +65,7 @@ forwardWithStakeTrick obsScriptCred tkIdx ctx = fst (head stakeCertPairs) == obs
 ```
 IE check that the StakingCredential is in the first pair in the `txInfoWdrl`.  This script is **O(1)** in the case where you limit it to one Observe script, or if you don't want to break composability with other Observe scripts, then it becomes** O(obs_N)** where `obs_N` is the number of Observe validators that are executed in the transaction.
 
-This proposal just makes this design pattern indepedent from implementation details of stake validators and withdrawals, and improves efficiency and readability for validators that implement it. 
+This proposal makes this design pattern indepedent from implementation details of stake validators and withdrawals, and improves efficiency and readability for validators that implement it. 
 
 ## Specification
 <!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned. If a proposal defines structure of on-chain data it must include a CDDL schema in it's specification.-->
@@ -76,8 +76,20 @@ Redeemer -> ScriptContext -> ()
 
 The type signature of the newly introduced `Purpose` will be:
 ```haskell
-Observe Integer -- ^ where integer is the index into the observations 
+Observe Integer -- ^ where integer is the index into the observations list.
 ```
+
+### Script context
+
+Scripts are passed information about transactions via the script context.
+We propose to augment the script context to include information about the observation scripts that are executed in the transaction.
+
+Changing the script context will require a new Plutus language version in the ledger to support the new interface.
+The change is: a new field is added to the script context which represents the list of observation scripts that must validate the transaction.
+The observation scripts in the list are represented by their hash. 
+
+The interface for old versions of the language will not be changed.
+Scripts with old versions cannot be spent in transactions that include observation scripts, attempting to do so will be a phase 1 transaction validation failure.
 
 A new field will be introduced into the script context:
 
@@ -104,6 +116,39 @@ data TxInfo = TxInfo
   }
 ```
 
+### CDDL
+
+The CDDL for transaction body will change as follows to reflect the new field.
+```
+transaction_body =
+  { 0 : set<transaction_input>             ; inputs
+  , 1 : [* transaction_output]
+  , 2 : coin                               ; fee
+  , ? 3 : uint                             ; time to live
+  , ? 4 : certificates
+  , ? 5 : withdrawals
+  , ? 7 : auxiliary_data_hash
+  , ? 8 : uint                             ; validity interval start
+  , ? 9 : mint
+  , ? 11 : script_data_hash
+  , ? 13 : nonempty_set<transaction_input> ; collateral inputs
+  , ? 14 : required_signers
+  , ? 15 : network_id
+  , ? 16 : transaction_output              ; collateral return
+  , ? 17 : coin                            ; total collateral
+  , ? 18 : nonempty_set<transaction_input> ; reference inputs
+  , ? 19 : voting_procedures               ; Voting procedures
+  , ? 20 : proposal_procedures             ; Proposal procedures
+  , ? 21 : coin                            ; current treasury value
+  , ? 22 : positive_coin                   ; donation
+  , ? 23 : required_observations           ; New; observation scripts that must execute in phase 2 validation
+  }
+
+required_observations = set<scripthash>
+```
+
+The required observations (field 23) is a set of script hashes that can be used to require the associated Plutus script to present in the witness set and is executed in the transaction. If a script hash is present but the corresponding Plutus script is not in the witness set, the transaction will fail in phase 1 validation. This way, Plutus validation scripts can know which observation scripts were executed in the transaction.
+
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 
@@ -114,10 +159,12 @@ It must also explain how the proposal affects the backward compatibility of exis
 
 ### Acceptance Criteria
 <!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
-
+- [] Fully implemented in Cardano.
+      
 ### Implementation Plan
 <!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
-
+- [] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
+      
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
 
