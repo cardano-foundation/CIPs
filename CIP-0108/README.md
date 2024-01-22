@@ -5,7 +5,8 @@ Category: Metadata
 Status: Proposed
 Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
-Implementors: []
+Implementors:
+  - Ryan Williams <ryan.williams@intersectmbo.org>
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/632
 Created: 2023-11-23
@@ -86,65 +87,119 @@ Although there are seven types of governance action defined via CIP-1694, we foc
 We leave room for future standards to refine and specialize further to cater more specific for each type of governance action.
 
 ### Extended Vocabulary
-The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100).
+The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100)'s `body` property.
 
-#### Title
-- This should be a sentence which should act as a human readable identifier for the GA.
-- It should briefly introduce the GA so at a glance users can differentiate actions.
-  - i.e; Increase K protocol parameter to 100,000 to increase decentralization of Cardano.
-- The intention for this field is to act as a quick and clear differentiator between governance actions.
+#### `title`
+- A very short freefrom text field. Limited to 20 words.
+- Authors SHOULD use this field to succinctly describe the governance action and its motivation.
+- Authors SHOULD attempt to make this field unique whilst also avoiding hyperbolic language.
+- i.e; Increase K protocol parameter to `100,000` to increase decentralization of Cardano.
 
-#### Abstract
-- This should be a short amount of free flow text, limited to ~200 words.
-- This should a short description of the reason behind the GA, so if a problem is being addressed: what, why and how.
-- This should summarizes the problem and how GA fixes the problem - to help voters gain an understanding the context behind the GA without having to dig in too deep.
-- This could help a user differentiate two actions which are having the same onchain effect, with similar titles.
+#### `abstract`
+- A short freefrom text field. Limited to 300 words.
+- Authors SHOULD use this field to expand upon their `title` by describing the contents of the governance action, its motivation and rationale.
 
-#### Motivation
-- This should be longer free form text encapsulating context around the problem that the GA is addressing.
-- The content should also include mention of the use cases and stakeholders.
-- This field is an opportunity for the author to provide full context to the problem being addressed.
+#### `motivation`
+- A freeform text field.
+- This SHOULD be used by the author to encapsulate all context around the problem that is being solved by the on-chain action.
+- This SHOULD be used to outline the related stakeholders and use cases. 
 
-#### Rationale
-- This should be longer free form text discussing how the GA addresses the problem identified in the motivation.
-- i.e "by increasing X parameter we increase rewards for SPOs thus encouraging new SPOs to join the network.
-- This section should fully justify the changes being made to Cardano.
-- This should include what led to particular design decisions.
-- It should describe alternate designs considered and related work.
-- The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
-- For some GAs this section SHOULD to be very long.
-- This should include any recommendations made by relevant organizations or committees.
+#### `rationale`
+- A freeform text field.
+- This SHOULD be used by the author to discuss how the content of the governance action addresses the problem outlined within the `motivation`.
+- This field SHOULD justify the changes being made to Cardano.
+- i.e "by decreasing X parameter by Y we increase Ada earned by SPOs, thus incentivising more people to become SPOs, leading to a more diverse network"
+- This SHOULD provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
+- This SHOULD include discussion of alternative solutions and related topics/ governance actions.
+- This SHOULD include any recommendations made by relevant organizations or committees.
 
-#### References
-- set of: index, title, URI, hash (optional nice-to-have)
-- Can link to Intersect working groups discussions
-- Ability to add more verifiably correct information.
+#### `references`
+- An OPTIONAL array of objects.
+- Each object MUST have a unique integer `index` field value which increases without gaps from `0`. This is to act as a unique referable ID. 
+- Each object MUST have a `title` field to describe the reference, such as; "blog - Why we must continue to fund Catalyst".
+- Each object MUST have a `URI` field.
+- Each object MAY have a OPTIONAL `URIHash` object.
+  - Each object MUST have a `hash` field.
+  - Each object MUST have a `hashAlgo` field.
+- This should be used by the author to link related or supporting work via the URI, and reference this via the index within their freefrom text fields.
+
+### Application
+Governance action metadata must include all compulsory fields to be considered CIP-0108 compliant.
+Unlike with CIP-0100, here we prescribe that authors MUST include all fields.
+
+### Test Vector
+See [test-vector.md](./test-vector.md) for examples.
 
 ### Versioning
 This proposal should not be versioned, to update this standard a new CIP should be proposed.
 Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary,
 
 ## Rationale: how does this CIP achieve its goals?
-- base standard, good for MVP, makes this more straight forward to implement and support for all.
-- want to start simple with this proposal - MVG.
-- fields based on the CIP process with the specification and most of the header removed.
-- want to build in "layers of investigation" for voters, enforced via character limit on fields. 
+We intentionally have kept this proposal brief and uncomplicated.
+This was to reduce the time to develop and deploy this standard.
+We think it is better to have a base standard which can be improved, rather than meticulously craft a perfect single standard.
+This way we enable tooling which depends on this standard to start development.
+Furthermore, it is very difficult to predict future wants/needs now, so by allowing upgrades we build in the ability to improve the standard as new wants/needs arrive.
+
+The fields which have been chosen for this standard heavily inspired to those used for CIPs.
+We did this for two reasons; familiarity and competency.
+Those who are involved in Cardano are familiar with the CIP format, meaning they will be intuitively understand these fields being reused here.
+These fields in combination have also been fairly battle tested via the CIPs process and thus act as a good standard to describe problems and their solutions.
+
+### Character Limits
+
+With this design, we wanted to allow for quick and easy differentiation between governance actions.
+We achieve this by facilitating users "layers of investigation", where some fields are limited in size.
+This encourages tooling providers to show users the small fields before allowing deep investigation of the larger fields.
+By allowing this we aim to improve the experience of prospective voters, when sorting though many governance actions.
+
+The downside of highlighting some fields over others is that we incentivize hyperbolic and eye catching phrases. 
+Where authors want their governance action to standout in tooling so use overly dramatic phrasing.
+This creates an environment where there is a race to the bottom on voter's attention.
+Overall this could decrease the perceived legitimacy of the system.
+The counter argument is that tooling providers should not use metadata to solely highlight proposals, rather other means such as cryptographically verified submitters.
+
+### `title`
+This should be used by voters to quickly and easily differentiate between two governance actions which may be having the same or similar on-chain effects.
+This is why we have chosen a short character limit, as longer titles would reduce the ability for quick reading.
+
+### `abstract`
+This gives voters one step more detail beyond the `title`.
+This allows for a compact description of the what, why and how without the voter having to read the larger fields.
+
+### `motivation`
+The `motivation` is a chance for the author to fully describe the problem that is being solved by the governance action.
+This is important as all governance actions are a solution to a problem and thus this is a universal field.
+By showing relation to stakeholders the author is able to show that they have performed adequate research on the problem.
+Voters can use this field to determine if the problem is sizable enough to warrant voting on.
+
+### `rationale`
+This field gives the author the opportunity to explain how the onchain action is addressing the problem outlined in the motivation.
+This gives the author a place to discuss any alternative designs or completing governance actions.
+Voters should be able to use this field to evaluate the applicability of the solution to the problem.
+
+### `references`
+References give the author ability to point to supporting research or related work.
+These should be used by voters to verify the content of supporting research.
+The inclusion of a hash allows for the supporting documentation to be cryptographically verified.
 
 ### Open Questions
 - <s>Should fields be optional or compulsory?</s>
   - Title, abstract, motivation and rationale should be compulsory as they should be very important to the ability 
-- How much vocabulary can be extended to other onchain events?
-- How to integrate custom set of HTML tags? to allow formatting of longer text fields. 
+- <s>How much vocabulary can be extended to other onchain governance events?</s>
+  - It is hard to predict how the scope of future standards before they have been developed.
+- <s>How to integrate custom set of HTML tags? to allow formatting of longer text fields.</s>
+  - Author to make a pull request against CIP-0100, to add this support.
 
 ## Path to Active
 
 ### Acceptance Criteria
 - [ ] This standard is supported by two different tooling providers used to submit governance actions to chain.
-- [ ] This standard is supported by two different chain indexing tools, used to read and render metadata
+- [ ] This standard is supported by two different chain indexing tools, used to read and render metadata.
 
 ### Implementation Plan
 Solicitation of feedback
-- [ ] Run X number of online workshops to gather insights from stakeholders.
+- [x] Run two online workshops to gather insights from stakeholders.
 - [ ] Seek community answers on all [Open Questions](#open-questions).
 Implementation
 - [ ] Author to provide reference implementation in a dApp form.
