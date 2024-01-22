@@ -273,7 +273,7 @@ An example document with an inline context is provided in [this](./example.json)
 
 Canonicalization should produce the following blak2b-256 hash:
 
-34cbb91e044cbd1dbda9e5aa542a74e712d23d0bf151c436c52920dcac03629c
+`6ea05c0e97b1b7316d48b5587a9e60d47c0c44993c8609c9544d88c111814819`
 
 ## Path to Active
 
