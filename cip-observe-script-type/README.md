@@ -63,7 +63,7 @@ forwardWithStakeTrick obsScriptCred tkIdx ctx = fst (head stakeCertPairs) == obs
     info = txInfo ctx 
     stakeCertPairs = AssocMap.toList (txInfoWdrl info)
 ```
-IE check that the StakingCredential is in the first pair in the `txInfoWdrl`.  This script is **O(1)** in the case where you limit it to one Observe script, or if you don't want to break composability with other Observe scripts, then it becomes** O(obs_N)** where `obs_N` is the number of Observe validators that are executed in the transaction.
+IE check that the StakingCredential is in the first pair in the `txInfoWdrl`.  This script is **O(1)** in the case where you limit it to one Observe script, or if you don't want to break composability with other Observe scripts, then it becomes **O(obs_N)** where `obs_N` is the number of Observe validators that are executed in the transaction.
 
 This proposal makes this design pattern indepedent from implementation details of stake validators and withdrawals, and improves efficiency and readability for validators that implement it. 
 
