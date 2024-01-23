@@ -100,7 +100,13 @@ Changing the script context will require a new Plutus language version in the le
 The interface for old versions of the language will not be changed.
 Scripts with old versions cannot be spent in transactions that include output tags, attempting to do so will be a phase 1 transaction validation failure.
 
-Also note that for simplicity, we propose that the `tag` field in `TxOut`s in transaction inputs in the script context always be empty (ie set to `Nothing`). There are certainly use-cases where one might want to associate arbitrary data to inputs for use in Phase 2 validation; however these use-cases are few and far between compared to those for outputs. 
+Note that for simplicity, we propose that the `tag` field in `TxOut`s in transaction inputs in the script context always be empty (ie set to `Nothing`). There are certainly use-cases where one might want to associate arbitrary data to inputs for use in Phase 2 validation; however these use-cases are few and far between compared to those for outputs. 
+
+
+
+### Output tags in transaction witness set 
+
+In keeping consistent with the design of redeemers, we propose to introduce this information into the witness set as redeemers are.
 
 ### CDDL
 
@@ -123,16 +129,14 @@ output_tag = [ index: unit, data: plutus_data ]
 
 Note that although we propose to add `tag` as a field to `TxOut`s in the script context, we don't actually put them there in the CDDL. This is because the purpose of `output_tag` is to hold arbitrary data that associated to the output that is only relevant in the context of evaluating Plutus validators during Phase 2 validation. This data is not meant to be stored in UTxOs. 
 
-This means that when constructing the script context the ledger must add each the data in each `output_tag` to the `TxOut` at the matching index in the transaction outputs. 
+This means that when constructing the script context the ledger must add each the data in each `output_tag` to the `TxOut` at the matching index in the transaction outputs. If there is a compelling case to be made to introduce this tagging for `TxOut`s in the transaction inputs in the script context (ie to associate arbitrary data to transaction inputs during Plutus validator execution) then this can be extended to introduce a 9th field to the witness set `[* output_tag]` to contain the arbitrary data that the ledger can then associate with `TxOut`s in transaction inputs in the script context. 
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 
 It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
-The core idea of this proposal is to introduce a mechanism by which we can associate arbitrary data (that is only relevant during Phase 2 validation) with transaction outputs without sacrificing script composability or wastefully storing this data into the chain. 
-
-### Output tags in transaction witness set 
+The core idea of this proposal is to introduce a mechanism by which we can associate arbitrary data (that is only relevant during Phase 2 validation) with transaction outputs without sacrificing script composability or wastefully storing this data into the chain.  
 
 There are a few possible alternatives for where to store the arbitrary data associated with outputs. 
 
