@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 11
 Title: Universal JSON Encoding for Domain Types
 Status: Open
 Category: Tools
