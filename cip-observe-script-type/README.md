@@ -33,7 +33,7 @@ Since observe validators are decoupled from actions, you can run them in a trans
 
 ## Motivation: why is this CIP necessary?
 <!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
-Often in a plutus validator you want to check "a particular Plutus script checked this transaction", but it's annoying (and wasteful) to have to have to lock an output in a script and then check if that output is consumed, or mint a token, or whatever else just to trigger script validation. 
+Often in a plutus validator you want to check "a particular (different) Plutus script checked this transaction", but it's annoying (and wasteful) to have to have to lock an output in a script and then check if that output is consumed, or mint a token, or whatever else just to trigger script validation. 
 
 Currently the main design pattern used to achieve this is a very obscure trick involving staking validators and the fact that you can withdraw 0 from a staking validator to trigger the script validation. A summary of the trick is:
 Implement all the intended validation logic in a Plutus staking validator, we will call this validator `s_v`. To check that this validator was executed in the transaction you check if the credential of `s_v` (`StakingCredential`) is present in `txInfoWdrl`, this guarantees that `s_v` was checked in validation. 
