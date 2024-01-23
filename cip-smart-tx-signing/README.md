@@ -18,7 +18,7 @@ This CIP extends [CIP-0030 Cardano dApp-Wallet Web Bridge](https://github.com/ca
 
 ## Motivation: why is this CIP necessary?
 
-Transaction chaining, building transactions that spend outputs of transactions that aren't settled on chain, allows dApps to quickly do several on-chain transactions instead of waiting for each indvidual transaction to settle before building and submitting the next one. This is a powerful feature that has allowed dApps to provide seamless experiences to users. However, due to the tranasaction data structure, wallets are unable to provide a complete and accurate summary of these chained transactions when prompting users for a signature.
+Transaction chaining, building transactions that spend outputs of transactions that aren't settled on chain, allows dApps to quickly do several on-chain transactions instead of waiting for each individual transaction to settle before building and submitting the next one. This is a powerful feature that has allowed dApps to provide seamless experiences to users. However, due to the transactions data structure, wallets are unable to provide a complete and accurate summary of these chained transactions when prompting users for a signature.
 
 A transaction input, which is a reference to a previous transaction output, is defined in the [babbage CDDL](https://github.com/IntersectMBO/cardano-ledger/blob/master/eras/babbage/impl/cddl-files/babbage.cddl) as follows:
 
