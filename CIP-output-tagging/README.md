@@ -25,7 +25,6 @@ License: CC-BY-4.0
 
 -->
 
-# Tag / Redeemer Field for TxOut
 
 ## Abstract
 We propose to allow the attachment of arbitrary, temporary data to transaction outputs within the script context. This data, akin to redeemers in their operational context, is intended to be used exclusively during the execution of Plutus scripts and thus are not recorded by the ledger. This will facilitate a wide variety of smart contract design patterns, one of which can be used as a general solution for double satisfaction without sacrificing script composability.
