@@ -102,7 +102,7 @@ Security should remain of paramount concern within Web3.
 Connection standards must strive to, above all, not compromise the security of wallets or dApps.
 Connection standards should be aware of the potential impacts of standard security vulnerabilities, such as man-in-the-middle attacks.
 
-The security of the API should again remain eminent.
+The security of the API should remain eminent.
 An example of this is that no secret information should ever be allowed to leave the wallet.
 
 #### 2. Range of supported connection
@@ -157,7 +157,10 @@ These changes resulted in diverging implementations and thus broken compatibilit
 At connection time there would be no way to tell which version of CIP-30 the wallet had implemented.
 Often resulting in errors during dApp-wallet communication, degrading usability.
 
-- has resulted in emulated wallets, as dApp devs test per wallet implementation, if better versioned this shouldnt be needed
+A result of this has been that dApps whitelist only those wallets which they have tested against.
+This completely undermines the benefits of having such a standard.
+Furthermore this whitelisting has encouraged those smaller wallets to emulate the whitelisted wallets, by injecting themselves under the name of the whitelisted wallets.
+This sort of arms race, is completely unnecessary and results in future complexities for both sides.
 
 ##### Unclear Responsibilities
 CIP-30 does not provide rationale to what should be the concern of the wallet and clients.
@@ -165,7 +168,8 @@ CIP-30 does not provide rationale to what should be the concern of the wallet an
 The knock-on effect of this is uncertainty regarding the direction future CIP-30 development should follow.
 
 ##### Limited Scope
-- is a base connector
+By it's nature CIP-30 is a base level connector designed to get the first dApps on Cardano moving.
+It does, of course, have a finite scope which cannot support future upgrades or specialized connections.
 
 ##### Language Dependent
 CIP-30's connection standard and API is defined using Typescript.
@@ -196,9 +200,6 @@ This adds unneeded complexity, making iterating on connection or API more diffic
 The CIP-30 API and connector is purely based on synchronous and asynchronous calls made by the client dApp.
 This prevents useful advantages of event-based design, such as dApps subscribing to state update events emitted by wallets.
 
-##### Encouraged Centralizing of Query layers
-- Effectively encourages centralization of query layer providers
-
 #### CIP-30 Iteration Improvements
 CIP-30 has seen some efforts to address its flaws.
 
@@ -211,13 +212,6 @@ With extensions also going part way to be able to address undefined behavior.
 
 At time of writing there are four proposed extensions, with only one being merged into the CIPs repository.
 
-<!-- 
-- CIP-62
-- CIP-95
-- CIP-103
-- CIP-104
-- #623 https://github.com/cardano-foundation/CIPs/pull/623 -->
-
 ##### CIP-30 Alteration Freeze
 As part of the extension mechanism be added within [#446](https://github.com/cardano-foundation/CIPs/pull/446), a less formal shift in attitude was adopted by the CIP editors.
 In that no more alterations to CIP-30 would be allowed, instead all changes must be done through the extension mechanism.
@@ -228,9 +222,6 @@ The hopefully final remediation to CIP-30 is this document.
 We want to discuss CIP-30's drawbacks, so they can be understood moving one step closer to solving them.
 
 ## Use cases
-<!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
-
-// todo: improve these
 
 ### NFT Marketplace
 Alice wishes to buy a NFT from an smart contract based NFT marketplace for an agreed price because she wishes to support the artist.
@@ -255,11 +246,6 @@ Dave has created a wallet, he wants to minimize the cost of running his wallet.
 Without clear role of the wallet, and optional API extension scoping Dave's infrastructure may be asked to do many operations incurring cost.
 
 ## Goals
-<!-- A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve.
-
-Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns.
-
-Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
 These goals we outline for future wallet connection and API standards are based upon solving our [Core Concerns](#core-concerns).
 
 **Wallet connectors should:**
@@ -281,8 +267,7 @@ APIs should be developed via the CIP process, whereby CIPs will each define thei
 
 Implementing the API support should be fully at the discretion of the wallet providers.
 Although at connection time dApps should be free to request as many APIs as they wish, they should not rely on the implementation of optional APIs beyond APIs implemented in [No-data Wallets](#no-data-wallets).
-
-- minimal connection is who am i, what do i support
+Connections be based on "who am I? what do I support?"
 
 ### 3. Support Versioning
 Versioning standards should be utilized by connection standard and API authors.
@@ -351,10 +336,7 @@ That would also allow the end users to choose query layer providers they trust m
 The pain caused by uprooting all CIP-30 implementations should not be underestimated.
 Thus, future standards should work to minimize the potential pain, be it by support CIP-30 implementations in a legacy mode.
 
-- Could achieve via providing a lib to translate the old interface to new one
-
 ## Open Questions
-<!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 ### Can a universal connector be pursued?
 Every wallet connector that simply adds functionality on top of another standard can be considered a valid implementation of the base standard.
@@ -365,8 +347,6 @@ Platform differences are a concern: by using specifications that do not rely on 
 
 There are many types of dApp architectures enabled by different wallet types, but there is no requirement to use the APIs provided by wallets, so dApps that use simpler standards should still remain functional when used with their extensions.
 
-Does that open a way to define a universal API?
-
 ### How interoperable can standards be with those of other ecosystems?
 Cardano is sufficiently different from most of the blockchains that aim to unify their wallet standards.
 
@@ -374,13 +354,3 @@ What options do we have for integration with Cardano sidechains, rollups, hardfo
 
 ### How can we effectively police API scope?
 How can we prevent duplication of functionality and make sure different APIs do not overlap?
-
-#### Should we provide historical data in full-data wallets?
-Historical data includes (but is not limited to):
-
-- metadata and contents of past transactions
-- spent transaction outputs
-- past epoch metadata
-- past stake delegations
-
-To what extent should we make historical data available to dApps?
