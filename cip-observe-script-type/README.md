@@ -142,7 +142,7 @@ transaction_body =
   , ? 20 : proposal_procedures             ; Proposal procedures
   , ? 21 : coin                            ; current treasury value
   , ? 22 : positive_coin                   ; donation
-  , ? 23 : required_scripts                ; New; scripts that must execute in phase 2 validation
+  , ? 23 : required_scripts                ; New; observation scripts that must execute in phase 2 validation
   }
 
 required_scripts = set<scripthash>
