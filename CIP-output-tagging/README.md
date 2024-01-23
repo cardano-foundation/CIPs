@@ -8,6 +8,7 @@ Authors:
 Implementors: N/A
 Discussions:
     - https://plutus.readthedocs.io/en/latest/reference/writing-scripts/common-weaknesses/double-satisfaction.html
+    - https://github.com/cardano-foundation/CIPs/pull/735
 Created: 2024-01-04
 License: CC-BY-4.0
 ---
