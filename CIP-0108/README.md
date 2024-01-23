@@ -5,8 +5,7 @@ Category: Metadata
 Status: Proposed
 Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
-Implementors:
-  - Ryan Williams <ryan.williams@intersectmbo.org>
+Implementors: [ ]
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/632
 Created: 2023-11-23
@@ -86,26 +85,33 @@ This is good for all governance participants.
 Although there are seven types of governance action defined via CIP-1694, we focus this proposal on defining core properties which must be attached to all types.
 We leave room for future standards to refine and specialize further to cater more specific for each type of governance action.
 
+### Markdown Text Styling
+This standard introduces the possibility of using [Github markdown text styling](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#styling-text) within fields.
+
 ### Extended Vocabulary
 The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100)'s `body` property.
 
 #### `title`
-- A very short freefrom text field. Limited to 20 words.
+- A very short freefrom text field. Limited to `80` characters.
+- This SHOULD NOT support markdown text styling.
 - Authors SHOULD use this field to succinctly describe the governance action and its motivation.
 - Authors SHOULD attempt to make this field unique whilst also avoiding hyperbolic language.
 - i.e; Increase K protocol parameter to `100,000` to increase decentralization of Cardano.
 
 #### `abstract`
-- A short freefrom text field. Limited to 300 words.
+- A short freefrom text field. Limited to `2500` characters.
+- This SHOULD support markdown text styling.
 - Authors SHOULD use this field to expand upon their `title` by describing the contents of the governance action, its motivation and rationale.
 
 #### `motivation`
 - A freeform text field.
+- This SHOULD support markdown text styling.
 - This SHOULD be used by the author to encapsulate all context around the problem that is being solved by the on-chain action.
 - This SHOULD be used to outline the related stakeholders and use cases. 
 
 #### `rationale`
 - A freeform text field.
+- This SHOULD support markdown text styling.
 - This SHOULD be used by the author to discuss how the content of the governance action addresses the problem outlined within the `motivation`.
 - This field SHOULD justify the changes being made to Cardano.
 - i.e "by decreasing X parameter by Y we increase Ada earned by SPOs, thus incentivising more people to become SPOs, leading to a more diverse network"
@@ -114,10 +120,11 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - This SHOULD include any recommendations made by relevant organizations or committees.
 
 #### `references`
-- An OPTIONAL array of objects.
-- Each object MUST have a unique integer `index` field value which increases without gaps from `0`. This is to act as a unique referable ID. 
+- We extend CIP-100's references field.
+- This SHOULD NOT support markdown text styling.
+- To be an OPTIONAL set of objects, using the `@set` property.
 - Each object MUST have a `title` field to describe the reference, such as; "blog - Why we must continue to fund Catalyst".
-- Each object MUST have a `URI` field.
+- Each object MUST have a `uri` field.
 - Each object MAY have a OPTIONAL `URIHash` object.
   - Each object MUST have a `hash` field.
   - Each object MUST have a `hashAlgo` field.
@@ -147,7 +154,6 @@ Those who are involved in Cardano are familiar with the CIP format, meaning they
 These fields in combination have also been fairly battle tested via the CIPs process and thus act as a good standard to describe problems and their solutions.
 
 ### Character Limits
-
 With this design, we wanted to allow for quick and easy differentiation between governance actions.
 We achieve this by facilitating users "layers of investigation", where some fields are limited in size.
 This encourages tooling providers to show users the small fields before allowing deep investigation of the larger fields.
@@ -189,7 +195,7 @@ The inclusion of a hash allows for the supporting documentation to be cryptograp
 - <s>How much vocabulary can be extended to other onchain governance events?</s>
   - It is hard to predict how the scope of future standards before they have been developed.
 - <s>How to integrate custom set of HTML tags? to allow formatting of longer text fields.</s>
-  - Author to make a pull request against CIP-0100, to add this support.
+  - Since CIP-100 does not intend to support rich text fields such an inclusion would not fit, so we have included such format here.
 
 ## Path to Active
 
@@ -202,8 +208,7 @@ Solicitation of feedback
 - [x] Run two online workshops to gather insights from stakeholders.
 - [ ] Seek community answers on all [Open Questions](#open-questions).
 Implementation
-- [ ] Author to provide reference implementation in a dApp form.
-- [ ] Author to provide example metadata.
+- [ ] Author to provide example metadata and schema files.
 
 ## Copyright
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
