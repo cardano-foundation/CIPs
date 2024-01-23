@@ -142,13 +142,13 @@ transaction_body =
   , ? 20 : proposal_procedures             ; Proposal procedures
   , ? 21 : coin                            ; current treasury value
   , ? 22 : positive_coin                   ; donation
-  , ? 23 : required_observations           ; New; observation scripts that must execute in phase 2 validation
+  , ? 23 : required_scripts                ; New; scripts that must execute in phase 2 validation
   }
 
-required_observations = set<scripthash>
+required_scripts = set<scripthash>
 ```
 
-The required observations (field 23) is a set of script hashes that can be used to require the associated Plutus script to present in the witness set and is executed in the transaction. If a script hash is present but the corresponding Plutus script is not in the witness set, the transaction will fail in phase 1 validation. This way plutus scripts can check the script context to know which observation scripts were executed in the transaction.
+The required scripts (field 23) is a set of script hashes that can be used to require the associated Plutus script to present in the witness set and is executed in the transaction. If a script hash is present but the corresponding Plutus script is not in the witness set or present in a reference script, the transaction will fail in phase 1 validation. This way plutus scripts can check the script context to know which observation scripts were executed in the transaction.
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
