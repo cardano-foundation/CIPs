@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 112
 Title: Observe Script Type
 Status: Proposed
 Category: Plutus
