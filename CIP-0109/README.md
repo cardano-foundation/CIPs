@@ -84,9 +84,9 @@ Integrating this function directly into Plutus will streamline cryptographic ope
 
 We consider the following criteria to be essential for acceptance:
 
-* The PR for this functionality is merged in the Plutus repository.
-* This PR must include tests, demonstrating that it behaves as the specification requires in this CIP.
-* A benchmarked use case is implemented in the Plutus repository, demonstrating that realistic use of this primitive does, in fact, provide major cost savings.
+- [ ] The PR for this functionality is merged in the Plutus repository.
+- [ ] This PR must include tests, demonstrating that it behaves as the specification requires in this CIP.
+- [ ] A benchmarked use case is implemented in the Plutus repository, demonstrating that realistic use of this primitive does, in fact, provide major cost savings.
 
 ### Implementation Plan
 
