@@ -43,6 +43,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
     - [Header Preamble](#header-preamble)
     - [Translations](#translations)
     - [Repository Organization](#repository-organization)
+    - [Versioning](#versioning)
     - [Licensing](#licensing)
   - [Statuses](#statuses)
     - [Status: Proposed](#status-proposed)
@@ -79,12 +80,13 @@ Name                                            | Description
 Preamble                                        | Headers containing metadata about the CIP ([see below](#header-preamble)).
 Abstract                                        | A short (\~200 word) description of the proposed solution and the technical issue being addressed.
 Motivation: why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
-Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations. <br/><br/>This must include how the CIP should be versioned. Stipulating that the proposal must be superseded by another is valid versioning. Adequate description must be given to allow versioned alterations to be added without author oversight. <br/><br/> If a proposal defines structure of on-chain data it must include a CDDL schema.
+Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations. <br/><br/>This section must address the [Versioning](#versioning) requirement unless this is addressed in an optional Versioning section.<br/><br/> If a proposal defines structure of on-chain data it must include a CDDL schema.
 Rationale: how does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
 Path to Active                                  | Organised in two sub-sections (see [Path to Active](#path-to-active) for detail):<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>Either a plan to meet those criteria or `N/A` if not applicable.
+_optional sections_                             | May appear in any order, or with custom titles, at author and editor discretion:<br/>**Versioning**: if [Versioning](#versioning) is not addressed in Specification<br/>**References**<br/>**Appendices**
 Copyright                                       | The CIP must be explicitly licensed under acceptable copyright terms ([see below](#licensing)).
 
-> **Note** Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
+> **Note** Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Subsections like _Versioning_ or _Acceptance Criteria_ should be H3 headings (e.g. `### Versioning`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
 
 ##### Header Preamble
 
@@ -164,6 +166,14 @@ Field          | Description
 `Language`     | An [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) code of the target language (e.g. `fr`)
 
 - Translated CIPs inherit the same licensing terms as their original sources.
+
+##### Versioning
+
+CIPs must indicate how the defined Specification is versioned.  **Note** this does not apply to the CIP text, for which annotated change logs are automatically generated and available through the GitHub UI as a history of CIP files and directories.
+
+Authors are free to describe any approach to versioning that allows versioned alterations to be added without author oversight.  Stipulating that the proposal must be superseded by another is also considered to be valid versioning.
+
+Since this is a functional definition it would typically be in one or more subsections of the Specification, but may also be placed in an optional Versioning section.
 
 ##### Licensing
 
@@ -249,7 +259,7 @@ Registered categories for explicitly enlisted projects are otherwise listed belo
 Category | Description
 ---      | ---
 Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][https://github.com/cardano-foundation/CIPs/pull/456]
+Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
 Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
 
 #### Project Enlisting
@@ -432,8 +442,8 @@ The choice of a code of conduct follows other popular open source initiatives. I
 
 ### Implementation Plan
 
-- [ ] Rework existing draft CIPs to adopt this new format and process. In particular, CIPs affecting enlisted projects should be brought to the attention of the respective project maintainers.
-- [ ] Possibly, edit / align old CIPs preambles and sections to at least reflect also this new format.
+- [x] Rework existing draft CIPs to adopt this new format and process. In particular, CIPs affecting enlisted projects should be brought to the attention of the respective project maintainers.
+- [x] Edit / align old CIPs preambles and sections to at least reflect also this new format.
 
 ## Copyright
 
@@ -442,6 +452,7 @@ This CIP is licensed under [CC-BY-4.0][].
 [Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [CIP-0035]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035
+[CIP-0084]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084
 [CIP-9999]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-9999
 [CIP-TEMPLATE.md]: https://github.com/cardano-foundation/CIPs/tree/master/.github/CIP-TEMPLATE.md
 [CODE_OWNERS]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners

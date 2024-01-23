@@ -7,7 +7,7 @@ Authors:
     - John Doe <john.doe@email.domain>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/?
 Created: YYYY-MM-DD
 ---
 
