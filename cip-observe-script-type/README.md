@@ -68,7 +68,7 @@ stakeValidatorWithSharedLogic :: AssetClass -> BuiltinData -> ScriptContext -> (
 stakeValidatorWithSharedLogic stateToken _rdmr ctx = assetClassValueOf stateToken (valueSpent (txInfo ctx)) == 1
 ```
 For the staking validator trick (demonstrated above), we are simply checking that the StakingCredential of the the staking validator containing the shared validation logic is in the first pair in `txInfoWdrl`. If the StakingCredential is present in `txInfoWdrl`, that means the staking validator (with our shared validation logic) successfully executed in the transaction. This script is **O(1)** in the case where you limit it to one shared logic validator (staking validator), or if you don't want to break composability with other staking validator, 
-then it becomes** O(obs_N)** where `obs_N` is the number of Observe validators that are executed in the transaction as you have to verify that the StakingCredential is present in `txInfoWdrl`.
+then it becomes **O(obs_N)** where `obs_N` is the number of Observe validators that are executed in the transaction as you have to verify that the StakingCredential is present in `txInfoWdrl`.
 
 
 This proposal makes this design pattern indepedent from implementation details of stake validators and withdrawals, and improves efficiency and readability for validators that implement it. 
