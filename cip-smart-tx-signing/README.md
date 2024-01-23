@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 111
 Title: Wallet Transaction Caching
 Status: Proposed
 Category: Wallets
