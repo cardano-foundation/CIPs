@@ -1,4 +1,4 @@
----
+--
 CIP: ?
 Title: Explicit script return values
 Category: Plutus
@@ -50,18 +50,20 @@ While these mistakes are relatively easily avoidable (any good smart contract to
 
 The specification for checking whether a Plutus Core script accepts a transaction changes as follows (the new part is in brackets):
 
-> A Plutus Core script S with arguments A1...An accepts a transaction if 'eval(S A1 ... An)' succeeds [and evaluates to the builtin boolean constant 'true'].
+> A Plutus Core script S with arguments A1...An accepts a transaction if 'eval(S A1 ... An)' succeeds [and evaluates to the builtin constant 'unit'].
 
 This change is not backwards-compatible and will need to go into a new Plutus ledger language.
 
 ## Rationale: how does this CIP achieve its goals?
 
-Since the return value of a script will now be significant, a script will only succeed if the whole thing evaluates to 'true'.
+Since the return value of a script will now be significant, a script will only succeed if the whole thing evaluates to 'unit'.
 This is very unlikely to happen by accident: mistakes in the number of arguments or in what to return will result in failure.
 
 ### Alternatives 
 
 - The status quo is not terrible, and we could simply accept it.
+- The return value could be a boolean constant, with 'true' indicating success and 'false' indicating failure.
+    - This is slightly more complicated, and technically we only need a designated success value, since "anything else" indicates failure. We don't need to distinguish between "normal exit indicating rejection of the transaction" and "abnormal exit".
 - We could specifically detect when a script returns a lambda, and say that that is a failure.
     - This is patching up one particular hole, whereas the proposal here has much more coverage by failing everything that doesn't quite specifically return 'true'.
 
