@@ -74,7 +74,7 @@
                     "cip": {
                         "$id": "#/items/anyOf/0/properties/cip",
                         "type": "string",
-                        "title": "The CIP which defines the Tab and its canonical encoding",
+                        "title": "The CIP which defines the Tag and its canonical encoding",
                         "examples": [
                             "CIP-xxxx"
                         ]
