@@ -110,6 +110,7 @@ Even though a CIPs metadata may use one, its formalization should be done outsid
 * Should we define recommendations for the use of Tags in Metadata CIPs?
 
 [CIP-0036]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036
+[CIP-0042]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0042/README.md
 [CBOR]: https://datatracker.ietf.org/doc/html/rfc8949
 [CBOR Tags]: https://datatracker.ietf.org/doc/html/rfc8949#name-tagging-of-items
 [CBOR Tags Registry]: https://datatracker.ietf.org/doc/html/rfc8949#ianatags
