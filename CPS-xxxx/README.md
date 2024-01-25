@@ -84,11 +84,20 @@ This would provide forward compatibility.
 
 ## Goals
 
-<!-- A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve.
+1. Definitive sources of truth for CBOR encoding of common Cardano data structures.
+2. Uniform use of CBOR tags to unambiguously identify common Cardano data structures inside CBOR.
+3. An easily accessible reference to all CBOR tags defined by CIPs, to help eliminate their re-definition.
+4. Guidelines on the creation of new CBOR tags as data structures emerge, or existing data structures are formalized.
+5. Clarity on who is responsible to have new Tags registered with IANA.
 
-Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns.
+It is NOT a goal of this CPS to cause all pre-existing Cardano data structures to be standardized with CBOR tags.
+Individual projects should evaluate if the existing tags are sufficient or if they require new ones for their purposes.
+it would then be the responsibility of the project to raise a CIP to standardize the CBOR tag for the pre-existing data structure.
 
-Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
+It is also not a goal of this CPS to define how general data structures are tagged.
+The data structure should be either defined by a CIP or integral to Cardano.
+An example is `ULID` this has no current CBOR Tag, but it is not defined by a CIP nor integral to Cardano.
+Even though a CIPs metadata may use one, its formalization should be done outside the CIP process.
 
 ## Open Questions
 
