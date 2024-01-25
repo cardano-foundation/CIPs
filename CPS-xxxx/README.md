@@ -6,7 +6,8 @@ Category: Meta
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
 Proposed Solutions: []
-Discussions: []
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/751
 Created: 2024-01-24
 License: CC-BY-4.0
 ---
