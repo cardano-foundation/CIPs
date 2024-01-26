@@ -46,8 +46,11 @@ If adopted it would allow to introduce the programmability over the transfer of 
 The solution proposed includes (answering to the open questions of CPS-0003):
 
 1 and 2) very much like account based models, wallets supporting this standard will require to know the address of the smart contract (validator)
+
 3) the soultion can co-exsist with the exsiting native tokens
+
 4) the implementaiton is possible without hardfork since Vasil
+
 5) optimized implementations should not take significant computation, especially on transfers.
 
 ## Specification
@@ -154,12 +157,13 @@ used as follows:
 optionally a specific implementation might require a fixed number of inputs (eg. a single input) for performance reasons.
 
 - when minting assets only a single token should be minted (indipendently from the number of inputs)
-- the only asset minted MUST have an unique asset name (we suggest using the output of `[(builtin serialiseData) fstUtxoRef]` where `fstUtxoRef` is the utxo reference (or `PTxOutRef`) of the very first input of the transaction)
+- the only asset minted MUST have an unique asset name (we suggest using the output of `[(builtin sha2_256) [(builtin serialiseData) fstUtxoRef]]` where `fstUtxoRef` is the utxo reference (or `PTxOutRef`) of the very first input of the transaction)
 
 - the asset minted MUST be included in an output of the transaction being validated going to the hard-coded `accountManager` validator.
 
 - the output going to the `accountManager` validator MUST implement the following checks (in addition to the presence of the minted asset):
     - the address' payment credential MUST have `ScriptCredential` constructor (constructor index `1`) and validator hash MUST equal the hard coded `accountManager` hash
+    - the value attached to the UTxO must only have 2 entries (ADA and minted token) to prevent DoS by token spam.
     - the output datum MUST:
         - be constructed using the `InlineDatum` consturctor (consturctor index `2`)
         - have datum value with the [`Account`](#Account) structure (explained below) with the foeeowing fields:
@@ -340,8 +344,10 @@ equivalent to the one specified in the `currencySym` field of the `Account` datu
 - the minted value in the transaction (`ctx.tx.mint`) MUST NOT include any entry with `PCurrencySymbol`
 equivalent to the one specified in the `currencySym` field of the `Account` datum (aka. no accounts are created)
 
+- to prevent DoS by token spamming the output going back to the `accountManager` must have at most length 2.
+
 - there MUST be an output going back to the `accountManager` contract with the following properties
-    - it MUST have an entry for the `PCurrencySymbol` specified in the `currencySym` field of the `Account`
+    - it MUST have an entry for the `PCurrencySymbol` specified in the `currencySym` field of the `Account` (aka. NFT is preserved)
     - the output datum MUST be constructed using the `InlineDatum` constructor
     - the datum fields `credentials`, `currencySym` and `state` must be unchanged compared to the current datum.
     - the datum field `account.amount` should change based on `mint.amount` as described below.
@@ -360,17 +366,39 @@ The `Transfer` redeemer is used to pay an other account in the same account mana
 When used as redeemer the contract checks for the following conditions to be true;
 
 - `ownInputs` to be of lenght `2`
+
+- the receiver input (the `ownInput` with different `utxoRef` of the `validatingInput`)
+being spent with `Receive` redeemer
+
+- the sender input (`validatinInput`) must have the NFT according to `account.currencySym` (the input is valid)
+
+- the output with the sender's credentials must preserve the NFT
+
+- the account fields `credentials`, `currencySym` and `state` are unchanged between sender input datum and sender output datum
+
+- the account fields `credentials`, `currencySym` and `state` are unchanged between receiver input datum and receiver output datum
+
 - `ownOuts` to be of lenght `2`
+
+- every member of `ownOuts` must have at most 2 entries to prevent DoS by token spam.
+
 - the input sender's amount field is greather or equal than the redeemer amount (`transfer.amount`)
+
 - the output sender's amount field is equal to the input one minus `transfer.amount`
+
 - the output receiver's amount field is equal to the input one plus `transfer.amount`
+
 - the sender singned the transaction (included in `ctx.tx.signatories` if a `PPubKeyHash` or included a script input if a `PValidatorHash`)
+
+any additional check can be made based on the `account.state` (implementation specific)
 
 #### `Receive`
 
 - `ownInputs` to be of lenght `2`
+
 - the sender input (the `ownInput` with different `utxoRef` of the `validatingInput`)
 being spent with `Transfer` redeemer
+
 - in the sender input `Transefer` redeemer the `to` field is equal to the `account.credentials` (where `account` is the receiver datum)
 
 > **NOTE**
