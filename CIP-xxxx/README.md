@@ -7,7 +7,7 @@ Authors:
     - Steven Johnson<steven.johnson@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/753
 Created: 2024-1-19
 License: CC-BY-4.0
 ---
@@ -29,13 +29,13 @@ Project Catalyst is in the process of defining new CBOR data structures.
 We needed a way to reliably disambiguate different 32 byte strings.
 Rather than making a non-standard encoding scheme specific to our structures we would like to use standard [CBOR] Tags.
 
-This CIP is informed by [CBOR-CPS] and [CBOR-CIP].
+This CIP is informed by [CPS-CBOR-TAGS] and [CIP-CBOR-TAGS].
 
 Without this Tag definition, a metadata CIP which uses [ED25519-BIP32] public keys:
 
-1. Is likely to just encode public keys as a byte string of 32 bytes; and
-2. Needs to redundantly define how the keys are encoded in the byte string.
-3. Different metadata may encode these keys differently which can lead to confusion and potential error.
+* Is likely to just encode public keys as a byte string of 32 bytes; and
+* Needs to redundantly define how the keys are encoded in the byte string.
+* May encode these keys differently to another CIP, which can lead to confusion and potential error.
 
 [BIP32] also defines `secp256k1`` keys which are also 32 bytes long.
 This CIP would help disambiguate between these keys and inform the decoder which key is being utilized.
@@ -109,7 +109,7 @@ Data for the signature inside the byte string is encoded in [network byte order]
 ## Rationale: how does this CIP achieve its goals?
 
 By defining concrete CBOR tags,  it is possible for metadata to unambiguously mark the kind of data encoded.
-This is conformant with the intent of Tags in [CBOR], and aligns with [CIP-CBOR].
+This is conformant with the intent of Tags in [CBOR], and aligns with [CIP-CBOR-TAGS].
 
 An official published spec is required to register these Tags with [IANA][IANA CBOR Tag Registry].
 This document also serves that purpose.
@@ -141,3 +141,5 @@ Code samples and reference material are licensed under [Apache 2.0]
 [IANA CBOR Tag Registry]: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
 [network byte order]: https://datatracker.ietf.org/doc/html/rfc1700
 [ED25519-BIP32]: https://github.com/input-output-hk/adrestia/raw/bdf00e4e7791d610d273d227be877bc6dd0dbcfb/user-guide/static/Ed25519_BIP.pdf
+[CPS-CBOR-TAGS]: https://github.com/cardano-foundation/CIPs/pull/751
+[CIP-CBOR-TAGS]: https://github.com/cardano-foundation/CIPs/pull/752
