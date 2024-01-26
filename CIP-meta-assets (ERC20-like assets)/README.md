@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: meta-assets (ERC20-like assets)
+Title: ERC20-like assets
 Category: Tokens
 Status: Proposed
 Authors:
