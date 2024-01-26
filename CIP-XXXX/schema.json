@@ -29,6 +29,122 @@
       "pattern": "^(0|[1-9][0-9]*)$",
       "minimum": 0,
       "maximum": 4294967295
+    },
+    "RewardAddress": {
+      "title": "RewardAddress",
+      "type": "string",
+      "contentEncoding": "bech32",
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
+    },
+    "ByronAddress": {
+      "title": "ByronAddress",
+      "type": "string",
+      "contentEncoding": "base58",
+      "pattern": "^[1-9A-HJ-NP-Za-km-z]*$"
+    },
+    "PointerAddress": {
+      "title": "PointerAddress",
+      "type": "string",
+      "contentEncoding": "bech32",
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
+    },
+    "EnterpriseAddress": {
+      "title": "EnterpriseAddress",
+      "type": "string",
+      "contentEncoding": "bech32",
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
+    },
+    "BaseAddress": {
+      "title": "BaseAddress",
+      "type": "string",
+      "contentEncoding": "bech32",
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
+    },
+    "Address": {
+      "title": "Address",
+      "oneOf": [
+        {
+          "$ref": "cardano.json#/definitions/RewardAddress"
+        },
+        {
+          "$ref": "cardano.json#/definitions/BaseAddress"
+        },
+        {
+          "$ref": "cardano.json#/definitions/PointerAddress"
+        },
+        {
+          "$ref": "cardano.json#/definitions/EnterpriseAddress"
+        },
+        {
+          "$ref": "cardano.json#/definitions/ByronAddress"
+        }
+      ]
+    },
+    "PlutusData": {
+      "title": "PlutusData",
+      "oneOf": [
+        {
+          "$ref": "cardano.json#/definitions/PlutusDataConstr",
+          "$ref": "cardano.json#/definitions/PlutusDataMap",
+          "$ref": "cardano.json#/definitions/PlutusDataList",
+          "$ref": "cardano.json#/definitions/PlutusDataInteger",
+          "$ref": "cardano.json#/definitions/PlutusDataBytes"
+        }
+      ]
+    },
+    "PlutusDataList": {
+      "title": "PlutusDataList",
+      "type": "array",
+      "items": {
+        "$ref": "cardano.json#/definitions/PlutusData"
+      }
+    },
+    "PlutusDataConstr": {
+      "title": "PlutusDataConstr",
+      "properties": {
+        "alternative": {
+          "$ref": "cardano.json#/definitions/BigNum"
+        },
+        "data": {
+          "$ref": "cardano.json#/definitions/PlutusDataList"
+        }
+      }
+    },
+    "PlutusDataMap": {
+      "title": "PlutusDataMap",
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": ["map"]
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": { "$ref": "cardano.json#/definitions/PlutusData" },
+              "value": { "$ref": "cardano.json#/definitions/PlutusData" }
+            }
+          }
+        }
+      }
+    },
+    "PlutusDataInteger": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": ["integer"]
+        },
+        "value": { "$ref": "cardano.json#/definitions/BigInt" }
+      }
+    },
+    "PlutusDataBytes": {
+      "title": "PlutusDataBytes",
+      "type": "string",
+      "contentEncoding": "hex",
+      "pattern": "^([0-9a-f][0-9a-f])*$"
     }
   }
 }
