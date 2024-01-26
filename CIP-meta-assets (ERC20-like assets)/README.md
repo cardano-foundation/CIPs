@@ -6,6 +6,7 @@ Status: Proposed
 Authors:
     - Michele Nuzzi <michele.nuzzi.204@gmail.com>
     - Harmonic Laboratories <harmoniclabs@protonmail.com>
+    - Matteo Coppola <m.coppola.mazzetti@gmail.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
