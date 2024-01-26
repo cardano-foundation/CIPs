@@ -15,7 +15,6 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 This CIP proposes a standard that if adopted would allow the same level of programmability of other ecosistems at the price of the token true ownership.
 
 This is achieved imitating the way the account model works laveraging the UTxO structure adopted by Cardano.
