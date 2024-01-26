@@ -84,67 +84,73 @@
       "title": "PlutusData",
       "oneOf": [
         {
-          "$ref": "cardano.json#/definitions/PlutusDataConstr",
-          "$ref": "cardano.json#/definitions/PlutusDataMap",
-          "$ref": "cardano.json#/definitions/PlutusDataList",
-          "$ref": "cardano.json#/definitions/PlutusDataInteger",
-          "$ref": "cardano.json#/definitions/PlutusDataBytes"
-        }
-      ]
-    },
-    "PlutusDataList": {
-      "title": "PlutusDataList",
-      "type": "array",
-      "items": {
-        "$ref": "cardano.json#/definitions/PlutusData"
-      }
-    },
-    "PlutusDataConstr": {
-      "title": "PlutusDataConstr",
-      "properties": {
-        "alternative": {
-          "$ref": "cardano.json#/definitions/BigNum"
-        },
-        "data": {
-          "$ref": "cardano.json#/definitions/PlutusDataList"
-        }
-      }
-    },
-    "PlutusDataMap": {
-      "title": "PlutusDataMap",
-      "type": "object",
-      "properties": {
-        "tag": {
-          "type": "string",
-          "enum": ["map"]
-        },
-        "value": {
+          "title": "PlutusDataList",
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "key": { "$ref": "cardano.json#/definitions/PlutusData" },
-              "value": { "$ref": "cardano.json#/definitions/PlutusData" }
+            "$ref": "cardano.json#/definitions/PlutusData"
+          }
+        },
+        {
+          "title": "PlutusDataConstr",
+          "properties": {
+            "alternative": {
+              "$ref": "cardano.json#/definitions/BigNum"
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano.json#/definitions/PlutusData"
+              }
             }
           }
-        }
-      }
-    },
-    "PlutusDataInteger": {
-      "type": "object",
-      "properties": {
-        "tag": {
-          "type": "string",
-          "enum": ["integer"]
         },
-        "value": { "$ref": "cardano.json#/definitions/BigInt" }
-      }
-    },
-    "PlutusDataBytes": {
-      "title": "PlutusDataBytes",
-      "type": "string",
-      "contentEncoding": "hex",
-      "pattern": "^([0-9a-f][0-9a-f])*$"
+        {
+          "title": "PlutusDataMap",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "map"
+              ]
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano.json#/definitions/PlutusData"
+                  },
+                  "value": {
+                    "$ref": "cardano.json#/definitions/PlutusData"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "integer"
+              ]
+            },
+            "value": {
+              "$ref": "cardano.json#/definitions/BigInt"
+            }
+          }
+        },
+        {
+          "title": "PlutusDataBytes",
+          "type": "string",
+          "contentEncoding": "hex",
+          "pattern": "^([0-9a-f][0-9a-f])*$"
+        }
+      ]
     }
   }
 }
