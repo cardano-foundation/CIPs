@@ -9,7 +9,7 @@ Authors:
     - Matteo Coppola <m.coppola.mazzetti@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/444
 Created: 2023-01-14
 License: CC-BY-4.0
 ---
