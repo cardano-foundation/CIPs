@@ -20,7 +20,6 @@ This CIP proposes a standard that if adopted would allow the same level of progr
 This is achieved imitating the way the account model works laveraging the UTxO structure adopted by Cardano.
 
 ## Motivation: why is this CIP necessary?
-<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
 
 This CIP proposes a solution at the Cardano Problem Statement 3 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/382/files?short_path=5a0dba0#diff-5a0dba075d998658d72169818d839f4c63cf105e4d6c3fe81e46b20d5fd3dc8f)).
 
