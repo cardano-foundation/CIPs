@@ -36,7 +36,6 @@ The solution proposed includes (answering to the open questions of CPS-0003):
 5) optimized implementations should not take significant computation, especially on transfers.
 
 ## Specification
-<!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. -->
 
 In the specifiaction we'll use the haskell data type `Data`:
 ```hs
