@@ -147,19 +147,28 @@ transaction_body =
   , ? 20 : proposal_procedures             ; Proposal procedures
   , ? 21 : coin                            ; current treasury value
   , ? 22 : positive_coin                   ; donation
-  , ? 23 : required_scripts                ; New; observation scripts that must execute in phase 2 validation
+  , ? 23 : required_observers              ; New; observation scripts that must execute in phase 2 validation
   }
 
-required_scripts = set<scripthash>
+required_observers = set<scripthash>
 ```
 
-The required scripts (field 23) is a set of script hashes that can be used to require the associated Plutus script to present in the witness set or as a reference script and is executed in the transaction. If a script hash is present but the corresponding Plutus script is not in the witness set or present in a reference script, the transaction will fail in phase 1 validation. This way plutus scripts can check the script context to know which observation scripts were executed in the transaction.
+The `required_observers` (field 23) is a set of script hashes that can be used to require the associated Plutus script to be present in the witness set or as a reference script and executed in the transaction. If a script hash is present but the corresponding Plutus script is not in the witness set or present in a reference script, the transaction will fail in phase 1 validation. This way plutus scripts can check the script context to know which observation scripts were executed in the transaction.
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 
 It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
+Currently Plutus scripts in a transaction will only execute when the transaction performs the associated ledger action (ie. a Plutus minting policy will only execute if the transaction mints or burns tokens with matching currency symbol). The only exception is the withdraw zero trick which relies on an obscure mechanic where zero amount withdrawals are not filtered by the ledger. Now using `required_observers` we can specify a list of Plutus scripts to be executed in the transaction independent of any ledger actions. The newly introduced `txInfoObservations` field in the script context provides a straightforward way for Plutus scripts to check that "a particular script validated this transaction".
+
+This change is not backwards-compatible and will need to go into a new Plutus language version.
+
+### Alternatives 
+
+- We could decide to accept the withdraw-zero staking script trick as an adequate solution, and just preserve the nonsensical withdraw zero case in future language versions. 
+- The staking script trick could be abstracted away from the developer by smart contract languages that compile to UPLC. 
+    - This can be dangerous since by distancing the developer from what is actually happening you open up the door for the developer to act on misguided assumptions. 
 
 ## Path to Active
 
