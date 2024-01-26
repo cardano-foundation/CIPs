@@ -1,5 +1,5 @@
 ---
-CIP: _???
+CIP: ?
 Title: meta-assets (ERC20-like assets)
 Category: Tokens
 Status: Proposed
