@@ -7,8 +7,8 @@ Authors:
     - Micah Kendall <micah@mcomp.tech>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
-Created: YYYY-MM-DD
+    - https://github.com/cardano-foundation/CIPs/pull/754
+Created: 2024-01-27
 License: CC-BY-4.0
 ---
 
