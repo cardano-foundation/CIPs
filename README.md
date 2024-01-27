@@ -139,8 +139,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0110? | [Plutus v1 compatible script references](https://github.com/cardano-foundation/CIPs/pull/679) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0112? | [Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) |
+| 0113? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
 
-<p align="right"><i>Last updated on 2024-01-23</i></p>
+<p align="right"><i>Last updated on 2024-01-27</i></p>
 
 ## Cardano Problem Statements (CPS)
 
