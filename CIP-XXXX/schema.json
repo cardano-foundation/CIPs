@@ -85,14 +85,32 @@
       "oneOf": [
         {
           "title": "PlutusDataList",
-          "type": "array",
-          "items": {
-            "$ref": "cardano.json#/definitions/PlutusData"
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "list"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano.json#/definitions/PlutusData"
+              }
+            }
           }
         },
         {
           "title": "PlutusDataConstr",
+          "type": "object",
           "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "constr"
+              ]
+            },
             "alternative": {
               "$ref": "cardano.json#/definitions/BigNum"
             },
@@ -114,7 +132,7 @@
                 "map"
               ]
             },
-            "value": {
+            "contents": {
               "type": "array",
               "items": {
                 "type": "object",
@@ -131,6 +149,7 @@
           }
         },
         {
+          "title": "PlutusDataInteger",
           "type": "object",
           "properties": {
             "tag": {
@@ -146,9 +165,20 @@
         },
         {
           "title": "PlutusDataBytes",
-          "type": "string",
-          "contentEncoding": "hex",
-          "pattern": "^([0-9a-f][0-9a-f])*$"
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "bytes"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "contentEncoding": "hex",
+              "pattern": "^([0-9a-f][0-9a-f])*$"
+            }
+          }
         }
       ]
     }
