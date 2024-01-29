@@ -4,7 +4,7 @@
   "title": "Cardano Domain Types",
   "definitions": {
     "BigInt": {
-      "title": "BigInt",
+      "title": "Long signed integer",
       "type": "string",
       "description": "A long integer domain type",
       "pattern": "^-?(0|[1-9][0-9]*)$",
@@ -15,18 +15,20 @@
       ]
     },
     "BigNum": {
+      "title": "64-bit unsigned integer",
       "type": "string",
       "pattern": "^-?(0|[1-9][0-9]*)$",
       "format": "uint64"
     },
     "Int": {
+      "title": "128-bit signed integer",
       "type": "string",
       "pattern": "^-?(0|[1-9][0-9]*)$",
       "format": "int128"
     },
     "UInt": {
+      "title": "32-bit unsigned integer",
       "type": "integer",
-      "pattern": "^(0|[1-9][0-9]*)$",
       "minimum": 0,
       "maximum": 4294967295
     },
@@ -79,6 +81,149 @@
           "$ref": "cardano.json#/definitions/ByronAddress"
         }
       ]
+    },
+    "MultiAsset": {
+      "title": "MultiAsset",
+      "description": "A mapping from policy IDs (script hashes) to mappings from asset names to amounts",
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-f]{56}$": {
+          "type": "object",
+          "patternProperties": {
+            "^([0-9a-f][0-9a-f]){0,32}$": {
+              "$ref": "cardano.json#/definitions/BigNum"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Value": {
+      "title": "Value",
+      "type": "object",
+      "properties": {
+        "coin": {
+          "$ref": "cardano.json#/definitions/BigNum"
+        },
+        "multiasset": {
+          "$ref": "cardano.json#/definitions/MultiAsset"
+        }
+      }
+    },
+    "TransactionHash": {
+      "title": "TransactionHash",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "TransactionInput": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "$ref": "cardano.json#/definitions/TransactionHash"
+        },
+        "index": {
+          "$ref": "cardano.json#/definitions/UInt"
+        }
+      }
+    },
+    "PlutusScript": {
+      "type": "string",
+      "contentEncoding": "hex",
+      "pattern": "^([0-9a-f][0-9a-f])+$"
+    },
+    "NativeScript": {
+      "title": "TODO align with cardano-cli"
+    },
+    "ScriptRef": {
+      "title": "ScriptRef",
+      "oneOf": [
+        {
+          "title": "PlutusScript",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "plutus_script"
+              ]
+            },
+            "value": {
+              "$ref": "cardano.json#/definitions/PlutusScript"
+            }
+          }
+        },
+        {
+          "title": "NativeScript",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "native_script"
+              ]
+            },
+            "value": {
+              "$ref": "cardano.json#/definitions/NativeScript"
+            }
+          }
+        }
+      ]
+    },
+    "DataHash": {
+      "title": "DataHash",
+      "type": "string",
+      "contentEncoding": "hex",
+      "pattern": "^([0-9a-f][0-9a-f]){32}$"
+    },
+    "TransactionOutput": {
+      "title": "TransactionOutput",
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "cardano.json#/definitions/Address"
+        },
+        "amount": {
+          "$ref": "cardano.json#/definitions/Value"
+        },
+        "plutus_data": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "tag": {
+                  "enum": [
+                    "datum"
+                  ]
+                },
+                "value": {
+                  "$ref": "cardano.json#/definitions/PlutusData"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "tag": {
+                  "enum": [
+                    "datum_hash"
+                  ]
+                },
+                "value": {
+                  "$ref": "cardano.json#/definitions/DataHash"
+                }
+              }
+            }
+          ]
+        },
+        "script_ref": {
+          "$ref": "cardano.json#/definitions/ScriptRef"
+        },
+        "requiredProperties": [
+          "address",
+          "amount"
+        ]
+      }
     },
     "PlutusData": {
       "title": "PlutusData",
