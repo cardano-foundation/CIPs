@@ -14,6 +14,13 @@
         "123"
       ]
     },
+    "ByteString": {
+      "title": "ByteString",
+      "description": "Arbitrary-length byte array",
+      "type": "string",
+      "contentEncoding": "hex",
+      "pattern": "^([0-9a-f][0-9a-f])+$"
+    },
     "BigNum": {
       "title": "64-bit unsigned integer",
       "type": "string",
@@ -224,6 +231,109 @@
           "amount"
         ]
       }
+    },
+    "TransactionUnspentOutput": {
+      "title": "TransactionUnspentOutput",
+      "type": "object",
+      "properties": {
+        "input": {
+          "$ref": "cardano.json#/definitions/TransactionInput"
+        },
+        "output": {
+          "$ref": "cardano.json#/definitions/TransactionOutput"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TransactionMetadatum": {
+      "title": "TransactionMetadatum",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "map"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano.json#/definitions/TransactionMetadatum"
+                  },
+                  "value": {
+                    "$ref": "cardano.json#/definitions/TransactionMetadatum"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "list"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano.json#/definitions/TransactionMetadatum"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "int"
+              ]
+            },
+            "value": {
+              "$ref": "cardano.json#/definitions/Int"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "bytes"
+              ]
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "contentEncoding": "hex",
+                "pattern": "^([0-9a-f][0-9a-f]){0,64}$"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "string"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        }
+      ]
     },
     "PlutusData": {
       "title": "PlutusData",
