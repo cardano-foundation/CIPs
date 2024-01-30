@@ -49,7 +49,7 @@
       "title": "ByronAddress",
       "type": "string",
       "contentEncoding": "base58",
-      "pattern": "^[1-9A-HJ-NP-Za-km-z]*$"
+      "pattern": "^[1-9A-HJ-NP-Za-km-z]+$"
     },
     "PointerAddress": {
       "title": "PointerAddress",
@@ -71,7 +71,7 @@
     },
     "Address": {
       "title": "Address",
-      "oneOf": [
+      "anyOf": [
         {
           "$ref": "cardano.json#/definitions/RewardAddress"
         },
@@ -86,6 +86,50 @@
         },
         {
           "$ref": "cardano.json#/definitions/ByronAddress"
+        }
+      ]
+    },
+    "Ed25519KeyHash": {
+      "title": "Ed25519KeyHash",
+      "type": "string",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "ScriptHash": {
+      "title": "ScriptHash",
+      "type": "string",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "Credential": {
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "pubkey_hash"
+              ]
+            },
+            "value": {
+              "$ref": "cardano.json#/definitions/Ed25519KeyHash"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "script_hash"
+              ]
+            },
+            "value": {
+              "$ref": "cardano.json#/definitions/ScriptHash"
+            }
+          }
         }
       ]
     },
@@ -144,6 +188,9 @@
     },
     "ScriptRef": {
       "title": "ScriptRef",
+      "discriminator": {
+        "propertyName": "tag"
+      },
       "oneOf": [
         {
           "title": "PlutusScript",
@@ -194,6 +241,9 @@
           "$ref": "cardano.json#/definitions/Value"
         },
         "plutus_data": {
+          "discriminator": {
+            "propertyName": "tag"
+          },
           "oneOf": [
             {
               "type": "object",
@@ -225,12 +275,12 @@
         },
         "script_ref": {
           "$ref": "cardano.json#/definitions/ScriptRef"
-        },
-        "requiredProperties": [
-          "address",
-          "amount"
-        ]
-      }
+        }
+      },
+      "required": [
+        "address",
+        "amount"
+      ]
     },
     "TransactionUnspentOutput": {
       "title": "TransactionUnspentOutput",
@@ -247,6 +297,9 @@
     },
     "TransactionMetadatum": {
       "title": "TransactionMetadatum",
+      "discriminator": {
+        "propertyName": "tag"
+      },
       "oneOf": [
         {
           "type": "object",
@@ -337,13 +390,15 @@
     },
     "PlutusData": {
       "title": "PlutusData",
+      "discriminator": {
+        "propertyName": "tag"
+      },
       "oneOf": [
         {
           "title": "PlutusDataList",
           "type": "object",
           "properties": {
             "tag": {
-              "type": "string",
               "enum": [
                 "list"
               ]
@@ -361,7 +416,6 @@
           "type": "object",
           "properties": {
             "tag": {
-              "type": "string",
               "enum": [
                 "constr"
               ]
@@ -382,7 +436,6 @@
           "type": "object",
           "properties": {
             "tag": {
-              "type": "string",
               "enum": [
                 "map"
               ]
@@ -423,7 +476,6 @@
           "type": "object",
           "properties": {
             "tag": {
-              "type": "string",
               "enum": [
                 "bytes"
               ]
@@ -432,6 +484,218 @@
               "type": "string",
               "contentEncoding": "hex",
               "pattern": "^([0-9a-f][0-9a-f])*$"
+            }
+          }
+        }
+      ]
+    },
+    "UnitInterval": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "$ref": "cardano.json#/definitions/BigNum"
+        },
+        "denominator": {
+          "$ref": "cardano.json#/definitions/BigNum"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Ipv4": {
+      "title": "IPv4 Address",
+      "type": "string",
+      "pattern": "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.){3}(25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)$"
+    },
+    "DNSName": {
+      "title": "DNSName",
+      "description": "",
+      "type": "string",
+      "maxLength": 64
+    },
+    "Relay": {
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "SingleHostAddr",
+          "properties": {
+            "tag": {
+              "enum": [
+                "single_host_addr"
+              ]
+            },
+            "port": {
+              "type": "integer",
+              "maxValue": 65535
+            },
+            "ipv4": {
+              "$ref": "cardano.json#/definitions/Ipv4"
+            },
+            "ipv6": {
+              "$ref": "cardano.json#/definitions/Ipv6"
+            }
+          },
+          "required": [
+            "tag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "title": "SingleHostName",
+          "properties": {
+            "tag": {
+              "enum": [
+                "single_host_name"
+              ]
+            },
+            "port": {
+              "type": "integer",
+              "maxValue": 65535
+            },
+            "dnsName": {
+              "$ref": "cardano.json#/definitions/DNSName"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "tag"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "MultiHostName",
+          "properties": {
+            "tag": {
+              "enum": [
+                "multi_host_name"
+              ]
+            },
+            "dnsName": {
+              "$ref": "cardano.json#/definitions/DNSName"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "tag"
+          ]
+        }
+      ]
+    },
+    "PoolParams": {
+      "type": "object",
+      "properties": {
+        "operator": {
+          "$ref": "cardano.json#/definitions/Ed25519KeyHash"
+        },
+        "vrf_keyhash": {
+          "$ref": "cardano.json#/definitions/VRFKeyHash"
+        },
+        "pledge": {
+          "$ref": "cardano.json#/definitions/BigNum"
+        },
+        "cost": {
+          "$ref": "cardano.json#/definitions/BigNum"
+        },
+        "margin": {
+          "$ref": "cardano.json#/definitions/UnitInterval"
+        },
+        "reward_account": {
+          "$ref": "cardano.json#/definitions/RewardAddress"
+        },
+        "pool_owners": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano.json#/definitions/Ed25519KeyHash"
+          }
+        },
+        "relays": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano.json#/definitions/Relay"
+          }
+        },
+        "pool_metadata": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "$ref": "cardano.json#/definitions/URL"
+            },
+            "pool_metadata_hash": {
+              "title": "Pool Metadata Hash",
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_registration"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano.json#/definitions/Credential"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_deregistration"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano.json#/definitions/Credential"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano.json#/definitions/Credential"
+            },
+            "pool_id": {
+              "$ref": "cardano.json#/definitions/PoolPubKeyHash"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "pool_registration"
+              ]
+            },
+            "pool_params": {
+              "$ref": "cardano.json#/definitions/PoolParams"
             }
           }
         }
