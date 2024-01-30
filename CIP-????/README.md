@@ -71,12 +71,12 @@ This is very unlikely to happen by accident: mistakes in the number of arguments
 
 ### Acceptance Criteria
 
-- The proposal is implemented in the ledger
-- The ledger changes are released on mainnnet
+- [ ] The proposal is implemented in the Ledger.
+- [ ] The ledger changes are released on Mainnnet.
 
 ### Implementation Plan
 
-- The Plutus team will implement the changes to the ledger
+- [ ] The Plutus team will implement the changes to the Ledger.
 
 ## Copyright
 
