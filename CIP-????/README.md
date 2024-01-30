@@ -8,7 +8,7 @@ Authors:
 Implementors: 
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/747
 Created: 2024-01-22
 License: CC-BY-4.0
 ---
