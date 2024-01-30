@@ -137,8 +137,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0108? | [Governance Metadata - Governance Actions](https://github.com/cardano-foundation/CIPs/pull/632) |
 | 0109? | [Modular Exponentiation Built-in for Plutus Core](https://github.com/cardano-foundation/CIPs/pull/641) |
 | 0110? | [Plutus v1 compatible script references](https://github.com/cardano-foundation/CIPs/pull/679) |
+| 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
+| 0112? | [Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) |
 
-<p align="right"><i>Last updated on 2024-01-09</i></p>
+<p align="right"><i>Last updated on 2024-01-23</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -163,8 +165,10 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
 | 0009? | [Coin Selection Including Native Tokens](https://github.com/cardano-foundation/CIPs/pull/611) |
 | 0010? | [Wallet Connectors](https://github.com/cardano-foundation/CIPs/pull/619) |
+| 0011? | [Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/742) |
+| 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
 
-<p align="right"><i>Last updated on 2023-11-28</i></p>
+<p align="right"><i>Last updated on 2024-01-27</i></p>
 
 ## Stalled / Waiting For Authors
 
