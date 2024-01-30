@@ -1,6 +1,6 @@
 ---
 CPS: ????
-Better builtin data structures in Plutus
+Title: Better builtin data structures in Plutus
 Status: Proposed
 Category: Plutus
 Authors:
