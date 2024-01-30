@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 12
 Title: Query Layer Standardization
 Status: Open
 Category: Tools
