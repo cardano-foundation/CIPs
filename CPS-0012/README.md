@@ -67,8 +67,6 @@ Inability to interchange query layer providers results in vendor lock-in. Query 
 
 ## Open Questions
 
-<!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
-
 - How can we encourage query layer providers to adopt the solution?
 - How can we encourage wallet developers to adopt the solution?
 - How can we encourage dApp developers to adopt the solution?
