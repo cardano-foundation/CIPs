@@ -42,7 +42,7 @@ The [initiative](https://github.com/cardano-foundation/CIPs/pull/625) to standar
 
 ## Goals
 
-The main goal of a CIP that corresponds to this CPS is to construct a JSON schema that explicitly defines all domain types for the current era. This CIP should evolve in sync with the cardano ledger CDDL specification, so that when a new era spec comes out, a new JSON schema file is provided with the needed modifications.
+The main goal of a CIP that corresponds to this CPS is to construct a JSON schema that explicitly defines all domain types for the current era. This CIP should evolve in sync with the Cardano Ledger CDDL specification, so that when a new era spec comes out, a new JSON schema file is provided with the needed modifications.
 
 Optional goals:
 
