@@ -11,21 +11,7 @@ Discussions:
 Created: 2024-01-10
 ---
 
-<!-- Existing categories:
-
-- Meta     | For meta-CIPs which typically serves another category or group of categories.
-- Wallets  | For standardisation across wallets (hardware, full-node or light).
-- Tokens   | About tokens (fungible or non-fungible) and minting policies in general.
-- Metadata | For proposals around metadata (on-chain or off-chain).
-- Tools    | A broad category for ecosystem tools not falling into any other category.
-- Plutus   | Changes or additions to Plutus
-- Ledger   | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
-- Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
-
--->
-
 ## Abstract
-<!-- A short (\~200 word) description of the target goals and the technical obstacles to those goals. -->
 
 dApps require the use of communication protocols that facilitate data transfer between:
 
@@ -46,10 +32,7 @@ As a result, software solutions are incompatible with each other, and dApp devel
 
 The [initiative](https://github.com/cardano-foundation/CIPs/pull/625) to standardize query layers on Cardano is currently blocked due to absence of a standardized JSON data schema. However, such a schema would be useful in contexts other than query layers, which is the reason why this CPS is separate.
 
-<!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
-
 ## Use cases
-<!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
 
 - dApp developers want to have a definite encoding of JSON data, so that they don't need to specify the format themselves
 - dApp developers want to be sure they will be able to reuse data coming from different sources (third parties) without format changes
@@ -58,12 +41,6 @@ The [initiative](https://github.com/cardano-foundation/CIPs/pull/625) to standar
 - Multiple service/product owners, who utilize different competing JSON encoding conventions want to converge to a single convention
 
 ## Goals
-
-<!-- A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve.
-
-Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns.
-
-Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
 
 The main goal of a CIP that corresponds to this CPS is to construct a JSON schema that explicitly defines all domain types for the current era. This CIP should evolve in sync with the cardano ledger CDDL specification, so that when a new era spec comes out, a new JSON schema file is provided with the needed modifications.
 
@@ -79,7 +56,6 @@ Non-goals:
 - Making the encoding as compact as possible (reducing encoded data size)
 
 ## Open Questions
-<!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 - What's the best approach to specifying address formats in json-schema format?
 - Should the schema be concerned with different representations of addresses (bech32 vs. hex)?
