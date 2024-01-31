@@ -36,7 +36,8 @@ Query layer providers are not identical, which means that the *promise* of abstr
 
 ### Query Layers and Wallets
 
-This CPS initiative originated in the discussion about [Extensive Wallet Standard CIP](https://github.com/cardano-foundation/CIPs/pull/620) in [Discord](https://discord.com/channels/971785110770831360/992011119872970762/1176567729017327737) ([invite](https://discord.gg/P59aNVN8zu)).
+This CPS initiative originated in the discussion about [Extensive Wallet Standard CIP](https://github.com/cardano-foundation/CIPs/pull/620) on the CIP Discord server ([invite](https://discord.gg/P59aNVN8zu))
+in the [`#general`](https://discord.com/channels/971785110770831360/992011119872970762/1176567729017327737) channel, continuing in a dedicated [`#query-layer-standard`](https://discord.com/channels/971785110770831360/1178763938389823598) channel.
 
 Every light wallet has its own backend infrastructure: functioning of the browser extension relies on the availability of the data sources. However, none of the wallets currently provide a way to override their query layer endpoint URLs.
 
