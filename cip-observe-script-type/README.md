@@ -30,6 +30,7 @@ License: CC-BY-4.0
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 We propose to introduce a new Plutus scripts type `Observe` in addition to those currently available (spending, certifying, rewarding, minting, drep). The purpose of this script type is to allow arbitrary validation logic to be decoupled from any ledger action. 
 Since observe validators are decoupled from actions, you can run them in a transaction without needing to perform any associated action (ie you don't need to consume a script input, or mint a token, or withdraw from a staking script just to execute this validator). 
+Additionally, we propose to introduce a new assertion to native scripts that they can use to check that a particular script hash is in `required_observers` (which in turn enforces that the script must be executed successfully in the transaction). This addresses a number of technical issues discussed in other CIPs and CPS such as the redundant execution of spending scripts, and the inability to effectively use native scripts in conjunction with Plutus scripts. 
 
 ## Motivation: why is this CIP necessary?
 <!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
@@ -53,7 +54,6 @@ forwardNFTValidator stateToken _ tkIdx ctx =  assetClassValueOf stateToken (txIn
 forwardMintPolicy:: AssetClass -> Integer -> ScriptContext -> () 
 forwardMintPolicy stateToken tkIdx ctx =  assetClassValueOf stateToken (txInInfoResolved (elemAt tkIdx (txInfoInputs (txInfo ctx)))) == 1 
 ```
-With this pattern DApps are able to process roughly 12-30 forwardNFTValidator UTxO's  per transaction without exceeding script budget limitations.
 The time complexity of this validator is **O(n)** where n is the number of tx inputs. This logic is executed once per input being unlocked  / currency symbol being minted. 
 The redundant execution of searching the inputs for a token is the largest throughput bottleneck for these DApps; it is **O(n*m)** where n is the number of inputs and m is the number of `forwardValidator` inputs + `forwardValidator` minting policies.
 Using the stake validator trick, the time complexity of the forwarding logic is improved to **O(1)**. The forwardValidator logic becomes:
@@ -70,8 +70,20 @@ stakeValidatorWithSharedLogic stateToken _rdmr ctx = assetClassValueOf stateToke
 For the staking validator trick (demonstrated above), we are simply checking that the StakingCredential of the the staking validator containing the shared validation logic is in the first pair in `txInfoWdrl`. If the StakingCredential is present in `txInfoWdrl`, that means the staking validator (with our shared validation logic) successfully executed in the transaction. This script is **O(1)** in the case where you limit it to one shared logic validator (staking validator), or if you don't want to break composability with other staking validator, 
 then it becomes **O(obs_N)** where `obs_N` is the number of Observe validators that are executed in the transaction as you have to verify that the StakingCredential is present in `txInfoWdrl`.
 
-
-This proposal makes this design pattern indepedent from implementation details of stake validators and withdrawals, and improves efficiency and readability for validators that implement it. 
+The proposed changes in this CIP enable this design pattern to exist indepedently from implementation details of stake validators and withdrawals, and improve efficiency and readability for validators that implement it. Furthermore, with the proposed extension to native scripts, we are able to completely get rid of the redundant spending script executions like so:
+```haskell
+observationValidator ::  AssetClass -> BuiltinData -> ScriptContext -> ()
+observationValidator stateToken _redeemer ctx = assetClassValueOf stateToken (valueSpent (txInfo ctx)) == 1
+```
+We simply include the script hash of the above `observationValidator` in the `required_observers` field in the transaction body and we lock
+all the UTxOs that we would like to share the same spending condition into the following native script:
+```json
+{
+  "type": "observer",
+  "keyHash": "OUR_OBSERVATION_SCRIPT_HASH"
+}
+```
+The above solution (enabled by this CIP) is more clear, concise, flexible and efficient than the alternatives discussed above.
 
 ## Specification
 <!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned. If a proposal defines structure of on-chain data it must include a CDDL schema in it's specification.-->
@@ -154,6 +166,31 @@ required_observers = set<scripthash>
 ```
 
 The `required_observers` (field 23) is a set of script hashes that can be used to require the associated Plutus script to be present in the witness set or as a reference script and executed in the transaction. If a script hash is present but the corresponding Plutus script is not in the witness set or present in a reference script, the transaction will fail in phase 1 validation. This way plutus scripts can check the script context to know which observation scripts were executed in the transaction.
+
+### Native Script Extension
+
+The BNF notation for the abstract syntax of native scripts change as follows to reflect the new field.
+
+```BNF
+<native_script> ::=
+             <RequireSignature>  <vkeyhash>
+           | <RequireObserver>   <scripthash>
+           | <RequireTimeBefore> <slotno>
+           | <RequireTimeAfter>  <slotno>
+
+           | <RequireAllOf>      <native_script>*
+           | <RequireAnyOf>      <native_script>*
+           | <RequireMOf>        <num> <native_script>*
+```
+
+Native scripts are typically represented in JSON syntax. We propose the following JSON representation for the `RequireObserver` constructor:
+```JSON
+{
+  "type": "observer",
+  "keyHash": "OBSERVATION_SCRIPT_HASH"
+}
+```
+
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
