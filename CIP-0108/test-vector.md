@@ -8,27 +8,16 @@ Here we create some useful definitions and some example metadata.
 The context fields which could be added to CIP-108 compliant jsonld files.
 See [cip-0108.common.jsonld](./cip-0108.common.jsonld).
 
-```json
-
-```
-
 ### Common Fields Schema
 A json schema for the common context fields.
 See [cip-0108.common.schema.json](./cip-0108.common.schema.json).
 
-```json
-
-```
-
 ## Examples
 
 ### Treasury Withdrawal
-Hash: ``
+Hash (to go onchain): ``
 See [example-treasury-withdrawal.jsonld](./example-treasury-withdrawal.jsonld).
 
-```json
-
-```
 
 ### Motion of No-Confidence
 Hash: ``

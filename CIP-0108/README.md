@@ -125,14 +125,14 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - To be an OPTIONAL set of objects, using the `@set` property.
 - Each object MUST have a `title` field to describe the reference, such as; "blog - Why we must continue to fund Catalyst".
 - Each object MUST have a `uri` field.
-- Each object MAY have a OPTIONAL `URIHash` object.
-  - Each object MUST have a `hash` field.
-  - Each object MUST have a `hashAlgo` field.
+- Each object MAY have a OPTIONAL `referenceHash` object.
+  - Each object MUST have a `hashDigest` field.
+  - Each object MUST have a `hashAlgorithm` field, which is inherited from CIP-100.
 - This should be used by the author to link related or supporting work via the URI, and reference this via the index within their freefrom text fields.
 
 ### Application
 Governance action metadata must include all compulsory fields to be considered CIP-0108 compliant.
-Unlike with CIP-0100, here we prescribe that authors MUST include all fields.
+As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-108 compliant metadata.
 
 ### Test Vector
 See [test-vector.md](./test-vector.md) for examples.
