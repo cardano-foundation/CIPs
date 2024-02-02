@@ -7,13 +7,15 @@ Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors: [ ]
 Discussions:
-  - https://github.com/cardano-foundation/cips/pulls/632
+  - https://github.com/cardano-foundation/CIPs/pull/632
+  - https://github.com/cardano-foundation/CIPs/pull/748
+  - https://github.com/cardano-foundation/CIPs/issues/757
 Created: 2023-11-23
 License: CC-BY-4.0
 ---
 
 ## Abstract
-The conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md), with the addition of many new on-chain governance artifacts.
+The Conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md), with the addition of many new on-chain governance artifacts.
 Some of these artifacts support the linking off-chain metadata, as a way to provide context.
 
 The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) standard provides a base framework for how all off-chain governance metadata should be formed and handled.
@@ -85,6 +87,16 @@ This is good for all governance participants.
 Although there are seven types of governance action defined via CIP-1694, we focus this proposal on defining core properties which must be attached to all types.
 We leave room for future standards to refine and specialize further to cater more specific for each type of governance action.
 
+## New `witness` Type
+Here we extend the potential witnesses, with a `witnessAlgorithm` that can be set to include support for [CIP-08 | Message Signing](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008) standard, indicated by `CIP-0008`.
+When `CIP-0008` algorithm is chosen a `publicKey` (set to a base-16 encoded ed25519 public key) property must be present along with a `cip8SignedMessage` property.
+Where the `cip8SignedMessage` is produced by (blake2b-256) hash digest of the canonicalized of the `body` inside of a COSE envelope.
+Where the key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
+* `alg` (1) - must be set to `EdDSA` (-8)
+
+
+from [CIP-30](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigndataaddr-address-payload-bytes-promisedatasignature).
+
 ### Markdown Text Styling
 This standard introduces the possibility of using [Github markdown text styling](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#styling-text) within fields.
 
@@ -152,6 +164,15 @@ The fields which have been chosen for this standard heavily inspired to those us
 We did this for two reasons; familiarity and competency.
 Those who are involved in Cardano are familiar with the CIP format, meaning they will be intuitively understand these fields being reused here.
 These fields in combination have also been fairly battle tested via the CIPs process and thus act as a good standard to describe problems and their solutions.
+
+### New `witness` type
+We introduce a new witness type to be able to reuse existing dApp-Wallet infrastructure.
+The type as described allows for reuse of the CIP-30 signData standard, which means that governance dApps are able to implement this without needing any alterations to existing wallets.
+
+### Markdown Text Styling
+We choose to introduce rich text standard here because we see significant value in supporting it.
+Rich text styling improves the ability for the author to express themselves.
+Furthermore, most potential voters are use to such standards when reviewing metadata.
 
 ### Character Limits
 With this design, we wanted to allow for quick and easy differentiation between governance actions.
