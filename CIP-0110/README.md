@@ -18,17 +18,21 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Despite making up less than half the transactions on Cardano, Plutus v1 scripts make up 90% of the space dedicated to scripts (around 60% of the total block space). Increasing the space available to blocks is risky, as it impacts the block propagation time. This proposal puts forth a simple way to reduce this strain.
+Despite making up less than half the transactions on Cardano, Plutus v1 scripts occupy around 40% of the total block space since chain inception, and sometimes higher during periods of peak activity. Increasing the space available to blocks is risky, as it impacts the block propagation time. This proposal puts forth a simple way to reduce this strain.
 
 ## Motivation: why is this CIP necessary?
 
 Plutus v2 introduced a way to publish scripts on-chain, and *reference* those scripts to satisfy the witness requirement. However, because this was done via a new field on the transaction (i.e. "Reference Inputs"), which shows up in the script context, this feature is not backwards compatible with Plutus v1.
 
-However, despite consisting of less than half of the transactions being posted to the blockchain in late 2023, the bytes taken up by constantly re-publishing the same Plutus v1 scripts is nearly 60% of each block. Put another way, of the 151gb it takes to represent the 6 year history of the chain, roughly 60 gb of that (nearly 40%) can be attributed to the wasted space from repeating the same scripts in the last 2 years. This analysis was further confirmed by IOG in [this](https://github.com/IntersectMBO/cardano-ledger/issues/3965) issue.
+However, of the 151gb it takes to represent the 6 year history of the chain, roughly 60 gb of that (nearly 40%) can be attributed to the wasted space from repeating the same scripts in the last 2 years. This analysis was further confirmed by IOG in [this](https://github.com/IntersectMBO/cardano-ledger/issues/3965) issue.
+
+It would be one thing if this was an issue mostly felt before or shortly after the Babbage hard-fork. It was assumed at the time that Plutus v2 would become a dominant player, and that usage of Plutus v1 contracts would die off. However, looking at recent trends in late 2023, it's clear this isn't happening.
+
+Looking at recent trends [through late 2023](https://twitter.com/SmaugPool/status/1737454984147390905/photo/1), considering all scripts included in transactions, Plutus v1 hovered at or slightly below 50% of all scripts in transactions. However, comparing the size of transactions which execute scripts scripts, [Plutus v1 scripts make up 90% of that space](https://twitter.com/SmaugPool/status/1737454984147390905/photo/2).
+
+Looking at periods of saturation can also help us understand where the limits of the chain are. Periods where activity is low and the chain is underutilized can skew our view of the problem: it largely doesn't matter to end users what percentage of space is occupied by different script versions, because the user experience is largely unimpacted and transactions are able to fit into the next block regardless. However, in periods of high activity, when blocks are nearly full, we get a better picture of where user activity is allocating that space, and where the cost savings would be most beneficial. For example, [epoch 455](https://twitter.com/SmaugPool/status/1737814898648691195) saw nearly 100% block usage for a full epoch, of which an average of 48% (and sometimes as high as 75%) of the space was occupied by scripts, presumably much of that Plutus v1 scripts.
 
 This problem isn't going away: while protocols may migrate to new Plutus v2 or v3 scripts, these old protocols will exist forever. Liquidity locked in these scripts, sometimes permanently, will mean that there is always an arbitrage opportunity that incentivizes a large portion of the block to be occupied by continually republishing these v1 scripts.
-
-> Historical Note: At the time that the babbage hardfork happened, the belief was that Plutus v2 would be attractive enough to encourage migration of that traffic. In practice, this simply isn't true, and circumstances like locked liquidity were unforseen.
 
 Additionally, raising the block size is considered incredibly sensitive, as it impacts block propagation times.
 
