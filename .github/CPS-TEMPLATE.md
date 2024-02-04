@@ -42,3 +42,5 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 
 ## Open Questions
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
+
+<!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
