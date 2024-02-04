@@ -5,7 +5,8 @@ Status: Proposed
 Category: Plutus
 Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
-Implementors: []
+Implementors:
+    - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Discussions:
  - https://twitter.com/SmaugPool/status/1737454984147390905
  - https://twitter.com/Quantumplation/status/1737704936089985339
