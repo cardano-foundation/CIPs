@@ -48,23 +48,26 @@
     },
     "hashAlgorithm": "blake2b-256",
     "body": {
-      "title": "Buy Ryan a island",
-      "abstract": "Withdraw 200000000000 ADA from the treasury so Ryan can buy an island.",
-      "motivation": "The current problem is that Ryan does not have an island, but he would really like an island.",
-      "rationale": "With these funds from the treasury will be sold for **cold hard cash**, this cash can then be used to purchase an island for Ryan. An example of this island is provided in the references.",
+      "title": "We must remove the ineffective Constitutional Committee",
+      "abstract": "The current constitutional committee have not voted for the last 100 epochs, causing an inability to pass any proposals. This is a waste of resources and must be removed.",
+      "motivation": "In order for governance to work an __active__ constitutional committee is required, without them the system grinds to a halt and important governance actions cannot be passed.",
+      "rationale": "By moving into a state of no confidence, **we** the DReps are able to vote in a new constitutional committee.",
       "references": [
         {
           "@type": "Other",
-          "label": "A cool island for Ryan",
-          "uri": "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"
+          "label": "A governance action that has been unable to pass",
+          "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/examples/treasury-withdrawal.jsonld",
+          "referenceHash": {
+            "hashDigest": "931f1d8cdfdc82050bd2baadfe384df8bf99b00e36cb12bfb8795beab3ac7fe5",
+            "hashAlgorithm": "blake2b-256"
+          }
         }
       ]
     },
     "authors": [
       {
-        "name": "Ryan Williams",
         "witness": {
-          "witnessAlgorithm": "ed25519",
+          "witnessAlgorithm": "cip-0005",
           "publicKey": "d34f36659e28a8343bd552b898ea77733f4057800d5a1e137453abfa7569caeb",
           "signature": "cbb96ba1596fafc18eec84e306feea3067ba1c6ace95b11af820bcbd53837ef32bdcf28176749061e1f2a1300d4df98c80582722786e40cf330072d0b78a7408"
         }
