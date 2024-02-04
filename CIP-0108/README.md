@@ -97,6 +97,8 @@ Where the key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the f
 
 from [CIP-30](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigndataaddr-address-payload-bytes-promisedatasignature).
 
+//todo: clean up
+
 ### Markdown Text Styling
 This standard introduces the possibility of using [Github markdown text styling](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#styling-text) within fields.
 
