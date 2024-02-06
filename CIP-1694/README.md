@@ -963,7 +963,7 @@ As discussed above, the Constitution is not yet defined and its content is out o
 ### The constitutional committee
 
 We define a _constitutional committee_ which represents a set of individuals or entities
-(each associated with a pair of Ed25519 credentials) that are collectively responsible for **ensuring that the Constitution is respected**.
+(each associated with a Ed25519 or native or Plutus script credential) that are collectively responsible for **ensuring that the Constitution is respected**.
 
 Though it **cannot be enforced on-chain**, the constitutional committee is **only** supposed to vote
 on the constitutionality of governance actions (which should thus ensure the long-term sustainability of the blockchain) and should be replaced
@@ -1024,12 +1024,17 @@ expiring every year.
 Expired members can no longer vote.
 Member can also willingly resign early, which will be marked on-chain as an expired member.
 
-The system will automatically enter a state of no-confidence when the number of non-expired
-committee members falls below the minimal size of the committee.
-For example, a committee of size five with a threshold of 3/5 a minimum size of three and two expired members can still
+If the number of non-expired committee members falls below the minimal
+size of the committee, the constitutional committee will be unable to
+ratify governance actions. This means that only governance actions
+that don't require votes from the constitutional committee can still
+be ratified.
+
+For example, a committee of size five with a threshold of 3/5 a minimum size
+of three and two expired members can still
 pass governance actions if two non-expired members vote `Yes`.
-However, if one more member expires then the system enters a state of no-confidence,
-since the two remaining members are not enough to meet quorum.
+However, if one more member expires then the constitutional committee becomes
+unable to ratify any more governance actions.
 
 The maximum term is a governance protocol parameter, specified as a number of epochs.
 During a state of no-confidence, no action can be ratified,
@@ -1043,6 +1048,9 @@ acts to supplement the constitutional committee by restricting some
 proposal types. For example, if the community wishes to have some hard
 rules for the treasury that cannot be violated, a script that enforces
 these rules can be voted in as the proposal policy.
+
+The proposal policy applies only to protocol parameter update and
+treasury withdrawal proposals.
 
 <!---------------------------           DReps          ------------------------>
 
@@ -1246,7 +1254,7 @@ that has been granted to the current constitutional committee.
 
 Governance actions are **ratified** through on-chain voting actions.
 Different kinds of governance actions have different ratification requirements but always involve **two of the three** governance bodies,
-with the exception of a hard-fork initiation, which requires ratification by all governance bodies.
+with the exception of a hard-fork initiation and security-relevant protocol parameters, which requires ratification by all governance bodies.
 Depending on the type of governance action, an action will thus be ratified when a combination of the following occurs:
 
 * the constitutional committee approves of the action (the number of members who vote `Yes` meets the threshold of the constitutional committee)
@@ -1295,10 +1303,28 @@ The following table details the ratification requirements for each governance ac
 | 6. Treasury withdrawal                                            | ✓  | $P_6$    | \-       |
 | 7. Info                                                           | ✓  | $100$    | $100$    |
 
-Each of these thresholds is a governance parameter.
+Each of these thresholds is a governance parameter. There is one
+additional threshold, `Q5`, related to security relevant protocol
+parameters, which is explained below.
 The initial thresholds should be chosen by the Cardano community as a whole.
 The two thresholds for the Info action are set to 100% since setting it any lower
 would result in not being able to poll above the threshold.
+
+Some parameters are relevant to security properties of the system. Any
+proposal attempting to change such a parameter requires an additional
+vote of the SPOs, with the threshold `Q5`.
+
+The security relevant protocol parameters are:
+* `maxBBSize`
+* `maxTxSize`
+* `maxBHSize`
+* `maxValSize`
+* `maxBlockExUnits`
+* `minFeeA`
+* `minFeeB`
+* `coinsPerUTxOByte`
+* `govActionDeposit`
+* `minFeeRefScriptsCoinsPerByte`
 
 > **Note**
 > It may make sense for some or all thresholds to be adaptive with respect to the Lovelace that is actively registered to vote.
@@ -1369,7 +1395,7 @@ In addition, each action will include some elements that are specific to its typ
 | Governance action type                           | Additional data                                                                                                                                                                                 |
 |:-------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1. Motion of no-confidence                       | None                                                                                                                                                                                            |
-| 2. New committee/threshold                       | The set of verification key hash digests (members to be removed), a map of verification key hash digests to epoch numbers (new members and their term limit), and a fraction (quorum threshold) |
+| 2. New committee/threshold                       | The set of verification key hash digests (members to be removed), a map of verification key hash digests to epoch numbers (new members and their term limit), and a fraction (new threshold) |
 | 3. Update to the Constitution or proposal policy | An anchor to the Constitution and an optional script hash of the proposal policy                                                                                                                |
 | 4. Hard-fork initiation                          | The new (greater) major protocol version                                                                                                                                                        |
 | 5. Protocol parameters changes                   | The changed parameters                                                                                                                                                                          |
@@ -1759,6 +1785,13 @@ We solve the long-term participation problem by not allowing reward withdrawals
 * Turn the Constitution into an anchor.
 * Rework which anchors are required and which are optional.
 * Clean up various inconsistencies and leftovers from older versions.
+
+#### Security-relevant changes and other fixes
+
+* Guard security-relevant changes behind SPO votes.
+* The system does not enter a state of no confidence with insufficient
+  active CC members, the CC just becomes unable to act.
+* Clarify that CC members can use any kind of credential.
 
 ## Path to Active
 
