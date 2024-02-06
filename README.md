@@ -139,8 +139,11 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0110? | [Plutus v1 compatible script references](https://github.com/cardano-foundation/CIPs/pull/679) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0112? | [Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) |
+| 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
+| 0114? | [CBOR Tags Registry](https://github.com/cardano-foundation/CIPs/pull/752) |
+| 0115? | [CBOR tag definition - ED25519-BIP32 Keys](https://github.com/cardano-foundation/CIPs/pull/753) |
 
-<p align="right"><i>Last updated on 2024-01-23</i></p>
+<p align="right"><i>Last updated on 2024-02-06</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -167,8 +170,10 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0010? | [Wallet Connectors](https://github.com/cardano-foundation/CIPs/pull/619) |
 | 0011? | [Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/742) |
 | 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
+| 0013? | [Better builtin data structures in Plutus](https://github.com/cardano-foundation/CIPs/pull/638) |
+| 0014? | [Register of CBOR Tags](https://github.com/cardano-foundation/CIPs/pull/751) |
 
-<p align="right"><i>Last updated on 2024-01-27</i></p>
+<p align="right"><i>Last updated on 2024-02-06</i></p>
 
 ## Stalled / Waiting For Authors
 
