@@ -11,7 +11,7 @@ Authors:
 Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
-Created: 2023-10-5
+Created: 2023-10-05
 License: CC-BY-4.0
 ---
 ## Abstract
