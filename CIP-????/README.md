@@ -93,7 +93,7 @@ We definetly want a few properties on the CONSTR_IDs
 
 Note that the implementation first computes a `ustr` in human readable form and then transforms it into an integer. This is intentional, since the alternatives (directly computing a large unique number or similar approaches) are much more difficult to debug.
 
-To ensure that this does not only take the structural definition but also the intended usage into account, names of records are taken into account for the computation.
+To ensure that there is no accidental overlap in constructor ids due to having same fields in different applications (i.e. `NegInfPosixTime` and `PosInfPosixTime` without any fields), names of records are taken into account for the computation of the constructor id.
 
 There is no issue with backwards compatability when adopting this implementation as an opt-in choice for users.
 PlutusTx and most other languages allow explicitly setting the constructor id of objects anyways.
