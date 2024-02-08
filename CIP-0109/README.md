@@ -90,7 +90,9 @@ We consider the following criteria to be essential for acceptance:
 
 ### Implementation Plan
 
-IOG has begun the implementation as required in the acceptance criteria.
+- [x] IOG Plutus team consulted and accept the proposal.
+- [x] Author to provide preliminary benchmarks of time consumption.
+  - https://github.com/perturbing/expFast-bench/tree/cca69b842050de9523493d52c20384bc50c80b22
 
 ## Copyright
 
