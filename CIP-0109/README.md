@@ -36,8 +36,6 @@ A nonexclusive list of cryptographic protocols that use a field and would benefi
 2. Onchain public key aggregation for Schnorr over SECP256k1: effectively, this aggregation is the point addition of the two keys on the curve, which requires one reciprocal in the SECP256k1 base field (using a 256 bit prime).
 3. A more interoperable interface for the BLS-12-381 built-ins: currently, the BLS-12-381 built-ins only expose a compressed version of a point, containing the `x` coordinate and some marked bits to describe how one can find the corresponding `y` in the base field. This calculation of finding `y` requires modular exponentiation in the field.
 
-For completeness and an historic perspective, the above functionality can also be attained by a new built-in function that performs normal exponentiation, after which one can reduce with the already present built-in function `ModInteger`. In the creation of this CIP, this possibility was discussed but put aside. This method has the flaw that the intermediate value of these integers is not bound. Meaning that memory consumption is not efficient for practical use in this setting.
-
 ## Specification
 Modular exponentiation is mathematically defined as the equivalence relation
 
@@ -77,6 +75,8 @@ The computational impact of modular exponentiation is complexified by it having 
 
 ## Rationale: how does this CIP achieve its goals?
 Integrating this function directly into Plutus will streamline cryptographic operations, reduce transaction costs, and uphold the integrity of existing cryptographic interfaces. It addresses current inefficiencies and enhances the cryptographic capabilities of the Plutus platform.
+
+For completeness and an historic perspective, the above functionality can also be attained by a new built-in function that performs normal exponentiation, after which one can reduce with the already present built-in function `ModInteger`. In the creation of this CIP, this possibility was discussed but put aside. This method has the flaw that the intermediate value of these integers is not bound. Meaning that memory consumption is not efficient for practical use in this setting.
 
 ## Path to Active
 
