@@ -64,6 +64,7 @@ Field                | Description
 `Proposed Solutions` | A list of CIPs addressing the problem, if any
 `Discussions`        | A list of links where major technical discussions regarding this CPS happened. Links should include any discussion before submission, a link to the pull request that created the CPS, and any pull request that modifies it.
 `Created`            | Date created on, in ISO 8601 (YYYY-MM-DD) format
+`License`            | Abbreviation of an approved license(s)
 
 For example:
 
