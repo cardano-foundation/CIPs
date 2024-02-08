@@ -97,6 +97,8 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0102 | [Royalty Datum Metadata](./CIP-0102) | Proposed |
 | 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
+| 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
+| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -105,7 +107,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-01-09</i></p>
+<p align="right"><i>Last updated on 2024-02-08</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -135,12 +137,14 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0106? | [Web-Wallet Bridge - Mutlisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
 | 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
 | 0108? | [Governance Metadata - Governance Actions](https://github.com/cardano-foundation/CIPs/pull/632) |
-| 0109? | [Modular Exponentiation Built-in for Plutus Core](https://github.com/cardano-foundation/CIPs/pull/641) |
-| 0110? | [Plutus v1 compatible script references](https://github.com/cardano-foundation/CIPs/pull/679) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0112? | [Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) |
+| 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
+| 0114? | [CBOR Tags Registry](https://github.com/cardano-foundation/CIPs/pull/752) |
+| 0115? | [CBOR tag definition - ED25519-BIP32 Keys](https://github.com/cardano-foundation/CIPs/pull/753) |
 
-<p align="right"><i>Last updated on 2024-01-23</i></p>
+
+<p align="right"><i>Last updated on 2024-02-08</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -148,8 +152,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | ---- | --- | --- |
 | 0005 | [Plutus Script Usability](./CPS-0005) | Open |
 | 0007 | [Voltaire era Governance](./CPS-0007) | Open |
+| 0010 | [Wallet Connectors](./CPS-0007) | Open |
 
-<p align="right"><i>Last updated on 2023-07-02</i></p>
+<p align="right"><i>Last updated on 2023-02-08</i></p>
 
 > 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
 
@@ -164,11 +169,12 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
 | 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
 | 0009? | [Coin Selection Including Native Tokens](https://github.com/cardano-foundation/CIPs/pull/611) |
-| 0010? | [Wallet Connectors](https://github.com/cardano-foundation/CIPs/pull/619) |
 | 0011? | [Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/742) |
 | 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
+| 0013? | [Better builtin data structures in Plutus](https://github.com/cardano-foundation/CIPs/pull/638) |
+| 0014? | [Register of CBOR Tags](https://github.com/cardano-foundation/CIPs/pull/751) |
 
-<p align="right"><i>Last updated on 2024-01-27</i></p>
+<p align="right"><i>Last updated on 2024-02-08</i></p>
 
 ## Stalled / Waiting For Authors
 
