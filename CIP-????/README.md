@@ -28,7 +28,9 @@ License: CC-BY-4.0
 Note: I will use record / Plutus Data exchangibly throughout the document.
 
 ## Abstract
-Plutus Constructor IDs are currently heavily focused around their origin in Haskell. They are usually used to distinguish different constructors of a single declared datatype.
+Plutus Data on Cardano represent product types and are usually identified on chain by a combination of a constructor ID and their fields, 
+i.e. for `type OptionalInt = None | Some (x:Integer)` we would get Plutus Data representing `None` with constructor ID 0 and no fields as well as Plutus Data representing `Some n` with constructor ID 1 and a single field with value `n` (an integer).
+The existence and declaration of these constructor IDs are currently heavily focused around their origin in Haskell. They are usually used to distinguish different constructors of a single declared datatype.
 In contrast, one may introduce universally recognized datatypes that are identified by a unique constructor id and can be expected to behave in a specified way (i.e. contain specific fields with specific types).
 For this purpose, we introduce a generic way to compute an almost unique, deterministic and universal constructor id for objects based on their name and field types.
 Note that it is not expected that every language adopts this standard as a default (i.e. for Haskell-like languages there might not be much use of it).
@@ -86,8 +88,8 @@ It must also explain how the proposal affects the backward compatibility of exis
 We definetly want a few properties on the CONSTR_IDs
 
 - _small_: ideally the constr_id integer should be as small as possible, as smaller integers are encoded more efficiently in CBOR and save the end user minutxo and txfees (constr_ids are encoded as the cbor tag up to 7 bit size, after that encoded as generic integer)
-- _unique_: There should be as little overlap with other values as possible, so that we can group together classes in unions without having to worry about setting/overwriting the constr id. This is reflected by the unique choice of identifiers in `ustr`.
-- _deterministic_: Datatypes that are defined in libraries may be imported in arbitrary contexts. the constr_id must therefore not depend on i.e. what other Unions the datatype is being used in or what other datatypes are declared in its surroundings. This rules out the Haskell approach and any automatically incrementing global counters.
+- _unique_: There should be as little overlap with other values as possible, so that we can group together classes in unions without having to worry about setting/overwriting the constr id. This is reflected by the unique choice of identifiers in `ustr` and rules out the traditional Haskell approach.
+- _deterministic_: Datatypes that are defined in libraries may be imported in arbitrary contexts. the constr_id must therefore not depend on i.e. what other Unions the datatype is being used in or what other datatypes are declared in its surroundings. This rules out any automatically incrementing global counters.
 
 Note that the implementation first computes a `ustr` in human readable form and then transforms it into an integer. This is intentional, since the alternatives (directly computing a large unique number or similar approaches) are much more difficult to debug.
 
