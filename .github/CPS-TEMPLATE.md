@@ -9,6 +9,7 @@ Proposed Solutions: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
 Created: YYYY-MM-DD
+License: CC-BY-4.0
 ---
 
 <!-- Existing categories:
