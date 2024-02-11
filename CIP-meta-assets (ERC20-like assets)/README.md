@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 113
 Title: Programmable token-like assets
 Category: Tokens
 Status: Proposed
