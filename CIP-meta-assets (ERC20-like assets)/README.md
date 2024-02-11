@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: ERC20-like assets
+Title: Programmable token-like assets
 Category: Tokens
 Status: Proposed
 Authors:
