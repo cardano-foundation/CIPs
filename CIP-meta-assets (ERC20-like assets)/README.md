@@ -122,7 +122,9 @@ The `accountFactory` contract is responsabile of validating the creation of new 
 ### validation logic
 
 If the creation of the account is considered valid (the minting policy suceeds)
-it should result in a single minted asset going to an hard-coded (parametrized) `accountManager` contract.
+it should result in a single minted asset going to an address with payment credentials equalst to an hard-coded (parametrized) `accountManager` contract, and stake credentials equals to the stake cretentials of the users (if any).
+
+This done to facilitate the query of the user's accounts in the offchain.
 
 The standard doesn't include a specification on the policy in case of burning but it is suggested to always allow for the assets burn.
 
@@ -140,7 +142,7 @@ optionally a specific implementation might require a fixed number of inputs (eg.
 - when minting assets only a single token should be minted (indipendently from the number of inputs)
 - the only asset minted MUST have an unique asset name (we suggest using the output of `[(builtin sha2_256) [(builtin serialiseData) fstUtxoRef]]` where `fstUtxoRef` is the utxo reference (or `PTxOutRef`) of the very first input of the transaction)
 
-- the asset minted MUST be included in an output of the transaction being validated going to the hard-coded `accountManager` validator.
+- the asset minted MUST be included in an output of the transaction being validated going to the address as specified above (payment credentials that are the hard-coded `accountManager` validator, and stake credtentials of the user if any).
 
 - the output going to the `accountManager` validator MUST implement the following checks (in addition to the presence of the minted asset):
     - the address' payment credential MUST have `ScriptCredential` constructor (constructor index `1`) and validator hash MUST equal the hard coded `accountManager` hash
