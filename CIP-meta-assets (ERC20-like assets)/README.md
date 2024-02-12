@@ -115,7 +115,7 @@ Constr 1 [ B valHash ]
 B currencySym
 ```
 
-## `accountFactory` (minting policy)
+### `accountFactory` (minting policy)
 
 The `accountFactory` contract is responsabile of validating the creation of new accounts.
 
