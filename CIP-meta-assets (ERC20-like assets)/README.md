@@ -157,7 +157,7 @@ optionally a specific implementation might require a fixed number of inputs (eg.
 
 optionally a specific implementation might require a fixed number of outputs (eg. a single output) for performance reasons.
 
-## `accountManager` (spending validator)
+### `accountManager` (spending validator)
 
 The `accountManager` contract is responsabile of managing exsiting accounts and their balances.
 
