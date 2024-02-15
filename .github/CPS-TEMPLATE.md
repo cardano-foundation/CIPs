@@ -9,6 +9,7 @@ Proposed Solutions: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
 Created: YYYY-MM-DD
+License: CC-BY-4.0
 ---
 
 <!-- Existing categories:
@@ -44,3 +45,9 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 <!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
+
+## Copyright
+<!-- The CPS must be explicitly licensed under acceptable copyright terms.  Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header:
+
+<!-- This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). -->
+<!-- This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0). -->
