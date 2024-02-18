@@ -71,7 +71,7 @@ Unlike the ERC20 standard; this CIP:
 
 The implementation requires
 
-- a parametrized minting policy to validate the creation of new accounts (in this CIP also referred as `accountFactory`)
+- a parameterized minting policy to validate the creation of new accounts (in this CIP also referred as `accountFactory`)
 - a spending validator to manage the accounts ((in this CIP also referred as `accountManager`))
 
 ### standard data types used
