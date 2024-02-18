@@ -226,19 +226,19 @@ const Account = pstruct({
 > });
 > ```
 
-### `AccounManagerRedeemer`
+### `AccountManagerRedeemer`
 
-The `AccounManagerRedeemer` is used to comunicate the contract the intention with which the utxo is being spent.
+The `AccountManagerRedeemer` is used to comunicate the contract the intention with which the utxo is being spent.
 
 It MUST define 4 standard redeemers; none of which is meant to manipulate the state of the spending account.
 
 for this reason a specific implementation will likely have more than 4 possible redeemers that will NOT be considered standard
 (eg. a wallet implementing an interface SHOULD NOT depend on the exsistence of these additional redeemers).
 
-The minimal `AccounManagerRedeemer` is:
+The minimal `AccountManagerRedeemer` is:
 
 ```ts
-const AccounManagerRdmr = pstruct({
+const AccountManagerRedeemer = pstruct({
     Mint: { // or Burn if `amount` is negative
         amount: int
     },
