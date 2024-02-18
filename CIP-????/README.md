@@ -258,7 +258,7 @@ Note that `LongTermHash` and `LongTermSignature` can be implemented as standard 
 
 ## Rationale
 
-We consider the implementation trustworthy after passing long comment period,
+We consider the NIST candidates trustworthy after passing a long comment period,
 considering that many competitors were eliminated by publishing weaknesses.
 
 An alternative approach could be to provide low-level primitives from the reference library,
