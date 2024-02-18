@@ -281,7 +281,7 @@ On-chain, this requires a hard fork.
 
 An implementation will require the following steps:
 
-1. Linking to PQC library.
+1. Linking to PQC library. We propose [PQClean](https://github.com/PQClean/PQClean) since it is a robust distribution of NIST-selected candidates. It also aims at cleanness and ease of formal verification.
 2. Providing the patch implementing new Plutus primitives just like for [EcDSA and Schnorr](https://github.com/input-output-hk/plutus/pull/4368).
 3. Providing the PQC primitives using `Crypto` interface for ease of use.
 
