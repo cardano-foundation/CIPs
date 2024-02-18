@@ -213,7 +213,7 @@ Before proceeding with the redeemers validation logic here are some common opera
 
 the `accountManager` contract is meant to be used only as spending validator.
 
-As succ we can extract the utxo being spent from the `ScriptPurpose` when constructed with the `Spending` contstructor and fail for the rest.
+As such we can extract the utxo being spent from the `ScriptPurpose` when constructed with the `Spending` constructor and fail for the rest.
 
 ```ts
 const ownUtxoRef = plet(
