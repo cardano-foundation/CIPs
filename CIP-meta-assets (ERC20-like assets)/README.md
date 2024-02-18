@@ -31,7 +31,7 @@ The solution proposed includes (answering to the open questions of CPS-0003):
 
 3) the solution can co-exist with the existing native tokens
 
-4) the implementaiton is possible without hardfork since Vasil
+4) the implementation is possible without hardfork since Vasil
 
 5) optimized implementations should not take significant computation, especially on transfers.
 
