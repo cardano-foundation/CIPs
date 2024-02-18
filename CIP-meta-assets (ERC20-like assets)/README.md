@@ -246,7 +246,7 @@ validatingInput.resolved.value
 
 ##### `isOwnOutput`
 
-given an output; we recongize the output as "own" if the attached credantials are equivalent to `ownCreds` 
+given an output; we recongize the output as "own" if the attached credentials are equivalent to `ownCreds` 
 and the attached value includes an entry for the `currencySym` field in the specified in the datum.
 
 ```ts
