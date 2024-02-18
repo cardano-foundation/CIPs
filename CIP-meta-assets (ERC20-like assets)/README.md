@@ -382,7 +382,7 @@ any additional check can be made based on the `account.state` (implementation sp
 - the sender input (the `ownInput` with different `utxoRef` of the `validatingInput`)
 being spent with `Transfer` redeemer
 
-- in the sender input `Transefer` redeemer the `to` field is equal to the `account.credentials` (where `account` is the receiver datum)
+- in the sender input `Transfer` redeemer the `to` field is equal to the `account.credentials` (where `account` is the receiver datum)
 
 > **NOTE**
 >
