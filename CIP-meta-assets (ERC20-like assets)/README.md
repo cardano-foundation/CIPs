@@ -477,6 +477,24 @@ The main purpose of the redeemer is to avoid breaking compatibilities for addtio
 It MUST also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section SHOULD explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
 
+The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) was quite different by the one shown in this document
+
+Main differences were in the proposed:
+- [use of sorted merkle trees to prove uniqueness](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58#diff-370b6563a47be474523d4f4dbfdf120c567c3c0135752afb61dc16c9a2de8d74R72) of an account during creation;
+- account credentials as asset name
+
+this path was abandoned due to the logaritmic cost of creation of accounts, on top of the complexity.
+
+Other crucial difference with the first proposed implementation was in the `accountManager` redeemers;
+which included definitions for `TransferFrom`, `Approve` and `RevokeApproval` redeemers, aiming to emulate ERC20's methods of `transferFrom` and `approve`;
+
+after [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
+
+The proposal does not affect backward compatibilty being the first proposing a standard for programmability over transfers;
+
+exsisting native tokens are not conflicting for the standard, and instead are making it possible;
+it would be infact much harder to prove the validity of an utxo without a native token on it.
+
 ## Path to Active
 
 ### Acceptance Criteria
