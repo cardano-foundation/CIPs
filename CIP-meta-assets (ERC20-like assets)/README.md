@@ -29,7 +29,7 @@ The solution proposed includes (answering to the open questions of CPS-0003):
 
 1 and 2) very much like account based models, wallets supporting this standard will require to know the address of the smart contract (validator)
 
-3) the soultion can co-exsist with the exsiting native tokens
+3) the solution can co-exist with the existing native tokens
 
 4) the implementaiton is possible without hardfork since Vasil
 
