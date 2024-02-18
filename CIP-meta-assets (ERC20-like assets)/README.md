@@ -37,7 +37,7 @@ The solution proposed includes (answering to the open questions of CPS-0003):
 
 ## Specification
 
-In the specifiaction we'll use the haskell data type `Data`:
+In the specification we'll use the haskell data type `Data`:
 ```hs
 data Data
     = Constr Integer [Data]
