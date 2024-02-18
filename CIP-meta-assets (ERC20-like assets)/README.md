@@ -312,7 +312,7 @@ This might not be true for any implementation specific additional redeemer.
 
 #### `Mint`
 
-the contract being called using the `Mint` redeemer MUST suceed only if the following conditions are met:
+the contract being called using the `Mint` redeemer MUST succeed only if the following conditions are met:
 
 > **NOTE** 
 >
