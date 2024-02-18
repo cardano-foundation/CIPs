@@ -62,7 +62,7 @@ Unlike the ERC20 standard; this CIP:
 >
 > this would allow for a more powerful model than the account based equivalent but implies higher execution costs
 >
-> whith the goal of keeping the standard interoperable and easy to understand and implement
+> with the goal of keeping the standard interoperable and easy to understand and implement
 > in this first implementation we restricts transfers from a single account to a single account
 >
 > if necessary; this restriction might be dropped in a future version of the CIP 
