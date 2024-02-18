@@ -297,7 +297,7 @@ over the course of few years.
 That would make Cardano permit **quantum-resistant** smart contracts today at negligible cost,
 and assure **long-term viability** of those smart contracts that will be deployed in the near future.
 
-[Long-term document storage](https://adastamp.co) is a killer application for the blockchain.
+[Long-term document storage](https://adastamp.co) is a killer application for the blockchain. It greatly benefits from standardized protocol of migration to better digital signature schemes.
 While any single signature may be obsoleted, this application adds new signatures for each document
 that keep integrity of the document and prolong its validity.
 
