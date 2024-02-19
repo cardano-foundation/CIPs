@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "cardano.json",
+  "$id": "cardano-babbage.json",
   "title": "Cardano Domain Types",
   "definitions": {
     "BigInt": {
@@ -73,19 +73,19 @@
       "title": "Address",
       "anyOf": [
         {
-          "$ref": "cardano.json#/definitions/RewardAddress"
+          "$ref": "cardano-babbage.json#/definitions/RewardAddress"
         },
         {
-          "$ref": "cardano.json#/definitions/BaseAddress"
+          "$ref": "cardano-babbage.json#/definitions/BaseAddress"
         },
         {
-          "$ref": "cardano.json#/definitions/PointerAddress"
+          "$ref": "cardano-babbage.json#/definitions/PointerAddress"
         },
         {
-          "$ref": "cardano.json#/definitions/EnterpriseAddress"
+          "$ref": "cardano-babbage.json#/definitions/EnterpriseAddress"
         },
         {
-          "$ref": "cardano.json#/definitions/ByronAddress"
+          "$ref": "cardano-babbage.json#/definitions/ByronAddress"
         }
       ]
     },
@@ -114,7 +114,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano.json#/definitions/Ed25519KeyHash"
+              "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
             }
           }
         },
@@ -127,7 +127,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano.json#/definitions/ScriptHash"
+              "$ref": "cardano-babbage.json#/definitions/ScriptHash"
             }
           }
         }
@@ -142,7 +142,7 @@
           "type": "object",
           "patternProperties": {
             "^([0-9a-f][0-9a-f]){0,32}$": {
-              "$ref": "cardano.json#/definitions/BigNum"
+              "$ref": "cardano-babbage.json#/definitions/BigNum"
             }
           },
           "additionalProperties": false
@@ -155,10 +155,10 @@
       "type": "object",
       "properties": {
         "coin": {
-          "$ref": "cardano.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/BigNum"
         },
         "multiasset": {
-          "$ref": "cardano.json#/definitions/MultiAsset"
+          "$ref": "cardano-babbage.json#/definitions/MultiAsset"
         }
       }
     },
@@ -171,10 +171,10 @@
       "type": "object",
       "properties": {
         "hash": {
-          "$ref": "cardano.json#/definitions/TransactionHash"
+          "$ref": "cardano-babbage.json#/definitions/TransactionHash"
         },
         "index": {
-          "$ref": "cardano.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt"
         }
       }
     },
@@ -203,7 +203,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano.json#/definitions/PlutusScript"
+              "$ref": "cardano-babbage.json#/definitions/PlutusScript"
             }
           }
         },
@@ -218,7 +218,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano.json#/definitions/NativeScript"
+              "$ref": "cardano-babbage.json#/definitions/NativeScript"
             }
           }
         }
@@ -235,10 +235,10 @@
       "type": "object",
       "properties": {
         "address": {
-          "$ref": "cardano.json#/definitions/Address"
+          "$ref": "cardano-babbage.json#/definitions/Address"
         },
         "amount": {
-          "$ref": "cardano.json#/definitions/Value"
+          "$ref": "cardano-babbage.json#/definitions/Value"
         },
         "plutus_data": {
           "discriminator": {
@@ -254,7 +254,7 @@
                   ]
                 },
                 "value": {
-                  "$ref": "cardano.json#/definitions/PlutusData"
+                  "$ref": "cardano-babbage.json#/definitions/PlutusData"
                 }
               }
             },
@@ -267,14 +267,14 @@
                   ]
                 },
                 "value": {
-                  "$ref": "cardano.json#/definitions/DataHash"
+                  "$ref": "cardano-babbage.json#/definitions/DataHash"
                 }
               }
             }
           ]
         },
         "script_ref": {
-          "$ref": "cardano.json#/definitions/ScriptRef"
+          "$ref": "cardano-babbage.json#/definitions/ScriptRef"
         }
       },
       "required": [
@@ -287,10 +287,10 @@
       "type": "object",
       "properties": {
         "input": {
-          "$ref": "cardano.json#/definitions/TransactionInput"
+          "$ref": "cardano-babbage.json#/definitions/TransactionInput"
         },
         "output": {
-          "$ref": "cardano.json#/definitions/TransactionOutput"
+          "$ref": "cardano-babbage.json#/definitions/TransactionOutput"
         }
       },
       "additionalProperties": false
@@ -315,10 +315,10 @@
                 "type": "object",
                 "properties": {
                   "key": {
-                    "$ref": "cardano.json#/definitions/TransactionMetadatum"
+                    "$ref": "cardano-babbage.json#/definitions/TransactionMetadatum"
                   },
                   "value": {
-                    "$ref": "cardano.json#/definitions/TransactionMetadatum"
+                    "$ref": "cardano-babbage.json#/definitions/TransactionMetadatum"
                   }
                 }
               }
@@ -336,7 +336,7 @@
             "contents": {
               "type": "array",
               "items": {
-                "$ref": "cardano.json#/definitions/TransactionMetadatum"
+                "$ref": "cardano-babbage.json#/definitions/TransactionMetadatum"
               }
             }
           }
@@ -350,7 +350,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano.json#/definitions/Int"
+              "$ref": "cardano-babbage.json#/definitions/Int"
             }
           }
         },
@@ -406,7 +406,7 @@
             "contents": {
               "type": "array",
               "items": {
-                "$ref": "cardano.json#/definitions/PlutusData"
+                "$ref": "cardano-babbage.json#/definitions/PlutusData"
               }
             }
           }
@@ -421,12 +421,12 @@
               ]
             },
             "alternative": {
-              "$ref": "cardano.json#/definitions/BigNum"
+              "$ref": "cardano-babbage.json#/definitions/BigNum"
             },
             "data": {
               "type": "array",
               "items": {
-                "$ref": "cardano.json#/definitions/PlutusData"
+                "$ref": "cardano-babbage.json#/definitions/PlutusData"
               }
             }
           }
@@ -446,10 +446,10 @@
                 "type": "object",
                 "properties": {
                   "key": {
-                    "$ref": "cardano.json#/definitions/PlutusData"
+                    "$ref": "cardano-babbage.json#/definitions/PlutusData"
                   },
                   "value": {
-                    "$ref": "cardano.json#/definitions/PlutusData"
+                    "$ref": "cardano-babbage.json#/definitions/PlutusData"
                   }
                 }
               }
@@ -467,7 +467,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano.json#/definitions/BigInt"
+              "$ref": "cardano-babbage.json#/definitions/BigInt"
             }
           }
         },
@@ -493,10 +493,10 @@
       "type": "object",
       "properties": {
         "numerator": {
-          "$ref": "cardano.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/BigNum"
         },
         "denominator": {
-          "$ref": "cardano.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/BigNum"
         }
       },
       "additionalProperties": false
@@ -531,10 +531,10 @@
               "maxValue": 65535
             },
             "ipv4": {
-              "$ref": "cardano.json#/definitions/Ipv4"
+              "$ref": "cardano-babbage.json#/definitions/Ipv4"
             },
             "ipv6": {
-              "$ref": "cardano.json#/definitions/Ipv6"
+              "$ref": "cardano-babbage.json#/definitions/Ipv6"
             }
           },
           "required": [
@@ -556,7 +556,7 @@
               "maxValue": 65535
             },
             "dnsName": {
-              "$ref": "cardano.json#/definitions/DNSName"
+              "$ref": "cardano-babbage.json#/definitions/DNSName"
             }
           },
           "additionalProperties": false,
@@ -574,7 +574,7 @@
               ]
             },
             "dnsName": {
-              "$ref": "cardano.json#/definitions/DNSName"
+              "$ref": "cardano-babbage.json#/definitions/DNSName"
             }
           },
           "additionalProperties": false,
@@ -588,40 +588,40 @@
       "type": "object",
       "properties": {
         "operator": {
-          "$ref": "cardano.json#/definitions/Ed25519KeyHash"
+          "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
         },
         "vrf_keyhash": {
-          "$ref": "cardano.json#/definitions/VRFKeyHash"
+          "$ref": "cardano-babbage.json#/definitions/VRFKeyHash"
         },
         "pledge": {
-          "$ref": "cardano.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/BigNum"
         },
         "cost": {
-          "$ref": "cardano.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/BigNum"
         },
         "margin": {
-          "$ref": "cardano.json#/definitions/UnitInterval"
+          "$ref": "cardano-babbage.json#/definitions/UnitInterval"
         },
         "reward_account": {
-          "$ref": "cardano.json#/definitions/RewardAddress"
+          "$ref": "cardano-babbage.json#/definitions/RewardAddress"
         },
         "pool_owners": {
           "type": "array",
           "items": {
-            "$ref": "cardano.json#/definitions/Ed25519KeyHash"
+            "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
           }
         },
         "relays": {
           "type": "array",
           "items": {
-            "$ref": "cardano.json#/definitions/Relay"
+            "$ref": "cardano-babbage.json#/definitions/Relay"
           }
         },
         "pool_metadata": {
           "type": "object",
           "properties": {
             "url": {
-              "$ref": "cardano.json#/definitions/URL"
+              "$ref": "cardano-babbage.json#/definitions/URL"
             },
             "pool_metadata_hash": {
               "title": "Pool Metadata Hash",
@@ -650,7 +650,7 @@
               ]
             },
             "credential": {
-              "$ref": "cardano.json#/definitions/Credential"
+              "$ref": "cardano-babbage.json#/definitions/Credential"
             }
           }
         },
@@ -664,7 +664,7 @@
               ]
             },
             "credential": {
-              "$ref": "cardano.json#/definitions/Credential"
+              "$ref": "cardano-babbage.json#/definitions/Credential"
             }
           }
         },
@@ -677,11 +677,11 @@
                 "stake_delegation"
               ]
             },
-            "credential": {
-              "$ref": "cardano.json#/definitions/Credential"
+            "stake_credential": {
+              "$ref": "cardano-babbage.json#/definitions/Credential"
             },
-            "pool_id": {
-              "$ref": "cardano.json#/definitions/PoolPubKeyHash"
+            "pool_keyhash": {
+              "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
             }
           }
         },
@@ -695,7 +695,7 @@
               ]
             },
             "pool_params": {
-              "$ref": "cardano.json#/definitions/PoolParams"
+              "$ref": "cardano-babbage.json#/definitions/PoolParams"
             }
           }
         }
