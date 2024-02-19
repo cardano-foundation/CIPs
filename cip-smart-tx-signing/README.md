@@ -54,7 +54,7 @@ When displaying a transaction summary to the user, the wallet MUST search for th
 2. The cache of signed transactions
 3. The set of transactions being signed
 
-If a transaction contains an input that references an output that cannot be found, the wallet MUST display a warning to the user that the transaction includes unidentifiable inputs. The style and wording of this warning is left up to the wallet. The wallet MAY prevent the user from signing a transaction with unidentified inputs, but this may cause issues when interacting with some dApps.
+If a transaction contains an input that references an output that cannot be found, the wallet MUST display a warning to the user that the transaction includes unidentifiable inputs. The style and wording of this warning is left up to the wallet. The wallet MAY prevent the user from signing a transaction with unidentified inputs, but this will cause issues when interacting with some dApps.
 
 ## Rationale: how does this CIP achieve its goals?
 
