@@ -14,6 +14,7 @@ Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/497
   - https://github.com/input-output-hk/Developer-Experience-working-group
 Created: 2023-04-04
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -167,3 +168,7 @@ Many of the above problems could be mitigated with a good metadata solution, and
 
 For example, simply knowing the script itself (i.e. the pre-image of the hash used in the script address) helps with problem 1, because then you can know that it’s a Plutus script.
 But it still doesn’t tell you what the form of the datum should be (problem 6), but this could be conveyed with additional metadata.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

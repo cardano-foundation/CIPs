@@ -10,6 +10,7 @@ Proposed Solutions: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pull/619
 Created: 2023-07-28
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -354,3 +355,7 @@ What options do we have for integration with Cardano sidechains, rollups, hardfo
 
 ### How can we effectively police API scope?
 How can we prevent duplication of functionality and make sure different APIs do not overlap?
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
