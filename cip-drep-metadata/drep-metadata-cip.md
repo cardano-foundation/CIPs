@@ -60,6 +60,14 @@ The following properties extend the potential vocabulary of CIP-100's `body` pro
 #### For Registration and Updates 
 There will need to be some way to alert the tools reading the metadata to expect metadata that is for the purposes of registering or updating the DRep's profile, and therefore to expect the following information.
 
+##### Payment Address
+Dreps may want to recieve tokens for a variety of reasons such as:
+- donations
+- expenses
+- any incentive program
+
+Therefore there will be a `payment_address` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
+
 ##### Registering as a Team
 There is an expressed community appetite to delegate to teams of individuals who register as a single DRep using [a native Plutus script](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694#registered-dreps), these will need an extra layer of information to present to people who are potentially interested in delegating to them.
 
@@ -76,6 +84,11 @@ There is an expressed community appetite to delegate to teams of individuals who
 - A base 64 encoded profile picture
 - Moderation of this image must be handled on the client side to comply with their TOS
 - This SHOULD be treated as the team's profile picture by tools interpreting and displaying the metadata
+
+`consensus`
+- Optional
+- To tell people how votes will be decided by the team, e.g. "x of y votes" or "Chad votes on Treasury Withdrawals and Stephan votes on..."
+- If the team is following best proctice and using a native Plutus script then multisig rules will be on-chain anyway, and this field SHOULD be used to add context.
 
 `bio`
 - Compulsory
@@ -125,13 +138,17 @@ There is an expressed community appetite to delegate to teams of individuals who
 - Moderation of this image must be handled on the client side to comply with their TOS
 - This SHOULD be treated as the profile picture of the individual
 
-`manifesto`
+`objectives`
 - Optional
 - A short description of what the person believes
 
 `motivation`
 - Optional
 - A short description of why they want to be a DRep
+
+`qualifications`
+- Optional
+- A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
 `identity`
 - Compulsory
@@ -173,20 +190,24 @@ We intentionally have kept this proposal brief and uncomplicated. This was to re
 
 ## Open Questions
 1. ~~Do we allow profile pictures to be included in metadata~~ <-- YES! possibly a list of pictures.
-2. Do we need to replace the `bio` field with a more structured set of fields
-3. Can we include and verify an ADA handle to uniquely identify a DRep
+2. ~~Do we need to replace the `bio` field with a more structured set of fields~~
+3. ~~Can we include and verify an ADA handle to uniquely identify a DRep~~
 4. ~~What do we do about lack of metadata integrity~~ <-- not show the metadata and make it clear that the #metadata =/ metadata#
 5. ~~Should we split this CIP up into separate transactions or also add the vote transaction metadata~~ <-- the scope is fine
-6. Compulsory vs optional for all fields
-7. types of DRep (script? representing an organisation? want delegations?)
-8. How can we verify the information that we are displaying(?) 
+6. ~~Compulsory vs optional for all fields~~
+7. ~~types of DRep (script? representing an organisation? want delegations?)~~
+8. ~~How can we verify the information that we are displaying(?)~~ 
 9. ~~Tooling providers displaying data SHOULD warn people that none of the information is verified and they should DYOR~~
 10. ~~Tooling providers making metadata SHOULD provide some information about best practices such as putting DRep ID in twitter bio.~~
 11. ~~What do we care about when someone is retiring?~~ <-- just the reason why
-12. When someone updates do we want a 1 line summary of what has changed?
-13. Tooling to inform people of recent changes?
-14. incentives address, where DRep incentives are paid ???
+12. ~~When someone updates do we want a 1 line summary of what has changed?~~
+13. ~~Tooling to inform people of recent changes?~~
+14. ~~incentives address, where DRep incentives are paid ???~~
 
+THE ONLY OPEN QUESTION STILL REMAINING --> How can we ensure that the DReps posting the metadata are who they say they are?
+1. linking to socials
+2. public/private key pairs
+3. Other 
 
 ## Path to Active
 
