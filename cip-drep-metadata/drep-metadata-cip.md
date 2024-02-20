@@ -48,6 +48,8 @@ CIP-1694 specifies that metadata anchors are optional for DRep registration, upd
 ### Markdown Text Styling
 Unlike [CIP-108](https://github.com/Ryun1/CIPs/blob/governance-metadata-actions/CIP-0108/README.md#markdown-text-styling) this standard seeks to simplify the job of tooling providers by not supporting text formatting such as markdown. 
 
+### Integrity
+Metadata integrity is when the hash of the metadata in the metadata anchor on-chain is the same as your hash when you hash it. Tooling SHOULD check for metadata integrity. If tooling detects that the metadata does not have integrity it MUST NOT display the metadata, and it MUST display a warning describing why it is not showing the metadata.
 
 ### Witnesses
 DRep Metadata will not follow the CIP-100 specification related to signing the metadata, instead they are attached to a DRep registration. The need for an `authors` field will also be discarded in favour of including usernames inside of the `body` field. 
@@ -134,7 +136,9 @@ There is an expressed community appetite to delegate to teams of individuals who
 `identity`
 - Compulsory
 - A link to a social media profile where the person must reference their DRep ID in their profile.
-- This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile. 
+- This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
+- Tooling providers SHOULD warn people that none of the information is verified by the tool and they should DYOR
+- Tooling providers making metadata SHOULD provide some information about why this is important.
 
 `links`
 - Optional
@@ -176,11 +180,12 @@ We intentionally have kept this proposal brief and uncomplicated. This was to re
 6. Compulsory vs optional for all fields
 7. types of DRep (script? representing an organisation? want delegations?)
 8. How can we verify the information that we are displaying(?) 
-9. Tooling providers displaying data SHOULD warn people that none of the information is verified and they should DYOR
-10. Tooling providers making metadata SHOULD provide some information about best practices such as putting DRep ID in twitter bio.
+9. ~~Tooling providers displaying data SHOULD warn people that none of the information is verified and they should DYOR~~
+10. ~~Tooling providers making metadata SHOULD provide some information about best practices such as putting DRep ID in twitter bio.~~
 11. ~~What do we care about when someone is retiring?~~ <-- just the reason why
 12. When someone updates do we want a 1 line summary of what has changed?
 13. Tooling to inform people of recent changes?
+14. incentives address, where DRep incentives are paid ???
 
 
 ## Path to Active
