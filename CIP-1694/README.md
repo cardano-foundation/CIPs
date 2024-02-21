@@ -55,6 +55,7 @@ Voting rights will be based on the total Ada that is delegated, as a whole numbe
 
 The most crucial aspect of this proposal is therefore the notion of **"one Lovelace = one vote"**.
 
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 ## Motivation: why is this CIP necessary?
 
 + [Goal](#goal)
