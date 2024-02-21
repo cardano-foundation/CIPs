@@ -19,7 +19,7 @@
       "description": "Arbitrary-length byte array",
       "type": "string",
       "format": "hex",
-      "pattern": "^([0-9a-f][0-9a-f])+$"
+      "pattern": "^([0-9a-f][0-9a-f])*$"
     },
     "BigNum": {
       "title": "64-bit unsigned integer",
