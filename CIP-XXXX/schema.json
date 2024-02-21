@@ -18,7 +18,7 @@
       "title": "ByteString",
       "description": "Arbitrary-length byte array",
       "type": "string",
-      "contentEncoding": "hex",
+      "format": "hex",
       "pattern": "^([0-9a-f][0-9a-f])+$"
     },
     "BigNum": {
@@ -42,31 +42,31 @@
     "RewardAddress": {
       "title": "RewardAddress",
       "type": "string",
-      "contentEncoding": "bech32",
+      "format": "bech32",
       "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
     },
     "ByronAddress": {
       "title": "ByronAddress",
       "type": "string",
-      "contentEncoding": "base58",
+      "format": "base58",
       "pattern": "^[1-9A-HJ-NP-Za-km-z]+$"
     },
     "PointerAddress": {
       "title": "PointerAddress",
       "type": "string",
-      "contentEncoding": "bech32",
+      "format": "bech32",
       "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
     },
     "EnterpriseAddress": {
       "title": "EnterpriseAddress",
       "type": "string",
-      "contentEncoding": "bech32",
+      "format": "bech32",
       "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
     },
     "BaseAddress": {
       "title": "BaseAddress",
       "type": "string",
-      "contentEncoding": "bech32",
+      "format": "bech32",
       "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
     },
     "Address": {
@@ -92,11 +92,13 @@
     "Ed25519KeyHash": {
       "title": "Ed25519KeyHash",
       "type": "string",
+      "format": "hex",
       "pattern": "^[0-9a-f]{56}$"
     },
     "ScriptHash": {
       "title": "ScriptHash",
       "type": "string",
+      "format": "hex",
       "pattern": "^[0-9a-f]{56}$"
     },
     "Credential": {
@@ -171,6 +173,7 @@
     "TransactionHash": {
       "title": "TransactionHash",
       "type": "string",
+      "format": "hex",
       "pattern": "^[0-9a-f]{64}$"
     },
     "TransactionInput": {
@@ -188,7 +191,7 @@
     },
     "PlutusScript": {
       "type": "string",
-      "contentEncoding": "hex",
+      "format": "hex",
       "pattern": "^([0-9a-f][0-9a-f])+$"
     },
     "NativeScript": {
@@ -352,7 +355,7 @@
     "DataHash": {
       "title": "DataHash",
       "type": "string",
-      "contentEncoding": "hex",
+      "format": "hex",
       "pattern": "^([0-9a-f][0-9a-f]){32}$"
     },
     "TransactionOutput": {
@@ -498,7 +501,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "contentEncoding": "hex",
+                "format": "hex",
                 "pattern": "^([0-9a-f][0-9a-f]){0,64}$"
               }
             }
@@ -585,6 +588,7 @@
         {
           "title": "Nonce from hash",
           "type": "string",
+          "format": "hex",
           "pattern": "^[0-9a-f]{64}$"
         }
       ]
@@ -710,6 +714,7 @@
           "description": "A mapping from GenesisHash to ProtocolParamUpdate",
           "patternProperties": {
             "^[0-9a-f]{56}$": {
+              "title": "ProtocolParamUpdate for a given GenesisHash",
               "$ref": "cardano-babbage.json#/definitions/ProtocolParamUpdate"
             }
           }
@@ -724,11 +729,13 @@
     "ScriptDataHash": {
       "title": "ScriptDataHash",
       "type": "string",
+      "format": "hex",
       "pattern": "^[0-9a-f]{64}$"
     },
     "AuxiliaryDataHash": {
       "title": "Auxiliary Data Hash",
       "type": "string",
+      "format": "hex",
       "pattern": "^[0-9a-f]{64}$"
     },
     "TransactionBody": {
@@ -935,7 +942,7 @@
             },
             "value": {
               "type": "string",
-              "contentEncoding": "hex",
+              "format": "hex",
               "pattern": "^([0-9a-f][0-9a-f])*$"
             }
           }
@@ -969,7 +976,7 @@
       "title": "Ipv6",
       "description": "IPv6 address in fully-expanded form",
       "type": "string",
-      "pattern": "^([0-9a-f]{4}:){7}:[0-9a-f]{4}$"
+      "format": "ipv6"
     },
     "Relay": {
       "discriminator": {
@@ -1098,6 +1105,7 @@
             "pool_metadata_hash": {
               "title": "Pool Metadata Hash",
               "type": "string",
+              "format": "hex",
               "pattern": "^[0-9a-f]{64}$"
             }
           },
@@ -1109,11 +1117,13 @@
     "GenesisHash": {
       "title": "GenesisHash",
       "type": "string",
+      "format": "hex",
       "pattern": "^[0-9a-f]{56}$"
     },
     "GenesisDelegateHash": {
       "title": "GenesisDelegateHash",
       "type": "string",
+      "format": "hex",
       "pattern": "^[0-9a-f]{56}$"
     },
     "MIRPot": {
@@ -1355,11 +1365,13 @@
     "Ed25519Signature": {
       "title": "Ed25519Signature",
       "type": "string",
+      "format": "hex",
       "pattern": "^([0-9a-f][0-9a-f]){64}$"
     },
     "Ed25519PublicKey": {
       "title": "Ed25519PublicKey",
       "type": "string",
+      "format": "hex",
       "pattern": "^([0-9a-f][0-9a-f]){32}$"
     },
     "BootstrapWitness": {
@@ -1367,10 +1379,12 @@
       "properties": {
         "attributes": {
           "type": "string",
+          "format": "hex",
           "pattern": "^([0-9a-f][0-9a-f])*$"
         },
         "chain_code": {
           "type": "string",
+          "format": "hex",
           "pattern": "^([0-9a-f][0-9a-f])*$"
         },
         "signature": {
