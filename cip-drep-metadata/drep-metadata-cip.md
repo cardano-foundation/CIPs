@@ -203,6 +203,7 @@ We intentionally have kept this proposal brief and uncomplicated. This was to re
 12. ~~When someone updates do we want a 1 line summary of what has changed?~~
 13. ~~Tooling to inform people of recent changes?~~
 14. ~~incentives address, where DRep incentives are paid ???~~
+15. PKI Public Key, Fingerprint, or DID? <-- Possible to do this with a Cardano wallet? Maybe a tooling gap for signing messages out-of-band?
 
 THE ONLY OPEN QUESTION STILL REMAINING --> How can we ensure that the DReps posting the metadata are who they say they are?
 1. linking to socials
