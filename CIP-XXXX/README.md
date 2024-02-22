@@ -51,7 +51,7 @@ The schemas MUST NOT be extensible with additional properties. This may sound co
 
 These conventions help to keep the schema uniform in style.
 
-### Encoding of mapping types
+#### Encoding of mapping types
 
 `Map`-like container types should be encoded as arrays of key-value pairs. Uniqueness of `"key"` objects in a map MUST be preserved (but this property is not expressible via a schema).
 
@@ -71,7 +71,7 @@ These conventions help to keep the schema uniform in style.
 
 Implementations MUST consider mappings with conflicting keys invalid.
 
-### Encoding of variant types
+#### Encoding of variant types
 
 Encoding types with variable payloads MUST be done with the use of `oneOf` and an explicit discriminator property: `tag`:
 
@@ -135,11 +135,11 @@ Lowercase snake case identifiers should be used for the options, e.g.:
     },
 ```
 
-### Encoding of record types
+#### Encoding of record types
 
 All record types MUST be encoded as objects with explicit list of `required` properties, and `additionalProperties` set to `false` (see "absence of extensibility" chapter for the motivation behind this suggestion).
 
-### Encoding of nominal type synonyms
+#### Encoding of nominal type synonyms
 
 Some of the types have identical representations, differing only by nominal name. For example, Slot domain type is expressed as `uint` in CDDL.
 
@@ -155,9 +155,9 @@ Some non-standard `format` types are used:
 
 TODO: describe the formats
 
-## Limitations
+### Limitations
 
-### Byte length limits for strings
+#### Byte length limits for strings
 
 In CDDL, the length of a `tstr` value gives the number of bytes, but in `json-schema` there is no way to specify restrictions on byte lengths. So, `maxLength` is not the correct way of specifying the limits, but it is still useful, because no string longer than 64 *characters* satisfies the 64-byte limit.
 
