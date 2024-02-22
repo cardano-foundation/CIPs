@@ -179,4 +179,3 @@ In CDDL, the length of a `tstr` value gives the number of bytes, but in `json-sc
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
-[Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
