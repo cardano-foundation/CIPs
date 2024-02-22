@@ -43,7 +43,7 @@
       "title": "RewardAddress",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(stake1|stake_test1)[02-9ac-hj-np-z]*$"
     },
     "ByronAddress": {
       "title": "ByronAddress",
