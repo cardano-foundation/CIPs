@@ -51,9 +51,13 @@ The schemas MUST NOT be extensible with additional properties. This may sound co
 
 These conventions help to keep the schema uniform in style.
 
+#### Encoding of binary types
+
+Binary data MUST be encoded as lower-case hexademical strings. Restricting the character set to lower-case letters (`a-f`) allows for comparisons and equality checks without the need to normalize the values to a uniform case.
+
 #### Encoding of mapping types
 
-`Map`-like container types should be encoded as arrays of key-value pairs. Uniqueness of `"key"` objects in a map MUST be preserved (but this property is not expressible via a schema).
+`Map`-like container types MUST be encoded as arrays of key-value pairs. Uniqueness of `"key"` objects in a map MUST be preserved (but this property is not expressible via a schema).
 
 ```json
 "Map": {
@@ -120,9 +124,9 @@ Other properties of a tagged object MUST be specified in lower-case snake-case.
 
 #### Encoding of enum types
 
-Enums are a special kind of variant types that carry no payloads. These must be encoded as string `enum`s.
+Enums are a special kind of variant types that carry no payloads. These MUST be encoded as string `enum`s.
 
-Lowercase snake case identifiers should be used for the options, e.g.:
+Lowercase snake case identifiers MUST be used for the options, e.g.:
 
 ```json
     "Language": {
@@ -141,9 +145,9 @@ All record types MUST be encoded as objects with explicit list of `required` pro
 
 #### Encoding of nominal type synonyms
 
-Some of the types have identical representations, differing only by nominal name. For example, Slot domain type is expressed as `uint` in CDDL.
+Some of the types have identical representations, differing only by nominal name. For example, `Slot` domain type is expressed as `uint` in CDDL.
 
-For these types, their nominal name should not have a separate definition in the json-schema, and the "representation type" should be used via a `$ref` instead. The domain type name SHOULD be included as `title` string at the point of usage.
+For these types, their nominal name SHOULD NOT have a separate definition in the json-schema, and the "representation type" should be used via a `$ref` instead. The domain type name SHOULD be included as `title` string at the point of usage.
 
 ### Additional format types
 
@@ -156,6 +160,22 @@ Some non-standard `format` types are used:
 TODO: describe the formats
 
 ### Limitations
+
+JSON-schema does not allow to express certain properties of some of the types.
+
+#### Uniqueness of mapping keys
+
+See the chapter on encoding of mapping types.
+
+#### Bech32 and Base58 formats
+
+Validity of values of these types can't be expressed as a regular expression, so the implementations MAY validate them separately.
+
+#### Address types
+
+Bech32 strings are not always valid addresses: even if the prefixes are correct, the [binary layout of the payload](https://github.com/IntersectMBO/cardano-ledger/blob/f754084675a1decceed4f309814b09605f443dd5/libs/cardano-ledger-core/src/Cardano/Ledger/Address.hs#L603) must also be valid.
+
+The implementations MAY validate it separately.
 
 #### Byte length limits for strings
 
