@@ -732,11 +732,54 @@
       "format": "hex",
       "pattern": "^[0-9a-f]{64}$"
     },
+    "TransactionMetadata": {
+      "title": "TransactionMetadata",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "cardano-babbage.json#/definitions/BigNum"
+          },
+          "value": {
+            "$ref": "cardano-babbage.json#/definitions/TransactionMetadatum"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "additionalProperties": false
+      }
+    },
     "AuxiliaryDataHash": {
-      "title": "Auxiliary Data Hash",
+      "title": "AuxiliaryDataHash",
       "type": "string",
       "format": "hex",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "AuxiliaryData": {
+      "title": "AuxiliaryData",
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "cardano-babbage.json#/definitions/TransactionMetadata"
+        },
+        "native_scripts": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-babbage.json#/definitions/NativeScript"
+          }
+        },
+        "plutus_scripts": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-babbage.json#/definitions/PlutusScript"
+          }
+        }
+      },
+      "requiredProperties": [],
+      "additionalProperties": false
     },
     "TransactionBody": {
       "type": "object",
@@ -1494,6 +1537,26 @@
         }
       },
       "required": []
+    },
+    "Transaction": {
+      "type": "object",
+      "title": "Transaction",
+      "properties": {
+        "auxiliary_data": {
+          "$ref": "cardano-babbage.json#/definitions/AuxiliaryData"
+        },
+        "body": {
+          "$ref": "cardano-babbage.json#/definitions/TransactionBody"
+        },
+        "is_valid": {
+          "type": "boolean"
+        },
+        "witness_set": {
+          "$ref": "cardano-babbage.json#/definitions/TransactionWitnessSet"
+        }
+      },
+      "requiredProperties": ["body", "is_valid", "witness_set"],
+      "additionalProperties": false
     }
   }
 }
