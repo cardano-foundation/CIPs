@@ -28,17 +28,24 @@ This CIP is expected to contain multiple schema definitions for Cardano Eras sta
 
 - [Babbage](./cardano-babbage.json)
 
+### Scope of the Schema
+
+The schemas should cover `Block` type and all of its structural components, which corresponds to the scope of CDDL files located in [the ledger repo](https://github.com/IntersectMBO/cardano-ledger/).
+
 ### Schema Design Principles
 
 Below you can find some principles outlining the process of schema creation / modification. They are intended to be applied when there is a need to create a schema for a new Cardano era.
+
+#### Uniqueness of encoding
+
+Every transaction (i.e. CBOR-encoded binary) must have exactly one valid JSON encoding, up to entry ordering in mappings (that are represented as key-value pairs).
+
+For a single JSON fixture, however, there are multiple variants of encoding it as CBOR.
 
 #### Consistency with the previous versions
 
 To simplify transitions of dApps between eras, the scope of changes introduced to the schemas SHOULD be limited to the scope of CDDL changes.
 
-#### Scope of the Schema
-
-The schemas should cover `Block` type and all of its structural components, which corresponds to the scope of CDDL files located in [the ledger repo](https://github.com/IntersectMBO/cardano-ledger/).
 
 #### Absence of extensibility
 
