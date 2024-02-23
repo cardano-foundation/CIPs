@@ -21,19 +21,19 @@
       "format": "hex",
       "pattern": "^([0-9a-f][0-9a-f])*$"
     },
-    "BigNum": {
+    "UInt64": {
       "title": "64-bit unsigned integer",
       "type": "string",
       "pattern": "^-?(0|[1-9][0-9]*)$",
       "format": "uint64"
     },
-    "Int": {
+    "Int128": {
       "title": "128-bit signed integer",
       "type": "string",
       "pattern": "^-?(0|[1-9][0-9]*)$",
       "format": "int128"
     },
-    "UInt": {
+    "UInt32": {
       "title": "32-bit unsigned integer",
       "type": "integer",
       "minimum": 0,
@@ -148,7 +148,7 @@
           "type": "object",
           "patternProperties": {
             "^([0-9a-f][0-9a-f]){0,32}$": {
-              "$ref": "cardano-babbage.json#/definitions/BigNum"
+              "$ref": "cardano-babbage.json#/definitions/UInt64"
             }
           },
           "additionalProperties": false
@@ -161,7 +161,7 @@
       "type": "object",
       "properties": {
         "coin": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "multiasset": {
           "$ref": "cardano-babbage.json#/definitions/MultiAsset"
@@ -183,7 +183,7 @@
           "$ref": "cardano-babbage.json#/definitions/TransactionHash"
         },
         "index": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         }
       },
       "required": ["transaction_id", "index"],
@@ -270,7 +270,7 @@
               }
             },
             "n": {
-              "$ref": "cardano-babbage.json#/definitions/UInt"
+              "$ref": "cardano-babbage.json#/definitions/UInt32"
             }
           },
           "additionalProperties": false,
@@ -286,7 +286,7 @@
               ]
             },
             "slot": {
-              "$ref": "cardano-babbage.json#/definitions/BigNum"
+              "$ref": "cardano-babbage.json#/definitions/UInt64"
             }
           },
           "additionalProperties": false,
@@ -302,7 +302,7 @@
               ]
             },
             "slot": {
-              "$ref": "cardano-babbage.json#/definitions/BigNum"
+              "$ref": "cardano-babbage.json#/definitions/UInt64"
             }
           },
           "additionalProperties": false,
@@ -483,7 +483,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano-babbage.json#/definitions/Int"
+              "$ref": "cardano-babbage.json#/definitions/Int128"
             }
           },
           "required": [ "tag", "value" ],
@@ -533,7 +533,7 @@
       "title": "CostModel",
       "type": "array",
       "items": {
-        "$ref": "cardano-babbage.json#/definitions/Int"
+        "$ref": "cardano-babbage.json#/definitions/Int128"
       },
       "maxLength": 166,
       "minLength": 166
@@ -542,7 +542,7 @@
       "title": "CostModel",
       "type": "array",
       "items": {
-        "$ref": "cardano-babbage.json#/definitions/Int"
+        "$ref": "cardano-babbage.json#/definitions/Int128"
       },
       "maxLength": 175,
       "minLength": 175
@@ -598,10 +598,10 @@
       "type": "object",
       "properties": {
         "mem": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "steps": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         }
       },
       "required": [ "mem", "steps" ],
@@ -612,10 +612,10 @@
       "type": "object",
       "properties": {
         "major": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "minor": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         }
       },
       "required": [ "major", "minor" ],
@@ -626,10 +626,10 @@
       "title": "ProtocolParamUpdate",
       "properties": {
         "ada_per_utxo_byte": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "collateral_percentage": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "cost_models": {
           "$ref": "cardano-babbage.json#/definitions/CostModels"
@@ -647,46 +647,46 @@
           "$ref": "cardano-babbage.json#/definitions/Nonce"
         },
         "key_deposit": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "max_block_body_size": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "max_block_ex_units": {
           "$ref": "cardano-babbage.json#/definitions/ExUnits"
         },
         "max_block_header_size": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "max_collateral_inputs": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "max_epoch": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "max_tx_ex_units": {
           "$ref": "cardano-babbage.json#/definitions/ExUnits"
         },
         "max_tx_size": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "max_value_size": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "min_pool_cost": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "minfee_a": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "minfee_b": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "n_opt": {
-          "$ref": "cardano-babbage.json#/definitions/Int"
+          "$ref": "cardano-babbage.json#/definitions/Int128"
         },
         "pool_deposit": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "pool_pledge_influence": {
           "$ref": "cardano-babbage.json#/definitions/UnitInterval"
@@ -706,7 +706,7 @@
       "title": "Update",
       "properties": {
         "epoch": {
-          "$ref": "cardano-babbage.json#/definitions/UInt"
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
         },
         "proposed_protocol_parameter_updates": {
           "type": "object",
@@ -739,7 +739,7 @@
         "type": "object",
         "properties": {
           "key": {
-            "$ref": "cardano-babbage.json#/definitions/BigNum"
+            "$ref": "cardano-babbage.json#/definitions/UInt64"
           },
           "value": {
             "$ref": "cardano-babbage.json#/definitions/TransactionMetadatum"
@@ -800,7 +800,7 @@
           }
         },
         "fee": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "certs": {
           "type": "array",
@@ -849,16 +849,16 @@
           "$ref": "cardano-babbage.json#/definitions/ScriptDataHash"
         },
         "total_collateral": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "ttl": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "update": {
           "$ref": "cardano-babbage.json#/definitions/Update"
         },
         "validity_start_interval": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "withdrawals": {
           "type": "array",
@@ -869,7 +869,7 @@
                 "$ref": "cardano-babbage.json#/definitions/RewardAddress"
               },
               "value": {
-                "$ref": "cardano-babbage.json#/definitions/BigNum"
+                "$ref": "cardano-babbage.json#/definitions/UInt64"
               }
             },
             "additionalProperties": false
@@ -924,7 +924,7 @@
               ]
             },
             "alternative": {
-              "$ref": "cardano-babbage.json#/definitions/BigNum"
+              "$ref": "cardano-babbage.json#/definitions/UInt64"
             },
             "data": {
               "type": "array",
@@ -970,7 +970,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano-babbage.json#/definitions/BigInt"
+              "$ref": "cardano-babbage.json#/definitions/Iigint128"
             }
           }
         },
@@ -996,10 +996,10 @@
       "type": "object",
       "properties": {
         "numerator": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "denominator": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         }
       },
       "additionalProperties": false
@@ -1116,10 +1116,10 @@
           "$ref": "cardano-babbage.json#/definitions/VRFKeyHash"
         },
         "pledge": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "cost": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "margin": {
           "$ref": "cardano-babbage.json#/definitions/UnitInterval"
@@ -1205,7 +1205,7 @@
                     "$ref": "cardano-babbage.json#/definitions/Credential"
                   },
                   "value": {
-                    "$ref": "cardano-babbage.json#/definitions/Int"
+                    "$ref": "cardano-babbage.json#/definitions/Int128"
                   }
                 },
                 "required": [
@@ -1235,7 +1235,7 @@
               "$ref": "cardano-babbage.json#/definitions/MIRPot"
             },
             "amount": {
-              "$ref": "cardano-babbage.json#/definitions/BigNum"
+              "$ref": "cardano-babbage.json#/definitions/UInt64"
             }
           },
           "additionalProperties": false,
@@ -1333,7 +1333,7 @@
               "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
             },
             "epoch": {
-              "$ref": "cardano-babbage.json#/definitions/UInt"
+              "$ref": "cardano-babbage.json#/definitions/UInt32"
             }
           },
           "required": ["tag", "pool_keyhash", "epoch"],
@@ -1397,7 +1397,7 @@
           "type": "object",
           "patternProperties": {
             "^([0-9a-f][0-9a-f]){0,32}$": {
-              "$ref": "cardano-babbage.json#/definitions/Int"
+              "$ref": "cardano-babbage.json#/definitions/Int128"
             }
           },
           "additionalProperties": false
@@ -1466,7 +1466,7 @@
           "$ref": "cardano-babbage.json#/definitions/RedeemerTag"
         },
         "index": {
-          "$ref": "cardano-babbage.json#/definitions/BigNum"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "ex_units": {
           "$ref": "cardano-babbage.json#/definitions/ExUnits"
