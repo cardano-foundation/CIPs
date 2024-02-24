@@ -103,8 +103,7 @@ Scripts are passed information about transactions via the script context.
 We propose to augment the script context to include information about the observation scripts that are executed in the transaction.
 
 Changing the script context will require a new Plutus language version in the ledger to support the new interface.
-The change is: a new field is added to the script context which represents the list of observation scripts that must validate the transaction.
-The observation scripts in the list are represented by their hash. 
+The change is: a new field is added to the script context which represents the list of observers that must be present in the transaction. 
 
 The interface for old versions of the language will not be changed.
 Scripts with old versions cannot be spent in transactions that include observation scripts, attempting to do so will be a phase 1 transaction validation failure.
@@ -130,7 +129,7 @@ data TxInfo = TxInfo
   , txInfoProposalProcedures    :: [ProposalProcedure]
   , txInfoCurrentTreasuryAmount :: Haskell.Maybe V2.Value
   , txInfoTreasuryDonation      :: Haskell.Maybe V2.Value
-  , txInfoObservations          :: [ScriptHash] -- ^ newly introduced list of observation scripts that executed in this tx. 
+  , txInfoObservations          :: [V2.Credential] -- ^ newly introduced list of observation scripts that executed in this tx. 
   }
 ```
 
@@ -150,7 +149,7 @@ transaction_body =
   , ? 9 : mint
   , ? 11 : script_data_hash
   , ? 13 : nonempty_set<transaction_input> ; collateral inputs
-  , ? 14 : required_signers
+  , ? 14 : required_observers              ; Upgraded `required_signers`
   , ? 15 : network_id
   , ? 16 : transaction_output              ; collateral return
   , ? 17 : coin                            ; total collateral
@@ -159,13 +158,13 @@ transaction_body =
   , ? 20 : proposal_procedures             ; Proposal procedures
   , ? 21 : coin                            ; current treasury value
   , ? 22 : positive_coin                   ; donation
-  , ? 23 : required_observers              ; New; observation scripts that must execute in phase 2 validation
   }
-
-required_observers = set<scripthash>
+; addr_keyhash variant is included for backwards compatibility and will be 
+; deprecated in the future era, because `credential` already contains `addr_keyhash`.
+required_observers = nonempty_set<credential / addr_keyhash>
 ```
 
-The `required_observers` (field 23) is a set of script hashes that can be used to require the associated Plutus script to be present in the witness set or as a reference script and executed in the transaction. If a script hash is present but the corresponding Plutus script is not in the witness set or present in a reference script, the transaction will fail in phase 1 validation. This way plutus scripts can check the script context to know which observation scripts were executed in the transaction.
+We rename the `required_signers` field to `required_observers`, promoting it from a list of public key hashes to a list of credentials (i.e. either a KeyHash or ScriptHash). This is consistent with other parts of the transaction that are unlocked by a script or a key witness. `required_observers` (field 14) is a set of credentials that must be satisfied by the transaction. For public key credentials, if the corresponding signature is not in the witness set, the transaction will fail in phase 1. For script credentials, if the associated scripts is not present in the witness set or as a reference script and executed in the transaction, the transaction will fail in phase 1 validation. This way Plutus scripts can check the script context to know which observation scripts were executed in the transaction. Similarly, since native script conditions use the `required_observers` field, it is natural that they are now able to require that other scripts observed the transaction (an extension of the ability to check for the presence of key signatures). 
 
 ### Native Script Extension
 
@@ -197,7 +196,7 @@ Native scripts are typically represented in JSON syntax. We propose the followin
 
 It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
-Currently Plutus scripts in a transaction will only execute when the transaction performs the associated ledger action (ie. a Plutus minting policy will only execute if the transaction mints or burns tokens with matching currency symbol). The only exception is the withdraw zero trick which relies on an obscure mechanic where zero amount withdrawals are not filtered by the ledger. Now using `required_observers` we can specify a list of Plutus scripts to be executed in the transaction independent of any ledger actions. The newly introduced `txInfoObservations` field in the script context provides a straightforward way for Plutus scripts to check that "a particular script validated this transaction".
+Currently Plutus scripts (and native scripts) in a transaction will only execute when the transaction performs the associated ledger action (ie. a Plutus minting policy will only execute if the transaction mints or burns tokens with matching currency symbol). The only exception is the withdraw zero trick which relies on an obscure mechanic where zero amount withdrawals are not filtered by the ledger. Now using `required_observers` we can specify a list of scripts (supports both native and Plutus scripts) to be executed in the transaction independent of any ledger actions. The newly introduced `txInfoObservations` field in the script context provides a straightforward way for scripts to check that "a particular script validated this transaction".
 
 This change is not backwards-compatible and will need to go into a new Plutus language version.
 
