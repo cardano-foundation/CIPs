@@ -80,7 +80,13 @@ export async function createRoyalty(lucid: Lucid, policy: Script, validator: Scr
 	return transaction;
   }
 
-  export async function createTimelockedTransaction(
+/** Mints CIP-68 nfts specified in the sanitizedMetadataAssets parameter.
+  * The cip102 parameter allows for 3 cases:
+  * - "NoRoyalty" - no royalty is attached to the collection - obviously not recommended but hey, it's your collection
+  * - "Premade" - the royalty has already been minted to the policy - no need to mint new tokens
+  * - RoyaltyRecipient - a new royalty token is minted to the policy in this transaction according to the information in the parameter
+  */
+  export async function mintNFTs(
 	lucid: Lucid,
 	policy: Script,
   validator: Script,
@@ -172,7 +178,7 @@ export async function createRoyalty(lucid: Lucid, policy: Script, validator: Scr
 }
 
 /// CIP-25 minting. Don't use unless you're certain this is what you want.
-export async function timeLockMintNft(lucid: Lucid, timestamp: number, nftData: NFTData) {
+export async function mintWithCip25(lucid: Lucid, timestamp: number, nftData: NFTData) {
 	const validTo = new Date();
 	validTo.setHours(validTo.getHours() + 1);
   

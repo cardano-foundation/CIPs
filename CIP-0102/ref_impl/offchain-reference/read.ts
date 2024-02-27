@@ -1,17 +1,14 @@
-import { getEnv } from "./utils/env.ts"
-import type { RoyaltyRecipient, asset_transactions, output } from './types.ts';
+import type { RoyaltyRecipient, output } from './types.ts';
 import { Constr, Data, toText } from 'https://deno.land/x/lucid@0.10.7/mod.ts';
+import { getAssetsTransactions, getScriptsDatumCbor, getTxsUtxos } from "./query.ts";
 
-export const CIP68_ROYALTY_TOKEN_HEX = '001f4d70526f79616c7479'; // (500)Royalty
-export const CIP68_222_TOKEN_HEX = '000de140';
+export const CIP102_ROYALTY_TOKEN_HEX = '001f4d70526f79616c7479'; // (500)Royalty
 
 type RoyaltyConstr = Constr<
 	Map<string, string | bigint> | Map<string, string | bigint>[]
 >;
 
-// TODO: this conversion does't work wor bigger values.
-// Example for input == 57% it loose 1% during backward conversion.
-export function toCip68ContractRoyalty(percentage: number): number {
+export function toCip102ContractRoyalty(percentage: number): number {
 	return Math.floor(1 / (percentage / 1000));
 }
 
@@ -30,10 +27,10 @@ export function getCip68BlockfrostVersion(version: string) {
 	}
 }
 
-export async function getCip68RoyaltyMetadata(
+export async function getCip102RoyaltyMetadata(
 	policyId: string
 ): Promise<RoyaltyRecipient[]> {
-	const assetName = policyId + CIP68_ROYALTY_TOKEN_HEX;
+	const assetName = policyId + CIP102_ROYALTY_TOKEN_HEX;
 	// ------ uncomment when blockfrost will be ready ----------
 	// const asset = await CardanoAssetsService.getAssets1(assetName);
 	// if (asset.metadata) {
@@ -55,7 +52,7 @@ export async function getCip68RoyaltyMetadata(
 			));
 			return royaltyData.flat();
 		}
-	} catch (err) {
+	} catch (_error) {
 		// Best effort just silently fail
 	}
 	return [];
@@ -78,7 +75,7 @@ async function getRoyaltyMetadata(out: output): Promise<RoyaltyRecipient[]> {
 					.filter((royalty) => royalty);
 				return royalties as RoyaltyRecipient[];
 			}
-		} catch (error) {
+		} catch (_error) {
 			// do nothing
 		}
 	}
@@ -96,46 +93,4 @@ function decodeDatumMap(
 	if ('address' in model && 'fee' in model) {
 		return model as unknown as RoyaltyRecipient;
 	}
-}
-
-// based on Blockfrost's openAPI
-const blockfrost_url = getEnv("BLOCKFROST_URL");
-const headers = {
-  project_id: getEnv("BLOCKFROST_PROJECT_KEY"), lucid: "0.10.7"
-}
-
-export async function getAssetsTransactions(
-  asset: string,
-  count: number = 100,
-  page: number = 1,
-  order: 'asc' | 'desc' = 'asc',
-  ): Promise<asset_transactions> 
-{
-  const response =
-    await fetch(
-      blockfrost_url + "/assets/" + asset + "/transactions",
-      { headers },
-    ).then((res) => res.json());
-
-  return response;
-}
-
-async function getTxsUtxos(txHash: string): Promise<{ outputs: output[] }> {
-  const response =
-    await fetch(
-      blockfrost_url + "/txs/" + txHash,
-      { headers },
-    ).then((res) => res.json());
-
-  return response;
-}
-
-async function getScriptsDatumCbor(datumHash: string): Promise<{ cbor: string }> {
-  const response =
-    await fetch(
-      blockfrost_url + "/scripts/datum/" + datumHash + "/cbor",
-      { headers },
-    ).then((res) => res.json());
-
-  return response;
 }
