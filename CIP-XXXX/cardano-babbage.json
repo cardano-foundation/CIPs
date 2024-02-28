@@ -167,14 +167,16 @@
           "$ref": "cardano-babbage.json#/definitions/MultiAsset"
         }
       },
-      "required": ["coin", "multiasset"],
+      "required": ["coin"],
       "additionalProperties": false
     },
     "TransactionHash": {
       "title": "TransactionHash",
       "type": "string",
       "format": "hex",
-      "pattern": "^[0-9a-f]{64}$"
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64
     },
     "TransactionInput": {
       "type": "object",
@@ -970,7 +972,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano-babbage.json#/definitions/Iigint128"
+              "$ref": "cardano-babbage.json#/definitions/Int128"
             }
           }
         },
@@ -1009,17 +1011,16 @@
       "type": "string",
       "pattern": "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.){3}(25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)$"
     },
-    "DNSName": {
-      "title": "DNSName",
-      "description": "",
-      "type": "string",
-      "maxLength": 64
-    },
     "Ipv6": {
       "title": "Ipv6",
       "description": "IPv6 address in fully-expanded form",
       "type": "string",
       "format": "ipv6"
+    },
+    "DNSName": {
+      "title": "DNSName",
+      "type": "string",
+      "maxLength": 64
     },
     "Relay": {
       "discriminator": {
@@ -1106,8 +1107,25 @@
       "type": "string",
       "maxLength": 64
     },
+    "PoolMetadata": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref": "cardano-babbage.json#/definitions/URL"
+        },
+        "pool_metadata_hash": {
+          "title": "Pool Metadata Hash",
+          "type": "string",
+          "format": "hex",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["url", "pool_metadata_hash"]
+    },
     "PoolParams": {
       "type": "object",
+      "title": "PoolParams",
       "properties": {
         "operator": {
           "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
@@ -1140,21 +1158,19 @@
           }
         },
         "pool_metadata": {
-          "type": "object",
-          "properties": {
-            "url": {
-              "$ref": "cardano-babbage.json#/definitions/URL"
-            },
-            "pool_metadata_hash": {
-              "title": "Pool Metadata Hash",
-              "type": "string",
-              "format": "hex",
-              "pattern": "^[0-9a-f]{64}$"
-            }
-          },
-          "additionalProperties": false
+          "$ref": "cardano-babbage.json#/definitions/PoolMetadata"
         }
       },
+      "required": [
+        "cost",
+        "margin",
+        "operator",
+        "pledge",
+        "pool_owners",
+        "relays",
+        "reward_account",
+        "vrf_keyhash"
+      ],
       "additionalProperties": false
     },
     "GenesisHash": {
@@ -1557,6 +1573,228 @@
       },
       "required": ["body", "is_valid", "witness_set"],
       "additionalProperties": false
+    },
+    "AuxiliaryDataSet": {
+      "type": "object",
+      "title": "AuxiliaryDataSet",
+      "description": "A mapping from numbers to AuxiliaryData",
+      "patternProperties": {
+        "^(0|[1-9][0-9]*)$": {
+          "$ref": "cardano-babbage.json#/definitions/AuxiliaryData"
+        }
+      },
+      "additionalProperties": false
+    },
+    "VRFCert": {
+      "type": "object",
+      "title": "VRFCert",
+      "properties": {
+        "output": {
+          "$ref": "cardano-babbage.json#/definitions/ByteString"
+        },
+        "proof": {
+          "$ref": "cardano-babbage.json#/definitions/ByteString"
+        }
+      },
+      "required": ["output", "proof"],
+      "additionalProperties": false
+    },
+    "HeaderLeaderCert": {
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "nonce_and_leader"
+              ]
+            },
+            "nonce": {
+              "$ref": "cardano-babbage.json#/definitions/VRFCert"
+            },
+            "leader": {
+              "$ref": "cardano-babbage.json#/definitions/VRFCert"
+            }
+          },
+          "required": ["tag", "nonce", "leader"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "vrf_result"
+              ]
+            },
+            "cert": {
+              "$ref": "cardano-babbage.json#/definitions/VRFCert"
+            }
+          },
+          "required": ["tag", "cert"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "KESVKey": {
+      "title": "KESVKey",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64
+    },
+    "BlockHash": {
+      "title": "BlockHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64
+    },
+    "VRFVKey": {
+      "title": "KESVKey",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64
+    },
+    "KESSignature": {
+      "title": "KESSignature",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{896}$",
+      "maxLength": 896,
+      "minLength": 896
+    },
+    "OperationalCert": {
+      "type": "object",
+      "properties": {
+        "hot_vkey": {
+          "$ref": "cardano-babbage.json#/definitions/KESVKey"
+        },
+        "kes_period": {
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
+        },
+        "sequence_number": {
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
+        },
+        "sigma": {
+          "$ref": "cardano-babbage.json#/definitions/Ed25519Signature"
+        }
+      },
+      "required": ["hot_vkey", "kes_period", "sequence_number", "sigma"],
+      "additionalProperties": false
+    },
+    "HeaderBody": {
+      "type": "object",
+      "properties": {
+        "block_body_hash": {
+          "$ref": "cardano-babbage.json#/definitions/BlockHash"
+        },
+        "block_body_size": {
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
+        },
+        "block_number": {
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
+        },
+        "issuer_vkey": {
+          "$ref": "cardano-babbage.json#/definitions/Ed25519PublicKey"
+        },
+        "leader_cert": {
+          "$ref": "cardano-babbage.json#/definitions/HeaderLeaderCert"
+        },
+        "operational_cert": {
+          "$ref": "cardano-babbage.json#/definitions/OperationalCert"
+        },
+        "prev_hash": {
+          "$ref": "cardano-babbage.json#/definitions/BlockHash"
+        },
+        "protocol_version": {
+          "$ref": "cardano-babbage.json#/definitions/ProtocolVersion"
+        },
+        "slot": {
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
+        },
+        "vrf_vkey": {
+          "$ref": "cardano-babbage.json#/definitions/VRFVKey"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "block_body_hash",
+        "block_body_size",
+        "block_number",
+        "issuer_vkey",
+        "leader_cert",
+        "operational_cert",
+        "protocol_version",
+        "slot",
+        "vrf_vkey"
+      ]
+    },
+    "Header": {
+      "type": "object",
+      "properties": {
+        "body_signature": {
+          "$ref": "cardano-babbage.json#/definitions/KESSignature"
+        },
+        "header_body": {
+          "$ref": "cardano-babbage.json#/definitions/HeaderBody"
+        }
+      },
+      "required": [ "body_signature", "header_body" ],
+      "additionalProperties": false
+    },
+    "Block": {
+      "type": "object",
+      "title": "Block",
+      "properties": {
+        "auxiliary_data_set": {
+          "$ref": "cardano-babbage.json#/definitions/AuxiliaryDataSet"
+        },
+        "header": {
+          "$ref": "cardano-babbage.json#/definitions/Header"
+        },
+        "invalid_transactions": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "title": "TransactionIndex"
+              },
+              {
+                "$ref": "cardano-babbage.json#/definitions/UInt32"
+              }
+            ]
+          }
+        },
+        "transaction_bodies": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-babbage.json#/definitions/TransactionBody"
+          }
+        },
+        "transaction_witness_sets": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-babbage.json#/definitions/TransactionWitnessSet"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "auxiliary_data_set",
+        "header",
+        "invalid_transactions",
+        "transaction_bodies",
+        "transaction_witness_sets"
+      ]
     }
   }
 }
