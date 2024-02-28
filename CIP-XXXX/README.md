@@ -188,6 +188,48 @@ The implementations MAY validate it separately.
 
 In CDDL, the length of a `tstr` value gives the number of bytes, but in `json-schema` there is no way to specify restrictions on byte lengths. So, `maxLength` is not the correct way of specifying the limits, but it is still useful, because no string longer than 64 *characters* satisfies the 64-byte limit.
 
+#### Auxiliary Data encoding
+
+`auxiliary_data` CDDL type is handled specially.
+
+```cddl
+auxiliary_data =
+  metadata ; Shelley
+  / [ transaction_metadata: metadata ; Shelley-ma
+    , auxiliary_scripts: [ * native_script ]
+    ]
+  / #6.259({ ? 0 => metadata         ; Alonzo and beyond
+      , ? 1 => [ * native_script ]
+      , ? 2 => [ * plutus_v1_script ]
+      , ? 3 => [ * plutus_v2_script ]
+      })
+```
+
+Instead of providing all three variants of encoding, we base the schema on the one that is the most general (the last one):
+
+```json
+    "AuxiliaryData": {
+      "properties": {
+        "metadata": {
+          "$ref": "cardano-babbage.json#/definitions/TransactionMetadata"
+        },
+        "native_scripts": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-babbage.json#/definitions/NativeScript"
+          }
+        },
+        "plutus_scripts": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-babbage.json#/definitions/PlutusScript"
+          }
+        }
+      },
+```
+
+It is up to implementors to decide how to serialize the values into CBOR. The property we want to maintain is preserved regardless of the choice: for every block binary there is exactly one JSON encoding.
+
 ## Rationale: how does this CIP achieve its goals?
 
 ## Path to Active
