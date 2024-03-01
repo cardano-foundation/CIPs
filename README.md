@@ -153,8 +153,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0005 | [Plutus Script Usability](./CPS-0005) | Open |
 | 0007 | [Voltaire era Governance](./CPS-0007) | Open |
 | 0010 | [Wallet Connectors](./CPS-0007) | Open |
+| 0011 | [Universal JSON Encoding for Domain Types](./CPS-0011) | Open |
+| 0013 | [Better builtin data structures in Plutus](./CPS-0013) | Open |
 
-<p align="right"><i>Last updated on 2023-02-08</i></p>
+<p align="right"><i>Last updated on 2024-03-01</i></p>
 
 > 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
 
@@ -169,12 +171,10 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
 | 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
 | 0009? | [Coin Selection Including Native Tokens](https://github.com/cardano-foundation/CIPs/pull/611) |
-| 0011? | [Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/742) |
 | 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
-| 0013? | [Better builtin data structures in Plutus](https://github.com/cardano-foundation/CIPs/pull/638) |
 | 0014? | [Register of CBOR Tags](https://github.com/cardano-foundation/CIPs/pull/751) |
 
-<p align="right"><i>Last updated on 2024-02-08</i></p>
+<p align="right"><i>Last updated on 2024-03-01</i></p>
 
 ## Stalled / Waiting For Authors
 
