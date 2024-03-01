@@ -100,3 +100,7 @@ Since map operations currently have much worse complexity than a good map data s
 ## References
 
 - https://x.com/Quantumplation/status/1733298551571038338?s=20
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
