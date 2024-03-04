@@ -38,7 +38,7 @@ This primarily manifests in the ability to use a single validator for both minti
 
 ### No Datum Spend Purpose
 
-One of the major footguns of Plutus scripts is if a user sends to the script with a wrong or missing datum. This has happened in the recent case of the Nami wallet having a bug that caused the wrong address to be chosen. A wrong datum can be handled by the Plutus scripts themselves by having an alternative execution branch if type does not match the expected datum type. But in the case of no datum the script is not run and fails in phase 1. The other motivation of this CIP is to be able to create spend scripts that can handle the no datum case. 
+One of the major footguns of Plutus scripts is if a user sends to the script with a wrong or missing datum. This has happened in the case of the Nami wallet having a bug that caused the wrong address to be chosen. There are other instances of user error where they send from a CEX to a script address. A wrong datum can be handled by the Plutus scripts themselves by having an alternative execution branch if type does not match the expected datum type. But in the case of no datum the script is not run and fails in phase 1. The other motivation of this CIP is to be able to create spend scripts that can handle the no datum case. 
 
 I see three major use cases when it comes to running spend scripts without datums:
 
