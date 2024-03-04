@@ -65,11 +65,17 @@ data ScriptArgs =
   | RedeemerAndDatum Redeemer Datum
 ```
 
+In the case of a spend purpose, the ledger would execute the script with RedeemerAndDatum Redeemer Datum if a datum is present in the spending input. Otherwise the ledger would execute the script with RedeemerOnly Redeemer. In all other purposes the ledger would enforce only RedeemerOnly Redeemer is used with the script execution.
+
 ## Rationale: how does this CIP achieve its goals?
 
 Unifying of the script signature is a very elegant solution to the problem, streamlining the experience of developing on cardano.
 Given that accessing the datum is almost always made by a spending script, it makes sense to introduce that argument back to the `ScriptPurpose` that now plays a more important role.
 It begs the question if it should be added as an argument to all validators, to further emphasize that fact.
+
+I'm not sure what the above section is talking about?
+
+This CIP turns all scripts into 2 arg scripts with a variant for the first argument that can be matched on to determine if a datum and redeemer or only redeemer is present.
 
 ## Backwards compatibility
 
