@@ -1,5 +1,5 @@
 ---
-CIP: xxxx
+CIP: 114
 Title: CBOR Tags Registry
 Status: Proposed
 Category: Meta
