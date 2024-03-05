@@ -4,11 +4,11 @@ Title: CBOR tag definition - ED25519-BIP32 Keys
 Category: Tools
 Status: Proposed
 Authors:
-    - Steven Johnson<steven.johnson@iohk.io>
+    - Steven Johnson <steven.johnson@iohk.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/753
-Created: 2024-1-19
+Created: 2024-01-19
 License: CC-BY-4.0
 ---
 
