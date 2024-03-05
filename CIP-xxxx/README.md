@@ -119,7 +119,9 @@ If a CIP author is not prepared to take on that responsibility they should not c
 ### Acceptance Criteria
 
 - [ ] [CPS-0014] is accepted.
-- [ ] At least 1 CIP that defines tag/s for a cardano data structure.
+- [ ] At least 1 CIPs are accepted into the Tag registry for historical tags.
+- [ ] At least 1 CIPs are accepted into the Tag registry for new tags.
+- [ ] At least 3 CIPs of any kind are accepted into the Tag registry.
 
 ### Implementation Plan
 
