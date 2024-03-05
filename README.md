@@ -142,9 +142,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
 | 0114? | [CBOR Tags Registry](https://github.com/cardano-foundation/CIPs/pull/752) |
 | 0115? | [CBOR tag definition - ED25519-BIP32 Keys](https://github.com/cardano-foundation/CIPs/pull/753) |
+| 0116? | [Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/766) |
 
-
-<p align="right"><i>Last updated on 2024-02-08</i></p>
+<p align="right"><i>Last updated on 2024-03-05</i></p>
 
 ## Cardano Problem Statements (CPS)
 
