@@ -149,5 +149,5 @@ Code samples and reference material are licensed under [Apache 2.0]
 [IANA CBOR Tag Registry]: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
 [network byte order]: https://datatracker.ietf.org/doc/html/rfc1700
 [ED25519-BIP32]: https://github.com/input-output-hk/adrestia/raw/bdf00e4e7791d610d273d227be877bc6dd0dbcfb/user-guide/static/Ed25519_BIP.pdf
-[CPS-CBOR-TAGS]: https://github.com/cardano-foundation/CIPs/pull/751
+[CPS-0014]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0014
 [CIP-CBOR-TAGS]: https://github.com/cardano-foundation/CIPs/pull/752
