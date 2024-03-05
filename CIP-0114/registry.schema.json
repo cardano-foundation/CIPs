@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-xxxx",
+    "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0114/registry.schema.json",
     "type": "array",
     "title": "CBOR Tag Registry",
     "description": "JSON schema for CBOR Tag registry",
@@ -11,13 +11,13 @@
                 "cbor_tag": 32773,
                 "iana_registered": false,
                 "description": "ED25519-BIP32 public-key",
-                "cip": "CIP-xxxx"
+                "cip": "CIP-0115"
             },
             {
                 "cbor_tag": 32774,
                 "iana_registered": false,
                 "description": "ED25519-BIP32 Signature",
-                "cip": "CIP-xxxx"
+                "cip": "CIP-0115"
             }
         ]
     ],
@@ -76,7 +76,7 @@
                         "type": "string",
                         "title": "The CIP which defines the Tag and its canonical encoding",
                         "examples": [
-                            "CIP-xxxx"
+                            "CIP-0115"
                         ]
                     }
                 },
