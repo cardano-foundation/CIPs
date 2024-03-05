@@ -1,5 +1,5 @@
 ---
-CPS: xxxx
+CPS: 14
 Title: Register of CBOR Tags for Cardano Data structures
 Status: Open
 Category: Meta
