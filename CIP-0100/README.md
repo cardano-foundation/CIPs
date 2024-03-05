@@ -139,7 +139,7 @@ Note: Any URI's in the @context field SHOULD be content-addressable and robustly
 
 In CIP-1694 (and likely any alternative or future evolution of it), there are a number of certificates that can be attached to a transaction pertaining to governance; each of these is equipped with an "anchor", which is a URI at which can be found additional metadata.
 
-While this metadata can be published anywhere, external hosting may be unavailable to some users. Therefore, we recognize the transaction metadata as an effective tool for a "common town square" for hosting and discoverability, and reserve [metadatum label 1694](../CIP-0010/README.md) for publishing governance related metadata on-chain.
+While this metadata can be published anywhere, external hosting may be unavailable to some users. Therefore, we recognize the transaction metadata as an effective tool for a "common town square" for hosting and discoverability, and reserve [metadatum label 1694](../CIP-0010) for publishing governance related metadata on-chain.
 
 With the help of [CIP-?](https://github.com/cardano-foundation/CIPs/pull/635), the anchor can then refer to the metadata of another transaction, or even the metadata of the transaction being published itself.
 

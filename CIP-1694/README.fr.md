@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: c33536c
+Revision: 1777164
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -945,7 +945,7 @@ Comme nous l’avons vu plus haut, la Constitution n’est pas encore définie e
 ### Le comité constitutionnel
 
 Nous définissons un _comité constitutionnel_ qui représente un ensemble d’individus ou d’entités
-(chacun associé à une paire d’identifiants Ed25519) qui sont collectivement responsables de **veiller à ce que la Constitution soit respectée**.
+(chacun associé à un identifiant Ed25519 ou un identifiant de script natif ou Plutus) qui sont collectivement responsables de **veiller à ce que la Constitution soit respectée**.
 
 Bien qu’il **ne puisse pas être appliqué en chaîne**, le comité constitutionnel est **seulement** censé voter
 sur la constitutionnalité des actions de gouvernance (qui devraient ainsi assurer la viabilité à long terme de la blockchain) et devraient être remplacées
@@ -1006,12 +1006,17 @@ expirant chaque année.
 Les membres expirés ne peuvent plus voter.
 Le membre peut également volontairement démissionner plus tôt, ce qui sera marqué sur la chaîne comme un membre expiré.
 
-Le système entrera automatiquement dans un état de non-confiance lorsque le nombre de membres du comité
-non expirés tombe en dessous de la taille minimale du comité.
-Par exemple, un comité de cinq membres avec un seuil de 3/5, une taille minimale de trois et deux membres expirés peut toujours
+Si le nombre de membres non expirés du comité tombe en dessous de la taille minimale
+du comité, le comité constitutionnel ne pourra pas ratifier 
+les actions de gouvernance. Cela signifie que seules les actions de gouvernance 
+qui ne nécessitent pas le vote du comité constitutionnel peuvent toujours 
+être ratifiées.
+
+Par exemple, un comité de cinq membres avec un seuil de 3/5, une taille minimale 
+de trois et deux membres expirés peut toujours
 adopter des mesures de gouvernance si deux membres non expirés votent `Yes`.
-Cependant, si un autre membre expire, le système entre dans un état de non-confiance,
-puisque les deux membres restants ne suffisent pas pour atteindre le quorum.
+Cependant, si un autre membre expire alors le comité constitutionnel devient
+incapable de ratifier d’autres actions de gouvernance.
 
 La durée maximale du mandat est un paramètre du protocole de gouvernance, spécifié en nombre d'époques.
 Pendant un état de non-confiance, aucune action ne peut être ratifiée,
@@ -1025,6 +1030,9 @@ agit pour compléter le comité constitutionnel en restreignant certains
 types de propositions. Par exemple, si la communauté souhaite avoir des règles
 strictes pour la trésorerie qui ne peuvent être violées, un script qui applique
 ces règles peut être voté en tant que politique de proposition.
+
+La politique de proposition s'applique uniquement aux propositions de mise à jour des paramètres de protocole et 
+de retrait de trésorerie.
 
 <!---------------------------           DReps          -------------------------->
 
@@ -1228,7 +1236,7 @@ qui a été accordé à l’actuel Comité constitutionnel.
 
 Les mesures de gouvernance sont **ratifiées** par le biais d’actions de vote en chaîne.
 Différents types d'action de gouvernance ont des exigences de ratification différentes, mais impliquent toujours **deux des trois** organes de gouvernance,
-à l’exception d’une initiative de hard fork, qui nécessite la ratification de tous les organes de gouvernance.
+à l’exception d’une initiative de hard fork et paramètres de protocole liés à la sécurité, qui nécessite la ratification de tous les organes de gouvernance.
 Selon le type d’action de gouvernance, une action sera donc ratifiée lorsqu’une combinaison des éléments suivants se produit :
 
 * le comité constitutionnel approuve l’action (le nombre de membres qui votent `Yes` atteint le seuil du comité constitutionnel)
@@ -1277,10 +1285,28 @@ Le seuil de vote DRep qui doit être atteint en pourcentage de la *participation
 | 6. Retrait du Trésor                                                            | ✓   | $P_6$    | \-       |
 | 7. Infos                                                                        | ✓   | $100$    | $100$    |
 
-Chacun de ces seuils est un paramètre de gouvernance.
+Chacun de ces seuils est un paramètre de gouvernance. Il y a un 
+seuil supplémentaire, « Q5 », lié aux paramètres de protocole pertinents pour la sécurité, 
+qui est expliqué ci-dessous.
 Les seuils initiaux devraient être choisis par la communauté Cardano dans son ensemble.
 Les deux seuils de l'action Info sont définis à 100 % car le fixer plus bas
 entraînerait l'impossibilité de sonder au-dessus du seuil.
+
+Certains paramètres sont pertinents pour les propriétés de sécurité du système. Toute
+proposition tentant de modifier un tel paramètre nécessite un vote supplémentaire 
+des SPOs, avec le seuil `Q5`.
+
+Les paramètres de protocole pertinents pour la sécurité sont :
+* `maxBBSize`
+* `maxTxSize`
+* `maxBHSize`
+* `maxValSize`
+* `maxBlockExUnits`
+* `minFeeA`
+* `minFeeB`
+* `coinsPerUTxOByte`
+* `govActionDeposit`
+* `minFeeRefScriptsCoinsPerByte`
 
 > **Note**
 > Il peut être logique que certains ou tous les seuils s’adaptent en ce qui concerne le Lovelace qui est activement inscrit pour voter.
@@ -1351,7 +1377,7 @@ De plus, chaque action comprendra certains éléments spécifiques à son type :
 | Type d’action de gouvernance                                  | Données supplémentaires                                                                                                                            |
 |:--------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1. Motion de non-confiance                                    | Aucune                                                                                                                                             |
-| 2. Nouveau comité/seuil                                       | L’ensemble des résumés de hachage de clé de vérification (membres à supprimer), une carte des résumés de hachage de clé de vérification aux numéros d'époque (nouveaux membres et leur limite de mandat) et une fraction (seuil de quorum)                                                                                                                               |
+| 2. Nouveau comité/seuil                                       | L’ensemble des résumés de hachage de clé de vérification (membres à supprimer), une carte des résumés de hachage de clé de vérification aux numéros d'époque (nouveaux membres et leur limite de mandat) et une fraction (nouveau seuil)                                                                                                                               |
 | 3. Mise à jour de la Constitution ou politique de proposition | Un condensé de hachage du document constitutionnel                                                                                                 |
 | 4. Initiation du hard fork                                    | La nouvelle version majeure du protocole                                                                                                           |
 | 5. Modifications des paramètres du protocole                  | Les paramètres modifiés                                                                                                                            |
@@ -1741,6 +1767,13 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 * Transformez la Constitution en une ancre.
 * Retravaillez quelles ancres sont requises et lesquelles sont facultatives.
 * Nettoyez diverses incohérences et restes des anciennes versions.
+
+#### Modifications liées à la sécurité et autres correctifs
+
+* Protégez les modifications liées à la sécurité derrière les votes SPO.
+* Le système n’entre pas dans un état de non-confiance avec un nombre insuffisant
+  de membres actifs du CC, le CC devient tout simplement incapable d’agir.
+* Précisez que les membres du CC peuvent utiliser n’importe quel type d’identifiant.
 
 ## Chemin vers Actif
 
