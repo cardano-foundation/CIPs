@@ -113,7 +113,8 @@ This document also serves that purpose.
 
 ### Acceptance Criteria
 
-* At least 1 Metadata CIP uses at least 1 of the tags defined in this CIP.
+- [ ] These tags to be included in [CIP-CBOR-TAGS].
+- [ ] One downstream CIP uses at least one of the tags defined in this CIP.
 - [ ] IANA register the all the tags as defined.
 
 ### Implementation Plan
