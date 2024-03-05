@@ -24,7 +24,7 @@ Project Catalyst is in the process of defining new CBOR data structures.
 We needed a way to reliably disambiguate different 32 byte strings.
 Rather than making a non-standard encoding scheme specific to our structures we would like to use standard [CBOR] Tags.
 
-This CIP is informed by [CPS-CBOR-TAGS] and [CIP-CBOR-TAGS].
+This CIP is informed by [CPS-0014] and [CIP-0114].
 
 Without this Tag definition, a metadata CIP which uses [ED25519-BIP32] public keys:
 
