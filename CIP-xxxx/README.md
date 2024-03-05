@@ -1,6 +1,6 @@
 ---
 CIP: xxxx
-Title: CBOR Tags for Cardano Data Structures and Registry
+Title: CBOR Tags Registry
 Status: Proposed
 Category: Meta
 Authors:
