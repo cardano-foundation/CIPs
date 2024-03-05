@@ -114,7 +114,7 @@ This document also serves that purpose.
 ### Acceptance Criteria
 
 * At least 1 Metadata CIP uses at least 1 of the tags defined in this CIP.
-* IANA register the Tags as defined.
+- [ ] IANA register the all the tags as defined.
 
 ### Implementation Plan
 
