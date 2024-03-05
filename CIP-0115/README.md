@@ -124,7 +124,7 @@ This document also serves that purpose.
 
 ## References
 
-- [CPS-0014 -  Register of CBOR Tags for Cardano Data structures][CPS-CBOR-TAGS]
+- [CPS-0014 -  Register of CBOR Tags for Cardano Data structures][CPS-0014]
 - [CIP-0003 - Wallet Key Generation][CIP-0003]
 - [CIP-0114 - CBOR Tags Registry][CIP-CBOR-TAGS]
 - [RFC8949 - Concise Binary Object Representation (CBOR)][CBOR]
