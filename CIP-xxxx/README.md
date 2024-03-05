@@ -118,18 +118,18 @@ If a CIP author is not prepared to take on that responsibility they should not c
 
 ### Acceptance Criteria
 
-* [ ] [CPS-xxxx] is accepted.
-* [ ] At least 1 CIP that defines tag/s for a cardano data structure.
+- [ ] [CPS-0014] is accepted.
+- [ ] At least 1 CIP that defines tag/s for a cardano data structure.
 
 ### Implementation Plan
 
-* [ ] ???
+- [ ] Author to write the first CBOR tag CIP.
 
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
 
-[CPS-xxxx]: https://github.com/cardano-foundation/CIPs/pull/751
+[CPS-0014]: https://github.com/cardano-foundation/CIPs/pull/751
 [CBOR]: https://datatracker.ietf.org/doc/rfc8949/
 [IANA]: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
 [CIP Tag Registry Schema]: ./registry.schema.json
