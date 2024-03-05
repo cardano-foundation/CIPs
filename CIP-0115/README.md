@@ -44,6 +44,10 @@ This CIP would help disambiguate between these keys and inform the decoder which
 | [ED25519-BIP32 Public Key](#ed25519-bip32-public-key) | 32773 | bstr | 32 | To submit |
 | [ED25519-BIP32 Signature](#ed25519-bip32-signature) | 32774 | bstr | 64 | To submit |
 
+*NOTE: These tags are preliminary and subject to change until IANA registration is complete.
+They MUST not be used outside of testing purposes.
+They MUST not be used in any data intended to be posted to main-net.*
+
 ### ED25519-BIP32 Private Key
 
 This key is defined in [ED25519-BIP32].
