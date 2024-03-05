@@ -5,7 +5,7 @@ Category: Tools
 Status: Proposed
 Authors:
     - Steven Johnson <steven.johnson@iohk.io>
-Implementors: []
+Implementors: N/A
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/753
 Created: 2024-01-19
@@ -126,7 +126,7 @@ This document also serves that purpose.
 
 - [CPS-0014 -  Register of CBOR Tags for Cardano Data structures][CPS-0014]
 - [CIP-0003 - Wallet Key Generation][CIP-0003]
-- [CIP-0114 - CBOR Tags Registry][CIP-CBOR-TAGS]
+- [CIP-0114 - CBOR Tags Registry][CIP-0114]
 - [RFC8949 - Concise Binary Object Representation (CBOR)][CBOR]
 - [RFC8610 - Concise Data Definition Language (CDDL)][CDDL]
 - [RFC1700 Data Notations (Network Byte Order)][network byte order]
@@ -150,4 +150,4 @@ Code samples and reference material are licensed under [Apache 2.0]
 [network byte order]: https://datatracker.ietf.org/doc/html/rfc1700
 [ED25519-BIP32]: https://github.com/input-output-hk/adrestia/raw/bdf00e4e7791d610d273d227be877bc6dd0dbcfb/user-guide/static/Ed25519_BIP.pdf
 [CPS-0014]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0014
-[CIP-CBOR-TAGS]: https://github.com/cardano-foundation/CIPs/pull/752
+[CIP-0114]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0114
