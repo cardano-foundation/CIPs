@@ -1,6 +1,6 @@
 ---
 CIP: 0115
-Title: CBOR Tag definition for CIP-0003 ED25519-BIP32 Keys
+Title: CBOR tag definition - ED25519-BIP32 Keys
 Category: Tools
 Status: Proposed
 Authors:
