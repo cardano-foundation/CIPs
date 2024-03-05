@@ -2,7 +2,7 @@
 CIP: 114
 Title: CBOR Tags Registry
 Status: Proposed
-Category: Meta
+Category: Tools
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
 Implementors: N/A
