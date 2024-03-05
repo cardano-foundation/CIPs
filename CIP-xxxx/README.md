@@ -103,7 +103,7 @@ Data for the signature inside the byte string is encoded in [network byte order]
 
 ## Rationale: how does this CIP achieve its goals?
 
-By defining concrete CBOR tags,  it is possible for metadata to unambiguously mark the kind of data encoded.
+By defining concrete CBOR tags, it is possible for metadata to unambiguously mark the kind of data encoded.
 This is conformant with the intent of Tags in [CBOR], and aligns with [CIP-CBOR-TAGS].
 
 An official published spec is required to register these Tags with [IANA][IANA CBOR Tag Registry].
