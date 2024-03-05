@@ -32,7 +32,7 @@ Without this Tag definition, a metadata CIP which uses [ED25519-BIP32] public ke
 * Needs to redundantly define how the keys are encoded in the byte string.
 * May encode these keys differently to another CIP, which can lead to confusion and potential error.
 
-[BIP32] also defines `secp256k1`` keys which are also 32 bytes long.
+[BIP32] also defines `secp256k1` keys which are also 32 bytes long.
 This CIP would help disambiguate between these keys and inform the decoder which key is being utilized.
 
 ## Specification
