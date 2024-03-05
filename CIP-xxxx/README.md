@@ -125,6 +125,12 @@ If a CIP author is not prepared to take on that responsibility they should not c
 
 - [ ] Author to write the first CBOR tag CIP.
 
+## References
+
+- [CPS-0014 -  Register of CBOR Tags for Cardano Data structures][CPS-0014]
+- [RFC8949 - Concise Binary Object Representation (CBOR)][CBOR]
+- [IANA CBOR Tag Registry][IANA]
+
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
