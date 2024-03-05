@@ -1,7 +1,7 @@
 ---
 CIP: xxxx
 Title: CBOR Tag definition for CIP-0003 ED25519-BIP32 Keys
-Category: MetaData
+Category: Tools
 Status: Proposed
 Authors:
     - Steven Johnson<steven.johnson@iohk.io>
