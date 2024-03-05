@@ -8,7 +8,7 @@ Authors:
 Implementors: N/A
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/752
-Created: 2020-1-25
+Created: 2020-01-25
 License: CC-BY-4.0
 ---
 
@@ -24,7 +24,7 @@ Finally, it recommends best practice for registering those Tags with IANA.
 
 ## Motivation: why is this CIP necessary?
 
-This CIP is motivated by the problems outlined in [CPS-xxxx].
+This CIP is motivated by the problems outlined in [CPS-0014].
 
 ## Specification
 
