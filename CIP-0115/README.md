@@ -1,5 +1,5 @@
 ---
-CIP: 0115
+CIP: 115
 Title: CBOR tag definition - ED25519-BIP32 Keys
 Category: Tools
 Status: Proposed
