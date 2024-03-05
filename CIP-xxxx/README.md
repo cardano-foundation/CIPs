@@ -119,7 +119,7 @@ This document also serves that purpose.
 ### Implementation Plan
 
 * Some of these Tags will be used by Project Catalyst for CBOR data structure definitions.
-* Project Catalyst will also make the application to [IANA][IANA CBOR Tag Registry] to register the Tags.
+- [ ] Project Catalyst will also make the application to [IANA][IANA CBOR Tag Registry] to register the Tags.
 
 ## Copyright
 
