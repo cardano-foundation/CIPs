@@ -177,7 +177,7 @@ Since this is a functional definition it would typically be in one or more subse
 
 ##### Licensing
 
-CIPs are licensed in the public domain. Moreso, they must be licensed under one of the following licenses. Each new CIP must identify at least one acceptable license in its preamble. In addition, each license must be referenced by its respective abbreviation below in the _"Copyright"_ section.
+CIPs are licensed in the public domain. More so, they must be licensed under one of the following licenses. Each new CIP must identify at least one acceptable license in its preamble. In addition, each license must be referenced by its respective abbreviation below in the _"Copyright"_ section.
 
 | Purpose             | Recommended License                                                                    |
 | ---                 | ---                                                                                    |
