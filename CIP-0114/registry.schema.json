@@ -56,7 +56,7 @@
                     "iana_registered": {
                         "$id": "#/items/anyOf/0/properties/iana_registered",
                         "type": "boolean",
-                        "title": "Is the tag registered with IANA",
+                        "title": "Is the tag registered with IANA.  Unregistered tags must not be used as they are subject to change.",
                         "default": false,
                         "examples": [
                             true

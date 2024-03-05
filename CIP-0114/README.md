@@ -65,6 +65,9 @@ Registration of the Tag with IANA is the sole responsibility of the CIP author.
 CIPs should not proceed to Active if they define unregistered Tags on data structures.
 This is to prevent abuse of the Tag number space.
 
+*NOTE: Tags defined by any CIP or marked as not registered with IANA in the `registry.json` MUST NOT be used outside of testing.
+Tags not registered with IANA are subject to change during the IANA registration process.*
+
 ### Usage of Tags within a CIP
 
 CIPs, such as metadata CIPs can freely define when and how tags are used with any CBOR data structure.
@@ -75,7 +78,7 @@ A CIP may also define that Tags are not used, and only the canonical encoding.
 
 ### Canonical Encoding
 
-When a Tag is defines, its Canonical encoding must also be defined.
+When a Tag is defined, its Canonical encoding must also be defined.
 This is to ensure that all data that is tagged is encoded in a uniform manor.
 Even if a CIP does NOT use a tag, it should preferably use the canonical encoding for the data structure.
 This is to prevent fragmentation and confusion amongst compliant encoders and decoders of the various data structures.
@@ -101,6 +104,8 @@ New entries MUST be added to the [CIP Tag Registry] in a PR for a CIP that first
 They MUST be updated when the Tag is accepted or rejected by IANA.
 The registry clearly notes if the tag is currently known to be registered or not.
 If a Tag is not yet registered then any implementor must be aware that its possible the Tag number could change and is not final.
+Unregistered tags MUST not be used in any main net on-chain metadata or data structures.
+They should only be used for testing purposes until registration is complete.
 
 ## Rationale: how does this CIP achieve its goals?
 
