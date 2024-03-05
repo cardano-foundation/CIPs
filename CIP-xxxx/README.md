@@ -1,8 +1,8 @@
 ---
-CIP: xxxx
-Title: CBOR Tags for Cardano Data Structures and Registry
+CIP: 114
+Title: CBOR Tags Registry
 Status: Proposed
-Category: Meta
+Category: Tools
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
 Implementors: N/A
@@ -97,7 +97,7 @@ This helps ensure backward compatibility with pre-existing CIPs where Tags are n
 
 Similar to [CIP-0010] this CIP defines a registry of all known tags.
 The format of the registry is defined by the json schema: [CIP Tag Registry Schema].
-New entries should be added to the [CIP Tag Registry] in a PR for a CIP that first defines a new CBOR Tag.
+New entries MUST be added to the [CIP Tag Registry] in a PR for a CIP that first defines a new CBOR Tag.
 They MUST be updated when the Tag is accepted or rejected by IANA.
 The registry clearly notes if the tag is currently known to be registered or not.
 If a Tag is not yet registered then any implementor must be aware that its possible the Tag number could change and is not final.
