@@ -60,70 +60,13 @@ The following properties extend the potential vocabulary of CIP-100's `body` pro
 #### For Registration and Updates 
 There will need to be some way to alert the tools reading the metadata to expect metadata that is for the purposes of registering or updating the DRep's profile, and therefore to expect the following information.
 
-##### Payment Address
+`Payment Address`
 Dreps may want to recieve tokens for a variety of reasons such as:
 - donations
 - expenses
 - any incentive program
 
 Therefore there will be a `payment_address` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
-
-##### Registering as a Team
-There is an expressed community appetite to delegate to teams of individuals who register as a single DRep using [a native Plutus script](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694#registered-dreps), these will need an extra layer of information to present to people who are potentially interested in delegating to them.
-
-`teamname`
-- Compulsory
-- The existence of this field will indicate to tooling that it should be expecting the metadata to take the form outlined in this section for a team of people who are registering as a single DRep
-- A very short freeform text field. Limited to 80 characters.
-- This SHOULD NOT support markdown text styling.
-- The team authoring this metadata MUST use this field for their profile name/ username.
-- The team authoring this metadata SHOULD attempt to make this field unique whilst also avoiding crass language.
-
-`picture`
-- Optional 
-- A base 64 encoded profile picture
-- Moderation of this image must be handled on the client side to comply with their TOS
-- This SHOULD be treated as the team's profile picture by tools interpreting and displaying the metadata
-
-`consensus`
-- Optional
-- To tell people how votes will be decided by the team, e.g. "x of y votes" or "Chad votes on Treasury Withdrawals and Stephan votes on..."
-- If the team is following best proctice and using a native Plutus script then multisig rules will be on-chain anyway, and this field SHOULD be used to add context.
-
-`bio`
-- Compulsory
-- A freeform text field.
-- This SHOULD NOT support markdown text styling.
-- This SHOULD be used to introduce the team and its USP.
--- I.e. “We are a team of successful Project Catalyst builders with a broad array of interests and expertise, which makes us perfect...”
-
-`links`
-- Optional
-- A list of urls to the social media/ websites associated with the DRep
-- Tools MUST only be expected to display the first 5 urls listed, but if more are listed they can display more.
-- It is up to the client to check where these links go
-- Warning about linking to external links
-
-`donotlist`
-- Optional
-- If not included then the value is assumed to be false
-- A boolean expression
-- A true value means that the DRep does not want to show up in tooling that displays DReps. 
--- I.e. they do not want to appear in GovTool’s DRep Explorer feature
-
-`members`
-- Compulsory
-- The fields describing the individual details of each team member is nested inside this field. The nested fields follow the same format as the Registering as an Individual section below except with the addition of the `role` field described below and the removal `donotlist` field in the Registering as an Individual section (teams cannot choose to omit individual members without arousing suspicion).
-- Tooling MUST display the compulsory `name` and `identity` fields for each team member, all other fields are optional.
-
-`role`
-- Optional
-- To describe the speciality of each individual team member e.g. "Constitutional Expert"
-- A very short freeform text field. Limited to 80 characters.
-
-
-
-##### Registering as an individual
 
 `username`
 - Compulsory
@@ -140,14 +83,17 @@ There is an expressed community appetite to delegate to teams of individuals who
 
 `objectives`
 - Optional
-- A short description of what the person believes
+- A freeform text field with a maximum of 300 characters
+- A short description of what the person believes nd what they want to achieve as a DRep
 
 `motivation`
 - Optional
-- A short description of why they want to be a DRep
+- A freeform text field with a maximum of 300 characters
+- A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to 
 
 `qualifications`
 - Optional
+- A freeform text field with a maximum of 300 characters 
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
 `identity`
@@ -208,7 +154,9 @@ We intentionally have kept this proposal brief and uncomplicated. This was to re
 THE ONLY OPEN QUESTION STILL REMAINING --> How can we ensure that the DReps posting the metadata are who they say they are?
 1. linking to socials
 2. public/private key pairs
-3. Other 
+    - with a pki solution someone wishing to be verified would still need to advertise their public key somewhere trusted and public, and the verifier would need to go to that location and verify it.
+       - Mandating a verification solution like [Keybase](https://keybase.io/) could allow tooling to verify a user owns the social media accounts that they say they do, however this is not an obvious win due to the need to centralize and then make Cardano governance dependent on a centralised entity.
+4. Other 
 
 ## Path to Active
 
