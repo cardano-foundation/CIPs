@@ -12,11 +12,6 @@ Created: 2024-1-19
 License: CC-BY-4.0
 ---
 
-<!-- cspell: words secp -->
-
-<!-- markdownlint-disable MD025-->
-# [CBOR] Tag definition for [CIP-0003] [ED25519-BIP32] Keys
-
 ## Abstract
 
 [CIP-0003] defines [ED25519-BIP32] Keys, Key derivation and a signature scheme.
