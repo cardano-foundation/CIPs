@@ -28,9 +28,9 @@ This CIP is informed by [CPS-CBOR-TAGS] and [CIP-CBOR-TAGS].
 
 Without this Tag definition, a metadata CIP which uses [ED25519-BIP32] public keys:
 
-* Is likely to just encode public keys as a byte string of 32 bytes; and
-* Needs to redundantly define how the keys are encoded in the byte string.
-* May encode these keys differently to another CIP, which can lead to confusion and potential error.
+- Is likely to just encode public keys as a byte string of 32 bytes; and
+- Needs to redundantly define how the keys are encoded in the byte string.
+- May encode these keys differently to another CIP, which can lead to confusion and potential error.
 
 [BIP32] also defines `secp256k1` keys which are also 32 bytes long.
 This CIP would help disambiguate between these keys and inform the decoder which key is being utilized.
@@ -115,11 +115,11 @@ This document also serves that purpose.
 
 - [ ] These tags to be included in [CIP-CBOR-TAGS].
 - [ ] One downstream CIP uses at least one of the tags defined in this CIP.
-- [ ] IANA register the all the tags as defined.
+- [ ] IANA register all the tags as defined herein.
 
 ### Implementation Plan
 
-- [ ]  Tags to be used by Project Catalyst for CBOR data structure definitions.
+- [ ] Tags are to be used by Project Catalyst for CBOR data structure definitions.
 - [ ] Project Catalyst will also make the application to [IANA][IANA CBOR Tag Registry] to register the Tags.
 
 ## Copyright
