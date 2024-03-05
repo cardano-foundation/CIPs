@@ -122,6 +122,18 @@ This document also serves that purpose.
 - [ ] Tags are to be used by Project Catalyst for CBOR data structure definitions.
 - [ ] Project Catalyst will also make the application to [IANA][IANA CBOR Tag Registry] to register the Tags.
 
+## References
+
+- [CPS-0014 -  Register of CBOR Tags for Cardano Data structures][CPS-CBOR-TAGS]
+- [CIP-0003 - Wallet Key Generation][CIP-0003]
+- [CIP-0114 - CBOR Tags Registry][CIP-CBOR-TAGS]
+- [RFC8949 - Concise Binary Object Representation (CBOR)][CBOR]
+- [RFC8610 - Concise Data Definition Language (CDDL)][CDDL]
+- [RFC1700 Data Notations (Network Byte Order)][network byte order]
+- [BIP32 - Hierarchical Deterministic Wallets][BIP32]
+- [ED25519-BIP32 - Hierarchical Deterministic Keys over a Non-linear Keyspace][ED25519-BIP32]
+- [IANA CBOR Tag Registry]
+
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0]
