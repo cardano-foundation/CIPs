@@ -8,7 +8,7 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/753
-Created: 2024-1-19
+Created: 2024-01-19
 License: CC-BY-4.0
 ---
 
