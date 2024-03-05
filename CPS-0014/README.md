@@ -110,6 +110,15 @@ Even though a CIPs metadata may use one, its formalization should be done outsid
 * Should defining tags be their own CIP, or can they be part of a larger CIP?
 * Should we define recommendations for the use of Tags in Metadata CIPs?
 
+## References
+
+* [CIP-0036 - Catalyst Registration Transaction Metadata Format (Updated)][CIP-0036]
+* [CIP-0042 - New Plutus Builtin serialiseData][CIP-0042]
+* [RFC8949 - Concise Binary Object Representation (CBOR)][CBOR]
+* [BCR-2020-006 - Registry of Uniform Resource (UR) Types][BCR-2020-006]
+* [BCR-2023-011 - UR Type Definitions for Public Key Cryptography][BCR-2023-011]
+* [IANA CBOR Tag Registry][IANA]
+
 ## Copyright
 
 This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
