@@ -125,6 +125,7 @@
             }
         },
         "_pair": {
+            "type": "object",
             "dataType": "object",
             "required": [
                 "dataType",
