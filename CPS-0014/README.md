@@ -110,6 +110,10 @@ Even though a CIPs metadata may use one, its formalization should be done outsid
 * Should defining tags be their own CIP, or can they be part of a larger CIP?
 * Should we define recommendations for the use of Tags in Metadata CIPs?
 
+## Copyright
+
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
 [CIP-0036]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036
 [CIP-0042]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0042/README.md
 [CBOR]: https://datatracker.ietf.org/doc/html/rfc8949
