@@ -142,7 +142,7 @@ If a CIP author is not prepared to take on that responsibility they should not c
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
 
-[CPS-0014]: https://github.com/cardano-foundation/CIPs/pull/751
+[CPS-0014]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0014
 [CBOR]: https://datatracker.ietf.org/doc/rfc8949/
 [IANA]: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
 [CIP Tag Registry Schema]: ./registry.schema.json
