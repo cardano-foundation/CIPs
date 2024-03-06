@@ -6,7 +6,7 @@ Category: Tools
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
 Proposed Solutions:
-  - https://github.com/cardano-foundation/CIPs/pull/752
+  - https://github.com/cardano-foundation/CIPs/tree/master/CIP-0114
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/751
   - https://github.com/cardano-foundation/CIPs/pull/752
