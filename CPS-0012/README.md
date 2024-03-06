@@ -5,17 +5,32 @@ Status: Open
 Category: Tools
 Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
+    - Ryan Williams <ryan.williams@intersectmbo.org>
 Proposed Solutions: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/625
 Created: 2023-11-27
+License: CC-BY-4.0
 ---
 
 ## Abstract
 
-Cardano lacks a standardized query layer. This leads to suboptimal tooling, dApp and wallet architecture.
+Query layers services abstract away the difficulties of indexing blockchains, offering builders API interfaces to access data. 
+
+Cardano's query layers lack standardization.
+This leads to suboptimal tooling, dApp and wallet architecture.
 
 ## Problem
+
+Cardano nodes offer limited options for querying chain data.
+For builders, running chain indexer infrastructure can alleviate the data availability issues of the Cardano node.
+But this brings with it large overheads in running the nodes, chain followers, data storage and data access.
+
+Query layer providers offer builders the opportunity to abstract away the infrastructure complexities of Cardano data availability, usually to some cost.
+These providers are extremely useful and in turn are used as a foundational element for hundreds of tools.
+
+Cardano has a range of query layer providers, each with their own interfaces and business motivations.
+This can present issues for builders who wish to build with multiple providers.
 
 ### Query Layers and Tooling
 
@@ -24,13 +39,13 @@ Lack of a standardized query layer results in multiple different implementations
 - [Blockfrost](https://blockfrost.io/)
 - [Koios](https://www.koios.rest/)
 - [Maestro](https://www.gomaestro.org)
-- [Ogmios](https://ogmios.dev/)
 
 As a result, there is a need to support multiple incompatible APIs in downstream tools, examples of which are:
 
 - [Mesh.js](https://meshjs.dev/providers)
 - [Lucid](https://lucid.spacebudz.io/)
 - [cardano-transaction-library](https://github.com/Plutonomicon/cardano-transaction-lib/blob/develop/doc/runtime.md)
+- [cardano-js-sdk](https://github.com/input-output-hk/cardano-js-sdk/tree/master/packages/core/src/Provider)
 
 Query layer providers are not identical, which means that the *promise* of abstracting away from a particular query layer provider completely, that an offchain library may want to give to its users, will either be left *unfulfilled* (i.e. some features will work with some providers, but not others) or the scope of the downstream API will have to be *reduced* to the very minimum that is covered by every supported query layer.
 
@@ -53,11 +68,23 @@ Another downside of tight coupling between wallets and query layers is that, unl
 
 Inability to interchange query layer providers results in vendor lock-in. Query layer providers are disincentivized to opensource their infrastructure setup or provide a competitive service. Dependency on a fixed set of entities to run the infrastructure makes it easier for adversaries to attack dApps by taking over the infrastructure.
 
+Having accepted standards drastically reduces the complexity and cost for new providers to develop.
+This creates a query layer marketplace where providers can be more easily compared by customers.
+
 ## Use cases
 
-- Wallets want to provide their end users with ability to run custom query layer software
-- dApp developers want to avoid vendor lock-in
-- New Cardano infrastructure providers want to join pools of interchangeable query layer suppliers, instead of replicating or deploying one of the many competing products
+### Multi-Provider Wallets
+Wallets may wish to allow users to bring their own data layer provider.
+By having a standard interface wallets would be able to support this, which would reduce the wallet's operating costs.
+For the users this gives them flexibility, redundancy and the option to run their wallet on their own infrastructure. 
+
+### DApps Avoiding Lock-In
+DApp developers don't want to tie their infrastructure to one query layer provider.
+By being able to switch providers without the need for significant engineering, they can avoid providers which do not offer fair pricing.
+
+### New Infrastructure Providers
+New Cardano infrastructure providers want to be able join a pools of interchangeable query layer suppliers.
+Without standardization new providers must invest significant time to develop their own.  
 
 ## Goals
 
@@ -65,8 +92,62 @@ Inability to interchange query layer providers results in vendor lock-in. Query 
 
 2. Describe how can it be used in different contexts: HTTP API, JavaScript interfaces, ???
 
+3. A query layer standard which meets the needs of query layer providers, wallet developers and dApp developers.
+
 ## Open Questions
 
-- How can we encourage query layer providers to adopt the solution?
-- How can we encourage wallet developers to adopt the solution?
-- How can we encourage dApp developers to adopt the solution?
+### How can we encourage query layer providers to adopt the solution?
+
+Such standardization could have drawbacks for existing query layer providers.
+
+The primary argument against such an initiative is the potential loss of business advantage from query layer providers.
+As standardized providers would loose the ability to differentiate themselves via data shape and language.
+
+For providers which charge per request this can negatively impact their ability to control their value proposition.
+Such providers are currently incentivized to make the data returned via queries contain the least possible useful information.
+Standards would mean providers would not be able to control the amount of data that is returned upon a query.
+This would mean existing providers would have to adjust their business and value proposition to customers.
+
+### How can we encourage wallet developers to adopt the solution?
+
+For wallet providers, a standardized query layer would offer long term benefits which out weigh any upfront engineering costs.
+With users being able to bring their own data providers, wallets will incur less costs to the use of their providers.
+
+### How can we encourage dApp developers to adopt the solution?
+
+DApp developers would benefit from a more open and competitive query layer market.
+Developers will be able to choose the provider which best fits the needs of their dApp.
+
+## Acknowledgements
+
+<details>
+  <summary><strong>Workshop 1 - 2024-01-25</strong></summary>
+
+  We would like to thank those that contributed to the first Query Layer Standardization workshop hosted by The Wallets Working Group ([see shared drive with resources](https://drive.google.com/drive/folders/1baSYHfWJdUh5dwRkHjY7qnaufjuO8sP2?usp=sharing)).
+
+  Hosts:
+
+  - Ryan Williams
+  - Adam Dean
+
+  Participants:
+
+  - Dmang
+  - George APEX Pool
+  - Leo H
+  - Marcin Szamotulski
+  - Markus Gufler
+  - Matt Davis
+  - Matthieu Pizenberg
+  - Michael Chappell
+  - NEXUS Crypto
+  - Nick Cook
+  - Rhys Bartels-Waller
+  - Ruslan Dudin
+  - Torbjørn Løvseth Finnøy
+
+</details>
+
+## Copyright
+
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
