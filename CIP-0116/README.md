@@ -7,6 +7,7 @@ Authors:
     - Vladimir Kalnitsky <klntsky@gmail.com>
 Implementors: []
 Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/742
     - https://github.com/cardano-foundation/cips/pulls/766
 Created: 2024-02-22
 License: CC-BY-4.0
@@ -20,7 +21,7 @@ Canonical JSON encoding for Cardano domain types lets the ecosystem converge on 
 
 Cardano domain types have canonical CDDL definitions (for every era), but when it comes to use in web apps, where JSON is the universally accepted format, there is no definite standard. This CIP aims to change that.
 
-The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/742).
+The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0011).
 
 ## Specification
 
@@ -259,5 +260,3 @@ It is up to implementors to decide how to serialize the values into CBOR. The pr
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
-
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
