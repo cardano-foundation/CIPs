@@ -226,6 +226,7 @@ Instead of providing all three variants of encoding, we base the schema on the o
           }
         }
       },
+    },
 ```
 
 It is up to implementors to decide how to serialize the values into CBOR. The property we want to maintain is preserved regardless of the choice: for every block binary there is exactly one JSON encoding.
