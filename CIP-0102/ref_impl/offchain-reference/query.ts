@@ -26,7 +26,7 @@ export async function getAssetsTransactions(
 export async function getTxsUtxos(txHash: string): Promise<{ outputs: output[] }> {
   const response =
     await fetch(
-      blockfrost_url + "/txs/" + txHash,
+      blockfrost_url + "/txs/" + txHash + "/utxos",
       { headers },
     ).then((res) => res.json());
 

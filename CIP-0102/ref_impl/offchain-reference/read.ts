@@ -12,7 +12,7 @@ export function toCip102ContractRoyalty(percentage: number): number {
 	return Math.floor(1 / (percentage / 1000));
 }
 
-export function percentageFromCip68Royalty(value: number): number {
+export function percentageFromCip102Royalty(value: number): number {
 	return Math.trunc((10 / value) * 1000) / 10;
 }
 
@@ -30,7 +30,7 @@ export function getCip68BlockfrostVersion(version: string) {
 export async function getCip102RoyaltyMetadata(
 	policyId: string
 ): Promise<RoyaltyRecipient[]> {
-	const assetName = policyId + CIP102_ROYALTY_TOKEN_HEX;
+	const asset_unit = policyId + CIP102_ROYALTY_TOKEN_HEX;
 	// ------ uncomment when blockfrost will be ready ----------
 	// const asset = await CardanoAssetsService.getAssets1(assetName);
 	// if (asset.metadata) {
@@ -38,7 +38,7 @@ export async function getCip102RoyaltyMetadata(
 	// }
 	try {
 		const lastTx = await getAssetsTransactions(
-			assetName,
+			asset_unit,
 			1,
 			1,
 			'desc'
