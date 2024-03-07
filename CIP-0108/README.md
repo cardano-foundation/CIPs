@@ -137,7 +137,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - We extend CIP-100's references field.
 - This SHOULD NOT support markdown text styling.
 - To be an OPTIONAL set of objects, using the `@set` property.
-- Each object MUST have a `title` field to describe the reference, such as; "blog - Why we must continue to fund Catalyst".
+- Each object MUST have a `label` field to describe the reference, such as; "blog - Why we must continue to fund Catalyst".
 - Each object MUST have a `uri` field.
 - Each object MAY have a OPTIONAL `referenceHash` object.
   - Each object MUST have a `hashDigest` field.
