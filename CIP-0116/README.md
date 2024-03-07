@@ -27,7 +27,9 @@ The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Do
 
 This CIP is expected to contain multiple schema definitions for Cardano Eras and breaking intra-era hardforks starting from Babbage.
 
-- [Babbage](./cardano-babbage.json)
+| Ledger Era | Ledger Commit | Schema | Changelog Entry |
+| --- | --- | --- | --- |
+| Babbage | [12dc779](https://github.com/IntersectMBO/cardano-ledger/blob/12dc779d7975cbeb69c7c18c1565964a90f50920/eras/babbage/impl/cddl-files/babbage.cddl) | [cardano-babbage.json](./cardano-babbage.json) | N/A |
 
 ### Scope of the Schema
 
@@ -244,7 +246,20 @@ Instead of providing all three variants of encoding, we base the schema on the o
 
 It is up to implementors to decide how to serialize the values into CBOR. The property we want to maintain is preserved regardless of the choice: for every block binary there is exactly one JSON encoding.
 
+### Versioning
+
+This CIP should not follow a conventional versioning scheme, rather it should be altered via pull request before a hardforks to add new a JSON schema to align with new ledger design. Authors MUST follow the [Schema Scope](#scope-of-the-schema), [Schema Design Principles](#schema-design-principles) and [Schema Conventions](#schema-conventions).
+
+Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be updated. Authors must clearly articulate the changes which has been made between the last schema and the new one being added.
+
 ## Rationale: how does this CIP achieve its goals?
+
+// todo
+ - why scope / why design principles / why conventions / why changelog
+ - what alternatives?
+ - why stick to Bech32
+ - Why are addresses so tricky?
+
 
 ## Path to Active
 
