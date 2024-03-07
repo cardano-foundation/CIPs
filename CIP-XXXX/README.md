@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 116
 Title: Standard JSON encoding for Domain Types
 Category: Tools
 Status: Proposed
