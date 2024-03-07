@@ -248,17 +248,37 @@ It is up to implementors to decide how to serialize the values into CBOR. The pr
 
 ### Versioning
 
-This CIP should not follow a conventional versioning scheme, rather it should be altered via pull request before a hardforks to add new a JSON schema to align with new ledger design. Authors MUST follow the [Schema Scope](#scope-of-the-schema), [Schema Design Principles](#schema-design-principles) and [Schema Conventions](#schema-conventions).
+This CIP should not follow a conventional versioning scheme, rather it should be altered via pull request before a hardforks to add new a JSON schema to align with new ledger ers. Each schema must be standalone and not reuse definitions between eras. Authors MUST follow the [Schema Scope](#scope-of-the-schema), [Schema Design Principles](#schema-design-principles) and [Schema Conventions](#schema-conventions).
 
 Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be updated. Authors must clearly articulate the changes which has been made between the last schema and the new one being added.
 
 ## Rationale: how does this CIP achieve its goals?
 
-// todo
- - why scope / why design principles / why conventions / why changelog
+### Scope
+- why just block data
+  - the most useful for most applications
+  - to match CDDL
+
+### Strictness
+
+This CIP lays out strong conventions that future schema authors must follow. With a large set of design principles and conventions. The aim for these is to minimize the potential for unavoidable deltas between schemas.
+
+By setting sometimes arbitrary conventions we hope to create a single possible interpretation from CBOR to JSON. This is beneficial as
+
+### JSON
  - what alternatives?
+   - JSON is by far the most useful, there really isnt any comparison.
+
+### Bech32
  - why stick to Bech32
- - Why are addresses so tricky?
+   - the checksum is useful
+   - the prefix is also really nice
+   - more preferable compared to hex because 
+
+### Versioning
+ - why seperate files - easier to consume and expand on
+   - CDDL can change between eras in ways that JSON cant be expanded to do 
+   - easier to keep seperate
 
 
 ## Path to Active
