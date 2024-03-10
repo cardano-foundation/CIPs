@@ -21,7 +21,7 @@ Some of these artifacts support the linking off-chain metadata, as a way to prov
 The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) standard provides a base framework for how all off-chain governance metadata should be formed and handled.
 But this is intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
 
-This proposal aims to provide a specification for off-chain metadata vocabulary can be used to give context to governance actions, CIP-100.
+This proposal aims to provide a specification for off-chain metadata vocabulary that can be used to give context to governance actions.
 Without a sufficiently detailed standard for governance actions we introduce the possibility to undermine voters ability to adequately assess governance actions.
 Furthermore a lack of such standards risks preventing interoperability between tools, to the detriment of user experiences.
 
