@@ -25,47 +25,7 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 Without a sufficiently detailed standard for governance actions we introduce the possibility to undermine voters ability to adequately assess governance actions.
 Furthermore a lack of such standards risks preventing interoperability between tools, to the detriment of user experiences.
 
-### Acknowledgments
-
-<details>
-  <summary><strong>Governance Metadata Working Group - Workshop #1 2023-12-04</strong></summary>
-
-  I would like to thank those that contributed to the Governance Metadata Working Group Workshop #1 hosted by Ryan Williams ([see presentation slides with notes](https://docs.google.com/presentation/d/18OK3vXexCc8ZXq-dC00RDPPKcy2Zu4DiMo8PeIZ47_4/)).
-
-  Thank you to the co-hosts:
-  - Adam Dean
-  - Thomas Upfield
-
-  Thank you to the participants:
-  - Carlos Lopez de Lara
-  - Igor Veličković
-  - Johnny Kelly
-  - Kenric Nelson
-  - Kevin Hammond
-  - Lorenzo Bruno
-  - Mike Susko
-  - Rhys Morgan
-  - Eric Alton
-  - Samuel Leathers
-  - Vladimir Kalnitsky
-
-</details>
-
-<details>
-  <summary><strong>Governance Metadata Working Group - Workshop #2 2023-12-14</strong></summary>
-
-  I would like to thank those that contributed to the Governance Metadata Working Group Workshop #2 hosted by Ryan Williams ([see presentation slides with notes](https://docs.google.com/presentation/d/1tFsyQnONjwyTm7zKrnxxedzWsoonO6-8vXw5vYzB3qs)).
-
-  Thank you to the co-host:
-  - Adam Dean
-
-  Thank you to the participants:
-  - Mark Byers
-  - Nils Codes
-
-  Thank you to the bots that joined also.
-
-</details>
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
 ## Motivation: why is this CIP necessary?
 Blockchains are poor choices to act as content databases.
@@ -87,17 +47,9 @@ This is good for all governance participants.
 Although there are seven types of governance action defined via CIP-1694, we focus this proposal on defining core properties which must be attached to all types.
 We leave room for future standards to refine and specialize further to cater more specific for each type of governance action.
 
-## New `witness` Type
+### New `witness` Type
 Here we extend the potential witnesses, with a `witnessAlgorithm` that can be set to include support for [CIP-08 | Message Signing](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008) standard, indicated by `CIP-0008`.
-When `CIP-0008` algorithm is chosen a `publicKey` (set to a base-16 encoded ed25519 public key) property must be present along with a `cip8SignedMessage` property.
-Where the `cip8SignedMessage` is produced by (blake2b-256) hash digest of the canonicalized of the `body` inside of a COSE envelope.
-Where the key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
-* `alg` (1) - must be set to `EdDSA` (-8)
-
-
-from [CIP-30](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#apisigndataaddr-address-payload-bytes-promisedatasignature).
-
-//todo: clean up
+Here we mimic the restrictions as imposed over the CIP-30's implementation in [.signData()](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apisigndataaddr-address-payload-bytes-promisedatasignature).
 
 ### Markdown Text Styling
 This standard introduces the possibility of using [Github markdown text styling](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#styling-text) within fields.
@@ -229,9 +181,51 @@ The inclusion of a hash allows for the supporting documentation to be cryptograp
 ### Implementation Plan
 Solicitation of feedback
 - [x] Run two online workshops to gather insights from stakeholders.
-- [ ] Seek community answers on all [Open Questions](#open-questions).
+- [x] Seek community answers on all [Open Questions](#open-questions).
 Implementation
-- [ ] Author to provide example metadata and schema files.
+- [x] Author to provide example metadata and schema files.
+
+## Acknowledgments
+
+<details>
+  <summary><strong>Governance Metadata Working Group - Workshop #1 2023-12-04</strong></summary>
+
+  I would like to thank those that contributed to the Governance Metadata Working Group Workshop #1 hosted by Ryan Williams ([see presentation slides with notes](https://docs.google.com/presentation/d/18OK3vXexCc8ZXq-dC00RDPPKcy2Zu4DiMo8PeIZ47_4/)).
+
+  Thank you to the co-hosts:
+  - Adam Dean
+  - Thomas Upfield
+
+  Thank you to the participants:
+  - Carlos Lopez de Lara
+  - Igor Veličković
+  - Johnny Kelly
+  - Kenric Nelson
+  - Kevin Hammond
+  - Lorenzo Bruno
+  - Mike Susko
+  - Rhys Morgan
+  - Eric Alton
+  - Samuel Leathers
+  - Vladimir Kalnitsky
+
+</details>
+
+<details>
+  <summary><strong>Governance Metadata Working Group - Workshop #2 2023-12-14</strong></summary>
+
+  I would like to thank those that contributed to the Governance Metadata Working Group Workshop #2 hosted by Ryan Williams ([see presentation slides with notes](https://docs.google.com/presentation/d/1tFsyQnONjwyTm7zKrnxxedzWsoonO6-8vXw5vYzB3qs)).
+
+  Thank you to the co-host:
+  - Adam Dean
+
+  Thank you to the participants:
+  - Mark Byers
+  - Nils Codes
+
+  Thank you to the bots that joined also.
+
+</details>
 
 ## Copyright
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
