@@ -14,4 +14,3 @@ _:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.
 _:c14n5 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#authors> _:c14n0 .
 _:c14n5 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#body> _:c14n2 .
 _:c14n5 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashAlgorithm> "blake2b-256"@en-us .
-
