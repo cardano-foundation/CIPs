@@ -41,12 +41,29 @@ This primarily manifests in the ability to use a single validator for both minti
 All the script purposes have a form of `Redeemer -> ScriptContext -> a` except the `Spending` one.
 It has the following form: `Datum -> Redeemer -> ScriptContext -> a`. This is enforced by the Cardano ledger.
 
-We modify the general signature to be `ScriptArgs -> ScriptContext -> a`.
+We make the following modification:
+
+- The signature of all scripts will be `Redeemer -> ScriptContext -> a`.
+- The `ScriptPurpose` type is modified such that the `Spending` variant contains a `Datum`:
 
 ```hs
-data ScriptArgs =
-    RedeemerOnly Redeemer
-  | RedeemerAndDatum Redeemer Datum
+data ScriptPurpose
+  = ...
+  | Spending TxOutRef Datum
+    ...
+```
+
+- A new data type `ScriptIdentifier` is created.
+  It is identical to the original `ScriptPurpose` and is used in the `txInfoRedeemers` map to uniquely identify a script within a transaction.
+
+```hs
+data ScriptIdentifier
+  = MintingScript CurrencySymbol
+  | SpendingScript TxOutRef
+  | RewardingScript Credential
+  | CertifyingScript Integer TxCert
+  | VotingScript Voter
+  | ProposingScript Integer ProposalProcedure
 ```
 
 ## Rationale: how does this CIP achieve its goals?
