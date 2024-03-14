@@ -1,12 +1,21 @@
 import { asset_transactions, output } from "./types.ts";
 import { getEnv } from "./utils/env.ts";
 
-// based on Blockfrost's openAPI
+// Barebones Blockfrost query wrappers. Based on Blockfrost's openAPI.
+
 const blockfrost_url = getEnv("BLOCKFROST_URL");
 const headers = {
   project_id: getEnv("BLOCKFROST_PROJECT_KEY"), lucid: "0.10.7"
 }
 
+/**
+ * Get the transactions of an asset
+ * @param asset the asset to query for
+ * @param _count unused for now
+ * @param _page unused for now
+ * @param _order unused for now
+ * @returns 
+ */
 export async function getAssetsTransactions(
   asset: string,
   _count: number = 100,
@@ -23,6 +32,11 @@ export async function getAssetsTransactions(
   return response;
 }
 
+/**
+ * Get the utxos of a transaction
+ * @param txHash the hash of the transaction
+ * @returns 
+ */
 export async function getTxsUtxos(txHash: string): Promise<{ outputs: output[] }> {
   const response =
     await fetch(
@@ -33,6 +47,11 @@ export async function getTxsUtxos(txHash: string): Promise<{ outputs: output[] }
   return response;
 }
 
+/**
+ * Get a cbor datum from its hash
+ * @param datumHash the hash of the datum
+ * @returns 
+ */
 export async function getScriptsDatumCbor(datumHash: string): Promise<{ cbor: string }> {
   const response =
     await fetch(

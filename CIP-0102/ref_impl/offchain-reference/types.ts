@@ -1,13 +1,4 @@
-/*
- needs 
-  RoyaltyRecipient, 
-  DatumMetadata, 
-  Metadata, 
-  RoyaltyFlag, 
-  MediaAssets 
-*/
-
-import { Data } from "https://deno.land/x/lucid@0.10.7/mod.ts";
+import { Constr, Data } from "https://deno.land/x/lucid@0.10.7/mod.ts";
 
 export const MetadataSchema = Data.Map(Data.Bytes(), Data.Any());
 export type Metadata = Data.Static<typeof MetadataSchema>;
@@ -27,12 +18,16 @@ export const RoyaltyFlag = RoyaltyFlagSchema as unknown as RoyaltyFlag;
 
 export type RoyaltyRecipient = {
 	address: string;
-	fee: number;
+	fee: number;  // in percentage
 	maxFee?: number;
 	minFee?: number;
 }
 
-// NOTE: these are ripped from `lucid-cardano` and modified because his types don't match the CIP-25 standard!!!
+export type RoyaltyConstr = Constr<
+	Map<string, string | bigint> | Map<string, string | bigint>[]
+>;
+
+// NOTE: these are ripped from `lucid-cardano` and modified
 export type MediaAsset = {
   name: string
   image: string | string[]
