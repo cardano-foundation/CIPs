@@ -128,339 +128,48 @@ The select inputs function is where most of the innovation in this CIP exists. T
 
 -   Step 2d)
 
--   Finally
+-   Finally we filter the selected Utxos such that it contains the minimum amount of asset required for the selection.
+-   However, each selected Utxo that is would create a selected Utxo that is NOT the minimum has a 25% random chance of being kept in the selection. The reason for this is to handle dust cleanup where some utxos are quite small and simply clog the utxo graph due to the increase in dust this algorithm could generate. Therefore it is important to cleanup the dust. 25% is an arbitrary value that has optimization potential.
+-   Next we add all of our selected Utxos to the global selected Utxos list and remove the newly selected Utxos from the candidateUtxos list!
 
----
+-   Step 3: Change Selection Function
 
----
+The Change Selection function creates change outputs that go back to the payment address that contains all of the extra assets and ada that is not used in the outputs of this transaction. This function will have the following parameters:
 
----
+    -   Our intial coin selection object
+    -   A Balance object containing the aggregated asset
+    -   A string change address that the change assets will go back to
+    -   An integer representing the fee buffer
 
----
+The idea behind this function is to create output utxos with change that limit the size of future transactions by splitting large utxos or utxos with a lot of assets. For this we introduce 2 constant parameters that can be adjusted to fit your algorithm needs, the maxChangeOuputs which we set to 4, and the idealMaxAssetsPerOutput which we set to 30.
 
----
+The maxChangeOutputs parameter indicates that we have a maximum of 4 change outputs unless we require additional outputs due to those ideal 4 reaching their size limits. The idealMaxAssetsPerOutput is the ideal maximum number of assets in an output utxo before we create a new output. This value is set to 30 meaning we try to output at max 30 assets in a change output. Having more then 30 is fine but the algorithm attempts to balance utxos such that it does not exceed 30 if we can avoid it.
 
-The algorithm proceeds according to the following sequence of steps:
+-   Step 3a)
 
--   **Step 1**
+-   We first want to create a list of assets, sorted by policy ids. The reason for this is that we want to keep assets of the same policy ids in the same output utxos if possible, even if the amount of assets go above 30 per output. This is because assets are grouped by policy ids in outputs and each output would need to duplicate the policy id data which is uneccesary extra bytes of overhead.
 
-    If the [available UTxO list](#available-utxo-list) is _empty_:
+-   We are then going to loop through each asset and add it to the most recently created output. If the assets in that output go above the ideal assets per output we create a new output unless the asset is part of an existing policy id. If a change output is over 2kb we create a new output automatically. The max output size on Cardano is 5kb but we are using 2kb to have more evenly split utxos in users wallet for smaller future transactions
 
-    -   Terminate with a [UTxO Balance
-        Insufficient](#utxo-balance-insufficient) error.
+-   Step 3b)
 
-    If the [available UTxO list](#available-utxo-list) is _not empty_:
+-   After looping through each asset we have a list of change outputs. We want to calculate the ada minUtxos required for all of those change outputs.
 
-    -   Remove an UTxO entry from the head of the [available UTxO
-        list](#available-utxo-list) and add it to the [selected UTxO
-        set](#selected-utxo-set).
+-   Using this ada minUtxo number along with the amount of ada in the balance we attempt to evenly distribute ada accross the existing change outputs, with the reaminder going to the final change output.
 
--   **Step 2**
+### Implementation Example
 
-    Compare the total size **_n_**<sub>selected</sub> of the [selected UTxO
-    set](#selected-utxo-set) with the [maximum input
-    count](#maximum-input-count) **_n_**<sub>max</sub>.
+An implementation example for all 3 core functions involved in the Optimized Random Improve selection can be found in this fork of the CardanoSharp Library here:
 
-    -   If **_n_**<sub>selected</sub> > **_n_**<sub>max</sub> then:
-
-        -   Terminate with a [Maximum Input Count
-            Exceeded](#maximum-input-count-exceeded) error.
-
-    -   If **_n_**<sub>selected</sub> ≤ **_n_**<sub>max</sub> then:
-
-        -   Go to step 3.
-
--   **Step 3**
-
-    Compare the total value **_v_**<sub>selected</sub> of the [selected UTxO
-    set](#selected-utxo-set) to the total value **_v_**<sub>requested</sub> of
-    the [requested output set](#requested-output-set):
-
-    -   If **_v_**<sub>selected</sub> < **_v_**<sub>requested</sub> then go to
-        step 1.
-    -   If **_v_**<sub>selected</sub> ≥ **_v_**<sub>requested</sub> then go to
-        step 4.
-
--   **Step 4**
-
-    Return a [coin selection](#coin-selection) result where:
-
-    -   The _inputs_ set is equal to the [selected UTxO
-        set](#selected-utxo-set).
-
-    -   The _outputs_ set is equal to the [requested output
-        set](#requested-output-set).
-
-    -   If **_v_**<sub>selected</sub> > **_v_**<sub>requested</sub> then:
-
-        -   The _change_ set contains just a single [coin](#coin-value) of value
-            (**_v_**<sub>selected</sub> − **_v_**<sub>requested</sub>).
-
-    -   If **_v_**<sub>selected</sub> = **_v_**<sub>requested</sub> then:
-
-        -   The _change_ set is empty.
-
-#### Random-Improve
-
-The **Random-Improve** coin selection algorithm works in _two phases_:
-
--   In the **first phase**, the algorithm iterates through each of the
-    [requested outputs](#requested-output-set) in _descending order of coin
-    value_, from _largest_ to _smallest_. For each output, the algorithm
-    repeatedly selects entries _at random_ from the [initial UTxO
-    set](#initial-utxo-set), until each requested output has been associated
-    with a set of UTxO entries whose _total value_ is enough to pay for that
-    ouput.
-
--   In the **second phase**, the algorithm attempts to _expand_ each
-    existing UTxO selection with _additional_ values taken at random from the
-    [initial UTxO set](#initial-utxo-set), to the point where the total value
-    of each selection is as close as possible to _twice_ the value of its
-    associated output.
-
-After the above phases are complete, for each output of value
-**_v_**<sub>output</sub> and accompanying UTxO selection of value
-**_v_**<sub>selection</sub>, the algorithm generates a _single_ change output
-of value **_v_**<sub>change</sub>, where:
-
-> **_v_**<sub>change</sub>
-> = **_v_**<sub>selection</sub>
-> − **_v_**<sub>output</sub>
-
-Since the goal of the second phase was to expand each selection to the point
-where its total value is _approximately twice_ the value of its associated
-output, this corresponds to a change output whose target value is
-_approximately equal_ to the value of the output itself:
-
-> **_v_**<sub>change</sub>
-> = **_v_**<sub>selection</sub>
-> − **_v_**<sub>output</sub>
->
-> **_v_**<sub>change</sub>
-> ≈ <span>2</span>**_v_**<sub>output</sub>
-> − **_v_**<sub>output</sub>
->
-> **_v_**<sub>change</sub>
-> ≈ **_v_**<sub>output</sub>
-
-##### Cardinality
-
-The Random-Improve algorithm imposes the following cardinality restriction:
-
--   Each entry from the [initial UTxO set](#initial-utxo-set) is used to pay
-    for _at most one_ output from the [requested output
-    set](#requested-output-set).
-
-As a result of this restriction, the algorithm will fail with a [UTxO Not
-Fragmented Enough](#utxo-not-fragmented-enough) error if the number of entries
-in the [initial UTxO set](#initial-utxo-set) is _smaller than_ the number of
-entries in the [requested output set](#requested-output-set).
-
-##### State
-
-At all stages of processing, the algorithm maintains the following pieces of
-state:
-
-1.  **Available UTxO Set**
-
-    This is initially equal to the [initial UTxO set](#initial-utxo-set).
-
-2.  **Accumulated Coin Selection**
-
-    The accumulated coin selection is a [coin selection](#coin-selection) where
-    all fields are initially equal to the _empty set_.
-
-##### Computation
-
-The algorithm proceeds in two phases.
-
--   **Phase 1: Random Selection**
-
-In this phase, the algorithm iterates through each of the [requested
-outputs](#requested-output-set) in descending order of coin value, from
-largest to smallest.
-
-For each output of value **_v_**, the algorithm repeatedly selects entries at
-**random** from the [available UTxO set](#available-utxo-set), until the _total
-value_ of selected entries is greater than or equal to **_v_**. The selected
-entries are then _associated with_ that output, and _removed_ from the
-[available UTxO set](#available-utxo-set).
-
-This phase ends when _every_ output has been associated with a selection of
-UTxO entries.
-
--   **Phase 2: Improvement**
-
-In this phase, the algorithm attempts to improve upon each of the UTxO
-selections made in the previous phase, by conservatively expanding the
-selection made for each output in order to generate improved change
-values.
-
-During this phase, the algorithm:
-
--   processes outputs in _ascending order of coin value_.
-
--   continues to select values from the [available UTxO
-    set](#available-utxo-set).
-
--   incrementally populates the
-    [accumulated coin selection](#accumulated-coin-selection-1).
-
-For each output of value **_v_**, the algorithm:
-
-1.  **Calculates a _target range_** for the total value of inputs used to
-    pay for that output, defined by the triplet:
-
-    (_minimum_, _ideal_, _maximum_) =
-    (**_v_**, <span>2</span>**_v_**, <span>3</span>**_v_**)
-
-2.  **Attempts to improve upon the existing UTxO selection** for that output,
-    by repeatedly selecting additional entries at random from the [available
-    UTxO set](#available-utxo-set), stopping when the selection can be
-    improved upon no further.
-
-    A selection with value **_v_<sub>1</sub>** is considered to be an
-    _improvement_ over a selection with value **_v_<sub>0</sub>** if **all**
-    of the following conditions are satisfied:
-
-    -   **Condition 1**: we have moved closer to the _ideal_ value:
-
-        abs (_ideal_ − **_v_<sub>1</sub>**) <
-        abs (_ideal_ − **_v_<sub>0</sub>**)
-
-    -   **Condition 2**: we have not exceeded the _maximum_ value:
-
-        **_v_<sub>1</sub>** ≤ _maximum_
-
-    -   **Condition 3**: when counting cumulatively across all outputs
-        considered so far, we have not selected more than the _maximum_ number
-        of UTxO entries specified by [Maximum Input
-        Count](#maximum-input-count).
-
-3.  **Creates a _change value_** for the output, equal to the total value
-    of the _improved UTxO selection_ for that output minus the value **_v_**
-    of that output.
-
-4.  **Updates the [accumulated coin
-    selection](#accumulated-coin-selection-1)**:
-
-    -   Adds the _output_ to the _outputs_ field;
-    -   Adds the _improved UTxO selection_ to the _inputs_ field;
-    -   Adds the _change value_ to the _change values_ field.
-
-This phase ends when every output has been processed, **or** when the
-[available UTxO set](#available-utxo-set) has been exhausted, whichever occurs
-sooner.
-
-##### Termination
-
-When both phases are complete, the algorithm terminates.
-
-The [accumulated coin selection](#accumulated-coin-selection-1) is returned
-to the caller as the [coin selection](#coin-selection) result.
-
-The [available UTxO set](#available-utxo-set) is returned to the caller as the
-[remaining UTxO set](#remaining-utxo-set) result.
-
-## Rationale
-
-### Largest-First
-
-\-
-
-### Random-Improve
-
-There are several motivating principles behind the design of the algorithm.
-
-#### Principle 1: Dust Management
-
-The probability that random selection will choose dust entries from a UTxO
-set _increases_ with the proportion of dust in the set.
-
-Therefore, for a UTxO set with a large amount of dust, there's a high
-probability that a random subset will include a large amount of dust.
-
-Over time, selecting entries randomly in this way will tend to _limit_ the
-amount of dust that accumulates in the UTxO set.
-
-#### Principle 2: Change Management
-
-As mentioned in the [Goals](#goals-of-coin-selection-algorithms) section, it is
-desirable that coin selection algorithms, over time, are able to create UTxO
-sets that have _useful_ outputs: outputs that will allow us to process future
-payments with a _reasonably small_ number of inputs.
-
-If for each payment request of value **_v_** we create a change output of
-_roughly_ the same value **_v_**, then we will end up with a distribution of
-change values that matches the typical value distribution of payment
-requests.
-
-> :bulb: **Example**
->
-> Alice often buys bread and other similar items that cost around €1.00 each.
->
-> When she instructs her wallet software to make a payment for around
-> €1.00, the software attempts to select a set of unspent transaction outputs
-> with a total value of around €2.00.
->
-> As she frequently makes payments for similar amounts, transactions created by
-> her wallet will also frequently produce change coins of around €1.00 in value.
->
-> Over time, her wallet will self-organize to contain multiple coins of around
-> €1.00, which are useful for the kinds of payments that Alice frequently makes.
-
-#### Principle 3: Performance Management
-
-Searching the UTxO set for additional entries to _improve_ our change outputs
-is _only_ useful if the UTxO set contains entries that are sufficiently
-small enough. But it is precisely when the UTxO set contains many small
-entries that it is less likely for a randomly-chosen UTxO entry to push the
-total above the upper bound.
-
-### External Resources
-
-#### Self Organisation in Coin Selection
-
-> | **Title**    | Self Organisation in Coin Selection                                           |
-> | :----------- | :---------------------------------------------------------------------------- |
-> | **Author**   | [Edsko de Vries](http://www.edsko.net/)                                       |
-> | **Year**     | 2018                                                                          |
-> | **Location** | https://iohk.io/en/blog/posts/2018/07/03/self-organisation-in-coin-selection/ |
->
-> This article introduces the [Random-Improve](#random-improve) coin selection
-> algorithm, invented by [Edsko de Vries](http://www.edsko.net/).
->
-> It describes the three principles of self-organisation that inform the
-> algorithm's design, and provides experimental evidence to demonstrate the
-> algorithm's effectiveness at maintaining healthy UTxO sets over time.
+-   Aggregator Function - https://github.com/Orion-Crypto/cardanosharp-wallet/blob/optimized-coin-selection-example/CardanoSharp.Wallet/CIPs/CIP2/CoinSelectionService.cs
+-   Select Inputs Function - https://github.com/Orion-Crypto/cardanosharp-wallet/blob/optimized-coin-selection-example/CardanoSharp.Wallet/CIPs/CIP2/CoinSelectionStrategies/OptimizedRandomImproveStrategy.cs
+-   Change Selection Function - https://github.com/Orion-Crypto/cardanosharp-wallet/blob/optimized-coin-selection-example/CardanoSharp.Wallet/CIPs/CIP2/ChangeCreationStrategies/MultiSplitChangeSelectionStrategy.cs
 
 ## Path to Active
 
 ### Acceptance Criteria
 
--   [x] There exists one or more reference implementations with appropriate testing illustrating the various properties of coin-selection stated in this document.
-
-### Implementation Plan
-
-#### Reference Implementations
-
-##### Largest-First
-
-Reference implementations of the [Largest-First](#largest-first) algorithm are
-available in the following languages:
-
-| _Language_  | _Documentation_                                                                                                                    | _Source_                                                                                                                        |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Haskell** | [Documentation](https://hackage.haskell.org/package/cardano-coin-selection/docs/Cardano-CoinSelection-Algorithm-LargestFirst.html) | [Source](https://hackage.haskell.org/package/cardano-coin-selection/docs/src/Cardano.CoinSelection.Algorithm.LargestFirst.html) |
-
-##### Random-Improve
-
-Reference implementations of the [Random-Improve](#random-improve) algorithm
-are available in the following languages:
-
-| _Language_  | _Documentation_                                                                                                                     | _Source_                                                                                                                         |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **Haskell** | [Documentation](https://hackage.haskell.org/package/cardano-coin-selection/docs/Cardano-CoinSelection-Algorithm-RandomImprove.html) | [Source](https://hackage.haskell.org/package/cardano-coin-selection/docs/src/Cardano.CoinSelection.Algorithm.RandomImprove.html) |
+-   [x] There exists one or more reference implementations and review by other dapp developers in the Cardano Ecosystem. Also at least 1 additional dapp developer commiting to implementing this algorithm or a slightly modified verision of it to suit their needs.
 
 ## Copyright
 
