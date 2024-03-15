@@ -1,5 +1,5 @@
 ---
-CIP: 2
+CIP: ?
 Title: Optimized Coin Selection Algorithms for Cardano
 Category: Wallets
 Authors:
@@ -60,11 +60,11 @@ The aggregator function is the function that calls the 2 other core functions th
 The parameters to the aggregator function are as follows:
 
     -   A list of transaction outputs that we need to select inputs for
-    -   A list of candidate input utxos
+    -   A list of candidate input Utxos
     -   A string address to send the change too
     -   A token data representing the assets being minted
-    -   A list of required input utxos
-    -   An integer representing the input utxo limit
+    -   A list of required input Utxos
+    -   An integer representing the input Utxo limit
     -   An unsigned long representing a Fee buffer, extra ada checks to account for a potential
 
 Example Definition (C#):
@@ -98,9 +98,9 @@ Example Definition (C#):
 -   <b>Step 1d)</b>
 
     -   We need to create a while loop that will continuously loop while our change value < minChangeAdaRequired and we have available candidate Utxos left
-    -   We calculate a new ada value which we need to select input utxos against. This new ada value is the minChangeAdaRequired - change + the sum of the ada in the selected Utxos
+    -   We calculate a new ada value which we need to select input Utxos against. This new ada value is the minChangeAdaRequired - change + the sum of the ada in the selected Utxos
     -   We once again call our "SelectInput" function followed by a has sufficient balance check for ADA, and repeat step 1c.
-    -   We repeat step 1d until we have no more utxos to select OR until the change < minChangeAdaRequired while loop criteria is false.
+    -   We repeat step 1d until we have no more Utxos to select OR until the change < minChangeAdaRequired while loop criteria is false.
 
 -   <b>Step 1e)</b>
 
@@ -111,11 +111,11 @@ Example Definition (C#):
 The select inputs function is where most of the innovation in this CIP exists. This function will have the following parameters:
 
     -   Our intial coin selection object
-    -   A list of candidate input utxos
+    -   A list of candidate input Utxos
     -   A long amount repesenting the amount of asset we are selecting inputs for
     -   A token data representing the asset we are selecting inputs for
-    -   A list of required input utxos
-    -   An integer representing the input utxo limit
+    -   A list of required input Utxos
+    -   An integer representing the input Utxo limit
 
 Example Definition (C#):
 
@@ -130,34 +130,32 @@ Example Definition (C#):
 
 -   <b>Step 2a)</b>
 
-    -   We first need to get the current amount of asset we have in our already selected utxos. If this amount is greater than or equal to the required amount, we can return.
-    -   We are going to loop through all of our candidate utxos, but first we perform a filter and then a sort to get the utxos by order of descending asset amount.
-    -   We we will now perform a while loop until there are no more available utxos, or the amount of asset is greater then the required amount, or we have required the utxo limit. Step 2b describes the functionality of this loop
+    -   We first need to get the current amount of asset we have in our already selected Utxos. If this amount is greater than or equal to the required amount, we can return.
+    -   We are going to loop through all of our candidate Utxos, but first we perform a filter and then a sort to get the Utxos by order of descending asset amount.
+    -   We we will now perform a while loop until there are no more available Utxos, or the amount of asset is greater then the required amount, or we have required the Utxo limit. Step 2b describes the functionality of this loop.
 
 -   <b>Step 2b)</b>
 
-    -   We first need to make sure we havent selected too many utxos such that we are over the limit. If we have and the amount is not larger then the required amount, we need to clear our current selection for this loop and continue through the loop.
+    -   We first need to make sure we havent selected too many Utxos such that we are over the limit. If we have and the amount is not larger then the required amount, we need to clear our current selection for this loop and continue through the loop.
     -   We select a random Utxo from our descending Utxo list, add it to a temporary new selected Utxos list, and remove it from the descending list.
     -   We calculate the amount of asset in that Utxo and add it to our sum, after which we check the while loop conditions again.
-    -   It is important to note for this loop that we require a minimum of 3 inputs selected (or less depending on the limit) if the asset we are looking for is ada. This is to allow us to choose potentially smaller utxo amounts in later parts of the algorithm without getting unlucky with a single gigantic utxo that we dont need to use.
+    -   It is important to note for this loop that we require a minimum of 3 inputs selected (or less depending on the limit) if the asset we are looking for is ada. This is to allow us to choose potentially smaller Utxo amounts in later parts of the algorithm without getting unlucky with a single gigantic Utxo that we dont need to use.
 
 -   <b>Step 2c)</b>
 
-    -   Now we must improve the random selection, we repeat this step twice to get some additional optimization performance
-    -   We create two a lists of objects that contain a List of utxos, the sum amount of the asset we are looking for in those utxos AND most importantly the quantity of OTHER DISTINCT assets in the selected Utxos. This is critical as we will be optimizing on reducing the total number of OTHER DISTINCT assets in the output utxos
-       
+    -   Now we must improve the random selection, we repeat this step twice to get some additional optimization performance.
+    -   We create two a lists of objects that contain a List of Utxos, the sum amount of the asset we are looking for in those Utxos AND most importantly the quantity of <b>OTHER DISTINCT</b> assets in the selected Utxos. This is critical as we will be optimizing on reducing the total number of <b>OTHER DISTINCT</b> assets in the output Utxos.
 
-        1. The first object list will have the new selected utxos sorted by descending number of assets such that selected utxos with large numbers of other distinct assets appear first
-        2. The second object list will have the remaining utxos sorted by the ascending number of assets such that remaining utxos with small numbers of other distinct assets appear first
-           
+        1. The first object list will have the new selected Utxos sorted by descending number of assets such that selected Utxos with large numbers of other distinct assets appear first.
+        2. The second object list will have the remaining Utxos sorted by the ascending number of assets such that remaining Utxos with small numbers of other distinct assets appear first.
 
-    -   We loop through all assets in the remaining utxo set while keeping an index pointer for the selectedUtxo list, if the number of assets in the remaining utxo we are looking at is less then the number of assets in the selectedUtxo at our point, we swap them and increment the pointer. NOTE: We only do this if we still have more then required amount of asset we are looking for in the selected Utxo set.
+    -   We loop through all assets in the remaining Utxo set while keeping an index pointer for the selectedUtxo list, if the number of assets in the remaining utxo we are looking at is less then the number of assets in the selected Utxo at our point, we swap them and increment the pointer. <b>NOTE:</b> We only do this if we still have more then required amount of asset we are looking for in the selected Utxo set.
 
 -   <b>Step 2d)</b>
 
     -   Finally we filter the selected Utxos such that it contains the minimum amount of asset required for the selection.
-    -   However, each selected Utxo that is would create a selected Utxo that is NOT the minimum has a 25% random chance of being kept in the selection. The reason for this is to handle dust cleanup where some utxos are quite small and simply clog the utxo graph due to the increase in dust this algorithm could generate. Therefore it is important to cleanup the dust. 25% is an arbitrary value that has optimization potential.
-    -   Next we add all of our selected Utxos to the global selected Utxos list and remove the newly selected Utxos from the candidateUtxos list!
+    -   However, each selected Utxo that is would create a selected Utxo that is NOT the minimum has a 25% random chance of being kept in the selection. The reason for this is to handle dust cleanup where some Utxos are quite small and simply clog the Utxo graph due to the increase in dust this algorithm could generate. Therefore it is important to cleanup the dust. 25% is an arbitrary value that has optimization potential.
+    -   Next we add all of our selected Utxos to the global selected Utxos list and remove the newly selected Utxos from the candidate Utxos list!
 
 -   <b>Step 3: Change Selection Function</b>
 
@@ -172,19 +170,19 @@ Example Definition (C#):
 
     public void CalculateChange(CoinSelection coinSelection, Balance outputBalance, string changeAddress, ulong feeBuffer = 0) { }
 
-The idea behind this function is to create output utxos with change that limit the size of future transactions by splitting large utxos or utxos with a lot of assets. For this we introduce 2 constant parameters that can be adjusted to fit your algorithm needs, the maxChangeOuputs which we set to 4, and the idealMaxAssetsPerOutput which we set to 30.
+The idea behind this function is to create output Utxos with change that limit the size of future transactions by splitting large Utxos or Utxos with a lot of assets. For this we introduce 2 constant parameters that can be adjusted to fit your algorithm needs, the maxChangeOuputs which we set to 4, and the idealMaxAssetsPerOutput which we set to 30.
 
-The maxChangeOutputs parameter indicates that we have a maximum of 4 change outputs unless we require additional outputs due to those ideal 4 reaching their size limits. The idealMaxAssetsPerOutput is the ideal maximum number of assets in an output utxo before we create a new output. This value is set to 30 meaning we try to output at max 30 assets in a change output. Having more then 30 is fine but the algorithm attempts to balance utxos such that it does not exceed 30 if we can avoid it.
+The maxChangeOutputs parameter indicates that we have a maximum of 4 change outputs unless we require additional outputs due to those ideal 4 reaching their size limits. The idealMaxAssetsPerOutput is the ideal maximum number of assets in an output Utxo before we create a new output. This value is set to 30 meaning we try to output at max 30 assets in a change output. Having more then 30 is fine but the algorithm attempts to balance Utxos such that it does not exceed 30 if we can avoid it.
 
 -   <b>Step 3a)</b>
 
-    -   We first want to create a list of assets, sorted by policy ids. The reason for this is that we want to keep assets of the same policy ids in the same output utxos if possible, even if the amount of assets go above 30 per output. This is because assets are grouped by policy ids in outputs and each output would need to duplicate the policy id data which is uneccesary extra bytes of overhead.
-    -   We are then going to loop through each asset and add it to the most recently created output. If the assets in that output go above the ideal assets per output we create a new output unless the asset is part of an existing policy id. If a change output is over 2kb we create a new output automatically. The max output size on Cardano is 5kb but we are using 2kb to have more evenly split utxos in users wallet for smaller future transactions
+    -   We first want to create a list of assets, sorted by policy ids. The reason for this is that we want to keep assets of the same policy ids in the same output Utxos if possible, even if the amount of assets go above 30 per output. This is because assets are grouped by policy ids in outputs and each output would need to duplicate the policy id data which is uneccesary extra bytes of overhead.
+    -   We are then going to loop through each asset and add it to the most recently created output. If the assets in that output go above the ideal assets per output we create a new output unless the asset is part of an existing policy id. If a change output is over 2kb we create a new output automatically. The max output size on Cardano is 5kb but we are using 2kb to have more evenly split Utxos in users wallet for smaller future transactions.
 
 -   <b>Step 3b)</b>
 
     -   After looping through each asset we have a list of change outputs. We want to calculate the ada minUtxos required for all of those change outputs.
-    -   Using this ada minUtxo number along with the amount of ada in the balance we attempt to evenly distribute ada accross the existing change outputs, with the reaminder going to the final change output.
+    -   Using this ada minUtxo number along with the amount of ada in the balance we attempt to evenly distribute ada accross the existing change outputs, with the remainder going to the final change output.
 
 ## Path to Active
 
