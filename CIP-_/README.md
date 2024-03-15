@@ -186,13 +186,19 @@ The maxChangeOutputs parameter indicates that we have a maximum of 4 change outp
 
 ## Path to Active
 
-### Implementation Example
+### Implementation Code Example
 
 An implementation example for all 3 core functions involved in the Optimized Random Improve selection can be found in this fork of the CardanoSharp Library here:
 
 -   Aggregator Function - https://github.com/Orion-Crypto/cardanosharp-wallet/blob/optimized-coin-selection-example/CardanoSharp.Wallet/CIPs/CIP2/CoinSelectionService.cs
 -   Select Inputs Function - https://github.com/Orion-Crypto/cardanosharp-wallet/blob/optimized-coin-selection-example/CardanoSharp.Wallet/CIPs/CIP2/CoinSelectionStrategies/OptimizedRandomImproveStrategy.cs
 -   Change Selection Function - https://github.com/Orion-Crypto/cardanosharp-wallet/blob/optimized-coin-selection-example/CardanoSharp.Wallet/CIPs/CIP2/ChangeCreationStrategies/MultiSplitChangeSelectionStrategy.cs
+
+### Implementation Dapp Example
+
+-   CardanoSharp 7 - (Active in fork): https://github.com/Orion-Crypto/cardanosharp-wallet
+-   SaturnNFT - (NFT / Token creation platform): https://https://saturnnft.io/
+-   Levvy Finanace - (NFT / Token Lending and Borrowing platform): https://levvy.fi/
 
 ### Acceptance Criteria
 
