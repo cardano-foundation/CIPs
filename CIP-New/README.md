@@ -81,23 +81,23 @@ Example Definition (C#):
 
 -   <b>Step 1a)</b>
 
-    -   The first step is to create an object to store the selected Utxos and the Change Outputs which will be evaluated repeatedly throughout the algorithm.
+    -   The first step is to create an object to store the <b>Selected Utxos</b> and the <b>Change Outputs</b> which will be evaluated repeatedly throughout the algorithm.
     -   Next, we need to combined all of our assets from all of the outputs into a single list of assets, these should take into account minted assets as well as a fee buffer which will allow the transaction to work for any fee below the buffer.
 
 -   <b>Step 1b)</b>
 
-    -   For each asset in our asset list we will call our "SelectInput" function (which will be described in Step 2)
-    -   After selecting inputs, we check to ensure that the inputs selected contain a sufficient balance of the asset for this iteration of the loop. If not we throw an "Insufficient Balance" error
-    -   After calling the "SelectInput" function for all assets, we do it one more time for ADA, and once again check to ensure that the inputs selected have the required amount of ada or more.
+    -   For each asset in our asset list we will call our <b>"SelectInput"</b> function (which will be described in Step 2).
+    -   After selecting inputs, we check to ensure that the inputs selected contain a sufficient balance of the asset for this iteration of the loop. If not we throw an "Insufficient Balance" error.
+    -   After calling the <b>"SelectInput"</b> function for all assets, we do it one more time for ADA, and once again check to ensure that the inputs selected have the required amount of ada or more.
 
 -   <b>Step 1c)</b>
 
-    -   Now onto change selection, we make a preliminary call to our "CalculateChange" function (which will be described in Step 3) to get a preliminary set of change outputs that we store in our initial coin selection object. These preliminary outputs are mainly meant to calculate the required minUtxos in our change selection.
+    -   Now onto change selection, we make a preliminary call to our <b>"CalculateChange"</b> function (which will be described in Step 3) to get a preliminary set of change outputs that we store in our initial coin selection object. These preliminary outputs are mainly meant to calculate the required minUtxos in our change selection.
     -   Next, we calculate the amount of ada in those preliminary change outputs AND we calculate the minimum change Ada required. The intention here is to check to ensure the change amount is greater then the minChangeAdaRequired. If it is not, we need to perform additional calculations.
 
 -   <b>Step 1d)</b>
 
-    -   We need to create a while loop, that will continuously loop while our change value < minChangeAdaRequired && we have available candidate Utxos left
+    -   We need to create a while loop that will continuously loop while our change value < minChangeAdaRequired and we have available candidate Utxos left
     -   We calculate a new ada value which we need to select input utxos against. This new ada value is the minChangeAdaRequired - change + the sum of the ada in the selected Utxos
     -   We once again call our "SelectInput" function followed by a has sufficient balance check for ADA, and repeat step 1c.
     -   We repeat step 1d until we have no more utxos to select OR until the change < minChangeAdaRequired while loop criteria is false.
