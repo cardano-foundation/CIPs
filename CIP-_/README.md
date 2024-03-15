@@ -19,7 +19,7 @@ This CIP aims to present optimized coin selection algorithms to enable Wallets a
 
 ## Motivation: why is this CIP necessary?
 
-<b>Cardano needs to scale.</b> As the ecosystem grows and new users come in, blocks are regular at 100% load with 88KB per block allocation. Recently, events such as the Lil Sappys NFT mint have pushed the Cardano blockchain load to over 100% for several hours, preventing anyone from using the chain and providing an awful user experience to new users who complain on social media and give the ecosystem a bad repution.
+<b>Cardano needs to scale.</b> As the ecosystem grows and new users come in, blocks are regular at 100% load with 88KB per block allocation. Recently, events such as the Lil Sappys NFT mint have pushed the Cardano blockchain load to over 100% for several hours, preventing anyone from using the chain and providing an awful user experience to new users who complain on social media and give the ecosystem a bad reputation.
 
 <b>This can't continue if Cardano is to succeed.</b>
 
