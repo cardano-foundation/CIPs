@@ -197,7 +197,7 @@ An implementation example for all 3 core functions involved in the Optimized Ran
 ### Implementation Dapp Example
 
 -   CardanoSharp 7 - (Active in fork): https://github.com/Orion-Crypto/cardanosharp-wallet
--   SaturnNFT - (NFT / Token creation platform): https://https://saturnnft.io/
+-   SaturnNFT - (NFT / Token creation platform): https://saturnnft.io/
 -   Levvy Finanace - (NFT / Token Lending and Borrowing platform): https://levvy.fi/
 
 ### Acceptance Criteria
