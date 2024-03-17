@@ -6,6 +6,7 @@ Authors:
     - Nicholas Maselli <maselli.nicholas@gmail.com>
 Implementors: CardanoSharp 7, SaturnNFT, Levvy Finance
 Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/785
 Status: Pending
 Created: 2024-14-03
 License: CC-BY-4.0
