@@ -7,7 +7,7 @@ Authors:
 Implementors: CardanoSharp 7, SaturnNFT, Levvy Finance
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/785
-Status: Pending
+Status: Proposed
 Created: 2024-14-03
 License: CC-BY-4.0
 ---
