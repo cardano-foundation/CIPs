@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: ?
 Title: Optimized Coin Selection Algorithms for Cardano
 Category: Wallets
 Authors:
