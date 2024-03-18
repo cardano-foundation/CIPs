@@ -26,9 +26,11 @@ Intents are [quite prevalent](https://members.delphidigital.io/reports/wtf-is-an
 For example, if you want to perform a trade, you usually need to specify exactly who with and exactly how much for.
 
 Cardano is unusually stringent in this regard. 
-On Ethereum, for example, smart contracts can actually change what your transaction does, in a way that is only determined when the transaction is validated. 
+On Ethereum, for example, smart contracts can actually change what your transaction does, in a way that is only determined when the transaction is validated.[^transaction-non-determinism]
 In contrast, on Cardano smart contracts only validate the behaviour that the user has specified in their transaction. 
 This gives us very nice determinism properties... but when resolving intents we actually want non-determinism!
+
+[^transaction-non-determinism]: This means that some use cases that need an "intents" system on Cardano can be done easily on Ethereum. For example, there is no need to do anything to enable non-deterministic access to state when operating smart contracts, since that's the default. Intent use cases that require _matching_ (like swaps) still likely need new technology.
 
 We can see the “concurrency problem” through this lens. 
 Cardano insists that state updates (via datums in UTXOs) are completely explicit and deterministically sequenced, in contrast to systems like Ethereum, where state access is implicit and non-deterministically sequenced. 
@@ -36,9 +38,12 @@ This is quite inconvenient, since what users often want is to interact with “t
 
 [^concurrency]: See https://github.com/input-output-hk/Developer-Experience-working-group/issues/47 for discussion of a very intent-like approach to solving the concurrency problem.
 
-To support intent-based interactions, we need two things:
-1. A way of turning intents and their fulfilments into something that can be settled on the blockchain (“intent settlement”).
-2. A way of distributing and matching up intents with their fulfilments (“intent processing”).
+To support intent-based interactions, we need three things:
+1. A way of expressing intents and fulfilments
+2. A way of turning intents and fulfilments into something that can be settled on the blockchain (“intent settlement”)
+2. A way of distributing and matching up intents with their fulfilments (“intent processing”)
+
+We will think about the first two together, since the format for specifying intents will most likely be determined by what we use for settlement.
 
 ### Intent settlement
 
@@ -47,6 +52,12 @@ Intent settlement can be done on-chain today by writing custom logic such that u
 [^on-chain-settlement]:  This is a common design pattern on Cardano today, e.g. SundaeSwap’s scooper pattern has this form.
 
 But this is quite expensive (since everything must be done with scripts and fully-settled transactions on the chain) and clumsy.
+While these kinds of designs can be made more efficient[^observers], ultimately they all require the Cardano network to reach consensus on the status of any intent proposals, not just their settlements. 
+This is inevitably going to be costly, especially for use cases (such as trading orders) which have high volume.[^stellar]
+
+[^observers]: e.g. CIP-0112 would help to avoid running scripts many times when similar intents are resolved all together.
+
+[^stellar]: High volume can reveal economic problems that were not obvious beforehand. This is arguably what happened to [Stellar's built-in DEX](https://stellar.org/blog/developers/introducing-automated-market-makers-on-stellar).
 
 We would prefer to have more direct support for expressing intents and their fulfilments, such that the Cardano ledger can check that everything has been done correctly but without exposing it to too much non-determinism or excess work. 
 This will require ledger changes.
@@ -72,8 +83,8 @@ This makes it much easier to distribute intents in a decentralised manner.
 ### UX considerations
 
 Intent processing is the part that has the most effect on UX. 
-Users will be interacting directly with an intent-processing system to submit their intents, and they may need various kinds of feedback or to make choices. 
-This is complicated by the fact that some information may instead come from the underlying blockchain, e.g. about settlement. 
+Users interact directly with an intent-processing system to submit their intents, and they may need various kinds of feedback ("has my intent been fulfilled?") or to make choices ("do I want to resubmit with a higher price?"). 
+This is complicated by the fact that some information may instead come from the underlying blockchain, e.g. whether the intent has ultimately been settled on-chain.
 
 As an example, here is a hypothetical sequence diagram for a Babel fees workflow (see below for more discussion of Babel fees):
 
@@ -96,6 +107,9 @@ Since intents are incomplete (and maybe incompletable), an intent-processing sys
 The second is front-running or more generally the various kinds of activity often discussed as MEV (“miner-extractable value”) in other blockchains. 
 This is an inevitable consequence of non-determinism: since the user has not specified exactly how things happen, the system or the actors within it are free to arrange the eventual fulfilment in a way that is maximally profitable for them. 
 This is a major topic, but one that needs to be addressed (or explicitly allowed) by an intent-processing system.
+
+In the case of Cardano, since we are starting from full determinism, any additional non-determinism needs to be chosen by the user, so hopefully the opportunities for exploitation will be fairly opted into.
+For example, a swap intent that leaves the counterparty open should not lead to unexpected fees: the only thing that can happen non-deterministically is the choice of counterparty and whether or not the intent is fulfilled at all.
 
 ## Use cases
 
@@ -137,7 +151,9 @@ In principle intents that need sponsorship can be sent directly to the applicati
 ### Non-deterministic access to state
 
 A user who interacts with an application’s state stored in the datum of a UTXO may well be happy to interact with the “current state” whatever that is. 
-An intent of this kind must specify the address of the UTXO it is spending, but not its content, and similarly not specify the state of the output it creates.
+An intent of this kind must specify the address of the UTXO it is spending, but not its datum[^datum-hashes], and similarly not specify the datum of the output it creates.
+
+[^datum-hashes]: Recall that if an output is locked with a script and provides a datum _hash_, then the spending transaction is responsible for providing the pre-image of the datum hash. If the datum on the output is inline, then you already don't need to specify it when you spend the output.
 
 Trickier cases will be cases where the intent wants to put some constraints on the state, rather than being totally agnostic.
 
