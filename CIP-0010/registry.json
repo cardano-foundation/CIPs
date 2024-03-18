@@ -20,6 +20,10 @@
     "description": "Proof of Existence record"
   },
   {
+    "transaction_metadatum_label": 620,
+    "description": "seedtrace.org - supply chain & fair payment tracing"
+  },
+  {
     "transaction_metadatum_label": 674,
     "description": "CIP-0020 - Transaction message/comment metadata"
   },
