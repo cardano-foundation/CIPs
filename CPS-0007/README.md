@@ -10,6 +10,7 @@ Proposed Solutions:
 Discussions:
   - https://discord.gg/hdqHwSgWvG
 Created: 2023-03-14
+License: CC-BY-4.0
 ---
 
 ## **Abstract**
@@ -97,3 +98,7 @@ Below are a set of philosophical questions applicable across a broad range of so
 4. What kinds of community standards are needed outside of the scope of a specific solution at the ledger layer?
 5. What kinds of incentives (or disinsentives) should we use to align behavior with our goals? Should we try to compensate actors for the time and effort they put in, or does that create corrupt and misaligned incentives of their own?
 6. Is the ability to delegate overall more helpful or harmful? Does the risk of "popularity" based delegation (as opposed to trust / expertise based delegation) dilute the votes of others more than it increases inclusivity?
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
