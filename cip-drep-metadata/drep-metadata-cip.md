@@ -37,28 +37,41 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 Blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying an On-Chain hash of the off-chain we ensure correctness of data whilst minimising the amount of data posted to the chain.
 
 #### For people wishing to delegate their voting power
-When observing from the chain level, tooling can only see the content and history of DRep registration, update and retirement certificates and any associated anchors. These on-chain components do not give any context to the motivation of a DRep. Although this information would likely be the desired context for people who might delegate their voting power. By providing rich contextual metadata we enable people choosing a DRep to delegate their voting power to, to make well informed decisions.
+When observing from the chain level, tooling can only see the content and history of DRep registration, update and retirement certificates and any associated anchors. These on-chain components do not give any context to the motivation of a DRep, even though this information would likely be the desired context for people who might delegate their voting power. By providing rich contextual metadata we enable people choosing a DRep to delegate their voting power to, to make well informed decisions.
 
 #### For all participants
 By standardising off-chain metadata formats we facilitate interoperability for tooling which creates and/or renders metadata attached to DRep registration, update and retirement transactions. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
 
+#### A Note on Teams
+CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of experitise, and would perhaps therefore be more attractive to some delegating Ada Holders. 
+
+Participants at the workshop held to debut the first draft of this CIP strongly advocated in favour of a CIP that would include features that would assist a DRep comprised of a team of individuals properly describe their endeavour to delegating Ada Holders and anyone else reading the metadata associated with their registration.
+
+This CIP has not included these features, the decision not to include these features was made in order to simplify this CIP so that it became suitable for the minimum viable level of tooling, with the expectation that further CIPs will build on it. 
+
 ## Specification
-CIP-1694 specifies that metadata anchors are optional for DRep registration, updates and retirement transactions. This CIP covers metadata for the aforementioned transaction types, but it does not cover metadata for voting transactions. 
+CIP-1694 specifies that metadata anchors are optional for DRep registration and updates. This CIP covers metadata for the aforementioned transaction types, but it does not cover metadata for voting transactions. 
 
 ### Markdown Text Styling
 Unlike [CIP-108](https://github.com/Ryun1/CIPs/blob/governance-metadata-actions/CIP-0108/README.md#markdown-text-styling) this standard seeks to simplify the job of tooling providers by not supporting text formatting such as markdown. 
 
 ### Integrity
-Metadata integrity is when the hash of the metadata in the metadata anchor on-chain is the same as your hash when you hash it. Tooling SHOULD check for metadata integrity. If tooling detects that the metadata does not have integrity it MUST NOT display the metadata, and it MUST display a warning describing why it is not showing the metadata.
+Metadata is said to have integrity when the hash of this metadata in the metadata anchor on-chain is the same as a hash made of the metadata now (given that the same algorithm is used). Tooling SHOULD check for metadata integrity, with the hashing algorithm determined by rules outlined in [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100). If tooling detects that the metadata does not have integrity it MUST NOT display the metadata, and it MUST display a warning describing why it is not showing the metadata.
+
+### Formatting
+If DRep Metadata is not formatted in the way described by this CIP then tooling SHOULD either:
+1. Deal with it as described in CIP-100 (by rendering the raw unformatted document)
+2. Not display the any of the metadata
+In either case the tooling SHOULD provide a warning that this has happened and link to the url described in the metadata anchor of the DRep registration.
+
+### Missing
+If the DRep metadata cannot be found at the address specified in the anchor then the tooling SHOULD provide a warning. There is no need to link to the url in the metadata anchor. 
 
 ### Witnesses
 DRep Metadata will not follow the CIP-100 specification related to signing the metadata, instead they are attached to a DRep registration. The need for an `authors` field will also be discarded in favour of including usernames inside of the `body` field. 
 
 ### Extended Vocabulary
-The following properties extend the potential vocabulary of CIP-100's `body` property.
-
-#### For Registration and Updates 
-There will need to be some way to alert the tools reading the metadata to expect metadata that is for the purposes of registering or updating the DRep's profile, and therefore to expect the following information.
+Like CIP-108, this CIP also extends the potential vocabulary of CIP-100's `body` property. For all of these properties tooling providers MUST be aware that they are responsible for what they display to their users and that these fields could be used for illegal, unsavoury, or innapropriate purposes or language. Therefore such tools SHOULD have a terms of service which they enforce to moderate what they show to their users. The following are a list of properties tooling should expect to encounter:
 
 `Payment Address`
 Dreps may want to recieve tokens for a variety of reasons such as:
@@ -73,7 +86,10 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 - A very short freeform text field. Limited to 80 characters.
 - This SHOULD NOT support markdown text styling.
 - Authors MUST use this field for their profile name/ username.
-- Authors SHOULD attempt to make this field unique whilst also avoiding crass language.
+- Authors SHOULD attempt to make this field unique.
+- Authours SHOULD avoid crass language.
+
+The compulsory nature of this field was controversial because the `username`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `username` it a reason for people reviewing governance actions to properly check the whole profile of a DRep before delegating to them. A `username` MUST be included because it is a human readable identifier, it is the property that people reviewing DReps will most likely identify that DRep by even in the presence of copycats.
 
 `picture`
 - Optional 
@@ -83,17 +99,17 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 
 `objectives`
 - Optional
-- A freeform text field with a maximum of 300 characters
+- A freeform text field with a maximum of 1000 characters
 - A short description of what the person believes nd what they want to achieve as a DRep
 
 `motivation`
 - Optional
-- A freeform text field with a maximum of 300 characters
+- A freeform text field with a maximum of 1000 characters
 - A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to 
 
 `qualifications`
 - Optional
-- A freeform text field with a maximum of 300 characters 
+- A freeform text field with a maximum of 1000 characters 
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
 `identity`
@@ -102,6 +118,8 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 - This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
 - Tooling providers SHOULD warn people that none of the information is verified by the tool and they should DYOR
 - Tooling providers making metadata SHOULD provide some information about why this is important.
+
+
 
 `links`
 - Optional
@@ -116,11 +134,6 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 - A true value means that the DRep does not want to show up in tooling that displays DReps. 
 -- I.e. they do not want to appear in GovTool’s DRep Explorer feature
 
-#### For Retirement
-There will need to be some way to alert the tools reading the metadata to expect metadata that is for the purposes of retiring the DRep, and therefore to expect the following information.
-`reason`
-- Optional
-- Providing the rationale for why the DRep retired
 
 ### Application
 DRep metadata must include all compulsory fields to be considered CIP-???? compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-???? compliant metadata.
