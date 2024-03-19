@@ -13,13 +13,11 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 We propose to introduce a new Plutus scripts type `Observe` in addition to those currently available (spending, certifying, rewarding, minting, drep). The purpose of this script type is to allow arbitrary validation logic to be decoupled from any ledger action. 
 Since observe validators are decoupled from actions, you can run them in a transaction without needing to perform any associated action (ie you don't need to consume a script input, or mint a token, or withdraw from a staking script just to execute this validator). 
 Additionally, we propose to introduce a new assertion to native scripts that they can use to check that a particular script hash is in `required_observers` (which in turn enforces that the script must be executed successfully in the transaction). This addresses a number of technical issues discussed in other CIPs and CPS such as the redundant execution of spending scripts, and the inability to effectively use native scripts in conjunction with Plutus scripts. 
 
 ## Motivation: why is this CIP necessary?
-<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
 Often in a plutus validator you want to check "a particular (different) Plutus script checked this transaction", but it's annoying (and wasteful) to have to have to lock an output in a script and then check if that output is consumed, or mint a token, or whatever else just to trigger script validation. 
 
 Currently the main design pattern used to achieve this is a very obscure trick involving staking validators and the fact that you can withdraw 0 from a staking validator to trigger the script validation. A summary of the trick is:
@@ -72,7 +70,6 @@ all the UTxOs that we would like to share the same spending condition into the f
 The above solution (enabled by this CIP) is more clear, concise, flexible and efficient than the alternatives discussed above.
 
 ## Specification
-<!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned. If a proposal defines structure of on-chain data it must include a CDDL schema in it's specification.-->
 The type signature of this script type will be consistent with the type signature of minting and staking validators, namely:
 ```haskell
 Redeemer -> ScriptContext -> () 
@@ -178,10 +175,7 @@ Native scripts are typically represented in JSON syntax. We propose the followin
 
 
 ## Rationale: how does this CIP achieve its goals?
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
 Currently Plutus scripts (and native scripts) in a transaction will only execute when the transaction performs the associated ledger action (ie. a Plutus minting policy will only execute if the transaction mints or burns tokens with matching currency symbol). The only exception is the withdraw zero trick which relies on an obscure mechanic where zero amount withdrawals are not filtered by the ledger. Now using `required_observers` we can specify a list of scripts (supports both native and Plutus scripts) to be executed in the transaction independent of any ledger actions. The newly introduced `txInfoObservations` field in the script context provides a straightforward way for scripts to check that "a particular script validated this transaction".
 
 This change is not backwards-compatible and will need to go into a new Plutus language version.
@@ -195,15 +189,12 @@ This change is not backwards-compatible and will need to go into a new Plutus la
 ## Path to Active
 
 ### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 - [] Fully implemented in Cardano.
       
 ### Implementation Plan
-<!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
 - [] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
       
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms. -->
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
