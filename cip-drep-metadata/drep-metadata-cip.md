@@ -119,7 +119,9 @@ The compulsory nature of this field was controversial because the `username`s ca
 - Tooling providers SHOULD warn people that none of the information is verified by the tool and they should DYOR
 - Tooling providers making metadata SHOULD provide some information about why this is important.
 
-
+PKI cryptographic solutions were also considered in the place of the current solution however they were generally considered too complex to implement for minimum viable tooling. There were also other issues with cryptographic forms of identification for MVPs:
+1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what the authentic pulic key is.
+2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for DReps.
 
 `links`
 - Optional
@@ -162,14 +164,7 @@ We intentionally have kept this proposal brief and uncomplicated. This was to re
 12. ~~When someone updates do we want a 1 line summary of what has changed?~~
 13. ~~Tooling to inform people of recent changes?~~
 14. ~~incentives address, where DRep incentives are paid ???~~
-15. PKI Public Key, Fingerprint, or DID? <-- Possible to do this with a Cardano wallet? Maybe a tooling gap for signing messages out-of-band?
-
-THE ONLY OPEN QUESTION STILL REMAINING --> How can we ensure that the DReps posting the metadata are who they say they are?
-1. linking to socials
-2. public/private key pairs
-    - with a pki solution someone wishing to be verified would still need to advertise their public key somewhere trusted and public, and the verifier would need to go to that location and verify it.
-       - Mandating a verification solution like [Keybase](https://keybase.io/) could allow tooling to verify a user owns the social media accounts that they say they do, however this is not an obvious win due to the need to centralize and then make Cardano governance dependent on a centralised entity.
-4. Other 
+15. ~~PKI Public Key, Fingerprint, or DID?~~ 
 
 ## Path to Active
 
