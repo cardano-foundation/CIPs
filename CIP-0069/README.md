@@ -44,14 +44,16 @@ It has the following form: `Datum -> Redeemer -> ScriptContext -> a`. This is en
 We make the following modification:
 
 - The signature of all scripts will be `Redeemer -> ScriptContext -> a`.
-- The `ScriptPurpose` type is modified such that the `Spending` variant contains a `Datum`:
+- The `ScriptPurpose` type is modified such that the `Spending` variant contains an optional `Datum`:
 
 ```hs
 data ScriptPurpose
   = ...
-  | Spending TxOutRef Datum
+  | Spending TxOutRef (Maybe Datum)
     ...
 ```
+
+The `Datum` is optional, which will enable us to allow executing spending scripts without a datum.
 
 - A new data type `ScriptIdentifier` is created.
   It is identical to the original `ScriptPurpose` and is used in the `txInfoRedeemers` map to uniquely identify a script within a transaction.
