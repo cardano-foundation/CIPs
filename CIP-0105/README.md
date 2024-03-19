@@ -4,7 +4,7 @@ Title: Conway era Key Chains for HD Wallets
 Status: Proposed
 Category: Wallets
 Authors:
-  - Ryan Williams <ryan.williams@iohk.io>
+  - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/597
