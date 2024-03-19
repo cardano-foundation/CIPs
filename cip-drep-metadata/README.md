@@ -24,6 +24,56 @@ License: CC-BY-4.0
 - Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
 
 -->
+## Acknowledgements
+There have been 3 lively public workshops on this subject, and I would like to thank the following people
+
+### Workshop 1 - 07/02/2024
+Abhik Nag, 
+Adam Dean, 
+Adam Rusch, 
+Digital Fortress (Rick McCracken), 
+Eduardo Silka, 
+Jose Miguel De Gamboa, 
+Leonardo Silka, 
+Lorenzo Bruno, 
+Mike Susko, 
+Nicolas Cerny, 
+Peter Wolcott, 
+Ryan Williams, 
+Sheldon Hunt, 
+Tyler Wales, 
+Upstream SPO, 
+Valeria Devaux, 
+Дима
+
+### Workshop 2 - 20/03/2024
+- Adam Rusch,
+- Aleksandar Djuricic (Aleks),
+- Christopher Hockaday,
+- Digital Fortress (Rick McCracken),
+- Eduardo Silka,
+- HD5000,
+- Igor Velickovic,
+- Input Endorsers,
+- Konstantinos Dermentzis,
+- Leonardo Silka,
+- Michael Madoff,
+- Michał Szałowski,
+- Mike Hornan,
+- Peter Wolcott,
+- Ryan,
+- Ryan (Cerkoryn),
+- Ryan Williams,
+- Steve Lockhart, 
+
+### Austtralia and APAC Workshop  - 05/03/2024
+- Andreas,
+- Linh P,
+- Mark Byers,
+- Mike Hornan,
+- Pedro Lucas,
+- Phil Lewis,
+
 
 ## Abstract
 The Conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md), with the addition of many new on-chain governance artefacts. Some of these artefacts support the linking off-chain metadata, as a way to provide context.
