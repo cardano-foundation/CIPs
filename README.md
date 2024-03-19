@@ -143,8 +143,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0112? | [Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) |
 | 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
 | 0116? | [Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/766) |
+| 0117? | [Explicit script return values](https://github.com/cardano-foundation/CIPs/pull/747) |
+| 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
 
-<p align="right"><i>Last updated on 2024-03-06</i></p>
+<p align="right"><i>Last updated on 2024-03-19</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -152,12 +154,13 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | ---- | --- | --- |
 | 0005 | [Plutus Script Usability](./CPS-0005) | Open |
 | 0007 | [Voltaire era Governance](./CPS-0007) | Open |
+| 0009 | [Coin Selection Including Native Tokens](./CPS-0009) | Open |
 | 0010 | [Wallet Connectors](./CPS-0007) | Open |
 | 0011 | [Universal JSON Encoding for Domain Types](./CPS-0011) | Open |
 | 0013 | [Better builtin data structures in Plutus](./CPS-0013) | Open |
 | 0014 | [Register of CBOR Tags](./CPS-0014) | Open |
 
-<p align="right"><i>Last updated on 2024-03-06</i></p>
+<p align="right"><i>Last updated on 2024-03-19</i></p>
 
 > 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
 
@@ -171,10 +174,10 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0004? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
 | 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
 | 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
-| 0009? | [Coin Selection Including Native Tokens](https://github.com/cardano-foundation/CIPs/pull/611) |
 | 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
+| 0015? | [Intents for Cardano](https://github.com/cardano-foundation/CIPs/pull/779) |
 
-<p align="right"><i>Last updated on 2024-03-06</i></p>
+<p align="right"><i>Last updated on 2024-03-19</i></p>
 
 ## Stalled / Waiting For Authors
 
