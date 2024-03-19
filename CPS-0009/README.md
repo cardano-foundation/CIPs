@@ -53,7 +53,7 @@ Decentralized applications and DeFi projects require efficient coin selection to
 
 Some real world use cases of coin selection algorithms taking Native Tokens into account are listed below:
 1. [UTxO utils of Cardano in WASM](https://www.npmjs.com/package/cardano-utxo-wasm)
-2. Cardano Wallet (link to be supplied)
+2. [Cardano Wallet](https://github.com/cardano-foundation/cardano-wallet/tree/master/lib/coin-selection)
 3. [cardano-multiplatform-lib](https://github.com/dcSpark/cardano-multiplatform-lib)
 4. [RoundTable](https://github.com/ADAOcommunity/round-table)
 
