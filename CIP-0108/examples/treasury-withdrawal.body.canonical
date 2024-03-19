@@ -1,0 +1,9 @@
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#abstract> "Withdraw 200000000000 ADA from the treasury so Ryan can buy an island."@en-us .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#motivation> "The current problem is that Ryan does not have an island, but he would really like an island."@en-us .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#rationale> "With these funds from the treasury will be sold for **cold hard cash**, this cash can then be used to purchase an island for Ryan. An example of this island is provided in the references."@en-us .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#references> _:c14n2 .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#title> "Buy Ryan a island"@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#body> _:c14n0 .
+_:c14n2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "A cool island for Ryan"@en-us .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"@en-us .
