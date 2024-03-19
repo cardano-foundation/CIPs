@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: DRep Metadata
-Category: ?
+Category: Metadata
 Status: Proposed
 Authors:
     - Thomas Upfield <thomas.upfield@iohk.io>
