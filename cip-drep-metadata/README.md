@@ -7,7 +7,7 @@ Authors:
     - Thomas Upfield <thomas.upfield@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/788
 Created: 2024-02-07
 License: CC-BY-4.0
 ---
