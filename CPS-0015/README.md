@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 0015
 Title: Intents for Cardano
 Status: Open
 Category: ?
