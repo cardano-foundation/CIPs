@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 0118
 Title: Validation zones
 Category: Ledger
 Status: Proposed
@@ -15,11 +15,11 @@ License: CC-BY-4.0
 
 We propose a set of changes that revolve around validation zones, a construct for allowing greater interdependency between transactions. 
 We use this to enable “unresolved transaction inputs”, and also atomic groups of transactions. 
-We show how these features can be used to address a number of use cases from CPS-????.
+We show how these features can be used to address a number of use cases from CPS-0015.
 
 ## Motivation: why is this CIP necessary?
 
-This CIP provides a partial solution to the problems described in CPS-????. 
+This CIP provides a partial solution to the problems described in CPS-0015. 
 In particular, it describes some ledger changes that allow intent settlement for a wide range of intents that require “counterparty irrelevance”, including most of the swap use cases and dApp fee sponsorship.
 
 ## Specification
@@ -185,7 +185,7 @@ Transactions that use UTXIs (or required transactions) cannot be put on the chai
 As such, some kind of secondary networking is necessary to distribute these incomplete transactions to the counterparties who can complete them. 
 That is: this proposal only addresses part of the intent-settlement problem, not the intent-processing problem.
 
-The author’s belief is that this is the right way to go because off-chain intent-processing systems are superior for the reasons discussed in CPS-???.
+The author’s belief is that this is the right way to go because off-chain intent-processing systems are superior for the reasons discussed in CPS-0015.
 
 #### Whither intents?
 
