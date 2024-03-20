@@ -156,12 +156,10 @@ We intentionally have kept this proposal brief and uncomplicated. This was to re
 ## Path to Active
 
 ### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
+
 
 ### Implementation Plan
-<!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
-
-<!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
+<!-- How I plan to meet the acceptance criteria -->
 
 ## Acknowledgements
 There have been 3 lively public workshops on this subject, and I would like to thank the following people
