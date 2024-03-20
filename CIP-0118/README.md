@@ -16,11 +16,11 @@ License: CC-BY-4.0
 
 We propose a set of changes that revolve around validation zones, a construct for allowing greater interdependency between transactions. 
 We use this to enable “unresolved transaction inputs”, and also atomic groups of transactions. 
-We show how these features can be used to address a number of use cases from CPS-0015.
+We show how these features can be used to address a number of use cases from CPS-15.
 
 ## Motivation: why is this CIP necessary?
 
-This CIP provides a partial solution to the problems described in CPS-0015. 
+This CIP provides a partial solution to the problems described in CPS-15. 
 In particular, it describes some ledger changes that allow intent settlement for a wide range of intents that require “counterparty irrelevance”, including most of the swap use cases and dApp fee sponsorship.
 
 ## Specification
@@ -53,6 +53,7 @@ We therefore need to implement https://github.com/cardano-foundation/CIPs/pull/7
 
 We add a new kind of transaction output, a “resolving output”. 
 A resolving output differs from a normal transaction output:
+
 - It specifies that it “resolves” a particular unresolved transaction input, by specifying the transaction ID and index of the input
 - It does not specify the value that it provides
 - It does not have a credential
@@ -70,58 +71,80 @@ It is however signed when the transaction body is signed.
 The required transactions field is illegal outside a validation zone. 
 It is included in the script context.
 
+### Validation dependencies and value dependencies
+
+There are two types of dependency between transactions which we will want to talk about.
+
+A *validation dependency* between transactions A and B means that we need to have seen B in order to validate A.
+For example, in order to validate a normal transaction A that spends an output of B, we need to have seen B in order to know that the UTXO is available to spend, as well as what the value and credential associated with it is.
+
+A *value dependency* between transactions A and B means that we need to have seen B in order to know that the value used by A is backed by something.
+For example, a normal transaction A that spends an output of B has a value dependency on B, since the value being spent comes from B.
+Similarly, a transaction A that has an unresolved input that is resolved by B has a value dependency on B.
+
+Transactions are in validation (resp. value) ordering when a transaction T comes after all transactions which it has a validation (resp. value) dependency on.
+When validating transactions in the ledger, they are always (implicitly) in validation order, since otherwise we will lack the information we need to validate the transaction.
+
+In the absence of unresolved inputs and resolving outputs, validation dependencies and value dependencies coincide.
+An unresolved input/resolving output pair have validation dependencies and value dependencies that go in opposite directions.
+
 ### Validating a zone
 
 Validating a zone proceeds as follows:
 
 #### 1: Check all zone-level properties
+
 The following zone-level properties are checked:
 
-1. (UTXIs are resolved) The unresolved inputs and resolving outputs in the zone match up exactly.
-2. (Linearizability) The transactions are linearizable, that is: there is a reordering of the transactions in the zone such that every resolving output comes before every unresolved input which it resolves.
-3. (Required transactions) For every transaction, all the transactions listed in `requiredTxs` are present in the zone.
+1. (Value order) The transactions can be value ordered.
+2. (Required transactions) For every transaction, all the transactions listed in `requiredTxs` are present in the zone.
 
 If any of these fail, the entire zone is discarded.
 
-#### 2: Validate transactions
+#### 2: Validate transactions for phase 1
 
-All transactions are validated for phase 1 checks; then they are all validated for phase 2.
+All transactions are validated for phase 1 checks; only then are they validated for phase 2.
+If any transaction fails at any point, then the zone is invalid.
 
-Resolving outputs are validated similarly to normal transaction inputs: we must check that the credential on the unresolved input accepts the resolving transaction, just as when spending a normal transaction output. 
+We add the following additional phase 1 checks:
 
-The other tricky case is where a transaction is phase-2 invalid. 
-To help us with this, we add two additional (phase-1) validity conditions inside the zone:
+1. (Resolving UTXIs) A resolving output must match with a UTXI that has already seen in the zone and has not already been resolved. The credential of the UTXI must be satisfied; this may incur a phase 2 check as usual.
+2. (No leftover UTXIs) After checking the final transaction in a zone, there must be no remaining UTXIs that have not been resolved.
+3. (Safe collateral) All collateral inputs come from outputs outside the zone.
+4. (Excess collateral) The collateral required for a transaction containing scripts is increased: the base amount is now based on the fee for the transaction and _every transaction it has a transitive validation dependency on_ within the zone.
 
-1. (Safe collateral) All collateral inputs come from outputs outside the zone.
-2. (Excess collateral) The collateral required for a transaction containing scripts is increased: the base amount is now based on the fee for the transaction and _every transaction it depends on_ within the zone.
-    - “A depends on B” here means that A is required in order to determine B’s validity. Note that this means that for unresolved-input-resolving-output pairs the dependency is the opposite way around to the relationship for a normal input-output pair.
+#### 3: Validate transactions for phase 2
 
-If a transaction is phase-2 invalid, then the following occurs:
+Transactions are validated for phase 2 as usual.
 
-- The node constructs an invalidity witness for the transaction. This consists of the invalid transaction, along with every transaction that it depends on from within the zone. 
+If one of the transactions is phase-2 invalid, then the following occurs:
+
+- The node constructs an invalidity witness for the transaction. This consists of the invalid transaction, along with every transaction that it has a transitive validation dependency on from within the zone. 
 - The node posts the invalidity witness to the chain and claims the collateral associated with the failing transaction.
 
 ## Rationale: how does this CIP achieve its goals?
  
 ### Design
 
-#### Linearizability and value flow
+#### Value flow
 
-The requirement that validity zones must be linearizable ensures that we do not allow any value flow in the ledger that was not possible before. 
+The requirement that validity zones must be value-orderable ensures that we do not allow any value flow in the ledger that was not possible before. 
 Value always flows from inputs to outputs, and there are no loops. 
-We can see this because linearizability shows that we could produce a “normal” series of transactions by reordering the zone and translating unresolved inputs and resolving outputs into normal inputs and outputs.
+We can see this because value ordering shows that we could produce a “normal” series of transactions by reordering the zone and translating unresolved inputs and resolving outputs into normal inputs and outputs.
 
 What we gain is the ability to specify and authorise this normal value flow in an out-of-order fashion. 
 Alice (whose transaction comes later in the value flow) can create their transaction first and send it to Bob (whose transaction comes earlier) and he can put them together into something valid.
 
-The linearizability requirement is the major driving difference between the design in this CIP and the one published in the "Babel Fees via Limited Liabilities" paper. 
+The value ordering requirement is the major driving difference between the design in this CIP and the one published in the "Babel Fees via Limited Liabilities" paper. 
 Both designs make use of the idea of “negative” inputs of one kind or another, but the liabilities’ design enables and embraces the possibility of loops in the value flow. 
 It is difficult to make this secure, which led to the painful restriction that minting policies be run in many cases where liabilities are used. 
 In practice that meant that many swap use cases could not be used with old tokens whose minting policies would not approve the new behaviour.
 
 Similarly, the liabilities design allowed easy access to arbitrary “flash loans” in Ada, which has often been a source of attacks on other blockchains.
 
-In contrast, if the value flow can be linearized then we know that nothing fundamentally new is possible here and we do not need to worry.
+In contrast, if transactions can be value ordered then we know that nothing fundamentally new is possible here and we do not need to worry.
+
+Unfortunately we can't require zones to be submitted in value order because we need them to instead be in validation order so that the ledger can process them one-by-one.
 
 #### Counterparty irrelevance
 
@@ -138,7 +161,7 @@ An example of this is Gas Station Network-style fee sponsorship, where a dApp op
 Users could then create a transaction with an unresolved input covering the fees, which would later be resolved by the dApp operator.
 
 Having counterparty irrelevance for both inputs and outputs allows us to do trades where we both give and receive assets: e.g. a swap. 
-However, this presents us with a problem: we cannot resolve both the input and the output in one transaction, because this would violate linearizability. 
+However, this presents us with a problem: we cannot resolve both the input and the output in one transaction, because this would prevent value ordering. 
 The same transaction cannot appear both earlier and later in the value flow!
 
 We can solve this problem with atomic (indivisible) transaction groups: then we can use two transactions, one earlier and one later, but bind them together so that they cannot be split apart.
@@ -153,7 +176,7 @@ The design is heavily inspired by [atomic transaction groups in Algorand](https:
 Algorand’s design is equivalent to ours with the additional restriction that every transaction in the “group” must require every other transaction. 
 We don’t want every transaction in a validity zone to require every other transaction, so if we were to use Algorand’s design we would need an additional kind of container for transactions to bound the atomic group.
 
-In contrast, by allowing transactions to have a specific list of stated dependencies, that means that it is legal for transactions to not state any dependencies, which is for us the normal case. 
+In contrast, by allowing transactions to have a specific list of stated dependencies, that means that it is legal for transactions in the zone to _not_ state any dependencies, which the normal case for us. 
 That means we can get away with only one kind of container: validation zones.
 
 This design also gives us some additional power, in that it lets us express dependency graphs other than connected components, but we do not currently know of a use for this.
@@ -186,7 +209,34 @@ Transactions that use UTXIs (or required transactions) cannot be put on the chai
 As such, some kind of secondary networking is necessary to distribute these incomplete transactions to the counterparties who can complete them. 
 That is: this proposal only addresses part of the intent-settlement problem, not the intent-processing problem.
 
-The author’s belief is that this is the right way to go because off-chain intent-processing systems are superior for the reasons discussed in CPS-0015.
+The author’s belief is that this is the right way to go because while on-chain processing systems have desirable properties (e.g. they have censorship resistance properties which cannot easily be matched by off-chain systems), designing such a system is a substantial research problem, and in the mean time it may be adequate to rely on off-chain solutions, which have other desirable properties as well.
+See CPS-15 for more discussion.
+
+#### Cancellation
+
+For many intent-based use cases it is useful to be able to cancel an intent. 
+An extreme example of this is a high-frequency trading system, which would want to be able to update its bids and asks very frequently (which means cancelling the old ones).
+While cancellation is really an intent-processing problem, the design here affects what cancellation approaches are possible.
+
+Fully uni-directional systems like the one given here make cancellation hard, since the intents are standalone things that can be resolved without the user's further interaction.
+
+There are a few approaches to cancellation that are compatible with the current design:
+
+- Accept the lack of cancellation. 
+    - This is fine for use cases that don't care so much about cancellation, e.g. Babel fees: there we expect fast settlement and we don't expect the user to change their mind.
+    - Contrast with e.g. Cardano itself: you can't rescind a transaction once you submit it.
+- Cancel by spending an output that is required by your intent transaction, making it invalid.
+    - This requires taking an expensive action on-chain, and managing the outputs that you use for this purpose.
+    - Depending on whether a normal or reference input is used, different kinds of behaviour arise, e.g. many intents that all spend a normal output "race" each other, in that only one can be settled.
+- Send around unsigned intents. 
+    - This loses the benefits of uni-directional communication, since intents now have come back to the user to sign, but allows you to cancel things by simply refusing to sign them. 
+- Use a trusted intermediary, who advertises intents but without some information that is needed to complete them (e.g. they strip the signatures and then advertise the unsigned version).
+   - This lets the user go offline but retain many of the benefits of the previous approach. 
+- Set short TTLs on intent transactions so if they aren't settled quickly they become invalid.
+   - This only works if you know ahead of time when you want things to expire: you can't cancel any sooner or later than that.
+
+These approaches have different tradeoffs and different ones may be appropriate for different situations.
+A full approach to cancellation would also have to consider how to notify intent-processing systems that the cancellation has occurred, so that people do not waste time trying to fulfil it.
 
 #### Whither intents?
 
@@ -224,6 +274,9 @@ Note that:
 Here is a diagram for an example:
 
 ![](./simple-swap.png)
+
+Note that this proposal does _not_ provide a way to do more advanced kinds of swap, such as limit or market orders.
+These require the exact values to also be unknown (but constrained), which is not possible in this proposal.
 
 #### DEX aggregators
 
@@ -293,7 +346,7 @@ The advantages of the negative outputs view are:
 The disadvantages of the negative outputs view are:
 
 - We need to introduce negative quantities, all ledger rules and scripts need to be aware of these. In contrast, unresolved inputs look more like normal inputs during validation of the transaction itself.
-- The linearizability condition looks backwards, since we would require negative outputs to be ordered after the inputs which “spend” them. Similarly ,the argument that we can view the linearized order as corresponding to a “normal” series of transactions is more subtle, since we would also need to translate negative outputs into inputs for that to be true.
+- The value ordering condition looks backwards, since we would require negative outputs to be ordered after the inputs which “spend” them. Similarly, the argument that we can view the value order as corresponding to a “normal” series of transactions is more subtle, since we would also need to translate negative outputs into inputs for that to be true.
 
 The authors’ position is that: 
 
