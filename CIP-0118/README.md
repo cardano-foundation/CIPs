@@ -45,7 +45,7 @@ An unresolved input differs from a normal transaction input:
 
 - It does not specify a transaction output that it spends
 - It does specify the value that the input provides
-- It has a credential and an optional datum
+- It has a credential and may have a datum
 
 Unresolved inputs must be addressable. 
 Current transaction inputs are not addressable by the combination of transaction ID and an index, since they are kept in a set. 
@@ -57,6 +57,7 @@ A resolving output differs from a normal transaction output:
 - It specifies that it “resolves” a particular unresolved transaction input, by specifying the transaction ID and index of the input
 - It does not specify the value that it provides
 - It does not have a credential
+- It may have a redeemer
 
 Unresolved inputs and resolving outputs are illegal outside a validation zone. 
 They are included in the script context accurately, with one subtlety: in the same way that normal transaction inputs are decorated with the value that they provide, resolving transaction outputs are similarly decorated with the value that they provide.
