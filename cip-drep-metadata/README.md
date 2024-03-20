@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: DRep Metadata
+Title: Governance metadata - DReps
 Category: Metadata
 Status: Proposed
 Authors:
