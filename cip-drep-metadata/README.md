@@ -90,7 +90,7 @@ Blockchains are poor choices to act as content databases. This is why governance
 When observing from the chain level, tooling can only see the content and history of DRep registration and update certificates and any associated anchors. These on-chain components do not give any context to the motivation of a DRep, even though this information would likely be the desired context for people who might delegate their voting power. By providing rich contextual metadata we enable people choosing a DRep to delegate their voting power to make well informed decisions.
 
 #### For all participants
-By standardising off-chain metadata formats we facilitate interoperability for tooling which creates and/or renders metadata attached to DRep registration, update and retirement transactions. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
+By standardising off-chain metadata formats we facilitate interoperability for tooling which creates and/or renders metadata attached to DRep registration and update transactions. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
 
 #### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of experitise, and would perhaps therefore be more attractive to some delegating Ada Holders. 
