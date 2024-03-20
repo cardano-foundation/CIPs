@@ -179,7 +179,7 @@ PKI cryptographic solutions were also considered in the place of the current sol
 - It is up to the client to check where these links go
 - Warning about linking to external links
 
-`donotlist`
+#### `donotlist`
 - Optional
 - If not included then the value is assumed to be false
 - A boolean expression
