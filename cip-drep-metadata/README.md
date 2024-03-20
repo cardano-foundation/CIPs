@@ -199,7 +199,7 @@ This proposal should not be versioned, to update this standard a new CIP should 
 ## Rationale: how does this CIP achieve its goals?
 We intentionally have kept this proposal brief and uncomplicated. This was to reduce the time to develop and deploy this standard. This way we enable tooling which depends on this standard to start development. The fields which have been chosen for this standard are heavily inspired by those that we are seeking to introduce for GovTool. We did this because GovTool will likely be the first technical implementation of this standard. 
 
-## Open Questions
+### Open Questions
 1. ~~Do we allow profile pictures to be included in metadata~~ <-- YES! possibly a list of pictures.
 2. ~~Do we need to replace the `bio` field with a more structured set of fields~~
 3. ~~Can we include and verify an ADA handle to uniquely identify a DRep~~
