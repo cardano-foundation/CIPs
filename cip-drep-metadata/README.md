@@ -86,7 +86,7 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 ## Motivation: why is this CIP necessary?
 Blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying an On-Chain hash of the off-chain we ensure correctness of data whilst minimising the amount of data posted to the chain.
 
-#### For people wishing to delegate their voting power
+#### For potential delegators
 When observing from the chain level, tooling can only see the content and history of DRep registration, update and retirement certificates and any associated anchors. These on-chain components do not give any context to the motivation of a DRep, even though this information would likely be the desired context for people who might delegate their voting power. By providing rich contextual metadata we enable people choosing a DRep to delegate their voting power to, to make well informed decisions.
 
 #### For all participants
