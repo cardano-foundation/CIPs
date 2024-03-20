@@ -162,7 +162,7 @@ The compulsory nature of this field was controversial because the `username`s ca
 - A freeform text field with a maximum of 1000 characters 
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
-`identity`
+#### `identity`
 - Compulsory
 - A link to a social media profile where the person must reference their DRep ID in their profile.
 - This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
