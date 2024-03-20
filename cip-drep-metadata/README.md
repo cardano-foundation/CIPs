@@ -55,7 +55,7 @@ DRep Metadata will not follow the CIP-100 specification related to signing the m
 ### Extended Vocabulary
 Like CIP-108, this CIP also extends the potential vocabulary of CIP-100's `body` property. For all of these properties tooling providers MUST be aware that they are responsible for what they display to their users and that these fields could be used for illegal, unsavoury, or innapropriate purposes or language. Therefore such tools SHOULD have a terms of service which they enforce to moderate what they show to their users. The following are a list of properties tooling should expect to encounter:
 
-#### `Payment Address`
+#### `paymentAddress`
 Dreps may want to recieve tokens for a variety of reasons such as:
 - donations
 - expenses
