@@ -14,14 +14,14 @@ License: CC-BY-4.0
 
 ## Abstract
 
-We propose a set of changes that revolve around validation zones, a construct for allowing greater interdependency between transactions. 
-We use this to enable “unresolved transaction inputs”, and also atomic groups of transactions. 
+We propose a set of changes that revolve around validation zones, a construct for allowing new kinds of dependency between transactions. 
+Alongside this we introduce “unresolved transaction inputs”, and also atomic groups of transactions. 
 We show how these features can be used to address a number of use cases from CPS-15.
 
 ## Motivation: why is this CIP necessary?
 
 This CIP provides a partial solution to the problems described in CPS-15. 
-In particular, it describes some ledger changes that allow intent settlement for a wide range of intents that require “counterparty irrelevance”, including most of the swap use cases and dApp fee sponsorship.
+In particular, it describes some ledger changes that allow intent settlement for a numer of intents that require “counterparty irrelevance”, including many of the swap use cases and dApp fee sponsorship.
 
 ## Specification
 
@@ -33,7 +33,7 @@ Within validation zones we can therefore allow features that require “earlier�
 
 At the ledger level, a validation zone:
 
-- Is a new top-level element (an alternative to a transaction)
+- Is the new top-level element (normal transactions are just a zone containing one transaction)
 - Contains a sequence of transactions (not zones, there is no point nesting them)
 - Carries no further data beyond this
 - Triggers a special mode of validation for the transactions within (see “validating a zone” below)
@@ -100,7 +100,7 @@ The following zone-level properties are checked:
 1. (Value order) The transactions can be value ordered.
 2. (Required transactions) For every transaction, all the transactions listed in `requiredTxs` are present in the zone.
 
-If any of these fail, the entire zone is discarded.
+If any of these fail, the zone is invalid.
 
 #### 2: Validate transactions for phase 1
 
@@ -198,8 +198,8 @@ But we need a way to take the collateral and prove that we did the right thing w
 Our first problem is how to get the collateral at all. 
 Rule Safe Collateral helps us here: by ensuring that collateral inputs come from outside the zone, we can be sure that we will actually be able to take them if we discard the zone.
 
-The second problem is how to ensure that the node is compensated for the work that it did validating transactions that came before the failing transaction in the zone. 
-The solution here is Rule Excess Collateral: we require that transactions have enough collateral to cover earlier work as well.
+The second problem is how to ensure that we pay for the space to record the transactions that are needed by the failing transaction in the zone. 
+The solution here is Rule Excess Collateral: we require that transactions have enough collateral to cover earlier transactions as well.
 
 The final problem is how to prove that the transaction really did fail. 
 In order to reproduce this we need all the (unapplied) transactions that came earlier in the zone. So our “failure witness” must include all of these.
