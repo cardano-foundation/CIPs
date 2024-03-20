@@ -173,7 +173,7 @@ PKI cryptographic solutions were also considered in the place of the current sol
 1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what the authentic pulic key is.
 2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for DReps.
 
-`links`
+#### `links`
 - Optional
 - A list of urls to the social media/ websites associated with the DRep
 - It is up to the client to check where these links go
