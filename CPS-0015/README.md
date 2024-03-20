@@ -1,8 +1,8 @@
 ---
-CPS: 0015
+CPS: 15
 Title: Intents for Cardano
 Status: Open
-Category: ?
+Category: Tools
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Proposed Solutions: []
