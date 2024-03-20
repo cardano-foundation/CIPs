@@ -28,7 +28,7 @@ License: CC-BY-4.0
 There have been 3 lively public workshops on this subject, and I would like to thank the following people
 
 ### Workshop 1 - 07/02/2024
-Abhik Nag, 
+Abhik Nag
 Adam Dean, 
 Adam Rusch, 
 Digital Fortress (Rick McCracken), 
