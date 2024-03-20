@@ -23,13 +23,14 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 Thank you to [everyone who participated in the CIP workshops](#Acknowledgements)
 
 ## Motivation: why is this CIP necessary?
-Blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying an On-Chain hash of the off-chain we ensure correctness of data whilst minimising the amount of data posted to the chain.
+CIP-1694 has set forth a compelling vision of a blockchain controlled by its community, and in doing so has thrown down the gauntlet to tooling providers to build apps and other kinds of tooling that will allow their users easy enjoyment of the governance features currently being built into the fabric of the Cardano blockchain. As I write this developers are feverishly hammering away at their keyboards like the blacksmiths of old to bring us the first iteration of these tools in a minimum viable format. 
 
-#### For potential delegators
-When observing from the chain level, tooling can only see the content and history of DRep registration and update certificates and any associated anchors. These on-chain components do not give any context to the motivation of a DRep, even though this information would likely be the desired context for people who might delegate their voting power. By providing rich contextual metadata we enable people choosing a DRep to delegate their voting power to make well informed decisions.
+The motivation for this CIP therefore is to provide these toolmakers with a simple and easy to accomodate standard which once adopted will allow them to read and display the metadata created by anyone who follows this standard when creating their DRep registration, or update metadata, made easy by tooling created to build this metadata for them.  
 
-#### For all participants
-By standardising off-chain metadata formats we facilitate interoperability for tooling which creates and/or renders metadata attached to DRep registration and update transactions. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
+Metadata is needed because blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying an On-Chain hash of the off-chain we ensure correctness of data whilst minimising the amount of data posted to the chain.
+
+## Specification
+CIP-1694 specifies that metadata anchors are optional for DRep registration and updates. This CIP covers metadata for the aforementioned transaction types, but it does not cover metadata for voting transactions. 
 
 #### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of experitise, and would perhaps therefore be more attractive to some delegating Ada Holders. 
@@ -37,15 +38,6 @@ CIP-1694 allows for DReps to be registered using a native or Plutus script crede
 Participants at the workshop held to debut the first draft of this CIP strongly advocated in favour of a CIP that would include features that would assist a DRep comprised of a team of individuals properly describe their endeavour to delegating Ada Holders and anyone else reading the metadata associated with their registration.
 
 This CIP has not included these features, the decision not to include these features was made in order to simplify this CIP so that it became suitable for the minimum viable level of tooling, with the expectation that further CIPs will build on it. 
-
-## Specification
-CIP-1694 specifies that metadata anchors are optional for DRep registration and updates. This CIP covers metadata for the aforementioned transaction types, but it does not cover metadata for voting transactions. 
-
-### Markdown Text Styling
-Unlike [CIP-108](https://github.com/Ryun1/CIPs/blob/governance-metadata-actions/CIP-0108/README.md#markdown-text-styling) this standard seeks to simplify the job of tooling providers by not supporting text formatting such as markdown. 
-
-### Integrity
-Metadata is said to have integrity when the hash of this metadata in the metadata anchor on-chain is the same as a hash made of the metadata now (given that the same algorithm is used). Tooling SHOULD check for metadata integrity, with the hashing algorithm determined by rules outlined in [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100). If tooling detects that the metadata does not have integrity it MUST NOT display the metadata, and it MUST display a warning describing why it is not showing the metadata.
 
 ### Formatting
 If DRep Metadata is not formatted in the way described by this CIP then tooling SHOULD either:
@@ -137,6 +129,17 @@ This proposal should not be versioned, to update this standard a new CIP should 
 
 ## Rationale: how does this CIP achieve its goals?
 We intentionally have kept this proposal brief and uncomplicated. This was to reduce the time to develop and deploy this standard. This way we enable tooling which depends on this standard to start development. The fields which have been chosen for this standard are heavily inspired by those that we are seeking to introduce for GovTool. We did this because GovTool will likely be the first technical implementation of this standard. 
+
+I believed that this CIP would provide a benefit to:
+
+#### Potential delegators
+When observing from the chain level, tooling can only see the content and history of DRep registration and update certificates and any associated anchors. These on-chain components do not give any context to the motivation of a DRep, even though this information would likely be the desired context for people who might delegate their voting power. By providing rich contextual metadata we enable people choosing a DRep to delegate their voting power to make well informed decisions.
+
+#### DReps
+DReps will be able to use tools that create metadata in a standard format. This in turn will allow their metadata to be read by apps that will render their words on screen for potential delegating Ada Holders to enjoy, this may lead to greater levelso of delegation. 
+
+#### All participants
+By standardising off-chain metadata formats for any tooling which creates and/or renders metadata referenced in DRep registration and update transactions we facilitate interoperability. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
 
 ### Open Questions
 1. ~~Do we allow profile pictures to be included in metadata~~ <-- YES! possibly a list of pictures.
