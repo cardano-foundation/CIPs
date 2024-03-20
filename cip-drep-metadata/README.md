@@ -19,6 +19,8 @@ The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/t
 
 This proposal aims to provide a specification for off-chain metadata vocabulary that can be used to give context to CIP-100 for DRep registration and updates. Without a sufficiently detailed standard for DRep metadata we introduce the possibility to undermine the ability of DReps to explain their motivations and therefore people looking for someone to represent them with the best possible information available to make that choice. Furthermore a lack of such standards risks preventing interoperability between tools, to the detriment of user experiences.
 
+#### Thank you
+Thank you to [everyone who participated in the CIP workshops](#Acknowledgements)
 
 ## Motivation: why is this CIP necessary?
 Blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying an On-Chain hash of the off-chain we ensure correctness of data whilst minimising the amount of data posted to the chain.
@@ -60,7 +62,7 @@ DRep Metadata will not follow the CIP-100 specification related to signing the m
 ### Extended Vocabulary
 Like CIP-108, this CIP also extends the potential vocabulary of CIP-100's `body` property. For all of these properties tooling providers MUST be aware that they are responsible for what they display to their users and that these fields could be used for illegal, unsavoury, or innapropriate purposes or language. Therefore such tools SHOULD have a terms of service which they enforce to moderate what they show to their users. The following are a list of properties tooling should expect to encounter:
 
-`Payment Address`
+#### `Payment Address`
 Dreps may want to recieve tokens for a variety of reasons such as:
 - donations
 - expenses
@@ -68,7 +70,7 @@ Dreps may want to recieve tokens for a variety of reasons such as:
 
 Therefore there will be a `payment_address` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
 
-`username`
+#### `username`
 - Compulsory
 - A very short freeform text field. Limited to 80 characters.
 - This SHOULD NOT support markdown text styling.
@@ -78,23 +80,23 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 
 The compulsory nature of this field was controversial because the `username`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `username` it a reason for people reviewing governance actions to properly check the whole profile of a DRep before delegating to them. A `username` MUST be included because it is a human readable identifier, it is the property that people reviewing DReps will most likely identify that DRep by even in the presence of copycats.
 
-`picture`
+#### `picture`
 - Optional 
 - A base 64 encoded profile picture
 - Moderation of this image must be handled on the client side to comply with their TOS
 - This SHOULD be treated as the profile picture of the individual
 
-`objectives`
+#### `objectives`
 - Optional
 - A freeform text field with a maximum of 1000 characters
 - A short description of what the person believes nd what they want to achieve as a DRep
 
-`motivation`
+#### `motivation`
 - Optional
 - A freeform text field with a maximum of 1000 characters
 - A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to 
 
-`qualifications`
+#### `qualifications`
 - Optional
 - A freeform text field with a maximum of 1000 characters 
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
