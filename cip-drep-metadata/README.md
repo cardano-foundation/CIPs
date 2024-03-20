@@ -12,69 +12,6 @@ Created: 2024-02-07
 License: CC-BY-4.0
 ---
 
-<!-- Existing categories:
-
-- Meta     | For meta-CIPs which typically serves another category or group of categories.
-- Wallets  | For standardisation across wallets (hardware, full-node or light).
-- Tokens   | About tokens (fungible or non-fungible) and minting policies in general.
-- Metadata | For proposals around metadata (on-chain or off-chain).
-- Tools    | A broad category for ecosystem tools not falling into any other category.
-- Plutus   | Changes or additions to Plutus
-- Ledger   | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
-- Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
-
--->
-## Acknowledgements
-There have been 3 lively public workshops on this subject, and I would like to thank the following people
-
-### Workshop 1 - 07/02/2024
-Abhik Nag
-Adam Dean, 
-Adam Rusch, 
-Digital Fortress (Rick McCracken), 
-Eduardo Silka, 
-Jose Miguel De Gamboa, 
-Leonardo Silka, 
-Lorenzo Bruno, 
-Mike Susko, 
-Nicolas Cerny, 
-Peter Wolcott, 
-Ryan Williams, 
-Sheldon Hunt, 
-Tyler Wales, 
-Upstream SPO, 
-Valeria Devaux, 
-Дима
-
-### Workshop 2 - 20/03/2024
-- Adam Rusch,
-- Aleksandar Djuricic (Aleks),
-- Christopher Hockaday,
-- Digital Fortress (Rick McCracken),
-- Eduardo Silka,
-- HD5000,
-- Igor Velickovic,
-- Input Endorsers,
-- Konstantinos Dermentzis,
-- Leonardo Silka,
-- Michael Madoff,
-- Michał Szałowski,
-- Mike Hornan,
-- Peter Wolcott,
-- Ryan,
-- Ryan (Cerkoryn),
-- Ryan Williams,
-- Steve Lockhart, 
-
-### Austtralia and APAC Workshop  - 05/03/2024
-- Andreas,
-- Linh P,
-- Mark Byers,
-- Mike Hornan,
-- Pedro Lucas,
-- Phil Lewis,
-
-
 ## Abstract
 The Conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md), with the addition of many new on-chain governance artefacts. Some of these artefacts support the linking off-chain metadata, as a way to provide context.
 
@@ -225,6 +162,67 @@ We intentionally have kept this proposal brief and uncomplicated. This was to re
 <!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
 
 <!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
+
+## Acknowledgements
+There have been 3 lively public workshops on this subject, and I would like to thank the following people
+
+<details>
+  <summary><strong>Workshop 1 - 07/02/2024</strong></summary>
+
+- Abhik Nag
+- Adam Dean
+- Adam Rusch
+- Digital Fortress (Rick McCracken)
+- Eduardo Silka
+- Jose Miguel De Gamboa
+- Leonardo Silka
+- Lorenzo Bruno
+- Mike Susko
+- Nicolas Cerny
+- Peter Wolcott
+- Ryan Williams
+- Sheldon Hunt
+- Tyler Wales
+- Upstream SPO
+- Valeria Devaux
+- Дима
+
+</details>
+
+<details>
+  <summary><strong>Workshop 2 - 20/03/2024</strong></summary>
+    
+- Adam Rusch
+- Aleksandar Djuricic (Aleks)
+- Christopher Hockaday
+- Digital Fortress (Rick McCracken)
+- Eduardo Silka
+- HD5000
+- Igor Velickovic
+- Input Endorsers
+- Konstantinos Dermentzis
+- Leonardo Silka
+- Michael Madoff
+- Michał Szałowski
+- Mike Hornan
+- Peter Wolcott
+- Ryan
+- Ryan (Cerkoryn)
+- Ryan Williams
+- Steve Lockhart 
+
+</details>
+
+<details>
+  <summary><strong>Austtralia and APAC Workshop  - 05/03/2024</strong></summary>
+    
+- Andreas,
+- Linh P,
+- Mark Byers,
+- Mike Hornan,
+- Pedro Lucas,
+- Phil Lewis,
+</details>
 
 ## Copyright
 
