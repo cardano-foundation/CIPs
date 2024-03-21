@@ -989,7 +989,7 @@
               ]
             },
             "value": {
-              "$ref": "cardano-babbage.json#/definitions/Int128"
+              "$ref": "cardano-babbage.json#/definitions/BigInt"
             }
           }
         },
