@@ -572,7 +572,7 @@
         "plutus_v1": {
           "$ref": "cardano-babbage.json#/definitions/PlutusV1CostModel"
         },
-        "plutus_v1": {
+        "plutus_v2": {
           "$ref": "cardano-babbage.json#/definitions/PlutusV2CostModel"
         }
       },
