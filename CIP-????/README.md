@@ -1,5 +1,5 @@
 ---
-CIP: 127?
+CIP: ?
 Title: Dynamic Asset Resale Fee Standard
 Status: Proposed
 Category: Tokens
