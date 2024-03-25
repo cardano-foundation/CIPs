@@ -94,6 +94,9 @@ The compulsory nature of this field was controversial because the `username`s ca
 - A freeform text field with a maximum of 1000 characters 
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
+#### `references`
+This CIP extends the 'references` property from CIP-100, adding two @type identifiers "Identity" and "Link".
+
 #### `identity`
 - Compulsory
 - A link to a social media profile where the person must reference their DRep ID in their profile.
