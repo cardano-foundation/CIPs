@@ -1,0 +1,21 @@
+; CIP-XXXX: CIP-Descriptor
+; Version: 1
+
+; Define any common or reusable pieces such as strings, URIs, etc
+
+string = text .size (0..64)
+
+; Define any nested objects before the top-level object
+
+details-object = {
+  0 : string            ; Something
+  ? 1 : uint            ; Foo
+  ? 2 : [+ string]      ; Stuff
+}
+
+; Define the top-level CIP object
+
+cip-xxxx-details = {
+  ? 0 : uint            ; optional version number
+  ? 1 : details-object  ; optional details object
+}
