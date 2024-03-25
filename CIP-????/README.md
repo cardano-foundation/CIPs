@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Dynamic Asset Resale Fee Standard
+Title: Dynamic Asset Resale Fees
 Status: Proposed
 Category: Tokens
 Authors:
