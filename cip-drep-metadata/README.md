@@ -95,24 +95,29 @@ The compulsory nature of this field was controversial because the `username`s ca
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
 #### `references`
-This CIP extends the 'references` property from CIP-100, adding two @type identifiers "Identity" and "Link".
+- This CIP extends the `references` property from [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100#high-level-description)
+- `references` contain the following sub-properties `type`, `label`, and `uri`
+- This CIP adds two `@type` identifiers "Identity" and "Link"
+- The creator of the metadata MUST add a `label`, this `label` SHOULD describe the source of the url, e.g. if it is a link to the DRep's X account then the `label` should say "X". If it is a personal website the `label` should say "Personal Website" rather than domain_name.com.
+- The `label` of each link SHOULD NOT be left blank, but if it is then tooling displaying links SHOULD still allow users to access the URL.
+- Each link MUST have exactly one `uri` (as specified in CIP-100) which MUST not be blank. If it is blank then tooling providers displaying the Link SHOULD NOT display any of the details of this link.
+- `uri` MUST be the full address to the souce of the intended data and MUST NOT be a shortened url i.e. one that has been created using a service such as bitly. This is to ensure that tooling can easily scan for malicious links and users of tooling who are reading the `uri` value can understand where the link goes.
+- Tools that have a user interface that allows users to navigate to the location in the `uri` of a link, SHOULD inform their user of the full url that they will be visiting and SHOULD also warn their user that they will be visiting a different website and ask them whether they want to proceed.
+- Tooling providers SHOULD warn people that none of the information contained in external is verified by the tool and they should DYOR
+##### `type`: Link
+- Optional
+- It is expected that these links will be the addresses of the social media/ websites associated with the DRep in order to give a person reviewing this information a fulsome overview of the DRep's online presence.
 
-#### `identity`
-- Compulsory
-- A link to a social media profile where the person must reference their DRep ID in their profile.
-- This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
-- Tooling providers SHOULD warn people that none of the information is verified by the tool and they should DYOR
+##### `type`: Identity
+- The `uri` of a reference with the `type` "Identity" is a way for DReps to prove that they are who they say they are
+- Each piece of metadata referenced in the anchor of a DRep registristration or update transaction MUST contain at least one reference with the `type` Identity. Else tooling SHOULD ignore the metadata.
+- It is expected that the "Identity" of a DRep will be the addresses of their most active social media account twitter, linkedin etc. or personal website.
+- The DRep must reference their DRep ID in a prominent place at the location that is specified in the `uri` property of that reference. This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
 - Tooling providers making metadata SHOULD provide some information about why this is important.
 
 PKI cryptographic solutions were also considered in the place of the current solution however they were generally considered too complex to implement for minimum viable tooling. There were also other issues with cryptographic forms of identification for MVPs:
-1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what the authentic pulic key is.
+1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what their authentic public key is.
 2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for DReps.
-
-#### `links`
-- Optional
-- A list of urls to the social media/ websites associated with the DRep
-- It is up to the client to check where these links go
-- Warning about linking to external links
 
 #### `donotlist`
 - Optional
