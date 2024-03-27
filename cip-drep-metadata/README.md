@@ -117,7 +117,7 @@ The compulsory nature of this field was controversial because the `username`s ca
 
 PKI cryptographic solutions were also considered in the place of the current solution however they were generally considered too complex to implement for minimum viable tooling. There were also other issues with cryptographic forms of identification for MVPs:
 1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what their authentic public key is.
-2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for DReps.
+2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for the identity validation of DReps.
 
 #### `donotlist`
 - Optional
