@@ -35,18 +35,24 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 
 ### Example JSON with string
 
-```
+```json
 {
-	"778": {
-		"rate": "0.025",
-		"addr": "addr1v9nevxg9wunfck0gt7hpxuy0elnqygglme3u6l3nn5q5gnq5dc9un",
-     		"rate2": "0.015",
-		"addr2": "addr1h2ahhsh2jajhsr4aj6jsajk2ahjaqbxnam1s892as3s1js6qx9kw",
-     		"rate3": "0.01",
-		"addr3": "addr1j6gqjsy6xgzjye7hq8hksuw1mylqmuqjsq7j182je9h2kn7ah5aj"
+    "778": [
+        {
+            "rate": "0.025",
+            "addr": "addr1v9nevxg9wunfck0gt7hpxuy0elnqygglme3u6l3nn5q5gnq5dc9un"
+        },
+        {
+            "rate": "0.015",
+            "addr": "addr1h2ahhsh2jajhsr4aj6jsajk2ahjaqbxnam1s892as3s1js6qx9kw"
+        },
+        {
+     		"rate": "0.01",
+		"addr": "addr1j6gqjsy6xgzjye7hq8hksuw1mylqmuqjsq7j182je9h2kn7ah5aj"
 	}
+    ]
 }
-```
+\```
 
 ### Example JSON with array
 
