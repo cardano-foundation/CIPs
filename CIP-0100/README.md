@@ -16,63 +16,7 @@ License: CC-BY-4.0
 
 This Cardano Improvement Proposal (CIP) introduces a standardized and flexible metadata format for governance events in the Cardano ecosystem. While the ledger does not enforce the structure of metadata, providing a standard for metadata will enable better tooling, improved interoperability, and more consistent display across wallets, blockchain explorers, and other tools. This CIP aims to strike a balance between flexibility and structure to facilitate high-quality tooling, without limiting expressivity with regards to user expression.
 
-### Acknowledgements
-
-<details>
-  <summary><strong>First draft/workshop</strong></summary>
-
-  I would like to thank those that contributed to this first draft during the online workshop that was held on 2023-04-12.
-
- - CHIL Pool
- - Alex Djuric
- - Cody Butz
- - Felix Weber
- - Leo Pienasola
- - Markus Gufler
- - Michael Madoff
- - Mohamed Mahmoud
- - Thomas Upfield
- - William Ryan
- - Santiago Carmuega
-
-</details>
-
-<details>
-  <summary><strong>Second draft</strong></summary>
-
-  The following people helped with the second draft, out of band at at the Edinburgh workshop on 2023-07-12.
-
-  - Ryan Williams
-  - Matthias Bankort
-  - All Edinburgh Workshop attendees
-</details>
-<details>
-  <summary><strong>Second Workshop</strong></summary>
-
-  The following people helped with the third draft during the online workshop held on 2023-11-02.
-
-  - Mike Susko
-  - Thomas Upfield
-  - Lorenzo Bruno
-  - Ryan Williams
-  - Nils Peuser
-  - Santiago Carmuega
-  - Nick Ulrich
-  - Ep Ep
-
-</details>
-
-<details>
-  <summary><strong>Third Workshop</strong></summary>
-
-  The following people helped with the third draft during the online workshop held on 2023-11-10.
-
-  - Adam Dean
-  - Rhys Morgan
-  - Thomas Upfield
-  - Marcel Baumberg
-
-</details>
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
 ## Motivation
 
@@ -306,6 +250,65 @@ The key stages to get this proposal to active, and the motivation for why each s
 - Extension
   - Finally, this standard chooses to fully specify very little of the total surface area of what could be expressed in governance metadata
   - Therefore, to prove the extensibility of the standard, at least one follow-up CIP should be drafted, extending the set of fields beyond "Minimum Viable Governance"
+
+## Acknowledgements
+
+<details>
+  <summary><strong>First draft/workshop</strong></summary>
+
+  I would like to thank those that contributed to this first draft during the online workshop that was held on 2023-04-12.
+
+ - CHIL Pool
+ - Alex Djuric
+ - Cody Butz
+ - Felix Weber
+ - Leo Pienasola
+ - Markus Gufler
+ - Michael Madoff
+ - Mohamed Mahmoud
+ - Thomas Upfield
+ - William Ryan
+ - Santiago Carmuega
+
+</details>
+
+<details>
+  <summary><strong>Second draft</strong></summary>
+
+  The following people helped with the second draft, out of band at at the Edinburgh workshop on 2023-07-12.
+
+  - Ryan Williams
+  - Matthias Benkort
+  - All Edinburgh Workshop attendees
+
+</details>
+<details>
+  <summary><strong>Second Workshop</strong></summary>
+
+  The following people helped with the third draft during the online workshop held on 2023-11-02.
+
+  - Mike Susko
+  - Thomas Upfield
+  - Lorenzo Bruno
+  - Ryan Williams
+  - Nils Peuser
+  - Santiago Carmuega
+  - Nick Ulrich
+  - Ep Ep
+
+</details>
+
+<details>
+  <summary><strong>Third Workshop</strong></summary>
+
+  The following people helped with the third draft during the online workshop held on 2023-11-10.
+
+  - Adam Dean
+  - Rhys Morgan
+  - Thomas Upfield
+  - Marcel Baumberg
+
+</details>
 
 ## Copyright
 

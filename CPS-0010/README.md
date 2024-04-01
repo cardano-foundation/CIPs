@@ -301,8 +301,6 @@ How can we prevent duplication of functionality and make sure different APIs do 
 
 ## Acknowledgements
 
-### Acknowledgments
-
 <details>
   <summary><strong>First workshop - 2023-11-27</strong></summary>
 
