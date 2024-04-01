@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Optimized Coin Selection Algorithms for Cardano
+Title: Coin Selection - Optimized Random Improve
 Category: Wallets
 Authors:
     - Nicholas Maselli <maselli.nicholas@gmail.com>
