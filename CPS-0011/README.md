@@ -9,6 +9,7 @@ Proposed Solutions: []
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/742
 Created: 2024-01-10
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -62,3 +63,7 @@ Non-goals:
 - How can we programmatically or manually test the constructed schema file?
 - How to encode long integer arithmetic? Some JSON encoding implementations simply refuse to handle long integers, e.g. [CSL](https://github.com/Emurgo/cardano-serialization-lib/blob/4a35ef11fd5c4931626c03025fe6f67743a6bdf9/rust/src/plutus.rs#L1370).
 - [RFC8949](https://www.rfc-editor.org/rfc/rfc8949.html#name-converting-data-between-cbo) and [RFC8610](https://datatracker.ietf.org/doc/html/rfc8610#appendix-E) contain recommendations for developers who want to maintain interoperability with JSON. Can we apply these in our context?
+
+## Copyright
+
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
