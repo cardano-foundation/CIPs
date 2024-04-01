@@ -52,7 +52,7 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 	}
     ]
 }
-\```
+```
 
 ### Example JSON with array
 
