@@ -25,64 +25,7 @@ This problem statement is concerned with the issues surrounding Cardano's curren
 These interfaces are difficult to define and historically have been even harder to iterate upon.
 We wish to provide a comprehensive catalogue of the current offerings and their drawbacks to be able to make suggestions on future standards.
 
-### Acknowledgments
-
-<details>
-  <summary><strong>First workshop - 2023-11-27</strong></summary>
-
-  We would like to thank those that contributed to the first workshop hosted by Adam Dean and Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
-  - Beatrice Anihiri
-  - Denis Kalinin
-  - Evgenii Lisitskii
-  - George APEX Pool
-  - George Flerovsky
-  - George Humphreys
-  - Hernán Rajchert
-  - Jack Rousian
-  - Joshua Marchand
-  - Ken Fritschy
-  - Ken-Erik Ølmheim
-  - Leo H
-  - Marcel Baumberg
-  - Martynas Kazlaukas
-  - Michael Chappell
-  - Mircea Hasegan
-  - Nicolas Ayotte
-  - Rhys Bartels-Waller
-  - Robert Phair
-  - Rodolpho Ribeiro
-  - Steven Johnson
-  - Teodora Sevastru Lunn
-  - Thomas Lindseth
-  - Thomas Upfield
-  - Vladimir Kalnitsky
-
-</details>
-
-<details>
-  <summary><strong>Second workshop - 2023-12-08</strong></summary>
-
-  We would like to thank those that contributed to the second workshop hosted by Adam Dean and Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
-  - Alex Dochioiu
-  - George APEX Pool
-  - Mark Byers
-  - Leo H
-
-</details>
-
-<details>
-  <summary><strong>Third workshop - 2024-01-06</strong></summary>
-
-  We would like to thank those that contributed to the third workshop hosted by Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
-  - Brent
-  - Ishita Verma
-  - Jonathan Kelly
-  - Leo H
-  - Nick Ulrich
-  - NOODZ
-  - Vladimir Kalnitsky
-
-</details>
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
 ## Problem
 The motivation for this document is to outline the current state of Cardano's wallet connectors, discuss their flaws, and identify key concerns for future connector authors to be aware of.
@@ -355,6 +298,65 @@ What options do we have for integration with Cardano sidechains, rollups, hardfo
 
 ### How can we effectively police API scope?
 How can we prevent duplication of functionality and make sure different APIs do not overlap?
+
+## Acknowledgements
+
+<details>
+  <summary><strong>First workshop - 2023-11-27</strong></summary>
+
+  We would like to thank those that contributed to the first workshop hosted by Adam Dean and Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
+  - Beatrice Anihiri
+  - Denis Kalinin
+  - Evgenii Lisitskii
+  - George APEX Pool
+  - George Flerovsky
+  - George Humphreys
+  - Hernán Rajchert
+  - Jack Rousian
+  - Joshua Marchand
+  - Ken Fritschy
+  - Ken-Erik Ølmheim
+  - Leo H
+  - Marcel Baumberg
+  - Martynas Kazlaukas
+  - Michael Chappell
+  - Mircea Hasegan
+  - Nicolas Ayotte
+  - Rhys Bartels-Waller
+  - Robert Phair
+  - Rodolpho Ribeiro
+  - Steven Johnson
+  - Teodora Sevastru Lunn
+  - Thomas Lindseth
+  - Thomas Upfield
+  - Vladimir Kalnitsky
+
+</details>
+
+<details>
+  <summary><strong>Second workshop - 2023-12-08</strong></summary>
+
+  We would like to thank those that contributed to the second workshop hosted by Adam Dean and Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
+  - Alex Dochioiu
+  - George APEX Pool
+  - Mark Byers
+  - Leo H
+
+</details>
+
+<details>
+  <summary><strong>Third workshop - 2024-01-06</strong></summary>
+
+  We would like to thank those that contributed to the third workshop hosted by Ryan Williams ([see shared drive with resources](https://drive.google.com/drive/folders/1gYGeVJBLmDhCGEp1mTkCrsJYspd5hSoM?usp=drive_link)).
+  - Brent
+  - Ishita Verma
+  - Jonathan Kelly
+  - Leo H
+  - Nick Ulrich
+  - NOODZ
+  - Vladimir Kalnitsky
+
+</details>
 
 ## Copyright
 

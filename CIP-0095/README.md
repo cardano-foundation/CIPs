@@ -4,13 +4,13 @@ Title: Web-Wallet Bridge - Conway ledger era
 Category: Wallets
 Status: Active
 Authors:
-  - Ryan Williams <ryan.williams@iohk.io>
+  - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors:
   - Eternl <https://eternl.io/>
   - GeroWallet <https://gerowallet.io>
   - Lace <https://www.lace.io/>
   - NuFi <https://nu.fi/>
-  - Ryan Williams <ryan.williams@iohk.io>
+  - Ryan Williams <ryan.williams@intersectmbo.org>
   - Typhon <https://typhonwallet.io/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
@@ -35,29 +35,7 @@ focussed web-based stacks. Here we aim to support the requirements of Ada
 holders and DReps in the Conway Ledger era, this specification is based on the
 [Conway Ledger Era Specification](https://github.com/IntersectMBO/cardano-ledger/blob/dcacf044c8d38362edc57a761e027953aab3f335/eras/conway/impl/cddl-files/conway.cddl).
 
-### Acknowledgments
-
-<details>
-  <summary><strong>Wallets and Tooling Hackathon</strong></summary>
-
-On 2023.07.13 a online and in person community hackathon took place, aims of
-this event included maturation of the design of this specification.
-
-We would like to thank the following attendees for providing their valuable
-insights:
-
-- Piotr Czeglik - Lace
-- Mircea Hasegan - Lace
-- Alex Apeldoorn - Lace
-- Michal Szorad - Yoroi
-- Javier Bueno - Yoroi
-- Ed Eykholt - Blocktrust
-- Vladimir Volek - Five Binaries
-- Marek Mahut - Five Binaries
-- Markus Gufler - Cardano Foundation
-- Michal Ciborowski - BinarApps
-
-</details>
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
 ## Motivation: why is this CIP necessary?
 
@@ -970,7 +948,31 @@ straight forward for wallets implementing both APIs.
 - [ ] Author to produce a set of test vectors for wallets to test against.
 - [x] Author to move DRep key definitions to a separate CIP.
   - via the addition of [CIP-105 | Conway era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md) via [CIPs PR #597](https://github.com/cardano-foundation/CIPs/pull/597). 
-  
+
+## Acknowledgments
+
+<details>
+  <summary><strong>Wallets and Tooling Hackathon</strong></summary>
+
+  On 2023.07.13 a online and in person community hackathon took place, aims of
+  this event included maturation of the design of this specification.
+
+  We would like to thank the following attendees for providing their valuable
+  insights:
+
+  - Piotr Czeglik - Lace
+  - Mircea Hasegan - Lace
+  - Alex Apeldoorn - Lace
+  - Michal Szorad - Yoroi
+  - Javier Bueno - Yoroi
+  - Ed Eykholt - Blocktrust
+  - Vladimir Volek - Five Binaries
+  - Marek Mahut - Five Binaries
+  - Markus Gufler - Cardano Foundation
+  - Michal Ciborowski - BinarApps
+
+</details>
+
 ## Copyright
 
 This CIP is licensed under
