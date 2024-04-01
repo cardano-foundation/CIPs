@@ -35,7 +35,7 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 
 ### Example JSON with string
 
-```json
+```
 {
     "778": [
         {
@@ -47,8 +47,8 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
             "addr": "addr1h2ahhsh2jajhsr4aj6jsajk2ahjaqbxnam1s892as3s1js6qx9kw"
         },
         {
-     		"rate": "0.01",
-		"addr": "addr1j6gqjsy6xgzjye7hq8hksuw1mylqmuqjsq7j182je9h2kn7ah5aj"
+            "rate": "0.01",
+            "addr": "addr1j6gqjsy6xgzjye7hq8hksuw1mylqmuqjsq7j182je9h2kn7ah5aj"
 	}
     ]
 }
@@ -58,18 +58,20 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 
 ```
 {
-	"778": {
+    "778": [
+        {
 		"rate": "0.025",
 		"addr": [
 			"addr1qysvslfjdx6f6s7ddhmhvqhutqpl2xwc8f46apwxmxl3l8snpwar4x0nqul",
 			"j5egg2puhn4w9s7tfawxs7568gr8sa3tqtxrrln"
 		],
-  		"rate2": "0.015",
-		"addr2": [
+  		"rate": "0.015",
+		"addr": [
 			"addr1q8ykglpxv9ra4vzhccu094xx5v7cnpr7ew2n43cgxpf4myqnpwar4x0nqul",
 			"j5egg2puhn4w9s7tfawxs7568gr8sa3tqen5vkl"
 		]
 	}
+    ]
 }
 ```
 
