@@ -7,11 +7,12 @@ string = text .size (0..64)
 
 ; Define any nested objects before the top-level object
 
-details-object = {
-  0 : string            ; Something
-  ? 1 : uint            ; Foo
-  ? 2 : [+ string]      ; Stuff
+royalty-object = {
+  0: string       ; rate
+  1: [+ string]   ; address
 }
+
+royalty-details-object = [* royalty-object]
 
 ; Define the top-level CIP object
 
