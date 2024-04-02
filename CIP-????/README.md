@@ -27,8 +27,8 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 - The resale fees tags are to be written to an unnamed token, using the policy to be used for the intended Cardano Assets.
 - The latest minted set of instructions will always be honored. This allows a Cardano Asset maker to change the resale fees at a future date.
 - Within this created asset will be the metadata for resale fees distributions.  It will use a tag of 778, and then have two or more tags to identify the percentages of future sales requested as resale fees, and the payment addresses to forward those resale fees to. The first set of two tags will be "rate" and "addr". Any additional tag sets will repeat after the first set of two tags, starting with "rate2" and "addr2", with sequentially increasing numbers for each added set.
-- The "rate*" key tags can be any floating point value from 0.0 to 1.0, to represent between 0 and 100 percent. For example, a 12.5 percent resale fee would be represented with "rate": "0.125".
-- The "addr*" key tags can be string values, or an array. It is to include a single payment address. By allowing for an array, the payment address can exceed the per line 64 character limitation. This payment address could be part of a smart contract, which should allow for greater flexibility of resale fees distributions, controlled by the asset creator.
+- The "rate" key tags can be any 6-decimal-shifted integer from 0 to 1000000, to represent between 0 and 100 percent. For example, a 12.5 percent resale fee would be represented with "rate": "125000".
+- The "addr" key tags can be string values, or an array. It is to include a single payment address. By allowing for an array, the payment address can exceed the per line 64 character limitation. This payment address could be part of a smart contract, which should allow for greater flexibility of resale fees distributions, controlled by the asset creator.
 - It is encouraged to burn the 778 token after minting, so that it does not add to the total asset count of the policy.
 - When referenced by [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088), the [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088) registration information will take priority over any previously minted CIP-???? tags, allowing for resale fee information to be updated even after the minting policy has locked.
 
@@ -39,15 +39,15 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 {
     "778": [
         {
-            "rate": "0.025",
+            "rate": "25000",
             "addr": "addr1v9nevxg9wunfck0gt7hpxuy0elnqygglme3u6l3nn5q5gnq5dc9un"
         },
         {
-            "rate": "0.015",
+            "rate": "15000",
             "addr": "addr1h2ahhsh2jajhsr4aj6jsajk2ahjaqbxnam1s892as3s1js6qx9kw"
         },
         {
-            "rate": "0.01",
+            "rate": "10000",
             "addr": "addr1j6gqjsy6xgzjye7hq8hksuw1mylqmuqjsq7j182je9h2kn7ah5aj"
 	}
     ]
@@ -60,12 +60,12 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 {
     "778": [
         {
-		"rate": "0.025",
+		"rate": "25000",
 		"addr": [
 			"addr1qysvslfjdx6f6s7ddhmhvqhutqpl2xwc8f46apwxmxl3l8snpwar4x0nqul",
 			"j5egg2puhn4w9s7tfawxs7568gr8sa3tqtxrrln"
 		],
-  		"rate": "0.015",
+  		"rate": "15000",
 		"addr": [
 			"addr1q8ykglpxv9ra4vzhccu094xx5v7cnpr7ew2n43cgxpf4myqnpwar4x0nqul",
 			"j5egg2puhn4w9s7tfawxs7568gr8sa3tqen5vkl"
