@@ -145,8 +145,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0116? | [Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/766) |
 | 0117? | [Explicit script return values](https://github.com/cardano-foundation/CIPs/pull/747) |
 | 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
+| 0119? | [Governance Metadata - DReps](https://github.com/cardano-foundation/CIPs/pull/788) |
 
-<p align="right"><i>Last updated on 2024-03-19</i></p>
+<p align="right"><i>Last updated on 2024-04-02</i></p>
 
 ## Cardano Problem Statements (CPS)
 
