@@ -69,16 +69,15 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 - Compulsory
 - A very short freeform text field. Limited to 80 characters.
 - This SHOULD NOT support markdown text styling.
-- Authors MUST use this field for their profile name/ username.
-- Authors SHOULD attempt to make this field unique.
-- Authours SHOULD avoid crass language.
+- It is intended that authors will use this field for their profile name/ username.
+- It is intended that authors will attempt to make this field unique.
+- It is intended that authors will avoid crass language.
 
 The compulsory nature of this field was controversial because the `username`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `username` it a reason for people reviewing governance actions to properly check the whole profile of a DRep before delegating to them. A `username` MUST be included because it is a human readable identifier, it is the property that people reviewing DReps will most likely identify that DRep by even in the presence of copycats.
 
 #### `picture`
 - Optional 
 - A base 64 encoded profile picture
-- Moderation of this image must be handled on the client side to comply with their TOS
 - This SHOULD be treated as the profile picture of the individual
 
 #### `objectives`
