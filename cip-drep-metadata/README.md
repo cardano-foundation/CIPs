@@ -83,7 +83,7 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 - A freeform text field with a maximum of 1000 characters
 - A short description of what the person believes and what they want to achieve as a DRep
 
-#### `motivation`
+#### `motivations`
 - Optional
 - A freeform text field with a maximum of 1000 characters
 - A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to 
@@ -148,6 +148,12 @@ By standardising off-chain metadata formats for any tooling which creates and/or
 
 ### Rationale for Insisting on a compulsory username
 The compulsory nature of this field was controversial because the `username`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `username` it a reason for people reviewing governance actions to properly check the whole profile of a DRep before delegating to them. A `username` MUST be included because it is a human readable identifier, it is the property that people reviewing DReps will most likely identify that DRep by even in the presence of copycats.
+
+### Rationale for multiple freeform fields
+It has been suggested that the `objectives`, `motifications`, and `qualifications` properties ([or at least the latter two](https://github.com/cardano-foundation/CIPs/pull/788#discussion_r1546391918)) could be one freeform property instead of 3. The rationale for having 3 sepparate properties is to provide structure to DReps so that they have a useful set of prompts about what they can and should write about. The author noticed in research that a single `bio` field in a form typically resulted in lower quality, often single line, responses from respondees than when this `bio` field was split into smaller fields with more highly specified purposes.
+
+It has also been suggested that the format of the input into these three properties could be more tightly specified for example `qualifications` could require a list of qualifications. Whilst this will probably be needed I have left this up to a future CIP to specify what these specifications should be because at this stage (MVP) I have no concrete examples of how people will end up using these fields and I want to leave it up to the community to experiment with this. 
+
 
 ### Open Questions
 1. ~~Do we allow profile pictures to be included in metadata~~ <-- YES! possibly a list of pictures.
