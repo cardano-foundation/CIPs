@@ -17,5 +17,5 @@ details-object = {
 
 cip-xxxx-details = {
   ? 0 : uint            ; optional version number
-  ? 1 : details-object  ; optional details object
+  1 : royalty-details-object  ; array containing zero (or more) royalty objects
 }
