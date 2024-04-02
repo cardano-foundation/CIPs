@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 119
 Title: Governance metadata - DReps
 Category: Metadata
 Status: Proposed
