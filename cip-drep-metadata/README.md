@@ -82,7 +82,7 @@ The compulsory nature of this field was controversial because the `username`s ca
 #### `objectives`
 - Optional
 - A freeform text field with a maximum of 1000 characters
-- A short description of what the person believes nd what they want to achieve as a DRep
+- A short description of what the person believes and what they want to achieve as a DRep
 
 #### `motivation`
 - Optional
