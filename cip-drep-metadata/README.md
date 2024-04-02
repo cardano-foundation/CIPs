@@ -68,7 +68,7 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 #### `username`
 - Compulsory
 - A very short freeform text field. Limited to 80 characters.
-- This SHOULD NOT support markdown text styling.
+- This MUST NOT support markdown text styling.
 - It is intended that authors will use this field for their profile name/ username.
 - It is intended that authors will attempt to make this field unique.
 - It is intended that authors will avoid crass language.
