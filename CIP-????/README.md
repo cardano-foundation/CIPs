@@ -30,7 +30,7 @@ This proposed standard will serve as a more functional alternative to [CIP-0027]
 - The "rate*" key tags can be any floating point value from 0.0 to 1.0, to represent between 0 and 100 percent. For example, a 12.5 percent resale fee would be represented with "rate": "0.125".
 - The "addr*" key tags can be string values, or an array. It is to include a single payment address. By allowing for an array, the payment address can exceed the per line 64 character limitation. This payment address could be part of a smart contract, which should allow for greater flexibility of resale fees distributions, controlled by the asset creator.
 - It is encouraged to burn the 778 token after minting, so that it does not add to the total asset count of the policy.
-- When referenced by [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088), the [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088) registration information will take priority over any previously minted CIP-0127 tags, allowing for resale fee information to be updated even after the minting policy has locked.
+- When referenced by [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088), the [CIP-0088](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088) registration information will take priority over any previously minted CIP-???? tags, allowing for resale fee information to be updated even after the minting policy has locked.
 
 
 ### Example JSON with string
