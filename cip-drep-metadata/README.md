@@ -42,7 +42,7 @@ This CIP has not included these features, the decision not to include these feat
 ### Formatting
 If DRep Metadata is not formatted in the way described by this CIP then tooling SHOULD either:
 1. Deal with it as described in CIP-100 (by rendering the raw unformatted document)
-2. Not display the any of the metadata
+2. Not display any of the metadata
 
 In either case the tooling SHOULD provide a warning that this has happened and link to the url described in the metadata anchor of the DRep registration.
 
