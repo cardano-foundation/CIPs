@@ -73,8 +73,6 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 - It is intended that authors will attempt to make this field unique.
 - It is intended that authors will avoid crass language.
 
-The compulsory nature of this field was controversial because the `username`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `username` it a reason for people reviewing governance actions to properly check the whole profile of a DRep before delegating to them. A `username` MUST be included because it is a human readable identifier, it is the property that people reviewing DReps will most likely identify that DRep by even in the presence of copycats.
-
 #### `picture`
 - Optional 
 - A base 64 encoded profile picture
@@ -127,7 +125,6 @@ PKI cryptographic solutions were also considered in the place of the current sol
 - A true value means that the DRep does not want to show up in tooling that displays DReps. 
 -- I.e. they do not want to appear in GovTool’s DRep Explorer feature
 
-
 ### Application
 DRep metadata must include all compulsory fields to be considered CIP-???? compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-???? compliant metadata.
 
@@ -150,6 +147,9 @@ DReps will be able to use tools that create metadata in a standard format. This 
 
 #### All participants
 By standardising off-chain metadata formats for any tooling which creates and/or renders metadata referenced in DRep registration and update transactions we facilitate interoperability. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
+
+### Rationale for Insisting on a compulsory username
+The compulsory nature of this field was controversial because the `username`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `username` it a reason for people reviewing governance actions to properly check the whole profile of a DRep before delegating to them. A `username` MUST be included because it is a human readable identifier, it is the property that people reviewing DReps will most likely identify that DRep by even in the presence of copycats.
 
 ### Open Questions
 1. ~~Do we allow profile pictures to be included in metadata~~ <-- YES! possibly a list of pictures.
