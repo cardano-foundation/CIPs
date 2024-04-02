@@ -100,9 +100,7 @@ Therefore there will be a `payment_address` field in the metadata where such pay
 - The creator of the metadata MUST add a `label`, this `label` SHOULD describe the source of the url, e.g. if it is a link to the DRep's X account then the `label` should say "X". If it is a personal website the `label` should say "Personal Website" rather than domain_name.com.
 - The `label` of each link SHOULD NOT be left blank, but if it is then tooling displaying links SHOULD still allow users to access the URL.
 - Each link MUST have exactly one `uri` (as specified in CIP-100) which MUST not be blank. If it is blank then tooling providers displaying the Link SHOULD NOT display any of the details of this link.
-- `uri` MUST be the full address to the souce of the intended data and MUST NOT be a shortened url i.e. one that has been created using a service such as bitly. This is to ensure that tooling can easily scan for malicious links and users of tooling who are reading the `uri` value can understand where the link goes.
-- Tools that have a user interface that allows users to navigate to the location in the `uri` of a link, SHOULD inform their user of the full url that they will be visiting and SHOULD also warn their user that they will be visiting a different website and ask them whether they want to proceed.
-- Tooling providers SHOULD warn people that none of the information contained in external is verified by the tool and they should DYOR
+
 ##### `type`: Link
 - Optional
 - It is expected that these links will be the addresses of the social media/ websites associated with the DRep in order to give a person reviewing this information a fulsome overview of the DRep's online presence.
