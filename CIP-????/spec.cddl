@@ -8,7 +8,7 @@ string = text .size (0..64)
 ; Define any nested objects before the top-level object
 
 royalty-object = {
-  0: string       ; rate
+  0: integer      ; rate
   1: [+ string]   ; address
 }
 
