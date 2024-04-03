@@ -1,14 +1,16 @@
 # Test Vector for CIP-0108
 
-Here we create some useful definitions and some example metadata.
+Here we create some useful definitions and some examples.
 
 ## Common Context
 
 ### Common Fields
+
 The context fields which could be added to CIP-108 compliant jsonld files.
 See [cip-0108.common.jsonld](./cip-0108.common.jsonld).
 
 ### Common Fields Schema
+
 A json schema for the common context fields.
 See [cip-0108.common.schema.json](./cip-0108.common.schema.json).
 
@@ -21,14 +23,16 @@ Blake2b-256 of the canonicalized document (to go onchain): `6685960f5884922e135a
 
 #### Intermediate files
 
+Files produced to articulate process, these are not necessary in implementations.
+
 Body files, used to correctly generate author's witness:
 - [treasury-withdrawal.body.jsonld](./examples/treasury-withdrawal.body.jsonld)
-- [treasury-withdrawal.body.canonical](./examples/treasury-withdrawal.body.canonical)
+- [treasury-withdrawal.body.nq](./examples/treasury-withdrawal.body.nq)
 
 Blake2b-256 hash digest of canonicalized body: `68d6fe27087457acf0164e65414238c43573192c99f30341926d1524924d71ca`
   
 Whole document canonical representation, used to generate final hash:
-- [treasury-withdrawal.canonical](./examples/treasury-withdrawal.canonical)
+- [treasury-withdrawal.nq](./examples/treasury-withdrawal.nq)
 
 ### Motion of No-Confidence
 
@@ -37,46 +41,42 @@ Blake2b-256 of the canonicalized document (to go onchain): `c382be96dd98c4bbd6d3
 
 #### Intermediate files
 
+Files produced to articulate process, these are not necessary in implementations.
+
 Body files, used to correctly generate author's witness:
 - [no-confidence.body.jsonld](./examples/no-confidence.body.jsonld)
-- [no-confidence.body.canonical](./examples/no-confidence.body.canonical)
+- [no-confidence.body.nq](./examples/no-confidence.body.nq)
 
 Blake2b-256 hash digest of canonicalized body: `4a7ecc544559df67ece3f7f90f76c4e3e7e329a274c79a06dcfbf28351db600e`
 
 Whole document canonical representation, used to generate final hash:
-- [no-confidence.canonical](./examples/no-confidence.canonical)
+- [no-confidence.nq](./examples/no-confidence.nq)
 
 ## How-to Recreate Examples
+
+This tutorial creates additional intermediate files, these are not required in implementations but are shown here to articulate the process.
 
 ### Author
 
 Keys used for author property, provided here for convenience.
 
-Private extended signing key (hex):
-```
-105d2ef2192150655a926bca9cccf5e2f6e496efa9580508192e1f4a790e6f53de06529129511d1cacb0664bcf04853fdc0055a47cc6d2c6d205127020760652
-```
+Private extended signing key (hex): `105d2ef2192150655a926bca9cccf5e2f6e496efa9580508192e1f4a790e6f53de06529129511d1cacb0664bcf04853fdc0055a47cc6d2c6d205127020760652`
 
 Public verification key (hex):
-```
-7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a
-```
+`7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a`
 
-Public verification key hash (hex):
-```
-0fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42
-```
+
+Public verification key hash (hex): `0fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42`
 
 Mainnet public enterprize address (hex):
-```
-610fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42
-```
+`610fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42`
 
 ### 1. Create the example.jsonld's `body`
 
-Create a `example.body.jsonld` and copy in all content from [cip-0108.common.jsonld](./cip-0108.common.jsonld) then fill in the body property with example data.
+Create the `example.jsonld` file adding in all available values.
+Then remove from this document any top-level field that is not `@context` or `body`.
 
-If recreating the [Treasury Withdrawal](#treasury-withdrawal), this will result in [treasury-withdrawal.body.jsonld](./examples/treasury-withdrawal.body.jsonld).
+If recreating the [Treasury Withdrawal](#treasury-withdrawal), this will result in the intermediate file of [treasury-withdrawal.body.jsonld](./examples/treasury-withdrawal.body.jsonld).
 
 ### 2. Canonicalize the `body`
 
@@ -84,13 +84,13 @@ Using a tool which complies with the [RDF Dataset Canonicalization](https://w3c-
 One such tool is the [JSON-LD Playground](https://json-ld.org/playground/).
 Ensure the results ends in a newline.
 
-This creates `example.body.canonical`.
+This creates `example.body.nq`.
 
-For [Treasury Withdrawal](#treasury-withdrawal), this will result in [treasury-withdrawal.body.canonical](./examples/treasury-withdrawal.body.canonical).
+For [Treasury Withdrawal](#treasury-withdrawal), this will result in the intermediate file of [treasury-withdrawal.body.nq](./examples/treasury-withdrawal.body.nq).
 
 ### 3. Hash the canonicalized `body`
 
-Using a tool create a Blake2b-256 hash of the canonicalized `example.body.canonical`.
+Using a tool create a Blake2b-256 hash of the canonicalized `example.body.nq`.
 One such tool is the [ToolKit Bay](https://toolkitbay.com/tkb/tool/BLAKE2b_256).
 
 For [Treasury Withdrawal](#treasury-withdrawal), this will result in: `68d6fe27087457acf0164e65414238c43573192c99f30341926d1524924d71ca`.
@@ -116,13 +116,13 @@ For [Treasury Withdrawal](#treasury-withdrawal), this will result in [treasury-w
 To be able to create a final metadata hash which can be attached on-chain we must first canonicalize the `example.jsonld`.
 Ensure the results ends in a newline.
 
-This creates `example.canonical`.
+This creates `example.nq`.
 
-For [Treasury Withdrawal](#treasury-withdrawal), this will result in [treasury-withdrawal.canonical](./examples/treasury-withdrawal.canonical).
+For [Treasury Withdrawal](#treasury-withdrawal), this will result in the intermediate file of [treasury-withdrawal.nq](./examples/treasury-withdrawal.nq).
 
 ### 7. Hash the canonicalized example.jsonld
 
-We then use the specified `hashAlgorithm` on `example.canonical`.
+We then use the specified `hashAlgorithm` on `example.nq`.
 
 For [Treasury Withdrawal](#treasury-withdrawal), this will result in `6685960f5884922e135a951f8acb581ff7202fc111ec405a7e014ae725927aae`.
 
