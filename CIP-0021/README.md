@@ -195,8 +195,36 @@ The specified auxiliary data format was chosen in order to be compatible with ot
 ### Implementation Plan
 
 - [x] Tools exist which can be used to validate or transform transactions into a HW wallet compatible format if possible:
-  - [x] [`cardano-hw-interop-library`](https://github.com/vacuumlabs/cardano-hw-interop-lib) 
-  - [x] [`cardano-hw-cli`](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library) 
+  - [x] [`cardano-hw-interop-library`](https://github.com/vacuumlabs/cardano-hw-interop-lib)
+  - [x] [`cardano-hw-cli`](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library)
+
+## Restrictions for specific hardware devices
+
+The following list of features with missing support on particular hardware devices is subject to occasional changes. Some features might be added, but some could also be removed (e.g. if they take too much space needed for other features).
+
+#### Ledger: Nano S Plus, Nano X, Stax
+
+Everything described here as allowed should (eventually) work on these devices.
+
+#### Ledger: Nano S
+
+Missing features:
+- signing operational certificates
+- derivation of native script hashes
+- stake pool registration and retirement
+- display of certain details of Byron addresses (though addresses themselves are supported)
+
+#### Trezor
+
+Missing features:
+- derivation of stake pool cold keys
+- signing operational certificates
+- signing pool registration certificates as operator (only as owner is allowed)
+- derivation of DRep and constitutional committee keys
+- DRep certificates (registration, retirement, update)
+- constitutional committee certificates
+- voting procedures
+- treasury and donation elements of transactions
 
 ## Copyright
 
