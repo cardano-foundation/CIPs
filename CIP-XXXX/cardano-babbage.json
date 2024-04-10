@@ -1118,7 +1118,6 @@
       "title": "VRFKeyHash",
       "type": "string",
       "description": "blake2b_256 digest of a VRF verification key, encoded as bech32",
-      "type": "string",
       "pattern": "^vrf_vkh[02-9ac-hj-np-z]*"
     },
     "URL": {
@@ -1434,7 +1433,7 @@
           "type": "object",
           "patternProperties": {
             "^([0-9a-f][0-9a-f]){0,32}$": {
-              "$ref": "cardano-babbage.json#/definitions/Int128"
+              "$ref": "cardano-babbage.json#/definitions/Int64"
             }
           },
           "additionalProperties": false

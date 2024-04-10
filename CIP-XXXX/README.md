@@ -24,7 +24,7 @@ The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Do
 
 ## Specification
 
-This CIP is expected to contain multiple schema definitions for Cardano Eras starting from Babbage.
+This CIP is expected to contain multiple schema definitions for Cardano Eras and breaking intra-era hardforks starting from Babbage.
 
 - [Babbage](./cardano-babbage.json)
 
@@ -87,6 +87,7 @@ Implementations MUST consider mappings with conflicting keys invalid.
 Encoding types with variable payloads MUST be done with the use of `oneOf` and an explicit discriminator property: `tag`:
 
 ```json
+{
     "Credential": {
       "type": "object",
       "discriminator": {
@@ -124,7 +125,8 @@ Encoding types with variable payloads MUST be done with the use of `oneOf` and a
           "additionalProperties": false
         }
       ]
-    },
+    }
+}
 ```
 
 Other properties of a tagged object MUST be specified in lower-case snake-case.
@@ -136,6 +138,7 @@ Enums are a special kind of variant types that carry no payloads. These MUST be 
 Lowercase snake case identifiers MUST be used for the options, e.g.:
 
 ```json
+{
     "Language": {
       "title": "Language",
       "type": "string",
@@ -143,7 +146,8 @@ Lowercase snake case identifiers MUST be used for the options, e.g.:
         "plutus_v1",
         "plutus_v2"
       ]
-    },
+    }
+}
 ```
 
 #### Encoding of record types
@@ -160,11 +164,9 @@ For these types, their nominal name SHOULD NOT have a separate definition in the
 
 Some non-standard `format` types are used:
 
-- `hex`
-- `bech32`
-- `base58`
-
-TODO: describe the formats
+- `hex` - lower-case hex-encoded byte string
+- `bech32` - [bech32](https://en.bitcoin.it/wiki/Bech32) string
+- `base58` - [base58](https://bitcoinwiki.org/wiki/base58) string
 
 ### Limitations
 
@@ -208,6 +210,7 @@ auxiliary_data =
 Instead of providing all three variants of encoding, we base the schema on the one that is the most general (the last one):
 
 ```json
+{
     "AuxiliaryData": {
       "properties": {
         "metadata": {
@@ -226,7 +229,8 @@ Instead of providing all three variants of encoding, we base the schema on the o
           }
         }
       },
-    },
+    }
+}
 ```
 
 It is up to implementors to decide how to serialize the values into CBOR. The property we want to maintain is preserved regardless of the choice: for every block binary there is exactly one JSON encoding.
