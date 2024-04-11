@@ -35,6 +35,12 @@
       "pattern": "^-?(0|[1-9][0-9]*)$",
       "format": "int128"
     },
+    "NonZeroInt64": {
+      "title": "NonZeroInt64",
+      "description": "64-bit signed integer, zero excluded. Ranges: -9223372036854775808..-1 and 1..9223372036854775807",
+      "type": "string",
+      "pattern": "^-?([1-9][0-9]*)$"
+    },
     "UInt32": {
       "title": "UInt32",
       "description": "32-bit unsigned integer",
@@ -103,6 +109,12 @@
       "type": "string",
       "format": "hex",
       "pattern": "^[0-9a-f]{56}$"
+    },
+    "AssetName": {
+      "title": "AssetName",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^([0-9a-f][0-9a-f]){0,32}$"
     },
     "Credential": {
       "title": "Credential",
@@ -1426,20 +1438,38 @@
     },
     "Mint": {
       "title": "Mint",
-      "description": "Minting or burning of assets. A mapping from policy IDs (script hashes) to mappings from asset names to amounts (that can be negative)",
-      "type": "object",
-      "patternProperties": {
-        "^[0-9a-f]{56}$": {
-          "type": "object",
-          "patternProperties": {
-            "^([0-9a-f][0-9a-f]){0,32}$": {
-              "$ref": "cardano-babbage.json#/definitions/Int64"
-            }
+      "description": "Minting or burning of assets. A mapping from policy IDs (script hashes) to mappings from asset names to amounts (that can be negative). Allows for duplicate script hash keys.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "script_hash": {
+            "$ref": "cardano-babbage.json#/definitions/ScriptHash"
           },
-          "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
+          "assets": {
+            "title": "Assets",
+            "type": "object",
+            "properties": {
+              "key": {
+                "$ref": "cardano-babbage.json#/definitions/AssetName"
+              },
+              "value": {
+                "$ref": "cardano-babbage.json#/definitions/NonZeroInt64"
+              }
+            },
+            "required": [
+              "key",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "additionalProperties": false
+      }
     },
     "Ed25519Signature": {
       "title": "Ed25519Signature",

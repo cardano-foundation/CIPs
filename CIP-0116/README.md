@@ -64,7 +64,7 @@ Binary data MUST be encoded as lower-case hexademical strings. Restricting the c
 
 #### Encoding of mapping types
 
-`Map`-like container types MUST be encoded as arrays of key-value pairs. Uniqueness of `"key"` objects in a map MUST be preserved (but this property is not expressible via a schema).
+`Map`-like container types MUST be encoded as arrays of key-value pairs.
 
 ```json
 "Map": {
@@ -75,12 +75,20 @@ Binary data MUST be encoded as lower-case hexademical strings. Restricting the c
             "key": ...,
             "value": ...
         },
+        "required": [
+          "key",
+          "value"
+        ],
         "additionalProperties": false
     }
 }
 ```
 
+Uniqueness of `"key"` objects in a map MUST be preserved (but this property is not expressible via a schema).
+
 Implementations MUST consider mappings with conflicting keys invalid.
+
+Some mapping-like types, specifically `Mint`, allow for duplicate keys. Types like these should not be encoded as maps, instead, `key` and `value` properties should be named differently.
 
 #### Encoding of variant types
 
