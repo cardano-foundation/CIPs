@@ -153,21 +153,18 @@ It has also been suggested that the format of the input into these three propert
 |1   |Should we accommodate for profile pictures to be included in metadata? | Yes, furthermore, a future CIP may allow for multiple pictures |
 |2   |Do we need to replace the `bio` field with a more structured set of fields? | Yes, adding structure is intended to guide people to add data which is more interesting to the reader |
 |3   |Can we include and verify an ADA handle to uniquely identify a DRep |[This](#type-identity) is how we verify the identity of a DRep |
-
-
-
-4. ~~What do we do about lack of metadata integrity~~ <-- not show the metadata and make it clear that the #metadata =/ metadata#
-5. ~~Should we split this CIP up into separate transactions or also add the vote transaction metadata~~ <-- the scope is fine
-6. ~~Compulsory vs optional for all fields~~
-7. ~~types of DRep (script? representing an organisation? want delegations?)~~
-8. ~~How can we verify the information that we are displaying(?)~~ 
-9. ~~Tooling providers displaying data SHOULD warn people that none of the information is verified and they should DYOR~~
-10. ~~Tooling providers making metadata SHOULD provide some information about best practices such as putting DRep ID in twitter bio.~~
-11. ~~What do we care about when someone is retiring?~~ <-- just the reason why
-12. ~~When someone updates do we want a 1 line summary of what has changed?~~
-13. ~~Tooling to inform people of recent changes?~~
-14. ~~incentives address, where DRep incentives are paid ???~~
-15. ~~PKI Public Key, Fingerprint, or DID?~~ 
+|4   |What do we do about lack of metadata integrity | This is up to the tooling provider|
+|5   |Should we split this CIP up into separate transactions or also add the vote transaction metadata |The scope is fine |
+|6   |Compulsory vs optional for all fields |See the relevant section for each property |
+|7   |types of DRep (script? representing an organisation? want delegations?)| This CIP is optimised for individuals who are DReps, but doesnt exclude teams. It is agnostic as o wherther the DRep is registered via a script or not |
+|8   |How can we verify the information that we are displaying(?) |This CIP adopts provisions from CIP-100 about how to display metadata which is in an unexpected format. Otherwise this CIP leaves questions surrounding the display of data to tooling providers. Identity verification is covered in QID 8. |
+|9   |Should tooling providers displaying data warn people that none of the information is verified and they should DYOR? |This is not specified in this CIP |
+|10  |Should tooling providers making metadata provide some information about best practices such as putting DRep ID in twitter bio? |This is not specified in the CIP |
+|11  |What do we care about when someone is retiring? | Retirement transactions no longer include a metadata anchor|
+|12  |When someone updates do we want a 1 line summary of what has changed? |Possibly future CIPs could include this feature |
+|13  |Should tools inform people of recent changes? |This is up to tooling providers |
+|14  |Should there be an incentives address, where DRep incentives are paid? |See [`paymentAddress`](#paymentAddress) |
+|15  |PKI Public Key, Fingerprint, or DID? | See [`type`: Identity](#type-identity) |
 
 ## Path to Active
 
