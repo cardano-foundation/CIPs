@@ -152,7 +152,7 @@ It has also been suggested that the format of the input into these three propert
 |----|---------|-------|
 |1   |Should we accommodate for profile pictures to be included in metadata? | Yes, furthermore, a future CIP may allow for multiple pictures |
 |2   |Do we need to replace the `bio` field with a more structured set of fields? | Yes, adding structure is intended to guide people to add data which is more interesting to the reader |
-|3   |Can we include and verify an ADA handle to uniquely identify a DRep |[This](#`type`:Identity) is how we verify the identity of a DRep |
+|3   |Can we include and verify an ADA handle to uniquely identify a DRep |[This](#`type`-:-Identity) is how we verify the identity of a DRep |
 
 
 
