@@ -92,7 +92,7 @@ Therefore there MAY be a `payment_address` field in the metadata where such paym
 - This CIP adds two `@type` identifiers "Identity" and "Link"
 - The creator of the metadata MUST add a `label`, this `label` SHOULD describe the source of the url, e.g. if it is a link to the DRep's X account then the `label` should say "X". If it is a personal website the `label` should say "Personal Website" rather than domain_name.com.
 - The `label` of each link SHOULD NOT be left blank
-- Each link MUST have exactly one `uri` (as specified in CIP-100) which MUST not be blank. If it is blank then tooling providers displaying the Link SHOULD NOT display any of the details of this link.
+- Each link MUST have exactly one `uri` (as specified in CIP-100) which MUST not be blank.
 
 ##### `type`: Link
 - Optional
@@ -103,7 +103,6 @@ Therefore there MAY be a `payment_address` field in the metadata where such paym
 - Each piece of metadata referenced in the anchor of a DRep registristration or update transaction MUST contain at least one reference with the `type` "Identity". Else tooling SHOULD ignore the metadata.
 - It is expected that the "Identity" of a DRep will be the addresses of their most active social media account twitter, linkedin etc. or personal website.
 - The DRep must reference their DRep ID in a prominent place at the location that is specified in the `uri` property of that reference. This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
-- Tooling providers making metadata SHOULD provide some information about why this is important.
 
 PKI cryptographic solutions were also considered in the place of the current solution however they were generally considered too complex to implement for minimum viable tooling. There were also other issues with cryptographic forms of identification for MVPs:
 1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what their authentic public key is.
