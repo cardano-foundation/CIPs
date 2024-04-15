@@ -86,11 +86,12 @@ Therefore there MAY be a `payment_address` field in the metadata where such paym
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
 #### `references`
+- Optional
 - This CIP extends the `references` property from [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100#high-level-description)
 - `references` contain the following sub-properties `type`, `label`, and `uri`
 - This CIP adds two `@type` identifiers "Identity" and "Link"
 - The creator of the metadata MUST add a `label`, this `label` SHOULD describe the source of the url, e.g. if it is a link to the DRep's X account then the `label` should say "X". If it is a personal website the `label` should say "Personal Website" rather than domain_name.com.
-- The `label` of each link SHOULD NOT be left blank, but if it is then tooling displaying links SHOULD still allow users to access the URL.
+- The `label` of each link SHOULD NOT be left blank
 - Each link MUST have exactly one `uri` (as specified in CIP-100) which MUST not be blank. If it is blank then tooling providers displaying the Link SHOULD NOT display any of the details of this link.
 
 ##### `type`: Link
