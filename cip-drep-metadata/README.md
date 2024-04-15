@@ -148,9 +148,14 @@ It has also been suggested that the format of the input into these three propert
 
 
 ### Open Questions
-1. ~~Do we allow profile pictures to be included in metadata~~ <-- YES! possibly a list of pictures.
-2. ~~Do we need to replace the `bio` field with a more structured set of fields~~
-3. ~~Can we include and verify an ADA handle to uniquely identify a DRep~~
+|QID |Question |Answer |
+|----|---------|-------|
+|1   |Should we accommodate for profile pictures to be included in metadata? | Yes, furthermore, a future CIP may allow for multiple pictures |
+|2   |Do we need to replace the `bio` field with a more structured set of fields? | Yes, adding structure is intended to guide people to add data which is more interesting to the reader |
+|3   |Can we include and verify an ADA handle to uniquely identify a DRep |[This](#`type`:Identity) is how we verify the identity of a DRep |
+
+
+
 4. ~~What do we do about lack of metadata integrity~~ <-- not show the metadata and make it clear that the #metadata =/ metadata#
 5. ~~Should we split this CIP up into separate transactions or also add the vote transaction metadata~~ <-- the scope is fine
 6. ~~Compulsory vs optional for all fields~~
