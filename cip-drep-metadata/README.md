@@ -57,7 +57,7 @@ Dreps may want to recieve tokens for a variety of reasons such as:
 - expenses
 - any incentive program
 
-Therefore there MAY be a `payment_address` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
+Therefore there MAY be a `paymentAddress` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
 
 #### `username`
 - Compulsory
