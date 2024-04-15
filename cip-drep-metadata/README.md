@@ -39,16 +39,6 @@ Participants at the workshop held to debut the first draft of this CIP strongly 
 
 This CIP has not included these features, the decision not to include these features was made in order to simplify this CIP so that it became suitable for the minimum viable level of tooling, with the expectation that further CIPs will build on it. 
 
-### Formatting
-If DRep Metadata is not formatted in the way described by this CIP then tooling SHOULD either:
-1. Deal with it as described in CIP-100 (by rendering the raw unformatted document)
-2. Not display any of the metadata
-
-In either case the tooling SHOULD provide a warning that this has happened and link to the url described in the metadata anchor of the DRep registration.
-
-### Missing
-If the DRep metadata cannot be found at the address specified in the anchor then the tooling SHOULD provide a warning. There is no need to link to the url in the metadata anchor. 
-
 ### Witnesses
 DRep Metadata will not follow the CIP-100 specification related to signing the metadata, the [authors property](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#high-level-description) can be left blank without the need for tooling providers to warn their users that the author has not been validated. Instead the author can be derived from the DRep ID associated with the registration. The need for an `authors` field will also be discarded in favour of including usernames inside of the `body` field. For the avoidance of doubt this CIP recommends that the entire authors property be left blank, and that tooling ignore it. 
 
