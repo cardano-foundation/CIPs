@@ -50,12 +50,14 @@ Like CIP-108, this CIP also extends the potential vocabulary of CIP-100's `body`
 The following are a list of properties tooling should expect to encounter:
 
 #### `paymentAddress`
+- Optional
+
 Dreps may want to recieve tokens for a variety of reasons such as:
 - donations
 - expenses
 - any incentive program
 
-Therefore there will be a `payment_address` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
+Therefore there MAY be a `payment_address` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
 
 #### `username`
 - Compulsory
