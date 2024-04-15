@@ -122,7 +122,7 @@ DRep metadata must include all compulsory fields to be considered CIP-???? compl
 See [test-vector.md](./test-vector.md) for examples.
 
 ### Versioning
-This proposal should not be versioned, to update this standard a new CIP should be proposed. Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary,
+This proposal should not be versioned, to update this standard a new CIP should be proposed. Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary.
 
 ## Rationale: how does this CIP achieve its goals?
 We intentionally have kept this proposal brief and uncomplicated. This was to reduce the time to develop and deploy this standard. This way we enable tooling which depends on this standard to start development. The fields which have been chosen for this standard are heavily inspired by those that we are seeking to introduce for GovTool. We did this because GovTool will likely be the first technical implementation of this standard. 
