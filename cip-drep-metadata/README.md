@@ -119,7 +119,7 @@ PKI cryptographic solutions were also considered in the place of the current sol
 DRep metadata must include all compulsory fields to be considered CIP-???? compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-???? compliant metadata.
 
 ### Test Vector
-See test-vector.md for examples.
+See [test-vector.md](./test-vector.md) for examples.
 
 ### Versioning
 This proposal should not be versioned, to update this standard a new CIP should be proposed. Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary,
