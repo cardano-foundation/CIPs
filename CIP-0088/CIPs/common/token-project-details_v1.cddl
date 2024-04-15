@@ -1,0 +1,34 @@
+; Token Project Details CDDL
+; Version: 1
+
+string = text .size (0..64)
+
+; A uri should consist of a scheme and one or more path strings describing the path to the resource
+; The first entry should contain the URI "Scheme" (e.g. "https://", "ftp://", "ar://", "ipfs://")
+; One or more subsequent entries should describe the path of the URI
+
+uri.scheme = text .size (5..64)
+uri.path = text .size (1..64)
+uri = {
+    uri.scheme,
+    + uri.path
+}
+
+; NFT Project Details
+;
+; Provide top-level information about NFT projects that can be useful to marketplaces and explorers
+
+social-media-uri = {
+    string,                      ; social media channel name
+    uri                          ; social media URI
+}
+
+token-project-details = {
+    0 : string,                  ; Collection Name
+    ? 1 : [* string],            ; Description
+    ? 2 : uri,                   ; Project Image
+    ? 3 : uri,                   ; Project Banner
+    ? 4 : 0 / 1,                 ; NSFW Flag (1 = true, 0 = false)
+    ? 5 : [* social-media-uri],  ; Project social media
+    ? 6 : string                 ; Project/Artist Name
+}

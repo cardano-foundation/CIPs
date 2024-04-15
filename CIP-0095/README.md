@@ -1,15 +1,16 @@
 ---
 CIP: 95
-Title: Web-Wallet Bridge - Governance 
+Title: Web-Wallet Bridge - Conway ledger era
 Category: Wallets
-Status: Proposed
+Status: Active
 Authors:
-  - Ryan Williams <ryan.williams@iohk.io>
+  - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors:
   - Eternl <https://eternl.io/>
+  - GeroWallet <https://gerowallet.io>
   - Lace <https://www.lace.io/>
   - NuFi <https://nu.fi/>
-  - Ryan Williams <ryan.williams@iohk.io>
+  - Ryan Williams <ryan.williams@intersectmbo.org>
   - Typhon <https://typhonwallet.io/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
@@ -27,36 +28,14 @@ Cardano wallets. This specification defines the API of the javascript object
 that needs to be injected into web applications.
 
 These definitions extend
-[CIP-30 | Cardano dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)
+[CIP-30 | Cardano dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030/README.md)
 to provide support for
 [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md)
 focussed web-based stacks. Here we aim to support the requirements of Ada
-Holders and DReps in the Conway Ledger era, this specification is based on the
-[Draft Conway Ledger Era Specification](https://github.com/input-output-hk/cardano-ledger/tree/master/eras/conway/test-suite/cddl-files).
+holders and DReps in the Conway Ledger era, this specification is based on the
+[Conway Ledger Era Specification](https://github.com/IntersectMBO/cardano-ledger/blob/dcacf044c8d38362edc57a761e027953aab3f335/eras/conway/impl/cddl-files/conway.cddl).
 
-### Acknowledgments
-
-<details>
-  <summary><strong>Wallets and Tooling Hackathon</strong></summary>
-
-On 2023.07.13 a online and in person community hackathon took place, aims of
-this event included maturation of the design of this specification.
-
-We would like to thank the following attendees for providing their valuable
-insights:
-
-- Piotr Czeglik - Lace
-- Mircea Hasegan - Lace
-- Alex Apeldoorn - Lace
-- Michal Szorad - Yoroi
-- Javier Bueno - Yoroi
-- Ed Eykholt - Blocktrust
-- Vladimir Volek - Five Binaries
-- Marek Mahut - Five Binaries
-- Markus Gufler - Cardano Foundation
-- Michal Ciborowski - BinarApps
-
-</details>
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
 ## Motivation: why is this CIP necessary?
 
@@ -87,70 +66,14 @@ within CIP-30. Although currently CIP-30 acts as the defacto Cardano dApp-wallet
 connector, this specification could be applied to similar standards.
 
 > **Note** This specification will evolve as the proposed ledger governance
-> model matures.
-
-### DRep Key
-
-⚠ These definitions are an initial version of these keys, such definitions are
-to be moved to a new CIP. Once new CIP is published please view that CIP.
-
-The Conway ledger era introduces a new _first class_ credential in
-[`drep_credential`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L332).
-This is used to identify registered DReps on-chain, via their certificates and
-votes.
-
-Here we introduction of DRep Keys to be used to create `drep_credential`s for
-(non-script) registered DReps.
-
-#### Derivation
-
-Here we describe DRep Key derivation as it attains to Cardano wallets who follow
-the
-[CIP-1852 | HD (Hierarchy for Deterministic) Wallets for Cardano](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1852/README.md)
-standard.
-
-To differentiate DRep keys from other Cardano keys the derivation path must
-follow:
-
-`m / 1852' / 1815' / account' / 3 / address_index`
-
-We strongly suggest that a maximum of one set of DRep keys should be associated
-with one wallet account, this can be achieved by only ever setting
-`address_index=0`. This avoids the need for DRep Key discovery.
-
-We believe the overhead that would be introduced by "multi-DRep" accounts is an
-unjustified expense. Future iterations of this specification may expand on this,
-but at present this is seen as unnecessary.
-
-#### Tooling
-
-Supporting tooling should clearly label these key pairs as "CIP-95 DRep Keys".
-
-Bech32 prefixes of `drep_sk` and `drep_vk` should be used, as described in
-[CIP-0005](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md).
-
-Examples of acceptable `keyType`s for supporting tools:
-
-| `keyType`                                   | Description           |
-| ------------------------------------------- | --------------------- |
-| `DRepSigningKey_ed25519`                    | DRep Signing Key      |
-| `DRepExtendedSigningKey_ed25519_bip32`      | DRep Signing Key      |
-| `DRepVerificationKey_ed25519`               | DRep Verification Key |
-| `DRepExtendedVerificationKey_ed25519_bip32` | DRep Verification Key |
-
-For hardware implementations:
-
-| `keyType`                     | Description                    |
-| ----------------------------- | ------------------------------ |
-| `DRepVerificationKey_ed25519` | Hardware DRep Verification Key |
-| `DRepHWSigningFile_ed25519`   | Hardware DRep Signing File     |
+> model is finalized.
 
 ### Data Types
 
 #### CIP-30 Inherited Data Types
 
 From
-[CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#data-types)
+[CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-003/README.md#data-types)
 we inherit:
 
 ##### [Address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#address)
@@ -168,7 +91,7 @@ A hex-encoded string of the corresponding bytes.
 A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049)
 corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610)
 either inside of the
-[Shelley Multi-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl)
+[Shelley Multi-asset binary spec](https://github.com/IntersectMBO/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl)
 or, if not present there, from the
 [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
 This representation was chosen when possible as it is consistent across the
@@ -213,7 +136,7 @@ type PubDRepKey = string;
 ```
 
 A hex-encoded string representing 32 byte Ed25519 DRep public key, as described
-in [DRep Key](#DRep-key).
+in [CIP-0105 | Conway Era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
 
 ##### PubStakeKey
 
@@ -324,13 +247,13 @@ To access these functionalities a client application must present this CIP-95
 extension object, as part of the extensions object passed at enable time:
 
 ```ts
-.enable({ extensions: [{ cip : 95 }]})
+cardano.{wallet-name}.enable({ extensions: [{ cip : 95 }]})
 ```
 
 #### `api.cip95.getPubDRepKey(): Promise<PubDRepKey>`
 
 The connected wallet account provides the account's public DRep Key, derivation
-as described in [DRep Key](#DRep-key).
+as described in [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
 
 These are used by the client to identify the user's on-chain CIP-1694
 interactions, i.e. if a user has registered to be a DRep.
@@ -412,7 +335,7 @@ era transaction fields and certificates.
 ##### Expected Inspection Support
 
 As read from
-[cardano-ledger Conway _draft_ specification](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl).
+[cardano-ledger Conway _draft_ specification](https://github.com/IntersectMBO/cardano-ledger/blob/dcacf044c8d38362edc57a761e027953aab3f335/eras/conway/impl/cddl-files/conway.cddl).
 
 Supporting wallets should be able to recognize and inspect
 all the following certificates and data contained in transaction bodies, in any
@@ -449,12 +372,13 @@ combination.
 |        22         | `positive_coin`          (new donation) |
 
 All other potential transaction field inclusions
-[0-18](https://github.com/input-output-hk/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L54-#L69),
+[0-18](https://github.com/IntersectMBO/cardano-ledger/blob/master/eras/conway/test-suite/cddl-files/conway.cddl#L54-#L69),
 should be able to be recognized by supporting wallets.
 
 ##### Unsupported Inspection
 
-In the Conway ledger era two certificate types are depreciated `genesis_key_delegation` and `move_instantaneous_rewards_cert`. If the wallet receives a transaction containing a depreciated certificate it should return a `TxSignError` with an error code of `DepreciatedCertificate`.
+In the Conway ledger era two certificate types are depreciated `genesis_key_delegation` and `move_instantaneous_rewards_cert`.
+If the wallet receives a transaction containing a depreciated certificate it should return a `TxSignError` with an error code of `DepreciatedCertificate`.
 
 | Index | Unsupported Pre-Conway Certificates |
 | ----- | ----------------------------------- |
@@ -463,7 +387,8 @@ In the Conway ledger era two certificate types are depreciated `genesis_key_dele
 
 ##### Expected Witness Support
 
-Although constitutional committee certificates and stake pool certificates should be able to be recognized they should not be able to be correctly witnessed by wallets following this API. Wallet's should only support witnesses using payment, stake and DRep keys.
+Although constitutional committee certificates and stake pool certificates should be able to be recognized they should not be able to be correctly witnessed by wallets following this API.
+Wallet's should only support witnesses using payment, stake and DRep keys.
 
 ##### Returns
 
@@ -620,7 +545,7 @@ wallet has already been made via
 2. **Construct Delegation:** The client application uses CIP-30 endpoints to
    query the wallet's UTxO set and payment address. A DRep delegation
    certificate
-   ([`vote_deleg_cert`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L303))
+   ([`vote_deleg_cert`](https://github.com/IntersectMBO/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L303))
    is constructed by the app using the chosen DRep's ID and wallet's stake
    credential. A transaction is constructed to send 1 ADA to the wallet's
    payment address with the certificate included in the transaction body.
@@ -650,7 +575,7 @@ the user is not a registered DRep.
 2. **Construct Registration**: The client application uses CIP-30 endpoints to
    query the wallet's UTxO set and payment address. A DRep registration
    certificate
-   ([`reg_drep_cert`](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L312))
+   ([`reg_drep_cert`](https://github.com/IntersectMBO/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L312))
    is constructed by the app using the wallet's DRep ID and the provided
    metadata anchor. A transaction is constructed to send 1 ADA to the wallet's
    payment address with the certificate included in the transaction body.
@@ -717,9 +642,9 @@ majority of participants thus we aim to cast a wide net with this specification.
 
 In this specification we have placed explicit boundaries on what should not be
 supported with `.signTx()`. Those being not witnessing
-[stake pool](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L294C1-L295C43)
+[stake pool](https://github.com/IntersectMBO/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L294C1-L295C43)
 or
-[constitutional committee](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L310C1-L311C61),
+[constitutional committee](https://github.com/IntersectMBO/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L310C1-L311C61),
 certificates and not inspecting genesis key delegation or MIR certificates.
 
 From speaking to CIP-30 implementors it seems reasonable that there does not
@@ -729,14 +654,14 @@ prefer the utility and security advantages not operating via light wallets. Due
 to the [Lack of Specificity](#lack-of-specificity) of CIP-30 we felt it
 necessary to explicitly state the lack of support in this extension.
 
-[Constitutional committee certificates](https://github.com/input-output-hk/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L310C1-L311C61)
+[Constitutional committee certificates](https://github.com/IntersectMBO/cardano-ledger/blob/1beddd3d9f10d8fcb163b5e83985c4bac6b74be7/eras/conway/test-suite/cddl-files/conway.cddl#L310C1-L311C61)
 are not supported by this specification's `.signTx()` for two reasons. First,
 this specification is only focussed on the need's of Ada holders and DReps.
 Secondly, the credentials used by the constitutional committee, are a hot and
 cold key setup. Hot and cold keys are not suited for standard light wallets.
 
 Genesis key delegation and move instantaneous reward certificates (see in
-[Shelley spec](https://github.com/input-output-hk/cardano-ledger/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl#L117#L118))
+[Shelley spec](https://github.com/IntersectMBO/cardano-ledger/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl#L117#L118))
 are not supported here because they have been depreciated in the Conway ledger
 era. Furthermore, due to the lack of accessibility (require access to genesis
 keys) for these certificates it is extremely unlikely any CIP-30 implementations
@@ -886,50 +811,6 @@ implementations to support Conway artifacts to `.signData()` and `.signTx()`.
 But if so they must support the CIP-95 object flag at connection time, so that
 clients are aware of this functionality.
 
-### DRep Key
-
-// todo: move to DRep Key CIP
-
-We chose to introduce the concept of a DRep Key, building on top of CIP-1694,
-this we see as a necessary step for wallet implementors. By setting a
-(hierarchical) deterministic derivation path it enables restorability from a
-seed phrase.
-
-With this definition we aim to standard for all ecosystem tooling to be able to
-derive DRep credentials from mnemonics. This brings the benefits ecosystem
-standards.
-
-#### Derivation Path
-
-When choosing the derivation path there were a few possible options. Initially
-we chose to follow how a new key definition was done in
-[CIP-36](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#derivation-path)
-by defining a new purpose of `1718'`. This was an oversight, as defining a new
-derivation purposes will likely have hardware wallet audit implications.
-
-#### Why not reuse [CIP-36 Vote Keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0036/README.md#voting-key)?
-
-CIP-36 defines derivation path for a key pair to be used within CIP-36 style
-governance. The most notable user of this standard is
-[Project Catalyst](https://projectcatalyst.io), where CIP-36 vote keys are used to sign
-vote transactions for the Jormungandr side-chain.
-
-One suggestion is to reuse this key pair instead of defining a new key pair in
-DRep key. The benefits to this would be that it is easier for users and tools to
-manage a single key pair to be used for any projects following the CIP-36
-standard and for use in this API. This would mean a single key could be used to
-sign Catalyst votes and CIP-1694 DRep votes.
-
-Reusing keys comes with the downside of possible confusion for users and
-tooling. This is why we have attempted to assign the DRep keys clear and
-explicit naming and usage to avoid confusion with CIP-36 vote keys. Furthermore,
-the keys described here are used for more than just vote signing just the
-"CIP-36 vote key" naming may be a cause of confusion.
-
-> **Note** The derivation path used for CIP-36 vote keys includes `1694` as the
-> `purpose`, this is a perhaps misleading reality and hints to the original
-> intension of using CIP-36 vote keys for Cardano's Voltaire.
-
 ### Multi-stake Key Support
 
 Although
@@ -1026,17 +907,24 @@ straight forward for wallets implementing both APIs.
     being a wallet web bridge.
 - <s>Should there be a way for the optional sharing of governance state, from
   wallet to client?</s>
-- Should DRep key be moved into CIP-1852?
-  - <s>Yes it will be moved to it's own CIP with reference added to
-    CIP-1852.</s>
+  - We leave this for future CIPs.
+- <s>Should DRep key be moved into CIP-1852?</s>
+  - Yes it will be moved to it's own CIP with reference added to
+    CIP-1852.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] The interface is supported by three wallet providers.
-- [ ] The interface is used by one web application to allow users to engage with
+- [x] The interface is supported by three wallet providers.
+  - [Nufi](https://assets.nu.fi/extension/sanchonet/nufi-cwe-sanchonet-latest.zip)
+  - [Lace](https://chromewebstore.google.com/detail/lace-sanchonet/djcdfchkaijggdjokfomholkalbffgil?hl=en)
+  - [Yoroi](https://chrome.google.com/webstore/detail/yoroi-nightly/poonlenmfdfbjfeeballhiibknlknepo/related)
+  - [demos wallet](https://github.com/Ryun1/cip95-demos-wallet)
+- [x] The interface is used by one web application to allow users to engage with
       the Conway ledger design.
+  - [SanchoNet GovTool](https://sanchogov.tools)
+  - [demos test dApp](https://github.com/Ryun1/cip95-cardano-wallet-connector/tree/master)
 
 ### Implementation Plan
 
@@ -1058,8 +946,33 @@ straight forward for wallets implementing both APIs.
 - [x] Author to provide a reference wallet implementation.
   - See [cip95-demos-wallet](https://github.com/Ryun1/cip95-demos-wallet/).
 - [ ] Author to produce a set of test vectors for wallets to test against.
-- [ ] Author to move DRep key definitions to a separate CIP.
-  
+- [x] Author to move DRep key definitions to a separate CIP.
+  - via the addition of [CIP-105 | Conway era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md) via [CIPs PR #597](https://github.com/cardano-foundation/CIPs/pull/597). 
+
+## Acknowledgments
+
+<details>
+  <summary><strong>Wallets and Tooling Hackathon</strong></summary>
+
+  On 2023.07.13 a online and in person community hackathon took place, aims of
+  this event included maturation of the design of this specification.
+
+  We would like to thank the following attendees for providing their valuable
+  insights:
+
+  - Piotr Czeglik - Lace
+  - Mircea Hasegan - Lace
+  - Alex Apeldoorn - Lace
+  - Michal Szorad - Yoroi
+  - Javier Bueno - Yoroi
+  - Ed Eykholt - Blocktrust
+  - Vladimir Volek - Five Binaries
+  - Marek Mahut - Five Binaries
+  - Markus Gufler - Cardano Foundation
+  - Michal Ciborowski - BinarApps
+
+</details>
+
 ## Copyright
 
 This CIP is licensed under

@@ -1,43 +1,45 @@
 ---
 CIP: 12
 Title: On-chain stake pool operator to delegates communication
-Authors: Marek Mahut <marek.mahut@fivebinaries.com>, Sebastien Guillemot <sebastien@emurgo.io>, Ján Hrnko <jan.hrnko@fivebinaries.com>
-Comments-URI: https://forum.cardano.org/t/on-chain-stake-pool-operator-to-delegates-communication/42229
-Status: Draft
-Type: Standards
+Status: Proposed
+Category: Metadata
+Authors:
+  - Marek Mahut <marek.mahut@fivebinaries.com>
+  - Sebastien Guillemot <sebastien@emurgo.io>
+  - Ján Hrnko <jan.hrnko@fivebinaries.com>
+Discussions:
+  - https://forum.cardano.org/t/on-chain-stake-pool-operator-to-delegates-communication/42229
+  - https://github.com/cardano-foundation/CIPs/pull/44
 Created: 2020-11-07
 License: CC-BY-4.0
-Requires: CIP10
 ---
 
 ## Abstract
 
 Standard format for metadata used in an on-chain communication of stake pool owner towards their delegates.
 
-## Terminology
+## Motivation: why is this CIP necessary?
 
-We define two types of communication metadata, which are distinguished by transaction metadata label as defined in the [CIP10 Transaction metadata label registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP10/README.md).
+Stake pool owners and their delegates lack an on-chain communication standard between them.
+
+[CIP-0006](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0006/README.md) already defines an external feed of a stake pool within the extended metadata. However, there is need for a more verifiable on-chain communication standard that will also provide additional cost associated with such communication to prevent its abuse.
+
+## Specification
+
+### Terminology
+
+We define two types of communication metadata, which are distinguished by transaction metadata label as defined in [CIP-0010: Transaction metadata label registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/README.md):
 
  * *Message board communication* is a type of metadata that has been included in an on-chain transaction between two base addresses associated with a stake pool operator owner address. Given the onetime fee for this communication, we are considering this as a message board of a stake pool, as it also enables delegates to easier access historical metadata communication.
 
  * *Direct delegate communication* is a type of metadata that has been included in an on-chain transaction between a stake pool owner account and a delegate's account. This type of communication is more expensive for the stake pool owner, preventing higher abuse and therefore enables wallets to implement notification granularity. It might be suitable for targeting specific delegates, such as messaging only new joined delegates, loyal delegates, high-amount delegates etc.
 
-## Motivation
-
-The lack of an on-chain communication standard between a stake pool owner and their delegates.
-
-<!-- Link to CIP6 link once/if merged -->
-
-Work in progress [CIP6](https://github.com/cardano-foundation/CIPs/pull/15) already defines an external feed of a stake pool within the extended metadata. However, there is need for a more verifiable on-chain communication standard that will also provide additional cost associated with such communication to prevent its abuse.
-
-## Specification
-
-As per [CIP10 Transaction metadata label registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP10/README.md), we assign:
+As per CIP-0010, we assign:
 
 * *Message board communication* transaction metadata label `1990`,
 * *Direct delegate communication* transaction metadata label `1991`.
 
-## Metadata
+### Metadata
 
 Metadata are written in JSON format and maximum size of metadata around 16KB.
 
@@ -52,11 +54,11 @@ language code of the content.
 | `valid` *(optional)*   | Slot number the communication becomes valid  | Unsigned integer                           |
 | `expires` *(optional)* | Slot number until the communication is valid | Unsigned integer                           |
 
-### Metadata JSON schema
+#### Metadata JSON schema
 
 The [schema.json](./schema.json) file defines the metadata.
 
-### Metadata example including the transaction metadata label
+#### Metadata example including the transaction metadata label
 
 ```
 {
@@ -96,22 +98,28 @@ The [schema.json](./schema.json) file defines the metadata.
 }
 ```
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 The format of the `content` field is required to be an array of 64 bytes chunks, as this is the maximum size of a JSON field in the Cardano ledger. Tools, such as wallets, are required to recompose the content of the message.
 
 The current Cardano protocol parameter for maximum transaction size, that will hold the metadata, is around 16KB.
 
-## Backwards compatibility
+### Backwards compatibility
 
 No backwards compatibility breaking changes are introduced.
 
-## Reference implementation
+## Path to Active
 
-We leave the decisions, such as what and how to display communication messages, up to downstream tools and wallets.
+### Acceptance Criteria
 
- * For simple implementation reference, refer to [CIP12 communication tool examples](https://github.com/fivebinaries/cip-metadata-communication-example)
+ * [ ] Indications that more than one wallet or backend supports this standard, including:
+   * [ ] Yoroi (in progress from [Implement CIP12 to Yoroi backends](https://www.lidonation.com/en/proposals/implement-cip12-to-yoroi-backends))
+
+### Implementation Plan
+
+ * [x] Develop reference implementation ([CIP12 communication tool examples](https://github.com/fivebinaries/cip-metadata-communication-example))
+ * [x] Offer this standard for implementation in downstream tools and wallets: pending their own decisions about whether and how to display communication messages.
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

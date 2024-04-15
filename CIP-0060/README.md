@@ -1,33 +1,51 @@
 ---
 CIP: 60
 Title: Music Token Metadata
-Authors: Andrew Westberg <awestberg@projectnewm.io>, Ryan Jones <rjones@projectnewm.io>, Justin Morgan <jusemorgan@gmail.com>, Ian Singer <tcl@fre5hmusic.com>, Anthony Eizmendiz <aeizmendiz@icloud.com>, Session Cruz <session@demu.pro>, Jimmy Londo <SickCityCleveland@gmail.com>, Gudbrand Tokerud <Gudbrand.tokerud@gmail.com>, Kevin St.Clair <kos1777@gmail.com>, Brandon Loyche <dsqise@gmail.com>, Andrew Donovan <adonovan23@gmail.com>
-Comments-URI: no comments yet
 Status: Active
-Type: Process
+Category: Metadata
+Authors:
+  - Andrew Westberg <awestberg@projectnewm.io>
+  - Ryan Jones <rjones@projectnewm.io>
+  - Justin Morgan <jusemorgan@gmail.com>
+  - Ian Singer <tcl@fre5hmusic.com>
+  - Anthony Eizmendiz <aeizmendiz@icloud.com>
+  - Session Cruz <session@demu.pro>
+  - Jimmy Londo <SickCityCleveland@gmail.com>
+  - Gudbrand Tokerud <Gudbrand.tokerud@gmail.com>
+  - Kevin St.Clair <kos1777@gmail.com>
+  - Brandon Loyche <dsqise@gmail.com>
+  - Andrew Donovan <adonovan23@gmail.com>
+Implementors:
+  - NEWM <newm.io>
+  - SoundRig <soundrig.io>
+  - SickCityNFT <sickcity.xyz>
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/307
+  - https://github.com/cardano-foundation/CIPs/pull/367
+  - https://github.com/cardano-foundation/CIPs/pull/502
 Created: 2022-07-26
 License: CC-BY-4.0
 ---
 
-# Abstract
+## Abstract
 
 This proposal defines an extension to CIP-25 and CIP-68 for token metadata specific to music tokens.
 
-# Motivation
+## Motivation: why is this CIP necessary?
 
 Music tokens on Cardano can be either NFTs or FTs and contain links to audio files. In order for players, indexers, and wallets to be able to properly search and categorize a user's music collection, we need to define a common schema for creating music on Cardano. If all parties creating these music tokens follow similar patterns, apps can consume this information and make proper use of it. The existing CIP-25 is a good base to build upon, but for a good music experience, we need to standardize additional fields that will be required specifically for music tokens.
 
-# Specification
+## Specification
 
 This CIP divides the additional metadata parameters into two categories of `Required` and `Optional`. When minting a music token on Cardano, you are expected to include ALL of the required fields. If you choose to include one or more of the optional fields, they must be named exactly as defined in this CIP. This will properly allow indexing apps and music players to utilize as much of your token metadata as possible without issues.
 
 [CDDL Spec Version 2](./cddl/version-2.cddl)<br/>
 [CDDL Spec Version 1 (deprecated)](./cddl/version-1.cddl)
 
-## Summary of v2 Changes ##
+### Summary of v2 Changes ##
 In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_title`. `release` is a more generic name that covers all types of releases from Albums, EPs, LPs, Singles, and Compilations. At the top level, we are grouping those metadata items that relate to the release under a new key `release`. At the file for each song, there is a new `song` key that holds the metadata specific to the individual song. These changes separate the music-specific metadata from the general CIP-25/CIP-68 NFT metadata. A music player can look at just the information necessary instead of having to ignore extra NFT-related fields. CIP-68 NFTs are officially supported and an example specific to CIP-68 has been added below.
 
-## Required Fields ###
+### Required Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
 | artists     | Array\<Artist\>     | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | |
@@ -40,7 +58,7 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 | release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc...|
 | music_metadata_version | Integer | "music_metadata_version" : 1 | Players should look for the presence of this field to determine if the token is a Music Token |
 
-### Optional Fields ###
+#### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
 | contributing_artists | Array\<Artist\> | "contributing_artists": ["Dolly Parton"]<br/>*or*<br/>"contributing_artists": [<br/>"Brad Paisley",<br/>"Keith Urban"<br/>] | |
@@ -78,9 +96,9 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 | derived_from | String | "derived_from" : "Some other work" | |
 | links | Map\<String,String\> | "links" : {<br/>"website": "https://website.com",<br/>"twitter": "https://twitter.com/username",<br/>"discord_invite": "https://discord.gg/TEzXxjsN",<br/>"TikTok": "https://www.tiktok.com/@knucklebumpfarms",<br/>"discord_username": "MusicianPerson#8537",<br/>"instagram":"...",<br/>"facebook":"...",<br/>"soundcloud": "...",<br/>"bandcamp": "...",<br/>"spotify": "...",<br/>"apple_music": "...",<br/>...<br/>...<br/>} | |
 
-## Examples ##
+### Examples ##
 
-### Single ###
+#### Single ###
 ```
 {
     "721":
@@ -134,7 +152,7 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 }
 ```
 
-### Multiple ###
+#### Multiple ###
 
 ```
 {
@@ -293,7 +311,7 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 }
 ```
 
-### CIP-68 Single ###
+#### CIP-68 Single ###
 
 ```
 {
@@ -375,7 +393,7 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 }
 ```
 
-# Rationale
+## Rationale: how does this CIP achieve its goals?
 
 Implementing this simplifies and commonizes the process for creating music tokens on Cardano. It greatly simplifies the work that apps have to make when consuming such tokens.
 
@@ -383,12 +401,17 @@ This CIP is the result of several online meetings between many different compani
 
 ## Path to Active
 
-This proposal is now considered in an Active state and has been implemented by a number of parties.
+### Acceptance Criteria
 
-- [x] SickCityNFT - sickcity.xyz
-- [x] NEWM - newm.io
-- [x] SoundRig - soundrig.io
+- [x] Has been implemented by a number of parties, including:
+  - [x] SickCityNFT - sickcity.xyz
+  - [x] NEWM - newm.io
+  - [x] SoundRig - soundrig.io
 
-# Copyright
+### Implementation Plan
+
+- [x] Consensus of companies building music-related Cardano projects to develop a mutually beneficial metadata vocabulary.
+
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)

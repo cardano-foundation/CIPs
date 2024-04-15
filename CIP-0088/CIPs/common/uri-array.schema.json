@@ -1,0 +1,53 @@
+{
+  "$id": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/common/uri-array.schema.json",
+  "title": "URI Array",
+  "$comment": "Because Cardano has a 64-character per string limit in on-chain JSON. Long strings should be broken up into an array of string parts. Particularly helpful for URIs that point to a resource on the internet is breaking URIs by scheme and path. This allows explorers to quickly and easily identify the type of resource before proceeding.",
+  "type": "array",
+  "minItems": 2,
+  "items": [
+    {
+      "title": "URI Scheme",
+      "description": "The protocol schema definition",
+      "type": "string",
+      "examples": [
+        "https://",
+        "ar://",
+        "ipfs://"
+      ],
+      "minLength": 4,
+      "maxLength": 64
+    },
+    {
+      "title": "URI Path",
+      "description": "One or more strings (64-character limit) to compose the URI",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "examples": [
+        "faucet.spacecoins.io",
+        "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly",
+        "WRi9jboeKx1fbjcvO5q0kshaMmdaYgDnYlMEy-loZeY"
+      ]
+    }
+  ],
+  "additionalItems": {
+    "title": "Path (Cont.)",
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 64
+  },
+  "examples": [
+    [
+      "ar://",
+      "WRi9jboeKx1fbjcvO5q0kshaMmdaYgDnYlMEy-loZeY"
+    ],
+    [
+      "https://",
+      "spacecoins.io"
+    ],
+    [
+      "ipfs://",
+      "bafkreibva6x6dwxqksmnozg44vpixja6jlhm2w7ueydkyk4lpxbowdbqly"
+    ]
+  ]
+}

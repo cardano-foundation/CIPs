@@ -20,6 +20,10 @@
     "description": "Proof of Existence record"
   },
   {
+    "transaction_metadatum_label": 620,
+    "description": "seedtrace.org - supply chain & fair payment tracing"
+  },
+  {
     "transaction_metadatum_label": 674,
     "description": "CIP-0020 - Transaction message/comment metadata"
   },
@@ -33,7 +37,11 @@
   },
   {
     "transaction_metadatum_label": 839,
-    "description": "Agora - Proposal creation metadata"
+    "description": "Agora - Proposal creation metadata"    
+  },
+  {
+    "transaction_metadatum_label": 867,
+    "description": "CIP-0088 - Token Policy Registration Standard"
   },
   {
     "transaction_metadatum_label": 888,
@@ -48,12 +56,20 @@
     "description": "CIP-72: dApp registration & Discovery"
   },
   {
+    "transaction_metadataum_label": 1694,
+    "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
+  },
+  {
     "transaction_metadatum_label": 1870,
     "description": "Open Badges v2.0 compliant metadata"
   },
   {
     "transaction_metadatum_label": 1888,
     "description": "amphitheatre by the ape society"
+  },
+  {
+    "transaction_metadatum_label": 1904,
+    "description": "Proof of origin and quality related verification data in supply chain"
   },
   {
     "transaction_metadatum_label": 1967,

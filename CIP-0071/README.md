@@ -1,12 +1,14 @@
 ---
 CIP: 71
 Title: Non-Fungible Token (NFT) Proxy Voting Standard
-Authors: Thaddeus Diamond <support@wildtangz.com>
-Comments-URI:
 Status: Proposed
-Type: Process
+Category: Tools
+Authors:
+  - Thaddeus Diamond <support@wildtangz.com>
+Implementors: []
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/351
 Created: 2022-10-11
-Post-History:
 License: CC-BY-4.0
 ---
 
@@ -14,7 +16,7 @@ License: CC-BY-4.0
 
 This proposal uses plutus minting policies to create valid "ballots" that are sent alongside datum "votes" to a centralized smart contract "ballot box" in order to perform verifiable on-chain voting in NFT projects that do not have a governance token.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 This proposal is intended to provide a standard mechanism for non-fungible token (NFT) projects to perform on-chain verifiable votes using only their NFT assets. There are several proposed solutions for governance that involve using either a service provider (e.g., Summon) with native assets or the issuance of proprietary native assets.  However, there are several issues with these approaches:
 - Airdrops of governance tokens require minUTxO ada attached, costing the NFT project ada out of pocket
@@ -198,7 +200,7 @@ func main(redeemer: Redeemer, ctx: ScriptContext) -> Bool {
 
 The Helios code above simply checks that during a burn (as indicated by the Plutus minting policy's `redeemer`), the user is not attempting to mint a positive number of any assets.  With this code, *any Cardano wallet* can burn *any ballot* minted as part of this protocol.  Why so permissive? We want to ensure that each vote is bringing the minimal costs possible to the user.  In providing this native burning mechanism we can free up the minUTxO that had been locked with the ballot, and enable the user to potentially participate in more votes they might not have otherwise.  In addition, users who really do not like the specific commemorative NFTs or projects that choose to skip the "commemorative" aspect of ballot creation now have an easy way to dispose of "junk" assets.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 ### Using Inline Datums (On-Chain) Instead of Metadata (Off-Chain)
 
@@ -226,7 +228,7 @@ A user could attempt to create multiple ballots of the same name for a given ref
 
 During the construction of the ballot NFTs we allow the user to specify their vote alongside a `voter` field indicating where their "ballot" NFT should be returned to once the vote is fully counted.  Unfortunately, this is not strictly checked inside the Plutus minting policy's code (largely due to CPU/memory constraints).  So, we rely on the user to provide an accurate return address, which means that there is the potential for someone who has not actually voted to receive a commemorative NFT.  This does not impact the protocol though, as the "ballot" NFT was legally minted, just returned to the incorrect location.  That user actually received a gift, as they can now burn the ballot and receive some small amount of dust.
 
-## Potential Disadvantages
+### Potential Disadvantages
 
 There are several potential disadvantages to this proposal that may be avoided by the use of a native token or other voting mechanism.  We enumerate some here explicitly so projects can understand where this protocol may or may not be appropriate to use:
 
@@ -235,7 +237,7 @@ There are several potential disadvantages to this proposal that may be avoided b
   - Performing an encrypted vote on-chain with verifiable post-vote results is an exercise left to the standard's implementer
 - Projects wishing for anonymity in their votes should not use this standard as each vote can be traced to a reference asset
 
-## Optional Recommendations
+### Optional Recommendations
 
 In no particular order, we recommend the following implementation details that do not impact the protocol, but may impact user experience:
 
@@ -244,17 +246,11 @@ In no particular order, we recommend the following implementation details that d
 - The "vote" represented by a datum will be easier to debug and analyze in real-time if it uses the new "inline datum" feature from Vasil, but the protocol will still work on Alonzo era transactions.
 - The "ballot box" smart contract should likely enforce that the datum's "voter" field is respected when returning the ballots to users after voting has ended to provide greater transparency and trust for project participants.
 
-## Backward Compatibility
+### Backward Compatibility
 
 Due to the nature of Plutus minting policies and smart contracts, which derive policy identifiers and payment addresses from the actual source code, once a vote has been started it cannot change versions or code implementations. However, because the mechanism we propose here is just a reference architecture, between votes projects are free to change either the "ballot" Plutus minting policy or the "ballot box" smart contract as they see fit.  There are no prior CIPs with which to conform with for backward interoperability.
 
-## Path to Active
-
-- Considerations for ranked-choice voting if projects wish to have it
-- Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [Plutus Core](https://github.com/input-output-hk/plutus) [using Helios](https://github.com/Hyperion-BT/Helios) (on-chain): [Implementation](./example/)
-- Open-source implementations from other NFT projects that make use of this CIP
-
-## References
+### References
 
 - [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025): NFT Metadata Standard
 - [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030): Cardano dApp-Wallet Web Bridge
@@ -262,6 +258,17 @@ Due to the nature of Plutus minting policies and smart contracts, which derive p
 - [Helios Language](https://github.com/Hyperion-BT/Helios): On-Chain Cardano Smart Contract language used in example code
 - [Lucid](https://github.com/spacebudz/lucid): Transaction construction library used in code samples and pseudocode
 - [VoteAire Specification](https://github.com/voteaire/voteaire-onchain-spec): Open-source voting specification using metadata off-chain
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [ ] Presentation to, and adoption by, projects that may benefit from ranked-choice voting
+- [ ] Open-source implementations from other NFT projects that make use of this CIP
+
+### Implementation Plan
+
+- [x] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [Plutus Core](https://github.com/input-output-hk/plutus) [using Helios](https://github.com/Hyperion-BT/Helios) (on-chain): [Implementation](./example/)
 
 ## Copyright
 
