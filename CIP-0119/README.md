@@ -95,7 +95,7 @@ Therefore there MAY be a `paymentAddress` field in the metadata where such payme
 #### `qualifications`
 - Optional
 - A freeform text field with a maximum of 1000 characters 
-- A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
+- A space where the registrant can to list the qualifications they hold that are relevant to their role as a DRep
 
 #### `references`
 - Compulsory
