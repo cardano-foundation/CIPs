@@ -120,7 +120,7 @@ PKI cryptographic solutions were also considered in the place of the current sol
 1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what their authentic public key is.
 2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for the identity validation of DReps.
 
-#### `donotlist`
+#### `doNotList`
 - Optional
 - If not included then the value is assumed to be false
 - A boolean expression
@@ -128,7 +128,7 @@ PKI cryptographic solutions were also considered in the place of the current sol
 -- e.g. a DRep who does not want to appear in GovTool’s DRep Explorer feature creates metadata with donotlist as true.
 
 ### Application
-DRep metadata must include all compulsory fields to be considered CIP-???? compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-???? compliant metadata.
+DRep metadata must include all compulsory fields to be considered CIP-119 compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-119 compliant metadata.
 
 ### Test Vector
 See [test-vector.md](./test-vector.md) for examples.
