@@ -177,6 +177,7 @@ The inclusion of a hash allows for the supporting documentation to be cryptograp
 ### Acceptance Criteria
 - [ ] This standard is supported by two different tooling providers used to submit governance actions to chain.
 - [ ] This standard is supported by two different chain indexing tools, used to read and render metadata.
+  - DB-Sync via [db-sync-sancho-4.1.0](https://github.com/IntersectMBO/cardano-db-sync/releases/tag/sancho-4.1.0)
 
 ### Implementation Plan
 Solicitation of feedback
