@@ -98,7 +98,7 @@ Therefore there MAY be a `paymentAddress` field in the metadata where such payme
 - A space to list the qualifications that the subject of this metadata has that are relevant to being a DRep
 
 #### `references`
-- Optional
+- Compulsory
 - This CIP extends the `references` property from [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100#high-level-description)
 - `references` contain the following sub-properties `type`, `label`, and `uri`
 - This CIP adds two `@type` identifiers "Identity" and "Link"
@@ -111,6 +111,7 @@ Therefore there MAY be a `paymentAddress` field in the metadata where such payme
 - It is expected that these links will be the addresses of the social media/ websites associated with the DRep in order to give a person reviewing this information a fulsome overview of the DRep's online presence.
 
 ##### `type`: Identity
+- Compulsory
 - The `uri` of a reference with the `type` "Identity" is a way for DReps to prove that they are who they say they are
 - Each piece of metadata referenced in the anchor of a DRep registristration or update transaction MUST contain at least one reference with the `type` "Identity". Else tooling SHOULD ignore the metadata.
 - It is expected that the "Identity" of a DRep will be the addresses of their most active social media account twitter, linkedin etc. or personal website.
