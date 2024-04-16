@@ -1,0 +1,111 @@
+{
+    "title": "CIP-0119 Common",
+    "description": "Metadata document for Cardano DReps, extending CIP-100",
+    "type": "object",
+    "required": ["hashAlgorithm", "body"],
+    "properties": {
+        "hashAlgorithm": {
+            "$ref": "#/definitions/hashAlgorithm"
+        },
+        "body": {
+            "$ref": "#/definitions/body"
+        }
+    },
+    "definitions": {
+        "hashAlgorithm": {
+            "type": "string",
+            "enum": ["blake2b-256"],
+            "title": "Hash Algorithm",
+            "description": "The algorithm used to authenticate this document externally (CIP-100)"
+        },
+        "body": {
+            "title": "Body",
+            "description": "The body of the metadata document that is hashed to produce a signature (CIP-100)",
+            "type": "object",
+            "required": ["username", "references"], 
+            "properties": {
+                "paymentAddress": {
+                    "type": "string",
+                    "title": "Payment Address",
+                    "description": "Donations or other payments to a DRep should be made to this address"
+                },
+                "username": {
+                    "type": "string",
+                    "title": "Username",
+                    "description": "The human readable name of a DRep"
+                },
+                "picture": {
+                    "type": "string",
+                    "title": "Profile Picture",
+                    "description": "A base64 encoded image representing the profile picture of a DRep"
+                },
+                "objectives": {
+                    "type": "string",
+                    "title": "Objectives",
+                    "description": "A short description of what the person believes and what they want to achieve as a DRep"
+                },
+                "motivations": {
+                    "type": "string",
+                    "title": "Motivations",
+                    "description": "A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to register"
+                },
+                "qualifications": {
+                    "type": "string",
+                    "title": "Motivations",
+                    "description": "A space where the registrant can to list the qualifications they hold that are relevant to their role as a DRep"
+                },
+                "doNotList": {
+                    "type": "boolean",
+                    "title": "Do Not List",
+                    "description": "Explanation of how the governance action addresses the problem outlined in 'motivation'"
+                },
+                "references": {
+                    "type": "array",
+                    "title": "References",
+                    "items": {
+                        "$ref": "#/definitions/reference"
+                    }
+                }
+            }
+        },
+        "reference": {
+            "title": "Reference",
+            "description": "A reference to a document",
+            "type": "object",
+            "required": ["type", "label", "uri"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["GovernanceMetadata", "Other", "Identity","Link"],
+                    "title": "Type"
+                },
+                "label": {
+                    "type": "string",
+                    "title": "Label"
+                },
+                "uri": {
+                    "type": "string",
+                    "title": "URI"
+                },
+                "referenceHash": {
+                    "$ref": "#/definitions/referenceHash"
+                }
+            }
+        },
+        "referenceHash": {
+            "title": "Reference Hash",
+            "description": "A hash of a reference document",
+            "type": "object",
+            "required": ["hashDigest", "hashAlgorithm"],
+            "properties": {
+                "hashDigest": {
+                    "type": "string",
+                    "title": "Hash"
+                },
+                "hashAlgorithm": {
+                    "$ref": "#/definitions/hashAlgorithm"
+                }
+            }
+        }
+    }
+}
