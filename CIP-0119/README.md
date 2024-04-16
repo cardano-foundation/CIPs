@@ -90,7 +90,7 @@ Therefore there MAY be a `paymentAddress` field in the metadata where such payme
 #### `motivations`
 - Optional
 - A freeform text field with a maximum of 1000 characters
-- A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to 
+- A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to register 
 
 #### `qualifications`
 - Optional
