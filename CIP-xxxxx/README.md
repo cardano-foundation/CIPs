@@ -1,6 +1,6 @@
 ---
 CIP: ???
-Title: Web-Wallet Bridge - Mutlisig wallets
+Title: Web-Wallet Bridge - Plutus based wallets
 Status: Proposed
 Category: Wallets
 Authors: 
