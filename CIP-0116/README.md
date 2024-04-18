@@ -25,11 +25,11 @@ The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Do
 
 ## Specification
 
-This CIP is expected to contain multiple schema definitions for Cardano Eras and breaking intra-era hardforks starting from Babbage.
+This CIP is expected to contain multiple schema definitions for Cardano eras and breaking intra-era hardforks starting from Babbage.
 
-| Ledger Era | Ledger Commit | Schema | Changelog Entry |
-| --- | --- | --- | --- |
-| Babbage | [12dc779](https://github.com/IntersectMBO/cardano-ledger/blob/12dc779d7975cbeb69c7c18c1565964a90f50920/eras/babbage/impl/cddl-files/babbage.cddl) | [cardano-babbage.json](./cardano-babbage.json) | N/A |
+| Ledger era | Hardfork | Ledger Commit | Schema | Changelog Entry |
+| --- | --- | --- | --- |--- |
+| Babbage | Vasil | [12dc779](https://github.com/IntersectMBO/cardano-ledger/blob/12dc779d7975cbeb69c7c18c1565964a90f50920/eras/babbage/impl/cddl-files/babbage.cddl) | [cardano-babbage.json](./cardano-babbage.json) | N/A |
 
 ### Scope of the Schema
 
@@ -48,14 +48,6 @@ For a single JSON fixture, however, there are multiple variants of encoding it a
 #### Consistency with the previous versions
 
 To simplify transitions of dApps between eras, the scope of changes introduced to the schemas SHOULD be limited to the scope of CDDL changes.
-
-
-#### Absence of extensibility
-
-The schemas MUST NOT be extensible with additional properties. This may sound counter-intuitive and against the spirit of json-schema, but there are some motivations behind that:
-
-- More safety from typos: object fields that are optional may be specified with slightly incorrect names in dApps' code, leading to inability of the decoders to pick up the values, which may go unnoticed.
-- Clear delineation between Cardano domain types and user dApp domain types: forcing the developers to store their dApp domain data separately from Cardano data, or close to it (as opposed to mixing these together in a single object) will indirectly motivate better structured dApp code.
 
 ### Schema Conventions
 
@@ -250,7 +242,7 @@ It is up to implementors to decide how to serialize the values into CBOR. The pr
 
 This CIP should not follow a conventional versioning scheme, rather it should be altered via pull request before a hardforks to add new a JSON schema to align with new ledger ers. Each schema must be standalone and not reuse definitions between eras. Authors MUST follow the [Schema Scope](#scope-of-the-schema), [Schema Design Principles](#schema-design-principles) and [Schema Conventions](#schema-conventions).
 
-Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be updated. Authors must clearly articulate the changes which has been made between the last schema and the new one being added.
+Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be updated. Authors must clearly articulate the deltas between schemas.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -264,6 +256,13 @@ Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be
 This CIP lays out strong conventions that future schema authors must follow. With a large set of design principles and conventions. The aim for these is to minimize the potential for unavoidable deltas between schemas.
 
 By setting sometimes arbitrary conventions we hope to create a single possible interpretation from CBOR to JSON. This is beneficial as
+
+### Absence of extensibility
+
+The schemas MUST NOT be extensible with additional properties. This may sound counter-intuitive and against the spirit of json-schema, but there are some motivations behind that:
+
+- More safety from typos: object fields that are optional may be specified with slightly incorrect names in dApps' code, leading to inability of the decoders to pick up the values, which may go unnoticed.
+- Clear delineation between Cardano domain types and user dApp domain types: forcing the developers to store their dApp domain data separately from Cardano data, or close to it (as opposed to mixing these together in a single object) will indirectly motivate better structured dApp code.
 
 ### JSON
  - what alternatives?
@@ -283,14 +282,16 @@ By setting sometimes arbitrary conventions we hope to create a single possible i
 
 ## Path to Active
 
-- [ ] Complete the specification
-- [ ] Provide an implementation of validating functions that uses this json-schema
-- [ ] Collect a list of cardano domain types implementations and negotiate transition to the specified formats with maintainers (if it makes sense and is possible)
-
 ### Acceptance Criteria
 
+- [ ] One future ledger era schema is added
+- [ ] This standard is implemented within three separate tools, libraries, etc. 
+
 ### Implementation Plan
-<!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
+
+- [ ] Complete the Babbage specification
+- [ ] Provide an implementation of validating functions that uses this json-schema
+- [ ] Collect a list of cardano domain types implementations and negotiate transition to the specified formats with maintainers (if it makes sense and is possible)
 
 ## Copyright
 
