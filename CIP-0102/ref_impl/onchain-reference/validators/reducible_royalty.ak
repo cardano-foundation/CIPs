@@ -1,8 +1,10 @@
 use aiken/list
-use aiken/transaction.{Output, ScriptContext, Transaction}
-use aiken/transaction/credential.{VerificationKeyCredential}
+use aiken/transaction.{Input, Output, ScriptContext, Transaction}
+use aiken/transaction/credential.{Address, VerificationKeyCredential}
 use aiken/transaction/value.{PolicyId}
-use onchain_reference/common.{RoyaltyInfo, get_data, royalty_tn}
+use onchain_reference/common.{
+  RoyaltyInfo, RoyaltyRecipient, get_data, royalty_tn,
+}
 
 type ReduceRedeemer {
   policy_id: PolicyId,
@@ -50,11 +52,10 @@ validator {
             fn(out_recipient) {
               // find the corresponding out recipient
               if in_recipient.address == out_recipient.address {
-                // the fee has not changed OR the fee has decreased AND the recipient has signed the transaction
-                in_recipient.fee == out_recipient.fee || in_recipient.fee > out_recipient.fee && list.has(
-                  context.transaction.extra_signatories,
-                  sig,
-                )
+                // the fee has not changed OR
+                in_recipient.fee == out_recipient.fee || // the fee has decreased (encoding reverses this) AND
+                in_recipient.fee < out_recipient.fee && // the recipient has signed the transaction
+                list.has(tx.extra_signatories, sig)
               } else {
                 False
               }
@@ -65,3 +66,48 @@ validator {
     True
   }
 }
+
+// ############### TESTS ###############
+const mock_owner = "some_fake_address_hash"
+
+const mock_policy_id = "some_fake_policy_id"
+
+test should_reduce_recipient() {
+  let redeemer = ReduceRedeemer { policy_id: mock_policy_id }
+
+  let in_royalty_info =
+    RoyaltyInfo {
+      recipients: [
+        RoyaltyRecipient {
+          address: Address {
+            payment_credential: VerificationKeyCredential(mock_owner),
+            stake_credential: None,
+          },
+          fee: 125,
+          min_fee: None,
+          max_fee: None,
+        },
+      ],
+      version: 1,
+      extra: None,
+    }
+
+  True
+}
+// fn get_base_transaction(recipients_in: List<Input>, recipients_out: List<Output>) -> Transaction {
+//   Transaction {
+//     ..transaction.placeholder()
+//     extra_signatories: [],
+//     inputs: [
+//       Output {
+//         value: value.new(
+//           value.new_map([
+//             (mock_policy_id, value.new_integer(1))
+//           ]),
+//           royalty_tn
+//         ),
+//         datum: 0
+//       }
+//     ]
+//   }
+// }
