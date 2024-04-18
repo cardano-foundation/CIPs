@@ -78,9 +78,9 @@ Script requirements encapsulate all the possible requirements for a transaction 
 
 ```ts
 type ScriptRequirement = {
-  collateral?: List<transaction_input>,
-  inputs?: List<transaction_input>,
-  reference_inputs?: List<transaction_input>,
+  collateral?: List<cbor<transaction_unspent_output>>,
+  inputs?: List<cbor<transaction_unspent_output>>,
+  reference_inputs?: List<cbor<transaction_unspent_output>>,
   outputs?: List<transaction_output>,
   mint?: Value,
   certificates?: List<Certificate>,
