@@ -83,7 +83,7 @@ DApp developers don't want to tie their infrastructure to one query layer provid
 By being able to switch providers without the need for significant engineering, they can avoid providers which do not offer fair pricing.
 
 ### New Infrastructure Providers
-New Cardano infrastructure providers want to be able join a pools of interchangeable query layer suppliers.
+New Cardano infrastructure providers want to be able join pools of interchangeable query layer suppliers.
 Without standardization new providers must invest significant time to develop their own.  
 
 ## Goals
