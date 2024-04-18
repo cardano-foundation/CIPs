@@ -158,7 +158,7 @@ in our example.
 
 **Encrypt** this content via openssl, the default passprase **cardano**, iteration set to 10000 and key-derivation via pbkdf2:
 ``` console
-openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
+echo -n '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]' | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano"
 ```
 
 The encrypted result are the **base64 encoded strings**:
