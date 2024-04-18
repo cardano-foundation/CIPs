@@ -110,7 +110,7 @@ This would mean existing providers would have to adjust their business and value
 
 ### How can we encourage wallet developers to adopt the solution?
 
-For wallet providers, a standardized query layer would offer long term benefits which out weigh any upfront engineering costs.
+For wallet providers, a standardized query layer would offer long term benefits which outweigh any upfront engineering costs.
 With users being able to bring their own data providers, wallets will incur less costs to the use of their providers.
 
 ### How can we encourage dApp developers to adopt the solution?
