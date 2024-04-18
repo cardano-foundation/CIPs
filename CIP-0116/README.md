@@ -24,9 +24,13 @@ The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Do
 
 ## Specification
 
-This CIP is expected to contain multiple schema definitions for Cardano Eras and breaking intra-era hardforks starting from Babbage.
+This CIP is expected to contain multiple json-schema definitions for Cardano Eras and breaking intra-era hardforks starting from Babbage:
 
 - [Babbage](./cardano-babbage.json)
+
+### Tests & utilities for JSON validation
+
+[`cip-0116-tests`](https://github.com/mlabs-haskell/cip-0116-tests) repo contains utility functions and a test suite for the schema. In particular, there's a `mkValidatorForType` function that builds a validator function for any type defined in the schema.
 
 ### Scope of the Schema
 
