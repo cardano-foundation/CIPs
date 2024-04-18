@@ -26,7 +26,7 @@ License: CC-BY-4.0
 ## Abstract
 
 This CIP is an addendum to the original [CIP-0020](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0020), which is active since mid 2021 and widely used across many entities.
-It describes the JSON schema to add encrypted messages/comments/memos as transaction metadata. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets. 
+It describes the JSON schema to add encrypted messages/comments/memos as transaction metadata. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets.
 Tools/Wallets that do not have an implementation to decrypt this format will just show the encrypted base64 as the message, but it will not break any existing processes.
 
 ## Motivation: why is this CIP necessary?
@@ -42,17 +42,17 @@ Theses and many other usecases are actively happening on the blockchain right no
 ### What is the issue with the current implementation?
 
 Metadata is attached as a CBOR bytearray in the auxiliary dataset of a transaction. So the encoding is just done from UTF8-Text to Hex-Code/Bytes and after that it is sent in plaintext over the network/blockchain.
-To seek further adoption of blockchain usage, privacy features are a must in the future. Having cleartext information in a TCP packet might not be an issue for many things, but it is an issue if you wanna convince 
+To seek further adoption of blockchain usage, privacy features are a must in the future. Having cleartext information in a TCP packet might not be an issue for many things, but it is an issue if you wanna convince
 users to use the blockchain and their transaction feature like users using it now with bank transfers.
 
-It is easy for 3rd-party entities like Internet Service Providers, Datacenters or basically any Man-In-The-Middle to collect data that is sent in cleartext. 
+It is easy for 3rd-party entities like Internet Service Providers, Datacenters or basically any Man-In-The-Middle to collect data that is sent in cleartext.
 Data such as bank-account-numbers, email-addresses, telephone numbers, etc. which are parts of transaction messages.
 
 ### What benefits/features would this CIP have on transaction messages?
 
 As pointed out above, everyone that is having access to the datastream and of course the publicly distributed ledger can extract the cleartext data of the transaction messages.
-Because there must not even be a specific approach to get such transaction message data out of a TCP stream, just a simple filter for email addresses (example) is enough. 
-Even with a simple encryption of such messages - and publicly known passphrase - it is much more complicated for the Man-In-The-Middle listener to collect data on the fly. 
+Because there must not even be a specific approach to get such transaction message data out of a TCP stream, just a simple filter for email addresses (example) is enough.
+Even with a simple encryption of such messages - and publicly known passphrase - it is much more complicated for the Man-In-The-Middle listener to collect data on the fly.
 
 **Targeted benefits:**
    - By using a default passphrase, Man-In-The-Middle "sniffer" cannot extract/parse data like email-addresses, invoice-numbers on the fly that easily. They would need to search for a cardano-node transmission and decrypt each message. Public explorers like Cexplorer.io, Cardanoscan, etc. can still show the decrypted message content via there https connection to the user. So no cleartext transmission at all.
@@ -67,16 +67,16 @@ This addition to the original CIP-0020 should not be seen as the end-all-be-all 
 
 # Specification - Encrypted message
 
-The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown instead of an maybe autodecrypted one. But even the encrypted base64 strings fit into the max. 64char long string restriction. So it does not break any tools. More on the autodecryption later. 
+The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown instead of an maybe autodecrypted one. But even the encrypted base64 strings fit into the max. 64char long string restriction. So it does not break any tools. More on the autodecryption later.
 
 ### Format:
 ``` json
-{ 
+{
   "674":
-         { 
+         {
            "enc": "<encryption-method>",
-           "msg": 
-                  [ 
+           "msg":
+                  [
                     "base64-string 1", "base64-string 2", "base64-string 3" ...
                   ]
          }
@@ -86,11 +86,11 @@ The format is identical to the original one, with a simple addition of the `enc`
 
 The value given in the `enc` field references the type of encryption is used. Starting with a simple implementation named `basic`. There is room to add additional encryption method in the future like using ChaCha20/Poly1305 or using public/private key encryption. Also there is the possibility to not encode the metadata in the standard JSON format, but using CBOR encoding instead.
 
-  
+
 ### Encryption methods:
 
 #### **plain** - no encryption at all
-  
+
   | Parameter | Value |
   | :--- | :--- |
   | method | **plain** |
@@ -107,6 +107,7 @@ The value given in the `enc` field references the type of encryption is used. St
   | default passphrase | cardano |
   | type | openssl |
   | cipher | aes-256-cbc (salted) |
+  | padding | PKCS#7 |
   | digest | pdkdf2 |
   | iterations | 10000 (default) |
   | key + iv | 32 bytes key + 16 bytes iv |
@@ -117,26 +118,28 @@ The value given in the `enc` field references the type of encryption is used. St
 OpenSSL was choosen, because its fast and widely available also for all kind of different platforms, web frontends, etc. Encryption algo is **AES-256-CBC** (salted) using `pdkdf2` to derive the key from the given passphrase. 10000 Iterations is the default value for this encryption method. The format of the encoded output is base64 format.
 
 The encryption is based on a given passphrase, which can be choosen by the user. However, a default-passphrase "cardano" should be used to encrypt/decrypt if no other passphrase is provided or known.
-  
+
+OpenSSL uses [PKCS#7](https://datatracker.ietf.org/doc/html/rfc5652#section-6.3) as padding. The adopted cipher accepts only multiple of 16-byte blocks. Not fitting messages to be encrypted are filled with the number of padding bytes that are needed to form multiple of 16-bytes. So if 1 byte of padding is required, the padding "01" is added. If 2 bytes of padding are needed, "02 02" is added. If no padding is required, an extra block of 0x10 bytes is added, meaning sixteen "10" bytes. In order to be interoperable with OpenSSL this kind of padding is a requirement.
+
 ##### Why a default passphrase?
-  
+
 As pointed out above, its way harder for man-in-the-middle listeners, to decrypt every single message on the fly. So by using a default passphrase, tools can encrypt messages and explorers/wallets can autodecrypt such messages trying to use the default passphrase. In that way, the displayed message is automatically readable to the user. If a more protected communication is needed, the sender can choose a custom passphrase and communicate that to the receiver as a preshared passphrase.
 
 What part is uses for the encryption?
-  
+
 The **whole content** of the unencrypted normal transaction **metadata `msg:` key is used**, thats the array with the message string(s). (Example below)
 
-##### Is there sample code?  
-  
+##### Is there sample code?
+
 Yes, example implementations for node.js, PHP, bash, etc. can be found in the [codesamples](./codesamples/) folder. They are showing how to encrypt/decrypt text with the right parameters set for this basic mode.
-  
+
 **warning**
 
 Message decryption should be done on the user frontend if possible, not via server callbacks.**
 
 #### Encryption/Decryption example on the console - basic mode
 
-First, generate a normal metadata transaction message. 
+First, generate a normal metadata transaction message.
 
 **normal-message-metadata.json**:
 ``` json
@@ -148,11 +151,11 @@ First, generate a normal metadata transaction message.
 ```
 
 The **encryption** is done on the **whole content of the `msg:` key**, so this is
-  
+
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
- 
+
 in our example.
-  
+
 **Encrypt** this content via openssl, the default passprase **cardano**, iteration set to 10000 and key-derivation via pbkdf2:
 ``` console
 openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
@@ -165,17 +168,17 @@ U2FsdGVkX1/5Y0A7l8xK686rvLsmPviTlna2n3P/ADNm89Ynr1UPZ/Q6bynbe28Y
 ```
 
 Compose the JSON by **using the base64 encoded encrypted strings now for the `msg:` part**.
-                                                                
-Also add the value `basic` for the `enc:` key, to mark this transaction message as encrypted with basic mode. 
+
+Also add the value `basic` for the `enc:` key, to mark this transaction message as encrypted with basic mode.
 
 **encrypted-message-metadata.json**:
 ``` json
-{ 
+{
   "674":
-         { 
+         {
            "enc": "basic",
-           "msg": 
-                 [ 
+           "msg":
+                 [
                    "U2FsdGVkX1/5Y0A7l8xK686rvLsmPviTlna2n3P/ADNm89Ynr1UPZ/Q6bynbe28Y",
                    "/zWYOB9PAGt+bq1L0z/W2LNHe92HTN/Fwz16aHa98TOsgM3q8tAR4NSqrLZVu1H7"
                  ]
@@ -186,17 +189,17 @@ Also add the value `basic` for the `enc:` key, to mark this transaction message 
 Console one-liner:
 ``` console
 jq ".\"674\".msg = [ $(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
-``` 
+```
 
 ---
-  
+
 A **decryption** can be done in a similar way:
 ``` console
 jq -crM ".\"674\".msg[]" encrypted-message-metadata.json | openssl enc -d -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano"
 ```
 
 Which results in the original content of the **msg** key:
-  
+
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
 
 ## Rationale
@@ -207,13 +210,13 @@ The original CIP-0020 design allowed the addition of new entries like the `"enc"
 There is also for example [CIP-8](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008), but CIP-8 doesn't really fulfill the simplicity of just providing encrypted messages. CIP-8 is focused on Signing, which is not needed for encryption. The method to generate encrypted messages here is not intended to verify the owner of a message via signing. There is no need that everything on Cardano must be difficult. Also using such CBOR encoded structures would break all currently implemented transaction message solutions. This CIP uses openssl and base64 encoding, and endusers could even copy&paste such text into other tools, etc. Future updates may include the option to mix encrypted and unencrypted messages by adding another key like `msgclear` to support such a mixed message style format.
 
 ### Implementation suggestions
- 
+
 Wallets/Tools can implement an autodecryption attempt with the default passphrase on such messages, to give the user a more streamlined experience. The communication should be done via https or similar to make sure the message cleartext is not exposed again during the transmission.
 Additionally the Tools can prompt for an input and decrypt the message once the user has requested it, this decryption should be done on the user frontend for further security.
 
 ### Handling ill-formed 674 metadata ##
 
-Like with CIP-0020, it is up to the wallet-/display-/receiver-implementor to parse and check the provided metadata. As for the current state, its not possible to have the same label "674" more than once in a cardano transaction. So a check about that can be ignored at the moment. This CIP provides the correct implementation format, the parsing should search for the "674" metadata label, the "msg" and the "enc" key underneath it. There should also be a check, that the provided data within that "msg" key is an array. All other implementations like a missing "msg" key, or a single string instead of an array, should be marked by the display-implementor as "invalid". Additional keys within the "674" label should not affect the parsing of the "msg" and the "enc" key. As written above, we will likely see more entries here in the future like a "version" key for example, so additional keys should not harm the parsing of the "msg" and "enc" key. 
+Like with CIP-0020, it is up to the wallet-/display-/receiver-implementor to parse and check the provided metadata. As for the current state, its not possible to have the same label "674" more than once in a cardano transaction. So a check about that can be ignored at the moment. This CIP provides the correct implementation format, the parsing should search for the "674" metadata label, the "msg" and the "enc" key underneath it. There should also be a check, that the provided data within that "msg" key is an array. All other implementations like a missing "msg" key, or a single string instead of an array, should be marked by the display-implementor as "invalid". Additional keys within the "674" label should not affect the parsing of the "msg" and the "enc" key. As written above, we will likely see more entries here in the future like a "version" key for example, so additional keys should not harm the parsing of the "msg" and "enc" key.
 
 ### Implementation conclusion ##
 
@@ -252,7 +255,7 @@ The acceptance criteria to be `Active` should already have been met, because the
 
 **Eternl.io**:
 ![image](https://user-images.githubusercontent.com/47434720/210166917-8af475fe-5cda-46f5-bd8d-3fc4c2c12482.png)
-    
+
 **AdaStat.net**: With the implementation of the **encrypted message decoding** using a pure **frontend solution**.
 ![image](https://user-images.githubusercontent.com/47434720/206574191-22aa490a-5870-4853-906b-443284458987.png)
 ![image](https://user-images.githubusercontent.com/47434720/206574354-5dd81551-efc6-4f69-a2aa-282bb40e5084.png)
