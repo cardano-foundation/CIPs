@@ -247,15 +247,16 @@ Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be
 ## Rationale: how does this CIP achieve its goals?
 
 ### Scope
-- why just block data
-  - the most useful for most applications
-  - to match CDDL
+
+We keep a lean scope, limited to the data types within Cardano blocks. The rationale for this is that block data is by far the most useful for the majority of Cardano actors. There is also one nice benefit that the definions can map directly from the provided CDDL file from ledger team.
+
+Defining additional would likely add unneeded overhead to the maintenance of this standard.
 
 ### Strictness
 
 This CIP lays out strong conventions that future schema authors must follow. With a large set of design principles and conventions. The aim for these is to minimize the potential for unavoidable deltas between schemas.
 
-By setting sometimes arbitrary conventions we hope to create a single possible interpretation from CBOR to JSON. This is beneficial as
+By setting sometimes arbitrary conventions we hope to create a single possible interpretation from CBOR to JSON. This is beneficial as it allows the development of downstream standards, which rely on a canonical JSON representation.
 
 ### Absence of extensibility
 
@@ -265,20 +266,14 @@ The schemas MUST NOT be extensible with additional properties. This may sound co
 - Clear delineation between Cardano domain types and user dApp domain types: forcing the developers to store their dApp domain data separately from Cardano data, or close to it (as opposed to mixing these together in a single object) will indirectly motivate better structured dApp code.
 
 ### JSON
- - what alternatives?
-   - JSON is by far the most useful, there really isnt any comparison.
 
-### Bech32
- - why stick to Bech32
-   - the checksum is useful
-   - the prefix is also really nice
-   - more preferable compared to hex because 
+JSON was chosen as there is no viable alternative. The majority of Cardano's web tooling is built with Javascript where JSON is the primary object representation format.
 
-### Versioning
- - why seperate files - easier to consume and expand on
-   - CDDL can change between eras in ways that JSON cant be expanded to do 
-   - easier to keep seperate
+Furthermore, even across non-Javascript based stacks, JSON enjoys wide tooling support, this improves the potential for builders to adopt this standard.
 
+### Bech32 for addresses
+
+We choose to use Bech32 as the representation for Cardano addresses. When compared to the alternative of base64, Bech32 gives the advantages of an included checksum and a human readable prefix. These add additional safety to the standard.
 
 ## Path to Active
 
@@ -290,7 +285,8 @@ The schemas MUST NOT be extensible with additional properties. This may sound co
 ### Implementation Plan
 
 - [ ] Complete the Babbage specification
-- [ ] Provide an implementation of validating functions that uses this json-schema
+- [x] Provide an implementation of validating functions that uses this json-schema
+  - [mlabs-haskell/cip-0116-tests](https://github.com/mlabs-haskell/cip-0116-tests)
 - [ ] Collect a list of cardano domain types implementations and negotiate transition to the specified formats with maintainers (if it makes sense and is possible)
 
 ## Copyright
