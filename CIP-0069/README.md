@@ -22,6 +22,8 @@ The exact change would be to have every validator take as argument the redeemer 
 
 ## Motivation: why is this CIP necessary?
 
+### Multi-purpose Scripts
+
 As it stands the scripts being made on cardano often suffer this problem, and the tokens usually are made to be able to be minted at any time. This leads to further checks being made on the frontend and further fragilitiy of the systems we create. When a mutual dependency arises we are forced to choose which script gets to statically know what's the hash of the other, and which has to be provided 'during runtime'.
 
 - Use Case 1: Minting validator checks datum given to spending validator. The spending validator requires the token be present as witness of the datum's correctness.
@@ -30,49 +32,55 @@ As it stands the scripts being made on cardano often suffer this problem, and th
 
 - Use Case 3 (taken from Minswap's Dex V1): NFT is minted for the same reason as above. It allows a minting policy to later mint LP tokens with that unique id token name.
 
-We see a similar pattern repeating over and over again as witnessed by dapp developers and auditors alike. By allowing the multi-purpose policies (spending and any other) we increase the security of Cardano by giving us more confidence and allowing to design protocols that have their architecture driven by Cardano's features, not limited by Cardano's language.
+We see a similar pattern repeating over and over again as witnessed by dapp developers and auditors alike. By allowing the multi-purpose scripts (spending and any other) we increase the security of Cardano by giving us more confidence and allowing to design protocols that have their architecture driven by Cardano's features, not limited by Cardano's language.
 
 This primarily manifests in the ability to use a single validator for both minting and spending but the proposed solution makes it possible to use one validator for any and all purposes at once.
+
+### No Datum Spend Purpose
+
+One of the major footguns of Plutus scripts is if a user sends to the script with a wrong or missing datum. This has happened in the case of the Nami wallet having a bug that caused the wrong address to be chosen. There are other instances of user error where they send from a CEX to a script address. A wrong datum can be handled by the Plutus scripts themselves by having an alternative execution branch if type does not match the expected datum type. But in the case of no datum the script is not run and fails in phase 1 validation. The other motivation of this CIP is to be able to create spend scripts that can handle the no datum case. 
+
+I see three major use cases when it comes to running spend scripts without datums:
+
+- Use Case 1: A script that acts as a wallet for users. By having no datum spending the user can send directly from exchanges or have friends send to their smart contract wallet with no datum needed.
+
+- Use Case 2: As a DAO treasury. The funds in this script would be controlled by a DAO and anyone can donate/contribute to the DAO without a datum.
+
+- Use Case 3: Allow dApp protocols to have a claim or withdraw mechanism (similar to Ethereum for tokens sent to a contract without call) for claiming tokens sent without a datum.
+
+I'd be remiss if I didn't mention CIP-0112 which has been expanded to improve native script capabilities to provide an alternative solution for use case 1 and 2. But for use case 3, CIP-0112 does not enable a "claim or withdraw mechanism" for contracts.
 
 ## Specification
 
 ### Removing the datum argument
 
-All the script purposes have a form of `Redeemer -> ScriptContext -> a` except the `Spending` one.
-It has the following form: `Datum -> Redeemer -> ScriptContext -> a`. This is enforced by the Cardano ledger.
+All the script purposes have a form of ```Redeemer -> ScriptContext -> a``` except the Spending one. It has the following form: ```Datum -> Redeemer -> ScriptContext -> a```. This is enforced by the Cardano ledger.
 
-We make the following modification:
+We propose to make the following modification:
 
-- The signature of all scripts will be `Redeemer -> ScriptContext -> a`.
-- The `ScriptPurpose` type is modified such that the `Spending` variant contains an optional `Datum`:
-
-```hs
-data ScriptPurpose
-  = ...
-  | Spending TxOutRef (Maybe Datum)
-    ...
+The signature of all scripts will be ```ScriptContext -> a```.
+The ScriptContext type is now a union type with a variant for each script purpose.
 ```
-
-The `Datum` is optional, which will enable us to allow executing spending scripts without a datum.
-
-- A new data type `ScriptIdentifier` is created.
-  It is identical to the original `ScriptPurpose` and is used in the `txInfoRedeemers` map to uniquely identify a script within a transaction.
-
-```hs
-data ScriptIdentifier
-  = MintingScript CurrencySymbol
-  | SpendingScript TxOutRef
-  | RewardingScript Credential
-  | CertifyingScript Integer TxCert
-  | VotingScript Voter
-  | ProposingScript Integer ProposalProcedure
+data ScriptContext
+  = Minting TxInfo Redeemer CurrencySymbol
+  | Spending TxInfo Redeemer (Maybe Datum) TxOutRef
+  | Rewarding TxInfo Redeemer Credential
+  | Certifying TxInfo Redeemer Integer TxCert 
+  | Voting TxInfo Redeemer Voter
+  | Proposing TxInfo Redeemer Integer ProposalProcedure
 ```
+The Datum is optional, which will enable us to allow the execution of spending scripts without a datum.
+
+The ScriptPurpose type is left the same used in the Redeemers Map is left the same.
 
 ## Rationale: how does this CIP achieve its goals?
 
 Unifying of the script signature is a very elegant solution to the problem, streamlining the experience of developing on cardano.
 Given that accessing the datum is almost always made by a spending script, it makes sense to introduce that argument back to the `ScriptPurpose` that now plays a more important role.
 It begs the question if it should be added as an argument to all validators, to further emphasize that fact.
+
+
+This CIP turns all scripts into 1 arg scripts with a Script Context union type for each purpose.
 
 ## Backwards compatibility
 
@@ -87,7 +95,18 @@ Node code must be modified.
 
 ### Implementation Plan
 
-None.
+The Cardano Ledger and Cardano Plutus teams would need to implement this in following repositories:
+  IntersectMBO/plutus
+  IntersectMBO/cardano-ledger
+
+The following languages that compile to uplc would need to update to support the new ScriptContext argument that 
+is passed in for the next Plutus Version:
+Aiken
+Helios
+Opshin
+Plu-ts
+Plutarch
+Scalus
 
 ## Copyright
 
