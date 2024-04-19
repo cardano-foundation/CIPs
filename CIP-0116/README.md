@@ -277,7 +277,7 @@ Furthermore, even across non-Javascript based stacks, JSON enjoys wide tooling s
 
 ### Bech32 for addresses
 
-We choose to use Bech32 as the representation for Cardano addresses. When compared to the alternative of base64, Bech32 gives the advantages of an included checksum and a human readable prefix. These add additional safety to the standard.
+We choose to use Bech32 as the representation for Cardano addresses. When compared to the alternative of hexademical encoding, Bech32 gives the advantages of an included checksum and a human readable prefix.
 
 ## Path to Active
 
