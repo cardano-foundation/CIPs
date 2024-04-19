@@ -254,7 +254,6 @@ Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be
 
 We keep a lean scope, limited to the data types within Cardano blocks. The rationale for this is that block data is by far the most useful for the majority of Cardano actors. There is also one nice benefit that the definitions can map directly from the provided CDDL file from ledger team.
 
-Defining additional would likely add unneeded overhead to the maintenance of this standard.
 
 ### Strictness
 
