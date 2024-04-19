@@ -289,6 +289,7 @@ We choose to use Bech32 as the representation for Cardano addresses. When compar
 ### Implementation Plan
 
 - [ ] Complete the Babbage specification
+- [ ] Provide a test suite validating JSON fixtures for all the types against the schema 
 - [x] Provide an implementation of validating functions that uses this json-schema
   - [mlabs-haskell/cip-0116-tests](https://github.com/mlabs-haskell/cip-0116-tests)
 - [ ] Collect a list of cardano domain types implementations and negotiate transition to the specified formats with maintainers (if it makes sense and is possible)
