@@ -188,7 +188,7 @@ Also add the value `basic` for the `enc:` key, to mark this transaction message 
 
 Console one-liner:
 ``` console
-jq ".\"674\".msg = [ $(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
+jq ".\"674\".msg = [ $(jq -cjrM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
 ``` 
 
 ---
