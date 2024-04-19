@@ -69,9 +69,13 @@ data ScriptContext
   | Voting TxInfo Redeemer Voter
   | Proposing TxInfo Redeemer Integer ProposalProcedure
 ```
-The Datum is optional, which will enable us to allow the execution of spending scripts without a datum.
+The Datum is optional, which will enable us to allow the execution of spending scripts without a datum. 
+One more change will be needed on the ledger side in order to make the Datum optional for spending scripts.
+The ledger UTXOW rule needs to be relaxed, this ledger rule checks if a utxo has an existing datum if the address's payment credential is a phase 2 validation script.
 
 The ScriptPurpose type is left the same used in the Redeemers Map is left the same.
+
+
 
 ## Rationale: how does this CIP achieve its goals?
 
