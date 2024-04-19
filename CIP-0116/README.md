@@ -258,7 +258,7 @@ Defining additional would likely add unneeded overhead to the maintenance of thi
 
 ### Strictness
 
-This CIP lays out strong conventions that future schema authors must follow. With a large set of design principles and conventions. The aim for these is to minimize the potential for unavoidable deltas between schemas.
+This CIP lays out strong conventions that future schema authors must follow, along with a large set of design principles and conventions. The aim is to minimize the potential for unavoidable deltas between schemas.
 
 By setting sometimes arbitrary conventions we hope to create a single possible interpretation from CBOR to JSON. This is beneficial as it allows the development of downstream standards, which rely on a canonical JSON representation.
 
