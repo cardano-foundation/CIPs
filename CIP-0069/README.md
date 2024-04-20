@@ -80,7 +80,6 @@ The ScriptPurpose type used in the Redeemers Map is left the same.
 ## Rationale: how does this CIP achieve its goals?
 
 Unifying of the script signature is a very elegant solution to the problem, streamlining the experience of developing on cardano.
-Given that accessing the datum is almost always made by a spending script, it makes sense to introduce that argument back to the `ScriptPurpose` that now plays a more important role.
 It begs the question if it should be added as an argument to all validators, to further emphasize that fact.
 
 
