@@ -62,12 +62,12 @@ The signature of all scripts will be ```ScriptContext -> a```.
 The ScriptContext type is now a union type with a variant for each script purpose.
 ```
 data ScriptContext
-  = Minting TxInfo Redeemer CurrencySymbol
-  | Spending TxInfo Redeemer (Maybe Datum) TxOutRef
-  | Rewarding TxInfo Redeemer Credential
-  | Certifying TxInfo Redeemer Integer TxCert 
-  | Voting TxInfo Redeemer Voter
-  | Proposing TxInfo Redeemer Integer ProposalProcedure
+  = SpendingContext TxInfo Redeemer (Maybe Datum) TxOutRef
+  | MintingContext TxInfo Redeemer CurrencySymbol
+  | CertifyingContext TxInfo Redeemer Integer TxCert 
+  | RewardingContext TxInfo Redeemer Credential
+  | VotingContext TxInfo Redeemer Voter
+  | ProposingContext TxInfo Redeemer Integer ProposalProcedure
 ```
 The Datum is optional, which will enable us to allow the execution of spending scripts without a datum. 
 One more change will be needed on the ledger side in order to make the Datum optional for spending scripts.
