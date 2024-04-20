@@ -1,5 +1,9 @@
 [
   {
+    "transaction_metadatum_label": 22,
+    "description": "Clarity - DAO creation metadata"
+  },
+  {
     "transaction_metadatum_label": 87,
     "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
   },
