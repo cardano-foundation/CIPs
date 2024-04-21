@@ -213,11 +213,7 @@ The following alternatives were considered, and rejected:
 
 ### Test Vectors
 
-An example document with an inline context is provided in [this](./example.json) example JSON file.
-
-Canonicalization should produce the following blak2b-256 hash:
-
-`6ea05c0e97b1b7316d48b5587a9e60d47c0c44993c8609c9544d88c111814819`
+See [test-vector.md](./test-vector.md) for example.
 
 ## Path to Active
 
