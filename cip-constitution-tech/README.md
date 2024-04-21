@@ -222,7 +222,7 @@ Just like CIP-1694, we aim to define a minimal viable set of standards to ensure
 
 ### Acceptance Criteria
 
-- [ ] This standard is followed for the interim Cardano constitution
+- [ ] This standard is followed for the interim Cardano Constitution
 - [ ] This standard is utilized by two tools reading constitution data from chain
 
 ### Implementation Plan
