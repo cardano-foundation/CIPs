@@ -56,7 +56,7 @@ This standard could be augmented in the future via a separate CIP which aims to 
 
 ### Sentences
 
-The constitution text MUST only contain at maximum one sentence per line.
+The constitution text MUST only contain a maximum of one sentence per group of lines delimited by one blank line between these groups.
 Each sentence MUST be followed by a newline.
 
 Each sentence SHOULD start on its own line with a capitalized letter.
