@@ -35,7 +35,7 @@ This standard will impact how Ada holders read the Constitution but the main sta
 ### Safety
 
 Without describing best practices for the form and handling of the constitution, we risk the constitution document being stored in an insecure manner.
-By storing the constitution on a decentralized platform, we can ensure it's immutability and permissionless access.
+By storing the constitution on a decentralized platform, we can ensure its immutability and permissionless access.
 This is a step to improve the longevity and accessibility of each constitution iteration.
 
 ### Interoperability
