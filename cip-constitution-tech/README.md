@@ -54,6 +54,13 @@ Without the ability to format text, it could easily become cumbersome to read, n
 The following specification SHOULD be applied to all constitution iterations.
 This standard could be augmented in the future via a separate CIP which aims to replace this one.
 
+### Terminology
+
+
+### Line length
+
+Each line in the constitution text MUST contain at maximum 80 characters.
+
 ### Sentences
 
 The constitution text MUST only contain a maximum of one sentence per group of lines delimited by one blank line between these groups.
