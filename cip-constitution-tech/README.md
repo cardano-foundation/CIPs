@@ -30,7 +30,7 @@ This is the extent to which CIP-1694 outlines the Cardano Constitution: CIP-1694
 By formalizing the form of the constitution and its iterations, we aim to promote its longevity and accessibility.
 This is essential to ensure the effectiveness of the CIP-1694 governance model.
 
-This standard will impact how ada holders read the constitution but the main stakeholders for this are the tool makers who wish to read, render and write the constitution.
+This standard will impact how Ada holders read the Constitution but the main stakeholders for this are the tool makers who wish to read, render and write a constitution.
 
 ### Safety
 
