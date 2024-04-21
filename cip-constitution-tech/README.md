@@ -17,8 +17,7 @@ License: CC-BY-4.0
 Cardano's minimum viable governance model as described within [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md) introduces the concept of a Cardano constitution.
 Although CIP-1694 gives no definition to the constitution's content or form.
 
-This proposal aims to describe a standardized technical form for the Cardano constitution.
-Aiming to enhance the accessibility and safety of the document.
+This proposal aims to describe a standardized technical form for the Cardano Constitution to enhance the accessibility and safety of the document.
 
 > **Note:** This proposal only covers the technical form of the constitution, this standard is agnostic to the content of the constitution.
 
