@@ -27,7 +27,7 @@ CIP-1694 defines the on-chain anchor mechanism used to link the off-chain Consti
 This mechanism was chosen due to its simplicity and cost effectiveness, moving the potentially large Cardano constitution off-chain, leaving only a hash digest and URI on-chain.
 This is the extent to which CIP-1694 outlines the Cardano Constitution: CIP-1694 does not provide suggestions around hashing algorithm, off-chain storage best practices or use of rich text styling.
 
-By formalizing the form of the constitution and it's iterations, we aim to promote it's longevity and accessibility.
+By formalizing the form of the constitution and its iterations, we aim to promote its longevity and accessibility.
 This is essential to ensure the effectiveness of the CIP-1694 governance model.
 
 This standard will impact how ada holders read the constitution but the main stakeholders for this are the tool makers who wish to read, render and write the constitution.
