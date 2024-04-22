@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This document describes a CIP-30 extension allowing webpages (i.e. dApps) to interface with Cardano Plutus-wallets. This document is a work in progress and is not yet finalized. It is expected to be updated as the ecosystem evolves. 
+This document describes a CIP-30 extension allowing webpages (i.e. dApps) to interface with Cardano Plutus wallets. This interface is a work in progress and new versions are expected to be included as the ecosystem evolves. 
 
 ## Motivation: why is this CIP necessary?
 
