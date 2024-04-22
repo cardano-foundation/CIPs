@@ -20,7 +20,8 @@ We describe the semantics of a set of logical operations for Plutus
 
 - Bitwise logical AND, OR, XOR and complement;
 - Reading a bit value at a given index;
-- Setting a bit value at a given index.
+- Setting a bit value at a given index; and
+- Replicating a byte a given number of times.
 
 As part of this, we also describe the bit ordering within a `BuiltinByteString`,
 and provide some laws these operations should obey.
