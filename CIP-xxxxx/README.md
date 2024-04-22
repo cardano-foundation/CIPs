@@ -11,34 +11,33 @@ Created: 2023-10-12
 License: CC-BY-4.0
 ---
 
-
 ## Abstract
 
-This document describes a CIP-30 extension allowing webpages (i.e. dApps) to interface with Cardano Plutus wallets. This interface is a work in progress and new versions are expected to be included as the ecosystem evolves. 
+This document describes a CIP-30 extension allowing webpages (i.e., DApps) to interface with Cardano Plutus wallets. This interface is a work in progress, and new versions are expected to be included as the ecosystem evolves. 
 
 ## Motivation: why is this CIP necessary?
 
-In order to facilitate future dApp development, we will need a way for dApps to communicate with Plutus wallets, given the unique complexities of Plutus based addresses. Special provisions need to be made to make the connector compatible with them.  
+In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets, given the unique complexities of Plutus-based addresses. Special provisions need to be made to make the connector compatible with them.  
 
 Specifically, apps building transactions need to be able to get the following information from the wallet:
 
 - Script descriptor
-- ScriptRequirements
+- `ScriptRequirements`
 - Change Datum
 
 Additionally, apps need to be able to submit a transaction to the wallet for signing in an asynchronous manner, as gathering of signatures can take a long time and each wallet provider will have its own way of handling this process. 
 
-Finally, the signData() endpoint will have to be disabled when using this extension since they are not compatible with Plutus based addresses. Plutus contracts cannot sign data, only validate transactions.
+Finally, the `signData()` endpoint will have to be disabled when using this extension since they are not compatible with Plutus-based addresses. Plutus contracts cannot sign data, only validate transactions.
 
 ### Rationale for the required data
 
 - Script descriptor:
-    Any transaction consuming a UTxO from a Plutus based address must attach the corresponding script. 
+    Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script. 
 
-- ScriptRequirements
-    The TxContext that is required to be able to validate the transaction. It encompasses all the possible combinations of requirements for the transaction to be valid, as such it is represented by an array of ScriptRequirement objects.
+- `ScriptRequirements`:
+    The `TxContext` that is required to be able to validate the transaction. It encompasses all the possible combinations of requirements for the transaction to be valid, as such it is represented by an array of `ScriptRequirement` objects.
 
-- Change Datum
+- Change Datum:
     The datum that will be used as the change output for the transaction. This is required for wallets based on Plutus V2 and before, as the change output must contain a datum to be valid and spendable.
 
 ## Specification
@@ -125,85 +124,81 @@ CompletedTxErrorCode = {
 
 ## Motivation: why is this CIP necessary?
 
-In order to facilitate future dApp development, we will need a way for dApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
+In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
 
 Specifically, apps building transactions need to be able to get the following information from the wallet:
 
 - Script descriptor
-- Script Requirements list
-- Collateral donator
+- `ScriptRequirement` list
+- Collateral donor
 
 Additionally, apps need to be able to submit a transaction to the wallet for signing in an asynchronous manner, as gathering of signatures can take a long time and each wallet provider will have its own way of handling this process.
 
 Finally, the `signData()` endpoints will have to be disabled when using this extension since they are not compatible with Plutus-based addresses.
 
-
-
 ### V2 Additional API Endpoints
 
-#### api.getScriptRequirements: Promise<ScriptRequirement[]>
+#### `api.getScriptRequirements`: Promise<ScriptRequirement[]>
 
 Errors: `APIError`
 
-Returns a list of `ScriptRequirements` that will be used to validate any transaction sent to the wallet. Every field in the `ScriptRequirements` object is optional, and the wallet should only include the fields that are relevant to the current transaction. 
+Returns a list of `ScriptRequirement` that will be used to validate any transaction sent to the wallet. Every field in the `ScriptRequirement` object is optional, and the wallet should only include the fields that are relevant to the current transaction.
 
-For wallets with multiple spend conditions, separate entries in the list should be used to represent each spend condition. Wallet providers should implement UX to allow users to order the list of `ScriptRequirements` from most to least preferred. DApps should use the first entry in the list that is valid for the current transaction or select one based on the logic of their use-case.
+For wallets with multiple spend conditions, separate entries in the list should be used to represent each spend condition. Wallet providers should implement UX to allow users to order the list of `ScriptRequirement` from most to least preferred. DApps should use the first entry in the list that is valid for the current transaction or select one based on the logic of their use-case.
 
-#### api.getScript(): Promise[<number<plutusVersion>],<CBOR<plutusScript>>
+#### `api.getScript()`: Promise[<number<plutusVersion>],<CBOR<plutusScript>>
 
 Errors: `APIError`
 
-Returns the CBOR-encoded Plutus script that controls this wallet. 
+Returns the CBOR-encoded Plutus script that controls this wallet.
 
-#### api.submitUnsignedTx(tx: CBOR<unsignedTransaction>): Promise<hash32>
+#### `api.submitUnsignedTx(tx: CBOR<unsignedTransaction>)`: Promise<hash32>
 
 Errors: `APIError`, `TxError`
 
 Submits a transaction to the wallet for signing. The wallet should check that the transaction is valid, gather the required signatures, compose the finalized transaction, and submit the transaction to the network. If the transaction is valid and the wallet is able to sign it, the wallet should return the transaction hash. If the transaction is invalid or the wallet is unable to sign it, the wallet should throw a `TxError` with the appropriate error code. The wallet should not submit the transaction to the network if it is invalid or the wallet is unable to sign it.
 
-If the transaction contains hidden metadata, the wallet should not submit the transaction when it is ready, but return it to the dApp when the dApp calls the `getCompletedTx` function.
+If the transaction contains hidden metadata, the wallet should not submit the transaction when it is ready, but return it to the DApp when the DApp calls the `getCompletedTx` function.
 
-It is expected that this will be the endpoint used by all wallets that require multiple signatures to sign a transaction. 
+It is expected that this will be the endpoint used by all wallets that require multiple signatures to sign a transaction.
 
-#### api.getCompletedTx(txId: hash32): Promise[<CBOR<transaction>,CBOR<transaction_witness_set>>]
+#### `api.getCompletedTx(txId: hash32)`: Promise[<CBOR<transaction>,CBOR<transaction_witness_set>>]
 
 Errors: `APIError`, `CompletedTxError`
 
 If the transaction is not ready, the wallet should throw a `CompletedTxError` with the appropriate error code. If the transaction is ready, the wallet should return the CBOR-encoded transaction and the signatures.
 
-### Altered API endpoints 
+### Altered API endpoints
 
-#### api.signTx(tx: CBOR<transaction>, partialSign: bool = false): Promise<CBOR<transaction_witness_set>>
+#### `api.signTx(tx: CBOR<transaction>, partialSign: bool = false)`: Promise<CBOR<transaction_witness_set>>
 
-This endpoint will now optionally return an error if the smart Wallet is a multiparty schema and signatures need to be gathered from multiple parties asynchronously. 
+This endpoint will now optionally return an error if the smart Wallet is a multiparty schema and signatures need to be gathered from multiple parties asynchronously.
 
 ### Removed API endpoints
 When connecting to a wallet using this extension the following endpoints will be disabled:
 
-#### `api.getCollateral(params: { amount: CBOR<Coin> }): Promise<TransactionUnspentOutput[] | null>`
+#### `api.getCollateral(params: { amount: CBOR<Coin> })`: Promise<TransactionUnspentOutput[] | null>
 
-Collateral will be provided as an optional field in the `ScriptRequirements` object. This will allow the wallet to provide the collateral when needed, and the dApp to know if the wallet can provide collateral or not for various validation scenarios on the same wallet.
+Collateral will be provided as an optional field in the `ScriptRequirement` object. This will allow the wallet to provide the collateral when needed, and the DApp to know if the wallet can provide collateral or not for various validation scenarios on the same wallet.
 
-#### `api.signData(addr: Address, payload: Bytes): Promise<DataSignature>`
+#### `api.signData(addr: Address, payload: Bytes)`: Promise<DataSignature>
 
 Plutus contracts cannot sign data, only validate transactions. This endpoint will be disabled when connecting to a wallet using this extension.
 
 ## Rationale: how does this CIP achieve its goals?
 
-By Altering the API endpoints and adding new ones, we can provide the necessary information for dApps to interact with Plutus wallets. This will allow any developer to integrate smart-wallets into their dApps, while providing a consistent interface for all wallets. 
+By altering the API endpoints and adding new ones, we can provide the necessary information for DApps to interact with Plutus wallets. This will allow any developer to integrate smart-wallets into their DApps, while providing a consistent interface for all wallets.
 
 ### Rationale for the required data
 
-- Script descriptor: Any transaction consuming a UTxO from a Plutus-based address must attach the corresponding script.
-- Script Requirements list: 
-    -- dApps need to know the scriptContext under which the transaction will be validated.
-    -- dApps need to know the collateral donator to attach the collateral to the transaction.
-    -- dApps need to know the Datum of the Utxos that it will be consuming.
-    -- dApps need to know the Redeemers that will be used in the transaction.
-- Change Datum
-    -- dApps need to know the Datum that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus V2 and before, as the change output must contain a datum to be valid and spendable.
-
-
+- Script descriptor: Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script.
+- `ScriptRequirement` list: 
+    -- DApps need to know the scriptContext under which the transaction will be validated.
+    -- DApps need to know the collateral donor to attach the collateral to the transaction.
+    -- DApps need to know the `Datum` of the UTXOs that it will be consuming.
+    -- DApps need to know the `Redeemers` that will be used in the transaction.
+- Change datum
+    -- DApps need to know the `Datum` that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus v2 and before, as the change output must contain a datum to be valid and spendable.
 ## Path to Active
 
 ### Acceptance Criteria
