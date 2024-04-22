@@ -186,6 +186,11 @@ Similarly to multiassets, allowing duplicate withdrawals might lead to inconsist
 
 The specified auxiliary data format was chosen in order to be compatible with other Cardano tools, which mostly use this serialization format.
 
+### Stake key signing vs other keys
+
+A DRep witness can serve for both certificates and votes at the same time. Unlike with stake keys (where combining pool registration with e.g. withdrawals is forbidden), no restriction is imposed on the combination of certificates and votes.
+We think that votes and DRep certificates are rare and substantially distinguished parts of a transaction, signed by DRep keys which are likely to only be used by users with deep enough understanding (and, unlike stake keys, are always visible when providing witnesses). A single vote or a DRep certificate is unlikely to have a major effect (esp. not on the loss of funds). If submitting unintended votes turns out to be a problem, it is likely better to solve it on the level of Cardano blockchain ledger by providing a mechanism allowing for replacing or cancelling votes.
+
 ## Path to Active
 
 ### Acceptance Criteria
