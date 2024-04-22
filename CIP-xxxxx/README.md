@@ -1,6 +1,6 @@
 ---
 CIP: ???
-Title: Web-Wallet Bridge - Plutus based wallets
+Title: Web-Wallet Bridge - Plutus wallets
 Status: Proposed
 Category: Wallets
 Authors: 
@@ -18,7 +18,7 @@ This document describes a CIP-30 extension allowing webpages (i.e. dApps) to int
 
 ## Motivation: why is this CIP necessary?
 
-In order to facilitate future dApp development, we will need a way for dApps to communicate with plutus wallets, given the unique complexities of plutus based addresses. Special provisions need to be made to make the connector compatible with them.  
+In order to facilitate future dApp development, we will need a way for dApps to communicate with Plutus wallets, given the unique complexities of Plutus based addresses. Special provisions need to be made to make the connector compatible with them.  
 
 Specifically, apps building transactions need to be able to get the following information from the wallet:
 
@@ -28,12 +28,12 @@ Specifically, apps building transactions need to be able to get the following in
 
 Additionally, apps need to be able to submit a transaction to the wallet for signing in an asynchronous manner, as gathering of signatures can take a long time and each wallet provider will have its own way of handling this process. 
 
-Finally, the signData() endpoint will have to be disabled when using this extension since they are not compatible with plutus based addresses. plutus contracts cannot sign data, only validate transactions.
+Finally, the signData() endpoint will have to be disabled when using this extension since they are not compatible with Plutus based addresses. Plutus contracts cannot sign data, only validate transactions.
 
 ### Rationale for the required data
 
 - Script descriptor:
-    Any transaction consuming a UTxO from a plutus based address must attach the corresponding script. 
+    Any transaction consuming a UTxO from a Plutus based address must attach the corresponding script. 
 
 - ScriptRequirements
     The TxContext that is required to be able to validate the transaction. It encompasses all the possible combinations of requirements for the transaction to be valid, as such it is represented by an array of ScriptRequirement objects.
@@ -135,20 +135,11 @@ Specifically, apps building transactions need to be able to get the following in
 
 Additionally, apps need to be able to submit a transaction to the wallet for signing in an asynchronous manner, as gathering of signatures can take a long time and each wallet provider will have its own way of handling this process.
 
-Finally, the `signTx()` and `signData()` endpoints will have to be disabled when using this extension since they are not compatible with native-script-based addresses.
+Finally, the `signData()` endpoints will have to be disabled when using this extension since they are not compatible with Plutus-based addresses.
 
-## Rationale for the required data
 
-- Script descriptor: Any transaction consuming a UTxO from a native-script-based address must attach the corresponding script.
-- Script Requirements list: 
-    -- dApps need to know the scriptContext under which the transaction will be validated.
-    -- dApps need to know the collateral donator to attack the collateral to the transaction.
-    -- dApps need to know the Datum of the Utxos that it will be consuming.
-    -- dApps need to know the Redeemers that will be used in the transaction.
-- Change Datum
-    -- dApps need to know the Datum that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus V2 and before, as the change output must contain a datum to be valid and spendable.
 
-### Additional API Endpoints
+### V2 Additional API Endpoints
 
 #### api.getScriptRequirements: Promise<ScriptRequirement[]>
 
@@ -199,7 +190,19 @@ Plutus contracts cannot sign data, only validate transactions. This endpoint wil
 
 ## Rationale: how does this CIP achieve its goals?
 
-See justification and explanations provided with each API endpoint.
+By Altering the API endpoints and adding new ones, we can provide the necessary information for dApps to interact with Plutus wallets. This will allow any developer to integrate smart-wallets into their dApps, while providing a consistent interface for all wallets. 
+
+### Rationale for the required data
+
+- Script descriptor: Any transaction consuming a UTxO from a Plutus-based address must attach the corresponding script.
+- Script Requirements list: 
+    -- dApps need to know the scriptContext under which the transaction will be validated.
+    -- dApps need to know the collateral donator to attach the collateral to the transaction.
+    -- dApps need to know the Datum of the Utxos that it will be consuming.
+    -- dApps need to know the Redeemers that will be used in the transaction.
+- Change Datum
+    -- dApps need to know the Datum that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus V2 and before, as the change output must contain a datum to be valid and spendable.
+
 
 ## Path to Active
 
