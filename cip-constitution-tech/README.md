@@ -105,7 +105,7 @@ Tooling rendering the constitution SHOULD recognize these and render them faithf
 #### Headers
 
 Headers are denoted via a hashtag character `#` followed by a space ` `.
-There are six levels to headers with, each being defined via a extra `#`.
+There are six levels of headers, with each lower level set via an added `#`.
 Headers are ended via a line break.
 Headers SHOULD be followed below by a blank line.
 Headers SHOULD not be preceded by whitespace.
