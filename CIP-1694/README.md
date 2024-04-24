@@ -288,13 +288,11 @@ treasury withdrawal proposals.
 > **Warning**
 > CIP-1694 DReps **should not be conflated** with Project Catalyst DReps.
 
-<!-- TODO find another name that still points to liquid democracy. -->
-
 #### Pre-defined DReps
 
 In order to participate in governance, a stake credential must be delegated to a DRep.
 Ada holders will generally delegate their voting rights to a registered DRep
-that will vote on their behalf.  In addition, two pre-defined DRep options are available:
+that will vote on their behalf. In addition, two pre-defined voting options are available:
 
 * `Abstain`
 
@@ -315,8 +313,8 @@ that will vote on their behalf.  In addition, two pre-defined DRep options are a
 
 
 > **Note**
-> The pre-defined DReps do not cast votes inside of transactions, their behavior is accounted for at the protocol level.
-> The `Abstain` DRep may be chosen for a variety of reasons, including the desire to not
+> The pre-defined voting options do not cast votes inside of transactions, their behavior is accounted for at the protocol level.
+> The `Abstain` option may be chosen for a variety of reasons, including the desire to not
 > participate in the governance system.
 
 > **Note**
@@ -682,7 +680,7 @@ The **technical group** consists of:
 * proportion of collateral needed for scripts (`collateralPercentage`)
 
 The **governance group** consists of all the new protocol parameters that are introduced in this CIP:
-* governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$)
+* governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$, $Q_5$)
 * governance action maximum lifetime in epochs (`govActionLifetime`)
 * governance action deposit (`govActionDeposit`)
 * DRep deposit amount (`drepDeposit`)
@@ -1109,16 +1107,19 @@ Firstly, during the bootstrap phase, a vote from the constitutional committee
 is sufficient to change the protocol parameters.
 Secondly, during the bootstrap phase, a vote from the constitutional committee,
 together with a sufficient SPO vote, is sufficient to initiate a hard fork.
-No other actions are possible during the bootstrap phase.
+Info actions will be available, but
+no other actions are possible during the bootstrap phase.
 
-The bootstrap phase ends when a given number of epochs has elapsed,
-as specified in the next ledger era configuration file.
-This is likely to be a number of months after the hard fork.
+The bootstrap phase ends when the Constitutional Committee and SPOs
+ratify a subsequent hard fork, enabling the remaining governance
+actions and DRep participation.
+This is likely to be a number of months after the Chang hard fork.
+Although all features will be technically available at this point, additional
+requirements for using each feature may be specified in the constitution.
 
-Moreover, there will be an interim Constitutional committee,
-also specified in the next ledger era configuration file,
-whose term limits will be set to expire when the bootstrap phase ends.
-The rotational schedule of the first non-bootstrap committee could be included in the constitution itself.
+Moreover, there will be an interim Constitutional committee with a set term,
+also specified in the next ledger era configuration file.
+The rotational schedule of the first non-interim committee could be included in the constitution itself.
 Note, however, that since the constitutional committee never votes on new committees,
 it cannot actually enforce the rotation.
 
