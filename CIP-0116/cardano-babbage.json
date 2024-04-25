@@ -1575,8 +1575,8 @@
           }
         },
         "required": [
-          "key",
-          "value"
+          "script_hash",
+          "assets"
         ],
         "additionalProperties": false
       }
