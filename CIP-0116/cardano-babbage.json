@@ -1441,7 +1441,7 @@
           },
           "required": [
             "tag",
-            "stake_credential",
+            "credential",
             "pool_keyhash"
           ],
           "additionalProperties": false
