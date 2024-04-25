@@ -56,6 +56,21 @@ This standard could be augmented in the future via a separate CIP which aims to 
 
 ### Terminology
 
+#### Capitalisation of key terms
+
+To avoid unnecessary edits, and therefore checksum changes, constitution authors MUST follow the following standard English capitalisation rules unless a translation language indicates otherwise:
+
+`Constitution` vs. `constitution`
+
+- The Constitution in effect — either the "initial" one or any updated version — is unique and therefore capitalised ("Constitution") as a proper noun.
+- Draft or proposed constitutions are not unique & therefore are not capitalised ("constitution") as a common noun.
+- "Cardano Constitution" is obviously a very specific proper noun phrase & so each word would be capitalised.
+- The phrase "the Constitution", unless used non-specifically (e.g. "the constitution that voters prefer"), would generally be assumed to be _the_ Constitution and capitalised as a proper noun.
+
+`Ada` vs. `ada` vs. `ADA`
+
+- `Ada` is the currency, while `ada` indicates units of that currency (e.g. "Ada holders can accumulate more ada to increase their influence.")
+- `ADA` is the trading symbol (e.g. "Fluctuations in ADA might influence decisions about the Treasury.")
 
 ### Line length
 
