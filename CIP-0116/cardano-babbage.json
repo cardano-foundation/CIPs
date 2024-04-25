@@ -1557,21 +1557,24 @@
             "$ref": "cardano-babbage.json#/definitions/ScriptHash"
           },
           "assets": {
-            "title": "Assets",
-            "type": "object",
-            "properties": {
-              "key": {
-                "$ref": "cardano-babbage.json#/definitions/AssetName"
+            "type": "array",
+            "items": {
+              "title": "Assets",
+              "type": "object",
+              "properties": {
+                "asset_name": {
+                  "$ref": "cardano-babbage.json#/definitions/AssetName"
+                },
+                "amount": {
+                  "$ref": "cardano-babbage.json#/definitions/NonZeroInt64"
+                }
               },
-              "value": {
-                "$ref": "cardano-babbage.json#/definitions/NonZeroInt64"
-              }
-            },
-            "required": [
-              "key",
-              "value"
-            ],
-            "additionalProperties": false
+              "required": [
+                "asset_name",
+                "amount"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [
