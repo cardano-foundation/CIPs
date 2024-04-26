@@ -75,16 +75,23 @@ Dreps may want to recieve tokens for a variety of reasons such as:
 
 Therefore there MAY be a `paymentAddress` field in the metadata where such payments could be sent. This makes such an address public and payments to DReps transparent. 
 
-#### `username`
+This SHOULD NOT be confused with the `address` property of a [Person](https://schema.org/Person), `address` in the context of a DRep refers to their location and NOT their payment address.
+
+#### `givenName`
 - Compulsory
+- This is a property inherited from [Person](https://schema.org/Person)
+- It is the only compulsory property
 - A very short freeform text field. Limited to 80 characters.
 - This MUST NOT support markdown text styling.
 - It is intended that authors will use this field for their profile name/ username.
 
-#### `picture`
-- Optional 
-- A base 64 encoded profile picture
+#### `Image`
+- Optional
+- This is a property inherited from [Person](https://schema.org/Person)
 - This SHOULD be treated as the profile picture of the individual
+- This should contain an [`imageObject`](https://schema.org/ImageObject) property
+  - `imageObject` SHOULD contain a base64 encoded image in its [`contentURL`](https://github.com/schemaorg/schemaorg/issues/2696) property in a [dataURI](https://en.wikipedia.org/wiki/Data_URI_scheme) format. 
+
 
 #### `objectives`
 - Optional
@@ -100,6 +107,7 @@ Therefore there MAY be a `paymentAddress` field in the metadata where such payme
 - Optional
 - A freeform text field with a maximum of 1000 characters 
 - A space where the registrant can to list the qualifications they hold that are relevant to their role as a DRep
+- This is distinct from the properties of a Person listed as `knows` and `knowsAbout` 
 
 #### `references`
 - Optional
@@ -130,7 +138,7 @@ PKI cryptographic solutions were also considered in the place of the current sol
 - If not included then the value is assumed to be false
 - A boolean expression
 - A true value means that the DRep does not want to show up in tooling that displays DReps. 
--- e.g. a DRep who does not want to appear in GovTool’s DRep Explorer feature creates metadata with donotlist as true.
+  - e.g. a DRep who does not want to appear in GovTool’s DRep Explorer feature creates metadata with donotlist as true.
 
 ### Application
 DRep metadata must include all compulsory fields to be considered CIP-119 compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-119 compliant metadata.
