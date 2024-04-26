@@ -57,6 +57,10 @@ DRep Metadata will not follow the CIP-100 specification related to signing the m
 ### Extended Vocabulary
 Like CIP-108, this CIP also extends the potential vocabulary of CIP-100's `body` property. 
 
+Furthermore we extend the Schema.org definition of a [Person](https://schema.org/Person). Any property of Person maybe included within the `body`.
+
+  
+
 >**Reminder for tooling providers/builders** DRep metadata is user generated content.
 
 The following are a list of properties tooling should expect to encounter:
