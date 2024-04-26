@@ -114,13 +114,14 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - This CIP extends the `references` property from [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100#high-level-description)
 - `references` contain the following sub-properties `type`, `label`, and `uri`
 - This CIP adds two `@type` identifiers "Identity" and "Link"
-- The creator of the metadata SHOULD add a `label`, this `label` SHOULD describe the source of the url, e.g. if it is a link to the DRep's X account then the `label` SHOULD say "X". If it is a personal website the `label` should say "Personal Website" rather than domain_name.com.
-- The `label` of each link SHOULD NOT be left blank
-- Each link MUST have exactly one `uri` (as specified in CIP-100) which MUST not be blank.
+
 
 ##### `type`: Link
 - Optional
 - It is expected that these links will be the addresses of the social media/ websites associated with the DRep in order to give a person reviewing this information a fulsome overview of the DRep's online presence.
+- The creator of the metadata SHOULD add a `label`, this `label` SHOULD describe the source of the url, e.g. if it is a link to the DRep's X account then the `label` SHOULD say "X". If it is the only personal website provided by the DRep the `label` should say "Personal Website" rather than domain_name.com.
+- The `label` of each `Link` SHOULD NOT be left blank
+- Each `Link' MUST have exactly one `uri` (as specified in CIP-100) which MUST not be blank.
 
 ##### `type`: Identity
 - Optional
