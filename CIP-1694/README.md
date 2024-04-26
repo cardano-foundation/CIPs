@@ -160,7 +160,7 @@ How any private companies, public or private institutions,  individuals etc. cho
   - [Size of the constitutional committee](#size-of-the-constitutional-committee)
   - [Term limits](#term-limits)
 + [Delegated representatives (DReps)](#delegated-representatives-dreps)
-  - [Pre-defined DReps](#pre-defined-dreps)
+  - [Pre-defined Voting Options](#pre-defined-voting-options)
   - [Registered DReps](#registered-dreps)
   - [New stake distribution for DReps](#new-stake-distribution-for-dreps)
   - [Incentives for Ada holders to delegate voting stake](#incentives-for-ada-holders-to-delegate-voting-stake)
@@ -288,7 +288,7 @@ treasury withdrawal proposals.
 > **Warning**
 > CIP-1694 DReps **should not be conflated** with Project Catalyst DReps.
 
-#### Pre-defined DReps
+#### Pre-defined Voting Options
 
 In order to participate in governance, a stake credential must be delegated to a DRep.
 Ada holders will generally delegate their voting rights to a registered DRep
@@ -1107,8 +1107,8 @@ Firstly, during the bootstrap phase, a vote from the constitutional committee
 is sufficient to change the protocol parameters.
 Secondly, during the bootstrap phase, a vote from the constitutional committee,
 together with a sufficient SPO vote, is sufficient to initiate a hard fork.
-Info actions will be available, but
-no other actions are possible during the bootstrap phase.
+Thirdly, info actions will be available.
+No other actions other than those mentioned in this paragraph are possible during the bootstrap phase.
 
 The bootstrap phase ends when the Constitutional Committee and SPOs
 ratify a subsequent hard fork, enabling the remaining governance
