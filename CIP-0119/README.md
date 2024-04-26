@@ -141,7 +141,7 @@ PKI cryptographic solutions were also considered in the place of the current sol
   - e.g. a DRep who does not want to appear in GovTool’s DRep Explorer feature creates metadata with donotlist as true.
 
 ### Application
-DRep metadata must include all compulsory fields to be considered CIP-119 compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-119 compliant metadata.
+Only the `givenName` property is listed above as compulsory, DRep metadata must include it to be considered CIP-119 compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-119 compliant metadata.
 
 ### Test Vector
 See [test-vector.md](./test-vector.md) for examples.
