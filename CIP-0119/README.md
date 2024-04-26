@@ -190,7 +190,7 @@ This CIP has not included these features, the decision not to include these feat
 ## Path to Active
 
 ### Acceptance Criteria
-- Publish JSON-LD schemas
+- Publish JSON-LD schemas & test-vector.md
 - Adoption by at least one community tool
 
 ### Implementation Plan
