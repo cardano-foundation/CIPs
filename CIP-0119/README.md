@@ -190,7 +190,8 @@ This CIP has not included these features, the decision not to include these feat
 ## Path to Active
 
 ### Acceptance Criteria
-
+- Publish JSON-LD schemas
+- Adoption by at least one community tool
 
 ### Implementation Plan
 <!-- How I plan to meet the acceptance criteria -->
