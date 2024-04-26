@@ -8,6 +8,8 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/788
+    - https://vimeo.com/912374177/0e9299fb5d?share=copy
+    - https://vimeo.com/915297122/c39f4a739b?share=copy
 Created: 2024-02-07
 License: CC-BY-4.0
 ---
@@ -212,6 +214,7 @@ There have been 3 lively public workshops on this subject, and I would like to t
 - Valeria Devaux
 - Дима
 
+[A recording of this meeting can be found here](https://vimeo.com/912374177/0e9299fb5d?share=copy)
 </details>
 
 <details>
@@ -236,6 +239,7 @@ There have been 3 lively public workshops on this subject, and I would like to t
 - Ryan Williams
 - Steve Lockhart 
 
+[A recording of this meeting can be found here](https://vimeo.com/915297122/c39f4a739b?share=copy)
 </details>
 
 <details>
