@@ -24,14 +24,12 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 #### Thank you
 Thank you to [everyone who participated in the CIP workshops](#Acknowledgements), and to @ryun1 for creating the JSON-LD schemas for this CIP and for his excellent technical support and invaluble advice. Thank you also to the other CIP editors and attendees of the CIP Editors' Meetings where this CIP was refined, most notably @rphair and @Crypto2099. 
 
-
 ## Motivation: why is this CIP necessary?
 CIP-1694 has set forth a model of a blockchain controlled by its community, and in doing so has challenged providers to build apps and tools that will allow users easy access to the governance features currently being built into Cardano.  Minimum viable tools must be ready at the time these governance features are launched.
 
 The motivation for this CIP therefore is to provide these toolmakers with a simple and easy to accommodate standard which, once adopted, will allow them to read and display the metadata created by anyone who follows this standard when creating their DRep registration or update metadata. Tooling designed for DReps so that they can easily create metadata will also be made possible, because toolmakers will not need to individually innovate over the contents or structure of the metadata that their tool creates.  
 
 Metadata is needed because blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying a url to the off-chain metadata, and a hash of that metadata to the blockchain we ensure correctness of data whilst minimising the amount of data posted on-chain.
-
 
 ### Benefits
 I believed that this CIP would provide a benefit to:
@@ -52,14 +50,12 @@ This CIP explains the structure of any metadata referenced in a metadata anchor 
 This CIP has been written for individuals acting in the capacity of DReps, and not for teams of people collaborating as a single DRep, although this does not preclude teams from using metadata in the structure explained by this CIP.
 
 ### Witnesses
-DRep Metadata will not follow the CIP-100 specification related to signing the metadata, the [authors property](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#high-level-description) can be left blank without the need for tooling providers to warn their users that the author has not been validated. Instead the author can be derived from the DRep ID associated with the registration. The need for an `authors` field will also be discarded in favour of including usernames inside of the `body` field. For the avoidance of doubt this CIP recommends that the entire authors property be left blank, and that tooling ignore it. 
+DRep Metadata will not follow the CIP-100 specification related to signing the metadata, the [`authors` property](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#high-level-description) can be left blank without the need for tooling providers to warn their users that the author has not been validated. Instead the author can be derived from the DRep ID associated with the registration. The need for an `authors` field will also be discarded in favour of including `givenName`s and `Identity` inside of the `body` field. For the avoidance of doubt this CIP recommends that the entire authors property be left blank, and that tooling ignore it. 
 
 ### Extended Vocabulary
 Like CIP-108, this CIP also extends the potential vocabulary of CIP-100's `body` property. 
 
 Furthermore we extend the Schema.org definition of a [Person](https://schema.org/Person). Any property of Person maybe included within the `body`.
-
-  
 
 >**Reminder for tooling providers/builders** DRep metadata is user generated content.
 
