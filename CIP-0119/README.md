@@ -23,7 +23,7 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 Thank you to [everyone who participated in the CIP workshops](#Acknowledgements)
 
 ## Motivation: why is this CIP necessary?
-CIP-1694 has set forth a compelling vision of a blockchain controlled by its community, and in doing so has thrown down the gauntlet to tooling providers to build apps and other kinds of tooling that will allow their users easy enjoyment of the governance features currently being built into the fabric of the Cardano blockchain. As I write this developers are feverishly hammering away at their keyboards like the blacksmiths of old to bring us the first iteration of these tools in a minimum viable format. 
+CIP-1694 has set forth a model of a blockchain controlled by its community, and in doing so has challenged providers to build apps and tools that will allow users easy access to the governance features currently being built into Cardano.  Minimum viable tools must be ready at the time these governance features are launched.
 
 The motivation for this CIP therefore is to provide these toolmakers with a simple and easy to accommodate standard which, once adopted, will allow them to read and display the metadata created by anyone who follows this standard when creating their DRep registration or update metadata. Tooling designed for DReps so that they can easily create metadata will also be made possible, because toolmakers will not need to individually innovate over the contents or structure of the metadata that their tool creates.  
 
