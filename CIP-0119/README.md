@@ -48,12 +48,8 @@ By standardising off-chain metadata formats for any tooling which creates and/or
 ## Specification
 This CIP explains the structure of any metadata referenced in a metadata anchor optionally included in any DRep registration or update transaction. 
 
-#### A Note on Teams
-CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of experitise, and would perhaps therefore be more attractive to some delegating Ada Holders. 
-
-Participants at the workshop held to debut the first draft of this CIP strongly advocated in favour of a CIP that would include features that would assist a DRep comprised of a team of individuals properly describe their endeavour to delegating Ada Holders and anyone else reading the metadata associated with their registration.
-
-This CIP has not included these features, the decision not to include these features was made in order to simplify this CIP so that it became suitable for the minimum viable level of tooling, with the expectation that further CIPs will build on it. 
+### Teams
+This CIP has been written for individuals acting in the capacity of DReps, and not for teams of people collaborating as a single DRep, although this does not preclude teams from using metadata in the structure explained by this CIP.
 
 ### Witnesses
 DRep Metadata will not follow the CIP-100 specification related to signing the metadata, the [authors property](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#high-level-description) can be left blank without the need for tooling providers to warn their users that the author has not been validated. Instead the author can be derived from the DRep ID associated with the registration. The need for an `authors` field will also be discarded in favour of including usernames inside of the `body` field. For the avoidance of doubt this CIP recommends that the entire authors property be left blank, and that tooling ignore it. 
@@ -164,6 +160,12 @@ It has been suggested that the `objectives`, `motifications`, and `qualification
 
 It has also been suggested that the format of the input into these three properties could be more tightly specified for example `qualifications` could require a list of qualifications. Whilst this will probably be needed I have left this up to a future CIP to specify what these specifications should be because at this stage (MVP) I have no concrete examples of how people will end up using these fields and I want to leave it up to the community to experiment with this. 
 
+### A Note on Teams
+CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of expertise, and would perhaps therefore be more attractive to some delegating Ada Holders.
+
+Participants at the workshop held to debut the first draft of this CIP strongly advocated in favour of including features that would assist a DRep comprised of a team of individuals to properly describe their endeavour.
+
+This CIP has not included these features, the decision not to include these features was made in order to simplify this CIP so that it became suitable for the minimum viable level of tooling, with the expectation that further CIPs will build on it.
 
 ### Open Questions
 |QID |Question |Answer |
