@@ -126,7 +126,6 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 ##### `type`: Identity
 - Optional
 - The `uri` of a reference with the `type` "Identity" is a way for DReps to prove that they are who they say they are
-- Each piece of metadata referenced in the anchor of a DRep registristration or update transaction MUST contain at least one reference with the `type` "Identity". Else tooling SHOULD ignore the metadata.
 - It is expected that the "Identity" of a DRep will be the addresses of their most active social media account twitter, linkedin etc. or personal website.
 - The DRep must reference their DRep ID in a prominent place at the location that is specified in the `uri` property of that reference. This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
 
