@@ -107,7 +107,7 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - Optional
 - A freeform text field with a maximum of 1000 characters 
 - A space where the registrant can to list the qualifications they hold that are relevant to their role as a DRep
-- This is distinct from the properties of a Person listed as `knows` and `knowsAbout` 
+- This is distinct from the properties of a Person listed as `knows` and `knowsAbout` because it encompasses things that the DRep has done as well as things that they know that qualify them for this position. 
 
 #### `references`
 - Optional
