@@ -43,7 +43,7 @@ When observing from the chain level, tooling can only see the content and histor
 DReps will be able to use tools that create metadata in a standard format. This in turn will allow their metadata to be read by apps that will render their words on screen for potential delegating Ada Holders to enjoy, this may lead to greater levels of delegation. 
 
 #### All participants
-By standardising off-chain metadata formats for any tooling which creates and/or renders metadata referenced in DRep registration and update transactions we facilitate interoperability. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
+By standardising off-chain metadata formats for any tooling which creates and/or renders metadata that is referenced in DRep registration and update transactions we facilitate interoperability. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
 
 ## Specification
 CIP-1694 specifies that metadata anchors are optional for DRep registration and updates. This CIP covers metadata for the aforementioned transaction types, but it does not cover metadata for voting transactions. 
