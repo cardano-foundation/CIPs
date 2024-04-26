@@ -46,7 +46,7 @@ DReps will be able to use tools that create metadata in a standard format. This 
 By standardising off-chain metadata formats for any tooling which creates and/or renders metadata that is referenced in DRep registration and update transactions we facilitate interoperability. This in turn promotes a rich user experience between tooling. This is good for all governance participants.
 
 ## Specification
-CIP-1694 specifies that metadata anchors are optional for DRep registration and updates. This CIP covers metadata for the aforementioned transaction types, but it does not cover metadata for voting transactions. 
+This CIP explains the structure of any metadata referenced in a metadata anchor optionally included in any DRep registration or update transaction. 
 
 #### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of experitise, and would perhaps therefore be more attractive to some delegating Ada Holders. 
