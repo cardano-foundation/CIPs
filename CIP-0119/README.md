@@ -111,7 +111,6 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - `references` contain the following sub-properties `type`, `label`, and `uri`
 - This CIP adds two `@type` identifiers "Identity" and "Link"
 
-
 ##### `type`: Link
 - Optional
 - It is expected that these links will be the addresses of the social media/ websites associated with the DRep in order to give a person reviewing this information a fulsome overview of the DRep's online presence.
@@ -148,13 +147,23 @@ This proposal should not be versioned, to update this standard a new CIP should 
 ## Rationale: how does this CIP achieve its goals?
 We intentionally have kept this proposal brief and uncomplicated. This was to reduce the time to develop and deploy this standard. This way we enable tooling which depends on this standard to start development. 
 
-### Rationale for Insisting on a compulsory username
-The compulsory nature of this field was controversial because the `username`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `username` it a reason for people reviewing a DRep's profile to properly check their whole profile before delegating to them. A `username` MUST be included because it is a human readable identifier, it is the property that people reviewing DReps will most likely identify that DRep by even in the presence of copycats.
+### Rationale for insisting on a compulsory name
+The compulsory nature of this field was controversial because the `givenName`s cannot be made unique and therefore are open to abuse (by e.g. copycats). However this is not a reason to not include a `givenName`, it a reason for people reviewing a DRep's profile to properly check their whole profile before delegating to them. A `givenName` MUST be included because a person must always have a name. Iit is a human readable identifier, it is the property that people reviewing DReps will most likely identify a given DRep by, even in the presence of copycats.
 
 ### Rationale for multiple freeform fields
-It has been suggested that the `objectives`, `motifications`, and `qualifications` properties ([or at least the latter two](https://github.com/cardano-foundation/CIPs/pull/788#discussion_r1546391918)) could be one freeform property instead of 3. The rationale for having 3 sepparate properties is to provide structure to DReps so that they have a useful set of prompts about what they can and should write about. The author noticed in research that a single `bio` field in a form typically resulted in lower quality, often single line, responses from respondees than when this `bio` field was split into smaller fields with more highly specified purposes.
+It has been suggested that the `objectives`, `motivations`, and `qualifications` properties ([or at least the latter two](https://github.com/cardano-foundation/CIPs/pull/788#discussion_r1546391918)) could be one freeform property instead of 3. The rationale for having 3 separate properties is to provide structure to DReps so that they have a useful set of prompts about what they can and should write about. The author noticed in research that a single `bio` field in a form typically resulted in lower quality, often single line, responses from respondents than when this `bio` field was split into smaller fields with more highly specified purposes.
 
 It has also been suggested that the format of the input into these three properties could be more tightly specified for example `qualifications` could require a list of qualifications. Whilst this will probably be needed I have left this up to a future CIP to specify what these specifications should be because at this stage (MVP) I have no concrete examples of how people will end up using these fields and I want to leave it up to the community to experiment with this. 
+
+### Rationale for the identity solution that is used
+PKI cryptographic solutions were also considered in the place of the current solution however they were generally considered too complex to implement for minimum viable tooling. There were also other issues with cryptographic forms of identification for MVPs:
+1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what their authentic public key is.
+2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for the identity validation of DReps.
+
+### Rationale for extending the schema.org Person property
+This CIP is not written to specifically cover the metadata created to describe teams of people collaborating to register as a DRep, but it is written to cover the metadata created by individuals to describe themselves in their capacity as a DRep. Therefore DReps are people. 
+
+People who want to extend the use of the DRep metadata can now do so in a way that allows tooling providers to use off the peg solutions. Furthermore there may be SEO benefits to using schema.org templates. 
 
 ### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of expertise, and would perhaps therefore be more attractive to some delegating Ada Holders.
