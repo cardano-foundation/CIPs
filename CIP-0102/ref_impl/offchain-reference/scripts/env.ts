@@ -3,7 +3,7 @@ import { writeFileSync } from "https://deno.land/std@0.110.0/node/fs.ts";
 
 const env = await load({ allowEmptyValues: true });
 
-export function getEnv(variable: string) {
+export function getEnv(variable: string): string {
 	const value = env[variable];
 	if (!value) {
 		throw Error(

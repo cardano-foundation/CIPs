@@ -1,7 +1,7 @@
 import type { RoyaltyRecipient, RoyaltyConstr, output } from './types.ts';
 import { Data, toText } from 'https://deno.land/x/lucid@0.10.7/mod.ts';
-import { getAssetsTransactions, getScriptsDatumCbor, getTxsUtxos } from "./query.ts";
-import { CIP102_ROYALTY_TOKEN_NAME, fromOnchainRoyalty } from './conversion.ts';
+import { getAssetsTransactions, getScriptsDatumCbor, getTxsUtxos } from "../utils/query.ts";
+import { CIP102_ROYALTY_TOKEN_NAME, fromOnchainRoyalty } from '../conversion.ts';
 
 /**
  * Queries the blockchain for the royalty metadata of a CIP-102 collection

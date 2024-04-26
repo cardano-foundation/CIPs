@@ -1,23 +1,41 @@
-import { Constr, Data } from "https://deno.land/x/lucid@0.10.7/mod.ts";
+import { Constr, Data, Address } from "https://deno.land/x/lucid@0.10.7/mod.ts";
 
-export const MetadataSchema = Data.Map(Data.Bytes(), Data.Any());
-export type Metadata = Data.Static<typeof MetadataSchema>;
-export const Metadata = MetadataSchema as unknown as Metadata;
+// NFT Metadata Schema
 
-export const DatumMetadataSchema = Data.Object({
-  metadata: MetadataSchema,
+export const NFTMetadataSchema = Data.Map(Data.Bytes(), Data.Any());
+export type NFTMetadata = Data.Static<typeof NFTMetadataSchema>;
+export const NFTMetadata = NFTMetadataSchema as unknown as NFTMetadata;
+
+export const NFTDatumMetadataSchema = Data.Object({
+  metadata: NFTMetadataSchema,
   version: Data.Integer({ minimum: 1, maximum: 1 }),
   extra: Data.Any(),
 });
-export type DatumMetadata = Data.Static<typeof DatumMetadataSchema>;
-export const DatumMetadata = DatumMetadataSchema as unknown as DatumMetadata;
+export type NFTDatumMetadata = Data.Static<typeof NFTDatumMetadataSchema>;
+export const NFTDatumMetadata = NFTDatumMetadataSchema as unknown as NFTDatumMetadata;
+
+// Royalty Metadata Schema
+
+export const RoyaltyMetadataSchema = Data.Array(Data.Map(Data.Bytes(), Data.Any()));
+export type RoyaltyMetadata = Data.Static<typeof RoyaltyMetadataSchema>;
+export const RoyaltyMetadata = RoyaltyMetadataSchema as unknown as RoyaltyMetadata;
+
+export const RoyaltyDatumMetadataSchema = Data.Object({
+  metadata: RoyaltyMetadataSchema,
+  version: Data.Integer({ minimum: 1, maximum: 1 }),
+  extra: Data.Any(),
+});
+export type RoyaltyDatumMetadata = Data.Static<typeof RoyaltyDatumMetadataSchema>;
+export const RoyaltyDatumMetadata = RoyaltyDatumMetadataSchema as unknown as RoyaltyDatumMetadata;
+
+// Royalty Flag Schema
 
 export const RoyaltyFlagSchema = Data.Object({ royalty_included: Data.Integer() })
 export type RoyaltyFlag = Data.Static<typeof RoyaltyFlagSchema>;
 export const RoyaltyFlag = RoyaltyFlagSchema as unknown as RoyaltyFlag;
 
 export type RoyaltyRecipient = {
-	address: string;
+	address: Address;
 	fee: number;  // in percentage
 	maxFee?: number;
 	minFee?: number;

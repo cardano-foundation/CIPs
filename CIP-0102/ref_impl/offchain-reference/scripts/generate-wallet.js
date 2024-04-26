@@ -9,7 +9,7 @@ const address = await lucid
 	.selectWalletFromPrivateKey(privateKey)
 	.wallet.address();
 const envUpdate = {
-  SERVICE_WALLET_ADDRESS: address,
-  SERVICE_WALLET_PRIVATE_KEY: privateKey,
+  WALLET_ADDRESS: address,
+  WALLET_PRIVATE_KEY: privateKey,
 }
 updateEnv(envUpdate);
