@@ -124,10 +124,6 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - It is expected that the "Identity" of a DRep will be the addresses of their most active social media account twitter, linkedin etc. or personal website.
 - The DRep must reference their DRep ID in a prominent place at the location that is specified in the `uri` property of that reference. This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
 
-PKI cryptographic solutions were also considered in the place of the current solution however they were generally considered too complex to implement for minimum viable tooling. There were also other issues with cryptographic forms of identification for MVPs:
-1. solutions that involve a public/private key setup still require people verifying the identity of a DRep to know what their authentic public key is.
-2. specifying the use of a verification service such as [Keybase](https://keybase.io/) would lead to centralisation and therefore reliance on a 3rd party for the identity validation of DReps.
-
 #### `doNotList`
 - Optional
 - If not included then the value is assumed to be false
