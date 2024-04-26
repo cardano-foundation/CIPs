@@ -249,7 +249,7 @@ There have been 3 lively public workshops on this subject, and I would like to t
 </details>
 
 <details>
-  <summary><strong>Austtralia and APAC Workshop  - 05/03/2024</strong></summary>
+  <summary><strong>Australia and APAC Workshop  - 05/03/2024</strong></summary>
     
 - Andreas,
 - Linh P,
