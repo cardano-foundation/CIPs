@@ -22,7 +22,8 @@ The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/t
 This proposal aims to provide a specification for off-chain metadata vocabulary that can be used to give context to CIP-100 for DRep registration and updates. Without a sufficiently detailed standard for DRep metadata we introduce the possibility to undermine the ability of DReps to explain their motivations and therefore people looking for someone to represent them with the best possible information available to make that choice. Furthermore a lack of such standards risks preventing interoperability between tools, to the detriment of user experiences.
 
 #### Thank you
-Thank you to [everyone who participated in the CIP workshops](#Acknowledgements)
+Thank you to [everyone who participated in the CIP workshops](#Acknowledgements), and to @ryun1 for creating the JSON-LD schemas for this CIP and for his excellent technical support and invaluble advice. Thank you also to the other CIP editors and attendees of the CIP Editors' Meetings where this CIP was refined, most notably @rphair and @Crypto2099. 
+
 
 ## Motivation: why is this CIP necessary?
 CIP-1694 has set forth a model of a blockchain controlled by its community, and in doing so has challenged providers to build apps and tools that will allow users easy access to the governance features currently being built into Cardano.  Minimum viable tools must be ready at the time these governance features are launched.
