@@ -1608,7 +1608,7 @@
         "chain_code": {
           "type": "string",
           "format": "hex",
-          "pattern": "^([0-9a-f][0-9a-f])*$"
+          "pattern": "^([0-9a-f][0-9a-f]){32}$"
         },
         "signature": {
           "$ref": "cardano-babbage.json#/definitions/Ed25519Signature"
