@@ -30,7 +30,8 @@ CIP-1694 has set forth a model of a blockchain controlled by its community, and 
 
 The motivation for this CIP therefore is to provide these toolmakers with a simple and easy to accommodate standard which, once adopted, will allow them to read and display the metadata created by anyone who follows this standard when creating their DRep registration or update metadata. Tooling designed for DReps so that they can easily create metadata will also be made possible, because toolmakers will not need to individually innovate over the contents or structure of the metadata that their tool creates.  
 
-Metadata is needed because blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying an On-Chain hash of the off-chain we ensure correctness of data whilst minimising the amount of data posted to the chain.
+Metadata is needed because blockchains are poor choices to act as content databases. This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events. By only supplying a url to the off-chain metadata, and a hash of that metadata to the blockchain we ensure correctness of data whilst minimising the amount of data posted on-chain.
+
 
 ### Benefits
 I believed that this CIP would provide a benefit to:
