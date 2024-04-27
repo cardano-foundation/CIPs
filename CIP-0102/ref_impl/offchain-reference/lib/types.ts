@@ -1,4 +1,4 @@
-import { Constr, Data, Address } from "https://deno.land/x/lucid@0.10.7/mod.ts";
+import { Constr, Data, Address, TxComplete } from "https://deno.land/x/lucid@0.10.7/mod.ts";
 
 // NFT Metadata Schema
 
@@ -44,6 +44,17 @@ export type RoyaltyRecipient = {
 export type RoyaltyConstr = Constr<
 	Map<string, string | bigint> | Map<string, string | bigint>[]
 >;
+
+// Tx Builder Output
+export type TxBuild = {
+  error: string;
+  tx?: undefined;
+  policyId?: undefined;
+} | {
+  tx: TxComplete;
+  policyId: string;
+  error?: undefined;
+}
 
 // NOTE: these are ripped from `lucid-cardano` and modified
 export type MediaAsset = {

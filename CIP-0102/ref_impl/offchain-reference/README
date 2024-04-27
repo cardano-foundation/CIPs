@@ -1,0 +1,26 @@
+# Using the CIP-102 Offchain Library
+
+## Importing
+The contents of this library are available to be imported from `index.ts` and will eventually be published to a public package manager (or two). I will add instructions here when I do.
+
+In the meantime, you can clone or copy the contents of the `/lib/` folder wherever you need it.
+
+## Direct Use
+
+If you want to interact with the library directly without setting up your own project, you can run the code directly with the mock frontend defined in `scripts/mock-frontend.ts`
+
+### Setup
+
+### Reading Royalties
+You can query the royalty information for a given collection with the following query:
+
+`deno task get-royalties [policyId]`
+
+This does not return CIP-27 royalties.
+
+### Minting CIP-102 Compliant NFTs
+You can mint a collection with multiple CIP-68 nfts & a royalty policy with
+
+`deno task mint-collection`
+
+Instead of using the command line, this takes its parameters from the `mock_` prefixed consts at the start of the `testTimelockedMint` function in `mock-frontend.ts`.

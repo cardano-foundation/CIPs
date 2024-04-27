@@ -17,7 +17,8 @@ import {
   RoyaltyDatumMetadata, 
   RoyaltyMetadata, 
   RoyaltyFlag, 
-  MediaAssets 
+  MediaAssets, 
+  TxBuild
 } from "./types.ts";
 
 /**
@@ -94,7 +95,7 @@ export async function createRoyalty(lucid: Lucid, policy: Script, validator: Scr
   validator: Script,
 	sanitizedMetadataAssets: MediaAssets,
 	cip102?: "NoRoyalty" | "Premade" | RoyaltyRecipient
-) {
+): Promise<TxBuild> {
   // extract royalty information or mark undefined
 	const royalty = cip102 === "NoRoyalty" || cip102 === "Premade" ? undefined : cip102;
 
