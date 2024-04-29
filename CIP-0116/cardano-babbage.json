@@ -1773,7 +1773,9 @@
           "$ref": "cardano-babbage.json#/definitions/ByteString"
         },
         "proof": {
-          "$ref": "cardano-babbage.json#/definitions/ByteString"
+          "$ref": "cardano-babbage.json#/definitions/ByteString",
+          "type": "string",
+          "pattern": "^[0-9a-f]{160}$"
         }
       },
       "required": [
