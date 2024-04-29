@@ -255,8 +255,8 @@ It is up to implementors to decide how to serialize the values into CBOR. The pr
 
 ## Path to Active
 
-- [ ] Complete the specification
-- [ ] Provide an implementation of validating functions that uses this json-schema
+- [x] Complete the specification for the current era
+- [x] Provide [an implementation](https://github.com/mlabs-haskell/cip-0116-tests) of validating functions that uses this json-schema
 - [ ] Collect a list of cardano domain types implementations and negotiate transition to the specified formats with maintainers (if it makes sense and is possible)
 
 ### Acceptance Criteria
