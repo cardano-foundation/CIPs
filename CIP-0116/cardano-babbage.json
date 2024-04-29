@@ -1784,55 +1784,6 @@
       ],
       "additionalProperties": false
     },
-    "HeaderLeaderCert": {
-      "title": "HeaderLeaderCert",
-      "type": "object",
-      "discriminator": {
-        "propertyName": "tag"
-      },
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "tag": {
-              "enum": [
-                "nonce_and_leader"
-              ]
-            },
-            "nonce": {
-              "$ref": "cardano-babbage.json#/definitions/VRFCert"
-            },
-            "leader": {
-              "$ref": "cardano-babbage.json#/definitions/VRFCert"
-            }
-          },
-          "required": [
-            "tag",
-            "nonce",
-            "leader"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "tag": {
-              "enum": [
-                "vrf_result"
-              ]
-            },
-            "cert": {
-              "$ref": "cardano-babbage.json#/definitions/VRFCert"
-            }
-          },
-          "required": [
-            "tag",
-            "cert"
-          ],
-          "additionalProperties": false
-        }
-      ]
-    },
     "KESVKey": {
       "title": "KESVKey",
       "type": "string",
@@ -1894,48 +1845,48 @@
       "title": "HeaderBody",
       "type": "object",
       "properties": {
-        "block_body_hash": {
-          "$ref": "cardano-babbage.json#/definitions/BlockHash"
-        },
-        "block_body_size": {
-          "$ref": "cardano-babbage.json#/definitions/UInt32"
-        },
         "block_number": {
           "$ref": "cardano-babbage.json#/definitions/UInt32"
-        },
-        "issuer_vkey": {
-          "$ref": "cardano-babbage.json#/definitions/Ed25519PublicKey"
-        },
-        "leader_cert": {
-          "$ref": "cardano-babbage.json#/definitions/HeaderLeaderCert"
-        },
-        "operational_cert": {
-          "$ref": "cardano-babbage.json#/definitions/OperationalCert"
-        },
-        "prev_hash": {
-          "$ref": "cardano-babbage.json#/definitions/BlockHash"
-        },
-        "protocol_version": {
-          "$ref": "cardano-babbage.json#/definitions/ProtocolVersion"
         },
         "slot": {
           "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
+        "prev_hash": {
+          "$ref": "cardano-babbage.json#/definitions/BlockHash"
+        },
+        "issuer_vkey": {
+          "$ref": "cardano-babbage.json#/definitions/Ed25519PublicKey"
+        },
         "vrf_vkey": {
           "$ref": "cardano-babbage.json#/definitions/VRFVKey"
+        },
+        "vrf_result": {
+          "$ref": "cardano-babbage.json#/definitions/VRFCert"
+        },
+        "block_body_size": {
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
+        },
+        "block_body_hash": {
+          "$ref": "cardano-babbage.json#/definitions/BlockHash"
+        },
+        "operational_cert": {
+          "$ref": "cardano-babbage.json#/definitions/OperationalCert"
+        },
+        "protocol_version": {
+          "$ref": "cardano-babbage.json#/definitions/ProtocolVersion"
         }
       },
       "additionalProperties": false,
       "required": [
-        "block_body_hash",
-        "block_body_size",
         "block_number",
-        "issuer_vkey",
-        "leader_cert",
-        "operational_cert",
-        "protocol_version",
         "slot",
-        "vrf_vkey"
+        "issuer_vkey",
+        "vrf_vkey",
+        "vrf_result",
+        "block_body_size",
+        "block_body_hash",
+        "operational_cert",
+        "protocol_version"
       ]
     },
     "Header": {
