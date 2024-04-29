@@ -1212,6 +1212,13 @@
       "maxLength": 64,
       "format": "string64"
     },
+    "PoolMetadataHash": {
+      "title": "PoolMetadataHash",
+      "description": "Pool Metadata Hash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$"
+    },
     "PoolMetadata": {
       "title": "PoolMetadata",
       "type": "object",
@@ -1220,10 +1227,7 @@
           "$ref": "cardano-babbage.json#/definitions/URL"
         },
         "hash": {
-          "title": "Pool Metadata Hash",
-          "type": "string",
-          "format": "hex",
-          "pattern": "^[0-9a-f]{64}$"
+          "$ref": "cardano-babbage.json#/definitions/PoolMetadataHash"
         }
       },
       "additionalProperties": false,
