@@ -1754,17 +1754,6 @@
       ],
       "additionalProperties": false
     },
-    "AuxiliaryDataSet": {
-      "type": "object",
-      "title": "AuxiliaryDataSet",
-      "description": "A mapping from numbers to AuxiliaryData",
-      "patternProperties": {
-        "^(0|[1-9][0-9]*)$": {
-          "$ref": "cardano-babbage.json#/definitions/AuxiliaryData"
-        }
-      },
-      "additionalProperties": false
-    },
     "VRFCert": {
       "title": "VRFCert",
       "type": "object",
@@ -1911,7 +1900,15 @@
       "type": "object",
       "properties": {
         "auxiliary_data_set": {
-          "$ref": "cardano-babbage.json#/definitions/AuxiliaryDataSet"
+          "type": "object",
+          "title": "AuxiliaryDataSet",
+          "description": "A mapping from transaction indices to AuxiliaryData values",
+          "patternProperties": {
+            "^(0|[1-9][0-9]*)$": {
+              "$ref": "cardano-babbage.json#/definitions/AuxiliaryData"
+            }
+          },
+          "additionalProperties": false
         },
         "header": {
           "$ref": "cardano-babbage.json#/definitions/Header"
