@@ -73,7 +73,11 @@ _maximum_ of the two arguments (which we call _padding semantics_). As these can
 both be useful depending on context, we allow both, controlled by a
 `BuiltinBool` flag, on all the operations listed above. 
 
-TODO: Example
+For example, consider the `BuiltinByteString`s `x = [0x00, 0xF0, 0xFF]` and `y =
+[0xFF, 0xF0]`. Under padding semantics, the result of `builtinLogicalAnd`,
+`builtinLogicalOr` or `builtinLogicalXor` using these two as arguments would
+have a length of 3; under truncation semantics, the result would have a length
+of 2 instead. 
 
 #### `builtinLogicalAnd`
 
@@ -295,7 +299,200 @@ byte at position $i$ of $b$, as per `builtinIndexByteString`. We have:
 
 ### Laws and examples
 
-TODO: Make some
+#### Binary operations
+
+We describe laws for all three operations that work over two
+`BuiltinByteStrings`, that is, `builtinLogicalAnd`, `builtinLogicalOr` and
+`builtinLogicalXor`, together, as many of them are similar (and related). We
+describe padding semantics and truncation semantics laws, as they are slightly
+different.
+
+All three operations above, under both padding and truncation semantics, are
+[commutative semigroups][special-semigroups]. Thus, we have:
+
+```haskell
+builtinLogicalAnd s x y = builtinLogicalAnd s y x
+
+builtinLogicalAnd s x (builtinLogicalAnd s y z) = builtinLogicalAnd s
+(builtinLogicalAnd s x y) z
+
+-- and the same for builtinLogicalOr and builtinLogicalXor
+```
+
+Note that the semantics (designated as `s` above) must be consistent in order
+for these laws to hold. Furthermore, under padding semantics, all the above
+operations are [commutative monoids][commutative-monoid]:
+
+```haskell
+builtinLogicalAnd True x "" = builtinLogicalAnd True "" x = x
+
+-- and the same for builtinLogicalOr and builtinLogicalXor
+```
+
+Under truncation semantics, `""` (that is, the empty `BuiltinByteString`) acts
+instead as an [absorbing element][absorbing-element]:
+
+```haskell
+builtinLogicalAnd False x "" = builtinLogicalAnd False "" x = ""
+
+-- and the same for builtinLogicalOr and builtinLogicalXor
+```
+
+`builtinLogicalAnd` and `builtinLogicalOr` are also [semilattices][semilattice],
+due to their idempotence:
+
+```haskell
+builtinLogicalAnd s x x = x
+
+-- and the same for builtinLogicalOr
+```
+
+`builtinLogicalXor` is instead involute:
+
+```haskell
+builtinLogicalXor s x (builtinLogicalXor s x x) = builtinLogicalXor s
+(builtinLogicalXor s x x) x = x
+```
+
+Additionally, under padding semantics, `builtinLogicalAnd` and
+`builtinLogicalOr` are [self-distributive][distributive]:
+
+```haskell
+builtinLogicalAnd True x (builtinLogicalAnd True y z) = builtinLogicalAnd True
+(builtinLogicalAnd True x y) (builtinLogicalAnd True x z)
+
+builtinLogicalAnd True (builtinLogicalAnd True x y) z = builtinLogicalAnd True
+(builtinLogicalAnd True x z) (builtinLogicalAnd True y z)
+
+-- and the same for builtinLogicalOr
+```
+
+Under truncation semantics, `builtinLogicalAnd` is only left-distributive over
+itself, `builtinLogicalOr` and `builtinLogicalXor`:
+
+```haskell
+builtinLogicalAnd False x (builtinLogicalAnd False y z) = builtinLogicalAnd
+False (builtinLogicalAnd False x y) (builtinLogicalAnd False x z)
+
+builtinLogicalAnd False x (builtinLogicalOr False y z) = builtinLogicalOr False
+(builtinLogicalAnd False x y) (builtinLogicalAnd False x z)
+
+builtinLogicalAnd False x (builtinLogicalXor False y z) = builtinLogicalXor
+False (builtinLogicalAnd False x y) (builtinLogicalAnd False x z)
+```
+
+`builtinLogicalOr` under truncation semantics is left-distributive over itself
+and `bitwiseLogicalAnd`:
+
+```haskell
+builtinLogicalOr False x (builtinLogicalOr False y z) = builtinLogicalOr False
+(builtinLogicalOr False x y) (builtinLogicalOr False x z)
+
+builtinLogicalOr False x (builtinLogicalAnd False y z) = builtinLogicalAnd False
+(builtinLogicalOr False x y) (builtinLogicalOr False x z)
+```
+
+If the first and second data arguments to these operations have the same length,
+these operations satisfy several additional laws. We describe these briefly
+below, with the added note that, in this case, padding and truncation semantics
+coincide:
+
+* `builtinLogicalAnd` and `builtinLogicalOr` form a [bounded lattice][lattice]
+* `builtinLogicalAnd` is [distributive][distributive] over itself, `builtinLogicalOr` and
+  `builtinLogicalXor`
+* `builtinLogicalOr` is [distributive][distributive] over itself and `builtinLogicalAnd`
+
+We do not specify these laws here, as they do not hold in general. At the same
+time, we expect that any implementation of these operations will be subject to
+these laws.
+
+#### `builtinLogicalComplement`
+
+The main law of `builtinLogicalComplement` is involution:
+
+```haskell
+builtinLogicalComplement (builtinLogicalComplement x) = x
+```
+
+In combination with `builtinLogicalAnd` and `builtinLogicalOr`,
+`builtinLogicalComplement` gives rise to the famous [De Morgan laws][de-morgan], irrespective of semantics:
+
+```haskell
+builtinLogicalComplement (builtinLogicalAnd s x y) = builtinLogicalOr s
+(builtinLogicalComplement x) (builtinLogicalComplement y)
+
+builtinLogicalComplement (builtinLogicalOr s x y) = builtinLogicalAnd s
+(builtinLogicalComplement x) (builtinLogicalComplement y)
+```
+
+For `builtinLogicalXor`, we instead have (again, irrespective of semantics):
+
+```haskell
+builtinLogicalXor s x (builtinLogicalComplement x) = x
+```
+
+#### Bit reading and modification
+
+Throughout, we assume any index arguments to be 'in-bounds'; that is, all the
+index arguments used in the statements of any law are such that the operation
+they are applied to wouldn't produce an error.
+
+The first law of `builtinSetBits` is similar to the [set-twice law of
+lenses][lens-laws]:
+
+```haskell
+builtinSetBits bs [(i, b1), (i, b2)] = builtinSetBits bs [(i, b2)]
+```
+
+Together with `builtinReadBit`, we obtain the remaining two analogues to the lens
+laws:
+
+```haskell
+-- writing to an index, then reading from that index, gets you what you wrote
+builtinReadBit (builtinSetBits bs [(i, b)]) i = b
+
+-- if you read from an index, then write that value to that same index, nothing
+-- happens
+builtinSetBits bs [(i, builtinReadBit bs i)] = bs
+```
+
+Furthermore, given a fixed data argument, `builtinSetBits` acts as a [monoid
+homomorphism][monoid-homomorphism] from functions to lists under concatenation:
+
+```haskell
+-- identity function corresponds to empty list
+builtinSetBits bs [] = bs
+
+-- composition is concatenation of change list arguments
+builtinSetBits (builtinSetBits bs is) js = builtinSetBits bs (is <> js)
+```
+
+#### `builtinReplicate`
+
+Given a fixed byte argument, `builtinReplicate` acts as a [monoid
+homomorphism][monoid-homomorphism] from natural numbers under addition to
+`BuiltinByteString`s under concatenation: 
+
+```haskell
+builtinReplicate 0 w = ""
+
+builtinReplicate (n + m) w = builtinReplicate n w <> builtinReplicate m w
+```
+
+Additionally, for any 'in-bounds' index (that is, any index for which
+`builtinIndexByteString` won't error) `i`, we have
+
+```haskell
+builtinIndexByteString (builtinReplicate n w) i = w
+```
+
+Lastly, we have
+
+```haskell
+builtinSizeOfByteString (builtinReplicate n w) = n
+```
+
+TODO: Examples
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -316,3 +513,13 @@ after review.
 ## Copyright
 
 This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+[special-semigroups]: https://en.wikipedia.org/wiki/Special_classes_of_semigroups
+[commutative-monoid]: https://en.wikipedia.org/wiki/Monoid#Commutative_monoid
+[absorbing-element]: https://en.wikipedia.org/wiki/Zero_element#Absorbing_elements
+[semilattice]: https://en.wikipedia.org/wiki/Semilattice
+[distributive]: https://en.wikipedia.org/wiki/Distributive_property
+[lattice]: https://en.wikipedia.org/wiki/Lattice_(order)
+[de-morgan]: https://en.wikipedia.org/wiki/De_Morgan%27s_laws
+[lens-laws]: https://oleg.fi/gists/posts/2017-04-18-glassery.html#laws:lens
+[monoid-homomorphism]: https://en.wikipedia.org/wiki/Monoid#Monoid_homomorphisms
