@@ -99,9 +99,9 @@ n_2 \}$; otherwise, $n_r = \min \{ n_1, n_2 \}$. For all $i \in 0, 1, \ldots 8
 
 $$
 b_r[i] = \begin{cases}
-         b_0[i] & n_1 < n_0 \text{ and } n_r > \min { n_1, n_2 } \\
-         b_1[i] & n_0 < n_1 \text { and } n_r > \min { n_1, n_2 } \\
-         1 & b_0[i] = b_1[i] = 1 \\
+         b_0[i] & \text{if } n_1 < n_0 \text{ and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
+         b_1[i] & \text{if } n_0 < n_1 \text { and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
+         1 & \text{if } b_0[i] = b_1[i] = 1 \\
          0 & \text{otherwise} \\
          \end{cases}
 $$
@@ -130,8 +130,8 @@ n_2 \}$; otherwise, $n_r = \min \{ n_1, n_2 \}$. For all $i \in 0, 1, \ldots 8
 
 $$
 b_r[i] = \begin{cases}
-         b_0[i] & n_1 < n_0 \text{ and } n_r > \min { n_1, n_2 } \\
-         b_1[i] & n_0 < n_1 \text { and } n_r > \min { n_1, n_2 } \\
+         b_0[i] & \text{if } n_1 < n_0 \text{ and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
+         b_1[i] & n_0 < n_1 \text { and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
          0 & b_0[i] = b_1[i] = 0 \\
          1 & \text{otherwise} \\
          \end{cases}
@@ -161,8 +161,8 @@ n_2 \}$; otherwise, $n_r = \min \{ n_1, n_2 \}$. For all $i \in 0, 1, \ldots 8
 
 $$
 b_r[i] = \begin{cases}
-         b_0[i] & n_1 < n_0 \text{ and } n_r > \min { n_1, n_2 } \\
-         b_1[i] & n_0 < n_1 \text { and } n_r > \min { n_1, n_2 } \\
+         b_0[i] & \text{if } n_1 < n_0 \text{ and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
+         b_1[i] & \text{if } n_0 < n_1 \text { and } i \geq 8 \cdot \min { n_1, n_2 } \\
          0 & b_0[i] = b_1[i] \\
          1 & \text{otherwise} \\
          \end{cases}
@@ -188,9 +188,110 @@ $$
 
 #### `builtinReadBit`
 
+`builtinReadBit` takes two arguments; we name and describe them below.
+
+1. The `BuiltinByteString` in which the bit we want to read can be found. This
+   is the _data argument_.
+2. A bit index into the data argument, of type `BuiltinInteger`. This is the
+   _index argument_.
+
+Let $b$ refer to the data argument, of length $n$ in bytes, and let $i$ refer to
+the index argument. We use $b[i]$ to refer to the $i$th bit of $b$; see the 
+[section on the bit indexing scheme](#bit-indexing-scheme) for the exact 
+specification of this.
+
+If $i < 0$ or $i \geq 8 \cdot n$, then `builtinReadBit`
+fails. In this case, the resulting error message must specify _at least_ the
+following information:
+
+* That `builtinReadBit` failed due to an out-of-bounds index argument; and
+* What `BuiltinInteger` was passed as an index argument.
+
+Otherwise, if $b[i] = 0$, `builtinReadBit` returns `False`, and if $b[i] = 1$,
+`builtinReadBit` returns `True`.
+
 #### `builtinSetBits`
 
+`builtinSetBits` takes two arguments: we name and describe them below.
+
+1. The `BuiltinByteString` in which we want to change some bits. This is the
+   _data argument_.
+2. A list of index-value pairs, indicating which positions in the data argument
+   should be changed to which value. This is the _change list argument_. Each
+   index has type `BuiltinInteger`, while each value has type `BuiltinBool`.
+
+Let $C = (i_1, v_1), (i_2, v_2), \ldots , (i_k, v_k)$ refer to the change list
+argument, and $b$ the data argument of length $n$ in bytes. Let $b_r$ be the
+result of `builtinSetBits`, whose length is also $n$. We use $b[i]$ to refer to
+the $i$th bit of $b$ (and analogously, $b_r$); see the [section on the bit
+indexing scheme](#bit-indexing-scheme) for the exact specification of this.
+
+If the change list argument is empty, the result is $b$. If the change list
+argument is a singleton, let $(i, v)$ refer to its only index-value pair. If $i
+< 0$ or i \geq 8 \cdot n$, then `builtinSetBits` fails. In this case, the
+resulting error message must specify _at least_ the following information:
+
+* That `builtinSetBits` failed due to an out-of-bounds index argument; and
+* What `BuiltinInteger` was passed as the index part of the index-value pair.
+
+Otherwise, for all $j \in 0, 1, \ldots 8 \cdot n - 1$, we have
+
+$$
+b_r[j] = \begin{cases}
+         0 & \text{if } j = i \text{ and } b = \texttt{False}//
+         1 & \text{if } j = i \text{ and } b = \texttt{True}//
+         b[j] & \text{otherwise}//
+         \end{cases}
+$$
+
+if the change list argument is longer than a singleton, suppose that we can
+process a change list argument of length $1 \leq m$, and let $b_m$ be the result
+of such processing. There are two possible outcomes for $b_m$:
+
+1. An error. In this case, we define the result of `builtinSetBits` on such a
+   change list as that error.
+2. A `BuiltinByteString`.
+
+From here, when we refer to $b_m$, we refer to the `BuiltinByteString` option.
+
+We observe that any change list $C^{\prime}$ of length $m +
+1$ will have the form of some other change list $C_m$, with an additional
+element $(i_{m + 1}, v_{m + 1})$ at the end. We define the result of 
+`builtinSetBits` with data argument $b$ and change list argument $C^{\prime}$ 
+as the result of `builtinSetBits` with data argument $b_m$ and the change list
+argument $(i_{m + 1}, v_{m + 1})$; as this change list is a singleton, we can
+process it according to the description above.
+
 #### `builtinReplicate`
+
+`builtinReplicate` takes two arguments; we name and describe them below.
+
+1. The desired result length, of type `BuiltinInteger`. This is the _length
+   argument_.
+2. The byte to place at each position in the result, represented as a
+   `BuiltinInteger` (corresponding to the unsigned integer this byte encodes).
+   This is the _byte argument_.
+
+Let $n$ be the length argument, and $w$ the byte argument. If $n < 0$, then
+`builtinReplicate` fails. In this case, the resulting error message must specify
+_at least_ the following information:
+
+* That `builtinReplicate` failed due to a negative length argument; and
+* What `BuiltinInteger` was passed as the length argument.
+
+If $n \geq 0$, and $w < 0$ or $w > 255$, then `builtinReplicate` fails. In this
+case, the resulting error message must specify _at least_ the following
+information:
+
+* That `builtinReplicate` failed due to the byte argument not being a valid
+  byte; and
+* What `BuiltinInteger` was passed as the byte argument.
+
+Otherwise, let $b$ be the result of `builtinReplicate`, and let $b[i]$ be the
+byte at position $i$ of $b$, as per `builtinIndexByteString`. We have:
+
+* The length (in bytes) of $b$ is $n$; and
+* For all $i \in 0, 1, \ldots, n - 1$, $b[i] = w$.
 
 ### Laws and examples
 
