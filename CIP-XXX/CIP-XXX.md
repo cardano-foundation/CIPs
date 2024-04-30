@@ -135,8 +135,8 @@ n_2 \}$; otherwise, $n_r = \min \{ n_1, n_2 \}$. For all $i \in 0, 1, \ldots 8
 $$
 b_r[i] = \begin{cases}
          b_0[i] & \text{if } n_1 < n_0 \text{ and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
-         b_1[i] & n_0 < n_1 \text { and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
-         0 & b_0[i] = b_1[i] = 0 \\
+         b_1[i] & \text{if } n_0 < n_1 \text { and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
+         0 & \text{if } b_0[i] = b_1[i] = 0 \\
          1 & \text{otherwise} \\
          \end{cases}
 $$
@@ -167,7 +167,7 @@ $$
 b_r[i] = \begin{cases}
          b_0[i] & \text{if } n_1 < n_0 \text{ and } i \geq 8 \cdot \min \{ n_1, n_2 \} \\
          b_1[i] & \text{if } n_0 < n_1 \text { and } i \geq 8 \cdot \min { n_1, n_2 } \\
-         0 & b_0[i] = b_1[i] \\
+         0 & \text{if } b_0[i] = b_1[i] \\
          1 & \text{otherwise} \\
          \end{cases}
 $$
@@ -185,7 +185,7 @@ For all $i \in 0, 1, \ldots , 8 \cdot n - 1$, we have
 
 $$
 b_r[i] = \begin{cases}
-        0 & b[i] = 1\\
+        0 & \text{if } b[i] = 1\\
         1 & \text{otherwise}\\
         \end{cases}
 $$
