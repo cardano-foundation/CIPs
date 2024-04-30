@@ -59,15 +59,28 @@ All the script purposes have a form of ```Redeemer -> ScriptContext -> a``` exce
 We propose to make the following modification:
 
 The signature of all scripts will be ```ScriptContext -> a```.
-The ScriptContext type is now a union type with a variant for each script purpose.
+The ScriptInfo type is a union type with a variant for each script purpose.
 ```
-data ScriptContext
-  = SpendingContext TxInfo Redeemer (Maybe Datum) TxOutRef
-  | MintingContext TxInfo Redeemer CurrencySymbol
-  | CertifyingContext TxInfo Redeemer Integer TxCert 
-  | RewardingContext TxInfo Redeemer Credential
-  | VotingContext TxInfo Redeemer Voter
-  | ProposingContext TxInfo Redeemer Integer ProposalProcedure
+data ScriptContext = ScriptContext
+  { scriptContextTxInfo  :: TxInfo
+  , scriptContextScriptInfo :: ScriptInfo
+  }
+
+data ScriptInfo
+  = MintingScript V2.CurrencySymbol Redeemer
+  | SpendingScript V3.TxOutRef (Maybe Datum) Redeemer
+  | RewardingScript V2.Credential Redeemer
+  | CertifyingScript
+      Haskell.Integer
+      -- ^ 0-based index of the given `TxCert` in `txInfoTxCerts`
+      TxCert
+      Redeemer
+  | VotingScript Voter Redeemer
+  | ProposingScript
+      Haskell.Integer
+      -- ^ 0-based index of the given `ProposalProcedure` in `txInfoProposalProcedures`
+      ProposalProcedure
+      Redeemer
 ```
 The Datum is optional, which will enable us to allow the execution of spending scripts without a datum. 
 One more change will be needed on the ledger side in order to make the Datum optional for spending scripts.
