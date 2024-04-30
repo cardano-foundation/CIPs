@@ -600,17 +600,34 @@ alternatives
 
 ### Acceptance Criteria
 
-TODO: Fill these in (lower priority)
+We consider the following criteria to be essential for acceptance:
+
+* A proof-of-concept implementation of the operations specified in this
+  document, outside of the Plutus source tree. The implementation must be in
+  GHC Haskell, without relying on the FFI.
+* The proof-of-concept implementation must have tests, demonstrating that it 
+  behaves as the specification requires.
+* The proof-of-concept implementation must demonstrate that it will 
+  successfully build, and pass its tests, using all GHC versions currently 
+  usable to build Plutus (8.10, 9.2 and 9.6 at the time of writing), across all 
+  [Tier 1][tier-1-ghc] platforms.
+
+Ideally, the implementation should also demonstrate its performance 
+characteristics by well-designed benchmarks.
 
 ### Implementation Plan
 
-These operations will be implemented by MLabs, to be merged into Plutus Core
-after review.
+MLabs has begun the [implementation of the proof-of-concept][mlabs-impl] as 
+required in the acceptance criteria. Upon completion, we will send a pull 
+request to Plutus with the implementation of the primitives for Plutus 
+Core, mirroring the proof-of-concept.
 
 ## Copyright
 
 This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
+[mlabs-impl]: https://github.com/mlabs-haskell/plutus-integer-bytestring
+[tier-1-ghc]: https://gitlab.haskell.org/ghc/ghc/-/wikis/platforms#tier-1-platforms
 [special-semigroups]: https://en.wikipedia.org/wiki/Special_classes_of_semigroups
 [commutative-monoid]: https://en.wikipedia.org/wiki/Monoid#Commutative_monoid
 [absorbing-element]: https://en.wikipedia.org/wiki/Zero_element#Absorbing_elements
