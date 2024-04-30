@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Constitution form
+Title: Constitution specification
 Category: Metadata
 Status: Proposed
 Authors:
