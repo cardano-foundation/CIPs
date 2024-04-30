@@ -28,7 +28,104 @@ and provide some laws these operations should obey.
 
 ## Motivation: why is this CIP necessary?
 
-TODO: Add case for integer set
+Bitwise operations, both over fixed-width and variable-width blocks of bits,
+have a range of uses, including data structures (especially
+[succinct][succinct-data-structures] ones) and cryptography. Currently,
+operations on individual bits in Plutus Core are difficult, or outright
+impossible, while also keeping within the tight constraints required onchain.
+While it is possible to some degree to work with individual _bytes_ over
+`BuiltinByteString`s, this isn't sufficient, or efficient, when bit
+maniputations are required.
+
+To demonstrate where bitwise operations would allow onchain possibilities that
+are currently either impractical or impossible, we give the following use cases.
+
+### Case 1: integer set
+
+An _integer set_ (also known as a bit set, bitmap, or bitvector) is a
+[succinct][succinct-data-structures] data structure for representing a set of
+numbers in a pre-defined range $[0, n)$ for some $n \in \mathbb{N}$. The
+structure supports the following operations:
+
+* Construction given a fixed number of elements, as well as the bound $n$.
+* Construction of the empty set (contains no elements) and the universe
+  (contains all elements).
+* Set union, intersection, complement and difference (symmetric and asymmetric).
+* Membership testing for a specific element.
+* Inserting or removing elements.
+
+These structures have a range of uses. In addition to being used as sets of
+bounded natural numbers, an integer set could also represent an array of Boolean
+values. These have [a range of applications][bitvector-apps], mostly as
+'backends' for other, more complex structures. Furthermore, by using some index 
+arithmetic, integer sets can also be used to represent 
+[binary matrices][binary-matrix] (in any number of
+dimensions), which have an even wider range of uses:
+
+* Representations of graphs in [adjacency-matrix][adjacency-matrix] form
+* [Checking the rules for a game of Go][go-binary-matrix]
+* [FSM representation][finite-state-machine-4vl]
+* Representation of an arbitrary binary relation between finite sets
+
+The succinctness of the integer set (and the other succinct data structures it
+enables) is particularly valuable on-chain, due to the limited transaction size
+and memory available.
+
+Typically, such a structure would be represented as a packed array of bytes
+(similar to the Haskell `ByteString`). Essentially, given a bound $n$, the
+packed array has a length in bytes large enough to contain at least $n$ bits,
+with a bit at position $i$ corresponding to the value $i \in \mathbb{N}$. This 
+representation ensures the succinctness of the structure (at most 7 bits of 
+overhead are required if $n = 8k + 1$ for some $k \in \mathbb{N}$), and
+also allows all the above operations to be implemented efficiently:
+
+* Construction given a fixed number of elements and the bound $n$ involves
+  allocating the packed array, then modifying some bits to be set.
+* Construction of the empty set is a packed array where every byte is `0x00`,
+  while the universe is a packed array where every byte is `0xFF`.
+* Set union is bitwise OR over both arguments.
+* Set intersection is bitwise AND over both arguments.
+* Set complement is bitwise complement over the entire packed array.
+* Symmetric set difference is bitwise XOR over both arguments; asymmetric set
+  difference can be defined using a combination of bitwise complement and
+  bitwise OR.
+* Membership testing is checking whether a bit is set.
+* Inserting an element is setting the corresponding bit.
+* Removing an element is clearing the corresponding bit.
+
+Given that this is a packed representation, these operations can be implemented
+very efficiently by relying on the cache-friendly properties of packed array
+traversals, as well as making use of optimized routines available in many
+languages. Thus, this structure can be used to efficiently represent sets of
+numbers in any bounded range (as ranges not starting from $0$ can be represented
+by storing an offset), while also being minimal in space usage.
+
+Currently, such a structure cannot be easily implemented in Plutus Core while
+preserving the properties described above. The two options using existing
+primitives are either to use `[BuiltinInteger]`, or to mimic the above
+operations over `BuiltinByteString`. The first of these is not space _or_
+time-efficient: each `BuiltinInteger` takes up multiple machine words of space,
+and the list overheads introduced are linear in the number of items stored,
+destroying succinctness; membership testing, insertion and removal require
+either maintaining an ordered list or forcing linear scans for at least some
+operations, which are inefficient over lists; and 'bulk' operations like union,
+intersection and complement become very difficult and time-consuming. The second
+is not much better: while we preserve succinctness, there is no easy way to
+access individual bits, only bytes, which would require a division-remainder
+loop for each such operation, with all the overheads this imposes; intersection,
+union and symmetric difference would have to be simulated byte-by-byte,
+requiring large lookup tables or complex conditional logic; and construction
+would require immense amounts of copying and tricky byte construction logic.
+While it is not outright impossible to make such a structure using current
+primitives, it would be so impractical that it could never see real use.
+
+Furthermore, for sparse (or dense) integer sets (that is, where either most
+elements in the range are absent or present respectively), a range of
+[compression techniques][bitmap-index-compression] have been developed. All of
+these rely on bitwise operations to achieve their goals, and can potentially
+yield significant space savings in many cases. Given the limitations onchain
+that we have to work within, having such techniques available to implementers
+would be a huge potential advantage.
 
 TODO: Another 1-2 example uses
 
@@ -523,3 +620,10 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [de-morgan]: https://en.wikipedia.org/wiki/De_Morgan%27s_laws
 [lens-laws]: https://oleg.fi/gists/posts/2017-04-18-glassery.html#laws:lens
 [monoid-homomorphism]: https://en.wikipedia.org/wiki/Monoid#Monoid_homomorphisms
+[succinct-data-structures]: https://en.wikipedia.org/wiki/Succinct_data_structure
+[adjacency-matrix]: https://en.wikipedia.org/wiki/Adjacency_matrix
+[binary-matrix]: https://en.wikipedia.org/wiki/Logical_matrix
+[go-binary-matrix]: https://senseis.xmp.net/?BinMatrix
+[finite-state-machine-4vl]: https://en.wikipedia.org/wiki/Four-valued_logic#Matrix_machine
+[bitvector-apps]: https://en.wikipedia.org/wiki/Bit_array#Applications
+[bitmap-index-compression]: https://en.wikipedia.org/wiki/Bitmap_index#Compression
