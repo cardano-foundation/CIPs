@@ -192,7 +192,7 @@ This change is not backwards-compatible and will need to go into a new Plutus la
 - [] Fully implemented in Cardano.
       
 ### Implementation Plan
-- [] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
+- [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
       
 ## Copyright
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
