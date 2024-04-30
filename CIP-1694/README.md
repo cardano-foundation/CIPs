@@ -5,10 +5,10 @@ Status: Proposed
 Category: Ledger
 Authors:
     - Jared Corduan <jared.corduan@iohk.io>
+    - Andre Knispel <andre.knispel@iohk.io>
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Kevin Hammond <kevin.hammond@iohk.io>
     - Charles Hoskinson <charles.hoskinson@iohk.io>
-    - Andre Knispel <andre.knispel@iohk.io>
     - Samuel Leathers <samuel.leathers@iohk.io>
 Discussions:
     - <https://github.com/cardano-foundation/CIPs/pull/380>
