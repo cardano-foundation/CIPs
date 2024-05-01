@@ -97,6 +97,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0102 | [Royalty Datum Metadata](./CIP-0102) | Proposed |
 | 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
+| 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
 | 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
@@ -109,7 +110,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-03-06</i></p>
+<p align="right"><i>Last updated on 2024-04-20</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -138,7 +139,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0104? | [Web-Wallet Bridge - Account public key](https://github.com/cardano-foundation/CIPs/pull/588) |
 | 0106? | [Web-Wallet Bridge - Mutlisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
 | 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
-| 0108? | [Governance Metadata - Governance Actions](https://github.com/cardano-foundation/CIPs/pull/632) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0112? | [Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) |
 | 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
@@ -147,7 +147,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
 | 0119? | [Governance Metadata - DReps](https://github.com/cardano-foundation/CIPs/pull/788) |
 
-<p align="right"><i>Last updated on 2024-04-02</i></p>
+<p align="right"><i>Last updated on 2024-04-20</i></p>
 
 ## Cardano Problem Statements (CPS)
 
