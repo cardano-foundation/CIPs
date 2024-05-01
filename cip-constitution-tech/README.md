@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 120
 Title: Constitution specification
 Category: Metadata
 Status: Proposed
