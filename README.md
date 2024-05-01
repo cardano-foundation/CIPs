@@ -146,8 +146,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0117? | [Explicit script return values](https://github.com/cardano-foundation/CIPs/pull/747) |
 | 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
 | 0119? | [Governance Metadata - DReps](https://github.com/cardano-foundation/CIPs/pull/788) |
+| 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
 
-<p align="right"><i>Last updated on 2024-04-20</i></p>
+<p align="right"><i>Last updated on 2024-05-01</i></p>
 
 ## Cardano Problem Statements (CPS)
 
