@@ -140,7 +140,97 @@ the use of these operations.
 
 ### Bit indexing scheme
 
-TODO: Specify
+We begin by observing that a `BuiltinByteString` is a packed array of bytes
+(that is, `BuiltinInteger`s in the range $[0, 255]$) according to the API
+provided by existing Plutus Core primitives. In particular, we have the ability
+to access individual bytes by index as a primitive operation. Thus, we can view
+a `BuiltinByteString` as an indexed collection of bytes; for any
+`BuiltinByteString` $b$ of length $n$, and any $i \in 0, 1, \ldots, n - 1$, we
+define $b\\{i\\}$ as the byte at index $i$ in $b$, as defined by the
+`builtinIndexByteString` primitive. In essence, for any `BuiltinByteString` of
+length `n`, we have _byte_ indexes as follows:
+
+```mermaid
+block-beta
+columns 1
+  block:BBS
+  A["0"]
+  B["1"]
+  C["..."]
+  D["n - 1"]
+  end
+```
+
+To view a `BuiltinByteString` as an indexed collection of _bits_, we must first
+consider the bit ordering within a byte. Suppose $i \in 0, 1, \ldots, 7$ is an
+index into a byte $w$. We say that the bit at $i$ in $w$ is _set_ when
+
+$$
+\left \lfloor \frac{w}{2^{i}} \right \rfloor \mod 2 \equiv 1
+$$
+
+Otherwise, the bit at $i$ in $w$ is _clear_. We define $w[i]$ to be $1$ when 
+the bit at $i$ in $w$ is set, and $0$ otherwise; this is the _value_ at index
+$i$ in $w$.
+
+For example, consider the byte represented by the `BuiltinInteger` 42. By the
+above scheme, we have the following:
+
+| Bit index | Set or clear? |
+|-----------|---------------|
+| $0$       | Clear         |
+| $1$       | Set           |
+| $2$       | Clear         |
+| $3$       | Set           |
+| $4$       | Clear         |
+| $5$       | Set           |
+| $6$       | Clear         |
+| $7$       | Clear         |
+
+Put another way, we can view $w[i] = 1$ to mean that the $(i + 1)$ th least significant
+digit in $w$'s binary representation is $1$, and likewise, $w[i] = 0$ would mean
+that the $i$th least significant digit in $w$'s binary representation is $0$.
+Continuing with the above example, $42$ is represented in binary as `00101010`;
+we can see that the second-least-significant, fourth-least-significant, and
+sixth-least-significant digits are `1`, and all the others are zero. This
+description mirrors the way bytes are represented on machine architectures.
+
+We now extend the above scheme to `BuiltinByteString`s. Let $b$ be a
+`BuiltinByteString` whose length is $n$, and let $i \in 0, 1, \ldots, 8 \cdot n - 1$. 
+For any $j \in 0, 1, \ldots, n - 1$, let $j^{\prime} = n - j - 1$. We say that the bit 
+at $i$ in $b$ is set if
+
+$$
+b\left\\{\left(\left\lfloor \frac{i}{8} \right\rfloor\right)^{\prime}\right\\}[i\mod 8] = 1
+$$
+
+We define the bit at $i$ in $b$ being clear analogously. Similarly to bits in a
+byte, we define $b[i]$ to be $1$ when the bit at $i$ in $b$ is set, and $0$
+otherwise; similarly to bytes, we term this the _value_ at index $i$ in $b$.
+
+As an example, consider the `BuiltinByteString` `[42, 57, 133]`: that is, the
+`BuiltinByteString` $b$ such that $b\\{0\\} = 42$, $b\\{1\\} = 57$ and $b\\{2\\}
+= 133$. We observe that the range of 'valid' bit indexes $i$ into $b$ is in 
+$[0, 3 \cdot 8 - 1 = 23]$. Consider $i = 4$; by the definition above, this
+corresponds to the _byte_ index 2, as $\left\lfloor\frac{4}{8}\right\rfloor =
+0$, and $3 - 0 - 1 = 2$ (as $b$ has length $3$). Within the byte $133$, this
+means we have $\left\lfloor\frac{133}{2^4}\right\rfloor \mod 2 \equiv 0$. Thus,
+$b[4] = 0$. Consider instead the index $i = 19$; by the definition above, this
+corresponds to the _byte_ index 0, as $\left\lfloor\frac{19}{8}\right\rfloor =
+2$, and $3 - 2 - 1 = 0$. Within the byte $42$, this means we have
+$\left\lfloor\frac{42}{2^3}\right\rfloor `mod 2 \equiv 1$. Thus, $b[19] = 1$. 
+
+Put another way, our _byte_ indexes run 'the opposite way' to our _bit_ indexes.
+Thus, for any `BuiltinByteString` of length $n$, we have _bit_ indexes relative
+_byte_ indexes as follows:
+
+```mermaid
+block-beta
+columns 4
+A["0"] B["1"] C["..."] D["n - 1"]
+```
+
+TODO: Diagram
 
 ### Operation semantics
 
