@@ -81,7 +81,7 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - This MUST NOT support markdown text styling.
 - It is intended that authors will use this field for their profile name/ username.
 
-#### `Image`
+#### `image`
 - Optional
 - This is a property inherited from [Person](https://schema.org/Person)
 - This SHOULD be treated as the profile picture of the individual
