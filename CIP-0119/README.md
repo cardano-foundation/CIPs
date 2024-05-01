@@ -63,6 +63,7 @@ The following are a list of properties tooling should expect to encounter:
 
 #### `paymentAddress`
 - Optional
+- Bech32 encoded address
 
 Dreps may want to recieve tokens for a variety of reasons such as:
 - donations
