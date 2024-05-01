@@ -679,8 +679,380 @@ TODO: Examples
 
 ## Rationale: how does this CIP achieve its goals?
 
-TODO: Explain goals relative examples, give descriptions of non-existent
-alternatives
+The operations, and semantics, described in this CIP provide a set of
+well-defined bitwise logical operations, as well as bitwise access and
+modification, to allow cases similar to Case 1 to be performed efficiently and
+conveniently. Furthermore, the semantics we describe would be reasonably
+familiar to users of other programming languages (including Haskell) which have
+provisions for bitwise logical operations of this kind, as well as some way of
+extending these operations to operate on packed byte vectors. At the same time,
+there are several choices we have made that are somewhat unusual, or could
+potentially have been implemented differently based on existing work: most
+notably, our choice of bit indexing scheme, the padding-versus-truncation
+semantics, and the multiplicitous definition of bit modification. Among existing
+work, a particularly important example is [CIP-58][cip-58], which makes
+provisions for operations similar to the ones described here, and from which we
+differ in several important ways. We clarify the reasoning behind our choices,
+and how they differ from existing work, below.
+
+Aside from the issues we list below, we don't consider other operations
+controversial. Indeed, `bitwiseLogicalComplement` has a direct parallel to the
+implementation in [CIP-58][cip-58], and `builtinReplicate` is a direct wrapper
+around the `replicate` function in `ByteString`. Thus, we do not discuss them
+further here.
+
+### Bit indexing scheme
+
+The bit indexing scheme we describe here is designed around two
+considerations. Firstly, we want operations on these bits, as well as those
+results, to be as consistent and as predictable as possible: any individual
+familiar with such operations on variable-length bitvectors from another
+language shouldn't be surprised by the semantics. Secondly, we want to
+anticipate future bitwise operation extensions, such as shifts and rotations,
+and have the indexing scheme support efficient implementations (and predictable
+semantics) for these. 
+
+While prior art for bit access (and modification) exists
+in almost any programming language, these are typically over types of fixed
+width (usually bytes, machine words, or something similar); for variable-width
+types, these typically are either not implemented at all, or if they are
+implemented, this is done in an external library, with varying support for
+certain operations. An example of the first is Haskell's `ByteString`, which has
+no way to even access, much less modify, individual bits; an example of the
+second is the [CRoaring][croaring] library for C, which supports all the
+operations we describe in this CIP, along with multiple others. In the second
+case, the _exact_ arrangement of bits inside the representation is not something
+users are exposed to directly: instead, the bitvector type is opaque, and the
+library only guarantees consistency of API. In our case, this is not a viable
+choice, as we require bit access _and_ byte access to both work on
+`BuiltinByteString`, and thus, some consistency of representation is required.
+
+The scheme for indexing bits within a byte that we describe in [the relevant
+section](#bit-indexing-scheme) is the same as the one used by the `Data.Bits`
+API in Haskell for `Word8` bit indexing, and mirrors the decisions of most
+languages that provide such an API at all, as well as the conventional
+definition of such operations as `(w >> i) & 1` for access, `w | (1 << i)` for
+setting, and `w & ~(1 << i)` for clearing. We could choose to 'flip' this
+indexing, by using a similar operation for 'index flipping' as we currently use
+for bytes: essentially, instead of 
+
+$$
+\left \lfloor \frac{w}{2^{i}} \right \rfloor \mod 2 \equiv 1
+$$
+
+we would instead use
+
+$$
+\left \lfloor \frac{w}{2^{8 - i - 1}} \right \rfloor \mod 2 \equiv 1
+$$
+
+to designate bit $i$ as set (and analogously for clear). Together with the
+ability to choose _not_ to flip the _byte_ index, we get four possibilities,
+which have [been described previously][too-many-ways-1]. For clarity, we name,
+and describe, them below. Throughout, we use `n` as the length of a given
+`BuiltinByteString` in bytes.
+
+The first possibility is that we 'flip' neither bit, nor byte, indexes. We call
+this the _no-flip variant_:
+
+```
+| Byte index | 0                             | 1                 | ... | n - 1                          |
+|------------|-------------------------------|-------------------| ... |--------------------------------|
+| Byte       | w0                            | w1                | ... | w(n - 1)                       |
+|------------|-------------------------------|-------------------| ... |--------------------------------|
+| Bit index  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 15 | 14 | ... | 8 | ... | 8n - 1 | 8n - 2 | ... | 8n - 8 |
+```
+
+The second possibility is that we 'flip' _both_ bit and byte indexes. We call
+this the _both-flip variant_:
+
+```
+| Byte index | 0                              | ... | n - 2            | n - 1                         |
+|------------|--------------------------------| ... |------------------|-------------------------------|
+| Byte       | w0                             | ... | w (n - 2)        | w(n - 1)                      |
+|------------|--------------------------------| ... |------------------|-------------------------------|
+| Bit index  | 8n - 8 | 8n - 7 | ... | 8n - 1 | ... | 8 | 9 | ... | 15 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 
+```
+
+The third possibility is that we 'flip' _bit_ indexes, but not _byte_ indexes.
+We call this the _bit-flip variant_:
+
+```
+| Byte index | 0                             | 1            | ... | n - 1                          |
+|------------|-------------------------------|--------------| ... |--------------------------------|
+| Byte       | w0                            | w1           | ... | w(n - 1)                       |
+|------------|-------------------------------|--------------| ... |--------------------------------|
+| Bit index  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... | 15 | ... | 8n - 8 | 8n - 7 | ... | 8n - 1 |
+```
+
+The fourth possibility is the one we describe in the [bit indexing scheme
+section](#bit-indexing-scheme), which is also the scheme chosen by CIP-58. We
+repeat it below for clarity:
+
+```
+| Byte index | 0                              | 1  | ... | n - 1                         |
+|------------|--------------------------------|----| ... |-------------------------------|
+| Byte       | w0                             | w1 | ... | w(n - 1)                      |
+|------------|--------------------------------|----| ... |-------------------------------|
+| Bit index  | 8n - 1 | 8n - 2 | ... | 8n - 8 |   ...    | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+```
+
+On the face of it, these schemes appear equivalent: they are all consistent, and
+all have formal descriptions, and quite similar ones at that. However, we
+believe that only the one we chose is the correct one. To explain this, we
+introduce two notions that we consider to be both intuitive and important,
+then specify why our choice of indexing scheme fits those notions better than
+any other.
+
+The first notion is _index locality_. Intuitively, this states that if
+two indexes are 'close' (in that their absolute difference is small), the values
+at those indexes should be 'close' (in that their positioning in memory should
+be separated less). We believe this notion to be reasonable, as this is an
+expectation from array indexing (and indeed, `BuiltinByteString` indexing), as
+well as the reason why packed array data is efficient on modern memory
+hierarchies. Extending this notion to bits, we can observe that the both-flip
+and no-flip variants of the bit indexing scheme do not preserve index locality:
+the separation between a bit at index $0$ and index $1$ is _significantly_
+different to the separation between a bit at index $7$ and index $8$ in both
+representations, despite their absolute difference being identical. Thus, we
+believe that these two variants are not viable, as they are not only confusing
+from the point of view of behaviour, they would also make implementation of
+future operations (such as shifts or rotations) significantly harder to both do,
+and also reason about. Thus, only the bit-flip variant, as well as our choice,
+remain contenders.
+
+The second notion is _conversion agreement_. To describe this notion, we first
+observe that, according to the definition of the bit indexing scheme given [in
+the corresponding section](#bit-indexing-scheme), as well as the corresponding
+definition for the bit-flip variant, we view a `BuiltinByteString` of length $n$
+as a binary natural number with exactly $8n$ digits, and the value at index $i$
+corresponds to the digits whose place value is either $2^i$ (for the bit-flip
+variant), or $2^{8n - i - 1}$ (for our chosen method). Put another way, under
+the specification for the bit-flip variant, the least significant binary digit
+is first, whereas in our chosen specification, the least significant binary
+digit is last. 
+
+When viewed this way, we can immediately see a potential problem, as by indexing
+a `BuiltinByteString`, we get back a `BuiltinInteger`, which has a numerical
+value as a natural number in the range $[0, 255]$. It would thus be sensible
+that, given a `BuiltinByteString` that is non-empty, if we were to get the
+values at bit indexes $0$ through $7$, and treat them as their corresponding
+place value in a summation, we should obtain the same answer as indexing
+whichever byte those bits come from. We call this notion _conversion agreement_,
+due to its relation to [an existing CIP][conversion-cip], which allows us to
+(essentially) view a `BuiltinByteString` as a natural number in base-256.
+Indeed, the case is analogous, with the only difference being that we are
+concerned with the positioning of base-256 digits, not binary ones.
+
+Consider the `BuiltinByteString` whose only byte is $42$, whose representation 
+is as follows:
+
+```
+| Byte index | 0        |
+|------------|----------|
+| Byte       | 00101010 |
+```
+
+Under the bit-flip variant, our bit indexes would be as follows:
+
+```
+| Byte index | 0                             |
+|------------|-------------------------------|
+| Byte       | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0 |
+|------------|-------------------------------|
+| Bit index  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+```
+
+However, this immediately causes a problem: under this indexing scheme, we imply
+that the $2^2 = 4$ place value is $1$ in $42$'s binary representation, but
+this is not the case. This fails conversion agreement. However, our choice 
+produces the correct answer:
+
+```
+| Byte index | 0                             |
+|------------|-------------------------------|
+| Byte       | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0 |
+|------------|-------------------------------|
+| Bit index  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+```
+
+Here, the $4$ place value is correctly $0$. Indeed, our choice simply 'extends'
+the bit ordering (in the place value sense) employed by all machine
+architectures for bytes in their sense as natural numbers within a fixed range.
+This was also the choice made by [CIP-58][cip-58], for similar reasons.
+
+While the bit-flip variant has the advantage of 'agreement' between byte and bit
+indexes, we believe that conversion agreement is the more important property to
+have, not only for consistency with our described semantics, but also to some
+extent for consistency with the conversion primitives [described in another
+existing CIP][conversion-cip]. Given that the aforementioned CIP has already
+been implemented into Plutus Core, we think that our choice is the only viable
+one if consistency is desirable.
+
+### Padding versus truncation
+
+For the operations defined in this CIP taking two `BuiltinByteString` arguments
+(that is, `builtinLogicalAnd`, `builtinLogicalOr`, and `builtinLogicalXor`),
+when the two arguments have identical lengths, the semantics are natural,
+mirroring the corresponding operations on the 
+[Boolean algebra $\mathbb{2}^{8n}$][boolean-algebra-2], where $n$ is the length 
+of either argument in bytes. When the arguments do _not_ have matching lengths,
+however, the situation becomes more complex, as there are several ways in which
+we could define these operations. The most natural possibilities are as follows;
+we repeat some of the definitions used [in the corresponding
+section](#padding-versus-truncation-semantics).
+
+* Extend the shorter argument with the identity element (1 for
+  `builtinLogicalAnd`, 0 otherwise) to match the length of the longer argument,
+  then perform the operation as if on matching-length arguments. We call this
+  _padding semantics_.
+* Ignore the bytes of the longer argument whose indexes would not be valid for
+  the shorter argument, then perform the operation as if on matching-length
+  arguments. We call this _truncation semantics_.
+* Fail with an error whenever argument lengths don't match. We call this
+  _match semantics_.
+
+It is not a priori clear which of these we should choose: they are subject to
+different laws (as evidenced by the [corresponding
+section](#laws-and-examples)), none of which are strict supersets of each other
+(at least not for _all_ inputs possible). While [CIP-58][cip-58] chose match
+semantics, we believe this was not the correct decision: we use Case 1 to
+justify the benefit of having other semantics described above available.
+
+Consider the following operation: given a bound $k$ and an integer set, remove
+all elements smaller than $k$ from the set. This can be done using
+`bitwiseLogicalAnd` and a mask where the first $k - 1$ bits are clear. However,
+under match semantics, the mask would have to have a length equal to the integer
+set representation; under padding semantics, the mask would only need to have a
+length proportional to $k$. This is noteworthy, as padding the mask would
+require an additional copy operation, only to produce a value that would be
+discarded immediately.
+
+Consider instead the following operation: given two integer sets with different
+(upper) bounds, take their intersection, producing an integer set whose size is
+the minimum of the two. This can once again be done using `bitwiseLogicalAnd`,
+but under match semantics (or padding semantics for that matter), we would first
+have to slice the longer argument, while under truncation semantics, we wouldn't
+need to.
+
+Match semantics can be useful for Case 1 as well. Consider the case that a 
+representation of an integer set is supplied as an
+input datum (in its `Data` encoding). In order to deserialize it, we need to
+verify at least whether it has the right length in bytes to represent an integer
+set with a given bound. Under padding or truncation semantics, we would have to
+check this at deserialization time; under exact match semantics, provided we
+were sure that at least one argument is of a known size, we could simply perform
+the necessary operations and let the match semantics error if given something
+inappropriate.
+
+It is also worth noting that truncation semantics are well-established in the
+Haskell ecosystem. Viewed another way, all of the operations under discussion in
+this sections are specialized versions of the `zipWith` operation; Haskell
+libraries provide this type of operation for a range of linear collections,
+including lists, `Vector`s, and mostly notably, `ByteString`s. In all of these
+cases, truncation semantics are what is implemented; it would be surprising to
+developers coming from Haskell to find that they have to do additional work to
+replicate them in Plutus. While we don't anticipate direct use of Plutus Core
+primitives by developers (although this is not an unheard-of case), we should
+enable library authors to build familiar APIs _on top of_ Plutus Core
+primitives, which suggests truncation semantics should be available, at least as
+an option.
+
+All the above suggests that no _single_ choice of semantics will satisfy all
+reasonable needs, if only from the point of view of efficiency. This suggests,
+much as for [conversion primitives][conversion-cip] and endianness issues, that
+the primitive should allow a choice in what semantics get used for any given
+call. Ideally, we would allow a choice of any of the three options described
+above; however, this is awkward to do in Plutus Core. While the choice between
+_two_ options is straightforward (pass a `BuiltinBool`), the choice between
+_three_ options would either require multiple `BuiltinBool` arguments, or a
+`BuiltinInteger` argument with 'designated values' (such as 'negative means
+truncation, zero means match, positive means padding'). Neither of these are
+ideal choices, as they involve either argument redundancy or additional checks
+(and erroring when they don't match). In light of this, we elected to choose
+only two of the three semantics and have this choice for any given call be
+controlled by a `BuiltinBool` flag.
+
+This naturally leads to the question of which of the three semantics above we
+can afford not to have. We believe that match semantics are the right ones to
+exclude. Firstly, technically we can still have match semantics by using either
+padding or truncation semantics plus a length check beforehand: this is a cheap
+operation, unlike simulating padding semantics for example, which would have
+non-trivial cost. Secondly, due to the preponderance of truncation semantics in
+Haskell, we feel excluding it as an option is wrong. Lastly, we believe that
+outside of error checking, exact match semantics give few benefits over padding
+or truncation semantics, for performance and otherwise. This combination of
+reasoning leads us to naturally consider padding and truncation as the two to
+keep, and this guided our implementation choices.
+
+### Bit setting
+
+`builtinSetBits` in our description takes a change list argument, allowing
+changing multiple bits at once. This is an added complexity, and an argument can
+be made that something similar to the following operation would be sufficient:
+
+```haskell
+builtinSetBit :: BuiltinByteString -> BuiltinInteger -> BuiltinBool ->
+BuiltinByteString
+```
+
+Essentially, `builtinSetBit bs i v` would be equivalent to `builtinSetBits bs
+[(i, v)]` as currently defined. This was the choice made by [CIP-58][cip-58],
+with the consideration of simplicity in mind. 
+
+At the same time, due to the immutability semantics of Plutus Core, each time
+`builtinSetBit` is called, a copy of its `BuiltinByteString` argument would have
+to be made. Thus, a sequence of $k$ `builtinSetBit` calls in a fold over a
+`BuiltinByteString` of length $n$ would require $\Theta(nk)$ time and
+$\Theta(nk)$ space. Meanwhile, if we instead used `builtinSetBits`, the time
+drops to $\Theta(n + k)$ and the space to $\Theta(n)$, which is a non-trivial
+improvement. While we cannot avoid the worst-case copying behaviour of
+`builtinSetBit` (if we have a critical path of read-write dependencies of length
+$k$, for example), and 'list packing' carries some cost, we have
+[benchmarks][benchmarks-bits] that show not only that this 'packing cost' is
+essentially zero, but that for `BuiltinByteString`s of 30 bytes or fewer,
+copying completely overwhelms the work required to set the bits in the first
+place. This alone is a strong argument for having `builtinSetBits` instead;
+indeed, there is prior art for doing this [in the `vector` library][vector], for
+the exact reasons we give here.
+
+The argument could also be made whether this design should be extended to other
+primitive operations in this CIP which both take `BuiltinByteString` arguments
+and also produce `BuiltinByteString` results. We believe that this is not as
+justified as in the `builtinSetBits` case, for several reasons. Firstly, for
+`builtinLogicalComplement`, it's not even clear what benefit this would have at
+all: the only possible signature such an operation would have is
+`[BuiltinByteString] -> [BuiltinByteString]`, which in effect would be a
+specialized form of mapping. Even the _general_ form of mapping is not
+considered suitable as a primitive operation in Plutus Core! 
+
+Secondly, the
+benefits to performance wouldn't be nearly as significant in theory, and likely
+in practice. Consider this hypothetical operation (with fold semantics):
+
+```haskell
+builtinLogicalXors :: BuiltinBool -> [BuiltinByteString] -> BuiltinByteString
+```
+
+Simulating this operation as a fold using `builtinLogicalXor`, in the worst
+case, irrespective of padding or truncation semantics, requires $\Theta(nk)$
+time and space, where $n$ is the size of each `BuiltinByteString` in the
+argument list, and $k$ is the length of the argument list itself. Using
+`builtinLogicalXors` would reduce the space required to $\Theta(n)$, but not
+affect the time complexity at all. 
+
+Lastly, it is questionable whether 'bulk' operations like `builtinLogicalXors`
+above would see as much use as `builtinSetBits`. In the context of Case 1,
+`builtinLogicalXors` corresponds to taking the symmetric difference of multiple
+integer sets; it seems unlikely that the number of sets we'd want to do this
+with would be higher than 2 often. However, in the same context,
+`builtinSetBits` corresponds to constructing an integer set given a list of
+members (or, for that matter, _non_-members): this is an operation that is both
+required by the case description, and also unarguably useful often.
+
+On the basis of the above, we believe that choosing to implement
+`builtinSetBits` as a 'bulk' operation, but to leave others as 'singular' is the
+right choice.
 
 ## Path to Active
 
@@ -730,3 +1102,10 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [finite-state-machine-4vl]: https://en.wikipedia.org/wiki/Four-valued_logic#Matrix_machine
 [bitvector-apps]: https://en.wikipedia.org/wiki/Bit_array#Applications
 [bitmap-index-compression]: https://en.wikipedia.org/wiki/Bitmap_index#Compression
+[cip-58]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0058
+[croaring]: https://github.com/RoaringBitmap/CRoaring
+[too-many-ways-1]: https://fgiesen.wordpress.com/2018/02/19/reading-bits-in-far-too-many-ways-part-1
+[conversion-cip]: https://github.com/mlabs-haskell/CIPs/tree/koz/to-from-bytestring/CIP-XXXX
+[benchmarks-bits]: https://github.com/mlabs-haskell/plutus-integer-bytestring/blob/koz/logical/bench/naive/Main.hs#L74-L83
+[vector]: https://hackage.haskell.org/package/vector-0.13.1.0/docs/Data-Vector.html#v:-47--47-
+[boolean-algebra-2]: https://en.wikipedia.org/wiki/Two-element_Boolean_algebra
