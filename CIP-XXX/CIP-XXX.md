@@ -150,15 +150,10 @@ define $b\\{i\\}$ as the byte at index $i$ in $b$, as defined by the
 `builtinIndexByteString` primitive. In essence, for any `BuiltinByteString` of
 length `n`, we have _byte_ indexes as follows:
 
-```mermaid
-block-beta
-columns 1
-  block:BBS
-  A["0"]
-  B["1"]
-  C["..."]
-  D["n - 1"]
-  end
+```
+| Index | 0  | 1  | ... | n - 1    |
+|-------|----|----| ... |----------|
+| Byte  | w0 | w1 | ... | w(n - 1) |
 ```
 
 To view a `BuiltinByteString` as an indexed collection of _bits_, we must first
@@ -224,13 +219,13 @@ Put another way, our _byte_ indexes run 'the opposite way' to our _bit_ indexes.
 Thus, for any `BuiltinByteString` of length $n$, we have _bit_ indexes relative
 _byte_ indexes as follows:
 
-```mermaid
-block-beta
-columns 4
-A["0"] B["1"] C["..."] D["n - 1"]
 ```
-
-TODO: Diagram
+| Byte index | 0                              | 1  | ... | n - 1                         |
+|------------|--------------------------------|----| ... |-------------------------------|
+| Byte       | w0                             | w1 | ... | w(n - 1)                      |
+|------------|--------------------------------|----| ... |-------------------------------|
+| Bit index  | 8n - 1 | 8n - 2 | ... | 8n - 8 |   ...    | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+```
 
 ### Operation semantics
 
@@ -280,7 +275,7 @@ Let $b_1, b_2$ refer to the first data argument and the second data
 argument respectively, and let $n_1, n_2$ be their respective lengths in bytes.
 Let the result of `builtinLogicalAnd`, given $b_1, b_2$ and some padding
 semantics argument, be $b_r$, of length $n_r$ in bytes. We use $b_1[i]$ to refer 
-to the $i$th bit of $b_1$ (and analogously for 
+to the value at index $i$ of $b_1$ (and analogously for 
 $b_2, b_r$); see the [section on the bit indexing scheme](#bit-indexing-scheme)
 for the exact specification of this.
 
@@ -311,7 +306,7 @@ Let $b_1, b_2$ refer to the first data argument and the second data
 argument respectively, and let $n_1, n_2$ be their respective lengths in bytes.
 Let the result of `builtinLogicalOr`, given $b_1, b_2$ and some padding
 semantics argument, be $b_r$, of length $n_r$ in bytes. We use $b_1[i]$ to refer 
-to the $i$th bit of $b_1$ (and analogously for 
+to the value at index $i$ of $b_1$ (and analogously for 
 $b_2, b_r$); see the [section on the bit indexing scheme](#bit-indexing-scheme)
 for the exact specification of this.
 
@@ -342,7 +337,7 @@ Let $b_1, b_2$ refer to the first data argument and the second data
 argument respectively, and let $n_1, n_2$ be their respective lengths in bytes.
 Let the result of `builtinLogicalXor`, given $b_1, b_2$ and some padding
 semantics argument, be $b_r$, of length $n_r$ in bytes. We use $b_1[i]$ to 
-refer to the $i$th bit of $b_1$ (and analogously for 
+refer to the value at index $i$ of $b_1$ (and analogously for 
 $b_2, b_r$); see the [section on the bit indexing scheme](#bit-indexing-scheme)
 for the exact specification of this.
 
@@ -364,8 +359,8 @@ $$
 `builtinLogicalComplement` takes a single argument, of type `BuiltinByteString`;
 let $b$ refer to that argument, and $n$ its length in bytes. Let $b_r$ be
 the result of `builtinLogicalComplement`; its length in bytes is also $n$. We
-use $b[i]$ to refer to the $i$th bit of $b$ (and analogously for $b_r$); see the
-[section on the bit indexing scheme](#bit-indexing-scheme) for the exact
+use $b[i]$ to refer to the value at index $i$ of $b$ (and analogously for $b_r$); 
+see the [section on the bit indexing scheme](#bit-indexing-scheme) for the exact
 specification of this.
 
 For all $i \in 0, 1, \ldots , 8 \cdot n - 1$, we have
@@ -387,8 +382,8 @@ $$
    _index argument_.
 
 Let $b$ refer to the data argument, of length $n$ in bytes, and let $i$ refer to
-the index argument. We use $b[i]$ to refer to the $i$th bit of $b$; see the 
-[section on the bit indexing scheme](#bit-indexing-scheme) for the exact 
+the index argument. We use $b[i]$ to refer to the value at index $i$t of $b$; see 
+the [section on the bit indexing scheme](#bit-indexing-scheme) for the exact 
 specification of this.
 
 If $i < 0$ or $i \geq 8 \cdot n$, then `builtinReadBit`
@@ -414,7 +409,7 @@ Otherwise, if $b[i] = 0$, `builtinReadBit` returns `False`, and if $b[i] = 1$,
 Let $C = (i_1, v_1), (i_2, v_2), \ldots , (i_k, v_k)$ refer to the change list
 argument, and $b$ the data argument of length $n$ in bytes. Let $b_r$ be the
 result of `builtinSetBits`, whose length is also $n$. We use $b[i]$ to refer to
-the $i$th bit of $b$ (and analogously, $b_r$); see the [section on the bit
+the value at index $i$ of $b$ (and analogously, $b_r$); see the [section on the bit
 indexing scheme](#bit-indexing-scheme) for the exact specification of this.
 
 If the change list argument is empty, the result is $b$. If the change list
