@@ -243,7 +243,7 @@ This gives a great deal of flexibility to the composition of the committee.
 In particular, it is possible to elect an empty committee if the community wishes to abolish the constitutional committee entirely. Note that this is different from a state of no-confidence and still constitutes a governance system capable of enacting proposals.
 
 There will be a new protocol parameter for the minimal size of the committee,
-itself a nonnegative number.
+itself a nonnegative number called `ccMinSize`.
 
 #### Terms
 
@@ -259,7 +259,7 @@ ratify governance actions. This means that only governance actions
 that don't require votes from the constitutional committee can still
 be ratified.
 
-For example, a committee of size five with a threshold of 3/5 a minimum size
+For example, a committee of size five with a threshold of 60% a minimum size
 of three and two expired members can still
 pass governance actions if two non-expired members vote `Yes`.
 However, if one more member expires then the constitutional committee becomes
@@ -331,7 +331,8 @@ Similarly, DRep registration will mimic the existing stake registration mechanis
 Additionally, registered DReps will need to vote regularly to still be considered active.
 Specifically, if a DRep does not submit any votes for `drepActivity`-many epochs, the DRep is considered inactive,
 where `drepActivity` is a new protocol parameter.
-Inactive DReps do not count towards the active voting stake anymore, and can become active again for `drepActivity`-many epochs by voting on any governance actions.
+Inactive DReps do not count towards the active voting stake anymore, and can become active again for
+`drepActivity`-many epochs by voting on any governance actions or submitting a DRep update certificate.
 The reason for marking DReps as inactive is so that DReps who stop participating but still have
 stake delegated to them do not eventually leave the system in a state where no governance
 action can pass.
@@ -417,13 +418,13 @@ is backed by.
 There will be a short [bootstrapping phase](#bootstrapping-phase) during which rewards will be earned
 for stake delegation etc. and may be withdrawn at any time.
 After this phase, although rewards will continue to be earned for block delegation etc., reward accounts will be
-**blocked from withdrawing any rewards** unless their associated stake credential is also delegated to a DRep.
+**blocked from withdrawing any rewards** unless their associated stake credential is also delegated to a DRep or pre-defined voting option.
 This helps to ensure high participation, and so, legitimacy.
 
 > **Note**
 >
 > Even though rewards cannot be withdrawn, they are not lost.  As soon as a stake credential is delegated
-> (including to a pre-defined DRep), the rewards can be withdrawn.
+> (including to a pre-defined voting option), the rewards can be withdrawn.
 
 #### DRep incentives
 
@@ -1013,12 +1014,18 @@ We solve the long-term participation problem by not allowing reward withdrawals
 * Rework which anchors are required and which are optional.
 * Clean up various inconsistencies and leftovers from older versions.
 
-#### Security-relevant changes and other fixes
+#### Security-relevant changes and other fixes (January 2024)
 
 * Guard security-relevant changes behind SPO votes.
 * The system does not enter a state of no confidence with insufficient
   active CC members, the CC just becomes unable to act.
 * Clarify that CC members can use any kind of credential.
+
+#### May 2024
+
+* Update the section on the bootstrap period.
+* Mention missing `Q_5` parameter.
+* Various small fixes/consistency changes.
 
 ## Path to Active
 
@@ -1031,7 +1038,9 @@ We solve the long-term participation problem by not allowing reward withdrawals
 The features in this CIP require a hard fork.
 
 This document describes an ambitious change to Cardano governance.
-We propose to implement the changes via **one hard fork**.
+We propose to implement the changes via two hard forks: the first
+one containing all new features but some being disabled for a bootstrap period
+and the second one enabling all features.
 
 In the following sections, we give more details about the various implementation work items that have already been identified.
 In addition, the final section exposes a few open questions which will need to be finalized.
