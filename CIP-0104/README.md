@@ -30,8 +30,10 @@ Errors: APIError
 
 Returns hex-encoded string representing cbor of extended account public key. Throws APIError if needed as defined by CIP30.
 
+Wallets implementing this CIP should, but not enforced, request additional access from the user to access this endpoint as it allows for complete read access to account history and derivation paths.
+
 ## Rationale: how does this CIP achieve its goals?
-Raw cbor is returned instead of bech32 encoding to follow specification of other CIP30 endpoints. Wallets implementing this CIP should, but not enforced, request additional access from the user to access this endpoint as it allows for complete read access to account history and derivation paths. 
+Raw cbor is returned instead of bech32 encoding to follow specification of other CIP30 endpoints.
 
 ## Path to Active
 
