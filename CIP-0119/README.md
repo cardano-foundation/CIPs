@@ -132,10 +132,9 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 
 #### `doNotList`
 - Optional
-- Can be of value `true` or `false`.
+- Is a boolean expression that can be given a single value of either `true` or `false`.
 - If not included then the value is assumed to be false
-- A boolean expression
-- A true value means that the DRep does not want to show up in tooling that displays DReps. 
+- A `true` value means that the DRep does not want to show up in tooling that displays DReps. 
   - e.g. a DRep who does not want to appear in GovTool’s DRep Explorer feature creates metadata with donotlist as true.
 
 ### Application
