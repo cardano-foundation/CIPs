@@ -12,25 +12,16 @@
                     "@context": {
                         "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
                         "Other": "CIP100:OtherReference",
-                        "Identity":"CIP119:IdentityReference",
-                        "Link":"CIP119:LinkReference",
                         "label": "CIP100:reference-label",
-                        "uri": "CIP100:reference-uri",
-                        "referenceHash": {
-                            "@id": "CIP119:referenceHash",
-                            "@context": {
-                                "hashDigest": "CIP119:hashDigest",
-                                "hashAlgorithm": "CIP100:hashAlgorithm"
-                            }
-                        }
+                        "uri": "CIP100:reference-uri"
                     }
                 },
                 "paymentAddress": "CIP119:paymentAddress",
-                "username": "CIP119:username",
-                "picture": "CIP119:picture",
+                "givenName": "CIP119:givenName",
+                "image": "CIP119:image",
                 "objectives": "CIP119:objectives",
-                "qualifications":"CIP119:qualifications",
-                "doNotList":"CIP119:doNotList"
+                "motivations": "CIP119:motivations",
+                "qualifications": "CIP119:qualifications"
             }
         }
     }
