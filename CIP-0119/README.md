@@ -127,6 +127,7 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 
 #### `doNotList`
 - Optional
+- Can be of value `true` or `false`.
 - If not included then the value is assumed to be false
 - A boolean expression
 - A true value means that the DRep does not want to show up in tooling that displays DReps. 
