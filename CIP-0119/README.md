@@ -86,9 +86,14 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - Optional
 - This is a property inherited from [Person](https://schema.org/Person)
 - This SHOULD be treated as the profile picture of the individual
-- This should contain an [`imageObject`](https://schema.org/ImageObject) property
-  - `imageObject` SHOULD contain a base64 encoded image in its [`contentURL`](https://github.com/schemaorg/schemaorg/issues/2696) property in a [dataURI](https://en.wikipedia.org/wiki/Data_URI_scheme) format. 
-
+- This MUST contain a fully described [`imageObject`](https://schema.org/ImageObject) property as opposed to a URL. 
+ 
+##### `imageObject`
+- This is to be included in a metadata file as a property of the `image` property, only if the `image` property is included.
+- It explains the image to those (inc. tools) who are viewing it.
+- `imageObject` MUST contain a base64 encoded image in its [`contentURL`](https://github.com/schemaorg/schemaorg/issues/2696) property in a [dataURI](https://en.wikipedia.org/wiki/Data_URI_scheme) format:
+  - i.e. _data:content/type;base64,_
+  - e.g. _contentURL:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==_
 
 #### `objectives`
 - Optional
