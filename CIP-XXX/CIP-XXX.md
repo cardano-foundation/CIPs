@@ -292,6 +292,33 @@ b_r[i] = \begin{cases}
          \end{cases}
 $$
 
+Some examples of the intended behaviour of `builtinLogicalAnd` follow. For
+brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
+
+```
+-- truncation semantics
+builtinLogicalAnd False [] [0xFF] => []
+
+builtinLogicalAnd False [0xFF] [] => []
+
+builtinLogicalAnd False [0xFF] [0x00] => [0x00]
+
+builtinLogicalAnd False [0x00] [0xFF] => [0x00]
+
+builtinLogicalAnd False [0x4F, 0x00] [0xF4] => [0x44]
+
+-- padding semantics
+builtinLogicalAnd True [] [0xFF] => [0xFF]
+
+builtinLogicalAnd True [0xFF] [] => [0xFF]
+
+builtinLogicalAnd False [0xFF] [0x00] => [0x00]
+
+builtinLogicalAnd False [0x00] [0xFF] => [0x00]
+
+builtinLogicalAnd False [0x4F, 0x00] [0xF4] => [0x44, 0x00]
+```
+
 #### `builtinLogicalOr`
 
 `builtinLogicalOr` takes three arguments; we name and describe them below.
@@ -322,6 +349,33 @@ b_r[i] = \begin{cases}
          1 & \text{otherwise} \\
          \end{cases}
 $$
+
+Some examples of the intended behaviour of `builtinLogicalOr` follow. For
+brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
+
+```
+-- truncation semantics
+builtinLogicalOr False [] [0xFF] => []
+
+builtinLogicalOr False [0xFF] [] => []
+
+builtinLogicalOr False [0xFF] [0x00] => [0xFF]
+
+builtinLogicalOr False [0x00] [0xFF] => [0xFF]
+
+builtinLogicalOr False [0x4F, 0x00] [0xF4] => [0xFF]
+
+-- padding semantics
+builtinLogicalOr True [] [0xFF] => [0xFF]
+
+builtinLogicalOr True [0xFF] [] => [0xFF]
+
+builtinLogicalOr False [0xFF] [0x00] => [0xFF]
+
+builtinLogicalOr False [0x00] [0xFF] => [0xFF]
+
+builtinLogicalOr False [0x4F, 0x00] [0xF4] => [0xFF, 0x00]
+```
 
 #### `builtinLogicalXor`
 
@@ -354,6 +408,33 @@ b_r[i] = \begin{cases}
          \end{cases}
 $$
 
+Some examples of the intended behaviour of `builtinLogicalXor` follow. For
+brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
+
+```
+-- truncation semantics
+builtinLogicalXor False [] [0xFF] => []
+
+builtinLogicalXor False [0xFF] [] => []
+
+builtinLogicalXor False [0xFF] [0x00] => [0xFF]
+
+builtinLogicalXor False [0x00] [0xFF] => [0xFF]
+
+builtinLogicalXor False [0x4F, 0x00] [0xF4] => [0xBB]
+
+-- padding semantics
+builtinLogicalOr True [] [0xFF] => [0xFF]
+
+builtinLogicalOr True [0xFF] [] => [0xFF]
+
+builtinLogicalOr False [0xFF] [0x00] => [0xFF]
+
+builtinLogicalOr False [0x00] [0xFF] => [0xFF]
+
+builtinLogicalOr False [0x4F, 0x00] [0xF4] => [0xBB, 0x00]
+```
+
 #### `builtinLogicalComplement`
 
 `builtinLogicalComplement` takes a single argument, of type `BuiltinByteString`;
@@ -371,6 +452,17 @@ b_r[i] = \begin{cases}
         1 & \text{otherwise}\\
         \end{cases}
 $$
+
+Some examples of the intended behaviour of `builtinLogicalComplement` follow. For
+brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
+
+```
+builtinLogicalComplement [] => []
+
+builtinLogicalComplement [0x0F] => [0xF0]
+
+builtinLogicalComplement [0x4F, 0xF4] => [0xB0, 0x0B]
+```
 
 #### `builtinReadBit`
 
@@ -395,6 +487,46 @@ following information:
 
 Otherwise, if $b[i] = 0$, `builtinReadBit` returns `False`, and if $b[i] = 1$,
 `builtinReadBit` returns `True`.
+
+Some examples of the intended behaviour of `builtinReadBit` follow. For
+brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
+
+```
+-- Indexing an empty BuiltinByteString fails
+builtinReadBit [] 0 => error
+
+builtinReadBit [] 345 => error
+
+-- Negative indexes fail
+builtinReadBit [] (-1) => error
+
+builtinReadBit [0xFF] (-1) => error
+
+-- Indexing reads 'from the end'
+builtinReadBit [0xF4] 0 => False
+
+builtinReadBit [0xF4] 1 => False 
+
+builtinReadBit [0xF4] 2 => True 
+
+builtinReadBit [0xF4] 3 => False
+
+builtinReadBit [0xF4] 4 => True
+
+builtinReadBit [0xF4] 5 => True
+
+builtinReadBit [0xF4] 6 => True
+
+builtinReadBit [0xF4] 7 => True
+
+-- Out-of-bounds indexes fail
+builtinReadBit [0xF4] 8 => error
+
+builtinReadBit [0xFF, 0xF4] 16 => error
+
+-- Larger indexes read backwards into the bytes from the end
+builtinReadBit [0xF4, 0xFF] 10 => False 
+```
 
 #### `builtinSetBits`
 
@@ -448,6 +580,86 @@ as the result of `builtinSetBits` with data argument $b_m$ and the change list
 argument $(i_{m + 1}, v_{m + 1})$; as this change list is a singleton, we can
 process it according to the description above.
 
+Some examples of the intended behaviour of `builtinSetBits` follow. For
+brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
+
+```
+-- Writing an empty BuiltinByteString fails
+builtinSetBits [] [(0, False)] => error
+
+-- Irrespective of index
+builtinSetBits [] [(15, False)] => error
+
+-- And value
+builtinSetBits [] [(0, True)] => error
+
+-- And multiplicity
+builtinSetBits [] [(0, False), (1, False)] => error
+
+-- Negative indexes fail
+builtinSetBits [0xFF] [((-1), False)] => error
+
+-- Even when mixed with valid ones
+builtinSetBits [0xFF] [(0, False), ((-1), True)] => error
+
+-- In any position
+builtinSetBits [0xFF] [((-1), True), (0, False)] => error
+
+-- Out-of-bounds indexes fail
+builtinSetBits [0xFF] [(8, False)] => error
+
+-- Even when mixed with valid ones
+builtinSetBits [0xFF] [(1, False), (8, False)] => error
+
+-- In any position
+builtinSetBits [0xFF] [(8, False), (1, False)] => error
+
+-- Bits are written 'from the end'
+builtinSetBits [0xFF] [(0, False)] => [0xFE]
+
+builtinSetBits [0xFF] [(1, False)] => [0xFD]
+
+builtinSetBits [0xFF] [(2, False)] => [0xFB]
+
+builtinSetBits [0xFF] [(3, False)] => [0xF7]
+
+builtinSetBits [0xFF] [(4, False)] => [0xEF]
+
+builtinSetBits [0xFF] [(5, False)] => [0xDF]
+
+builtinSetBits [0xFF] [(6, False)] => [0xBF]
+
+builtinSetBits [0xFF] [(7, False)] => [0x7F]
+
+-- True value sets the bit
+builtinSetBits [0x00] [(5, True)] => [0x20]
+
+-- False value clears the bit
+builtinSetBits [0xFF] [(5, False)] => [0xDF]
+
+-- Larger indexes write backwards into the bytes from the end
+builtinSetBits [0xF4, 0xFF] [(10, True)] => [0xF0, 0xFF]
+
+-- Multiple items in a change list apply cumulatively
+builtinSetBits [0xF4, 0xFF] [(10, True), (1, False)] => [0xF0, 0xFD]
+
+builtinSetBits (builtinSetBits [0xF4, 0xFF] [(10, True)]) [(1, False)] => [0xF0, 0xFD]
+
+-- Order within a changelist is unimportant among unique indexes
+builtinSetBits [0xF4, 0xFF] [(1, False), (10, True)] => [0xF0, 0xFD]
+
+-- But _is_ important for identical indexes
+builtinSetBits [0x00, 0xFF] [(10, True), (10, False)] => [0x00, 0xFF]
+
+builtinSetBits [0x00, 0xFF] [(10, False), (10, True)] => [0x04, 0xFF]
+
+-- Setting an already set bit does nothing
+builtinSetBits [0xFF] [(0, True)] => [0xFF]
+
+-- Clearing an already clear bit does nothing
+builtinSetBits [0x00] [(0, False)] => [0x00]
+```
+
 #### `builtinReplicate`
 
 `builtinReplicate` takes two arguments; we name and describe them below.
@@ -480,7 +692,33 @@ scheme](#bit-indexing-scheme). We have:
 * The length (in bytes) of $b$ is $n$; and
 * For all $i \in 0, 1, \ldots, n - 1$, $b\\{i\\} = w$.
 
-### Laws and examples
+Some examples of the intended behaviour of `builtinReplicate` follow. For
+brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
+
+```
+-- Replicating a negative number of times fails
+builtinReplicate (-1) 0 => error
+
+-- Irrespective of byte argument
+builtinReplicate (-1) 3 => error
+
+-- Out-of-bounds byte arguments fail
+builtinReplicate 1 (-1) => error
+
+builtinReplicate 1 256 => error
+
+-- Irrespective of length argument
+builtinReplicate 4 (-1) => error
+
+builtinReplicate 4 256 => error
+
+-- Length of result matches length argument, and all bytes are the same
+builtinReplicate 0 0xFF => []
+
+builtinReplicate 4 0xFF => [0xFF, 0xFF, 0xFF, 0xFF]
+```
+
+### Laws
 
 #### Binary operations
 
@@ -674,8 +912,6 @@ Lastly, we have
 ```haskell
 builtinSizeOfByteString (builtinReplicate n w) = n
 ```
-
-TODO: Examples
 
 ## Rationale: how does this CIP achieve its goals?
 
