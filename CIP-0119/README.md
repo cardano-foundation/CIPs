@@ -168,6 +168,12 @@ This CIP is not written to specifically cover the metadata created to describe t
 
 People who want to extend the use of the DRep metadata can now do so in a way that allows tooling providers to use off the peg solutions. Furthermore there may be SEO benefits to using schema.org templates. 
 
+### Rationale for `imageObject` and b64 encoding
+According to schema.org The `image` property inherited from [Person](https://schema.org/Person) can either be a URL to a sepparate location where an image is stored, or it can be an `imageObject`. The reasons why this CIP specifies the use of an imageObject is:
+1. that the data at the location specified by a URL could be subject to change without the hash in the metadata anchor needing to be changed
+2. One option has been chosen in order to limit the amount of tooling options that need to be created to cater to those wishing to read and write DRep metadata. This way tools know exactly what to expect.
+3. it was mooted that the `image` property could instead directly be a base64 encoded value. Although a simpler solution, this would not be compliant with schema.org and would therefore not be compatible with any libraries build to read/write schema.org data. 
+
 ### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of expertise, and would perhaps therefore be more attractive to some delegating Ada Holders.
 
