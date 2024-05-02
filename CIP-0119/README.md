@@ -63,7 +63,7 @@ The following are a list of properties tooling should expect to encounter:
 
 #### `paymentAddress`
 - Optional
-- Bech32 encoded address
+- Bech32 encoded address, for the same network as the DRep registration is to be submitted to.
 
 Dreps may want to recieve tokens for a variety of reasons such as:
 - donations
