@@ -93,7 +93,7 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - It explains the image to those (inc. tools) who are viewing it.
 - `imageObject` MUST contain a base64 encoded image in its [`contentURL`](https://github.com/schemaorg/schemaorg/issues/2696) property in a [dataURI](https://en.wikipedia.org/wiki/Data_URI_scheme) format:
   - i.e. _data:content/type;base64,_ (AND NOT _data:domain.tld_)
-  - e.g. _contentURL:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==_ (AND NOT _https://avatars.githubusercontent.com/u/113025685?v=4_)
+  - e.g. _contentURL:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==_ (AND NOT _contentURL:https://avatars.githubusercontent.com/u/113025685?v=4_)
 
 #### `objectives`
 - Optional
