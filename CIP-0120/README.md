@@ -110,8 +110,6 @@ Where backups can be easily made in a permissionless manner by interested partie
 This storage platform MUST be easily accessible, with strong tooling support.
 Authors SHOULD NOT specify the use of centralized gateways to access the constitution plain text.
 
-// only ascii
-
 ### Rich Text Formatting
 
 The constitution text MAY include a strict subset of rich text styling as defined in this specification.
@@ -196,39 +194,90 @@ This line is only separated by a single newline, so it's a separate line in the 
 ```
 
 ### Best Practices
-- when hash doesnt match
+
+#### Hashing
+
+When submitting an update constitution governance action, tooling SHOULD make the effort to verify the document hash and the document match.
+Tooling reading constitution anchors from chain SHOULD always perform a correctness check using the hash digest on-chain.
+If the hash provided on-chain does not match the hash produced from the off-chain document, then the tooling SHOULD highlight this in a very obvious way to users.
+
+#### Form
+
 - when unrecognised formatting/style
 - Keep lines left-aligned without unneeded whitespace or tabs
 - tabs vs spaces
 
+#### Iterations
+
+- ideally all iterations are stored immutably
+
+### Test vectors
+
+// todo
+
 ## Rationale: how does this CIP achieve its goals?
 
-Just like CIP-1694, we aim to define a minimal viable set of standards to ensure governance can be achieved.
+### Line length
+
+We choose to restrict the maximum number of characters per line in aims of improving readability of the document in plain text and within diff views.
 
 ### Sentences
-- improve the readability of diff views
+
+By limiting documents to one sentence per line we hope to improve the experience when comparing documents and commenting on specific sentences.
+Conventional document comparison tools such as git diff views, compare documents on a by line basis.
+By spreading text across lines, it greatly improves tooling's ability to differentiate between documents.
+
+Furthermore, isolating one sentence per line, allows users to more easily isolate specific lines to comment upon.
+This gives each sentence an unambiguous reference point, which can be very useful for sharing and commenting.
 
 ### Versioning
-- why not build in options in hashalgo (like CIP100)
-- why a whole replacement?
+
+We chose to only allow replacement of this document rather than including a more conventional versioning scheme.
+This was done for simplicity to minimize the amount of effort required to create tooling which reads and writes constitutions.
+
+The alternative was to add some details of version to the constitution document.
+This would make changing hashing algorithm, rich text formatting, etc much easier.
+But this makes the standard and subsequent, more complex than necessary.
+We dont believe the added complexity is justified, for the expected number of future replacement CIPs to this one.
 
 ### File Type
-- just simple and easy
+
+The text file was chosen, due to its ubiquity across platforms.
+My choosing a common format, we drastically improve the accessibility of the document.
 
 ### Hashing
-- we choose blake2b-256 as it is a standard for hashing in Cardano
-- standard, lots of tools already use it 
+
+Blake2b-256 was chosen for its common use across the Cardano ecosystem.
+This means that a lot of Cardano tooling already has this algorithm implemented.
+This lowers the bar to entry for existing tool makers to add constitutional support.
 
 ### Storage
-- The constitution is the most important document for Cardano (?), ensuring its permissionless accessibly is paramount
-- Storing each iteration immutably is just as important, to allow access of past constitutions
-- IPFS is well known already with good tooling support -> improve accessibility
+
+Ensuring the Cardano Constitution and its iterations can be accessed in a permissionless manor is paramount.
+Permissionless networks such as IPFS reduce the ability for parties to censor the content.
+With each interested party able to make copies of constitutions, this improves the resilience of the documents from deletion.
+
+The primary competing idea to platforms such as IPFS is to store the constitution text on Cardano itself.
+This would philosophically be superior to storing the document off-chain, keeping the Cardano Constitution on Cardano seems sensible.
+The counter point to this is that, Cardano is not a general data storage system, rather it is a ledger.
+Storing data on Cardano is expensive and difficult.
 
 ### Rich Text Formatting
-- why not all markdown?
-- wanted to keep a bare minimum spec, no images or videos
-- also dont want people to be able to attack consumers by attacks utilizing the HTML
-- wanted to allow standard markdown libs to work
+
+Rich text styling will greatly improve the readability of the constitution documents.
+
+#### Markdown
+
+Markdown styling was chosen due to its ubiquity, with strong tooling support.
+Furthermore, markdown has a benefit in that the unrendered documents are still human readable.
+This is in contrast to other solutions such as HTML.
+
+#### Strict subset
+
+We chose a strict subset of markdown text styling for two reasons.
+Firstly, markdown contains a very large and varied syntax, reducing the scope making implementation easier for all tooling.
+Secondly, some features of markdown may not want to be used in a formal constitution document.
+Embedded HTML or videos are likely things to be avoided.
 
 ## Open Questions
 - [x] How can we support multi-languages?
