@@ -7,7 +7,7 @@
       "title": "BigInt",
       "type": "string",
       "description": "A long integer domain type",
-      "pattern": "^-?(0|[1-9][0-9]*)$",
+      "pattern": "^(0|-?[1-9][0-9]*)$",
       "examples": [
         "0",
         "-123",
@@ -25,8 +25,15 @@
       "title": "UInt64",
       "description": "64-bit unsigned integer",
       "type": "string",
-      "pattern": "^-?(0|[1-9][0-9]*)$",
+      "pattern": "^(0|[1-9][0-9]*)$",
       "format": "uint64"
+    },
+    "PosInt64": {
+      "title": "PosInt64",
+      "description": "64-bit unsigned integer, zero-excluded. 1-18446744073709551615",
+      "type": "string",
+      "pattern": "^([1-9][0-9]*)$",
+      "format": "posint64"
     },
     "Int128": {
       "title": "Int128",
@@ -135,7 +142,10 @@
               "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
             }
           },
-          "required": ["tag", "value"],
+          "required": [
+            "tag",
+            "value"
+          ],
           "additionalProperties": false
         },
         {
@@ -150,7 +160,10 @@
               "$ref": "cardano-babbage.json#/definitions/ScriptHash"
             }
           },
-          "required": ["tag", "value"],
+          "required": [
+            "tag",
+            "value"
+          ],
           "additionalProperties": false
         }
       ]
@@ -164,7 +177,7 @@
           "type": "object",
           "patternProperties": {
             "^([0-9a-f][0-9a-f]){0,32}$": {
-              "$ref": "cardano-babbage.json#/definitions/UInt64"
+              "$ref": "cardano-babbage.json#/definitions/PosInt64"
             }
           },
           "additionalProperties": false
@@ -179,11 +192,13 @@
         "coin": {
           "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
-        "multiasset": {
+        "assets": {
           "$ref": "cardano-babbage.json#/definitions/MultiAsset"
         }
       },
-      "required": ["coin"],
+      "required": [
+        "coin"
+      ],
       "additionalProperties": false
     },
     "TransactionHash": {
@@ -205,7 +220,10 @@
           "$ref": "cardano-babbage.json#/definitions/UInt32"
         }
       },
-      "required": ["transaction_id", "index"],
+      "required": [
+        "transaction_id",
+        "index"
+      ],
       "additionalProperties": false
     },
     "PlutusScript": {
@@ -221,11 +239,15 @@
           "pattern": "^([0-9a-f][0-9a-f])+$"
         }
       },
-      "required": ["language", "bytes"],
+      "required": [
+        "language",
+        "bytes"
+      ],
       "additionalProperties": false
     },
     "NativeScript": {
       "title": "NativeScript",
+      "type": "object",
       "discriminator": {
         "propertyName": "tag"
       },
@@ -235,6 +257,7 @@
           "type": "object",
           "properties": {
             "tag": {
+              "type": "string",
               "enum": [
                 "pubkey"
               ]
@@ -244,13 +267,17 @@
             }
           },
           "additionalProperties": false,
-          "required": ["tag", "pubkey"]
+          "required": [
+            "tag",
+            "pubkey"
+          ]
         },
         {
           "title": "ScriptAll",
           "type": "object",
           "properties": {
             "tag": {
+              "type": "string",
               "enum": [
                 "all"
               ]
@@ -263,13 +290,17 @@
             }
           },
           "additionalProperties": false,
-          "required": ["tag", "scripts"]
+          "required": [
+            "tag",
+            "scripts"
+          ]
         },
         {
           "title": "ScriptAny",
           "type": "object",
           "properties": {
             "tag": {
+              "type": "string",
               "enum": [
                 "any"
               ]
@@ -282,13 +313,17 @@
             }
           },
           "additionalProperties": false,
-          "required": ["tag", "scripts"]
+          "required": [
+            "tag",
+            "scripts"
+          ]
         },
         {
           "title": "ScriptNOfK",
           "type": "object",
           "properties": {
             "tag": {
+              "type": "string",
               "enum": [
                 "n_of_k"
               ]
@@ -304,13 +339,18 @@
             }
           },
           "additionalProperties": false,
-          "required": [ "tag", "scripts", "n" ]
+          "required": [
+            "tag",
+            "scripts",
+            "n"
+          ]
         },
         {
           "title": "TimelockStart",
           "type": "object",
           "properties": {
             "tag": {
+              "type": "string",
               "enum": [
                 "timelock_start"
               ]
@@ -320,13 +360,17 @@
             }
           },
           "additionalProperties": false,
-          "required": [ "tag", "slot" ]
+          "required": [
+            "tag",
+            "slot"
+          ]
         },
         {
           "title": "TimelockExpiry",
           "type": "object",
           "properties": {
             "tag": {
+              "type": "string",
               "enum": [
                 "timelock_expiry"
               ]
@@ -336,12 +380,16 @@
             }
           },
           "additionalProperties": false,
-          "required": [ "tag", "slot" ]
+          "required": [
+            "tag",
+            "slot"
+          ]
         }
       ]
     },
     "ScriptRef": {
       "title": "ScriptRef",
+      "type": "object",
       "discriminator": {
         "propertyName": "tag"
       },
@@ -360,7 +408,10 @@
               "$ref": "cardano-babbage.json#/definitions/PlutusScript"
             }
           },
-          "required": ["tag", "value"],
+          "required": [
+            "tag",
+            "value"
+          ],
           "additionalProperties": false
         },
         {
@@ -377,7 +428,10 @@
               "$ref": "cardano-babbage.json#/definitions/NativeScript"
             }
           },
-          "required": ["tag", "value"],
+          "required": [
+            "tag",
+            "value"
+          ],
           "additionalProperties": false
         }
       ]
@@ -399,6 +453,7 @@
           "$ref": "cardano-babbage.json#/definitions/Value"
         },
         "plutus_data": {
+          "type": "object",
           "discriminator": {
             "propertyName": "tag"
           },
@@ -451,11 +506,15 @@
           "$ref": "cardano-babbage.json#/definitions/TransactionOutput"
         }
       },
-      "required": ["input", "output"],
+      "required": [
+        "input",
+        "output"
+      ],
       "additionalProperties": false
     },
     "TransactionMetadatum": {
       "title": "TransactionMetadatum",
+      "type": "object",
       "discriminator": {
         "propertyName": "tag"
       },
@@ -479,11 +538,19 @@
                   "value": {
                     "$ref": "cardano-babbage.json#/definitions/TransactionMetadatum"
                   }
-                }
+                },
+                "required": [
+                  "key",
+                  "value"
+                ],
+                "additionalProperties": false
               }
             }
           },
-          "required": [ "tag", "contents" ],
+          "required": [
+            "tag",
+            "contents"
+          ],
           "additionalProperties": false
         },
         {
@@ -501,7 +568,10 @@
               }
             }
           },
-          "required": [ "tag", "contents" ],
+          "required": [
+            "tag",
+            "contents"
+          ],
           "additionalProperties": false
         },
         {
@@ -516,7 +586,10 @@
               "$ref": "cardano-babbage.json#/definitions/Int128"
             }
           },
-          "required": [ "tag", "value" ],
+          "required": [
+            "tag",
+            "value"
+          ],
           "additionalProperties": false
         },
         {
@@ -528,15 +601,15 @@
               ]
             },
             "value": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "hex",
-                "pattern": "^([0-9a-f][0-9a-f]){0,64}$"
-              }
+              "type": "string",
+              "format": "hex",
+              "pattern": "^([0-9a-f][0-9a-f]){0,64}$"
             }
           },
-          "required": [ "tag", "value" ],
+          "required": [
+            "tag",
+            "value"
+          ],
           "additionalProperties": false
         },
         {
@@ -551,10 +624,14 @@
             },
             "value": {
               "type": "string",
-              "maxLength": 64
+              "maxLength": 64,
+              "format": "string64"
             }
           },
-          "required": [ "tag", "value" ],
+          "required": [
+            "tag",
+            "value"
+          ],
           "additionalProperties": false
         }
       ]
@@ -565,8 +642,8 @@
       "items": {
         "$ref": "cardano-babbage.json#/definitions/Int128"
       },
-      "maxLength": 166,
-      "minLength": 166
+      "maxItems": 166,
+      "minItems": 166
     },
     "PlutusV2CostModel": {
       "title": "PlutusV2CostModel",
@@ -574,8 +651,8 @@
       "items": {
         "$ref": "cardano-babbage.json#/definitions/Int128"
       },
-      "maxLength": 175,
-      "minLength": 175
+      "maxItems": 175,
+      "minItems": 175
     },
     "CostModels": {
       "title": "CostModels",
@@ -603,24 +680,9 @@
         }
       },
       "additionalProperties": false,
-      "required": [ "mem_price", "step_price" ]
-    },
-    "Nonce": {
-      "title": "Nonce",
-      "oneOf": [
-        {
-          "title": "Identity Nonce",
-          "type": "string",
-          "enum": [
-            ""
-          ]
-        },
-        {
-          "title": "Nonce from hash",
-          "type": "string",
-          "format": "hex",
-          "pattern": "^[0-9a-f]{64}$"
-        }
+      "required": [
+        "mem_price",
+        "step_price"
       ]
     },
     "ExUnits": {
@@ -634,7 +696,10 @@
           "$ref": "cardano-babbage.json#/definitions/UInt64"
         }
       },
-      "required": [ "mem", "steps" ],
+      "required": [
+        "mem",
+        "steps"
+      ],
       "additionalProperties": false
     },
     "ProtocolVersion": {
@@ -648,7 +713,10 @@
           "$ref": "cardano-babbage.json#/definitions/UInt32"
         }
       },
-      "required": [ "major", "minor" ],
+      "required": [
+        "major",
+        "minor"
+      ],
       "additionalProperties": false
     },
     "ProtocolParamUpdate": {
@@ -672,9 +740,6 @@
         },
         "expansion_rate": {
           "$ref": "cardano-babbage.json#/definitions/UnitInterval"
-        },
-        "extra_entropy": {
-          "$ref": "cardano-babbage.json#/definitions/Nonce"
         },
         "key_deposit": {
           "$ref": "cardano-babbage.json#/definitions/UInt64"
@@ -713,7 +778,7 @@
           "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "n_opt": {
-          "$ref": "cardano-babbage.json#/definitions/Int128"
+          "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
         "pool_deposit": {
           "$ref": "cardano-babbage.json#/definitions/UInt64"
@@ -747,7 +812,8 @@
               "title": "ProtocolParamUpdate for a given GenesisHash",
               "$ref": "cardano-babbage.json#/definitions/ProtocolParamUpdate"
             }
-          }
+          },
+          "additionalProperties": false
         }
       },
       "required": [
@@ -924,6 +990,7 @@
     },
     "PlutusData": {
       "title": "PlutusData",
+      "type": "object",
       "discriminator": {
         "propertyName": "tag"
       },
@@ -1051,10 +1118,12 @@
     "DNSName": {
       "title": "DNSName",
       "type": "string",
-      "maxLength": 64
+      "maxLength": 64,
+      "format": "string64"
     },
     "Relay": {
       "title": "Relay",
+      "type": "object",
       "discriminator": {
         "propertyName": "tag"
       },
@@ -1070,7 +1139,7 @@
             },
             "port": {
               "type": "integer",
-              "maxValue": 65535
+              "maximum": 65535
             },
             "ipv4": {
               "$ref": "cardano-babbage.json#/definitions/Ipv4"
@@ -1095,15 +1164,17 @@
             },
             "port": {
               "type": "integer",
-              "maxValue": 65535
+              "minimum": 1,
+              "maximum": 65535
             },
-            "dnsName": {
+            "dns_name": {
               "$ref": "cardano-babbage.json#/definitions/DNSName"
             }
           },
           "additionalProperties": false,
           "required": [
-            "tag"
+            "tag",
+            "dns_name"
           ]
         },
         {
@@ -1115,13 +1186,14 @@
                 "multi_host_name"
               ]
             },
-            "dnsName": {
+            "dns_name": {
               "$ref": "cardano-babbage.json#/definitions/DNSName"
             }
           },
           "additionalProperties": false,
           "required": [
-            "tag"
+            "tag",
+            "dns_name"
           ]
         }
       ]
@@ -1130,13 +1202,22 @@
       "title": "VRFKeyHash",
       "type": "string",
       "description": "blake2b_256 digest of a VRF verification key, encoded as bech32",
-      "pattern": "^vrf_vkh[02-9ac-hj-np-z]*"
+      "pattern": "^vrf_vkh[02-9ac-hj-np-z]*",
+      "format": "bech32"
     },
     "URL": {
       "title": "URL",
       "description": "UTF-8 URL string. Maximum size is 64 bytes, but there is no way to express byte length limit in a json-schema (maxLength limits the number of characters)",
       "type": "string",
-      "maxLength": 64
+      "maxLength": 64,
+      "format": "string64"
+    },
+    "PoolMetadataHash": {
+      "title": "PoolMetadataHash",
+      "description": "Pool Metadata Hash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "PoolMetadata": {
       "title": "PoolMetadata",
@@ -1145,22 +1226,28 @@
         "url": {
           "$ref": "cardano-babbage.json#/definitions/URL"
         },
-        "pool_metadata_hash": {
-          "title": "Pool Metadata Hash",
-          "type": "string",
-          "format": "hex",
-          "pattern": "^[0-9a-f]{64}$"
+        "hash": {
+          "$ref": "cardano-babbage.json#/definitions/PoolMetadataHash"
         }
       },
       "additionalProperties": false,
-      "required": ["url", "pool_metadata_hash"]
+      "required": [
+        "url",
+        "hash"
+      ]
+    },
+    "PoolPubKeyHash": {
+      "title": "PoolPubKeyHash",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(pool1)[02-9ac-hj-np-z]*$"
     },
     "PoolParams": {
       "title": "PoolParams",
       "type": "object",
       "properties": {
         "operator": {
-          "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
+          "$ref": "cardano-babbage.json#/definitions/PoolPubKeyHash"
         },
         "vrf_keyhash": {
           "$ref": "cardano-babbage.json#/definitions/VRFKeyHash"
@@ -1226,6 +1313,7 @@
     },
     "MoveInstantaneousRewards": {
       "title": "MoveInstantaneousRewards",
+      "type": "object",
       "discriminator": {
         "propertyName": "tag"
       },
@@ -1296,6 +1384,7 @@
     },
     "Certificate": {
       "title": "Certificate",
+      "type": "object",
       "discriminator": {
         "propertyName": "tag"
       },
@@ -1313,7 +1402,10 @@
               "$ref": "cardano-babbage.json#/definitions/Credential"
             }
           },
-          "required": ["tag", "credential"],
+          "required": [
+            "tag",
+            "credential"
+          ],
           "additionalProperties": false
         },
         {
@@ -1329,7 +1421,10 @@
               "$ref": "cardano-babbage.json#/definitions/Credential"
             }
           },
-          "required": ["tag", "credential"],
+          "required": [
+            "tag",
+            "credential"
+          ],
           "additionalProperties": false
         },
         {
@@ -1341,14 +1436,18 @@
                 "stake_delegation"
               ]
             },
-            "stake_credential": {
+            "credential": {
               "$ref": "cardano-babbage.json#/definitions/Credential"
             },
             "pool_keyhash": {
               "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
             }
           },
-          "required": ["tag", "stake_credential", "pool_keyhash"],
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash"
+          ],
           "additionalProperties": false
         },
         {
@@ -1364,7 +1463,10 @@
               "$ref": "cardano-babbage.json#/definitions/PoolParams"
             }
           },
-          "required": ["tag", "pool_params"],
+          "required": [
+            "tag",
+            "pool_params"
+          ],
           "additionalProperties": false
         },
         {
@@ -1378,13 +1480,17 @@
               ]
             },
             "pool_keyhash": {
-              "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
+              "$ref": "cardano-babbage.json#/definitions/PoolPubKeyHash"
             },
             "epoch": {
               "$ref": "cardano-babbage.json#/definitions/UInt32"
             }
           },
-          "required": ["tag", "pool_keyhash", "epoch"],
+          "required": [
+            "tag",
+            "pool_keyhash",
+            "epoch"
+          ],
           "additionalProperties": false
         },
         {
@@ -1407,7 +1513,12 @@
               "$ref": "cardano-babbage.json#/definitions/VRFKeyHash"
             }
           },
-          "required": ["tag", "genesis_hash", "genesis_delegate_hash", "vrf_keyhash"],
+          "required": [
+            "tag",
+            "genesis_hash",
+            "genesis_delegate_hash",
+            "vrf_keyhash"
+          ],
           "additionalProperties": false
         },
         {
@@ -1423,7 +1534,10 @@
               "$ref": "cardano-babbage.json#/definitions/MoveInstantaneousRewards"
             }
           },
-          "required": ["tag", "move_instantaneous_rewards"],
+          "required": [
+            "tag",
+            "move_instantaneous_rewards"
+          ],
           "additionalProperties": false
         }
       ]
@@ -1447,26 +1561,29 @@
             "$ref": "cardano-babbage.json#/definitions/ScriptHash"
           },
           "assets": {
-            "title": "Assets",
-            "type": "object",
-            "properties": {
-              "key": {
-                "$ref": "cardano-babbage.json#/definitions/AssetName"
+            "type": "array",
+            "items": {
+              "title": "Assets",
+              "type": "object",
+              "properties": {
+                "asset_name": {
+                  "$ref": "cardano-babbage.json#/definitions/AssetName"
+                },
+                "amount": {
+                  "$ref": "cardano-babbage.json#/definitions/NonZeroInt64"
+                }
               },
-              "value": {
-                "$ref": "cardano-babbage.json#/definitions/NonZeroInt64"
-              }
-            },
-            "required": [
-              "key",
-              "value"
-            ],
-            "additionalProperties": false
+              "required": [
+                "asset_name",
+                "amount"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [
-          "key",
-          "value"
+          "script_hash",
+          "assets"
         ],
         "additionalProperties": false
       }
@@ -1495,7 +1612,7 @@
         "chain_code": {
           "type": "string",
           "format": "hex",
-          "pattern": "^([0-9a-f][0-9a-f])*$"
+          "pattern": "^([0-9a-f][0-9a-f]){32}$"
         },
         "signature": {
           "$ref": "cardano-babbage.json#/definitions/Ed25519Signature"
@@ -1539,7 +1656,12 @@
           "$ref": "cardano-babbage.json#/definitions/ExUnits"
         }
       },
-      "required": ["data", "tag", "index", "ex_units"],
+      "required": [
+        "data",
+        "tag",
+        "index",
+        "ex_units"
+      ],
       "additionalProperties": false
     },
     "Vkeywitness": {
@@ -1553,7 +1675,10 @@
           "$ref": "cardano-babbage.json#/definitions/Ed25519Signature"
         }
       },
-      "required": ["vkey", "signature"],
+      "required": [
+        "vkey",
+        "signature"
+      ],
       "additionalProperties": false
     },
     "TransactionWitnessSet": {
@@ -1622,18 +1747,11 @@
           "$ref": "cardano-babbage.json#/definitions/TransactionWitnessSet"
         }
       },
-      "required": ["body", "is_valid", "witness_set"],
-      "additionalProperties": false
-    },
-    "AuxiliaryDataSet": {
-      "type": "object",
-      "title": "AuxiliaryDataSet",
-      "description": "A mapping from numbers to AuxiliaryData",
-      "patternProperties": {
-        "^(0|[1-9][0-9]*)$": {
-          "$ref": "cardano-babbage.json#/definitions/AuxiliaryData"
-        }
-      },
+      "required": [
+        "body",
+        "is_valid",
+        "witness_set"
+      ],
       "additionalProperties": false
     },
     "VRFCert": {
@@ -1644,53 +1762,16 @@
           "$ref": "cardano-babbage.json#/definitions/ByteString"
         },
         "proof": {
-          "$ref": "cardano-babbage.json#/definitions/ByteString"
+          "$ref": "cardano-babbage.json#/definitions/ByteString",
+          "type": "string",
+          "pattern": "^[0-9a-f]{160}$"
         }
       },
-      "required": ["output", "proof"],
+      "required": [
+        "output",
+        "proof"
+      ],
       "additionalProperties": false
-    },
-    "HeaderLeaderCert": {
-      "title": "HeaderLeaderCert",
-      "type": "object",
-      "discriminator": {
-        "propertyName": "tag"
-      },
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "tag": {
-              "enum": [
-                "nonce_and_leader"
-              ]
-            },
-            "nonce": {
-              "$ref": "cardano-babbage.json#/definitions/VRFCert"
-            },
-            "leader": {
-              "$ref": "cardano-babbage.json#/definitions/VRFCert"
-            }
-          },
-          "required": ["tag", "nonce", "leader"],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "tag": {
-              "enum": [
-                "vrf_result"
-              ]
-            },
-            "cert": {
-              "$ref": "cardano-babbage.json#/definitions/VRFCert"
-            }
-          },
-          "required": ["tag", "cert"],
-          "additionalProperties": false
-        }
-      ]
     },
     "KESVKey": {
       "title": "KESVKey",
@@ -1741,55 +1822,60 @@
           "$ref": "cardano-babbage.json#/definitions/Ed25519Signature"
         }
       },
-      "required": ["hot_vkey", "kes_period", "sequence_number", "sigma"],
+      "required": [
+        "hot_vkey",
+        "kes_period",
+        "sequence_number",
+        "sigma"
+      ],
       "additionalProperties": false
     },
     "HeaderBody": {
       "title": "HeaderBody",
       "type": "object",
       "properties": {
-        "block_body_hash": {
-          "$ref": "cardano-babbage.json#/definitions/BlockHash"
-        },
-        "block_body_size": {
-          "$ref": "cardano-babbage.json#/definitions/UInt32"
-        },
         "block_number": {
           "$ref": "cardano-babbage.json#/definitions/UInt32"
-        },
-        "issuer_vkey": {
-          "$ref": "cardano-babbage.json#/definitions/Ed25519PublicKey"
-        },
-        "leader_cert": {
-          "$ref": "cardano-babbage.json#/definitions/HeaderLeaderCert"
-        },
-        "operational_cert": {
-          "$ref": "cardano-babbage.json#/definitions/OperationalCert"
-        },
-        "prev_hash": {
-          "$ref": "cardano-babbage.json#/definitions/BlockHash"
-        },
-        "protocol_version": {
-          "$ref": "cardano-babbage.json#/definitions/ProtocolVersion"
         },
         "slot": {
           "$ref": "cardano-babbage.json#/definitions/UInt64"
         },
+        "prev_hash": {
+          "$ref": "cardano-babbage.json#/definitions/BlockHash"
+        },
+        "issuer_vkey": {
+          "$ref": "cardano-babbage.json#/definitions/Ed25519PublicKey"
+        },
         "vrf_vkey": {
           "$ref": "cardano-babbage.json#/definitions/VRFVKey"
+        },
+        "vrf_result": {
+          "$ref": "cardano-babbage.json#/definitions/VRFCert"
+        },
+        "block_body_size": {
+          "$ref": "cardano-babbage.json#/definitions/UInt32"
+        },
+        "block_body_hash": {
+          "$ref": "cardano-babbage.json#/definitions/BlockHash"
+        },
+        "operational_cert": {
+          "$ref": "cardano-babbage.json#/definitions/OperationalCert"
+        },
+        "protocol_version": {
+          "$ref": "cardano-babbage.json#/definitions/ProtocolVersion"
         }
       },
       "additionalProperties": false,
       "required": [
-        "block_body_hash",
-        "block_body_size",
         "block_number",
-        "issuer_vkey",
-        "leader_cert",
-        "operational_cert",
-        "protocol_version",
         "slot",
-        "vrf_vkey"
+        "issuer_vkey",
+        "vrf_vkey",
+        "vrf_result",
+        "block_body_size",
+        "block_body_hash",
+        "operational_cert",
+        "protocol_version"
       ]
     },
     "Header": {
@@ -1803,7 +1889,10 @@
           "$ref": "cardano-babbage.json#/definitions/HeaderBody"
         }
       },
-      "required": [ "body_signature", "header_body" ],
+      "required": [
+        "body_signature",
+        "header_body"
+      ],
       "additionalProperties": false
     },
     "Block": {
@@ -1811,7 +1900,15 @@
       "type": "object",
       "properties": {
         "auxiliary_data_set": {
-          "$ref": "cardano-babbage.json#/definitions/AuxiliaryDataSet"
+          "type": "object",
+          "title": "AuxiliaryDataSet",
+          "description": "A mapping from transaction indices to AuxiliaryData values",
+          "patternProperties": {
+            "^(0|[1-9][0-9]*)$": {
+              "$ref": "cardano-babbage.json#/definitions/AuxiliaryData"
+            }
+          },
+          "additionalProperties": false
         },
         "header": {
           "$ref": "cardano-babbage.json#/definitions/Header"

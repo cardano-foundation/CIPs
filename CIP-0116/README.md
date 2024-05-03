@@ -174,6 +174,10 @@ Some non-standard `format` types are used:
 - `hex` - lower-case hex-encoded byte string
 - `bech32` - [bech32](https://en.bitcoin.it/wiki/Bech32) string
 - `base58` - [base58](https://bitcoinwiki.org/wiki/base58) string
+- `uint64` - 64-bit unsigned integer
+- `int128` - 128-bit signed integer
+- `string64` - a unicode string that must not exceed 64 bytes when utf8-encoded.
+- `posint64` - a positive (0 excluded) 64-bit integer. `1 .. 2^64-1`
 
 ### Limitations
 
@@ -286,7 +290,7 @@ We choose to use Bech32 as the representation for Cardano addresses. When compar
 
 ### Implementation Plan
 
-- [ ] Complete the Babbage specification
+- [x] Complete the specification for the current Babbage era
 - [ ] Provide a test suite validating JSON fixtures for all the types against the schema 
 - [x] Provide an implementation of validating functions that uses this json-schema
   - [mlabs-haskell/cip-0116-tests](https://github.com/mlabs-haskell/cip-0116-tests)
