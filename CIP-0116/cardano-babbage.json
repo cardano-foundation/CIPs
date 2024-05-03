@@ -1440,7 +1440,7 @@
               "$ref": "cardano-babbage.json#/definitions/Credential"
             },
             "pool_keyhash": {
-              "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
+              "$ref": "cardano-babbage.json#/definitions/PoolPubKeyHash"
             }
           },
           "required": [
