@@ -9,7 +9,7 @@ Implementors:
     - Koz Ross <koz@mlabs.city>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
-Created: 2024-04-30
+Created: 2024-05-03
 License: Apache-2.0
 ---
 
@@ -135,7 +135,7 @@ required in a range of applications. Most notably, hashing is a key tool in
 cryptographic protocols and applications, either in its own right, or as part of
 a larger task. The value of such functionality is such that Plutus Core already
 contains primitives for certain hash functions, specifically two variants of
-[SHA256][sha-256] and [BLAKE2b][blake2b]. At the same time, hash functions
+[SHA256][sha256] and [BLAKE2b][blake2b]. At the same time, hash functions
 choices are often determined by protocol or use case, and providing individual
 primitives for every possible hash function is not a scalable choice. It is much
 preferrable to give necessary tools to implement such functionality to users of
@@ -143,7 +143,7 @@ Plutus (Core), allowing them to use whichever hash function(s) their
 applications require.
 
 As an example, we consider the [Argon2][argon2] family of hash functions. In
-order to implement any of this family requires the following operations:
+order to implement any variant of this family requires the following operations:
 
 1. Conversion of numbers to bytes
 2. Bytestring concatenation
