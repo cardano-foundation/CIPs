@@ -8,7 +8,8 @@ Authors:
 Implementors:
     - Vladimir Kalnitsky <klntsky@gmail.com>
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/766
+    - https://github.com/cardano-foundation/CIPs/pull/742
+    - https://github.com/cardano-foundation/CIPs/pull/766
 Created: 2024-02-22
 License: CC-BY-4.0
 ---
@@ -21,13 +22,15 @@ Canonical JSON encoding for Cardano domain types lets the ecosystem converge on 
 
 Cardano domain types have canonical CDDL definitions (for every era), but when it comes to use in web apps, where JSON is the universally accepted format, there is no definite standard. This CIP aims to change that.
 
-The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/pull/742).
+The full motivation text is provided in [CPS-11 | Universal JSON Encoding for Domain Types](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0011).
 
 ## Specification
 
-This CIP is expected to contain multiple json-schema definitions for Cardano Eras and breaking intra-era hardforks starting from Babbage:
+This CIP is expected to contain multiple json-schema definitions for Cardano Eras and breaking intra-era hardforks starting from Babbage.
 
-- [Babbage](./cardano-babbage.json)
+| Ledger era | Hardfork | Ledger Commit | Schema | Changelog Entry |
+| --- | --- | --- | --- |--- |
+| Babbage | Vasil | [12dc779](https://github.com/IntersectMBO/cardano-ledger/blob/12dc779d7975cbeb69c7c18c1565964a90f50920/eras/babbage/impl/cddl-files/babbage.cddl) | [cardano-babbage.json](./cardano-babbage.json) | N/A |
 
 ### Tests & utilities for JSON validation
 
@@ -50,14 +53,6 @@ For a single JSON fixture, however, there are multiple variants of encoding it a
 #### Consistency with the previous versions
 
 To simplify transitions of dApps between eras, the scope of changes introduced to the schemas SHOULD be limited to the scope of CDDL changes.
-
-
-#### Absence of extensibility
-
-The schemas MUST NOT be extensible with additional properties. This may sound counter-intuitive and against the spirit of json-schema, but there are some motivations behind that:
-
-- More safety from typos: object fields that are optional may be specified with slightly incorrect names in dApps' code, leading to inability of the decoders to pick up the values, which may go unnoticed.
-- Clear delineation between Cardano domain types and user dApp domain types: forcing the developers to store their dApp domain data separately from Cardano data, or close to it (as opposed to mixing these together in a single object) will indirectly motivate better structured dApp code.
 
 ### Schema Conventions
 
@@ -252,21 +247,56 @@ Instead of providing all three variants of encoding, we base the schema on the o
 
 It is up to implementors to decide how to serialize the values into CBOR. The property we want to maintain is preserved regardless of the choice: for every block binary there is exactly one JSON encoding.
 
+### Versioning
+
+This CIP should not follow a conventional versioning scheme, rather it should be altered via pull request before a hardforks to add new a JSON schema to align with new ledger ers. Each schema must be standalone and not reuse definitions between eras. Authors MUST follow the [Schema Scope](#scope-of-the-schema), [Schema Design Principles](#schema-design-principles) and [Schema Conventions](#schema-conventions).
+
+Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be updated. Authors must clearly articulate the deltas between schemas.
+
 ## Rationale: how does this CIP achieve its goals?
+
+### Scope
+
+We keep the scope of this standard to the data types within Cardano blocks. The rationale for this is that block data is by far the most useful for the majority of Cardano actors. There is also one nice benefit that the definitions can map directly from the provided CDDL file from ledger team.
+
+### Strictness
+
+This CIP lays out strong conventions that future schema authors must follow, along with a large set of design principles. The aim is to minimize the potential for unavoidable deltas between schemas.
+
+By setting sometimes arbitrary conventions we hope to create a single possible interpretation from CBOR to JSON, alleviating any ambiguity.
+
+### Absence of extensibility
+
+The schemas MUST NOT be extensible with additional properties. This may sound counter-intuitive and against the spirit of json-schema, but there are some motivations behind that:
+
+- More safety from typos: object fields that are optional may be specified with slightly incorrect names in dApps' code, leading to inability of the decoders to pick up the values, which may go unnoticed.
+- Clear delineation between Cardano domain types and user dApp domain types: forcing the developers to store their dApp domain data separately from Cardano data, or close to it (as opposed to mixing these together in a single object) will indirectly motivate better structured dApp code.
+
+### JSON
+
+JSON was chosen as there is no viable alternative. The majority of Cardano's web tooling is built with Javascript where JSON is the primary object representation format.
+
+Furthermore, even across non-Javascript based stacks, JSON enjoys wide tooling support, this improves the potential for builders to adopt this standard.
+
+### Bech32 for addresses
+
+We choose to use Bech32 as the representation for Cardano addresses. When compared to the alternative of hexademical encoding, Bech32 gives the advantages of an included checksum and a human readable prefix.
 
 ## Path to Active
 
-- [x] Complete the specification for the current era
-- [x] Provide [an implementation](https://github.com/mlabs-haskell/cip-0116-tests) of validating functions that uses this json-schema
-- [ ] Collect a list of cardano domain types implementations and negotiate transition to the specified formats with maintainers (if it makes sense and is possible)
-
 ### Acceptance Criteria
 
+- [ ] One future ledger era schema is added
+- [ ] This standard is implemented within three separate tools, libraries, etc. 
+
 ### Implementation Plan
-<!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
+
+- [x] Complete the specification for the current Babbage era
+- [ ] Provide a test suite validating JSON fixtures for all the types against the schema 
+- [x] Provide an implementation of validating functions that uses this json-schema
+  - [mlabs-haskell/cip-0116-tests](https://github.com/mlabs-haskell/cip-0116-tests)
+- [ ] Collect a list of cardano domain types implementations and negotiate transition to the specified formats with maintainers (if it makes sense and is possible)
 
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
-
-[CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
