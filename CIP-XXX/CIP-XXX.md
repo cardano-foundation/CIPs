@@ -172,9 +172,8 @@ function that happens to be self-inverting, as well as preserving randomness
 We describe the proposed operations in several stages. First, we specify a
 scheme for indexing individual bits (rather than whole bytes) in a
 `BuiltinByteString`. We then specify the semantics of each operation, as well as
-giving costing expectations. Lastly, we provide some laws that these operations
-are supposed to obey, as well as giving some specific examples of results from
-the use of these operations.
+giving costing expectations and some examples. Lastly, we provide some laws that 
+these operations are supposed to obey.
 
 ### Bit indexing scheme
 
@@ -281,6 +280,18 @@ semantics. These operations will have the following signatures:
 * `builtinSetBits :: BuiltinByteString -> [(BuiltinInteger, BuiltinBool)] ->
   BuiltinByteString`
 * `builtinReplicate :: BuiltinInteger -> BuiltinInteger -> BuiltinByteString`
+
+For costing, we assume the following costing:
+
+| Operation | Cost |
+|-----------|------|
+| `builtinLogicalAnd` | Linear in longest `BuiltinByteString` argument |
+| `builtinLogicalOr` | Linear in longest `BuiltinByteString` argument |
+| `builtinLogicalXor` | Linear in longest `BuiltinByteString` argument |
+| `builtinLogicalComplement` | Linear in `BuiltinByteString` argument |
+| `builtinReadBit` | Constant |
+| `builtinSetBits` | Additively linear in both arguments |
+| `builtinReplicate` | Linear in the _value_ of the first argument |
 
 #### Padding versus truncation semantics
 
