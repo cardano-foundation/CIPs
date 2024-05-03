@@ -5,7 +5,8 @@ Category: Tools
 Status: Proposed
 Authors:
     - Vladimir Kalnitsky <klntsky@gmail.com>
-Implementors: []
+Implementors:
+    - Vladimir Kalnitsky <klntsky@gmail.com>
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/766
 Created: 2024-02-22
