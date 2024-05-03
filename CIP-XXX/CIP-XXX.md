@@ -173,7 +173,7 @@ We describe the proposed operations in several stages. First, we specify a
 scheme for indexing individual bits (rather than whole bytes) in a
 `BuiltinByteString`. We then specify the semantics of each operation, as well as
 giving costing expectations and some examples. Lastly, we provide some laws that 
-these operations are supposed to obey.
+any implementation of these operations is expected to obey.
 
 ### Bit indexing scheme
 
