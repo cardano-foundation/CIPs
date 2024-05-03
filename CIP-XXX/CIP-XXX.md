@@ -127,7 +127,45 @@ yield significant space savings in many cases. Given the limitations onchain
 that we have to work within, having such techniques available to implementers
 would be a huge potential advantage.
 
-TODO: Another 1-2 example uses
+### Case 2: hashing
+
+[Hashing][hashing], that is, computing a fixed-length 'fingerprint' or 'digest'
+of a variable-length input (typically viewed as binary) is a common task
+required in a range of applications. Most notably, hashing is a key tool in
+cryptographic protocols and applications, either in its own right, or as part of
+a larger task. The value of such functionality is such that Plutus Core already
+contains primitives for certain hash functions, specifically two variants of
+[SHA256][sha-256] and [BLAKE2b][blake2b]. At the same time, hash functions
+choices are often determined by protocol or use case, and providing individual
+primitives for every possible hash function is not a scalable choice. It is much
+preferrable to give necessary tools to implement such functionality to users of
+Plutus (Core), allowing them to use whichever hash function(s) their
+applications require.
+
+As an example, we consider the [Argon2][argon2] family of hash functions. In
+order to implement any of this family requires the following operations:
+
+1. Conversion of numbers to bytes
+2. Bytestring concatenation
+3. BLAKE2b hashing
+4. Floor division
+5. Indexing bytes in a bytestring
+6. Logical XOR
+
+Operations 1 to 5 are already provided by Plutus Core (with 1 being included [in
+a recent CIP][conversion-cip]); however, without logical XOR, no function in the
+Argon2 family could be implemented. While in theory, it could be simulated with
+what operations already exist, much as with Case 1, this would be impractical at
+best, and outright impossible at worst, due to the severe limits imposed
+on-chain. This is particularly the case here, as all Argon2 variants call
+logical XOR in a loop, whose step count is defined by _multiple_ user-specified
+(or protocol-specified) parameters.
+
+We observe that this requirement for logical XOR is not unique to the Argon2
+family of hash functions. Indeed, logical XOR is widely used for [a variety of
+cryptographic applications][xor-crypto], as it is both a low-cost mixing
+function that happens to be self-inverting, as well as preserving randomness
+(that is, a random bit XORed with a non-random bit will give a random bit).  
 
 ## Specification
 
@@ -1117,13 +1155,19 @@ the bit ordering (in the place value sense) employed by all machine
 architectures for bytes in their sense as natural numbers within a fixed range.
 This was also the choice made by [CIP-58][cip-58], for similar reasons.
 
+We also note that conversion agreement matters for Case 2, in the wider context
+of the interaction between [conversion primitives][conversion-cip] and logical
+XOR. The Argon2 family of hashes use certain inputs (which happen to be numbers)
+both as numbers and also as blocks of binary, which means that any inconsistency
+would cause strange (and possibly quite surprising) results when implementing
+any of those functions. This once again suggests that our choice is the right
+one, as it is the only one that would ensure conversion agreement.
+
 While the bit-flip variant has the advantage of 'agreement' between byte and bit
 indexes, we believe that conversion agreement is the more important property to
-have, not only for consistency with our described semantics, but also to some
-extent for consistency with the conversion primitives [described in another
-existing CIP][conversion-cip]. Given that the aforementioned CIP has already
+have. Given that the [conversion primitives CIP][conversion-cip] has already
 been implemented into Plutus Core, we think that our choice is the only viable
-one if consistency is desirable.
+one in light of both this fact, and the Cases we have stated here.
 
 ### Padding versus truncation
 
@@ -1345,3 +1389,8 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [benchmarks-bits]: https://github.com/mlabs-haskell/plutus-integer-bytestring/blob/koz/logical/bench/naive/Main.hs#L74-L83
 [vector]: https://hackage.haskell.org/package/vector-0.13.1.0/docs/Data-Vector.html#v:-47--47-
 [boolean-algebra-2]: https://en.wikipedia.org/wiki/Two-element_Boolean_algebra
+[hashing]: https://en.wikipedia.org/wiki/Hash_function
+[sha256]: https://en.wikipedia.org/wiki/Secure_Hash_Algorithms
+[blake2b]: https://en.wikipedia.org/wiki/BLAKE_(hash_function)
+[argon2]: https://en.wikipedia.org/wiki/Argon2
+[xor-crypto]: https://en.wikipedia.org/wiki/Exclusive_or#Bitwise_operation
