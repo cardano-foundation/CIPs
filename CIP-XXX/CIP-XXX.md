@@ -250,7 +250,7 @@ means we have $\left\lfloor\frac{133}{2^4}\right\rfloor \mod 2 \equiv 0$. Thus,
 $b[4] = 0$. Consider instead the index $i = 19$; by the definition above, this
 corresponds to the _byte_ index 0, as $\left\lfloor\frac{19}{8}\right\rfloor =
 2$, and $3 - 2 - 1 = 0$. Within the byte $42$, this means we have
-$\left\lfloor\frac{42}{2^3}\right\rfloor `mod 2 \equiv 1$. Thus, $b[19] = 1$. 
+$\left\lfloor\frac{42}{2^3}\right\rfloor\mod 2 \equiv 1$. Thus, $b[19] = 1$. 
 
 Put another way, our _byte_ indexes run 'the opposite way' to our _bit_ indexes.
 Thus, for any `BuiltinByteString` of length $n$, we have _bit_ indexes relative
@@ -281,7 +281,7 @@ semantics. These operations will have the following signatures:
   BuiltinByteString`
 * `builtinReplicate :: BuiltinInteger -> BuiltinInteger -> BuiltinByteString`
 
-For costing, we assume the following costing:
+We assume the following costing:
 
 | Operation | Cost |
 |-----------|------|
@@ -595,7 +595,7 @@ indexing scheme](#bit-indexing-scheme) for the exact specification of this.
 
 If the change list argument is empty, the result is $b$. If the change list
 argument is a singleton, let $(i, v)$ refer to its only index-value pair. If $i
-< 0$ or i \geq 8 \cdot n$, then `builtinSetBits` fails. In this case, the
+< 0$ or $i \geq 8 \cdot n$, then `builtinSetBits` fails. In this case, the
 resulting error message must specify _at least_ the following information:
 
 * That `builtinSetBits` failed due to an out-of-bounds index argument; and
@@ -619,7 +619,8 @@ of such processing. There are two possible outcomes for $b_m$:
    change list as that error.
 2. A `BuiltinByteString`.
 
-From here, when we refer to $b_m$, we refer to the `BuiltinByteString` option.
+From here, when we refer to $b_m$, we refer to the `BuiltinByteString` outcome;
+in the case of the first outcome, we simply 'forward' the result.
 
 We observe that any change list $C^{\prime}$ of length $m +
 1$ will have the form of some other change list $C_m$, with an additional
@@ -1186,7 +1187,7 @@ For the operations defined in this CIP taking two `BuiltinByteString` arguments
 (that is, `builtinLogicalAnd`, `builtinLogicalOr`, and `builtinLogicalXor`),
 when the two arguments have identical lengths, the semantics are natural,
 mirroring the corresponding operations on the 
-[Boolean algebra $\mathbb{2}^{8n}$][boolean-algebra-2], where $n$ is the length 
+[Boolean algebra][boolean-algebra-2] $\textbf{2}^{8n}$, where $n$ is the length 
 of either argument in bytes. When the arguments do _not_ have matching lengths,
 however, the situation becomes more complex, as there are several ways in which
 we could define these operations. The most natural possibilities are as follows;
