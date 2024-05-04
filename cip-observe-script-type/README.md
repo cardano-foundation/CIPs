@@ -189,7 +189,7 @@ This change is not backwards-compatible and will need to go into a new Plutus la
 ## Path to Active
 
 ### Acceptance Criteria
-- [] Fully implemented in Cardano.
+- [ ] These rules included within a official Plutus version, and released via a major hard fork.
       
 ### Implementation Plan
 - [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
