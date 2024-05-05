@@ -1,12 +1,21 @@
 ---
 CIP: 25
 Title: Media Token Metadata Standard
-Authors: Alessandro Konrad <alessandro.konrad@live.de>, Smaug <smaug@pool.pm>
-Comments-URI:
 Status: Active
-Type: Informational
+Category: Tokens
+Authors:
+  - Alessandro Konrad <alessandro.konrad@live.de>
+  - Smaug <smaug@pool.pm>
+Implementors: N/A
+Discussions:
+  - https://forum.cardano.org/t/cip-nft-metadata-standard/45687
+  - https://www.reddit.com/r/CardanoDevelopers/comments/mkhlv8/nft_metadata_standard/
+  - https://github.com/cardano-foundation/CIPs/pull/85
+  - https://github.com/cardano-foundation/CIPs/pull/267
+  - https://github.com/cardano-foundation/CIPs/pull/341
+  - https://github.com/cardano-foundation/CIPs/pull/527
+  - https://github.com/cardano-foundation/CIPs/pull/593
 Created: 2021-04-08
-Post-History: https://forum.cardano.org/t/cip-nft-metadata-standard/45687 and https://www.reddit.com/r/CardanoDevelopers/comments/mkhlv8/nft_metadata_standard/
 License: CC-BY-4.0
 ---
 
@@ -14,19 +23,18 @@ License: CC-BY-4.0
 
 This proposal defines an Media Token Metadata Standard for Native Tokens.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Tokens on Cardano are a part of the ledger. Unlike on Ethereum, where metadata can be attached to a token through a smart contract, this isn't possible on Cardano because tokens are native and Cardano uses a UTxO ledger, which makes it hard to directly attach metadata to a token.
 So the link to the metadata needs to be established differently.
-Cardano has the ability to send metadata in a transaction, that's the way we can create a link between a token and the metadata. To make the link unique, the metadata should be appended to the same transaction, where the token forge happens:
+
+Cardano has the ability to send metadata in a transaction, allowing the creation of a link between a token and the metadata. To make the link unique, the metadata should be appended to the same transaction, where the token forge happens:
 
 > Given a token in a EUTXOma ledger, we can ask “where did this token come from?” Since tokens
 > are always created in specific forging operations, we can always trace them back through their
 > transaction graph to their origin.
 
-(Section 4 in the paper: https://iohk.io/en/research/library/papers/utxomautxo-with-multi-asset-support/)
-
-## Considerations
+—Section 4 in the paper [UTXOma:UTXO with Multi-Asset Support](https://iohk.io/en/research/library/papers/utxomautxo-with-multi-asset-support/)
 
 That being said, we have unique metadata link to a token and can always prove that with 100% certainty. No one else can manipulate the link except if the policy allows it to ([update mechanism](#update-metadata-link-for-a-specific-token)).
 
@@ -135,9 +143,18 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
 }
 ```
 
+### References
+
+- Mime types: [RFC6838: Media Type Specifications and Registration Procedures](https://tools.ietf.org/html/rfc6838)
+- CIP about reserved labels: [CIP-0010: Transaction Metadata Label Registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010)
+- [EIP-721](https://eips.ethereum.org/EIPS/eip-721)
+- URI/URL standards: [RFC3986](https://tools.ietf.org/html/rfc3986), [RFC2397](https://tools.ietf.org/html/rfc2397)
+
+## Rationale: how does this CIP achieve its goals?
+
 ### Retrieve valid metadata for a specific token
 
-As mentioned above this metadata structure allows to have either one token or multiple tokens with also different policies in a single mint transaction. A third party tool can then fetch the token metadata seamlessly. It doesn't matter if the metadata includes just one token or multiple. The proceedure for the third party is always the same:
+As mentioned above this metadata structure allows to have either one token or multiple tokens with also different policies in a single mint transaction. A third party tool can then fetch the token metadata seamlessly. It doesn't matter if the metadata includes just one token or multiple. The procedure for the third party is always the same:
 
 1. Find the latest mint transaction with the label 721 in the metadata of the specific token that mints a positive amount of the token
 2. Lookup the 721 key
@@ -151,17 +168,21 @@ Using the latest mint transaction with the label 721 as valid metadata for a tok
 
 Since modern token policies or ledger rules should generally make burning of tokens permissionless, the metadata update is restricted to minting (as in positive amounts) transaction and excludes burning transactions explicitly.
 
-## Backward Compatibility
+### Backward Compatibility
 
 To keep token metadata compatible with changes coming up in the future, we use the **`version`** property.
 A future version will introduce [schema.org](https://schema.org).
 
-## References
+## Path to Active
 
-- Mime type: https://tools.ietf.org/html/rfc6838.
-- CIP about reserved labels: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010
-- EIP-721: https://eips.ethereum.org/EIPS/eip-721
-- URI: https://tools.ietf.org/html/rfc3986, https://tools.ietf.org/html/rfc2397
+### Acceptance Criteria
+
+- [x] Support of this NFT definition in a commercially significant number and variety of NFT-related services and wallets.
+- [x] Evolution of this document and standard beyond its early adoption and use cases (up through the point when alternative NFT standards have emerged).
+
+### Implementation Plan
+
+- [x] Promulgation of this standard among NFT creators, minting services, token analytic / query services, and wallets.
 
 ## Copyright
 

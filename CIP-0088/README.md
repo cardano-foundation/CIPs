@@ -254,15 +254,15 @@ This entry, if present, should be a CIP ID indexed object containing additional 
 When and where possible the CIP-Specific registration should follow the CBOR-like declaration syntax to ensure that
 the content is well-formed and easily parseable.
 
-| CIP | Name                          | Version | Status | CDDL                                     | Rationale           |
-|-----|-------------------------------|---------|--------|------------------------------------------|---------------------|
-| 25  | Token Metadata                | 1       | Active | [CIP25_v1.cddl](CIPs/0025/CIP25_v1.cddl) | [CIP-25](CIPs/0025) |
-| 26  | Fungible Token Information    | 1       | Active | [CIP26_v1.cddl](CIPs/0026/CIP26_v1.cddl) | [CIP-26](CIPs/0026) |
-| 27  | Token Royalties               | 1       | Active | [CIP27_v1.cddl](CIPs/0027/CIP27_v1.cddl) | [CIP-27](CIPs/0027) |
-| 48  | Metadata References           | 1       | Draft  | [CIP48_v1.cddl](CIPs/0048/CIP48_v1.cddl) | [CIP-48](CIPs/0048) |
-| 60  | Music Token Metadata          | 1       | Draft  | [CIP60_v1.cddl](CIPs/0060/CIP60_v1.cddl) | [CIP-60](CIPs/0060) |
-| 68  | Datum Token Metadata          | 1       | Active | [CIP68_v1.cddl](CIPs/0068/CIP68_v1.cddl) | [CIP-68](CIPs/0068) |
-| 86  | Token Metadata Update Oracles | 1       | Active | [CIP86_v1.cddl](CIPs/0086/CIP86_v1.cddl) | [CIP-86](CIPs/0086) |
+| CIP | Name                          | Version | Status | CDDL                                       | Rationale             |
+|-----|-------------------------------|---------|--------|--------------------------------------------|-----------------------|
+| 25  | Token Metadata                | 1       | Active | [CIP25_v1.cddl](./CIPs/0025/CIP25_v1.cddl) | [CIP-25](./CIPs/0025) |
+| 26  | Fungible Token Information    | 1       | Active | [CIP26_v1.cddl](./CIPs/0026/CIP26_v1.cddl) | [CIP-26](./CIPs/0026) |
+| 27  | Token Royalties               | 1       | Active | [CIP27_v1.cddl](./CIPs/0027/CIP27_v1.cddl) | [CIP-27](./CIPs/0027) |
+| 48  | Metadata References           | 1       | Draft  | [CIP48_v1.cddl](./CIPs/0048/CIP48_v1.cddl) | [CIP-48](./CIPs/0048) |
+| 60  | Music Token Metadata          | 1       | Draft  | [CIP60_v1.cddl](./CIPs/0060/CIP60_v1.cddl) | [CIP-60](./CIPs/0060) |
+| 68  | Datum Token Metadata          | 1       | Active | [CIP68_v1.cddl](./CIPs/0068/CIP68_v1.cddl) | [CIP-68](./CIPs/0068) |
+| 86  | Token Metadata Update Oracles | 1       | Active | [CIP86_v1.cddl](./CIPs/0086/CIP86_v1.cddl) | [CIP-86](./CIPs/0086) |
 
 ***Note: CIP-0068 Tokens***
 

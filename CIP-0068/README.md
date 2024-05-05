@@ -17,6 +17,7 @@ Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/471
   - https://github.com/cardano-foundation/CIPs/pull/494
   - https://github.com/cardano-foundation/CIPs/issues/520
+  - https://github.com/cardano-foundation/CIPs/pull/586
 Created: 2022-07-13
 License: CC-BY-4.0
 ---
@@ -515,26 +516,6 @@ the Plutus validator context. To do this we
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and
    their asset names without the `asset_name_label` prefix match. (on-chain)
 
-## Rationale: how does this CIP achieve its goals?
-
-Without separation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be
-quite cumbersome as you would need to add the metadata everytime to the new output where the `user token` is sent to.
-Hence, you separate metadata and `user token` and lock the metadata inside another UTxO, so you can freely move
-the `user token` around.
-
-In order to reference the correct UTxO containing the metadata, it needs to be authenticated, otherwise metadata
-spoofing attacks become possible. One way to achieve that is by adding an NFT (`reference NFT`) to the UTxO. This NFT
-needs to under the same Policy ID as the `user token`, followed by an asset name pattern defined in the standard. This
-way you create a secure link between `reference NFT` and `user token` without the need for any extra data, and you can
-make use of this off-chain and on-chain.
-
-The security for the link is derived from the minting policy itself, so it's important to write the validator with the
-right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
-
-### Backward Compatibility
-
-To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
-
 ### Extending & Modifying this CIP
 
 > The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
@@ -582,31 +563,6 @@ review prior to official acceptance. These separate CIPs **MUST** include a plan
 versions of the affected tokens. `asset_name_labels` **MUST** only be marked obsolete once a modifying CIP achieves the
 `accepted` status.
 
-## Path to Active
-
-### Acceptance Criteria
-
-- [X] Agree on a binary encoding for asset name labels
-  in [CIP-0067](https://github.com/cardano-foundation/CIPs/pull/298).
-- [X] Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
-- [X] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (
-  off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Implementation](./ref_impl)
-- [X] Open-source more practical implementations/projects which make use of this CIP.
-
-### Implementation Plan
-
-To keep metadata compatibility with changes coming in the future, we introduce
-a `version` field in the datum as an integer to increment. New asset classes or
-changes to the on-chain format must come with a version bump.
-
-## References
-
-- [CIP 25 - Media NFT Metadata Standard](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025)
-- [CIP 31 - Reference inputs](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031)
-- [CIP 67 - Asset Name Label Registry](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067)
-- [RFC 3986 - Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986)
-- [RFC 2397 - The "data" URL scheme](https://datatracker.ietf.org/doc/html/rfc2397)
-
 ### Changelog
 
 #### version 1
@@ -616,6 +572,50 @@ changes to the on-chain format must come with a version bump.
 #### version 2
 
 - Added new RFT asset class (444)
+
+## Rationale: how does this CIP achieve its goals?
+
+Without separation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be
+quite cumbersome as you would need to add the metadata everytime to the new output where the `user token` is sent to.
+Hence, you separate metadata and `user token` and lock the metadata inside another UTxO, so you can freely move
+the `user token` around.
+
+In order to reference the correct UTxO containing the metadata, it needs to be authenticated, otherwise metadata
+spoofing attacks become possible. One way to achieve that is by adding an NFT (`reference NFT`) to the UTxO. This NFT
+needs to under the same Policy ID as the `user token`, followed by an asset name pattern defined in the standard. This
+way you create a secure link between `reference NFT` and `user token` without the need for any extra data, and you can
+make use of this off-chain and on-chain.
+
+The security for the link is derived from the minting policy itself, so it's important to write the validator with the
+right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
+
+### Backward Compatibility
+
+To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [X] Open-source more practical implementations/projects which make use of this CIP.
+- [X] Introduce a `version` integer datum field to increment for new asset classes or
+changes to the on-chain format.
+
+### Implementation Plan
+
+- [X] Agree on a binary encoding for asset name labels
+  in [CIP-0067](https://github.com/cardano-foundation/CIPs/pull/298).
+- [X] Get support for this CIP by wallets, explorers, tools, minting platforms and other 3rd parties.
+- [X] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (
+  off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Implementation](./ref_impl)
+
+## References
+
+- [CIP 25 - Media NFT Metadata Standard](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025)
+- [CIP 31 - Reference inputs](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0031)
+- [CIP 67 - Asset Name Label Registry](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067)
+- [RFC 3986 - Uniform Resource Identifier (URI)](https://www.rfc-editor.org/rfc/rfc3986)
+- [RFC 2397 - The "data" URL scheme](https://datatracker.ietf.org/doc/html/rfc2397)
 
 ## Copyright
 

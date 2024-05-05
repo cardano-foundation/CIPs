@@ -1,24 +1,27 @@
 ---
 CIP: 49
 Title: ECDSA and Schnorr signatures in Plutus Core
-Authors: Koz Ross (koz@mlabs.city), Michael Peyton-Jones (michael.peyton-jones@iohk.io), Iñigo Querejeta Azurmendi (querejeta.azurmendi@iohk.io)
-Discussions-To: koz@mlabs.city
-Status: Proposed
-Type: Standards Track
+Status: Active
+Category: Plutus
+Authors:
+  - Koz Ross <koz@mlabs.city>
+  - Michael Peyton-Jones <michael.peyton-jones@iohk.io>
+  - Iñigo Querejeta Azurmendi <querejeta.azurmendi@iohk.io>
+Implementors:
+  - MLabs
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/250
 Created: 2022-04-27
+License: Apache-2.0
 ---
-## Simple Summary
-
-Support ECDSA and Schnorr signatures over the SECP256k1 curve in Plutus Core;
-specifically, allow validation of such signatures as builtins.
 
 ## Abstract
 
-Provides a way of verifying ECDSA and Schnorr signatures over the SECP256k1
-curve in Plutus Core, specifically with new builtins. These builtins work over
-``BuiltinByteString``s.
+Support ECDSA and Schnorr signatures over the SECP256k1 curve in Plutus Core;
+specifically, allow validation of such signatures as builtins.
+These builtins work over ``BuiltinByteString``s.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Signature schemes based on the SECP256k1 curve are common in the blockchain
 industry; a notable user of these is Bitcoin. Supporting signature schemes which
@@ -143,7 +146,7 @@ The builtin operations will error with a descriptive message if given inputs
 that don't correspond to the constraints above, return `False` if the signature
 fails to verify the input given the key, and `True` otherwise.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 We consider the implementation trustworthy: `secp256k1` is the reference
 implementation for both signature schemes, and is already being used in
@@ -171,7 +174,7 @@ It may be possible that some set of primitive can avoid both of these issues
 CIP](https://github.com/cardano-foundation/CIPs/pull/220)); in the meantime,
 providing direct support for commonly-used schemes such as these is worthwhile.
 
-## Backward Compatibility
+### Backward Compatibility
 
 At the Plutus Core level, implementing this proposal induces no
 backwards-incompatibility: the proposed new primitives do not break any existing
@@ -182,12 +185,16 @@ On-chain, this requires a hard fork.
 
 ## Path to Active
 
-An implementation by MLabs already exists, and has been [merged into
-Plutus](https://github.com/input-output-hk/plutus/pull/4368). Tests of the
-functionality have also been included, although costing is currently
-outstanding, as it cannot be done by MLabs due to limitations in how costing is
-calculated. Costing will instead be done by the Plutus Core team.
+### Acceptance Criteria
+
+- [x] Include tests of functionality with implementation.
+- [x] Satisfaction of CIP-0035 requirements ([Additions to the Plutus Core Builtins](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#additions-to-the-plutus-core-builtins)) including costing.
+- [x] Inclusion of SECP in Plutus core ([as of Valentine hard fork](https://docs.cardano.org/cardano-testnet/about/secp/)).
+
+### Implementation Plan
+
+- [x] Provide an implementation: by MLabs, [merged into Plutus](https://github.com/input-output-hk/plutus/pull/4368).
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0.
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).

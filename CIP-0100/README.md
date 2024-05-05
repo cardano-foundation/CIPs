@@ -16,63 +16,7 @@ License: CC-BY-4.0
 
 This Cardano Improvement Proposal (CIP) introduces a standardized and flexible metadata format for governance events in the Cardano ecosystem. While the ledger does not enforce the structure of metadata, providing a standard for metadata will enable better tooling, improved interoperability, and more consistent display across wallets, blockchain explorers, and other tools. This CIP aims to strike a balance between flexibility and structure to facilitate high-quality tooling, without limiting expressivity with regards to user expression.
 
-### Acknowledgements
-
-<details>
-  <summary><strong>First draft/workshop</strong></summary>
-
-  I would like to thank those that contributed to this first draft during the online workshop that was held on 2023-04-12.
-
- - CHIL Pool
- - Alex Djuric
- - Cody Butz
- - Felix Weber
- - Leo Pienasola
- - Markus Gufler
- - Michael Madoff
- - Mohamed Mahmoud
- - Thomas Upfield
- - William Ryan
- - Santiago Carmuega
-
-</details>
-
-<details>
-  <summary><strong>Second draft</strong></summary>
-
-  The following people helped with the second draft, out of band at at the Edinburgh workshop on 2023-07-12.
-
-  - Ryan Williams
-  - Matthias Bankort
-  - All Edinburgh Workshop attendees
-</details>
-<details>
-  <summary><strong>Second Workshop</strong></summary>
-
-  The following people helped with the third draft during the online workshop held on 2023-11-02.
-
-  - Mike Susko
-  - Thomas Upfield
-  - Lorenzo Bruno
-  - Ryan Williams
-  - Nils Peuser
-  - Santiago Carmuega
-  - Nick Ulrich
-  - Ep Ep
-
-</details>
-
-<details>
-  <summary><strong>Third Workshop</strong></summary>
-
-  The following people helped with the third draft during the online workshop held on 2023-11-10.
-
-  - Adam Dean
-  - Rhys Morgan
-  - Thomas Upfield
-  - Marcel Baumberg
-
-</details>
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
 ## Motivation
 
@@ -139,7 +83,7 @@ Note: Any URI's in the @context field SHOULD be content-addressable and robustly
 
 In CIP-1694 (and likely any alternative or future evolution of it), there are a number of certificates that can be attached to a transaction pertaining to governance; each of these is equipped with an "anchor", which is a URI at which can be found additional metadata.
 
-While this metadata can be published anywhere, external hosting may be unavailable to some users. Therefore, we recognize the transaction metadata as an effective tool for a "common town square" for hosting and discoverability, and reserve [metadatum label 1694](../CIP-0010/README.md) for publishing governance related metadata on-chain.
+While this metadata can be published anywhere, external hosting may be unavailable to some users. Therefore, we recognize the transaction metadata as an effective tool for a "common town square" for hosting and discoverability, and reserve [metadatum label 1694](../CIP-0010) for publishing governance related metadata on-chain.
 
 With the help of [CIP-?](https://github.com/cardano-foundation/CIPs/pull/635), the anchor can then refer to the metadata of another transaction, or even the metadata of the transaction being published itself.
 
@@ -269,11 +213,7 @@ The following alternatives were considered, and rejected:
 
 ### Test Vectors
 
-An example document with an inline context is provided in [this](./example.json) example JSON file.
-
-Canonicalization should produce the following blak2b-256 hash:
-
-34cbb91e044cbd1dbda9e5aa542a74e712d23d0bf151c436c52920dcac03629c
+See [test-vector.md](./test-vector.md) for example.
 
 ## Path to Active
 
@@ -306,6 +246,65 @@ The key stages to get this proposal to active, and the motivation for why each s
 - Extension
   - Finally, this standard chooses to fully specify very little of the total surface area of what could be expressed in governance metadata
   - Therefore, to prove the extensibility of the standard, at least one follow-up CIP should be drafted, extending the set of fields beyond "Minimum Viable Governance"
+
+## Acknowledgements
+
+<details>
+  <summary><strong>First draft/workshop</strong></summary>
+
+  I would like to thank those that contributed to this first draft during the online workshop that was held on 2023-04-12.
+
+ - CHIL Pool
+ - Alex Djuric
+ - Cody Butz
+ - Felix Weber
+ - Leo Pienasola
+ - Markus Gufler
+ - Michael Madoff
+ - Mohamed Mahmoud
+ - Thomas Upfield
+ - William Ryan
+ - Santiago Carmuega
+
+</details>
+
+<details>
+  <summary><strong>Second draft</strong></summary>
+
+  The following people helped with the second draft, out of band at at the Edinburgh workshop on 2023-07-12.
+
+  - Ryan Williams
+  - Matthias Benkort
+  - All Edinburgh Workshop attendees
+
+</details>
+<details>
+  <summary><strong>Second Workshop</strong></summary>
+
+  The following people helped with the third draft during the online workshop held on 2023-11-02.
+
+  - Mike Susko
+  - Thomas Upfield
+  - Lorenzo Bruno
+  - Ryan Williams
+  - Nils Peuser
+  - Santiago Carmuega
+  - Nick Ulrich
+  - Ep Ep
+
+</details>
+
+<details>
+  <summary><strong>Third Workshop</strong></summary>
+
+  The following people helped with the third draft during the online workshop held on 2023-11-10.
+
+  - Adam Dean
+  - Rhys Morgan
+  - Thomas Upfield
+  - Marcel Baumberg
+
+</details>
 
 ## Copyright
 

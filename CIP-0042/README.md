@@ -1,25 +1,25 @@
 ---
 CIP: 42
-Title: New Plutus built-in serialiseData
-Authors: Matthias Benkort <matthias.benkort@iohk.io>, Sebastian Nagel <sebastian.nagel@iohk.io>
-Discussions-To: https://github.com/cardano-foundation/CIPs/pull/218
-Comments-URI: https://github.com/cardano-foundation/CIPs/pull/218
-Category: Plutus
+Title: New Plutus Builtin serialiseData
 Status: Active
-Type: Standards Track
+Category: Plutus
+Authors:
+  - Matthias Benkort <matthias.benkort@iohk.io>
+  - Sebastian Nagel <sebastian.nagel@iohk.io>
+Implementors: 
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/218
 Created: 2022-02-09
 License: Apache-2.0
-Requires: CIP-35
 
 ---
-
-# New Plutus built-in serialiseData
 
 ## Abstract
 
 This document describes the addition of a new Plutus builtin for serialising `BuiltinData` to `BuiltinByteString`.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 As part of developing on-chain script validators for [the Hydra Head protocol](https://eprint.iacr.org/2020/299), we stumble across a peculiar need for on-chain scripts: we need to verify and compare digests obtained from hashing elements of the script's surrounding transaction.
 
@@ -97,7 +97,7 @@ We propose to re-use this instance to define a cost model linear in the size of 
 
 Benchmarking and costing `serialiseData` was done in [this PR](https://github.com/input-output-hk/plutus/pull/4480) according to this strategy. As the benchmark is not very uniform, because some cases of `Data` "structures" differ in CPU time taken to process, the linear model is used as an **upper bound** and thus conservatively overestimating actual costs.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 * Easy to implement as it reuses existing code of the Plutus codebase;
 * Such built-in is generic enough to also cover a wider set of use-cases, while nicely fitting ours;
@@ -110,26 +110,31 @@ Benchmarking and costing `serialiseData` was done in [this PR](https://github.co
 
   Results can be reproduced with the [plutus-cbor benchmark][].
 
-## Path To Active
-
-- [x] Using the existing _sizing metric_ for `Data`, we need to determine a costing function (using existing tooling / benchmarks? TBD)
-- [x] The Plutus team updates plutus to add the built-in to PlutusV1 and PlutusV2 and uses a suitable cost function
-- [ ] The binary format of `Data` is documented and embraced as an interface within `plutus`.
-- [ ] Release it as a backward-compatible change within the next hard-fork
-
-## Alternatives
+### Alternatives
 
 * We have identified that the cost mainly stems from concatenating bytestrings; so possibly, an alternative to this proposal could be a better way to concatenate (or to cost) bytestrings (Builders in Plutus?)
 
 * If costing for `BuiltinData` is unsatisfactory, maybe we want have only well-known input types, e.g. `TxIn`, `TxOut`, `Value` and so on.. `WellKnown t => t -> BuiltinByteString`
 
-## Backward Compatibility
+### Backward Compatibility
 
 * Additional built-in: so can be added to PlutusV1 and PlutusV2 without breaking any existing script validators. A hard-fork is however required as it would makes more blocks validate.
 
+## Path To Active
+
+### Acceptance Criteria
+
+- [x] Release it as a backward-compatible change within the Vasil protocol upgrade
+
+### Implementation Plan
+
+- [x] Using the existing _sizing metric_ for `Data`, determine a costing function (using existing tooling / benchmarks? TBD)
+- [x] The Plutus team updates plutus to add the built-in to PlutusV1 and PlutusV2 and uses a suitable cost function
+- [x] The binary format of `Data` is documented and embraced as an interface within `plutus`. (see [cardano-ledger's CDDL specification](https://github.com/IntersectMBO/cardano-ledger/blob/faa40b812511bfb6592cdfbdd85fe560cbcaed43/eras/babbage/impl/cddl-files/babbage.cddl#L306-L311))
+
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 [CBOR]: https://www.rfc-editor.org/rfc/rfc8949
 [plutus-cbor]: https://github.com/input-output-hk/hydra-poc/tree/a4b843a040897e45120cb63b666d965759091651/plutus-cbor

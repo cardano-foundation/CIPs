@@ -1,16 +1,18 @@
 ---
 CIP: 0381
 Title: Plutus support for Pairings over BLS12-381
-Authors: Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
-Discussions-To: https://github.com/cardano-foundation/CIPs/pull/220
-Comments-URI: https://github.com/cardano-foundation/CIPs/pull/220
-Category: Plutus
 Status: Proposed
-Type: Standards Track
+Category: Plutus
+Authors:
+  - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
+Implementors:
+  - Kenneth MacKenzie <kenneth.mackenzie@iohk.io>
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/220
+  - https://github.com/cardano-foundation/CIPs/pull/506
 Created: 2022-02-11
 License: Apache-2.0
 ---
-
 
 ## Abstract
 This CIP proposes an extension of the current plutus functions to provide support for basic operations over BLS12-381 
@@ -18,7 +20,7 @@ curve to the plutus language. We expose a candidate implementation, and describe
 would bring. In a nutshell, pairing friendly curves will enable a large number of cryptographic primitives that will 
 be essential for the scalability of Cardano. 
 
-## Motivation
+## Motivation: why is this CIP necessary?
 Pairing Friendly Curves are a type of curves that provide the functionality of computing pairings. A pairing is a 
 binary function that maps two points from two groups to a third element in a third target group. For a more in-depth 
 introduction to pairings, we recommend reading [Pairings for Beginners](https://www.craigcostello.com.au/tutorials) or 
@@ -395,7 +397,7 @@ x is negative = true
 ```
 One should note that base field modulus is equal to 3 mod 4 that allows an efficient square root extraction.
 
-### Rationale
+### Rationale: how does this CIP achieve its goals?
 The reason for choosing the BLS12-381 over the BN256 curve is that the former is claimed to provide 128 bits of security,
 while the latter was reduced to 100 bits of security after the extended number field sieve (a new algorithm to compute
 the discrete logarithm) was [shown to reduce the security](https://eprint.iacr.org/2016/1102.pdf) of these curves.
@@ -487,4 +489,15 @@ Groth16 (~23% of the execution budget required for a proof verification) were co
 IOG internal. PR open for Plutus bindings https://github.com/input-output-hk/plutus/pull/5231
 
 ## Path to Active
-Release in upcoming update.
+
+### Acceptance Criteria
+
+- [ ] Confirmation from IOG Plutus Team that this curve support is included in a scheduled Plutus release.
+
+### Implementation Plan
+
+- [ ] Confirmation from IOG Plutus Team that [CIP-0035 Processes](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#processes) for changes to Plutus have been satisfied.
+
+## Copyright
+
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).

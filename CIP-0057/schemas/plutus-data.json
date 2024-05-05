@@ -91,6 +91,7 @@
             }
         },
         "map": {
+            "type": "object",
             "dataType": "object",
             "required": [
                 "dataType",
