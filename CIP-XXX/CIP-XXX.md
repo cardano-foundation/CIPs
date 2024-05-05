@@ -153,7 +153,7 @@ order to implement any variant of this family requires the following operations:
 6. Logical XOR
 
 Operations 1 to 5 are already provided by Plutus Core (with 1 being included [in
-a recent CIP][conversion-cip]); however, without logical XOR, no function in the
+a CIP-121][conversion-cip]); however, without logical XOR, no function in the
 Argon2 family could be implemented. While in theory, it could be simulated with
 what operations already exist, much as with Case 1, this would be impractical at
 best, and outright impossible at worst, due to the severe limits imposed
@@ -1125,7 +1125,7 @@ that, given a `BuiltinByteString` that is non-empty, if we were to get the
 values at bit indexes $0$ through $7$, and treat them as their corresponding
 place value in a summation, we should obtain the same answer as indexing
 whichever byte those bits come from. We call this notion _conversion agreement_,
-due to its relation to [an existing CIP][conversion-cip], which allows us to
+due to its relation to [CIP-121][conversion-cip], which allows us to
 (essentially) view a `BuiltinByteString` as a natural number in base-256.
 Indeed, the case is analogous, with the only difference being that we are
 concerned with the positioning of base-256 digits, not binary ones.
@@ -1168,7 +1168,7 @@ architectures for bytes in their sense as natural numbers within a fixed range.
 This was also the choice made by [CIP-58][cip-58], for similar reasons.
 
 We also note that conversion agreement matters for Case 2, in the wider context
-of the interaction between [conversion primitives][conversion-cip] and logical
+of the interaction between [CIP-121 primitives][conversion-cip] and logical
 XOR. The Argon2 family of hashes use certain inputs (which happen to be numbers)
 both as numbers and also as blocks of binary, which means that any inconsistency
 would cause strange (and possibly quite surprising) results when implementing
@@ -1177,7 +1177,7 @@ one, as it is the only one that would ensure conversion agreement.
 
 While the bit-flip variant has the advantage of 'agreement' between byte and bit
 indexes, we believe that conversion agreement is the more important property to
-have. Given that the [conversion primitives CIP][conversion-cip] has already
+have. Given that the [CIP-121][conversion-cip] has already
 been implemented into Plutus Core, we think that our choice is the only viable
 one in light of both this fact, and the Cases we have stated here.
 
@@ -1252,7 +1252,7 @@ an option.
 
 All the above suggests that no _single_ choice of semantics will satisfy all
 reasonable needs, if only from the point of view of efficiency. This suggests,
-much as for [conversion primitives][conversion-cip] and endianness issues, that
+much as for [CIP-121 primitives][conversion-cip] and endianness issues, that
 the primitive should allow a choice in what semantics get used for any given
 call. Ideally, we would allow a choice of any of the three options described
 above; however, this is awkward to do in Plutus Core. While the choice between
@@ -1397,8 +1397,8 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [cip-58]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0058
 [croaring]: https://github.com/RoaringBitmap/CRoaring
 [too-many-ways-1]: https://fgiesen.wordpress.com/2018/02/19/reading-bits-in-far-too-many-ways-part-1
-[conversion-cip]: https://github.com/mlabs-haskell/CIPs/tree/koz/to-from-bytestring/CIP-XXXX
-[benchmarks-bits]: https://github.com/mlabs-haskell/plutus-integer-bytestring/blob/koz/logical/bench/naive/Main.hs#L74-L83
+[conversion-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/to-from-bytestring/CIP-0121/README.md
+[benchmarks-bits]: https://github.com/mlabs-haskell/plutus-integer-bytestring/blob/main/bench/naive/Main.hs#L74-L83
 [vector]: https://hackage.haskell.org/package/vector-0.13.1.0/docs/Data-Vector.html#v:-47--47-
 [boolean-algebra-2]: https://en.wikipedia.org/wiki/Two-element_Boolean_algebra
 [hashing]: https://en.wikipedia.org/wiki/Hash_function
