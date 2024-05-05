@@ -1,8 +1,8 @@
 ---
-CIP: ????
+CIP: 121
 Title: Integer-ByteString conversions
 Category: Plutus
-Status: Proposed
+Status: Active
 Authors:
     - Koz Ross <koz@mlabs.city>
     - Ilia Rodionov <ilia@mlabs.city>
@@ -544,12 +544,10 @@ characteristics by well-designed benchmarks.
 
 ### Implementation Plan
 
-MLabs has begun the implementation of the proof-of-concept as required in the
-acceptance criteria [here][our-implementation]. Upon completion, we will send a
-pull request to Plutus with the implementation of the primitives for Plutus
-Core, mirroring the proof-of-concept.
-
-[our-implementation]: https://gitlab.haskell.org/ghc/ghc/-/wikis/platforms#tier-1-platforms
+MLabs have completed the implementation of the proof of concept as required
+(located [here](https://github.com/mlabs-haskell/plutus-integer-bytestring).
+This implementation has been merged into Plutus Core, and will be released in
+the upcoming V3 release.
 
 ## Copyright
 
