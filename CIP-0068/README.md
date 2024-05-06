@@ -191,7 +191,7 @@ metadata =
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
-uri = bounded_bytes ; UTF-8
+uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
   
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
