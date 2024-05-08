@@ -200,7 +200,7 @@ extra = plutus_data
 
 datum = #6.121([metadata, version, extra])
 
-version = 1 / 2
+version = 1 / 2 / 3
 ```
 
 Example datum as JSON:
@@ -316,7 +316,7 @@ extra = plutus_data
 
 datum = #6.121([metadata, version, extra])
 
-version = 1 / 2
+version = 1 / 2 / 3
 ```
 
 Example datum as JSON:
@@ -442,7 +442,7 @@ extra = plutus_data
 
 datum = #6.121([metadata, version, extra])
 
-version = 2
+version = 3
 ```
 
 Example datum as JSON:
@@ -572,6 +572,10 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 #### version 2
 
 - Added new RFT asset class (444)
+
+#### version 3
+
+- Added plutus data array support to the image and src tags on the metadata 
 
 ## Rationale: how does this CIP achieve its goals?
 
