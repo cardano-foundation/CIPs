@@ -1,0 +1,110 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+
+    # Terminal theme code
+    theme-id: 300
+  }
+}
+
+classes: {
+  NONE: {style.opacity: 0}
+  PRIVATE_KEY: {
+    shape: sql_table
+    style: {
+      border-radius: 15
+      stroke: wheat
+      fill: cornsilk
+      font-color: red
+    }
+  }
+  SIGN: {
+    style: {
+      stroke-dash: 3
+      stroke: blueviolet
+      animated: true
+    }
+  }
+}
+
+title: |md
+  # Chaining Certificates.
+| {
+  shape: text
+  near: top-center
+  style: {
+    font-size: 25
+  }
+}
+
+root-ca: "ROOT CERTIFICATE AUTHORITY (CA)" {
+  # shape: text
+
+  pad.class: NONE
+
+  key: "Root CA's Key Pair" {
+    class: PRIVATE_KEY
+    private: Secret
+    public: Shared
+  }
+
+  certificate: "Root Certificate (ROOT CA)" {
+    shape: sql_table
+    "Subject`s Name": "ROOT CA Name"
+    "Subject`s PublicKey": Public Key
+    "Issuer`s Name": "ROOT CA Name"
+    "Issuer`s Signature": Signature
+    "Subject Alt. Name": "URI:S:ada:stake1vpu...p0u"
+  }
+
+  key.public -> certificate."Subject`s PublicKey": Published
+  key.private -> certificate."Issuer`s Signature": Self Sign {class: SIGN}
+}
+
+intermediate-ca: "INTERMEDIATE CERTIFICATE AUTHORITY (CA)" {
+  key: "Intermediate CA's Key Pair" {
+    class: PRIVATE_KEY
+    private: Secret
+    public: Shared
+  }
+
+  certificate: "Intermediate Certificate (Intermediate CA)" {
+    shape: sql_table
+    "Subject`s Name": "Intermediate CA Name"
+    "Subject`s PublicKey": Public Key
+    "Issuer`s Name": "Root CA Name"
+    "Issuer`s Signature": Signature
+    "Subject Alt. Name": "URI:S:ada:stake1ngf...8dy"
+    "": "URI:S:ada:cc_cold16cj..80v"
+  }
+
+  key.public -> certificate."Subject`s PublicKey": Published
+}
+
+root-ca.key.private -> intermediate-ca.certificate."Issuer`s Signature": Sign {class: SIGN}
+root-ca.certificate."Subject`s Name" <- intermediate-ca.certificate."Issuer`s Name": References
+root-ca.certificate <- intermediate-ca.certificate: Verifies
+
+entity-cert: "End-Entity Certificate" {
+  key: "Entities Key Pair" {
+    class: PRIVATE_KEY
+    private: Secret
+    public: Shared
+  }
+
+  certificate: "Intermediate Certificate (Intermediate CA)" {
+    shape: sql_table
+    "Subject`s Name": "Entities Name"
+    "Subject`s PublicKey": Public Key
+    "Issuer`s Name": "Intermediate CA Name"
+    "Issuer`s Signature": Signature
+    "Subject Alt. Name": "URI:S:ada:stake1ngf...v2q"
+    "": "URI:S:ada:drep1ayt..80v"
+  }
+
+  key.public -> certificate."Subject`s PublicKey": Published
+}
+
+intermediate-ca.certificate <- entity-cert.certificate: Verifies
+intermediate-ca.key.private -> entity-cert.certificate."Issuer`s Signature": Sign {class: SIGN}
+intermediate-ca.certificate."Subject`s Name" <- entity-cert.certificate."Issuer`s Name": References
