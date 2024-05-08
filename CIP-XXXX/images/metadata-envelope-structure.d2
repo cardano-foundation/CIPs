@@ -1,0 +1,29 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+
+    # Terminal theme code
+    theme-id: 300
+  }
+}
+
+grid-columns: 1
+
+title: |md
+  # Label = `509`
+| {
+  shape: text
+  # near: top-left  
+  style: {
+    font-size: 25
+  }
+}
+
+metadata-signed: {
+  shape: sql_table
+  "0 : purpose": "128bit UUID V4 of the Metadata Purpose"
+  "1 : txn-inputs-hash": "Hash of the transaction inputs"
+  "?2 : previous_transaction_id": Hash of the immediately proceeding registration in a series of updates (optional)
+  "10/11/12 = X509 chunks": "[ + x509_chunk ] - x509 Update Data (Preferably compressed)."
+  "99 = validation signature": "Signature over the entire Auxiliary data attached to the transaction."
+}

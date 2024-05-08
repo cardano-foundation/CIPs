@@ -1,0 +1,138 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+
+    # Terminal theme code
+    theme-id: 300
+  }
+}
+
+grid-columns: 1
+
+title: |md
+  # Secure Metadata Envelope
+| {
+  shape: text
+  # near: top-left  
+  style: {
+    font-size: 25
+  }
+}
+
+signing-procedure: |md
+  # Signing procedure
+|
+
+step_one: "" {
+  shape: rectangle
+  grid-columns: 1
+  grid-gap: 10
+
+  step-1-2: |md
+    ## Prepare transaction body
+
+    1. Finalize the `transaction inputs` of the transaction.
+    2. Generate a `blake2b_256()` hash of the finalized transaction inputs CBOR array.
+  |
+
+  transaction-body-unsigned: "transaction-body-unsigned (minimum)" {
+    shape: sql_table
+    "0 = transaction inputs": "[ * [transaction hash, index] ]"
+    "1 = transaction outputs": "[ * transaction_output ]"
+    "2 = transaction fee": "coin (lovelace uint64)"
+  }
+}
+
+step_three: "" {
+  shape: rectangle
+  grid-columns: 1
+  grid-gap: 10
+
+  step-3-4-5: |md
+    ## Prepare the `auxiliary data` ready to sign.
+
+    3. Prepare all Auxiliary Data.
+    4. Set `txn-input-hash` to the value computed in Step 2.
+    5. PRESET the `validation signature` to 0s.
+  |
+
+  metadata-ready-to-sign: {
+    shape: sql_table
+    "0 = purpose:": "128bit UUID V4 of the Metadata Purpose"
+    "1 = txn-input-hash:": "Blake2b-256 hash of the transaction inputs."
+    "10/11/12 = X509 chunks": "[ + x509_chunk ] - x509 Update Data."
+    "99 = validation signature": "0x00's"
+  }
+}
+
+step_six: "" {
+  shape: rectangle
+  grid-columns: 1
+  grid-gap: 10
+
+  step-6: |md
+    ## Sign the auxiliary data
+
+    6. Calculate the signature of the `metadata-ready-to-sign` using the Role 0 signing key.
+    7. Replace the 0x00s in the `validation signature` with the calculated signature.
+  |
+
+  metadata-signed: {
+    shape: sql_table
+    "0 = purpose:": "128bit UUID V4 of the Metadata Purpose"
+    "1 = txn-inputs-hash:": "Blake2b-256 hash of the transaction inputs."
+    "10/11/12 = X509 chunks": "[ + x509_chunk ] - x509 Update Data."
+    "99 = validation signature": "Signature calculated in step 6"
+  }
+}
+
+step_eight: "" {
+  shape: rectangle
+  grid-columns: 1
+  grid-gap: 10
+
+  step-8-9: |md
+    ## Finalize transaction ready to sign
+
+    8. Calculate and set the `auxiliary_data_hash` into the `transaction-body`.
+    9. Optionally set `required signers` to ensure necessary extra witnesses are present.
+  |
+
+  transaction-body-ready-to-signed: "transaction-body-ready-to-sign (minimum)" {
+    shape: sql_table
+    "0 = transaction inputs": "[ * [transaction hash, index] ]"
+    "1 = transaction outputs": "[ * transaction_output ]"
+    "2 = transaction fee": "coin (lovelace uint64)"
+    "7 = auxiliary_data_hash": "blake2b_256(auxiliary_data)"
+    "14 = required signers": "Optional list of extra witnesses required for transaction"
+  }
+}
+
+step_ten: "" {
+  shape: rectangle
+  grid-columns: 1
+  grid-gap: 10
+
+  step-10: |md
+    ## Sign the transaction
+
+    10. Sign the transaction with all necessary on-chain keys.
+  |
+
+  transaction-body-signed: "transaction-body-signed (minimum)" {
+    shape: sql_table
+    "0 = transaction inputs": "[ * [transaction hash, index] ]"
+    "1 = transaction outputs": "[ * transaction_output ]"
+    "2 = transaction fee": "coin (lovelace uint64)"
+    "7 = auxiliary_data_hash": "blake2b_256(auxiliary_data)"
+    "14 = required signers": "Optional list of extra witnesses required for transaction"
+  }
+
+  metadata-signed: {
+    shape: sql_table
+    "0 = purpose:": "128bit UUID V4 of the Metadata Purpose"
+    "1 = txn-inputs-hash:": "Hash of the transaction inputs"
+    "10/11/12 = X509 chunks": "[ + x509_chunk ] - x509 Update Data."
+    "99 = validation signatures": "Signature calculated in step 6"
+  }
+}
