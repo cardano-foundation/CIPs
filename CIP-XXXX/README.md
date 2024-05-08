@@ -7,7 +7,7 @@ Authors:
     - Steven Johnson<steven.johnson@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/814
 Created: 2023-10-24
 License: CC-BY-4.0
 ---
@@ -147,7 +147,7 @@ weight = uint
   A weight of `1` is assumed if there are multiple delegations.
 * `weighted_delegation` allows the weight to be defined, it is a positive integer.
   Weight apportions a voters voting power between all dReps delegated to.
-  
+
 Voting Power weighted apportionment is a function of the wights.
 The total of the weights is added to give `total_weight`.
 Each dRep get `voting power * (weight / total_weight)` worth of voting power from the delegation.
@@ -222,7 +222,7 @@ Proposers MUST define a Proposers signature public key.
 It must be a simple public key of the type ED25519, and it must reference the second signing key in the simple key array.
 
 The proposer registration may OPTIONALLY define an encryption key.
-Currently only X25519 encryption is supported, and this must be a reference to the second or third key in the simple key array.  
+Currently only X25519 encryption is supported, and this must be a reference to the second or third key in the simple key array.
 IF the key is an ED25519 key, the X25519 public key is derived from it.
 Otherwise if the key is an X25519 key, it is used as specified.
 
