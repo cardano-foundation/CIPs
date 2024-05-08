@@ -7,7 +7,7 @@ Authors:
     - Steven Johnson<steven.johnson@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/CIPs/pull/810
 Created: 2023-10-24
 License: CC-BY-4.0
 ---
@@ -15,7 +15,7 @@ License: CC-BY-4.0
 ## Abstract
 
 x509 Certificate metadata and related metadata within a x509 Registration/Update transaction must be
-protected against replayability.  
+protected against replayability.
 
 ## Motivation: why is this CIP necessary?
 
@@ -69,7 +69,7 @@ For example, Project Catalyst defines the following two Purposes:
 | --- | --- |
 | ca7a1457-ef9f-4c7f-9c74-7f8c4a4cfa6c | Project Catalyst User Role Registrations |
 | ca7ad312-a19b-4412-ad53-2a36fb14e2e5 | Project Catalyst Admin Role Registrations |
-  
+
 The reason in this case for having two purposes for the same application is to allow the rules
 governing registration to be easier managed between the groups.
 It also allows Admins to have a distinct identity when they are just users of the system.
@@ -136,7 +136,7 @@ Compressed Data can be larger than Raw Data if the data is small and not very co
 This is an artifact of overhead in the codec data stream itself.
 
 The specification reserves keys 13-17 for future compression schemes.
-Even though there are multiple keys defined, ONLY 1 may be used at a time.  
+Even though there are multiple keys defined, ONLY 1 may be used at a time.
 There is only a single list of x509 chunks, and the key is used to define the compression used only.
 
 i.e., it is invalid to use key 10 and 12 at the same time in the same envelope.
