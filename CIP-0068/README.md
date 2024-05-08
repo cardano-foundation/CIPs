@@ -433,7 +433,7 @@ metadata =
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
-uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
+uri = bounded_bytes ; UTF-8
 
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
@@ -550,7 +550,8 @@ version of these tokens from any point in time with the following format:
 
 1. [6d897eb](https://github.com/cardano-foundation/CIPs/tree/6d897eb60805a58a3e54821fe61284d5c5903764/CIP-XXXX)
 2. [45fa23b](https://github.com/cardano-foundation/CIPs/tree/45fa23b60806367a3e52231e552c4d7654237678/CIP-XXXX)
-3. **Current**
+3. [bfc6fde](https://github.com/cardano-foundation/CIPs/tree/bfc6fde340280d8b51f5a7131b57f4cc6cc5f260/CIP-XXXX)
+4. **Current**
 ```
 
 Each time a new version is introduced the previous version's link MUST be updated to match the last commit corresponding
@@ -575,7 +576,7 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 
 #### version 3
 
-- Added plutus data array support to the image and src tags on the metadata 
+- Added [* bounded_bytes] support to the image and src tags on the metadata 
 
 ## Rationale: how does this CIP achieve its goals?
 
