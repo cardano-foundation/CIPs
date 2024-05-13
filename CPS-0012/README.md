@@ -84,13 +84,13 @@ By being able to switch providers without the need for significant engineering, 
 
 ### New Infrastructure Providers
 New Cardano infrastructure providers want to be able join pools of interchangeable query layer suppliers.
-Without standardization new providers must invest significant time to develop their own.  
+Without standardization new providers must invest significant time to develop their own backends (including APIs).
 
 ## Goals
 
 1. Create an extensive query layer API specification that is not tied to any particular implementation
 
-2. Describe how can it be used in different contexts: HTTP API, JavaScript interfaces, ???
+2. Describe how can it be used in different contexts: HTTP API, JavaScript interfaces, browser-based wallets, standalone wallets, dApp backends.
 
 3. A query layer standard which meets the needs of query layer providers, wallet developers and dApp developers.
 
