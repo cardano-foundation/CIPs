@@ -5,10 +5,10 @@ Status: Proposed
 Category: Ledger
 Authors:
     - Jared Corduan <jared.corduan@iohk.io>
+    - Andre Knispel <andre.knispel@iohk.io>
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Kevin Hammond <kevin.hammond@iohk.io>
     - Charles Hoskinson <charles.hoskinson@iohk.io>
-    - Andre Knispel <andre.knispel@iohk.io>
     - Samuel Leathers <samuel.leathers@iohk.io>
 Discussions:
     - <https://github.com/cardano-foundation/CIPs/pull/380>
@@ -160,7 +160,7 @@ How any private companies, public or private institutions,  individuals etc. cho
   - [Size of the constitutional committee](#size-of-the-constitutional-committee)
   - [Term limits](#term-limits)
 + [Delegated representatives (DReps)](#delegated-representatives-dreps)
-  - [Pre-defined DReps](#pre-defined-dreps)
+  - [Pre-defined Voting Options](#pre-defined-voting-options)
   - [Registered DReps](#registered-dreps)
   - [New stake distribution for DReps](#new-stake-distribution-for-dreps)
   - [Incentives for Ada holders to delegate voting stake](#incentives-for-ada-holders-to-delegate-voting-stake)
@@ -243,7 +243,7 @@ This gives a great deal of flexibility to the composition of the committee.
 In particular, it is possible to elect an empty committee if the community wishes to abolish the constitutional committee entirely. Note that this is different from a state of no-confidence and still constitutes a governance system capable of enacting proposals.
 
 There will be a new protocol parameter for the minimal size of the committee,
-itself a nonnegative number.
+itself a nonnegative number called `ccMinSize`.
 
 #### Terms
 
@@ -259,7 +259,7 @@ ratify governance actions. This means that only governance actions
 that don't require votes from the constitutional committee can still
 be ratified.
 
-For example, a committee of size five with a threshold of 3/5 a minimum size
+For example, a committee of size five with a threshold of 60% a minimum size
 of three and two expired members can still
 pass governance actions if two non-expired members vote `Yes`.
 However, if one more member expires then the constitutional committee becomes
@@ -288,13 +288,11 @@ treasury withdrawal proposals.
 > **Warning**
 > CIP-1694 DReps **should not be conflated** with Project Catalyst DReps.
 
-<!-- TODO find another name that still points to liquid democracy. -->
-
-#### Pre-defined DReps
+#### Pre-defined Voting Options
 
 In order to participate in governance, a stake credential must be delegated to a DRep.
 Ada holders will generally delegate their voting rights to a registered DRep
-that will vote on their behalf.  In addition, two pre-defined DRep options are available:
+that will vote on their behalf. In addition, two pre-defined voting options are available:
 
 * `Abstain`
 
@@ -315,8 +313,8 @@ that will vote on their behalf.  In addition, two pre-defined DRep options are a
 
 
 > **Note**
-> The pre-defined DReps do not cast votes inside of transactions, their behavior is accounted for at the protocol level.
-> The `Abstain` DRep may be chosen for a variety of reasons, including the desire to not
+> The pre-defined voting options do not cast votes inside of transactions, their behavior is accounted for at the protocol level.
+> The `Abstain` option may be chosen for a variety of reasons, including the desire to not
 > participate in the governance system.
 
 > **Note**
@@ -333,7 +331,8 @@ Similarly, DRep registration will mimic the existing stake registration mechanis
 Additionally, registered DReps will need to vote regularly to still be considered active.
 Specifically, if a DRep does not submit any votes for `drepActivity`-many epochs, the DRep is considered inactive,
 where `drepActivity` is a new protocol parameter.
-Inactive DReps do not count towards the active voting stake anymore, and can become active again for `drepActivity`-many epochs by voting on any governance actions.
+Inactive DReps do not count towards the active voting stake anymore, and can become active again for
+`drepActivity`-many epochs by voting on any governance actions or submitting a DRep update certificate.
 The reason for marking DReps as inactive is so that DReps who stop participating but still have
 stake delegated to them do not eventually leave the system in a state where no governance
 action can pass.
@@ -419,13 +418,13 @@ is backed by.
 There will be a short [bootstrapping phase](#bootstrapping-phase) during which rewards will be earned
 for stake delegation etc. and may be withdrawn at any time.
 After this phase, although rewards will continue to be earned for block delegation etc., reward accounts will be
-**blocked from withdrawing any rewards** unless their associated stake credential is also delegated to a DRep.
+**blocked from withdrawing any rewards** unless their associated stake credential is also delegated to a DRep or pre-defined voting option.
 This helps to ensure high participation, and so, legitimacy.
 
 > **Note**
 >
 > Even though rewards cannot be withdrawn, they are not lost.  As soon as a stake credential is delegated
-> (including to a pre-defined DRep), the rewards can be withdrawn.
+> (including to a pre-defined voting option), the rewards can be withdrawn.
 
 #### DRep incentives
 
@@ -682,7 +681,7 @@ The **technical group** consists of:
 * proportion of collateral needed for scripts (`collateralPercentage`)
 
 The **governance group** consists of all the new protocol parameters that are introduced in this CIP:
-* governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$)
+* governance voting thresholds ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$, $Q_5$)
 * governance action maximum lifetime in epochs (`govActionLifetime`)
 * governance action deposit (`govActionDeposit`)
 * DRep deposit amount (`drepDeposit`)
@@ -1015,12 +1014,18 @@ We solve the long-term participation problem by not allowing reward withdrawals
 * Rework which anchors are required and which are optional.
 * Clean up various inconsistencies and leftovers from older versions.
 
-#### Security-relevant changes and other fixes
+#### Security-relevant changes and other fixes (January 2024)
 
 * Guard security-relevant changes behind SPO votes.
 * The system does not enter a state of no confidence with insufficient
   active CC members, the CC just becomes unable to act.
 * Clarify that CC members can use any kind of credential.
+
+#### May 2024
+
+* Update the section on the bootstrap period.
+* Mention missing `Q_5` parameter.
+* Various small fixes/consistency changes.
 
 ## Path to Active
 
@@ -1033,7 +1038,9 @@ We solve the long-term participation problem by not allowing reward withdrawals
 The features in this CIP require a hard fork.
 
 This document describes an ambitious change to Cardano governance.
-We propose to implement the changes via **one hard fork**.
+We propose to implement the changes via two hard forks: the first
+one containing all new features but some being disabled for a bootstrap period
+and the second one enabling all features.
 
 In the following sections, we give more details about the various implementation work items that have already been identified.
 In addition, the final section exposes a few open questions which will need to be finalized.
@@ -1109,16 +1116,19 @@ Firstly, during the bootstrap phase, a vote from the constitutional committee
 is sufficient to change the protocol parameters.
 Secondly, during the bootstrap phase, a vote from the constitutional committee,
 together with a sufficient SPO vote, is sufficient to initiate a hard fork.
-No other actions are possible during the bootstrap phase.
+Thirdly, info actions will be available.
+No other actions other than those mentioned in this paragraph are possible during the bootstrap phase.
 
-The bootstrap phase ends when a given number of epochs has elapsed,
-as specified in the next ledger era configuration file.
-This is likely to be a number of months after the hard fork.
+The bootstrap phase ends when the Constitutional Committee and SPOs
+ratify a subsequent hard fork, enabling the remaining governance
+actions and DRep participation.
+This is likely to be a number of months after the Chang hard fork.
+Although all features will be technically available at this point, additional
+requirements for using each feature may be specified in the constitution.
 
-Moreover, there will be an interim Constitutional committee,
-also specified in the next ledger era configuration file,
-whose term limits will be set to expire when the bootstrap phase ends.
-The rotational schedule of the first non-bootstrap committee could be included in the constitution itself.
+Moreover, there will be an interim Constitutional committee with a set term,
+also specified in the next ledger era configuration file.
+The rotational schedule of the first non-interim committee could be included in the constitution itself.
 Note, however, that since the constitutional committee never votes on new committees,
 it cannot actually enforce the rotation.
 
