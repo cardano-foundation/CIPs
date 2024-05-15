@@ -160,7 +160,7 @@ See justification and explanations provided with each API endpoint.
 
 ### Acceptance Criteria
 
-- [ ] The interface is implemented and supported by various wallet providers.
+- [ ] The interface is implemented and supported by two wallet providers.
 - [ ] The interface is used by multiple dApps to interact with wallet providers. 
 	
 ### Implementation Plan
