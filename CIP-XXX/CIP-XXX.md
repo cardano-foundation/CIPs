@@ -281,7 +281,7 @@ semantics. These operations will have the following signatures:
   BuiltinByteString`
 * `builtinReplicate :: BuiltinInteger -> BuiltinInteger -> BuiltinByteString`
 
-We assume the following costing:
+We assume the following costing, for both memory and execution time:
 
 | Operation | Cost |
 |-----------|------|
