@@ -987,6 +987,20 @@ implementation in [CIP-58][cip-58], and `builtinReplicate` is a direct wrapper
 around the `replicate` function in `ByteString`. Thus, we do not discuss them
 further here.
 
+### Relationship to CIP-58 and CIP-121
+
+Our work relates to both [CIP-58][cip-58] and [CIP-121][cip-121]. Essentially,
+our goal with both this CIP and CIP-121 is to both break CIP-58 into more
+manageable (and reviewable) parts, and also address some of the design choices
+in CIP-58 that were not as good (or as clear) as they could have been. In this
+regard, this CIP is a direct continuation of CIP-121; CIP-121 dealt with
+conversions between `BuiltinByteString` and `BuiltinInteger`, while this CIP
+handles bit indexing more generally, as well as 'parallel' logical operations
+that operate on all the bits of a `BuiltinByteString` in bulk. 
+
+We describe how our work in this CIP relates to (and in some cases, supercedes)
+CIP-58, as well as how it follows on from CIP-121, in more detail below.
+
 ### Bit indexing scheme
 
 The bit indexing scheme we describe here is designed around two
@@ -1126,9 +1140,12 @@ values at bit indexes $0$ through $7$, and treat them as their corresponding
 place value in a summation, we should obtain the same answer as indexing
 whichever byte those bits come from. We call this notion _conversion agreement_,
 due to its relation to [CIP-121][conversion-cip], which allows us to
-(essentially) view a `BuiltinByteString` as a natural number in base-256.
-Indeed, the case is analogous, with the only difference being that we are
-concerned with the positioning of base-256 digits, not binary ones.
+(essentially) view a `BuiltinByteString` as a natural number in base-256. While
+CIP-121 allows two different views of a natural number (specifically, whether
+the first _byte_ index corresponds to the highest or the lowest place value),
+our case applies equally in both situations (as described below). The only difference
+in our case is that we are concerned with the positioning of binary digits, not
+base-256 ones.
 
 Consider the `BuiltinByteString` whose only byte is $42$, whose representation 
 is as follows:
@@ -1138,6 +1155,11 @@ is as follows:
 |------------|----------|
 | Byte       | 00101010 |
 ```
+
+Indeed, if we used the CIP-121 conversion primitive
+[`builtinByteStringToInteger`](https://github.com/mlabs-haskell/CIPs/tree/koz/to-from-bytestring/CIP-0121#builtinbytestringtointeger) 
+to convert it to its `BuiltinInteger` equivalent, this is the answer we would
+get, regardless of which digit arrangement we choose.
 
 Under the bit-flip variant, our bit indexes would be as follows:
 
@@ -1170,10 +1192,16 @@ This was also the choice made by [CIP-58][cip-58], for similar reasons.
 We also note that conversion agreement matters for Case 2, in the wider context
 of the interaction between [CIP-121 primitives][conversion-cip] and logical
 XOR. The Argon2 family of hashes use certain inputs (which happen to be numbers)
-both as numbers and also as blocks of binary, which means that any inconsistency
-would cause strange (and possibly quite surprising) results when implementing
-any of those functions. This once again suggests that our choice is the right
-one, as it is the only one that would ensure conversion agreement.
+both as numbers (meaning, arithmetic operations), and also as blocks of binary
+(meaning, XOR operations specifically). This is common in a range of
+applications that rely on bitwise operations, both in cryptography and
+elsewhere, whether for performance, functionality, or both. In such situations,
+users of the primitives, and in our specific case, conversions, must be
+confident that their changes 'translate' in the way they expect between these
+two 'views' of the data. This once again suggests that our choice is the right
+one, as it is the only one that would ensure conversion agreement. While some
+care would be needed in multi-byte cases, as only most-significant-first
+conversions maintain this behaviour, this is not difficult to remember.
 
 While the bit-flip variant has the advantage of 'agreement' between byte and bit
 indexes, we believe that conversion agreement is the more important property to
@@ -1315,8 +1343,9 @@ justified as in the `builtinSetBits` case, for several reasons. Firstly, for
 `builtinLogicalComplement`, it's not even clear what benefit this would have at
 all: the only possible signature such an operation would have is
 `[BuiltinByteString] -> [BuiltinByteString]`, which in effect would be a
-specialized form of mapping. Even the _general_ form of mapping is not
-considered suitable as a primitive operation in Plutus Core! 
+specialized form of mapping. While an argument could be made for a _general_
+form of mapping as a Plutus Core primitive, it wouldn't be reasonable for an
+operation like this to be considered for such.
 
 Secondly, the
 benefits to performance wouldn't be nearly as significant in theory, and likely
