@@ -605,8 +605,8 @@ Otherwise, for all $j \in 0, 1, \ldots 8 \cdot n - 1$, we have
 
 $$
 b_r[j] = \begin{cases}
-         0 & \text{if } j = i \text{ and } b = \texttt{False}\\
-         1 & \text{if } j = i \text{ and } b = \texttt{True}\\
+         0 & \text{if } j = i \text{ and } v = \texttt{False}\\
+         1 & \text{if } j = i \text{ and } v = \texttt{True}\\
          b[j] & \text{otherwise}\\
          \end{cases}
 $$
