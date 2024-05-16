@@ -71,18 +71,44 @@ Inability to interchange query layer providers results in vendor lock-in. Query 
 Having accepted standards drastically reduces the complexity and cost for new providers to develop.
 This creates a query layer marketplace where providers can be more easily compared by customers.
 
+### Barriers to adoption
+
+Such a standard could likely face resistance to adoption.
+
+The potential risk for commercial offerings adopting this standard is the loss of an ability to diverentiate themselves from competitors via data shape.
+
+Differentiating themselves via data shape is useful in two ways for query layer providers.
+Firstly, data providers each use their own unique infrastructure making costs of the same query are not uniform between providers.
+By adjusting query shape providers can adjust queries to suit their architecture, ensuring speed and reducing cost.
+
+Secondly, is the potential monetary advantages.
+Without a standard commercial providers are able to shape their data in a way to attract customers.
+A provider's business model maybe to charge per request, this incentives them to keep the data small to increase the amount of queries by customers.
+A standardized set of queries would reduce the ability for providers to do this.
+
+#### Mitigation
+
+To mitigate the impact of varying provider architecture, authors of solutions should seek to involve query layer providers in development of a standard.
+This will allow providers to voice concerns over potentially expensive or awkward queries.
+
+To address loss of avenue for differentiation, via data shape standard authors should seek to ensure there are other ways in which providers can differentiate.
+These could be built into the standard such as optional batching, allowing providers to offer tiers of batching support for their endpoints.
+
 ## Use cases
 
 ### Multi-Provider Wallets
+
 Wallets may wish to allow users to bring their own data layer provider.
 By having a standard interface wallets would be able to support this, which would reduce the wallet's operating costs.
 For the users this gives them flexibility, redundancy and the option to run their wallet on their own infrastructure. 
 
 ### DApps Avoiding Lock-In
+
 DApp developers don't want to tie their infrastructure to one query layer provider.
 By being able to switch providers without the need for significant engineering, they can avoid providers which do not offer fair pricing.
 
 ### New Infrastructure Providers
+
 New Cardano infrastructure providers want to be able join pools of interchangeable query layer suppliers.
 Without standardization new providers must invest significant time to develop their own backends (including APIs).
 
@@ -117,6 +143,11 @@ With users being able to bring their own data providers, wallets will incur less
 
 DApp developers would benefit from a more open and competitive query layer market.
 Developers will be able to choose the provider which best fits the needs of their dApp.
+
+### How can we address multiple Cardano ledger eras?
+
+How a standard distinguishes between data from different Cardano ledger eras is something that needs to be addressed.
+Should providers be expected to support a superset of all Cardano eras?
 
 ## Acknowledgements
 
