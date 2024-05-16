@@ -43,12 +43,14 @@ Our proposed operations will have the following signatures:
 
 We assume the following costing, for both memory and execution time:
 
-| Operation | Cost |
+| Operation | Execution time cost | Memory cost |
 |-----------|------|
-|`bitwiseShift`| Linear in the `BuiltinByteString` argument |
-|`bitwiseRotate` | Linear in the `BuiltinByteString` argument |
-|`countSetBits` | Linear in the argument |
-|`findFirstSetBit` | Linear in the argument |
+|`bitwiseShift`| Linear in the `BuiltinByteString` argument | As execution time
+|
+|`bitwiseRotate` | Linear in the `BuiltinByteString` argument | As execution
+time |
+|`countSetBits` | Linear in the argument | Constant |
+|`findFirstSetBit` | Linear in the argument | Constant |
 
 #### `bitwiseShift`
 
