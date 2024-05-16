@@ -54,6 +54,8 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 
 - single address wallets should be aware that other wallets are multi-address
 - be aware of relevant standards
+- show bech32 encoded at all times
+- address domain resolution (handles, ada domains, etc)
 
 ### Secrets
 
