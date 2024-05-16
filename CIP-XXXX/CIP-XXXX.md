@@ -77,7 +77,22 @@ $$
 Some examples of the intended behaviour of `bitwiseShift` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
-TODO: Examples
+```
+-- Shifting the empty bytestring does nothing
+bitwiseShift [] 3 => []
+-- Regardless of direction
+bitwiseShift [] (-3) => []
+-- Positive shifts move bits to higher indexes, cutting off high indexes and
+-- filling low ones with zeroes
+bitwiseShift [0xEB, 0xFC] 5 => [0x7F, 0x80]
+-- Negative shifts move bits to lower indexes, cutting off low indexes and
+-- filling high ones with zeroes
+bitwiseShift [0xEB, 0xFC] (-5) => [0x07, 0x5F]
+-- Shifting by the total number of bits or more clears all bytes
+bitwiseShift [0xEB, 0xFC] 16 => [0x00, 0x00]
+-- Regardless of direction
+bitwiseShift [0xEB, 0xFC] (-16) => [0x00, 0x00]
+```
 
 #### `bitwiseRotate`
 
@@ -97,7 +112,27 @@ For all $j \in 0, 1, \ldots 8 \cdot n - 1$, we have $b_r = b[j - i \mod 8 \cdot 
 Some examples of the intended behaviour of `bitwiseRotate` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
-TODO: Examples
+```
+-- Rotating the empty bytestring does nothing
+bitwiseRotate [] 3 => []
+-- Regardless of direction
+bitwiseRotate [] (-1) => []
+-- Positive rotations move bits to higher indexes, 'wrapping around' for high
+-- indexes into low indexes
+bitwiseRotate [0xEB, 0xFC] 5 => [0x7F, 0x9D]
+-- Negative rotations move bits to lower indexes, 'wrapping around' for low
+-- indexes into high indexes
+bitwiseRotate [0xEB, 0xFC] (-5) => [0xE7, 0x5F]
+-- Rotation by the total number of bits does nothing
+bitwiseRotate [0xEB, 0xFC] 16 => [0xEB, 0xFC]
+-- Regardless of direction
+bitwiseRotate [0xEB, 0xFC] (-16) => [0xEB, 0xFC]
+-- Rotation by more than the total number of bits is the same as the remainder
+-- after division by number of bits
+bitwiseRotate [0xEB, 0xFC] 21 =>[0x7F, 0x9D]
+-- Regardless of direction, preserving sign
+bitwiseRotate [0xEB, 0xFC] (-21) => [0xE7, 0x5F]
+```
 
 #### `countSetBits`
 
@@ -111,7 +146,15 @@ $$
 Some examples of the intended behaviour of `countSetBits` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
-TODO: Examples
+```
+-- The empty bytestring has no set bits
+countSetBits [] => 0
+-- Bytestrings with only zero bytes have no set bits
+countSetBits [0x00, 0x00] => 0
+-- Set bits are counted regardless of where they are
+countSetBits [0x01, 0x00] => 1
+countSetBits [0x00, 0x01] => 1
+```
 
 #### `findFirstSetBit`
 
@@ -128,7 +171,15 @@ following:
 Some examples of the intended behaviour of `findFirstSetBit` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
-TODO: Examples
+```
+-- The empty bytestring has no first set bit
+findFirstSetBit [] => -1
+-- Bytestrings with only zero bytes have no first set bit
+findFirstSetBit [0x00, 0x00] => -1
+-- Only the first set bit matters, regardless what comes after it
+findFirstSetBit [0x00, 0x02] => 1
+findFirstSetBit [0xFF, 0xF2] => 1
+```
 
 ### Laws
 
