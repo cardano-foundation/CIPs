@@ -7,7 +7,7 @@ Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/815
 Created: 2024-05-08
 License: CC-BY-4.0
 ---
