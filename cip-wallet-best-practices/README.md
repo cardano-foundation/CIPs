@@ -15,19 +15,19 @@ License: CC-BY-4.0
 ## Abstract
 
 Cardano boasts a wide and competitive wallet ecosystem.
-Diversity brings advantages, but can lead to disperse functionalities.
+Diversity brings advantages but can also lead to disperse functionalities.
 
-Here we describe a common set of best practices for wallet implementors, in aims to improve security and user experience across the ecosystem.
-Whilst these recommendations cannot be enforced, by documenting them we aim to bring awareness to them for wallets
+Here we describe a common set of best practices for wallet implementors that aim to improve wallet security and user experience across the ecosystem.
+While these recommendations cannot be enforced, by documenting them, we aim to bring awareness to them for all stakeholders.
 
 ## Motivation: why is this CIP necessary?
-<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. -->
+
+The Cardano ecosystem enjoys a wide range of wallets, this is great for users, affording them a range of options.
+Although this can bring challenges, ecosystem level standardization can be difficult.
 
 This proposal intends to improve the security and user experience base lines for all wallets in the Cardano ecosystem.
 
 The stakeholders of this proposal are wallet users and wallet implementors.
-
-- Cardano wallets are quite different from a lot of other ecosystem wallets
 
 ### Security
 
@@ -42,6 +42,13 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 - can lead to confusion for users across wallets, could lead to mistakes
 
 ## Specification
+
+### Meta
+
+- open source
+- should attempt to conform to standards/ formally describe
+- passcode protected
+- should allow users to do what they want, but can warn of dangerous situations
 
 ### Derivation/ Addresses
 
@@ -62,14 +69,10 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 - inform of all assets being moved within a transaction
 - strong warnings when wallet cannot verify the inputs to a transaction
 - signing certificates with the wrong type of keys
-
-### Meta
-
-- open source
-- should attempt to conform to standards/ formally describe
-- password protected
   
 ### Staking
+
+- should allow delegation to all
 
 ### dApp Connector
 
