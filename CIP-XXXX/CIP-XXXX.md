@@ -37,7 +37,7 @@ byte index $i$ of $x$.
 Our proposed operations will have the following signatures:
 
 * ``bitwiseShift :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString``
-* ``bitwiseRotate :: BuiltinByteStirng -> BuiltinInteger -> BuiltinByteString``
+* ``bitwiseRotate :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString``
 * ``countSetBits :: BuiltinByteString -> BuiltinInteger``
 * ``findFirstSetBit :: BuiltinByteString -> BuiltinInteger``
 
@@ -130,6 +130,124 @@ TODO: Examples
 
 ### Laws
 
+Throughout, we use `bitLen bs` to indicate the number of bits in `bs`; that is,
+`sizeOfByteString bs * 8`. We also make reference to [logical
+operations][logic-cip] from a previous CIP as part of specifying these laws.
+
+#### Shifts and rotations
+
+We describe the laws for `bitwiseShift` and `bitwiseRotate` together, as they
+are similar. Firstly, we observe that `bitwiseShift` and `bitwiseRotate` both
+form a [monoid homomorphism][monoid-homomorphism] between natural number 
+addition and function composition:
+
+```haskell
+bitwiseShift bs 0 = bitwiseRotate bs 0 = bs
+
+bitwiseShift bs (i + j) = bitwiseShift (bitwiseShift bs i) j
+
+bitwiseRotate bs (i + j) = bitwiseRotate (bitwiseRotate bs i) j
+```
+
+However, `bitwiseRotate`'s homomorphism is between _integer_ addition and
+function composition: namely, `i` and `j` in the above law are allowed to have
+different signs. `bitwiseShift`'s composition law only holds if `i` and `j`
+don't have opposite signs: that is, if they're either both non-negative or both
+non-positive.
+
+Shifts by more than the number of bits in the data argument produce an empty
+`BuiltinByteString`:
+
+```haskell
+-- n is non-negative
+
+bitwiseShift bs (bitLen bs + n) = 
+bitwiseShift bs (- (bitLen bs + n)) = 
+replicateByteString (sizeOfByteString bs) 0x00
+```
+
+Rotations, on the other hand, exhibit 'modular roll-over':
+
+```haskell
+-- n is non-negative
+bitwiseRotate bs (binLen bs + n) = bitwiseRotate bs n
+
+bitwiseRotate bs (- (bitLen bs + n)) = bitwiseRotate bs (- n)
+```
+
+Shifts clear bits at low indexes if the shift argument is positive, and at high
+indexes if the shift argument is negative:
+
+```
+-- 0 < n < bitLen bs, and 0 <= i < n
+readBit (bitwiseShift bs n) i = False
+
+readBit (bitwiseShift bs (- n)) (bitLen bs - i - 1)  = False
+```
+
+Rotations instead preserve all set and clear bits, but move them around:
+
+```
+-- 0 <= i < bitLen bs
+readBit bs i = readBit (bitwiseRotate bs j) (modInteger (i + j) (bitLen bs))
+```
+
+#### `countSetBits`
+
+`countSetBits` forms a [monoid homomorphism][monoid-homomorphism] between
+`BuiltinByteString` concatenation and natural number addition:
+
+```haskell
+countSetBits "" = 0
+
+countSetBits (x <> y) = countSetBits x + countSetBits y
+```
+
+There is also a relationship between the result of `countSetBits` on a given
+argument and its complement:
+
+```haskell
+countSetBits bs = bitLen bs - countSetBits (bitwiseLogicalComplement bs)
+```
+
+Furthermore, `countSetBits` exhibits (or more precisely, gives evidence for) the
+[inclusion-exclusion principle][include-exclude] from combinatorics, but only
+under truncation semantics:
+
+```haskell
+countSetBits (bitwiseLogicalXor False x y) = countSetBits (bitwiseLogicalOr
+False x y) - countSetBits (bitwiseLogicalAnd False x y)
+```
+
+Lastly, `countSetBits` has a relationship to bitwise XOR, regardless of
+semantics:
+
+```haskell
+countSetBits (bitwiseLogicalXor semantics x x) = 0
+```
+
+#### `findFirstSetBit`
+
+`BuiltinByteString`s consisting entirely of zero bytes (including the empty
+`BuiltinByteString`, by vacuous truth) always give a `-1` result with
+`findFirstSetBit`:
+
+```haskell
+findFirstSetBit (replicateByteString n 0x00) = -1
+```
+
+Any result of a `findFirstSetBit` operation that isn't `-1` gives a valid bit
+index to a set bit, but any non-negative `BuiltinInteger` less than this will
+give an index to a clear bit:
+
+```haskell
+-- bs is not all zero bytes or empty
+readBit bs (findFirstSetBit bs) = True
+
+-- 0 <= i < findFirstSet bs
+readBit bs i = False
+```
+
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 
@@ -169,3 +287,6 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [tier-1]: https://gitlab.haskell.org/ghc/ghc/-/wikis/platforms#tier-1-platforms
 [impl]: https://github.com/mlabs-haskell/plutus-integer-bytestring/tree/koz/milestone-2
 [bit-indexing-scheme]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#bit-indexing-scheme
+[monoid-homomorphism]: https://en.wikipedia.org/wiki/Monoid#Monoid_homomorphisms
+[logic-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md
+[include-exclude]: https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle
