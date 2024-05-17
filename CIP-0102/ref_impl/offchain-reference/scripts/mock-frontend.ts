@@ -1,5 +1,5 @@
 import { createTimelockedMP, mintNFTs } from "../lib/mint.ts";
-import { MediaAssets, RoyaltyRecipient, TxBuild } from "../lib/types.ts";
+import { MediaAssets, Royalty, TxBuild } from "../lib/types/index.ts";
 import { getRoyaltyPolicy } from "../lib/read.ts";
 import { Lucid, Blockfrost, Network, Script, PlutusVersion } from "https://deno.land/x/lucid@0.10.7/mod.ts";
 import { getEnv } from "./env.ts";
@@ -85,7 +85,7 @@ function testTimelockedMint(lucid: Lucid, mp: Script, validator: Script, walletA
   const mock_name = "test"
   const mock_deadline = new Date("2024-12-31T23:59:59Z").getTime()
   const mock_size = 5
-  const mock_fee = 625 // 10 / 0.016
+  const mock_fee = 1.6
 
   // parameterize minting policy
 	const parameterized_mp = createTimelockedMP(lucid, mp.script, mock_deadline, walletAddress);
@@ -101,7 +101,7 @@ function testTimelockedMint(lucid: Lucid, mp: Script, validator: Script, walletA
 	}
 
   // define royalty policy
-	const royalties: RoyaltyRecipient[] = [{
+	const royalties: Royalty[] = [{
 		address: walletAddress,
 		fee: mock_fee
 	}]

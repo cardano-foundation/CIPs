@@ -10,16 +10,21 @@ import {
   toUnit 
 } from "https://deno.land/x/lucid@0.10.7/mod.ts";
 
-import { 
-  RoyaltyRecipient, 
-	NFTDatumMetadata,
+import {
+	toCip102RoyaltyDatum,
+	Royalty,
+	RoyaltyFlag
+} from './types/royalties.ts'
+
+import {
 	NFTMetadata,
-  RoyaltyDatumMetadata, 
-  RoyaltyMetadata, 
-  RoyaltyFlag, 
-  MediaAssets, 
-  TxBuild
-} from "./types.ts";
+	NFTDatumMetadata
+} from './types/chain.ts'
+
+import {
+	MediaAssets,
+	TxBuild
+} from './types/utility.ts'
 
 /**
  * Included in this file:
@@ -36,12 +41,8 @@ import {
  * @param royalty the royalty metadata
  * @returns a TxComplete object, ready to sign & submit
  */
-export async function createRoyalty(lucid: Lucid, policy: Script, validator: Script, royalty: RoyaltyRecipient) {
-	const royaltyDatum = Data.to<RoyaltyDatumMetadata>({
-		metadata: Data.castFrom<RoyaltyMetadata>(Data.fromJson([royalty]), RoyaltyMetadata),
-		version: BigInt(1),
-		extra: Data.from<Data>(Data.void())
-	}, RoyaltyDatumMetadata)
+export async function createRoyalty(lucid: Lucid, policy: Script, validator: Script, royalty: Royalty) {
+	const royaltyDatum = toCip102RoyaltyDatum([royalty])
 
   // generous tx validity window
 	const validTo = new Date();
@@ -86,7 +87,7 @@ export async function createRoyalty(lucid: Lucid, policy: Script, validator: Scr
  * @param cip102 The cip102 parameter allows for 3 cases:
  * - "NoRoyalty" - no royalty is attached to the collection - obviously not recommended here but hey, it's your collection
  * - "Premade" - the royalty has already been minted to the policy - no need to mint new tokens, but include the flag to indicate a royalty token exists
- * - RoyaltyRecipient - a new royalty token is minted to the policy in this transaction according to the information in the parameter 
+ * - Royalty - a new royalty token is minted to the policy in this transaction according to the information in the parameter 
  * @returns an object containing a TxComplete object & the policyId of the minted assets
  */
   export async function mintNFTs(
@@ -94,7 +95,7 @@ export async function createRoyalty(lucid: Lucid, policy: Script, validator: Scr
 	policy: Script,
   validator: Script,
 	sanitizedMetadataAssets: MediaAssets,
-	cip102?: "NoRoyalty" | "Premade" | RoyaltyRecipient
+	cip102?: "NoRoyalty" | "Premade" | Royalty
 ): Promise<TxBuild> {
   // extract royalty information or mark undefined
 	const royalty = cip102 === "NoRoyalty" || cip102 === "Premade" ? undefined : cip102;
@@ -138,11 +139,7 @@ export async function createRoyalty(lucid: Lucid, policy: Script, validator: Scr
 	const attachDatums = (tx: Tx): Tx => {
 		if(royalty) {
       // construct the royalty datum
-			const royaltyDatum = Data.to<RoyaltyDatumMetadata>({
-				metadata: Data.castFrom<RoyaltyMetadata>(Data.fromJson([royalty]), RoyaltyMetadata),
-				version: BigInt(1),
-				extra: Data.from<Data>(Data.void())
-			}, RoyaltyDatumMetadata)
+			const royaltyDatum = toCip102RoyaltyDatum([royalty])
 
       // attach the royalty token & datum to the transaction
 			tx = tx.payToContract(

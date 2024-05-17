@@ -1,4 +1,5 @@
-import type { RoyaltyRecipient, RoyaltyConstr, output } from './types.ts';
+import type { Royalty, RoyaltyConstr } from './types/royalties.ts';
+import type { output } from "./types/chain.ts";
 import { Data, toText } from 'https://deno.land/x/lucid@0.10.7/mod.ts';
 import { getAssetsTransactions, getScriptsDatumCbor, getTxsUtxos } from "../utils/query.ts";
 import { CIP102_ROYALTY_TOKEN_NAME, fromOnchainRoyalty } from '../conversion.ts';
@@ -10,7 +11,7 @@ import { CIP102_ROYALTY_TOKEN_NAME, fromOnchainRoyalty } from '../conversion.ts'
  */
 export async function getRoyaltyPolicy(
 	policyId: string
-): Promise<RoyaltyRecipient[]> {
+): Promise<Royalty[]> {
 	const asset_unit = policyId + CIP102_ROYALTY_TOKEN_NAME;
 	try {
     // get the last tx of the royalty token
@@ -47,7 +48,7 @@ export async function getRoyaltyPolicy(
  * @param out the utxo to examine
  * @returns an array of royalty recipients if the utxo contains royalty metadata, [] if not
  */
-async function getRoyaltyMetadata(out: output): Promise<RoyaltyRecipient[]> {
+async function getRoyaltyMetadata(out: output): Promise<Royalty[]> {
 	let datum;
   // get the datum of the utxo
 	if(!out.inline_datum && out.data_hash)
@@ -63,7 +64,7 @@ async function getRoyaltyMetadata(out: output): Promise<RoyaltyRecipient[]> {
 				const royalties = datumData
 					.map((royaltyMap) => decodeDatumMap(royaltyMap))
 					.filter((royalty) => royalty);
-				return royalties as RoyaltyRecipient[];
+				return royalties as Royalty[];
 			}
 		} catch (_error) {
 			// do nothing
@@ -79,7 +80,7 @@ async function getRoyaltyMetadata(out: output): Promise<RoyaltyRecipient[]> {
  */
 function decodeDatumMap(
 	data: Map<string, string | bigint>
-): RoyaltyRecipient | undefined {
+): Royalty | undefined {
 	const model: { [key: string]: string | number } = {};
 
   // parse the datum to a javascript object
@@ -90,6 +91,6 @@ function decodeDatumMap(
 
   // check if the object contains the required fields. This could be more robust, but it's functional as is.
 	if ('address' in model && 'fee' in model) {
-		return model as unknown as RoyaltyRecipient;
+		return model as unknown as Royalty;
 	}
 }
