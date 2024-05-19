@@ -14,10 +14,76 @@ License: Apache-2.0
 ---
 
 ## Abstract
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
+
+We describe the semantics of a set of bitwise operations for Plutus
+`BuiltinByteString`s. Specifically, we provide descriptions for:
+
+* Bit shifts and rotations
+* Counting the number of set bits (`popcount`)
+* Finding the first set bit
+
+We base our work on similar operations described in [CIP-58][cip-58], but use
+the bit indexing scheme from [the logical operations cip][logic-cip] for the
+semantics. This is intended as follow-on work from both of these.
 
 ## Motivation: why is this CIP necessary?
-<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
+
+TODO: Lead-in
+
+To demonstrate why these operations would be useful, we re-use the cases
+provided in the [logical operations CIP][logic-cip], and show why the operations
+we describe would be beneficial.
+
+### Case 1: integer set
+
+For integer sets, the [previous description][integer-set] lacks two important,
+and useful, operations:
+
+* Given an integer set, return its cardinality; and
+* Given an integer set, return its minimal member (or specify it is empty).
+
+These operations have a range of uses. The first corresponds to the notion of
+[Hamming weight][hamming-weight], which can be used for operations ranging from
+representing boards in chess games to exponentiation by squaring to succinct
+data structures. Together with bitwise XOR, it can also compute the [Hamming
+distance][hamming-distance]. The second operation also has a [range of
+uses][ffs-uses], ranging from succinct priority queues to integer normalization.
+It is also useful for [rank-select dictionaries][rank-select-dictionary], a
+succinct structure that can act as the basis of a range of others, such as
+dictionaries, multisets and trees of different arity.
+
+In all of the above, these operations need to be implemented efficiently to be
+useful. While we could use only bit reading to perform all of these, it is
+extremely inefficient: given an input of length $n$, assuming that any bit
+distribution is equally probable, we need $\Theta(8 \cdot n)$ time in the
+average case. While it is
+impossible to do both of these operations in sub-linear time in general, the
+large constant factors this imposes (as well as the overhead of looping over
+_bit_ indexes) is a cost we can ill afford on-chain, especially if the goal is
+to use these operations as 'building blocks' for something like a data
+structure.
+
+### Case 2: hashing
+
+In our [previously-described][hashing] case, we stated what operations we would
+need for the Argon2 family of hashes specifically. However, Argon2 has a
+specific advantage in that the number of operations it requires are both
+relatively few, and the most complex of which (BLAKE2b hashing) already exists
+in Plutus Core as a primitive. However, other hash functions (and indeed, many
+other cryptographic primitives) rely on two other important instructions: bit
+shifts and bit rotations. As an example, consider SHA512, which is an important
+component in several cryptographic protocols (including Ed25519 signature
+verification): its implementation requires both shifts and rotations to work. 
+
+Like with Case 1, we can theoretically simulate both rotations and shifts using
+a combination of bit reads and bit writes to an empty `BuiltinByteString`.
+However, the cost of this is extreme: we would need to produce a list of
+index-value pairs of length equal to the Hamming weight of the input, only to
+then immediately discard it! To put this into some perspective, for an 8-byte
+input, performing a rotation involves allocating an expected 32 index-value
+pairs, using _significantly_ more memory than the result. On-chain, we can't
+really afford this cost, especially in an operation intended to be used as part
+of larger constructions (as would be necessary here).
 
 ## Specification
 
@@ -302,10 +368,19 @@ readBit bs i = False
 ```
 
 ## Rationale: how does this CIP achieve its goals?
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
+TODO: Add note about how we can implement this using only reads and writes, but
+why it won't end well.
+
+TODO: Talk about why we need all four, especially popcount and ffs.
+
+TODO: Compare with CIP-58, although we're basically identical anyway.
+
+TODO: Mention that our shifts and rotates line up with what Data.Bits does.
+
+TODO: Talk about the -1 versus bitlen choice for ffs and why we chose the first.
+
+TODO: Why did we choose to omit clz?
 
 ## Path to Active
 
@@ -343,3 +418,10 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [monoid-homomorphism]: https://en.wikipedia.org/wiki/Monoid#Monoid_homomorphisms
 [logic-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md
 [include-exclude]: https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle
+[cip-58]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0058
+[integer-set]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#case-1-integer-set
+[hamming-weight]: https://en.wikipedia.org/wiki/Hamming_weight#History_and_usage
+[hamming-distance]: https://en.wikipedia.org/wiki/Hamming_distance
+[ffs-uses]: https://en.wikipedia.org/wiki/Find_first_set#Applications
+[rank-select-dictionary]: https://en.wikipedia.org/wiki/Succinct_data_structure#Succinct_indexable_dictionaries
+[hashing]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#case-2-hashing
