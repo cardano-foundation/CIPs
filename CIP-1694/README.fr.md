@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: 7631f32
+Revision: b11b540
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -142,7 +142,7 @@ Comment les entreprises privées, les institutions publiques ou privées, les pa
   - [Taille du comité constitutionnel](#taille-du-comité-constitutionnel)
   - [Limites de mandat](#limites-de-mandat)
 + [Représentants délégués (DReps)](#représentants-délégués-dreps)
-  - [DReps prédéfinis](#dreps-prédéfinis)
+  - [Options de vote prédéfinies](#options-de-vote-prédéfinies)
   - [DReps enregistrés](#dreps-enregistrés)
   - [Nouvelle distribution de la mise pour DReps](#nouvelle-distribution-de-la-mise-pour-dreps)
   - [Incitatifs pour les détenteurs d’Ada à déléguer une mise de vote](#incitatifs-pour-les-détenteurs-dada-à-déléguer-une-mise-de-vote)
@@ -225,7 +225,7 @@ Cela donne beaucoup de flexibilité à la composition du comité.
 En particulier, il est possible d’élire un comité vide si la communauté souhaite supprimer entièrement le comité constitutionnel. Notez que cela est différent d’un état de non-confiance et constitue toujours un système de gouvernance capable de mettre en oeuvre des propositions.
 
 Il y aura un nouveau paramètre du protocole pour la taille minimale du comité,
-lui-même un nombre non négatif.
+lui-même un nombre non négatif appelé `ccMinSize`.
 
 #### Mandat
 
@@ -241,7 +241,7 @@ les actions de gouvernance. Cela signifie que seules les actions de gouvernance
 qui ne nécessitent pas le vote du comité constitutionnel peuvent toujours 
 être ratifiées.
 
-Par exemple, un comité de cinq membres avec un seuil de 3/5, une taille minimale 
+Par exemple, un comité de cinq membres avec un seuil de 60%, une taille minimale 
 de trois et deux membres expirés peut toujours
 adopter des mesures de gouvernance si deux membres non expirés votent `Yes`.
 Cependant, si un autre membre expire alors le comité constitutionnel devient
@@ -270,13 +270,11 @@ de retrait de trésorerie.
 > **Warning**
 > CIP-1694 DReps **ne doit pas être confondu** avec Project Catalyst DReps.
 
-<!-- TODO trouver un autre nom qui pointe encore vers la démocratie liquide. -->
-
-#### DReps prédéfinis
+#### Options de vote prédéfinies
 
 Afin de participer à la gouvernance, un justificatif d’identité de mise doit être délégué à un DRep.
 Les détenteurs d’Ada délégueront généralement leurs droits de vote à un DRep enregistré
-qui voteront en leur nom. De plus, deux options DRep prédéfinies sont disponibles :
+qui voteront en leur nom. De plus, deux options de vote prédéfinies sont disponibles :
 
 * `Abstain`
 
@@ -297,8 +295,8 @@ qui voteront en leur nom. De plus, deux options DRep prédéfinies sont disponib
 
 
 > **Note**
-> Les DReps prédéfinis ne votent pas à l'intérieur des transactions, leur comportement est pris en compte au niveau du protocole.
-> Le DRep `Abstain` peut être choisi pour diverses raisons, y compris le désir de ne pas
+> Les options de vote prédéfinis ne votent pas à l'intérieur des transactions, leur comportement est pris en compte au niveau du protocole.
+> L'option `Abstain` peut être choisi pour diverses raisons, y compris le désir de ne pas
 > participer au système de gouvernance.
 
 > **Note**
@@ -315,7 +313,8 @@ De même, l’enregistrement des DReps imitera les mécanismes existants d’enr
 De plus, les DReps inscrits devront voter régulièrement pour être toujours considérés comme actifs.
 Plus précisément, si un DRep ne soumet aucun vote pour `drepActivity` - plusieurs époques, le DRep est considéré comme inactif,
 où `drepActivity` est un nouveau paramètre de protocole.
-Les DReps inactifs ne comptent plus dans la participation active des votes, et peut redevenir actif durant un nombre `drepActivity` d'époques en votant sur n’importe quel actions de gouvernance.
+Les DReps inactifs ne comptent plus dans la participation active des votes, et peut redevenir actif durant un nombre 
+`drepActivity` d'époques en votant sur n’importe quel actions de gouvernance ou en soumettant une de mise à jour du certificat de DRep.
 La raison pour laquelle les DReps sont marqués comme inactifs est que les DReps qui cessent de participer mais qui ont encore
 la mise qui leur est déléguée ne laisse finalement pas le système dans un état où aucune action de
 gouvernance peut passer.
@@ -401,13 +400,13 @@ est soutenu.
 Il y aura une courte [phase d’amorçage] (#bootstrapping-phase) au cours de laquelle des récompenses seront gagnées
 pour la délégation de mise, etc. et peut être retiré à tout moment.
 Après cette phase, bien que des récompenses continueront d’être gagnées pour la délégation de blocs, etc., les comptes de récompense seront
-**empêché de retirer des récompenses** à moins que leurs informations d’identification de mise associées ne soient également déléguées à un DRep.
+**empêché de retirer des récompenses** à moins que leurs informations d’identification de mise associées ne soient également déléguées à un DRep ou à une option de vote prédéfinie.
 Cela contribue à assurer une participation élevée et, par conséquent, une légitimité.
 
 > **Note**
 >
 > Même si les récompenses ne peuvent pas être retirées, elles ne sont pas perdues. Dès qu’un justificatif de mise est délégué
-> (y compris à un DRep prédéfini), les récompenses peuvent être retirées.
+> (y compris à une option de vote prédéfinie), les récompenses peuvent être retirées.
 
 #### Incitatifs DRep
 
@@ -664,7 +663,7 @@ Le **groupe technique** est composé de :
 * proportion de collatéral nécessaire pour les scripts (`collateralPercentage`)
 
 Le **groupe de gouvernance** comprend tous les nouveaux paramètres de protocole introduits dans ce CIP :
-* seuils de vote de gouvernance ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$)
+* seuils de vote de gouvernance ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$, $Q_5$)
 * durée de vie maximale de l'action de gouvernance en époques (`govActionLifetime`)
 * dépôt d'action de gouvernance (`govActionDeposit`)
 * montant du dépôt DRep (`drepDeposit`)
@@ -997,13 +996,19 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 * Retravaillez quelles ancres sont requises et lesquelles sont facultatives.
 * Nettoyez diverses incohérences et restes des anciennes versions.
 
-#### Modifications liées à la sécurité et autres correctifs
+#### Modifications liées à la sécurité et autres correctifs (Janvier 2024)
 
 * Protégez les modifications liées à la sécurité derrière les votes SPO.
 * Le système n’entre pas dans un état de non-confiance avec un nombre insuffisant
   de membres actifs du CC, le CC devient tout simplement incapable d’agir.
 * Précisez que les membres du CC peuvent utiliser n’importe quel type d’identifiant.
 
+#### Mai 2024
+
+* Mise à jour de la section sur la période d'amorçage.
+* Mention du paramètre `Q_5` manquant.
+* Diverses petites corrections/changements de cohérence.
+  
 ## Chemin vers Actif
 
 ### Critères d’acceptation
@@ -1015,7 +1020,9 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 Les fonctionnalités de ce CIP nécessitent un hard fork.
 
 Ce document décrit un changement ambitieux dans la gouvernance de Cardano.
-Nous proposons de mettre en oeuvre les changements via **un hard fork**.
+Nous proposons de mettre en œuvre les changements via deux hard forks : le premier
+contenant toutes les nouvelles fonctionnalités mais certaines étant désactivées pendant une période de démarrage
+et le second permettant toutes les fonctionnalités.
 
 Dans les sections suivantes, nous donnons plus de détails sur les différents éléments de travail de mise en œuvre qui ont déjà été identifiés.
 En outre, la dernière section expose quelques questions ouvertes qui devront être finalisées.
@@ -1091,16 +1098,19 @@ Tout d’abord, pendant la phase d’amorçage, un vote du comité constitutionn
 est suffisant pour modifier les paramètres du protocole.
 Deuxièmement, pendant la phase d’amorçage, un vote du comité constitutionnel,
 avec un vote SPO suffisant, est suffisant pour initier un hard fork.
-Aucune autre action n’est possible pendant la phase d’amorçage.
+Troisièmement, des actions d'information seront disponibles.
+Aucune autre action autre que celles mentionnées dans ce paragraphe n’est possible pendant la phase d’amorçage.
 
-La phase d'amorçage se termine lorsqu'un nombre donné d'époques s'est écoulé,
-comme spécifié dans le fichier de configuration de l'ère du prochain grand livre.
-Cela se produira probablement plusieurs mois après le hard fork.
+La phase d'amorçage se termine lorsque le Comité constitutionnel et les SPOs
+ratifieront un hard fork ultérieur, permettant les actions de 
+de gouvernance restantes et la participation des DReps.
+Cela se produira probablement plusieurs mois après le hard fork de Chang.
+Bien que toutes les fonctionnalités soient techniquement disponibles à ce stade, des exigences
+supplémentaires pour l'utilisation de chaque fonctionnalité peuvent être spécifiées dans la constitution.
 
-De plus, il y aura un comité constitutionnel intérimaire,
-également spécifié dans le fichier de configuration de l'ère du prochain grand livre,
-dont les limites de mandat expireront à la fin de la phase d'amorçage.
-Le calendrier de rotation du premier comité non-bootstrap pourrait être inclus dans la constitution elle-même.
+De plus, il y aura un comité constitutionnel intérimaire pour une durée déterminée,
+également spécifié dans le fichier de configuration de la prochaine ère du "ledger".
+Le calendrier de rotation du premier comité non intérimaire pourrait être inclus dans la constitution elle-même.
 Notez toutefois que, puisque le comité constitutionnelle ne vote jamais sur de nouveaux comités,
 il ne peut pas réellement imposer la rotation.
 
