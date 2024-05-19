@@ -101,6 +101,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
+| 0122 | [Logical operations](./CIP-0122) | Proposed | 
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
