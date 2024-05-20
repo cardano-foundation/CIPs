@@ -31,7 +31,7 @@ semantics. This is intended as follow-on work from both of these.
 TODO: Lead-in
 
 To demonstrate why these operations would be useful, we re-use the cases
-provided in the [logical operations CIP][logic-cip], and show why the operations
+provided in the [CIP-122][logic-cip], and show why the operations
 we describe would be beneficial.
 
 ### Case 1: integer set
@@ -416,7 +416,7 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [impl]: https://github.com/mlabs-haskell/plutus-integer-bytestring/tree/koz/milestone-2
 [bit-indexing-scheme]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#bit-indexing-scheme
 [monoid-homomorphism]: https://en.wikipedia.org/wiki/Monoid#Monoid_homomorphisms
-[logic-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md
+[logic-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-0122/CIP-0122.md
 [include-exclude]: https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle
 [cip-58]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0058
 [integer-set]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#case-1-integer-set
