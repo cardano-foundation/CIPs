@@ -2,9 +2,9 @@ use aiken/dict
 use aiken/transaction.{Datum, DatumHash, InlineDatum, NoDatum, Transaction}
 use aiken/transaction/credential.{Address}
 
-pub const royalty_tn: ByteArray = ""
+pub const royalty_tn: ByteArray = "001f4d70526f79616c7479"
 
-pub type RoyaltyInfo {
+pub type RoyaltyDatum {
   recipients: List<RoyaltyRecipient>,
   version: Int,
   extra: Data,

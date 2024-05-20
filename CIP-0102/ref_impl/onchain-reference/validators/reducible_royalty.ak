@@ -1,17 +1,18 @@
 use aiken/list
-use aiken/transaction.{Input, Output, ScriptContext, Transaction}
+use aiken/transaction.{Input, Output, ScriptContext, Spend, Transaction}
 use aiken/transaction/credential.{Address, VerificationKeyCredential}
 use aiken/transaction/value.{PolicyId}
 use onchain_reference/common.{
-  RoyaltyInfo, RoyaltyRecipient, get_data, royalty_tn,
+  RoyaltyDatum, RoyaltyRecipient, get_data, royalty_tn,
 }
+use onchain_reference/tests.{recipients_to_input, recipients_to_output}
 
 type ReduceRedeemer {
   policy_id: PolicyId,
 }
 
 validator {
-  fn spend(_d: Data, redeemer: ReduceRedeemer, context: ScriptContext) -> Bool {
+  fn reduce(_d: Data, redeemer: ReduceRedeemer, context: ScriptContext) -> Bool {
     let tx = context.transaction
 
     // find output datum
@@ -23,7 +24,7 @@ validator {
         },
       )
 
-    expect out_royalty_info: RoyaltyInfo = get_data(tx, royalty_output.datum)
+    expect out_royalty_info: RoyaltyDatum = get_data(tx, royalty_output.datum)
 
     // find input datum
     expect Some(royalty_input) =
@@ -34,7 +35,7 @@ validator {
         },
       )
 
-    expect in_royalty_info: RoyaltyInfo =
+    expect in_royalty_info: RoyaltyDatum =
       get_data(tx, royalty_input.output.datum)
 
     // check that for each in recipient, there is a corresponding out recipient
@@ -52,10 +53,10 @@ validator {
             fn(out_recipient) {
               // find the corresponding out recipient
               if in_recipient.address == out_recipient.address {
+                // the recipient has signed the transaction AND
                 // the fee has not changed OR
-                in_recipient.fee == out_recipient.fee || // the fee has decreased (encoding reverses this) AND
-                in_recipient.fee < out_recipient.fee && // the recipient has signed the transaction
-                list.has(tx.extra_signatories, sig)
+                // the fee has decreased (encoding reverses this)
+                list.has(tx.extra_signatories, sig) && in_recipient.fee > out_recipient.fee || (in_recipient.fee == out_recipient.fee)?
               } else {
                 False
               }
@@ -73,41 +74,81 @@ const mock_owner = "some_fake_address_hash"
 const mock_policy_id = "some_fake_policy_id"
 
 test should_reduce_recipient() {
+  trace @"do traces work?"
   let redeemer = ReduceRedeemer { policy_id: mock_policy_id }
 
-  let in_royalty_info =
-    RoyaltyInfo {
-      recipients: [
-        RoyaltyRecipient {
-          address: Address {
-            payment_credential: VerificationKeyCredential(mock_owner),
-            stake_credential: None,
-          },
-          fee: 125,
-          min_fee: None,
-          max_fee: None,
-        },
-      ],
-      version: 1,
-      extra: None,
+  let in_recipient =
+    RoyaltyRecipient {
+      address: Address {
+        payment_credential: VerificationKeyCredential(mock_owner),
+        stake_credential: None,
+      },
+      fee: 625,
+      min_fee: None,
+      max_fee: None,
     }
 
-  True
+  let input = recipients_to_input([in_recipient], mock_policy_id)
+
+  let outputs =
+    [
+      recipients_to_output(
+        [RoyaltyRecipient { ..in_recipient, fee: 125 }],
+        mock_policy_id,
+      ),
+    ]
+
+  let ctx =
+    ScriptContext {
+      transaction: get_base_transaction([input], outputs),
+      purpose: Spend(input.output_reference),
+    }
+
+  reduce([], redeemer, ctx)
 }
-// fn get_base_transaction(recipients_in: List<Input>, recipients_out: List<Output>) -> Transaction {
-//   Transaction {
-//     ..transaction.placeholder()
-//     extra_signatories: [],
-//     inputs: [
-//       Output {
-//         value: value.new(
-//           value.new_map([
-//             (mock_policy_id, value.new_integer(1))
-//           ]),
-//           royalty_tn
-//         ),
-//         datum: 0
-//       }
-//     ]
-//   }
-// }
+
+test should_fail_increase_recipient() fail {
+  trace @"do traces work?"
+  let redeemer = ReduceRedeemer { policy_id: mock_policy_id }
+
+  let in_recipient =
+    RoyaltyRecipient {
+      address: Address {
+        payment_credential: VerificationKeyCredential(mock_owner),
+        stake_credential: None,
+      },
+      fee: 125,
+      min_fee: None,
+      max_fee: None,
+    }
+
+  let input = recipients_to_input([in_recipient], mock_policy_id)
+
+  let outputs =
+    [
+      recipients_to_output(
+        [RoyaltyRecipient { ..in_recipient, fee: 625 }],
+        mock_policy_id,
+      ),
+    ]
+
+  let ctx =
+    ScriptContext {
+      transaction: get_base_transaction([input], outputs),
+      purpose: Spend(input.output_reference),
+    }
+
+  reduce([], redeemer, ctx)
+}
+
+fn get_base_transaction(
+  recipients_in: List<Input>,
+  recipients_out: List<Output>,
+) -> Transaction {
+  Transaction {
+    ..transaction.placeholder(),
+    extra_signatories: [mock_owner],
+    inputs: recipients_in,
+    outputs: recipients_out,
+  }
+}
