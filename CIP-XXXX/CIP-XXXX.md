@@ -28,9 +28,16 @@ semantics. This is intended as follow-on work from both of these.
 
 ## Motivation: why is this CIP necessary?
 
-TODO: Lead-in
+Bitwise operations, both over fixed-width and variable-width blocks of bits, 
+have a range of uses. Indeed, we have already proposed [CIP-122][logic-cip],
+with some example cases, and a range of primitive operations on
+`BuiltinByteString`s designed to allow bitwise operations in the service of
+those example cases, as well as many others. These operations form a core of
+functionality, which is important and necessary, but not complete. We believe
+that the operations we describe in this CIP form a useful 'completion' of the
+work in CIP-122, based on similar work done in the [earlier CIP-58][cip-58].
 
-To demonstrate why these operations would be useful, we re-use the cases
+To demonstrate why our proposed operations are useful, we re-use the cases
 provided in the [CIP-122][logic-cip], and show why the operations
 we describe would be beneficial.
 
@@ -94,9 +101,9 @@ examples. Lastly, we provide laws that any implementation of the proposed
 operations should obey.
 
 Throughout, we make use of the [bit indexing scheme][bit-indexing-scheme]
-described in a prior CIP. We also use the notation $x[i]$ to refer to the value
+described in a CIP-122. We also re-use the notation $x[i]$ to refer to the value
 of at bit index $i$ of $x$, and the notation $x\\{i\\}$ to refer to the byte at
-byte index $i$ of $x$.
+byte index $i$ of $x$: both are specified in CIP-122.
 
 ### Operation semantics
 
@@ -320,6 +327,13 @@ readBit bs i = readBit (bitwiseRotate bs j) (modInteger (i + j) (bitLen bs))
 countSetBits "" = 0
 
 countSetBits (x <> y) = countSetBits x + countSetBits y
+```
+
+`countSetBits` also demonstrates that `bitwiseRotate` indeed preserves the
+number of set (and thus clear) bits:
+
+```haskell
+countSetBits bs = countSetBits (bitwiseRotate bs i)
 ```
 
 There is also a relationship between the result of `countSetBits` on a given
