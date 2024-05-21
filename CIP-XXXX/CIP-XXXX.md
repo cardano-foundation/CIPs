@@ -383,18 +383,134 @@ readBit bs i = False
 
 ## Rationale: how does this CIP achieve its goals?
 
-TODO: Add note about how we can implement this using only reads and writes, but
-why it won't end well.
+Our four operations, along with their semantics, fulfil the requirements of both
+our cases, and are law-abiding, familiar, consistent and straightforward to
+implement. Furthermore, they relate directly to operations provided by
+[CIP-122][logic-cip], as well as being identical to the equivalent operations in
+[CIP-58][cip-58]. At the same time, some alternative choices could have been
+made:
 
-TODO: Talk about why we need all four, especially popcount and ffs.
+* Not implementing these operations at all, instead requiring higher-level APIs
+  to implement them atop CIP-122 primitives;
+* Providing only some of these four operations;
+* Having `findFirstSetBit` return the bit length for an all-zero argument,
+  instead of `-1`;
+* Including a way of finding the _last_ set bit as well.
 
-TODO: Compare with CIP-58, although we're basically identical anyway.
+We discuss our choices with regards to all the above, and specify why we made
+the choices that we did.
 
-TODO: Mention that our shifts and rotates line up with what Data.Bits does.
+While we chose to provide all of these operations as primitives, we could
+instead have required higher-level APIs to provide these on the basis
+of [CIP-122][logic-cip] bit reads and writes. This is indeed possible:
 
-TODO: Talk about the -1 versus bitlen choice for ffs and why we chose the first.
+* `bitwiseShift` and `bitwiseRotate` is a loop over all bits in the data argument, 
+  which is used to construct a change list that sets appropriate bits (with the 
+  right offset), which then gets applied to a `BuiltinByteString` of the same
+  length as the data argument, but full of zero bytes.
+* `countSetBits` is a fold over all bit indexes, incrementing an accumulator
+  every time a set bit is found.
+* `findFirstSetBit` is a fold over all bit indexes, returning the first index
+  with a set bit, or (-1) if none can be found.
 
-TODO: Why did we choose to omit clz?
+However, especially for `bitwiseShift` and `bitwiseRotate`, this comes at
+significant cost. For shifts and rotations, we have to construct a change list
+argument whose length is proportional to the Hamming weight of the data
+argument. Assuming that all inputs are equally likely, this is proportional to
+the bit length of the data argument: such a change list is likely significantly
+larger than the result of the shift or rotation, making the memory cost of such
+operations far higher than it needs to be. Given the constraints on memory and
+execution time on-chain, at minimum, these two operations would have to be
+primitives to make them viable at all: Case 2-style implementations would have
+intolerably large memory costs otherwise, as such algorithms often make heavy
+use of both shifts and rotations.
+
+The case for `countSetBits` and `findFirstSetBit` is less clear here, as they
+wouldn't require nearly as much of a memory cost if implemented atop CIP-122
+primitives using folds. However, the cost would still be significant:
+`countSetBits` requires looping over every bit index in the argument, and
+`findFirstSetBit` (again, assuming any bit distribution in an argument is
+equally probable) requires looping over about half this many. This would make
+these operations unreasonable even over smaller inputs, which would make
+applications like rank-select dictionaries (which expect these operations to be
+fast and low-cost) unworkable. As succinct data structures are foremost in our
+minds when considering the current primitives, we believe it is important that
+`countSetBits` and `findFirstSetBit` are as efficient as they could be, hence
+their inclusion.
+
+When designing our operations, we tried to keep them familiar to Haskellers,
+namely by having them behave like the similar operations from the `Bits` and
+`FiniteBits` type classes. In particular,
+`bitwiseShift` and `bitwiseRotate` act similarly given the same shift (or
+rotation) argument, as positive values shift left and negative ones shift 
+right. The only exception is the choice for `findFirstSetBit` to return `-1`
+when no set bits are found, which runs counter to the way `countTrailingZeros`
+from `FiniteBits` works, which instead returns the bit length. This is also
+different to how this operations [works in hardware][ctz]. Indeed, having
+`findFirstSetBit` work this way would not only be more familiar, it would also
+provide additional laws:
+
+```haskell
+-- Not possible under our current definition
+-- bitLen is the bit length of the argument
+0 <= popcount bs <= bitLen bs - findFirstSet bs 
+```
+
+Under both definitions, the intent is the same: if the argument doesn't contain
+any set bits, produce an invalid index. The difference is that we choose to
+produce a _negative_ invalid index, whereas the consensus is to produce a
+_non-negative_ invalid index instead. However, one task that is likely to come
+up frequently when using `findFirstSetBit` is checking whether the index we were
+given was valid or not (essentially, whether the argument has any nonzero bytes
+in it). Under our definition, all that would be required is
+
+```haskell
+let found = findFirstSetBit bs
+  in if found < 0
+     then weMissed
+     else validIndex
+```
+
+This is a cheap operation in Plutus Core, requiring only comparing against a
+constant. However, if we used the more widely-used definition, we would instead
+have to do this:
+
+```haskell
+let found = findFirstSetBit bs
+    bitLen = 8 * sizeOfByteString bs
+  in if found >= bitLen
+     then weMissed
+     else validIndex
+```
+
+This requires us to do considerably more work (finding the length of the
+argument, multiplying by 8, then compare against that result), and is also much
+more prone to error: users have to remember to use a `>=` comparison, as well as
+to multiply the argument length by 8. This is less of an issue with
+implementations of this operation in other languages, as their equivalent
+operations are designed for fixed-width arguments (indeed, `FiniteBits`
+_requires_ this), which makes their bit length a constant. In our case, this
+isn't as simple, as `BuiltinByteString`s have variable length, which would make
+the cost described above unavoidable. Our solution is both more efficient and
+less error-prone: all a user needs to remember is that invalid indexes from
+`findFirstSetBit` are negative. On this basis, we decided to vary from
+conventional approaches.
+
+One notable omission from our operators is the equivalent of counting _leading_
+zeroes: namely, an operation that would find the _last_ set bit. Typically, both
+a count of leading _and_ trailing zeroes is provided in both hardware and
+software: this is the case for `FiniteBits`, as well as [most hardware
+implementations][ctz]. To relate this to our cases, specifically Case 1, this
+would allow us to efficiently find the _largest_ element in an integer set. The
+reason we omit this operation is because, when compared with counting trailing
+zeroes, it is far less useful: while it can be used for computing fast integer
+square roots, it lacks many other uses. Counting trailing zeroes, on the other
+hand, is essential for rank-select dictionaries (specifically for the `select`
+operation), and also enables a range of other uses, which we have already
+mentioned. In order to limit the number of new primitives, we decided that
+counting leading zeroes can be omitted for now. However, our design doesn't
+preclude such an operation from being added later if a use case for it is found
+to be useful.
 
 ## Path to Active
 
@@ -439,3 +555,4 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [ffs-uses]: https://en.wikipedia.org/wiki/Find_first_set#Applications
 [rank-select-dictionary]: https://en.wikipedia.org/wiki/Succinct_data_structure#Succinct_indexable_dictionaries
 [hashing]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#case-2-hashing
+[ctz]: https://en.wikipedia.org/wiki/Find_first_set#Hardware_support
