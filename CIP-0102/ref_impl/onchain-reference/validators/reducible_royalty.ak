@@ -20,7 +20,7 @@ validator {
       list.find(
         tx.outputs,
         fn(output) {
-          value.quantity_of(output.value, redeemer.policy_id, royalty_tn) >= 1
+          value.quantity_of(output.value, redeemer.policy_id, royalty_tn) == 1
         },
       )
 
@@ -31,7 +31,7 @@ validator {
       list.find(
         tx.inputs,
         fn(input) {
-          value.quantity_of(input.output.value, redeemer.policy_id, royalty_tn) >= 1
+          value.quantity_of(input.output.value, redeemer.policy_id, royalty_tn) == 1
         },
       )
 
@@ -56,7 +56,7 @@ validator {
                 // the recipient has signed the transaction AND
                 // the fee has not changed OR
                 // the fee has decreased (encoding reverses this)
-                list.has(tx.extra_signatories, sig) && in_recipient.fee > out_recipient.fee || (in_recipient.fee == out_recipient.fee)?
+                list.has(tx.extra_signatories, sig) && in_recipient.fee > out_recipient.fee || in_recipient.fee == out_recipient.fee
               } else {
                 False
               }
@@ -74,7 +74,6 @@ const mock_owner = "some_fake_address_hash"
 const mock_policy_id = "some_fake_policy_id"
 
 test should_reduce_recipient() {
-  trace @"do traces work?"
   let redeemer = ReduceRedeemer { policy_id: mock_policy_id }
 
   let in_recipient =
@@ -108,7 +107,6 @@ test should_reduce_recipient() {
 }
 
 test should_fail_increase_recipient() fail {
-  trace @"do traces work?"
   let redeemer = ReduceRedeemer { policy_id: mock_policy_id }
 
   let in_recipient =
@@ -131,6 +129,39 @@ test should_fail_increase_recipient() fail {
         mock_policy_id,
       ),
     ]
+
+  let ctx =
+    ScriptContext {
+      transaction: get_base_transaction([input], outputs),
+      purpose: Spend(input.output_reference),
+    }
+
+  reduce([], redeemer, ctx)
+}
+
+test should_fail_no_token() fail {
+  let redeemer = ReduceRedeemer { policy_id: mock_policy_id }
+
+  let in_recipient =
+    RoyaltyRecipient {
+      address: Address {
+        payment_credential: VerificationKeyCredential(mock_owner),
+        stake_credential: None,
+      },
+      fee: 125,
+      min_fee: None,
+      max_fee: None,
+    }
+
+  let input = recipients_to_input([in_recipient], mock_policy_id)
+  let recipient_output =
+    recipients_to_output(
+      [RoyaltyRecipient { ..in_recipient, fee: 625 }],
+      mock_policy_id,
+    )
+
+  let outputs =
+    [Output { ..recipient_output, value: value.zero() }]
 
   let ctx =
     ScriptContext {
