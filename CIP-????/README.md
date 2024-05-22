@@ -30,7 +30,7 @@ The RIPEMD-160 is not only relevant to Bitcoin - other chains like (Cosmos)[http
 ## Specification
 This proposal aims to introduce a new built-in hash function `RIPEMD-160`.
 
-This function will be developed following the [`TODO:RIP-160`]() specification and will utilize the [`cryptonite`](https://github.com/haskell-crypto/cryptonite/blob/master/Crypto/Hash/RIPEMD160.hs)
+This function will be developed following the [`RIP-160`](https://homes.esat.kuleuven.be/~bosselae/ripemd160/pdf/AB-9601/AB-9601.pdf) specification and will utilize the [`cryptonite`](https://github.com/haskell-crypto/cryptonite/blob/master/Crypto/Hash/RIPEMD160.hs)
 
 Since `cardano-base` already relies on `cryptonite` in the context of [`keccak-256`](https://github.com/input-output-hk/cardano-base/blob/master/cardano-crypto-class/src/Cardano/Crypto/Hash/Keccak256.hs) we would like to expose `RIPEMD-160` through the same library, to facilitate its integration into Plutus.
 
