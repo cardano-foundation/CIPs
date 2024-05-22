@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: ?
 Title: Bitwise operations
 Category: Plutus
 Status: Proposed
@@ -8,7 +8,7 @@ Authors:
 Implementors: 
     - Koz Ross <koz@mlabs.city>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/825
 Created: 2024-05-16
 License: Apache-2.0
 ---
