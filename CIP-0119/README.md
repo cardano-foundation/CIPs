@@ -86,14 +86,20 @@ This SHOULD NOT be confused with the `address` property of a [Person](https://sc
 - Optional
 - This is a property inherited from [Person](https://schema.org/Person)
 - This SHOULD be treated as the profile picture of the individual
-- This MUST contain a fully described [`imageObject`](https://schema.org/ImageObject) property as opposed to a URL. 
+- This MUST contain a fully described [`imageObject`](https://schema.org/ImageObject) property 
  
 ##### `imageObject`
 - This is to be included in a metadata file as a property of the `image` property, only if the `image` property is included.
 - It explains the image to those (inc. tools) who are viewing it.
-- `imageObject` MUST contain a base64 encoded image in its [`contentURL`](https://github.com/schemaorg/schemaorg/issues/2696) property in a [dataURI](https://en.wikipedia.org/wiki/Data_URI_scheme) format:
+- `imageObject` MUST take one of the following forms:
+
+###### base64 encoded image
+`imageObject` contains a base64 encoded image in its [`contentUrl`](https://github.com/schemaorg/schemaorg/issues/2696) property in a [dataURI](https://en.wikipedia.org/wiki/Data_URI_scheme) format:
   - i.e. _data:content/type;base64,_ (AND NOT _data:domain.tld_)
   - e.g. _contentURL:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==_ (AND NOT _contentURL:https://avatars.githubusercontent.com/u/113025685?v=4_)
+
+###### URL of image
+If the `imageObject` DOES NOT contain a base64 encoded image, the `contentUrl` MUST contain the url where the image can be found and the `sha256` property MUST be populated with the SHA256 hash of the image file contents found at the `contentUrl`. The SHA256 hash is needed in order for readers to verify that the image has not been altered since the metadata anchor was submitted on-chain.
 
 #### `objectives`
 - Optional
@@ -167,11 +173,18 @@ This CIP is not written to specifically cover the metadata created to describe t
 
 People who want to extend the use of the DRep metadata can now do so in a way that allows tooling providers to use off the peg solutions. Furthermore there may be SEO benefits to using schema.org templates. 
 
-### Rationale for `imageObject` and b64 encoding
-According to schema.org The `image` property inherited from [Person](https://schema.org/Person) can either be a URL to a sepparate location where an image is stored, or it can be an `imageObject`. The reasons why this CIP specifies the use of an `imageObject` are:
-1. that the data at the location specified by a URL could be subject to change without the hash in the metadata anchor needing to be changed
-2. one option has been chosen in order to limit the amount of tooling options that need to be created to cater to those wishing to read and write DRep metadata. This way tools know exactly what to expect.
-3. it was mooted that the `image` property could instead directly be a base64 encoded value. Although a simpler solution, this would not be compliant with schema.org and would therefore not be compatible with any libraries built to read/write schema.org data. 
+### Rationale for decisions made regarding `imageObject` and b64 encoding
+According to schema.org The `image` property inherited from [Person](https://schema.org/Person) can either be a URL to a separate location where an image is stored, or it can be an `imageObject`. 
+
+For the following reasons it was originally intended that this CIP would specify the use of an `imageObject` with a b64 encoded image only, because:
+1. The data at the location specified by a URL could be subject to change without the hash in the metadata anchor needing to be changed
+2. Choosing just one way to write and read image data would to limit the amount of tooling options that need to be created to cater to those wishing to create DRep metadata. 
+
+However it was pointed out that this may quickly lead to relatively massive (multi-megabyte) metadata files that are more difficult to fetch and store without providing substantial value. Even IPFS would take a relatively long time to serve these files, and if there was a need to index them by some chain indexer (such as DB-Sync) then this could massively increase the storage space needed to run the indexer. 
+
+It is also the case that CIP-100 allows for metadata to be saved within a governance transaction, and including b64 encoded images directly within transactions would be troublesome due to their size. This would not be an issue with including an image file url. 
+
+Therefore it was decided to allow a provision for people to submit images as a url in addition to b64 only if a hash was included.  
 
 ### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of expertise, and would perhaps therefore be more attractive to some delegating Ada Holders.
