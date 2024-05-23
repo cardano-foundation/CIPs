@@ -158,8 +158,6 @@ Emphasis, aka italics, with single *asterisks*.
 Strong emphasis, aka bold, with double **asterisks**.
 ```
 
-The text contained within headings can be emphasized.
-
 Both italicized and bold cannot be applied to the same text.
 
 #### Code and Syntax Highlighting
@@ -174,10 +172,24 @@ Inline `code` has `back-ticks around` it.
 
 The text contained within headings or emphasis cannot be highlighted as code.
 
+#### Ordered Lists
+
+// todo
+
+```md
+1. This is the first item in my ordered list
+2. this is the second item in my list
+```
 
 #### Unordered Lists
 
 // todo
+
+```md
+- this is my list 
+- I like unordered lists
+```
+
 
 #### Line Breaks / Paragraphs
 
