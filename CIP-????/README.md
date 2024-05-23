@@ -5,7 +5,9 @@ Status: Proposed
 Category: Tools
 Authors:
     - Pal Dorogi <pal.dorogi@gmail.com>
+Implementors: []
 Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/816
 Created: 2024-05-17
 License: CC-BY-4.0
 ---
@@ -284,7 +286,7 @@ The use of an accumulator to represent the state of the IntegriTree allows for t
 The acceptance criteria for this CIP to become active are as follows:
 
 - The solution described in the CIP has been implemented and tested on the Cardano blockchain.
-- The implementation has been reviewed and approved by the Cardano Foundation and IOHK.
+- The implementation has been reviewed and approved by subject matter experts.
 - The community has had sufficient time to review and provide feedback on the CIP and the implementation.
 - Any concerns or issues raised during the review and testing process have been addressed and resolved.
 
@@ -294,14 +296,12 @@ The acceptance criteria for this CIP to become active are as follows:
 The implementation plan for this CIP is as follows:
 
 - The solution described in the CIP will be implemented and tested - on the Cardano blockchain by the proposer of the CIP.
-- The proposer will submit the implementation for review and - approval by the Cardano Foundation and IOHK.
+- The proposer will submit the implementation for review and approval by subject matter experts.
 - The proposer will make the implementation and the CIP available for review and feedback by the community.
 - The proposer will address and resolve any concerns or issues raised during the review and testing process.
 - Once the acceptance criteria have been met, the proposer will submit a pull request to the Cardano Improvement Proposals repository to update the status of the CIP to active.
 
-## Optional sections
-
-### Versioning
+## Versioning
 
 The solution described in this CIP does not require any specific versioning approach.
 
