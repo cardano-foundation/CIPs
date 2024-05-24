@@ -303,6 +303,14 @@ The implementation plan for this CIP is as follows:
 - [ ] The proposer will address and resolve any concerns or issues raised during the review and testing process.
 - [ ] Once the acceptance criteria have been met, the proposer will submit a pull request to the Cardano Improvement Proposals repository to update the status of the CIP to active.
 
+## References
+
+- [Minimal Subtrees](https://link.springer.com/chapter/10.1007/978-3-319-61199-0_8)
+- [Strong Accumulators from Collision-Resistant Hashing](https://users.dcc.uchile.cl/~pcamacho/papers/strongacc08.pdf)
+- [Cryptography for Efficiency: New Directions in Authenticated Data Structures](https://user.eng.umd.edu/~cpap/published/theses/cpap-phd.pdf)
+- [Transparency Logs via Append-Only Authenticated Dictionaries](https://eprint.iacr.org/2018/721.pdf)
+- [Batching non-membership proofs and proving non-repetition with bilinear accumulators](https://eprint.iacr.org/2019/1147.pdf)
+
 ## Versioning
 
 The solution described in this CIP does not require any specific versioning approach.
