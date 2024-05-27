@@ -7,6 +7,7 @@ Authors:
   - Tomasz Rybarczy <tomasz.rybarczyk@iohk.io>
 Implementors:
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/826
 Created: 2024-05-22
 License: Apache-2.0
 ---
