@@ -5,7 +5,7 @@ Status: Proposed
 Category: Plutus
 Authors:
   - Tomasz Rybarczy <tomasz.rybarczyk@iohk.io>
-Implementors:
+Implementors: []
     Tomasz Rybarczy <tomasz.rybarczyk@iohk.io>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/826
