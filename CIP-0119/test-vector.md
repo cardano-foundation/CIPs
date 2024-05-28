@@ -1,6 +1,6 @@
 # Test Vector for CIP-0119
 
-Here we give some supporting files, give an example and explain how the [example.json](./example.json) was created.
+Here we give some supporting files, give an example and explain how the [drep.jsonld](./examples/drep.jsonld) was created.
 
 ## Common Context
 
@@ -18,7 +18,7 @@ See [cip-0119.common.schema.json](./cip-0119.common.schema.json).
 
 CIP-119 off-chain metadata json example: [drep.jsonld](./examples/drep.jsonld)
 
-Blake2b-256 hash of the canonicalize example (to go on-chain): `426e4fa13175393095f1aa54620847c13ba70cb3437ce39e25db06205f73d154`
+Blake2b-256 hash of the canonicalize example (to go on-chain): `a7a5cf6bfcad40e7b43653dae26344d6fbb5d7a2ef8de56a5e43703b298b94b5`
 
 ### Intermediate files
 
