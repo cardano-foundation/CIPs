@@ -221,7 +221,7 @@ pub fn root_hash(root: Proof) -> Hash {
 }
 ```
 
-## Membership and Non-Membership Proofs
+### Membership and Non-Membership Proofs
 
 IntegriTree provides proofs for both membership and non-membership of elements in the tree:
 
