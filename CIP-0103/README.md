@@ -2,7 +2,7 @@
 CIP: 103
 Title: Web-Wallet Bridge - Bulk transaction signing
 Category: Wallets
-Status: Proposed
+Status: Active
 Authors:
     - Martín Schere
     - Ola Ahlman <ola.ahlman@tastenkunst.io>
