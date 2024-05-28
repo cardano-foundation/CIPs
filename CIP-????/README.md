@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: Integration of `ripemd-160` into Plutus
+Title: `ripemd-160` hashing in Plutus Core
 Status: Proposed
 Category: Plutus
 Authors:
