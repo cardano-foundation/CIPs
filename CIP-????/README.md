@@ -228,7 +228,7 @@ IntegriTree provides proofs for both membership and non-membership of elements i
 - **Membership**: If an `x` element is in the tree, there exists at least one node where either `xa = x` or `xb = x`.
 - **Non-Membership**: If an element is not in the tree, there exists a node where `xa < x < xb`.
 
-## Append and Delete Proofs
+### Append and Delete Proofs
 
 Proofs are available for appending new elements to the tree and deleting existing elements:
 
