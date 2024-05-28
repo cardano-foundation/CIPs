@@ -13,7 +13,7 @@ License: Apache-2.0
 ---
 
 ## Abstract
-This CIP follows closely the (CIP-0101)[../CIP-0101/README.md][^1] and proposes an extension of the current Plutus functions with another hashing primitive [`RIPEMD-160`](https://en.bitcoin.it/wiki/RIPEMD-160). Primary goal is to introduce compatibility with Bitocoin's cryptographic infrastructure.
+This CIP follows closely the (CIP-0101)[^1] and proposes an extension of the current Plutus functions with another hashing primitive [`RIPEMD-160`](https://en.bitcoin.it/wiki/RIPEMD-160). Primary goal is to introduce compatibility with Bitcoin's cryptographic infrastructure.
 
 ## Motivation: why is this CIP necessary?
 
