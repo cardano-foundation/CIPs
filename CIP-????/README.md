@@ -243,7 +243,7 @@ There are two types of Vals are used with the Proof:
 - **Updateable Node's (`Nu`'s)**: Nodes' val that are already part of the tree but may have their values updated.
 - **Parent Node's (`Np`'s)**: Nodes' val where a new leaf will be appended to or removed from.
 
-## Completeness Enforcement
+### Completeness Enforcement
 
 The tree must always maintain its completeness which enforced by the sequential index of nodes in the tree.
 
