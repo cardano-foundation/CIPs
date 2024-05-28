@@ -26,7 +26,7 @@ Most of common addresses in Bitcoin are derived from double [hashing procedure](
 
 Adding `RIPEMD-160` to Plutus would enhance the potential for cross-chain solutions between Cardano and Bitcoin blockchains and complements the set of primitives which we already have in that regard. It would allow for the verification of Bitcoin addresses and transactions on-chain. This addition enables also the verification of signed messages that identify the signer by the public key hash, which has not yet been witnessed on the Bitcoin blockchain.
 
-The RIPEMD-160 is not only relevant to Bitcoin - other chains like (Cosmos)[https://docs.cosmos.network/main/build/architecture/adr-028-public-key-addresses#legacy-public-key-addresses-dont-change] or (BNB)[https://docs.bnbchain.org/docs/beaconchain/learn/accounts/#address] also use it for address generation.
+The RIPEMD-160 is not only relevant to Bitcoin - other chains like [Cosmos](https://docs.cosmos.network/main/build/architecture/adr-028-public-key-addresses#legacy-public-key-addresses-dont-change) or [BNB](https://docs.bnbchain.org/docs/beaconchain/learn/accounts/#address) also use it for address generation.
 
 ## Specification
 This proposal aims to introduce a new built-in hash function `RIPEMD-160`.
