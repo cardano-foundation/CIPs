@@ -147,7 +147,6 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
 | 0119? | [Governance Metadata - DReps](https://github.com/cardano-foundation/CIPs/pull/788) |
 | 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
-| 0121? | [Integer-ByteString conversions](https://github.com/cardano-foundation/CIPs/pull/624) |
 
 <p align="right"><i>Last updated on 2024-05-03</i></p>
 
