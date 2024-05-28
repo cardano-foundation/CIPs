@@ -394,7 +394,7 @@ x emptyByteString`.
    appendByteString (builtinIntegerToByteString False 0 q)
    (builtinIntegerToByteString False 0 r)`
 
-## `builtinByteStringToInteger`
+### `builtinByteStringToInteger`
 
 The `builtinByteStringToInteger` primitive takes two arguments. We specify, and
 name, these below:
