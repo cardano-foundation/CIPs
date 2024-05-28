@@ -6,9 +6,7 @@ Category: Tools
 Authors:
     - Pal Dorogi <pal.dorogi@gmail.com>
 Implementors: []
-Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/816
     - https://github.com/cardano-foundation/CIPs/pull/816
 Created: 2024-05-17
 License: CC-BY-4.0
