@@ -247,7 +247,7 @@ There are two types of Vals are used with the Proof:
 
 The tree must always maintain its completeness which enforced by the sequential index of nodes in the tree.
 
-## Technical briefs of the IntegriTree
+### Technical briefs of the IntegriTree
 
 - The tree model **`T`** representing the set **`X = {x1, ..., xn}`** is and must always be a **`Complete Binary Tree`**.
 - A `Complete Binary Tree` can have an incomplete last level, as long as all the leaves in that level are arranged from left to right.
