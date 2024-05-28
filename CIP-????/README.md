@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: Efficient Proofs for Dynamic Sets on Cardano
+Title: Efficient Proofs for Dynamic Sets
 Status: Proposed
 Category: Tools
 Authors:
