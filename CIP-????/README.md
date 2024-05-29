@@ -50,12 +50,12 @@ The library, cryptonite, is not implemented by and under control of the Plutus t
 * Its behaviour is predictable and computationally efficient. The cost of the function is linear with respect to the size of the message provided as input. This is the same behaviour that other hash functions exposed in plutus (blake, sha3, keccak-256) have.
 
 ### Acceptance Criteria
-* A `cardano-base` binding is created for the `ripemd-160` function and included in a new version of the library.
-* A Plutus binding is created for the `ripemd_160` function and included in a new version of Plutus.
-* Integration tests, similar to those of the existing Plutus hash functions, are added to the testing infrastructure.
-* The function is benchmarked to assess its cost. As for other hash functions available in Plutus (blake2b, sha256 and keccak_256), we expect the cost of `ripemd_160` to be linear with respect to the size of the message. The Plutus team determines the exact costing functions empirically.
-* The ledger is updated to include new protocol parameters to control costing of the new builtins.
-* This CIP may transition to active status once the Plutus version containing the `ripemd_160` function is introduced in a node release and becomes available on Mainnet.
+[ ] A `cardano-base` binding is created for the `ripemd-160` function and included in a new version of the library.
+[ ] A Plutus binding is created for the `ripemd_160` function and included in a new version of Plutus.
+[ ] Integration tests, similar to those of the existing Plutus hash functions, are added to the testing infrastructure.
+[ ] The function is benchmarked to assess its cost. As for other hash functions available in Plutus (blake2b, sha256 and keccak_256), we expect the cost of `ripemd_160` to be linear with respect to the size of the message. The Plutus team determines the exact costing functions empirically.
+[ ] The ledger is updated to include new protocol parameters to control costing of the new builtins.
+[ ] This CIP may transition to active status once the Plutus version containing the `ripemd_160` function is introduced in a node release and becomes available on Mainnet.
 
 ### Implementation Plan
 The Plutus team will develop the binding, integration tests, and benchmarks. The E2E tests will be designed and implemented collaboratively by the testing team, the Plutus team, and community members planning to use this primitive.
