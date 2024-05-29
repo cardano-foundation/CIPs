@@ -107,11 +107,12 @@ including spaces and punctuation.
 
 #### Sentences
 
-// todo; improve this - it is confusing
+The constitution text MUST only contain a maximum of one sentence per line, 
+with each sentence followed by a newline.
 
-The constitution text MUST only contain a maximum of one sentence per group of adjacent
-lines, with each sentence followed by a newline.
-There MUST be one and only one blank line between paragraphs.
+When rendered, these newlines between sentences SHOULD NOT be shown.
+
+Paragraphs are shown by leaving a blank line between text.
 
 Each sentence SHOULD start on its own line with a capitalized letter.
 
@@ -122,6 +123,9 @@ This is a short sentence on one line.
 
 This is a long sentence and I have valid reasons for it being so long,
 such as being an example of a long sentence.
+When this sentence is rendered it should be shown to directly follow the sentence above.
+
+This sentence is the start of a new paragraph.
 ```
 
 While 80 characters is a limit, authors don't have to try and always hit 80.
