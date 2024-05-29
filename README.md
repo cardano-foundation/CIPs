@@ -148,7 +148,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0121? | [Integer-ByteString conversions](https://github.com/cardano-foundation/CIPs/pull/624) |
 | 0122? | [Logical operations over BuiltinByteString](https://github.com/cardano-foundation/CIPs/pull/806) |
 
-<p align="right"><i>Last updated on 2024-05-03</i></p>
+<p align="right"><i>Last updated on 2024-05-19</i></p>
 
 ## Cardano Problem Statements (CPS)
 
