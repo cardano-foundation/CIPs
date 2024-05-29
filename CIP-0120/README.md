@@ -109,9 +109,9 @@ including spaces and punctuation.
 
 // todo; improve this - it is confusing
 
-The constitution text MUST only contain a maximum of one sentence per group of 
-lines delimited by one blank line between these groups.
-Each sentence MUST be followed by a newline.
+The constitution text MUST only contain a maximum of one sentence per group of adjacent
+lines, with each sentence followed by a newline.
+There MUST be one and only one blank line between paragraphs.
 
 Each sentence SHOULD start on its own line with a capitalized letter.
 
