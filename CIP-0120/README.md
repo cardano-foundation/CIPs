@@ -98,7 +98,7 @@ rules unless a translation language indicates otherwise:
 
 ### Characters
 
-The constitution text MUST only contain UTF-8 characters.
+The constitution text MUST only contain printable text characters in UTF-8 encoding.
 
 ### Lines
 
