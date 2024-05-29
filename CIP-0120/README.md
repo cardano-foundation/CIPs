@@ -5,6 +5,7 @@ Category: Metadata
 Status: Proposed
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
+    - Danielle Stanko <danielle.stanko@iohk.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/796
@@ -106,6 +107,8 @@ including spaces and punctuation.
 
 #### Sentences
 
+// todo; improve this - it is confusing
+
 The constitution text MUST only contain a maximum of one sentence per group of 
 lines delimited by one blank line between these groups.
 Each sentence MUST be followed by a newline.
@@ -126,7 +129,9 @@ Legibility should be kept in mind.
 
 ### File Type
 
-The constitution file MUST be a text file named `constitution.txt`.
+// todo define iteration number
+
+The constitution file MUST be a text file named `cardano-constitution-{i}.txt`.
 
 ### Hashing
 
@@ -152,6 +157,22 @@ The constitution text MAY include a strict subset of rich text styling as
 defined in this specification.
 Tooling rendering the constitution SHOULD recognize these and render them 
 faithfully.
+
+#### Line Breaks / Paragraphs
+
+To create paragraphs, use a blank line to separate one or more lines of text.
+
+Examples:
+```md
+Here's a line for us to start with.
+
+This line is separated from the one above by two newlines, 
+so it will be a *separate paragraph*.
+
+This line is also a separate paragraph, but...
+This line is only separated by a single newline, 
+so it's a separate line in the *same paragraph*.
+```
 
 #### Headers
 
@@ -213,40 +234,41 @@ The text contained within headings or emphasis cannot be highlighted as code.
 
 #### Ordered Lists
 
-// todo
+To create an ordered list, 
+add line items with numbers followed by one period and then one space.
+Each line item is separated by a new line. 
+The numbers MUST be in numerical order, 
+but the list should start with the number one.
+
+Ordered lists MUST NOT have indented items.
+Ordered lists MUST NOT include headings.
 
 ```md
 1. This is the first item in my ordered list
 2. this is the second item in my list
+3. the third item
 ```
 
 #### Unordered Lists
 
-// todo
+To create an unordered list, add dashes (-) and one space, 
+in front of line items.
+
+Unordered lists MUST NOT have indented items.
+Unordered lists MUST NOT start with a number followed by a period.
 
 ```md
 - this is my list 
 - I like unordered lists
 ```
 
-
-#### Line Breaks / Paragraphs
-
-To create paragraphs, use a blank line to separate one or more lines of text.
-
-Examples:
-```md
-Here's a line for us to start with.
-
-This line is separated from the one above by two newlines, 
-so it will be a *separate paragraph*.
-
-This line is also a separate paragraph, but...
-This line is only separated by a single newline, 
-so it's a separate line in the *same paragraph*.
-```
+Unordered lists MUST NOT include headings.
 
 ### Best Practices
+
+#### Rendering
+
+- 
 
 #### Hashing
 
@@ -259,9 +281,19 @@ If the hash provided on-chain does not match the hash produced from
 the off-chain document, then the tooling SHOULD highlight this in a 
 very obvious way to users.
 
+#### Conformance
+
+Tools writing constitutions should strive to follow this specification.
+If tooling discovering and rendering constitution documents discovers that 
+the document does not follow this specification then a small warning should 
+be given to users.
+
 #### Form
 
-- when unrecognised formatting/style
+Authors SHOULD aim to keep the document as clean and consistent as possible.
+Text should try to be left aligned, without using unneeded whitespace.
+
+
 - Keep lines left-aligned without unneeded whitespace or tabs
 - tabs vs spaces
 
@@ -271,7 +303,7 @@ very obvious way to users.
 
 ### Test vectors
 
-// todo
+See [Test vector file](./test-vector.md)
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -408,4 +440,5 @@ Embedded HTML or videos are likely things to be avoided.
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CIP is licensed under 
+[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
