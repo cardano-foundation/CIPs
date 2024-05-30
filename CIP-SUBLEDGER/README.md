@@ -5,7 +5,7 @@ Status: Proposed
 Category: Ledger
 Authors:
     - Micah Kendall <micah@butane.dev>
-Implementors: [Micah Kendall]
+Implementors: [Micah Kendall, <you?>]
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
 Created: 2024-05-30
@@ -86,7 +86,6 @@ type AdminSeizures {
 - The extra field is for arbitrary extra redeemer data
 - Extra field example: could be used for a signed payload if it's an admin endpoint using a key.
 
-
 ## Developer Experience
 The primary improvement for the developer experience is the ability to specify all these "capabilities to freeze/unfreeze" externally to the user-level experience of transferring the UTxOs.
 
@@ -94,7 +93,17 @@ This script can be implemented without any parameterization of UTxOs or network-
 
 For an enhanced developer experience, we should subject the implementation (in Aiken) to external analysis from the developer community before finalizing the exact script hash to be included in this CIP.
 
-## Terms
+## Path to Active
+
+### Acceptance Criteria
+- An implementation must be provided that aligns with the CIP's textual description.
+- The implementation (including code, build, and deployment) must undergo an external audit by a reputable firm.
+- A basic example of a minting policy that supports asset seizures under the subledger protocol must be included.
+
+### Implementation Plan
+- ???
+
+## Glossary
 
 | Term                                            | Explanation                                                                                                                                        |
 |-------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
