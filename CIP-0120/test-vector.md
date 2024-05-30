@@ -1,23 +1,29 @@
 # Test Vector for CIP-0120
 
-Here we create some useful definitions and some examples.
+Here we provide some useful examples. 
 
-Example hash digests produced using 
-[Toolkit Bay BLAKE2b-256 tool](https://toolkitbay.com/tkb/tool/BLAKE2b_256).
+Example hash digests produced using [Toolkit Bay BLAKE2b-256 tool](https://toolkitbay.com/tkb/tool/BLAKE2b_256).
 
 ## Examples
 
 ### Ryan's Constitution
 
-This is a fun example.
+This is a fun example for a first constitution from Ryan.
 
-File: [ryan-constitution/constitution.txt](./examples/ryan-constitution/constitution.txt)
-Hosted at: ``
-Blake2b-256 hash digest: `8c792bae82dbe5a270108a060b77cff8b969eb475393bc3bddcb60789557676d`
+File: [ryan-constitution](./examples/ryan-constitution/cardano-constitution-0.txt)
+
+Hosted at (to go onchain): `ipfs://bafkreida43nd62yu4vl6czo7hcc7wecxgjdsnphzlg2i6daii5q4ai6npi`
+Blake2b-256 hash digest (to go onchain): `55b35f81de519b320da15a4f1faf6b9cfe0cf18cf6daa320224ebb1a924d2986`
+
+Example rendered: [ryan-rendered.png](./examples/ryan-consitution/ryan-rendered.png)
 
 ### Malicious Constitution
 
+This is an example 5th generational constitution, which is malicious.
 
 File: [malicious-constitution/constitution.txt](./examples/malicious-constitution/constitution.txt)
-Hosted at: ``
-Blake2b-256 hash digest: ``
+
+Hosted at (to go onchain): `ipfs://bafkreiggjdt7kxsohnewkcligixppzkccmsqv4lljpy7d65djtfaxqkzxm`
+Blake2b-256 hash digest (to go onchain): `6a246e447f0e03a065666394121696ee5fb61a6289dc20029279622ee2d2622d`
+
+Example rendered: [malicious-rendered.png](./examples/malicious-consitution/malicious-rendered.png)

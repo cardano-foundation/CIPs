@@ -21,3 +21,20 @@ All treasury withdrawal actions must go into a wallet that Ryan controls.
 
 Protocol parameter changes should seek to raise transaction fees and to 
 increase the amount of money that is paid into the treasury.
+
+## Appendix
+
+### Islands Ryan would like to buy
+
+This is an ordered list of islands that Ryan would like to buy.
+
+1. Australia
+
+### Ryan's favorite plants
+
+This is a list of Ryan's favorite plants:
+
+- Monstera deliciosa
+- Anthurium veitchii
+- Monstera esqueleto
+- Strawberry
