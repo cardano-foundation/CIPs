@@ -86,12 +86,12 @@ type AdminSeizures {
 - The extra field is for arbitrary extra redeemer data
 - Extra field example: could be used for a signed payload if it's an admin endpoint using a key.
 
-## Developer Experience
-The primary improvement for the developer experience is the ability to specify all these "capabilities to freeze/unfreeze" externally to the user-level experience of transferring the UTxOs.
+## Development
+The primary improvement for developers is the ability to specify all these "capabilities to freeze/unfreeze" externally to the user-level experience of transferring the UTxOs.
 
 This script can be implemented without any parameterization of UTxOs or network-specific values, allowing us to compile, deploy, and spend to the same script hash across mainnet, testnets, and emulators.
 
-For an enhanced developer experience, we should subject the implementation (in Aiken) to external analysis from the developer community before finalizing the exact script hash to be included in this CIP.
+For an enhanced developer experience, we should subject the implementation (in Aiken) to external analysis from the developer community before finalizing the exact instance to be enshrined in this CIP.
 
 ## Path to Active
 
