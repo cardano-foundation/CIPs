@@ -14,11 +14,16 @@ License: CC-BY-4.0
 
 # CIP \*\*\*: A Subledger in Plutus Enabling Native-Asset Seizure for Regulatory Compliance
 
-## Introduction
+## Abstract
 We aim to establish a simple standard to ensure native assets can exist in a locked smart contract system, referred to as the "subledger". This subledger will enable functionality defined in the minting policy to seize assets.
 
 This design preserves the benefits of Cardano's native assets by enabling the reuse of most EUTxO patterns. It is significant that DEXs or other Plutus applications can be easily adapted to function within the subledger environment.
 
+# Motivation: why is this CIP necessary?
+
+A solution is required to enable asset seizure such as revoking USDC. We attempt to provide one in an EUTXO-harmonious style, for the sake of developer & user experience. 
+
+# Specification
 ## Objectives
 This CIP encompasses:
 - An implementation of a smart contract system (subledger)
@@ -61,7 +66,6 @@ This guarantees that you can always utilize the policy-level functionality on th
 
 
 ### Policy-Level Functionality
-This guarantees that you can always utilize the policy-level functionality on the UTxOs.
 
 #### Additional Constraint (Redeemer Endpoint)
 - Value may be withdrawn from a UTxO.
@@ -93,15 +97,22 @@ This script can be implemented without any parameterization of UTxOs or network-
 
 For an enhanced developer experience, we should subject the implementation (in Aiken) to external analysis from the developer community before finalizing the exact instance to be enshrined in this CIP.
 
+## Rationale: how does this CIP achieve its goals?
+
+We accomplish the seizure capabilities on a technical basis, and the implementation style follows Keep-It-Simple-Stupid principles to minimise developer headache.
+
 ## Path to Active
 
 ### Acceptance Criteria
-- An implementation must be provided that aligns with the CIP's textual description.
-- The implementation (including code, build, and deployment) must undergo an external audit by a reputable firm.
-- A basic example of a minting policy that supports asset seizures under the subledger protocol must be included.
+- [ ] An implementation must be provided that aligns with the CIP's textual description.
+- [ ] The implementation (including code, build, and deployment) must undergo an external audit by a reputable firm.
+- [ ] A basic example of a minting policy that supports asset seizures under the subledger protocol must be included.
 
 ### Implementation Plan
-- ???
+- [ ] Wait for high-level feedback
+- [ ] Implement in Aiken
+- [ ] Undergo further feedback
+- [ ] Volunteer or Hire Audit
 
 ## Glossary
 
