@@ -467,9 +467,17 @@ Embedded HTML or videos are likely things to be avoided.
   <summary><strong>First draft</strong></summary>
   
   We would like to thank those who reviewed the first draft of this proposal;
-    - Danielle Stanko
-    - Kevin Hammond
-    - Steven Johnson 
+  - Danielle Stanko
+  - Kevin Hammond
+  - Steven Johnson 
+
+</details>
+
+<details>
+  <summary><strong>Significant Contributions</strong></summary>
+  
+  We would like to thank Robert Phair ([@rphair](https://github.com/rphair)) for
+  his expert contributions to this proposal.
 
 </details>
 
