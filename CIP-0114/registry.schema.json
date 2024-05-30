@@ -1,0 +1,87 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0114/registry.schema.json",
+    "type": "array",
+    "title": "CBOR Tag Registry",
+    "description": "JSON schema for CBOR Tag registry",
+    "default": [],
+    "examples": [
+        [
+            {
+                "cbor_tag": 32773,
+                "iana_registered": false,
+                "description": "ED25519-BIP32 public-key",
+                "cip": "CIP-0115"
+            },
+            {
+                "cbor_tag": 32774,
+                "iana_registered": false,
+                "description": "ED25519-BIP32 Signature",
+                "cip": "CIP-0115"
+            }
+        ]
+    ],
+    "additionalItems": false,
+    "items": {
+        "$id": "#/items",
+        "anyOf": [
+            {
+                "$id": "#/items/anyOf/0",
+                "type": "object",
+                "title": "The first anyOf schema",
+                "description": "An entry in the CBOR Tag registry",
+                "default": {},
+                "examples": [
+                    {
+                        "cbor_tag": 32771,
+                        "iana_registered": false,
+                        "description": "ED25519-BIP32 Private Key",
+                        "cip": "CIP-xxxx"
+                    }
+                ],
+                "required": [
+                    "cbor_tag",
+                    "iana_registered",
+                    "description"
+                ],
+                "properties": {
+                    "cbor_tag": {
+                        "$id": "#/items/anyOf/0/properties/cbor_tag",
+                        "type": "integer",
+                        "title": "The CBOR Tag number",
+                        "examples": [
+                            32771
+                        ]
+                    },
+                    "iana_registered": {
+                        "$id": "#/items/anyOf/0/properties/iana_registered",
+                        "type": "boolean",
+                        "title": "Is the tag registered with IANA.  Unregistered tags must not be used as they are subject to change.",
+                        "default": false,
+                        "examples": [
+                            true
+                        ]
+                    },
+                    "description": {
+                        "$id": "#/items/anyOf/0/properties/description",
+                        "type": "string",
+                        "title": "The CBOR tag description",
+                        "default": "",
+                        "examples": [
+                            "ED25519-BIP32 Private Key"
+                        ]
+                    },
+                    "cip": {
+                        "$id": "#/items/anyOf/0/properties/cip",
+                        "type": "string",
+                        "title": "The CIP which defines the Tag and its canonical encoding",
+                        "examples": [
+                            "CIP-0115"
+                        ]
+                    }
+                },
+                "additionalProperties": true
+            }
+        ]
+    }
+}

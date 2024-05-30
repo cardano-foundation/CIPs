@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This article describes, in _human-readable terms_, the coin selection
 algorithms used by [Cardano
-Wallet](https://github.com/input-output-hk/cardano-wallet/) and other parts of
+Wallet](https://github.com/cardano-foundation/cardano-wallet/) and other parts of
 the Cardano ecosystem.
 
 In the context of this article, **coin selection** refers to the process of

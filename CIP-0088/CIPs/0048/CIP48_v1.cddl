@@ -1,0 +1,23 @@
+; CIP-0048: Metadata References Standard
+; Version: 1
+
+string = text .size (0..64)
+
+reference-payload = {
+    0 : "content" / "pointer"  ; Payload Type: Is the payload a direct content replacement or a pointer
+    1 :
+}
+
+reference = {
+    0 : string,                ; reference name (case sensitive)
+    1 : reference-payload      ; The payload of the reference
+}
+
+reference-details = {
+    1 : [+ reference]
+}
+
+cip48-details = {
+    ? 0 : uint,               ; version
+      1 : reference-details   ; CIP-0068 NFT Project Details
+}

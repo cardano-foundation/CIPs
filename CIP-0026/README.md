@@ -1,20 +1,25 @@
 ---
 CIP: 26
 Title: Cardano Off-Chain Metadata
-Authors: Matthias Benkort <matthias.benkort@iohk.io>, Michael Peyton Jones <michael.peyton-jones@iohk.io>, Polina Vinogradova <polina.vinogradova@iohk.io>
-Comments-Summary: No comments yet
-Comments-URI: https://github.com/CardanoFoundation/CIPs/pulls/112
-Status: Draft
-Type: Process
+Status: Active
+Category: Metadata
+Authors:
+  - Matthias Benkort <matthias.benkort@iohk.io>
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+  - Polina Vinogradova <polina.vinogradova@iohk.io>
+Implementors:
+  - cardano-token-registry <https://github.com/cardano-foundation/cardano-token-registry>
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/112
 Created: 2021-08-10
 License: CC-BY-4.0
 ---
 
-# Abstract
+## Abstract
 
 We introduce a standard for off-chain metadata that can map opaque on-chain identifiers to metadata suitable for human consumption. This will support user-interface components, and allow resolving trust issues in a moderately decentralized way.
 
-# Motivation
+## Motivation: why is this CIP necessary?
 
 On the blockchain, we tend to refer to things by hashes or other opaque identifiers. But these are not very human friendly:
 * In the case of hashes, we often want to know the preimage of the hash, such as
@@ -32,25 +37,27 @@ We think there is a case for a metadata distribution system that would fill thes
 
 The Rationale section provides additional justifications for the design decisions in this document.
 
-## Use Cases
+### Use Cases
 
-### Hashed Content
+#### Hashed Content
 
 Many pieces of information on the Cardano blockchain are stored as hashes, and only revealed at later stages when required for validation. This is the case for example of scripts (Plutus or phase-1), datums, and public keys. It is likely that (some) users will want to know the preimages of those hashes in a somewhat reliable way and, before they are revealed on-chain.
 
-### Off-Chain Metadata
+#### Off-Chain Metadata
 
 Unlike some (un)popular opinions suggest, a blockchain is a poor choice for a content database. Blockchains are intrinsically ledgers and they are good at recording events or hashes. Yet, there are several elements for which hashes aren't providing a great user experience and to which we would rather attach some human-readable metadata (like names, websites, contact details etc...). This is the case for stake pool for instance for which [SMASH](https://github.com/input-output-hk/smash/) already provides a solution. This is also the case for monetary policies and scripts. In both cases, having the ability to attach extra metadata to _some_ hash with a way to ensure the authenticity of the data is useful.
 
-# Specification
+## Specification
 
 This specification covers some parts of a bigger system likely involving multiple components. What part is being implemented and by who is considered out of the scope of this specification. We however envision a setup in which users have access to a client application (a.k.a the wallet), which itself is able to connect to some remote server. We assume the server to also offer a user-interface (either via a graphical user-interface or a application programming interface) for accepting content. 
 
-## Hash Function
+> **Note** The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
+
+### Hash Function
 
 There are several places in this document where we need an arbitrary hash function. We will  henceforth refer to this simply as “hash”. The hash function MUST be **Blake2b-256** (unless explicitly said otherwise). The hash of a string is the hash of the bytes of the string according to its encoding.
 
-## Metadata Structure
+### Metadata Structure
 
 Metadata consists of a mandatory _metadata subject_, and a number of _metadata properties_ which describes that subject. Each property consists of a mapping from _property names_ to _property values_, _sequence numbers_ and _signatures_.
 
@@ -76,11 +83,11 @@ We will refer to a whole metadata as a _metadata object_ and to a particular pro
 }
 ```
 
-### Sequence Numbers
+#### Sequence Numbers
 
 Metadata entries MUST have a `sequenceNumber` associated with them. This is a monotonically increasing integer which is used to ensure that clients and servers do not revert to “earlier” versions of an entry. Upon receiving new metadata objects, servers SHOULD verify the sequence number for each entry already known for that subject and reject submissions with a lower sequence number. 
 
-### Attestation Signatures
+#### Attestation Signatures
 
 Metadata entries MAY have attestations `signatures` associated with them, in the form of an array of objects. Attestation signatures are indeed annotated. An annotated signature for a message is an object with of a `publicKey`, and a `signature` of a specified message (see below) by the corresponding private key.
 
@@ -116,7 +123,7 @@ hash(
 The `publicKey` and the `signature` MUST be base16-encoded and stored as JSON strings. All signatures must be verifiable through the **Ed25519 digital signature** scheme and public keys must therefore be 32-byte long Ed25519 public keys. 
 
 
-## Well-known Properties
+### Well-known Properties
 
 The following properties are considered well-known, and the JSON in their values MUST have the given structure and semantic interpretation. New properties can be added to this list by amending this CIP. The role of well-known properties is to facilitate integration between applications implementing this CIP. Nevertheless, registries are encouraged to **not** restrict properties to only this limited set but, registries (or metadata servers) MUST verify the well-formedness of those properties when present in a metadata object.
 
@@ -223,9 +230,9 @@ The following properties are considered well-known, and the JSON in their values
 ```
 </details>
 
-## Verifying Metadata 
+### Verifying Metadata 
 
-### General Case
+#### General Case
 
 Applications that want to display token metadata MUST verify signatures of metadata entries against a set of trusted keys for certain subjects. We will call such applications _"clients"_. Conceptually we expect clients to maintain a mapping of many subjects to many verification keys. In case where a metadata entry contains no signatures, when none of the provided signatures was produced by a known key for the corresponding subject or when none of the provided signatures verifies: the metadata entry MUST be considered invalid and not be presented to end-users.
 
@@ -245,7 +252,7 @@ The way by which the trusted keys are registered into clients is unspecified alt
 
 3. Mappings of subjects to keys MAY be recorded on-chain, using transaction metadata and an appropriate label registered on [CIP-0010]. In some scenarios, the context within which the transaction is signed may be enough to reliably trust the legitimacy of a mapping. For example, in the case of a monetary policy, one could imagine _registering trusted keys_ in the same transaction minting tokens. Because the transaction is inserted in the ledger, it must have been signed by the token issuer and therefore, the specified keys are without doubt acknowledged by the token issuer. As a result, clients having access to on-chain data can automatically discover new mappings from observing the chain. 
 
-### Special Case: Phase-1 Monetary Policies
+#### Special Case: Phase-1 Monetary Policies
 
 > <sub>░ note ░</sub> 
 > 
@@ -303,11 +310,11 @@ To validate such a policy, each entry would require 2 signatures:
 
 The policy MAY also contain some additional time constraints (VALID-AFTER, VALID-BEFORE) specifying a certain slot number. For the sake of verifying policies, these should be ignored and consider _valid_. 
 
-## Recommendations For Metadata Servers
+### Recommendations For Metadata Servers
 
 The following section gives some recommendations to application developers willing to implement a metadata server / registry. Following these recommendations will facilitate interoperability between applications and also, provide some good security foundation for the server. In this context, what we refer to as a _metadata server_ is a web server that exposes the functionality of a simple key-value store, where the keys are metadata subjects and property names, and the values are their property values.
 
-#### Querying Metadata
+##### Querying Metadata
 
 The metadata server SHOULD implement the following HTTP methods:
 
@@ -351,7 +358,7 @@ If `“subjects”` and `“properties”` are supplied, the query will return a
 > * Searching for all mappings whose “name” property value is a particular string
 > * Searching for all metadata items which are signed by a particular cryptographic key, or uploaded by a particular user
 
-#### Modifying metadata
+##### Modifying metadata
 
 The metadata server needs some way to add and modify metadata entries. The method for doing so is largely up to the implementor, but recommend to abide by the following rules:
 
@@ -361,13 +368,13 @@ The metadata server needs some way to add and modify metadata entries. The metho
 1. The server MAY reject entries with no signatures. 
 1. The server MAY support the POST, PUT, and DELETE verbs to modify metadata entries.
 
-#### Authentication
+##### Authentication
 
 If the server supports modifications to metadata entries, it SHOULD provide some form of authentication which controls who can modify them. Servers MUST NOT use the attestation signatures on metadata entries as part of authentication (with the exception of phase-1 monetary policy). Attestation signatures are per-entry, and are orthogonal to determining who controls the metadata for a subject.
 
 Simple systems may want to use little more than cryptographic signatures, but more sophisticated systems could have registered user accounts and control access in that way.
 
-#### Audit
+##### Audit
 
 The metadata server MAY provide a mechanism auditing changes to metadata, for example by storing the update history of an entry and allowing users to query it (via the API or otherwise).
 
@@ -381,7 +388,7 @@ See the earlier “Authentication” section for a description of a possible app
 
 Depending on the authentication mechanism they use, servers may also need to worry about replay attacks, where an attacker submits a (correctly signed) old record to “revert” a legitimate change.  However, these can be unconditionally prevented by correctly implementing sequence numbers as described earlier, which prevents old entries from being accepted.
 
-## Recommendations For Metadata Clients
+### Recommendations For Metadata Clients
 
 Similar to the recommendations for metadata servers, this section gives some recommendations to application developers willing to implement a metadata client. Following these recommendations will facilitate interoperability between applications and also, provide some good security foundation for the clients. A metadata client refers to the component that communicates with a metadata server and maintains the user’s trusted metadata mapping. This may be implemented as part of a larger system, or may be an independent component (which could be shared between multiple other systems, e.g. a wallet frontend and a blockchain explorer).
 
@@ -396,9 +403,9 @@ Similar to the recommendations for metadata servers, this section gives some rec
 - The metadata client MAY be configurable to limit the amount downloaded.
 - The metadata client MAY accept user updates for metadata entries.
 
-# Rationale
+## Rationale: how does this CIP achieve its goals?
 
-## Interfaces and progressive enhancement
+### Interfaces and progressive enhancement
 
 The design space for a metadata server is quite large. For example, any of the following examples could work, or other combinations of these features:
 
@@ -410,7 +417,7 @@ This design aims to be agnostic about the details of the implementation, by spec
 - Progressive enhancement of servers over time. Initially servers may provide a very bare-bones implementation, but this can be improved later.
 - Competition between multiple implementations, including from third parties.
 
-## Decentralization
+### Decentralization
 
 For much of the metadata we are concerned with there is no “right” answer. The metadata server is thus playing a key trusted role - even if that trust is partial because users can rely on attestation signatures. We therefore believe that it is critical that we allow users to choose which metadata server (or servers) they refer to.
 
@@ -418,7 +425,7 @@ An analogy is with DNS nameservers: these are a trusted piece of infrastructure 
 
 This also makes it possible for these servers to be a true piece of community infrastructure, rather than something wedded to a major player (although we hope that the Cardano Foundation and IOHK will produce a competitive offering).
 
-## Verifiable vs non-verifiable metadata
+### Verifiable vs non-verifiable metadata
 
 A key distinction is between metadata that is verifiably correct and that which is non-verifiable.
 
@@ -433,7 +440,7 @@ However, most metadata is non-verifiable:
 - Many scripts do not have an obvious “owner” (certainly this is true for Plutus scripts), but even for those which do (e.g. phase-1 monetary scripts) this does not mean that the owner is trusted! See the “Security” section below for more discussion on trust.
 - Any associations with authors, websites, icons, etc are similarly non-verifiable as there is no basis for establishing trust.
 
-## Security
+### Security
 
 Most of the security considerations relate to non-verifiable metadata. Verifiable metadata can generally always be accepted as is (provided that it is verified). Our threat model is that non-verifiable metadata may always have been provided by an attacker.
 
@@ -445,7 +452,7 @@ Clients could also be tricked into downloading large amounts of metadata that th
 
 Clients also need to worry about replay attacks, where they are sent old (correctly signed) records in an attempt to “roll back” a legitimate update. The easiest way to avoid this is to correctly implement sequence numbers, in which case old updates will be rejected.
 
-## Data storage location
+### Data storage location
 
 This design needs to store a fair amount of data in a shared location. We might wonder whether we should use the blockchain for this: we could store metadata updates in transaction metadata.
 
@@ -463,23 +470,30 @@ Besides, on-chain storage comes with considerable downsides:
 
 For this reason, we think that a traditional database is a much better fit. However, it would be perfectly possible for someone to produce an implementation that was backed by the chain if they believed that that could be competitive.
 
-## Storage cost
+### Storage cost
 
 Metadata may potentially be sizable. For example, preimages of hashes can in principle be any size!
 
 Servers will want some way to manage this to avoid abuse. However, this is a typical problem faced by web services and can be solved in the usual ways: size limits per account, charging for storage, etc.
 
-# Backwards compatibility
+### Backwards compatibility
 
 See [Special Case: Phase-1 Monetary Policies](#special-case--phase--1-monetary-policies) which covers existing implementations. 
 
-# Reference implementation
+## Path to Active
 
-- https://github.com/input-output-hk/offchain-metadata-tools
+### Acceptance Criteria
 
-# Copyright
+- [x] Document commercial or community implementations of any of the use cases described above.
+  - [cardano-token-registry](https://github.com/cardano-foundation/cardano-token-registry)
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+### Implementation Plan
+
+- [x] Provide a reference implementation: [Off-chain metadata tools](https://github.com/input-output-hk/offchain-metadata-tools)
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 [schema.json]: https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0026/schema.json
 [CIP-0010]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010

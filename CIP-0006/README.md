@@ -1,12 +1,17 @@
 ---
 CIP: 6
 Title: Stake Pool Extended Metadata
-Authors: Markus Gufler <gufmar@gmail.com>, Mike Fullman <mike@fullman.net>
-Comments-URI: https://github.com/cardano-foundation/CIPs/pull/15
-Status: Draft
-Type: Standards
+Status: Active
+Category: Tools
+Authors:
+  - Markus Gufler <gufmar@gmail.com>
+  - Mike Fullman <mike@fullman.net>
+Implementors:
+  - pooltool.io
+  - cexplorer.io
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/15
 Created: 2020-07-20
-Updated: 2020-11-24 2nd key-pair for validation 2021-02-08 json schema
 License: CC-BY-4.0
 ---
 
@@ -14,9 +19,9 @@ License: CC-BY-4.0
 
 This CIP defines the concept of extended metadata for pools that is referenced from the pool registration data stored on chain.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
-As the ecosystem around Cardano stake pools proliferate so will the desire to slice, organize and search pool information dynamically.  Currently the metadata referenced on chain provides 512 bytes that can be allocated across the four information categories ([delegation-design-specification Section 4.2)](https://hydra.iohk.io/build/790053/download/1/delegation_design_spec.pdf):
+As the ecosystem around Cardano stake pools proliferate so will the desire to slice, organize and search pool information dynamically.  Currently the metadata referenced on chain provides 512 bytes that can be allocated across the four information categories ([delegation-design-specification Section 4.2)](https://github.com/IntersectMBO/cardano-ledger/releases/latest/download/shelley-delegation.pdf):
 
 | key           | Value                                |  Rules  |
 | ---           | ---                                  |  ---  |
@@ -29,7 +34,10 @@ Many additional attributes can be envisioned for future wallets, pool explorers,
 
 ## Specification
 
+> **Note** Updated: 2020-11-24 2nd key-pair for validation 2021-02-08 json schema
+
 ### On Chain referenced (main) metadata file
+
 We define two more fields for the on chain referenced metadata file that references another JSON file on a URL with the extended metadata.  The proposed metadata is as follows:
 
 | key           | Value                                | Rules  |
@@ -79,9 +87,9 @@ The operator now:
 
 This re-registration of the main metadata file with the `extData.vkey` and the two URLs is only necessary once. Afterwards, the operator can update his extended metadata at any time, compute the new signature with the `cardano-cli stake-pool rawdata-sign` command, and publish both files at the existing `extDataUrl` and `extSigUrl`.
 
-### Extended Metadata structure
+## Rationale: how does this CIP achieve its goals?
 
-In the following we describe a first minimal version of the extended JSON file format
+In the following we describe a first minimal version of the extended JSON file format.
 
 Since this extended metadata file can be updated at any time by the pool operator, a **serial number** is useful for consuming applications and services to identify updates.
 
@@ -130,16 +138,24 @@ The full schema is given in annexe as [schema.json][]
 ```
 </details>
 
-## Backwards compatibility
+### Backwards compatibility
 
 No fields are removed or changed in the current on chain metadata.  The new `ext...` fields are optional and not necessary to parse for any entities that do not need additional information about a pool
 
-## Reference implementation
+## Path to Active
 
-N/A
+### Acceptance Criteria
+
+- [x] There exist at least two explorers which make use of this extended metadata structure or very close equivalent:
+  - [x] pooltool.io
+  - [x] cexplorer.io
+
+### Implementation Plan
+
+- [x] Provide direct support for this specification in stake pool explorers and other tools.
 
 ## Copyright
 
-This file is documentation, and therefore subject to CC-BY-4.0 (and not subject to Apache 2.0).
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 [schema.json]: https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0006/schema.json

@@ -38,7 +38,7 @@ Conversion from a recovery phrase to entropy is the same as described in [BIP39]
 
 ### Hierarchical Deterministic Wallets
 
-In Cardano, hierarchical deterministic (abbrev. HD) wallets are similar to those described in [BIP-0032](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki). Notably, we use a variation called [ED25519-BIP32](https://github.com/input-output-hk/adrestia/raw/bdf00e4e7791d610d273d227be877bc6dd0dbcfb/user-guide/static/Ed25519_BIP.pdf). A reference implementation can be found [here](https://docs.rs/ed25519-bip32/)
+In Cardano, hierarchical deterministic (abbrev. HD) wallets are similar to those described in [BIP-0032](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki). Notably, we use a variation called [ED25519-BIP32](https://github.com/input-output-hk/adrestia/raw/bdf00e4e7791d610d273d227be877bc6dd0dbcfb/user-guide/static/Ed25519_BIP.pdf). A reference implementation can be found [here](https://docs.rs/ed25519-bip32/).
 
 ### Master Key Generation
 
@@ -68,7 +68,7 @@ This CIP is merely to document the existing standards and not to provide rationa
 
 However, you can learn more at the following links:
 
-- [Adrestia documentation](https://input-output-hk.github.io/cardano-wallet/concepts/cryptography-and-encoding)
+- [Adrestia documentation](https://cardano-foundation.github.io/cardano-wallet/concepts/master-key-generation)
 - [SLIP-0010](https://github.com/satoshilabs/slips/blob/master/slip-0010.md)
 - [SLIP-0023](https://github.com/satoshilabs/slips/blob/master/slip-0023.md)
 
@@ -86,4 +86,4 @@ However, you can learn more at the following links:
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
