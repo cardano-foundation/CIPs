@@ -1,5 +1,5 @@
 ---
-CIP: *
+CIP: ?
 Title: A Subledger in Plutus Enabling Native-Asset Seizure for Regulatory Compliance
 Status: Proposed
 Category: Ledger
