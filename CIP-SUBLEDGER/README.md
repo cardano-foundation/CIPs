@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: A Subledger in Plutus Enabling Native-Asset Seizure for Regulatory Compliance
+Title: A Plutus Subledger Enabling Native Asset Seizure
 Status: Proposed
 Category: Ledger
 Authors:
@@ -12,19 +12,17 @@ Created: 2024-05-30
 License: CC-BY-4.0
 ---
 
-# CIP \*\*\*: A Subledger in Plutus Enabling Native-Asset Seizure for Regulatory Compliance
-
 ## Abstract
 We aim to establish a simple standard to ensure native assets can exist in a locked smart contract system, referred to as the "subledger". This subledger will enable functionality defined in the minting policy to seize assets.
 
 This design preserves the benefits of Cardano's native assets by enabling the reuse of most EUTxO patterns. It is significant that DEXs or other Plutus applications can be easily adapted to function within the subledger environment.
 
-# Motivation: why is this CIP necessary?
+## Motivation: why is this CIP necessary?
 
 A solution is required to enable asset seizure such as revoking USDC. We attempt to provide one in an EUTXO-harmonious style, for the sake of developer & user experience. 
 
-# Specification
-## Objectives
+## Specification
+### Objectives
 This CIP encompasses:
 - An implementation of a smart contract system (subledger)
 - The particular build & deployment of that smart contract
