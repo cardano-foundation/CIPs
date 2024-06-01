@@ -1,10 +1,14 @@
+---
 CPS: ????
 Title: Dynamically Minting Unique NFTs on the Cardano Blockchain
 Status: Open
 Category: Blockchain
-Authors: - [Pal Dorogi, pal.dorogi@gmail.com]
+Authors: 
+    - [Pal Dorogi, pal.dorogi@gmail.com]
+Proposed Solutions: []
+Discussions: []
 Created: 2024-05-31
-License: CC-BY-4.0
+---
 
 ## Abstract
 
