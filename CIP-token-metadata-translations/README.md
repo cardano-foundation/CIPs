@@ -125,7 +125,8 @@ console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name"
 - Access to localized strings is easy and logical from a coding perspective.
             
 ### Implementation Plan
-Add this new standard to all relevant documentation and references for web3 developers.
+Propose this method in documentation and references for web3 developers.
+
 
 NMKR has supported this CIP with peer feedback, and in the future with a pilot implementation of this localization method.
 
