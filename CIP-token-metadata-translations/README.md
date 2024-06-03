@@ -93,7 +93,6 @@ This metadata standard extension is backward compatible and it doesn't affect ap
 To access the localized strings from the fetched metadata for a native asset, we can simply access the JSON properties from the front end by using the user's selected culture:
 
 ```
-
 const response = await fetch(`${<BASE_URL>}/policyId/${<policyId>}`);
             
 const metadata = response.json();
