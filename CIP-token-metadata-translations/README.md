@@ -81,7 +81,6 @@ The new JSON metadata standard will look like this:
       }
   }
 }
-
 ```
 
 This metadata standard extension is backward compatible and it doesn't affect applications using the current standard. Dapps implementing the proposed extended standard can also default on the legacy values if the localized strings are not available on an asset.
