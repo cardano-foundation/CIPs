@@ -114,7 +114,6 @@ console.log(`Default policy property: ${getPolicyString(policy, <policy_property
 console.log(`Localized policy property: ${getPolicyString(policy, <policy_property>, "it-IT")}`);
 console.log(`Default asset name: ${getAssetString(policy, <asset_name>, "name")}`);
 console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name", "de-CH")}`);
-         
 ```
      
 ## Path to Active
