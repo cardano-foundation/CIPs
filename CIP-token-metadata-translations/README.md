@@ -70,7 +70,7 @@ The new JSON metadata standard will look like this:
               },
               "it-IT": {
                 "name": <string in Italian>,
-                "image": <localized uri for Italian German | array>,     
+                "image": <localized uri for Italian | array>,     
                 "description": <string in Italian | array>
                 <other localized properties>
               },
