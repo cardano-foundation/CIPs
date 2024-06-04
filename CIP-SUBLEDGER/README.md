@@ -13,7 +13,7 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
-We aim to establish a simple standard to ensure native assets can exist in a locked smart contract system, referred to as the "subledger". This subledger will enable functionality defined in the minting policy to seize assets.
+We aim to establish a simple standard to ensure native assets can exist in a locked smart contract system, referred to as the "subledger". This subledger will enable functionality defined in the minting policy to seize assets. The goal of this functionality is to enable regulatory compliance for RWA.
 
 This design preserves the benefits of Cardano's native assets by enabling the reuse of most EUTxO patterns. It is significant that DEXs or other Plutus applications can be easily adapted to function within the subledger environment.
 
