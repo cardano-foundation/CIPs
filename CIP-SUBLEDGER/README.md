@@ -93,9 +93,48 @@ type AdminSeizures {
 - The extra field is for arbitrary extra redeemer data
 - Extra field example: could be used for a signed payload if it's an admin endpoint using a key.
 
+### Guide for implementors:
+
+When you support this CIP in an api, you may want to provide utilities which blurs the necessary transformation between the subledger and the ledger. This will allow you to work with the subledger with reduced manual overhead.
+
+When you have some UTxO in the subledger, at the ledger level it may appear as so:
+
+**A SUBLEDGER UTXO**
+| Address            | Value | Datum | Reference Script |
+|--------------------|-------|-------|------------------|
+| `<script_credential> . <user_stake_credential>`         | `<value>`  | `{owner: <user_payment_credential>, datum: <inner_datum>, seized: {...}}` | `<ref_script>` |
+
+A translation can be applied to make this subledger-utxo appear top-level:
+
+**A TRANSLATED SUBLEDGER UTXO**
+| Address            | Value | Datum | Reference Script |
+|--------------------|-------|-------|------------------|
+| `<user_payment_credential> . <user_stake_credential>`         | `<value>`  | `<inner_datum>` | `<ref_script>` |
+
+With care*, this transformation can be made in reverse, particularly for outputs which contain value that only are allowed on the subledger.
+
+One way this transformation can be useful, is in the development of indexers. If a database table is maintained which reflects the state of the entire translated subledger, you can allow simple querying by the owner field, allowing you to fetch the list of assets owned by an address *in the restricted subledger context*.
+
 ## Rationale: how does this CIP achieve its goals?
 
 We accomplish the seizure capabilities on a technical basis, and the implementation style follows Keep-It-Simple-Stupid principles to minimise developer headache.
+
+### Compare and Contrast
+Comparing and contrasting to the proposed [CIP-113?](https://github.com/cardano-foundation/CIPs/pull/444):
+- this CIP doesn't focus on extensible programmability of assets, it adds one single new function
+- this CIP maintains the same script hash across all UTxOs, hence saving budget, enabling programmability, allowing ease of interoperability,
+- because we use prefixing to identify assets which are locked to the subledger, we may not only have one script hash across the same asset class, but across all asset classes (I believe making this the favourable CIP for DEX integration)
+- again, because we use prefixing, you may put non-seizable assets into the subledger, and then withdraw them again, so no wrapping is necessary for example to swap $BTN (true native, unseizable) and $USDC (subledger native, seizable), because a subledger DEX can simply operate with both in one UTxO
+- native assets are still used
+- the mechanism to control seizure in the same script as the minting policy (by case switching on the purpose) is new and simplifies implementation of seizable asset policies
+- datum however makes indexing more difficult which is a consideration
+    - we aim to solve indexing by cooperating with APIs such as Blockfrost and others, included self-hosted
+    - this can be done by providing a new index route, which translates the owner of the datum field into the UTxO owner.
+- this CIP isn't a standard of implementations, it aims to provide a single implementation, to minimise fragmentation
+- no account abstractions
+- succinct, for ease of understanding
+- narrow scope, enabling a faster path to active.
+
 
 ## Path to Active
 
