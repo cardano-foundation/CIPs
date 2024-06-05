@@ -38,7 +38,7 @@ This primarily manifests in the ability to use a single validator for both minti
 
 ### No Datum Spend Purpose
 
-One of the major footguns of Plutus scripts is if a user sends to the script with a wrong or missing datum. This has happened in the case of the Nami wallet having a bug that caused the wrong address to be chosen. There are other instances of user error where they send from a CEX to a script address. A wrong datum can be handled by the Plutus scripts themselves by having an alternative execution branch if type does not match the expected datum type. But in the case of no datum the script is not run and fails in phase 1 validation. The other motivation of this CIP is to be able to create spend scripts that can handle the no datum case. 
+One of the major footguns of Plutus scripts is if a user sends to the script with a wrong or missing datum. This has happened in the case of the Nami wallet having a bug that caused the wrong address to be chosen. There are other instances of user error where they send from a CEX to a script address. A wrong datum can be handled by the Plutus scripts themselves by having an alternative execution branch if type does not match the expected datum type. But in the case of no datum the script is not run and fails in phase 1 validation. The other motivation of this CIP is to be able to create spend scripts that can handle the no datum case.
 
 I see three major use cases when it comes to running spend scripts without datums:
 
@@ -59,35 +59,43 @@ All the script purposes have a form of ```Redeemer -> ScriptContext -> a``` exce
 We propose to make the following modification:
 
 The signature of all scripts will be ```ScriptContext -> a```.
-The ScriptInfo type is a union type with a variant for each script purpose.
-```
+The `ScriptInfo` type is a union type with a variant for each script purpose.
+It is the same as `ScriptPurpose`, except for the additional optional datum in spending scripts.
+
+```haskell
+-- | The context that the currently-executing script can access.
 data ScriptContext = ScriptContext
-  { scriptContextTxInfo  :: TxInfo
+  { scriptContextTxInfo     :: TxInfo
+  -- ^ information about the transaction the currently-executing script is included in
+  , scriptContextRedeemer   :: V2.Redeemer
+  -- ^ Redeemer for the currently-executing script
   , scriptContextScriptInfo :: ScriptInfo
+  -- ^ the purpose of the currently-executing script, along with information associated
+  -- with the purpose
   }
 
+-- | Like `ScriptPurpose` but with an optional datum for spending scripts.
 data ScriptInfo
-  = MintingScript V2.CurrencySymbol Redeemer
-  | SpendingScript V3.TxOutRef (Maybe Datum) Redeemer
-  | RewardingScript V2.Credential Redeemer
+  = MintingScript V2.CurrencySymbol
+  | SpendingScript V3.TxOutRef (Haskell.Maybe V2.Datum)
+  | RewardingScript V2.Credential
   | CertifyingScript
       Haskell.Integer
       -- ^ 0-based index of the given `TxCert` in `txInfoTxCerts`
       TxCert
-      Redeemer
-  | VotingScript Voter Redeemer
+  | VotingScript Voter
   | ProposingScript
       Haskell.Integer
       -- ^ 0-based index of the given `ProposalProcedure` in `txInfoProposalProcedures`
       ProposalProcedure
-      Redeemer
 ```
-The Datum is optional, which will enable us to allow the execution of spending scripts without a datum. 
+
+The datum in `SpendingScript` is optional, which will allow the execution of spending scripts without a datum.
 One more change will be needed on the ledger side in order to make the Datum optional for spending scripts.
 The ledger UTXOW rule needs to be relaxed, this ledger rule checks if a utxo has an existing datum if the address's payment credential is a phase 2 validation script.
 
 The ScriptPurpose type used in the Redeemers Map is left the same.
-
+It is used to uniquely identify a Plutus script within a transaction.
 
 
 ## Rationale: how does this CIP achieve its goals?
@@ -115,7 +123,7 @@ The Cardano Ledger and Cardano Plutus teams would need to implement this in foll
   IntersectMBO/plutus
   IntersectMBO/cardano-ledger
 
-The following languages that compile to uplc would need to update to support the new ScriptContext argument that 
+The following languages that compile to uplc would need to update to support the new ScriptContext argument that
 is passed in for the next Plutus Version:
 Aiken
 Helios
