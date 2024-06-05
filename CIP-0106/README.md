@@ -93,7 +93,7 @@ Additionally, apps need to be able to submit a transaction to the wallet for sig
 
 Finally, the signTx() and signData() endpoints will have to be disabled when using this extension since they are not compatible with native script based addresses.
 
-## Rationale for the required data
+### Rationale for the required data
 - Script descriptor: Any transaction consuming a UTxO from a native script based address must attach the corresponding script.
 - Script Requirements list: 
 	-- dApps need to know the number of signers to calculate the fees correctly. 
