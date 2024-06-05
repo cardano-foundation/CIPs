@@ -149,7 +149,7 @@ Returns a list of `ScriptRequirement` that will be used to validate any transact
 
 For wallets with multiple spend conditions, separate entries in the list should be used to represent each spend condition. Wallet providers should implement UX to allow users to order the list of `ScriptRequirement` from most to least preferred. DApps should use the first entry in the list that is valid for the current transaction or select one based on the logic of their use-case.
 
-#### `api.getScript()`: Promise[<number<plutusVersion>],<CBOR<plutusScript>>
+#### `api.getScript()`: Promise[<number<plutusVersion>>],<CBOR<plutusScript>>
 
 Errors: `APIError`
 
