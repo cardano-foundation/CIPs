@@ -116,6 +116,17 @@ CompletedTxErrorCode = {
 
 ## Motivation: why is this CIP necessary?
 
+Plutus wallets is a class of wallets where the holding address does not correspond to a public key, but to a script. This enables more complex validation logic to be implemented in the wallet, allowing for more complex spending conditions to be enforced.
+
+Examples of Plutus wallets include :
+- Updatable Multi-signature wallets
+- Subscription wallets (wallet that allow for periodic payments to be made)
+- Maltifactor authetication wallets
+- Semi-custodial wallets
+- Tokenized wallets
+- EstatePlanning wallets
+
+
 In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
 
 Specifically, apps building transactions need to be able to get the following information from the wallet:
