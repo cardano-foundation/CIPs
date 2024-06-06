@@ -35,12 +35,12 @@ This document describes a CIP-30 extension allowing webpages (i.e., DApps) to in
   
   - Script descriptor: Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script.
   - `ScriptRequirement` list: 
-      -- DApps need to know the scriptContext under which the transaction will be validated.
-      -- DApps need to know the collateral donor to attach the collateral to the transaction.
-      -- DApps need to know the `Datum` of the UTXOs that it will be consuming.
-      -- DApps need to know the `Redeemers` that will be used in the transaction.
+      - DApps need to know the scriptContext under which the transaction will be validated.
+      - DApps need to know the collateral donor to attach the collateral to the transaction.
+      - DApps need to know the `Datum` of the UTXOs that it will be consuming.
+      - DApps need to know the `Redeemers` that will be used in the transaction.
   - Change datum
-      -- DApps need to know the `Datum` that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus v2 and before, as the change output must contain a datum to be valid and spendable.
+      - DApps need to know the `Datum` that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus v2 and before, as the change output must contain a datum to be valid and spendable.
 
 ## Specification
 
