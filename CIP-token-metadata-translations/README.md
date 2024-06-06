@@ -129,8 +129,8 @@ console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name"
 ### Implementation Plan
 
 - [ ] Propose this method in documentation and references for web3 developers.
-- [x] NMKR has supported this CIP with peer feedback
-- [ ] NMKR provides a pilot implementation of this localization method.
+- [x] NMKR has supported this CIP with peer feedback.
+- [ ] NMKR has provided a pilot implementation of this localization method.
 
 ## Copyright
 This CIP is licensed under [CC-BY-4.0].
