@@ -5,7 +5,7 @@ use aiken/transaction/value.{PolicyId}
 use onchain_reference/common.{
   RoyaltyDatum, RoyaltyRecipient, get_data, royalty_tn,
 }
-use onchain_reference/tests.{recipients_to_input, recipients_to_output}
+use onchain_reference/test_utils.{recipients_to_input, recipients_to_output}
 
 type ReduceRedeemer {
   policy_id: PolicyId,
@@ -24,7 +24,8 @@ validator {
         },
       )
 
-    expect out_royalty_info: RoyaltyDatum = get_data(tx, royalty_output.datum)
+    expect out_royalty_info: RoyaltyDatum =
+      get_data(tx.datums, royalty_output.datum)
 
     // find input datum
     expect Some(royalty_input) =
@@ -36,7 +37,7 @@ validator {
       )
 
     expect in_royalty_info: RoyaltyDatum =
-      get_data(tx, royalty_input.output.datum)
+      get_data(tx.datums, royalty_input.output.datum)
 
     // check that for each in recipient, there is a corresponding out recipient
     expect
@@ -82,7 +83,7 @@ test should_reduce_recipient() {
         payment_credential: VerificationKeyCredential(mock_owner),
         stake_credential: None,
       },
-      fee: 625,
+      fee: 625, // 1.6%
       min_fee: None,
       max_fee: None,
     }
@@ -92,7 +93,7 @@ test should_reduce_recipient() {
   let outputs =
     [
       recipients_to_output(
-        [RoyaltyRecipient { ..in_recipient, fee: 125 }],
+        [RoyaltyRecipient { ..in_recipient, fee: 125 }], // 8%
         mock_policy_id,
       ),
     ]
@@ -115,7 +116,7 @@ test should_fail_increase_recipient() fail {
         payment_credential: VerificationKeyCredential(mock_owner),
         stake_credential: None,
       },
-      fee: 125,
+      fee: 125, // 8%
       min_fee: None,
       max_fee: None,
     }
@@ -125,7 +126,7 @@ test should_fail_increase_recipient() fail {
   let outputs =
     [
       recipients_to_output(
-        [RoyaltyRecipient { ..in_recipient, fee: 625 }],
+        [RoyaltyRecipient { ..in_recipient, fee: 625 }], // 1.6%
         mock_policy_id,
       ),
     ]

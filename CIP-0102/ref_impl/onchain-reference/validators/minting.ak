@@ -1,17 +1,16 @@
-use aiken/hash.{Blake2b_224, Hash}
 use aiken/interval.{Finite, Interval, IntervalBound}
 use aiken/list
 use aiken/time.{PosixTime}
 use aiken/transaction.{Mint, ScriptContext, Transaction}
-use aiken/transaction/credential.{VerificationKey}
 use aiken/transaction/value
+use onchain_reference/common.{VerificationKeyHash}
 
 type Redeemer {
   MintNft
   BurnNft
 }
 
-validator(lock_time: PosixTime, owner: Hash<Blake2b_224, VerificationKey>) {
+validator(lock_time: PosixTime, owner: VerificationKeyHash) {
   fn minting_validator(redeemer: Redeemer, ctx: ScriptContext) -> Bool {
     expect
       is_not_expired(ctx.transaction, lock_time)? && list.has(

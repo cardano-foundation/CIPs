@@ -3,16 +3,15 @@ use aiken/transaction/credential.{Address, VerificationKeyCredential}
 use aiken/transaction/value.{PolicyId}
 use onchain_reference/common.{RoyaltyDatum, RoyaltyRecipient, royalty_tn}
 
+pub const placeholder_oref = OutputReference {
+  transaction_id: transaction.placeholder().id,
+  output_index: 0,
+}
+
 pub fn recipients_to_input(
   recipients: List<RoyaltyRecipient>,
   policy_id: PolicyId,
 ) -> Input {
-  let mock_outref =
-    OutputReference {
-      transaction_id: transaction.placeholder().id,
-      output_index: 0,
-    }
-
   Input {
     output_reference: mock_outref,
     output: recipients_to_output(recipients, policy_id),
