@@ -15,22 +15,32 @@ License: CC-BY-4.0
 
 This document describes a CIP-30 extension allowing webpages (i.e., DApps) to interface with Cardano Plutus wallets. This interface is a work in progress, and new versions are expected to be included as the ecosystem evolves. 
 
-## Motivation: why is this CIP necessary?
-
-In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets, given the unique complexities of Plutus-based addresses. Special provisions need to be made to make the connector compatible with them.  
-
-Specifically, apps building transactions need to be able to get the following information from the wallet:
-
-- Script descriptor
-  - Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script. 
-- `ScriptRequirements`
-  - The `TxContext` that is required to be able to validate the transaction. It encompasses all the possible combinations of requirements for the transaction to be valid, as such it is represented by an array of `ScriptRequirement` objects.
-- Change Datum
-  - The datum that will be used as the change output for the transaction. This is required for wallets based on Plutus V2 and before, as the change output must contain a datum to be valid and spendable.
-
-Additionally, apps need to be able to submit a transaction to the wallet for signing in an asynchronous manner, as gathering of signatures can take a long time and each wallet provider will have its own way of handling this process. 
-
-Finally, the `signData()` endpoint will have to be disabled when using this extension since they are not compatible with Plutus-based addresses. Plutus contracts cannot sign data, only validate transactions.
+  
+  ## Motivation: why is this CIP necessary?
+  
+  Plutus wallets is a class of wallets where the holding address does not correspond to a public key, but to a script. This enables more complex validation logic to be implemented in the wallet, allowing for more complex spending conditions to be enforced.
+  
+  Examples of Plutus wallets include :
+  - Updatable Multi-signature wallets
+  - Subscription wallets (wallet that allow for periodic payments to be made)
+  - Maltifactor authetication wallets
+  - Semi-custodial wallets
+  - Tokenized wallets
+  - EstatePlanning wallets
+  
+  
+  In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
+  
+  ### Rationale for the required data
+  
+  - Script descriptor: Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script.
+  - `ScriptRequirement` list: 
+      -- DApps need to know the scriptContext under which the transaction will be validated.
+      -- DApps need to know the collateral donor to attach the collateral to the transaction.
+      -- DApps need to know the `Datum` of the UTXOs that it will be consuming.
+      -- DApps need to know the `Redeemers` that will be used in the transaction.
+  - Change datum
+      -- DApps need to know the `Datum` that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus v2 and before, as the change output must contain a datum to be valid and spendable.
 
 ## Specification
 
@@ -113,34 +123,6 @@ CompletedTxErrorCode = {
 
 * NotFound - The transaction with the given id was not found.
 * NotReady - The transaction with the given id is not ready yet. 
-
-## Motivation: why is this CIP necessary?
-
-Plutus wallets is a class of wallets where the holding address does not correspond to a public key, but to a script. This enables more complex validation logic to be implemented in the wallet, allowing for more complex spending conditions to be enforced.
-
-Examples of Plutus wallets include :
-- Updatable Multi-signature wallets
-- Subscription wallets (wallet that allow for periodic payments to be made)
-- Maltifactor authetication wallets
-- Semi-custodial wallets
-- Tokenized wallets
-- EstatePlanning wallets
-
-
-In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
-
-
-### Rationale for the required data
-
-- Script descriptor: Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script.
-- `ScriptRequirement` list: 
-    -- DApps need to know the scriptContext under which the transaction will be validated.
-    -- DApps need to know the collateral donor to attach the collateral to the transaction.
-    -- DApps need to know the `Datum` of the UTXOs that it will be consuming.
-    -- DApps need to know the `Redeemers` that will be used in the transaction.
-- Change datum
-    -- DApps need to know the `Datum` that will be used as the change output for the transaction. This is mandatory for wallets based on Plutus v2 and before, as the change output must contain a datum to be valid and spendable.
-    
 
 ### V2 Additional API Endpoints
 
