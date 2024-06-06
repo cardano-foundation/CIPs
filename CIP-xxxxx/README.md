@@ -126,7 +126,7 @@ CompletedTxErrorCode = {
 
 ### V2 Additional API Endpoints
 
-#### `api.getScriptRequirements`: Promise<ScriptRequirement[]>
+#### `api.cipxxxx.getScriptRequirements`: Promise<ScriptRequirement[]>
 
 Errors: `APIError`
 
@@ -134,13 +134,13 @@ Returns a list of `ScriptRequirement` that will be used to validate any transact
 
 For wallets with multiple spend conditions, separate entries in the list should be used to represent each spend condition. Wallet providers should implement UX to allow users to order the list of `ScriptRequirement` from most to least preferred. DApps should use the first entry in the list that is valid for the current transaction or select one based on the logic of their use-case.
 
-#### `api.getScript()`: Promise[<number<plutusVersion>>],<CBOR<plutusScript>>
+#### `api.cipxxxx.getScript()`: Promise[<number<plutusVersion>>],<CBOR<plutusScript>>
 
 Errors: `APIError`
 
 Returns the CBOR-encoded Plutus script that controls this wallet.
 
-#### `api.submitUnsignedTx(tx: CBOR<unsignedTransaction>)`: Promise<hash32>
+#### `api.cipxxxx.submitUnsignedTx(tx: CBOR<unsignedTransaction>)`: Promise<hash32>
 
 Errors: `APIError`, `TxError`
 
@@ -150,7 +150,7 @@ If the transaction contains hidden metadata, the wallet should not submit the tr
 
 It is expected that this will be the endpoint used by all wallets that require multiple signatures to sign a transaction.
 
-#### `api.getCompletedTx(txId: hash32)`: Promise[<CBOR<transaction>,CBOR<transaction_witness_set>>]
+#### `api.cipxxxx.getCompletedTx(txId: hash32)`: Promise[<CBOR<transaction>,CBOR<transaction_witness_set>>]
 
 Errors: `APIError`, `CompletedTxError`
 
