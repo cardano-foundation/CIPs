@@ -11,17 +11,12 @@ jobs:
     steps:
     - name: Approve
       run: echo For security reasons, all pull requests need to be approved first before running any automated CI.
-      
+
   validate-json:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Validate JSON format
-      uses: stefannibral/json-lint-action@v1
-      with:
-        file: 'CIP-0010/registry.json'
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -30,6 +25,10 @@ jobs:
 
     - name: Install dependencies
       run: npm install ajv-cli
+
+    - name: Validate JSON format
+      run: |
+        cat CIP-0010/registry.json | jq empty
 
     - name: Validate JSON against schema
       run: |
