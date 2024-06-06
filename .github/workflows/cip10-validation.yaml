@@ -21,15 +21,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '14'
+        node-version: '21'
 
     - name: Install dependencies
       run: npm install ajv-cli
 
-    - name: Validate JSON format
-      run: |
-        cat CIP-0010/registry.json | jq empty
-
     - name: Validate JSON against schema
-      run: |
-        npx ajv validate -s CIP-0010/registry.schema.json -d CIP-0010/registry.json
+      run: npx ajv validate -s CIP-0010/registry.schema.json -d CIP-0010/registry.json  > /dev/null
