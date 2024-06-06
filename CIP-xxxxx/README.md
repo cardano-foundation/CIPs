@@ -27,6 +27,7 @@ This document describes a CIP-30 extension allowing webpages (i.e., DApps) to in
   - Semi-custodial wallets
   - Tokenized wallets
   - EstatePlanning wallets
+  - wallets controlled by non-cardano addresses
   
   
   In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
@@ -64,17 +65,17 @@ type KeyHash = String
 
 Script requirements encapsulate all the possible requirements for a transaction to be valid. It includes the following fields:
 
-- collateral: The list of inputs that will be used as collateral for the transaction.
-- inputs: The list of inputs that will be used as inputs for the transaction.
-- reference_inputs: The list of inputs that will be used as reference inputs for the transaction.
-- outputs: The list of outputs that will be used for the transaction.
-- mint: The amount of tokens that will be minted/burned in the transaction.
-- certificates: The list of certificates that will be included in the transaction.
-- withdrawals: The list of withdrawals that will be included in the transaction.
+- collateral: The list of inputs that can be used as collateral for the transaction.
+- inputs: The list of inputs that must be used as inputs for the transaction.
+- reference_inputs: The list of inputs that must be used as reference inputs for the transaction.
+- outputs: The list of outputs that must be included in the transaction.
+- mint: The amount of tokens that must be minted/burned in the transaction.
+- certificates: The list of certificates that must be included in the transaction.
+- withdrawals: The list of withdrawals that must be included in the transaction.
 - validity_range: The validity range that the transaction must be valid in.
 - signatories: The list of signatories that must sign the transaction.
-- redeemers: The list of redeemers that will be used in the transaction.
-- datums: The list of datums that will be used in the transaction.
+- redeemers: The list of redeemers required for the transaction, if secret is true, the secretId will be provided to retrieve the secret from the wallet. 
+- datums: The list of datums that should be used in the transaction for the change outputs.
 
 
 ```ts
@@ -90,6 +91,13 @@ type ScriptRequirement = {
   signatories?: List<KeyHash>,
   redeemers?: Dict<ScriptPurpose, Redeemer>,
   datums?: Dict<Hash<Blake2b_256, Data>, Data>
+}
+```
+
+```ts
+type Redeemer = {
+  secret: Bool,
+  redeemer: Bytes | SecretId,
 }
 ```
 
@@ -155,6 +163,15 @@ It is expected that this will be the endpoint used by all wallets that require m
 Errors: `APIError`, `CompletedTxError`
 
 If the transaction is not ready, the wallet should throw a `CompletedTxError` with the appropriate error code. If the transaction is ready, the wallet should return the CBOR-encoded transaction and the signatures.
+
+
+#### `api.cipxxxx.getSecret(secretId: String)`: Promise<String>
+
+Errors: `APIError`
+
+Returns the secret associated with the given secretId. The secret should be returned as a hex-encoded string. 
+
+Wallets should request authorization from the user before returning the secret to the DApp.
 
 ### Altered API endpoints
 
