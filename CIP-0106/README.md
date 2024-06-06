@@ -31,13 +31,13 @@ Finally, the signTx() and signData() endpoints will have to be disabled when usi
 ### Rationale for the required data
 
 - Script descriptor:
-	-- Any transaction consuming a UTxO from a native script based address must attach the corresponding script. 
+	- Any transaction consuming a UTxO from a native script based address must attach the corresponding script. 
 - Script Requirements list:
-	-- dApps need to know the number of signers to calculate the fees correctly.
-	-- Including the correct "required signers" brings UX improvements.
-	-- dApps need to know if the script has any before-after requirements to set the correct validBefore and TTL values.
+	- dApps need to know the number of signers to calculate the fees correctly.
+	- Including the correct "required signers" brings UX improvements.
+	- dApps need to know if the script has any before-after requirements to set the correct validBefore and TTL values.
 - Collateral donator:
-    -- Native script based addresses cannot provide collateral for Plutus transactions 
+    - Native script based addresses cannot provide collateral for Plutus transactions 
 
 ## Specification
 
