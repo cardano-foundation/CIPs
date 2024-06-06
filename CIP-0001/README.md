@@ -291,8 +291,6 @@ Editors occasionally invite project maintainers to speak during review meetings 
 
 Proposals must be submitted to the [cardano-foundation/CIPs][Repository] repository as a pull request named after the proposal's title. The pull request title **should not** include a CIP number (and use `?` instead as number); the editors will assign one. Discussions may precede a proposal. Early reviews and discussions streamline the process down the line.
 
-> **Note** In the original comment for your pull request, please include a link to the `README.md` for the CIP in your working branch, so readers and reviewers can easily follow your work.  If this link changes (e.g. from the CIP directory being renamed), please keep this link updated.
-
 > **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
 ###### Naming CIPs with similar subjects
@@ -302,6 +300,12 @@ When a CIP title *and* subject matter share a common element, begin the CIP titl
 > *Web-Wallet Bridge **-** Governance*
 
 CIP editors will help determine these common elements and, whenever necessary, rename both CIP document titles and PR titles accordingly.  The objective is to provide commonly recognisable names for similar developments (e.g. multiple extensions to another CIP or scheme).
+
+###### Link to proposal from PR first comment
+
+In the original comment for your pull request, please include a link to the directory or the `README.md` for the CIP in your working branch, so readers and reviewers can easily follow your work.  This makes it easier for editors and the community to read and review your proposal.
+
+> **Note** If this link changes (e.g. from the CIP directory being renamed), please keep this link updated.
 
 ##### 1.b. Authors seek feedback
 

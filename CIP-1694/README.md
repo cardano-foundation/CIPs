@@ -586,7 +586,7 @@ Actions that have been ratified in the current epoch are prioritized as follows 
 6. Treasury withdrawals
 7. Info
 
-> **Note** Enactment for _Info_ actions is a null action, since they do not have any effect on the protocol.
+> **Note** _Info_ actions cannot be ratified or enacted, since they do not have any effect on the protocol.
 
 ##### Order of enactment
 
