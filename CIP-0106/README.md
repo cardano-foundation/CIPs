@@ -81,25 +81,25 @@ CompletedTxErrorCode = {
 
 ### Additional API Endpoints
 
-#### api.getCollateralAddress(): Promise\<Address>
+#### api.cip106.getCollateralAddress(): Promise\<Address>
 
 For Plutus V2 and later, partial collateral is supported. This function returns an address that can be used to add collateral to a transaction. The address returned must be owned by one of the signers in the list of signers returned by `api.getScriptRequirements()`. 
 
 dApp developers can choose to use this address to add collateral to a transaction, or they can choose to use the `api.getCollateral()` function to get a list of UTXOs that can be used as collateral. If the dApp chooses to use this address, they must ensure that the address is not used for any other purpose, as the wallet may be using it to track collateral, and that the collateral return address is the same one.
 
-#### api.getScriptRequirements: Promise\<ScriptRequirement[]>
+#### api.cip106.getScriptRequirements: Promise\<ScriptRequirement[]>
 
 Errors: `APIError`
 
 Returns a list of ScriptRequirements that will be used to validate any transaction sent to the wallet.
 
-#### api.getScript(): Promise\<cbor\<nativeScript>>
+#### api.cip106.getScript(): Promise\<cbor\<nativeScript>>
 
 Errors: `APIError`
 
 Returns the CBOR-encoded native script that controls this wallet. 
 
-#### api.submitUnsignedTx(tx: cbor\<unsignedTransaction>): Promise\<hash32>
+#### api.cip106.submitUnsignedTx(tx: cbor\<unsignedTransaction>): Promise\<hash32>
 
 Errors: `APIError`, `TxError`
 
@@ -107,7 +107,7 @@ Submits a transaction to the wallet for signing. The wallet should check that th
 
 If the transaction contains hidden metadata, the wallet should not submit the transaction when it is ready, but return it to the dApp when the dApp calls the `getCompletedTx` function.
 
-#### api.getCompletedTx(txId: hash32): Promise\[<cbor\<transaction>,cbor<transaction_witness_set>>]
+#### api.cip106.getCompletedTx(txId: hash32): Promise\[<cbor\<transaction>,cbor<transaction_witness_set>>]
 
 Errors: `APIError`, `CompletedTxError`
 
