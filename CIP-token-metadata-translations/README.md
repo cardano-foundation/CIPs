@@ -119,19 +119,21 @@ console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name"
 ## Path to Active
 
 ### Acceptance Criteria
-- NFT metadata standard extension covers all existing localization needs and use cases on web2.
-- Implementation is compliant with JSON conventions.
-- Implementation is compliant with the [[ISO-639]](https://www.iso.org/standard/4767.html) standard for language code, and the [[ISO-3166]](https://www.iso.org/standard/63545.html) standard for country/region code.
-- Access to localized strings is easy and logical from a coding perspective.
+
+- [x] Implementation is compliant with JSON conventions.
+- [x] Implementation is compliant with the [[ISO-639]](https://www.iso.org/standard/4767.html) standard for language code, and the [[ISO-3166]](https://www.iso.org/standard/63545.html) standard for country/region code.
+- [ ] Implementations and peer review verify that:
+  - [ ] NFT metadata standard extension covers all existing localization needs and use cases on web2.
+  - [ ] Access to localized strings is easy and logical from a coding perspective.
             
 ### Implementation Plan
-Propose this method in documentation and references for web3 developers.
 
-
-NMKR has supported this CIP with peer feedback, and in the future with a pilot implementation of this localization method.
+- [ ] Propose this method in documentation and references for web3 developers.
+- [x] NMKR has supported this CIP with peer feedback
+- [ ] NMKR provides a pilot implementation of this localization method.
 
 ## Copyright
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CIP is licensed under [CC-BY-4.0].
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
