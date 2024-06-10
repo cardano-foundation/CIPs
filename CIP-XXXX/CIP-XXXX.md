@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP:  
 Title: Bitwise operations
 Category: Plutus
 Status: Proposed
@@ -117,11 +117,9 @@ Our proposed operations will have the following signatures:
 We assume the following costing, for both memory and execution time:
 
 | Operation | Execution time cost | Memory cost |
-|-----------|------|
-|`bitwiseShift`| Linear in the `BuiltinByteString` argument | As execution time
-|
-|`bitwiseRotate` | Linear in the `BuiltinByteString` argument | As execution
-time |
+|-----------|---------------------|-------------|
+|`bitwiseShift`| Linear in the `BuiltinByteString` argument | As execution time|
+|`bitwiseRotate` | Linear in the `BuiltinByteString` argument | As execution time |
 |`countSetBits` | Linear in the argument | Constant |
 |`findFirstSetBit` | Linear in the argument | Constant |
 
@@ -180,7 +178,8 @@ Let $b$ refer to the data argument, whose length in bytes is $n$, and let $i$
 refer to the rotation argument. Let the result of `bitwiseRotate` called with $b$
 and $i$ be $b_r$, also of length $n$. 
 
-For all $j \in 0, 1, \ldots 8 \cdot n - 1$, we have $b_r = b[j - i \mod 8 \cdot n]$.
+For all $j \in 0, 1, \ldots 8 \cdot n - 1$, we have 
+$b_r = b[(j - i) \text{ } \mathrm{mod} \text { } (8 \cdot n)]$.
 
 Some examples of the intended behaviour of `bitwiseRotate` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
@@ -352,8 +351,8 @@ countSetBits (bitwiseLogicalXor False x y) = countSetBits (bitwiseLogicalOr
 False x y) - countSetBits (bitwiseLogicalAnd False x y)
 ```
 
-Lastly, `countSetBits` has a relationship to bitwise XOR, regardless of
-semantics:
+Lastly, `countSetBits` has a relationship to bitwise XOR, regardless 
+of semantics:
 
 ```haskell
 countSetBits (bitwiseLogicalXor semantics x x) = 0
@@ -361,12 +360,20 @@ countSetBits (bitwiseLogicalXor semantics x x) = 0
 
 #### `findFirstSetBit`
 
-`BuiltinByteString`s consisting entirely of zero bytes (including the empty
-`BuiltinByteString`, by vacuous truth) always give a `-1` result with
-`findFirstSetBit`:
+`BuiltinByteString`s where every byte is the same (provided they are not empty)
+have the same first bit as a singleton of that same byte:
 
 ```haskell
-findFirstSetBit (replicateByteString n 0x00) = -1
+-- 0 <= w8 <= 255, n >= 1
+findFirstSetBit (replicateByteString n w8) = 
+findFirstSetBit (replicateByteString 1 w8)
+```
+
+Additionally, `findFirstSet` has a relationship to bitwise XOR, regardless of
+semantics:
+
+```haskell
+findFirstSetBit (bitwiseLogicalXor semantics x x) = -1
 ```
 
 Any result of a `findFirstSetBit` operation that isn't `-1` gives a valid bit
