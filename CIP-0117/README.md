@@ -76,7 +76,7 @@ This is very unlikely to happen by accident: mistakes in the number of arguments
 
 ### Implementation Plan
 
-- [ ] The Plutus team will implement the changes to the Ledger.
+- [x] The Plutus team will implement the changes to the Ledger.
 
 ## Copyright
 
