@@ -1,5 +1,5 @@
 ---
-CIP:  
+CIP: 123
 Title: Bitwise operations
 Category: Plutus
 Status: Proposed
