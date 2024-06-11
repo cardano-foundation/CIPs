@@ -1,5 +1,5 @@
 ---
-CIP: 0117
+CIP: 117
 Title: Explicit script return values
 Category: Plutus
 Status: Proposed
