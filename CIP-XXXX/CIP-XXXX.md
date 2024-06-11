@@ -1,6 +1,6 @@
 ---
 CIP: 123
-Title: Bitwise operations
+Title: Bitwise operations over BuiltinByteString
 Category: Plutus
 Status: Proposed
 Authors:
