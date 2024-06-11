@@ -71,7 +71,7 @@ This is very unlikely to happen by accident: mistakes in the number of arguments
 
 ### Acceptance Criteria
 
-- [ ] The proposal is implemented in the Ledger.
+- [x] The proposal is implemented in the Ledger.
 - [ ] The ledger changes are released on Mainnnet.
 
 ### Implementation Plan
