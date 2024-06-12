@@ -5,7 +5,8 @@ Status: Proposed
 Category: Wallets
 Authors: 
   - Leo
-Implementors: NA
+Implementors: 
+  -  BroClanWallet 
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/617
 Created: 2023-10-12
@@ -28,17 +29,6 @@ Specifically, apps building transactions need to be able to get the following in
 Additionally, apps need to be able to submit a transaction to the wallet for signing in an asynchronous manner, as gathering of signatures can take a long time and each wallet provider will have its own way of handling this process. 
 
 Finally, the signTx() and signData() endpoints will have to be disabled when using this extension since they are not compatible with native script based addresses.
-
-### Rationale for the required data
-
-- Script descriptor:
-	- Any transaction consuming a UTxO from a native script based address must attach the corresponding script. 
-- Script Requirements list:
-	- dApps need to know the number of signers to calculate the fees correctly.
-	- Including the correct "required signers" brings UX improvements.
-	- dApps need to know if the script has any before-after requirements to set the correct validBefore and TTL values.
-- Collateral donator:
-    - Native script based addresses cannot provide collateral for Plutus transactions 
 
 ## Specification
 
