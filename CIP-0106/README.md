@@ -22,10 +22,13 @@ This document describes a CIP-30 extension allowing webpages (i.e. dApps) to int
 In order to facilitate future dApp development, we will need a way for dApps to communicate with multisig wallets, given the unique complexities of native script based addresses. Special provisions need to be made to make the connector compatible with them.  
 
 Specifically, apps building transactions need to be able to get the following information from the wallet:
-- Script descriptor 
-- Script Requirements list 
-- Collateral donator (since native script based addresses cannot provide collateral for transactions)
-
+- Script descriptor
+  - Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script. 
+- `ScriptRequirements`
+  - The `TxContext` that is required to be able to validate the transaction. It encompasses all the possible combinations of requirements for the transaction to be valid, as such it is represented by an array of `ScriptRequirement` objects.
+- Change Datum
+  - The datum that will be used as the change output for the transaction. This is required for wallets based on Plutus V2 and before, as the change output must contain a datum to be valid and spendable.
+  
 Additionally, apps need to be able to submit a transaction to the wallet for signing in an asynchronous manner, as gathering of signatures can take a long time and each wallet provider will have its own way of handling this process. 
 
 Finally, the signTx() and signData() endpoints will have to be disabled when using this extension since they are not compatible with native script based addresses.
