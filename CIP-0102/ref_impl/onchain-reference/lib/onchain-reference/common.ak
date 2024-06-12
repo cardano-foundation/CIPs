@@ -1,11 +1,11 @@
+use aiken/builtin.{choose_data}
 use aiken/bytearray
 use aiken/dict.{Dict}
 use aiken/hash.{Blake2b_224, Blake2b_256, Hash}
+use aiken/int
 use aiken/list
 use aiken/option
-use aiken/transaction.{
-  Datum, DatumHash, InlineDatum, Input, NoDatum
-}
+use aiken/transaction.{Datum, DatumHash, InlineDatum, Input, NoDatum}
 use aiken/transaction/credential.{Address, VerificationKey}
 use aiken/transaction/value.{AssetName, PolicyId}
 
@@ -23,12 +23,20 @@ pub type RoyaltyDatum {
 }
 
 pub type Metadata =
-  Dict<ByteArray, Data>
+  Pairs<ByteArray, Data>
+
+pub type ChooseData {
+  DConstr
+  DMap
+  DList
+  DInt
+  DByteArray
+}
 
 pub type RefDatumMetadata {
   metadata: Metadata,
   version: Int,
-  extra: Data,
+  extra: Metadata,
 }
 
 pub type RoyaltyRecipient {
@@ -54,7 +62,7 @@ pub type VerificationKeyHash =
 // since integer division handles the truncation for us, it's as simple as dividing by 10000
 // recall that n / (n / m) == m, so the same function handles both directions of conversion
 pub fn to_from_per_mille_fee(in_fee: Int) -> Int {
-  10000 / in_fee
+  10_000 / in_fee
 }
 
 // take a CIP 68 user token asset name, and output the corresponding reference token asset name
@@ -117,20 +125,41 @@ pub fn get_recipients(
           },
         )
       // parse the reference datum
-      expect _reference_datum: RefDatumMetadata =
+      expect reference_datum: RefDatumMetadata =
         get_data(datums, ref_token_input.output.datum)
 
+      // Check for royalty flag 
+      let has_flag = list.find(reference_datum.extra, fn(item) -> Bool { and {
+              // maybe TODO: convert to hex
+              item.1st == "royalty_included",
+              // when constr, map, list, int, bytearray
+              when
+                choose_data(item.2nd, DConstr, DMap, DList, DInt, DByteArray)
+              is {
+                DInt -> {
+                  expect parsed_int: Int = item.2nd
+                  parsed_int >= 1
+                }
+                DByteArray -> {
+                  expect parsed_ba: ByteArray = item.2nd
+                  when int.from_utf8(parsed_ba) is {
+                    None -> False
+                    Some(parsed_int) -> parsed_int >= 1
+                  }
+                }
+                _ -> False
+              },
+            } })
 
-      // // Check for royalty flag
-      // if reference_datum.extra {
-      // TODO: Figure out how to pass on an `expect` failure
-      //   // throw error if it exists and is > 0
-      // } else {
-      // return empty list if it exists and is 0
-      // return empty list if it doesn't exist
-      []
+      when has_flag is {
+        Some(_) ->
+          // throw error if it exists and is > 0
+          fail
+        // return empty list if it doesn't exist or is 0
+        None ->
+          []
+      }
     } else {
-      // }
       // if the asset is not a CIP 68 NFT, return an empty list
       []
     }

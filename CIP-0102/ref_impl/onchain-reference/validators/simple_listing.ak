@@ -1,19 +1,21 @@
 use aiken/builtin
-use aiken/dict
+use aiken/bytearray
 use aiken/list
 use aiken/math
 use aiken/option
 use aiken/transaction.{
-  Datum, InlineDatum, NoDatum, Output, OutputReference, ScriptContext, Spend,
-  Transaction, TransactionId,
+  Datum, InlineDatum, Input, NoDatum, Output, OutputReference, ScriptContext,
+  Spend, Transaction, TransactionId,
 }
-use aiken/transaction/credential.{Address, VerificationKeyCredential}
-use aiken/transaction/value.{to_dict}
+use aiken/transaction/credential.{
+  Address, ScriptCredential, VerificationKeyCredential,
+}
+use aiken/transaction/value.{quantity_of}
 use onchain_reference/common.{
   Asset, RoyaltyRecipient, VerificationKeyHash, get_recipients,
-  to_from_per_mille_fee,
+  to_from_per_mille_fee, user_tn_prefix,
 }
-use onchain_reference/test_utils.{placeholder_oref}
+use onchain_reference/test_utils.{placeholder_oref, recipients_to_input}
 
 type ListingDatum {
   // to further prevent circumvention, lot could be detected from consumed the Listing output
@@ -32,7 +34,7 @@ type Payout {
 
 /// A user can either buy a token
 /// or cancel/update the listing.
-type Redeemer {
+type ListingRedeemer {
   /// Make a purchase.
   Buy
   /// Cancel or update a listing.
@@ -42,7 +44,11 @@ type Redeemer {
 validator {
   /// Validate that the signer is the owner or that payouts
   /// are present as outputs and that the tag is correct.
-  fn spend(datum: ListingDatum, redeemer: Redeemer, ctx: ScriptContext) -> Bool {
+  fn spend(
+    datum: ListingDatum,
+    redeemer: ListingRedeemer,
+    ctx: ScriptContext,
+  ) -> Bool {
     let ScriptContext { transaction, purpose } = ctx
 
     let Transaction { outputs, extra_signatories, reference_inputs, datums, .. } =
@@ -79,12 +85,15 @@ fn get_payouts(
 ) -> List<Payout> {
   // for each recipient
   // DO THIS WORK? TEST IT
-  let already_paid_out = 0
 
-  let payouts =
-    list.map(
+  let (payouts, paid_out) =
+    list.foldl(
       royalty_recipients,
-      fn(recipient: RoyaltyRecipient) -> Payout {
+      ([], 0),
+      fn(recipient: RoyaltyRecipient, out: (List<Payout>, Int)) -> (
+        List<Payout>,
+        Int,
+      ) {
         // get the estimated amount based on the price
         let amount = to_from_per_mille_fee(recipient.fee) * price / 1000
 
@@ -92,7 +101,7 @@ fn get_payouts(
         let amount =
           if option.is_some(recipient.min_fee) {
             expect Some(min) = recipient.min_fee
-            math.max(amount, math.min(price - already_paid_out, min))
+            math.max(amount, math.min(price - out.2nd, min))
           } else {
             amount
           }
@@ -105,9 +114,15 @@ fn get_payouts(
           } else {
             amount
           }
-        let already_paid_out = already_paid_out + amount
+        let already_paid_out = out.2nd + amount
         // output payout
-        Payout { recipient: recipient.address, amount }
+        (
+          list.concat(
+            out.1st,
+            [Payout { recipient: recipient.address, amount }],
+          ),
+          already_paid_out,
+        )
       },
     )
 
@@ -117,7 +132,7 @@ fn get_payouts(
         payment_credential: VerificationKeyCredential(seller),
         stake_credential: None,
       },
-      amount: price - already_paid_out,
+      amount: price - paid_out,
     }
 
   // output seller payout with remainder of price
@@ -149,17 +164,11 @@ fn check_payouts(
   // the address specified in the corresponding
   // payout from the datum.
   expect payout_address == output_address
-  expect [(policy, tokens)] =
-    value
-      |> to_dict
-      |> dict.to_list
 
-  expect [(_, quantity)] = dict.to_list(tokens)
-
-  expect policy == ""
   // The quantity in the output must equal
   // the amount specified in the corresponding
   // payout from the datum.
+  let quantity = quantity_of(value, "", "")
   expect quantity >= amount_lovelace && amount_lovelace > 0
   let rest_payouts_amount =
     when rest_payouts is {
@@ -189,17 +198,11 @@ fn check_payouts_aux(outputs: List<Output>, payouts: List<Payout>) -> Int {
   // the address specified in the corresponding
   // payout from the datum.
   expect payout_address == output_address
-  expect [(policy, tokens)] =
-    value
-      |> to_dict
-      |> dict.to_list
 
-  expect [(_, quantity)] = dict.to_list(tokens)
-
-  expect policy == ""
   // The quantity in the output must equal
   // the amount specified in the corresponding
   // payout from the datum.
+  let quantity = quantity_of(value, "", "")
   expect quantity >= amount_lovelace && amount_lovelace > 0
   let rest_payouts_amount =
     when rest_payouts is {
@@ -217,100 +220,131 @@ fn check_payouts_aux(outputs: List<Output>, payouts: List<Payout>) -> Int {
 
 // ############### ENDPOINT TESTS ###############
 const mock_owner: VerificationKeyHash = "some_fake_address_hash"
+
 const mock_policy_id = "fake_lot_policy_id"
+
 const mock_buyer: VerificationKeyHash = "some_other_fake_address_hash"
-const spent_oref = OutputReference {
-  ..placeholder_oref,
-  output_index: 1 // 0 is the royalty input
-}
 
 test one_recipient_cip68_buy() {
-  let redeemer = Redeemer { Buy }
+  let redeemer = Buy
 
-  let listing_datum = ListingDatum {
-    lot: Asset {
+  let lot =
+    Asset {
       policy_id: mock_policy_id,
-      asset_name: user_tn_prefix + "fake_lot_tn",
-      1
-    },
-    seller: mock_owner,
-    price: 1 000 000 000 // 1000 Ada
-  }
+      asset_name: bytearray.concat(user_tn_prefix, "fake_lot_tn"),
+      quantity: 1,
+    }
+
+  // Price: 1000 Ada
+  let listing_datum =
+    ListingDatum { lot, seller: mock_owner, price: 1_000_000_000 }
 
   let royalty_recipients =
-    [RoyaltyRecipient {
+    [
+      RoyaltyRecipient {
+        address: Address {
+          payment_credential: VerificationKeyCredential(mock_owner),
+          stake_credential: None,
+        },
+        fee: 125,
+        // 8%
+        min_fee: None,
+        max_fee: None,
+      },
+    ]
+
+  let ctx =
+    ScriptContext {
+      transaction: get_base_transaction(listing_datum, royalty_recipients),
+      purpose: Spend(OutputReference { ..placeholder_oref(), output_index: 1 }),
+    }
+
+  // 0 is the royalty input
+  spend(listing_datum, redeemer, ctx)
+}
+
+fn get_base_transaction(
+  listing_datum: ListingDatum,
+  royalty_recipients: List<RoyaltyRecipient>,
+) -> Transaction {
+  let lot_input = lot_to_input(listing_datum)
+  let royalty_policy_ref_input =
+    recipients_to_input(royalty_recipients, mock_policy_id)
+
+  let buyer_address =
+    Address {
+      payment_credential: VerificationKeyCredential(mock_buyer),
+      stake_credential: None,
+    }
+
+  let buyer_output =
+    Output {
+      address: buyer_address,
+      // add 1 ada for fees
+      value: value.from_lovelace(listing_datum.price + 1_000_000),
+      datum: NoDatum,
+      reference_script: None,
+    }
+
+  let buyer_input =
+    Input {
+      output: buyer_output,
+      output_reference: OutputReference {
+        ..placeholder_oref(),
+        output_index: 2,
+      },
+    }
+
+  // 0 is royalty input, 1 is lot
+  let buyer_output =
+    Output {
+      address: buyer_address,
+      value: value.from_lovelace(listing_datum.price),
+      datum: NoDatum,
+      reference_script: None,
+    }
+
+  let amount_to_royalties =
+    list.foldl(
+      royalty_recipients,
+      0,
+      fn(recipient, total) {
+        total + to_from_per_mille_fee(recipient.fee) * 10 * listing_datum.price
+      },
+    )
+
+  let royalty_outputs: List<Output> =
+    list.map(
+      royalty_recipients,
+      fn(recipient) {
+        Output {
+          address: recipient.address,
+          value: value.from_lovelace(
+            to_from_per_mille_fee(recipient.fee) * 10 * listing_datum.price,
+          ),
+          datum: NoDatum,
+          reference_script: None,
+        }
+      },
+    )
+
+  let seller_output =
+    Output {
       address: Address {
         payment_credential: VerificationKeyCredential(mock_owner),
         stake_credential: None,
       },
-      fee: 125, // 8%
-      min_fee: None,
-      max_fee: None,
-    }]
-
-  let ctx = ScriptContext {
-    transaction: get_base_transaction(listing_datum, royalty_recipients ),
-    purpose: Spend(spent_oref)
-  }
-
-  spend(listing_datum, redeemer, ctx)
-}
-
-fn get_base_transaction(listing_datum: ListingDatum, royalty_recipients: List<RoyaltyRecipients> , outputs: List<Output>) -> Transaction {
-  let lot_input = lot_to_input(listing_datum)
-  let royalty_policy_ref_input = recipients_to_input([in_recipient], mock_policy_id)
-
-  let buyer_address = Address {
-    payment_credential: VerificationKeyCredential(mock_buyer),
-    stake_credential: None
-  }
-
-  let buyer_input = Input {
-    output: Output {
-      address: buyer_address,
-      value: value.from_lovelace(listing_datum.price + 1000000) // add 1 ada for fees,,
-      datum: None,
-      reference_script: None
-    },
-    output_reference: OutputReference {..placeholder_oref, output_index: 2 } // 0 is royalty input, 1 is lot
-  }
-
-  let buyer_output = Output {
-    address: buyer_address,
-    value: value.from_lovelace(listing_datum.price),
-    datum: None,
-    reference_script: None
-  }
-
-  let amount_to_royalties = list.foldl(royalty_recipients, 0, fn(recipient, total) {
-    to_from_per_mille_fee(royalty.fee) * 10 * listing_datum.price
-  })
-
-  let royalty_outputs: List<Output> = list.map(royalty_recipients, fn(recipient) {
-    Output {
-      address: first_recipient.address,
-      value: value.from_lovelace(to_from_per_mille_fee(first_recipient.fee) * 10 * listing_datum.price),
-      datum: None,
-      reference_script: None
+      value: value.from_lovelace(listing_datum.price - amount_to_royalties),
+      datum: NoDatum,
+      reference_script: None,
     }
-  })
-
-  let seller_output = Output {
-    address: Address {
-      payment_credential: VerificationKeyCredential(mock_owner),
-      stake_credential: None
-    },
-    value: value.from_lovelace(listing_datum.price - amount_to_royalties),
-    datum: None,
-    reference_script: None
-  }
 
   Transaction {
     ..transaction.placeholder(),
     extra_signatories: [mock_buyer],
     inputs: [lot_input, buyer_input],
     reference_inputs: [royalty_policy_ref_input],
-    outputs: [seller_output, buyer_output, royalty_outputs],
+    outputs: [seller_output, buyer_output, ..royalty_outputs],
   }
 }
 
@@ -320,14 +354,15 @@ fn lot_to_input(datum: ListingDatum) -> Input {
     output: Output {
       address: Address {
         payment_credential: ScriptCredential(""),
-        stake_credential: None
+        stake_credential: None,
       },
       value: value.from_asset(lot.policy_id, lot.asset_name, lot.quantity),
       datum: InlineDatum(datum),
-      reference_script: None
+      reference_script: None,
     },
-    output_reference: spent_oref
+    output_reference: OutputReference { ..placeholder_oref(), output_index: 1 },
   }
+  // 0 is the royalty input
 }
 
 // ############### FUNCTION TESTS ###############
