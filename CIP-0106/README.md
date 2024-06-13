@@ -113,7 +113,7 @@ If the transaction is not ready, the wallet should throw a `CompletedTxError` wi
 
 Native script based addresses cannot provide collateral for transactions. Using this function, dApps can request the wallet to provide collateral for a transaction. The collateral must be a pure ADA UTXO, held by one of the signers in the list of signers returned by `api.getScriptRequirements()`.
 
-### Removed API endpoints
+### Disabled API endpoints
 
 When connecting to a wallet using this extension the following endpoints will be disabled:
 
@@ -122,6 +122,7 @@ When connecting to a wallet using this extension the following endpoints will be
 
 #### `api.signData(addr: Address, payload: Bytes): Promise<DataSignature>`
 
+These endpoints should return an error if called when using this extension. 
 
 ## Rationale: how does this CIP achieve its goals?
 
