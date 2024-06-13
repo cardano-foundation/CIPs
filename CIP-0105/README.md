@@ -307,7 +307,7 @@ cc_hot_script_2: cc_hot_script1dg9jdwlsxzakctywv2cw7a7ggj2dwu0gz5tueu2rf40zvkj8d
 ```
 
 #### Test vector 3
-`mnemonic: excess behave track soul table wearocean cash stay nature item turtlepalm soccer lunch horror start stumblemonth panic right must lock dress`
+`mnemonic: excess behave track soul table wear ocean cash stay nature item turtle palm soccer lunch horror start stumble month panic right must lock dress`
 `accountIx: 0x80000000`
 ```
 drep_xsk: drep_xsk17pwn6d7pu0d6sfzysyk5taux99f5tdqsct7zzthgljyd5zs33azej0tm5ny7ksunthqu84tqg832md6vs3hm392agwx3auhvyjtzxr2l6c0dj47k6zedl4kgugneu04j64fc5uueayydmufdrdaled9k4qllaka6
@@ -336,7 +336,7 @@ cc_hot_script_2: cc_hot_script1c77thg5lrahy0he4q6glsk8vgsp45gt75k3pq09d02u8g4s30
 ```
 
 #### Test vector 4
-`mnemonic: excess behave track soul table wearocean cash stay nature item turtlepalm soccer lunch horror start stumblemonth panic right must lock dress`
+`mnemonic: excess behave track soul table wear ocean cash stay nature item turtle palm soccer lunch horror start stumble month panic right must lock dress`
 `accountIx: 0x80000100`
 ```
 drep_xsk: drep_xsk14z6a7nd2q5r03s4gxsrujc59sg757vqqcwxeuc5s874c2rq33az37lwkxpxvh5s4a94sncxp6y7m73pxsuknt7gvethhue5jk5vc5n2hrg95mynhw7mtrshxr5mpku4v8x6lpm05nznrqej70u0fllgfkusexdkv
