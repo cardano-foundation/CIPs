@@ -96,6 +96,8 @@ The goals of this CPS are as follows:
 
 1. What can we do as a community to encourage more applications and software
    providers to support `web+cardano:` URIs?
+2. What software or best practices exist to aid developers in deploying support
+   for `web+cardano:` URIs?
 2. What new authorities or protocols could be built to leverage these URIs?
 3. What does the process look like to register a new `web+cardano:` URI
    authority or protocol?
