@@ -11,6 +11,7 @@ Proposed Solutions:
   - CIP-0107: https://github.com/cardano-foundation/CIPs/pull/635
 Discussions:
   - https://github.com/cardano-foundation/CIPs/issues/836
+  - https://github.com/cardano-foundation/CIPs/pull/559
   - https://github.com/cardano-foundation/CIPs/pull/635
   - https://github.com/cardano-foundation/CIPs/pull/841
 Created: 2024-06-15
