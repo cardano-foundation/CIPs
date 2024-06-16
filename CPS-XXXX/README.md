@@ -12,7 +12,7 @@ Proposed Solutions:
 Discussions:
   - https://github.com/cardano-foundation/CIPs/issues/836
   - https://github.com/cardano-foundation/CIPs/pull/635
-  - https://github.com/cardano-foundation/CIPs/pull/?
+  - https://github.com/cardano-foundation/CIPs/pull/841
 Created: 2024-06-15
 License: CC-BY-4.0
 ---
