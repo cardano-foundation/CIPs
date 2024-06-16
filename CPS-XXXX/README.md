@@ -1,6 +1,6 @@
 ---
 CPS: ????
-Title: CPS-???? | Cardano URI Schemes
+Title: CPS-???? | Cardano URIs
 Status: Open
 Category: Tools
 Authors:
