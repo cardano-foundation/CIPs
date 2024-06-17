@@ -41,9 +41,13 @@ in outline how the chain could recover if each of these situations were to arise
 ## Motivation: why is this CIP necessary?
 <!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
 
+This CIP is needed to explain the processes and procedures that should be followed in the unlikely event
+that the Cardano network encounters a situation where the built-in recovery mechanisms fail.
 
 ## Specification
 <!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned, if not covered under an optional Versioning main heading. If a proposal defines structure of on-chain data it must include a CDDL schema in its specification.-->
+
+While recovery will need to be tailored to the actual situation, three main scenarios can be identified.
 
 ### Scenario 1: Long-Lived Network Partition
 
