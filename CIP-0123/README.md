@@ -32,9 +32,12 @@ License: CC-BY-4.0
 
 ## Abstract
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
+
 While the Cardano network has proved to be highly reliable, it is necessary to consider how the Cardano network can be recovered in the unlikely 
 event of a major failure where the network does not recover itself.  This CIP considers three representative scenarios and explains
 in outline how the chain could recover if each of these situations were to arise.
+
+The CIP should be considered to be a living document.  It is based on an earlier IOHK technical report, supplemented by internal documentation.
 
 
 
@@ -119,7 +122,7 @@ and advise them on how to rejoin the main chain.
 #### Timing Considerations
 
 Partitions of less than 2,160 blocks will automatically rejoin the main chain.  With current Cardano settings, this represents
-a period of up to 12 hours during which automatic rollback.
+a period of up to 12 hours during which automatic rollback will occur.
 
 
 ### Scenario 2: Failure to Make Blocks for an Extended Period of Time
@@ -145,7 +148,13 @@ at high speed (10x usual speed is recommended), while inserting new empty blocks
 are allocated to the block producers.  An Ouroboros Genesis snapshot can be created once the recovery
 nodes have caught up to real time. The recovery nodes can then be restarted with normal settings, including
 connections to the network.  Ouroboros Genesis then allows other nodes in the network to rapidly resynchronize
-with the newly restored chain.
+with the newly restored chain.  This would leave one or more gaps in the chain, interspersed with empty blocks.
+
+##### Rewards Donation
+
+In order to avoid allegations of unfair behaviour, block producing nodes that are used to recover the network should
+donate any rewards that they receieve during recovery to the treasury.
+
 
 #### Additional Effects on Cardano Users
 
@@ -158,15 +167,53 @@ and the Ouroboros Genesis snapshot is distributed across all nodes.
 
 #### Timing Considerations
 
-The chain will tolerate a gap of up to *3k/f* blocks (36 hours with current Cardano settings). 
+The chain will tolerate a gap of up to *3k/f* slots (36 hours with current Cardano settings). 
 
-### Scenario 3: Bad Blocks
 
-In the event that a bad block was to be minted on-chain, then the chain
+### Scenario 3: Bad Blocks Minted on Chain
+
+In the event that a bad block was to be minted on-chain, then some or all validators might be unable to process the block.
+They would therefore stop, and be unable to restart.  Wallet and other nodes might be unable to synchronise beyond the
+point of the bad block.
 
 #### Remediation
 
-### Mithril
+Depending on the cause of the issue and its severity, alternative remediations might be possible.  
+
+Scenario 3.1: if some existing node versions were able to process the block, but others were not, then
+the chain would continue to grow at a lower chain density.  SPOs would be encouraged to upgrade (or downgrade)
+to a suitable node version.  The chain density would then gradually recover to its normal level.
+
+Scenario 3.2: if no node version was able to process the block and a
+gap of less than *3k/f* slots existed, then the chain could be rolled
+back immediately before the bad block was created, and nodes
+restarted.  The chain would then grow as normal, with a small gap around the bad block.
+In this case, care would need to be taken that the rogue
+transaction was not accidentally reinserted into the chain.  This might involve
+clearing node mempools, applying filters on the transaction, or developing and deploying a new node version that 
+rejected the bad block.
+
+Scenario 3.3: an alternative to rolling back would be to develop and deploy a "hot-fix" node that could
+accept the bad block.  Nodes would then be able to incorporate the bad block as part of the chain,
+minting new blocks as usual.
+In this case, the bad block would persist on-chain indefinitely and future nodes
+would need to also accept the bad block.  This approach is best used when the rejected block has behaviour
+that was unanticipated, but which is benign in nature.
+
+#### Timing Considerations
+
+If more than *3k/f* slots have passed since the bad block was minted on-chain (36 hours with current Cardano settings),
+then a mix of recovery techniques will be needed, as described in Scenario 3.4.  When deciding on the correct recovery
+technique, consideration should be given as to whether the recovery can be successfully completed
+
+### Using Ouroboros Genesis Snapshots
+
+Ouroboros Genesis snapshots can be used to assist with recovery.  TODO: expand this
+
+
+### Using Mithril Snapshots
+
+Alternatively, Mithril snapshots can be used to assist with recovery.  TODO: expand this
 
 
 ## Recommended Actions
@@ -176,7 +223,16 @@ In the event that a bad block was to be minted on-chain, then the chain
 3. Set up emergency communication channels with stake pool operators and other community members.
 4. Practice disaster recovery procedures on a regular basis.
 5. Provide signed Mithril snapshots and a way for full node wallet users and others to recover from this snapshot.
-6. 
+6. Determine how to exploit Ouroboros Genesis snapshots as part of the disaster recovery process
+
+### Community Engagement
+
+One of the key requirements for successful disaster recovery will be proper engagement with the community.
+
+1. Identify block producers who can assist with disaster recovery
+2. Discuss requirements with Intersect's Technical Working Groups and Security Council
+3. Identify and establish the right communications channels with the community
+4. Set up regular disaster recovery practice sessions
 
 
 ## Rationale: how does this CIP achieve its goals?
@@ -185,21 +241,22 @@ In the event that a bad block was to be minted on-chain, then the chain
 It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
 
+TBC
+
 ## References
 
 [Cardano Disaster Recovery Plan (May 2021)](https://iohk.io/en/research/library/papers/cardano-disaster-recovery-plan/)
 
-[DB Truncator Tool]()
+[DB Truncator Tool](TODO)
 
-[DB Synthesizer Tool]()
+[DB Synthesizer Tool](TODO)
 
-[Ouroboros Genesis]()
+[Ouroboros Genesis](TODO)
 
-[Mithril]()
+[Mithril](TODO)
 
 
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms.  Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header: -->
 
-<!-- This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). -->
-<!-- This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0). -->
+ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
