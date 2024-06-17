@@ -5,11 +5,11 @@ Category: Cardano Information
 Status: Proposed
 Authors:
     - Kevin Hammond <kevin.hammond@iohk.io>
-	- Sam Leathers <samuel.leathers@iohk.io>
-	- Alex Moser <alex.moser@cardanofoundation.org>
-	- Steve Wagendorp <steve.wagendorp@cardanofoundation.org>
-	- Rick McCracken
-	- Adam Dean
+    - Sam Leathers <samuel.leathers@iohk.io>
+    - Alex Moser <alex.moser@cardanofoundation.org>
+    - Steve Wagendorp <steve.wagendorp@cardanofoundation.org>
+    - Rick McCracken
+    - Adam Dean
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
