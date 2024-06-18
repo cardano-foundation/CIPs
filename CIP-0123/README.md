@@ -53,7 +53,7 @@ It should be considered to be a living document that is reviewed and revised on 
 This CIP is needed to explain the processes and procedures that should be followed in the unlikely event
 that the Cardano network encounters a situation where the built-in recovery mechanisms fail.
 
-## Specification
+## Disaster Recovery Procedures
 <!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned, if not covered under an optional Versioning main heading. If a proposal defines structure of on-chain data it must include a CDDL schema in its specification.-->
 
 While recovery will need to be tailored to the actual situation, three main scenarios can be identified.
@@ -189,11 +189,11 @@ point of the bad block.
 
 Depending on the cause of the issue and its severity, alternative remediations might be possible.  
 
-Scenario 3.1: if some existing node versions were able to process the block, but others were not, then
+**Scenario 3.1**: if some existing node versions were able to process the block, but others were not, then
 the chain would continue to grow at a lower chain density.  SPOs would be encouraged to upgrade (or downgrade)
 to a suitable node version.  The chain density would then gradually recover to its normal level.
 
-Scenario 3.2: if no node version was able to process the block and a
+**Scenario 3.2**: if no node version was able to process the block and a
 gap of less than *3k/f* slots existed, then the chain could be rolled
 back immediately before the bad block was created, and nodes
 restarted.  The chain would then grow as normal, with a small gap around the bad block.
@@ -202,14 +202,14 @@ transaction was not accidentally reinserted into the chain.  This might involve
 clearing node mempools, applying filters on the transaction, or developing and deploying a new node version that 
 rejected the bad block.
 
-Scenario 3.3: an alternative to rolling back would be to develop and deploy a "hot-fix" node that could
+**Scenario 3.3**: an alternative to rolling back would be to develop and deploy a "hot-fix" node that could
 accept the bad block.  Nodes would then be able to incorporate the bad block as part of the chain,
 minting new blocks as usual.
 In this case, the bad block would persist on-chain indefinitely and future nodes
 would need to also accept the bad block.  This approach is best used when the rejected block has behaviour
 that was unanticipated, but which is benign in nature.  This approach will leave no abnormal gaps in the chain.
 
-Scenario 3.4: if more than *3k/f* slots have passed since the bad block was minted, then it will be necessary to roll back the chain immediately
+**Scenario 3.4**: if more than *3k/f* slots have passed since the bad block was minted, then it will be necessary to roll back the chain immediately
 prior to the bad block as in Scenario 3.2, and then proceed as described for Scenario 2.  As with Scenario 2, this will leave
 a series of gaps in the chain interspersed with empty blocks.
 
