@@ -35,9 +35,15 @@ License: CC-BY-4.0
 
 While the Cardano network has proved to be highly reliable, it is necessary to consider how the Cardano network can be recovered in the unlikely 
 event of a major failure where the network does not recover itself.  This CIP considers three representative scenarios and explains
-in outline how the chain could recover if each of these situations were to arise.
+in outline how the chain could recover if each of these situations were to arise: Scenario 1 -- Long-Lived Network Partition; 
+Scenario 2 -- Failure to Make Blocks for an Extended Period of Time;  Scenario 3: Bad Blocks Minted on Chain.  Successful recovery depends
+on the correct procedures being followed and good communication channels being established.  It is recommended that these communication channels are
+established now, and regular practice recoveries are undertaken, so that the community is familiar with the recovery procedures in the event that
+the chain does need to be recovered.
 
-The CIP should be considered to be a living document.  It is based on an earlier IOHK technical report, supplemented by internal documentation.
+This CIP is based on an earlier IOHK technical report that is referenced below, supplemented by
+internal documentation and discussions that have not been publicly released.
+It should be considered to be a living document that is reviewed and revised on a regular basis.
 
 
 
@@ -122,7 +128,8 @@ and advise them on how to rejoin the main chain.
 #### Timing Considerations
 
 Partitions of less than 2,160 blocks will automatically rejoin the main chain.  With current Cardano settings, this represents
-a period of up to 12 hours during which automatic rollback will occur.
+a period of up to 12 hours during which automatic rollback will occur.  If the partition exceeds 2,160 blocks, then the
+procedure described above will be necessary to allow nodes to rejoin the main chain.
 
 
 ### Scenario 2: Failure to Make Blocks for an Extended Period of Time
@@ -150,7 +157,7 @@ nodes have caught up to real time. The recovery nodes can then be restarted with
 connections to the network.  Ouroboros Genesis then allows other nodes in the network to rapidly resynchronize
 with the newly restored chain.  This would leave one or more gaps in the chain, interspersed with empty blocks.
 
-##### Rewards Donation
+##### Rewards Donation by Recovery Block Producers
 
 In order to avoid allegations of unfair behaviour, block producing nodes that are used to recover the network should
 donate any rewards that they receieve during recovery to the treasury.
@@ -167,7 +174,9 @@ and the Ouroboros Genesis snapshot is distributed across all nodes.
 
 #### Timing Considerations
 
-The chain will tolerate a gap of up to *3k/f* slots (36 hours with current Cardano settings). 
+The chain will tolerate a gap of up to *3k/f* slots (36 hours with current Cardano settings).
+This period of low chain density may have other implications (TODO: describe these), for which
+Ouroboros Genesis may provide a remedy (TODO: confirm and describe this).
 
 
 ### Scenario 3: Bad Blocks Minted on Chain
@@ -198,13 +207,18 @@ accept the bad block.  Nodes would then be able to incorporate the bad block as 
 minting new blocks as usual.
 In this case, the bad block would persist on-chain indefinitely and future nodes
 would need to also accept the bad block.  This approach is best used when the rejected block has behaviour
-that was unanticipated, but which is benign in nature.
+that was unanticipated, but which is benign in nature.  This approach will leave no abnormal gaps in the chain.
+
+Scenario 3.4: if more than *3k/f* slots have passed since the bad block was minted, then it will be necessary to roll back the chain immediately
+prior to the bad block as in Scenario 3.2, and then proceed as described for Scenario 2.  As with Scenario 2, this will leave
+a series of gaps in the chain interspersed with empty blocks.
 
 #### Timing Considerations
 
 If more than *3k/f* slots have passed since the bad block was minted on-chain (36 hours with current Cardano settings),
 then a mix of recovery techniques will be needed, as described in Scenario 3.4.  When deciding on the correct recovery
-technique, consideration should be given as to whether the recovery can be successfully completed
+technique for Scenarios 3.1-3.3, consideration should be given as to whether the recovery can be successfully completed before *3k/f* slots
+have elapsed.  In case of doubt, the procedure for Scenario 3.4 should be followed.
 
 ### Using Ouroboros Genesis Snapshots
 
@@ -246,6 +260,10 @@ TBC
 ## References
 
 [Cardano Disaster Recovery Plan (May 2021)](https://iohk.io/en/research/library/papers/cardano-disaster-recovery-plan/)
+
+[Cardano Incident Reports](https://updates.cardano.intersectmbo.org/tags/incident)
+
+[January 2023 Block Production Temporary Outage](https://updates.cardano.intersectmbo.org/2023-04-17-ledger)
 
 [DB Truncator Tool](TODO)
 
