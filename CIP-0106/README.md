@@ -1,6 +1,6 @@
 ---
 CIP: 106
-Title: Web-Wallet Bridge - Mutlisig wallets
+Title: Web-Wallet Bridge - Multisig wallets
 Status: Proposed
 Category: Wallets
 Authors: 
