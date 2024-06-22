@@ -6,7 +6,7 @@ Category: Wallets
 Authors: 
   - Leo
 Implementors: 
-  -  BroClanWallet 
+  - BroClanWallet 
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/617
 Created: 2023-10-12
