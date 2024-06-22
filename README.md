@@ -106,7 +106,10 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
 | 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
+| 0117 | [Explicit script return values](./CIP-0117) | Proposed |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
+| 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
+| 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -115,7 +118,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-05-28</i></p>
+<p align="right"><i>Last updated on 2024-06-22</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -138,17 +141,17 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 0106? | [Web-Wallet Bridge - Mutlisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
+| 0106? | [Web-Wallet Bridge - Multisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
 | 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
-| 0117? | [Explicit script return values](https://github.com/cardano-foundation/CIPs/pull/747) |
 | 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
 | 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
-| 0121? | [Integer-ByteString conversions](https://github.com/cardano-foundation/CIPs/pull/624) |
-| 0122? | [Logical operations over BuiltinByteString](https://github.com/cardano-foundation/CIPs/pull/806) |
+| 0123? | [Bitwise operations over BuiltinByteString](https://github.com/cardano-foundation/CIPs/pull/825) |
+| 0124? | [Extend token metadata for translations](https://github.com/cardano-foundation/CIPs/pull/488) |
+| 0125? | [Arrestable native assets](https://github.com/cardano-foundation/CIPs/pull/832) |
 
-<p align="right"><i>Last updated on 2024-05-28</i></p>
+<p align="right"><i>Last updated on 2024-06-22</i></p>
 
 ## Cardano Problem Statements (CPS)
 
