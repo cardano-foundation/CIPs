@@ -1,13 +1,13 @@
 ---
-CIP: ?
-Title: A Plutus Subledger Enabling Native Asset Seizure
+CIP: 125
+Title: Arrestable native assets
 Status: Proposed
 Category: Ledger
 Authors:
     - Micah Kendall <micah@butane.dev>
 Implementors: [Micah Kendall, <you?>]
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/832
 Created: 2024-05-30
 License: CC-BY-4.0
 ---
