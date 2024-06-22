@@ -5,7 +5,7 @@ Status: Proposed
 Category: Ledger
 Authors:
     - Micah Kendall <micah@butane.dev>
-Implementors: [Micah Kendall, <you?>]
+Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/832
 Created: 2024-05-30
