@@ -544,16 +544,16 @@ proposal attempting to change such a parameter requires an additional
 vote of the SPOs, with the threshold `Q5`.
 
 The security relevant protocol parameters are:
-* `maxBBSize`
+* `maxBlockBodySize`
 * `maxTxSize`
-* `maxBHSize`
-* `maxValSize`
-* `maxBlockExUnits`
-* `minFeeA`
-* `minFeeB`
-* `coinsPerUTxOByte`
+* `maxBlockHeaderSize`
+* `maxValueSize`
+* `maxBlockExecutionUnits`
+* `txFeePerByte`
+* `txFeeFixed`
+* `utxoCostPerByte`
 * `govActionDeposit`
-* `minFeeRefScriptsCoinsPerByte`
+* `minFeeRefScriptCostPerByte`
 
 > **Note**
 > It may make sense for some or all thresholds to be adaptive with respect to the Lovelace that is actively registered to vote.
