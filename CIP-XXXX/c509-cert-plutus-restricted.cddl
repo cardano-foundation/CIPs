@@ -1,0 +1,86 @@
+; This c509 Certificate format is based upon:
+; https://datatracker.ietf.org/doc/draft-ietf-cose-cbor-encoded-cert/09/
+; And is restricted/customized to better enable compatibility with Plutus scripts
+; that would consume them, without loosing necessary features of x509
+; Not all x509 features are supported and some fields have different semantics to improve
+; certificate size and ability to be processed by Plutus Scripts.
+
+; cspell: words reencoded, biguint 
+
+C509CertificatePlutusRestrictedSubset = [ TBSCertificate, issuerSignatureValue: ed25519Signature, ]
+
+; The elements of the following group are used in a CBOR Sequence:
+TBSCertificate = (
+	c509CertificateType: &c509CertificateTypeValues, ; Always 0
+	certificateSerialNumber: CertificateSerialNumber, ; Can be ignored/set to 0 or used as intended.
+	issuer: Name, ; This could be an on-chain reference to the issuer cert, what would be the best way?  Transaction hash/cert hash?
+	validityNotBefore: Time, ; c509 uses UTC
+	validityNotAfter: Time, ; c509 uses UTC
+	subject: Name, ; Reference to on-chain keys related to this certificate
+	subjectPublicKeyAlgorithm: AlgorithmIdentifier, ; Must be int(12) = Ed25519
+	subjectPublicKey: subjectPublicKey, ; Ed25519 public key
+	extensions: Extensions, ; No extensions are currently supported must be set to []
+	issuerSignatureAlgorithm: AlgorithmIdentifier, ; Must be int(12) = Ed25519
+)
+
+; 0 = Native CBOR Certificate type
+; 1 = reencoded-der-cert -  Not supported in this restricted version of the format.
+c509CertificateTypeValues = ( native-cbor: 0,
+	; reencoded-der: 1 ; Not supported in this restricted encoding format
+)
+
+CertificateSerialNumber = biguint
+
+Name = [ * RelativeDistinguishedName ]
+	/ text
+	/ bytes
+
+RelativeDistinguishedName = Attribute / [ 2* Attribute ]
+
+Attribute = (
+	( attributeType: int, attributeValue: text )
+	// ( attributeType: oid, attributeValue: bytes )
+	// ( attributeType: pen, attributeValue: bytes )
+	// CardanoPublicKey
+)
+
+subjectPublicKey = bytes .size (32..32); Ed25519 public key stored in bytes, adjust size of this if other key types are supported.  
+
+; This is a completely custom Attribute for the RelativeDistinguishedName which is only for use with Plutus scripts.
+; attributeType = The type of Cardano key we associate with this certificate.
+; proof = Does the transaction require proof that the key is owned by the transaction signer?
+; attributeValue = The Cardano public key hash of the attribute type
+
+CardanoPublicKey = ( attributeType: &cardanoKeyTypes proof: bool, attributeValue: bytes .size (28..28) )
+
+cardanoKeyTypes = (
+	paymentKeyHash: 0,
+	stakeKeyHash: 1,
+	drepVerificationKeyHash: 2,
+	ccColdVerificationKeyHash: 3,
+	ccHotVerificationKeyHash: 4,
+)
+
+; Plutus will need to convert the Unix epoch timestamp to the nearest slot number
+; validityNotBefore rounds up to the next Slot after that time.
+; validityNotAfter rounds down to the next Slot before that time.
+Time = ( ~time / null )
+
+ed25519Signature = bstr .size 64; Ed25519 signature must be tagged to identify their type.
+
+
+; Currently ONLY AlgorithmIdentifier int(12) - Ed25519 is supported.
+; oid and [ algorithm: oid, parameters: bytes ] are not supported by Plutus.
+AlgorithmIdentifier = (int
+	/ ~oid
+	/ [ algorithm: ~oid, parameters: bytes ])
+
+; Extensions are not currently supported by plutus and should be set to []
+; Any extensions present in the certificate will be ignored by plutus scripts.
+Extensions = [ * Extension ] / int
+
+Extension = (
+	( extensionID: int, extensionValue: any )
+	// ( extensionID: ~oid, ? critical: true, extensionValue: bytes )
+	// ( extensionID: pen, ? critical: true, extensionValue: bytes )
+)
