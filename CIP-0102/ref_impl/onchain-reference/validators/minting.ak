@@ -60,7 +60,7 @@ test should_mint_nft() {
   minting_validator(mock_timestamp, mock_owner, redeemer, ctx) == True
 }
 
-test should_burn_nfg() {
+test should_burn_nft() {
   // GIVEN
   let redeemer = BurnNft
   let ctx =

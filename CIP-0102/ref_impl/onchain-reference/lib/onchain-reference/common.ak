@@ -165,3 +165,10 @@ pub fn get_recipients(
     }
   }
 }
+
+test test_to_per_mille() {
+  and {
+    to_from_per_mille_fee(125) == 80,
+    to_from_per_mille_fee(625) == 16,
+  }
+}

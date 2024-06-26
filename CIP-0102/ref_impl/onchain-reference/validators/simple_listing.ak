@@ -1,11 +1,11 @@
-use aiken/builtin
 use aiken/bytearray
 use aiken/list
 use aiken/math
 use aiken/option
+use aiken/string
 use aiken/transaction.{
-  Datum, InlineDatum, Input, NoDatum, Output, OutputReference, ScriptContext,
-  Spend, Transaction, TransactionId,
+  InlineDatum, Input, NoDatum, Output, OutputReference, ScriptContext, Spend,
+  Transaction,
 }
 use aiken/transaction/credential.{
   Address, ScriptCredential, VerificationKeyCredential,
@@ -15,7 +15,10 @@ use onchain_reference/common.{
   Asset, RoyaltyRecipient, VerificationKeyHash, get_recipients,
   to_from_per_mille_fee, user_tn_prefix,
 }
-use onchain_reference/test_utils.{placeholder_oref, recipients_to_input}
+use onchain_reference/listing_utils.{Payout}
+use onchain_reference/test_utils.{
+  output_to_string, payout_to_string, placeholder_oref, recipients_to_input,
+}
 
 type ListingDatum {
   // to further prevent circumvention, lot could be detected from consumed the Listing output
@@ -23,13 +26,6 @@ type ListingDatum {
   seller: VerificationKeyHash,
   // in lovelace
   price: Int,
-}
-
-// functionally identical to ListingDatum, but used in a different capacity.
-type Payout {
-  recipient: Address,
-  // in lovelace
-  amount: Int,
 }
 
 /// A user can either buy a token
@@ -66,8 +62,24 @@ validator {
         let payouts: List<Payout> =
           get_payouts(datum.seller, royalty_recipients, datum.price)
 
+        trace list.foldl(
+          outputs,
+          @"",
+          fn(output, current_str) {
+            string.concat(current_str, output_to_string(output))
+          },
+        )
+
+        trace list.foldl(
+          payouts,
+          @"",
+          fn(payout, current_str) {
+            string.concat(current_str, payout_to_string(payout))
+          },
+        )
+
         // check that the payouts are represented in the outputs and that enough are 
-        datum.price <= check_payouts(outputs, payouts, NoDatum)
+        datum.price <= check_payouts(list.reverse(outputs), payouts)
       }
 
       // There's not much to do here. An asset
@@ -146,16 +158,10 @@ fn get_payouts(
 /// with matching payout outputs needs to be constructed.
 /// We also require that outputs are in the same order as the
 /// payouts in the datum. Returns the sum of the payout amounts.
-fn check_payouts(
-  outputs: List<Output>,
-  payouts: List<Payout>,
-  datum_tag: Datum,
-) -> Int {
+fn check_payouts(outputs: List<Output>, payouts: List<Payout>) -> Int {
   expect [first_output, ..rest_outputs] = outputs
 
-  let Output { address: output_address, value, datum, .. } = first_output
-
-  expect datum == datum_tag
+  let Output { address: output_address, value, .. } = first_output
   expect [payout, ..rest_payouts] = payouts
 
   let Payout { recipient: payout_address, amount: amount_lovelace } = payout
@@ -178,41 +184,7 @@ fn check_payouts(
         0
       _ ->
         // continue with remaining outputs and payouts
-        check_payouts_aux(rest_outputs, rest_payouts)
-    }
-
-  amount_lovelace + rest_payouts_amount
-}
-
-fn check_payouts_aux(outputs: List<Output>, payouts: List<Payout>) -> Int {
-  expect [first_output, ..rest_outputs] = outputs
-
-  let Output { address: output_address, value, datum, .. } = first_output
-
-  expect datum == NoDatum
-  expect [payout, ..rest_payouts] = payouts
-
-  let Payout { recipient: payout_address, amount: amount_lovelace } = payout
-
-  // The `Output` address must match
-  // the address specified in the corresponding
-  // payout from the datum.
-  expect payout_address == output_address
-
-  // The quantity in the output must equal
-  // the amount specified in the corresponding
-  // payout from the datum.
-  let quantity = quantity_of(value, "", "")
-  expect quantity >= amount_lovelace && amount_lovelace > 0
-  let rest_payouts_amount =
-    when rest_payouts is {
-      // the base case
-      [] ->
-        // if rest is empty we are done
-        0
-      _ ->
-        // continue with remaining outputs and payouts
-        check_payouts_aux(rest_outputs, rest_payouts)
+        check_payouts(rest_outputs, rest_payouts)
     }
 
   amount_lovelace + rest_payouts_amount
@@ -277,7 +249,7 @@ fn get_base_transaction(
       stake_credential: None,
     }
 
-  let buyer_output =
+  let buyer_input_output =
     Output {
       address: buyer_address,
       // add 1 ada for fees
@@ -288,7 +260,7 @@ fn get_base_transaction(
 
   let buyer_input =
     Input {
-      output: buyer_output,
+      output: buyer_input_output,
       output_reference: OutputReference {
         ..placeholder_oref(),
         output_index: 2,
@@ -305,13 +277,19 @@ fn get_base_transaction(
     }
 
   let amount_to_royalties =
-    list.foldl(
-      royalty_recipients,
+    math.clamp(
+      list.foldl(
+        royalty_recipients,
+        0,
+        fn(recipient, total) {
+          to_from_per_mille_fee(recipient.fee) * listing_datum.price / 1000 + total
+        },
+      ),
       0,
-      fn(recipient, total) {
-        total + to_from_per_mille_fee(recipient.fee) * 10 * listing_datum.price
-      },
+      listing_datum.price,
     )
+
+  trace string.from_int(amount_to_royalties)
 
   let royalty_outputs: List<Output> =
     list.map(
@@ -320,7 +298,7 @@ fn get_base_transaction(
         Output {
           address: recipient.address,
           value: value.from_lovelace(
-            to_from_per_mille_fee(recipient.fee) * 10 * listing_datum.price,
+            to_from_per_mille_fee(recipient.fee) * listing_datum.price / 1000,
           ),
           datum: NoDatum,
           reference_script: None,
@@ -344,7 +322,7 @@ fn get_base_transaction(
     extra_signatories: [mock_buyer],
     inputs: [lot_input, buyer_input],
     reference_inputs: [royalty_policy_ref_input],
-    outputs: [seller_output, buyer_output, ..royalty_outputs],
+    outputs: list.concat([seller_output, ..royalty_outputs], [buyer_output]),
   }
 }
 
@@ -401,20 +379,11 @@ test check_payouts_with_trailing_outputs() {
       Payout { recipient: test_seller_addr, amount: 95000000 },
     ]
 
-  let datum_tag =
-    OutputReference {
-      transaction_id: TransactionId { hash: #"00" },
-      output_index: 0,
-    }
-      |> builtin.serialise_data
-      |> builtin.blake2b_256
-      |> InlineDatum
-
   let out_1 =
     Output {
       address: test_royalty_addr,
       value: value.from_lovelace(3100000),
-      datum: datum_tag,
+      datum: NoDatum,
       reference_script: None,
     }
 
@@ -430,11 +399,11 @@ test check_payouts_with_trailing_outputs() {
     Output {
       address: test_random_addr,
       value: value.from_lovelace(1000000),
-      datum: datum_tag,
+      datum: NoDatum,
       reference_script: None,
     }
 
   let outputs = list.concat([out_1, out_2], list.repeat(out_random, 100))
 
-  98000000 == check_payouts(outputs, test_royalty_payouts, datum_tag)
+  98000000 == check_payouts(outputs, test_royalty_payouts)
 }

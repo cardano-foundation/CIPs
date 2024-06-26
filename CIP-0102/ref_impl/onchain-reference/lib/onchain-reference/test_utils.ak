@@ -1,7 +1,11 @@
+use aiken/string
 use aiken/transaction.{InlineDatum, Input, Output, OutputReference}
-use aiken/transaction/credential.{Address, VerificationKeyCredential}
-use aiken/transaction/value.{PolicyId}
+use aiken/transaction/credential.{
+  Address, ScriptCredential, VerificationKeyCredential,
+}
+use aiken/transaction/value.{AssetName, PolicyId}
 use onchain_reference/common.{RoyaltyDatum, RoyaltyRecipient, royalty_tn}
+use onchain_reference/listing_utils.{Payout}
 
 pub fn placeholder_oref() {
   OutputReference {
@@ -34,5 +38,64 @@ pub fn recipients_to_output(
     value: value.from_asset(policy_id, royalty_tn, 1),
     datum: InlineDatum(out_royalty_info),
     reference_script: None,
+  }
+}
+
+pub fn output_to_string(output: Output) -> String {
+  let value_string =
+    string.join(
+      value.flatten_with(output.value, asset_to_string),
+      @"\n",
+    )
+
+  let address_string = address_to_cred_hash(output.address)
+
+  string.join(
+    [
+      @"\nOutput:",
+      string.concat(@"Address: ", address_string),
+      string.concat(@"Value: ", value_string),
+      @"",
+    ],
+    @"\n",
+  )
+}
+
+fn asset_to_string(
+  policy_id: PolicyId,
+  asset_name: AssetName,
+  amt: Int,
+) -> Option<String> {
+  Some(
+    string.join(
+      [
+        string.from_bytearray(policy_id),
+        string.from_bytearray(asset_name),
+        string.from_int(amt),
+      ],
+      @" ",
+    ),
+  )
+}
+
+pub fn payout_to_string(payout: Payout) -> String {
+  let address_string = address_to_cred_hash(payout.recipient)
+
+  let amt_string = string.from_int(payout.amount)
+  string.join(
+    [
+      @"\nPayout: ",
+      string.concat(@"Address: ", address_string),
+      string.concat(@"Amount: ", amt_string),
+      @"",
+    ],
+    @"\n",
+  )
+}
+
+pub fn address_to_cred_hash(address: Address) -> String {
+  when address.payment_credential is {
+    VerificationKeyCredential(hash) -> string.from_bytearray(hash)
+    ScriptCredential(hash) -> string.from_bytearray(hash)
   }
 }
