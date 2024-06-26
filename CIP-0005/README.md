@@ -92,35 +92,41 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Hashes
 
-| Prefix             | Meaning                                                               | Contents                                                                 |
-| ---                | ---                                                                   | ---                                                                      |
-| `asset`            | Fingerprint of a native asset for human comparison                    | See [CIP-0014]                                                           |
-| `pool`             | Pool operator verification key hash (pool ID)                         | blake2b\_224 digest of an operator verification key                      |
-| `script`           | Script hash                                                           | blake2b\_224 digest of a serialized transaction script                   |
-| `addr_vkh`         | Address verification key hash                                         | blake2b\_224 digest of a payment verification key                        |
-| `addr_shared_vkh`  | Shared address verification key hash                                  | blake2b\_224 digest of a payment verification key                        |
-| `policy_vkh`       | Policy verification key hash                                          | blake2b\_224 digest of a policy verification key                         |
-| `stake_vkh`        | Stake address verification key hash                                   | blake2b\_224 digest of a delegation verification key                     |
-| `stake_shared_vkh` | Shared stake address verification key hash                            | blake2b\_224 digest of a delegation verification key                     |
-| `req_signer_vkh`   | Required signer verification key hash                                 | blake2b\_224 digest of a required signer verification key                |
-| `vrf_vkh`          | VRF verification key hash                                             | blake2b\_256 digest of a VRF verification key                            |
-| `datum`            | Output datum hash                                                     | blake2b\_256 digest of output datum                                      |
-| `script_data`      | Script data hash                                                      | blake2b\_256 digest of script data                                       |
-| `drep`             | Delegate representative verification key hash (DRep ID)               | blake2b\_224 digest of a delegate representative verification key        |
-| `drep_script`      | Delegate representative script hash (DRep ID)                         | blake2b\_224 digest of a serialized delegate representative script       |
-| `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key   |
-| `cc_cold_script`   | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
-| `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key    |
-| `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
+| Prefix                 | Meaning                                                               | Contents                                                                 |
+| ---                    | ---                                                                   | ---                                                                      |
+| `asset`                | Fingerprint of a native asset for human comparison                    | See [CIP-0014]                                                           |
+| `pool`                 | Pool operator verification key hash (pool ID)                         | blake2b\_224 digest of an operator verification key                      |
+| `script`               | Script hash                                                           | blake2b\_224 digest of a serialized transaction script                   |
+| `addr_vkh`             | Address verification key hash                                         | blake2b\_224 digest of a payment verification key                        |
+| `addr_shared_vkh`      | Shared address verification key hash                                  | blake2b\_224 digest of a payment verification key                        |
+| `policy_vkh`           | Policy verification key hash                                          | blake2b\_224 digest of a policy verification key                         |
+| `stake_vkh`            | Stake address verification key hash                                   | blake2b\_224 digest of a delegation verification key                     |
+| `stake_shared_vkh`     | Shared stake address verification key hash                            | blake2b\_224 digest of a delegation verification key                     |
+| `req_signer_vkh`       | Required signer verification key hash                                 | blake2b\_224 digest of a required signer verification key                |
+| `vrf_vkh`              | VRF verification key hash                                             | blake2b\_256 digest of a VRF verification key                            |
+| `datum`                | Output datum hash                                                     | blake2b\_256 digest of output datum                                      |
+| `script_data`          | Script data hash                                                      | blake2b\_256 digest of script data                                       |
+| `drep_vkh`             | Delegate representative verification key hash                         | blake2b\_224 digest of a delegate representative verification key        |
+| `drep_script_vkh`      | Delegate representative script hash                                   | blake2b\_224 digest of a serialized delegate representative script       |
+| `cc_cold_vkh`          | Constitutional committee cold verification key hash                   | blake2b\_224 digest of a consitutional committee cold verification key   |
+| `cc_cold_script_vkh`   | Constitutional committee cold script hash                             | blake2b\_224 digest of a serialized constitutional committee cold script |
+| `cc_hot_vkh`           | Constitutional committee hot verification key hash                    | blake2b\_224 digest of a consitutional committee hot verification key    |
+| `cc_hot_script_vkh`    | Constitutional committee hot script hash                              | blake2b\_224 digest of a serialized constitutional committee hot script  |
 
 ### Miscellaneous
 
-| Prefix           | Meaning                                               | Contents                                                      |
-| ---              | ---                                                   | ---                                                           |
-| `addr`           | Mainnet address                                       | Network tag, payment credential and optional stake credential |
-| `addr_test`      | Testnet address                                       | Network tag, payment credential and optional stake credential |
-| `stake`          | Mainnet stake address                                 | Network tag and stake credential                              |
-| `stake_test`     | Testnet stake address                                 | Network tag and stake credential                              |
+| Prefix              | Meaning                                               | Contents                                                      |
+| ---                 | ---                                                   | ---                                                           |
+| `addr`              | Mainnet address                                       | Network tag, payment credential and optional stake credential |
+| `addr_test`         | Testnet address                                       | Network tag, payment credential and optional stake credential |
+| `stake`             | Mainnet stake address                                 | Network tag and stake credential                              |
+| `stake_test`        | Testnet stake address                                 | Network tag and stake credential                              |
+| `drep`              | Mainnet drep address                                  | Network tag and drep credential                               |
+| `drep_test`         | Testnet drep address                                  | Network tag and drep credential                               |
+| `cc_cold`           | Mainnet cc cold address                               | Network tag and cc cold credential                            |
+| `cc_cold_test`      | Testnet cc cold address                               | Network tag and cc cold credential                            |
+| `cc_hot`            | Mainnet cc hot address                                | Network tag and cc hot credential                             |
+| `cc_hot_test`       | Testnet cc hot address                                | Network tag and cc hot credential                             |
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -139,6 +145,10 @@ Addresses probably are the most user-facing object in the current Cardano eco-sy
 ### About `stake`
 
 Stake _addresses_ are references to reward account. They are used in many manipulation involving rewards (registering stake key, delegating, fetching reward balance etc..). We therefore make it a "first-class" object and assign it a dedicated prefix.
+
+### About `drep`
+
+dReps _addresses_ are references to dReps used for delegation and tracking purposes. These addresses are involved in transactions like delegating to a dRep and participating in voting. Because of their importance, we treat them as "first-class" objects and assign them a dedicated prefix.
 
 ### About `sk` & `vk`
 
