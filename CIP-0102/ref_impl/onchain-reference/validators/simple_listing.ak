@@ -17,7 +17,8 @@ use onchain_reference/common.{
 }
 use onchain_reference/listing_utils.{Payout}
 use onchain_reference/test_utils.{
-  output_to_string, payout_to_string, placeholder_oref, recipients_to_input,
+  output_to_string, payout_to_string, placeholder_oref, placeholder_recipient,
+  recipients_to_input,
 }
 
 type ListingDatum {
@@ -79,7 +80,7 @@ validator {
         )
 
         // check that the payouts are represented in the outputs and that enough are 
-        datum.price <= check_payouts(list.reverse(outputs), payouts)
+        datum.price <= check_payouts(outputs, payouts)
       }
 
       // There's not much to do here. An asset
@@ -212,22 +213,78 @@ test one_recipient_cip68_buy() {
     ListingDatum { lot, seller: mock_owner, price: 1_000_000_000 }
 
   let royalty_recipients =
+    [placeholder_recipient(80, mock_owner)]
+
+  let ctx =
+    ScriptContext {
+      transaction: get_base_transaction(listing_datum, royalty_recipients),
+      purpose: Spend(OutputReference { ..placeholder_oref(), output_index: 1 }),
+    }
+
+  // 0 is the royalty input
+  spend(listing_datum, redeemer, ctx)
+}
+
+test multi_recipient_cip68_buy() {
+  let redeemer = Buy
+
+  let lot =
+    Asset {
+      policy_id: mock_policy_id,
+      asset_name: bytearray.concat(user_tn_prefix, "fake_lot_tn"),
+      quantity: 1,
+    }
+
+  // Price: 1000 Ada
+  let listing_datum =
+    ListingDatum { lot, seller: mock_owner, price: 1_000_000_000 }
+
+  let royalty_recipients =
     [
-      RoyaltyRecipient {
-        address: Address {
-          payment_credential: VerificationKeyCredential(mock_owner),
-          stake_credential: None,
-        },
-        fee: 125,
-        // 8%
-        min_fee: None,
-        max_fee: None,
-      },
+      placeholder_recipient(80, mock_owner),
+      placeholder_recipient(15, "other_mock_owner"),
+      placeholder_recipient(50, "other_other_mock_owner"),
+      placeholder_recipient(20, "yet_another_mock_owner"),
+      placeholder_recipient(200, "so_many_mock_owners"),
     ]
 
   let ctx =
     ScriptContext {
       transaction: get_base_transaction(listing_datum, royalty_recipients),
+      purpose: Spend(OutputReference { ..placeholder_oref(), output_index: 1 }),
+    }
+
+  // 0 is the royalty input
+  spend(listing_datum, redeemer, ctx)
+}
+
+test no_royalty_paid() fail {
+  let redeemer = Buy
+
+  let lot =
+    Asset {
+      policy_id: mock_policy_id,
+      asset_name: bytearray.concat(user_tn_prefix, "fake_lot_tn"),
+      quantity: 1,
+    }
+
+  // Price: 1000 Ada
+  let listing_datum =
+    ListingDatum { lot, seller: mock_owner, price: 1_000_000_000 }
+
+  let royalty_recipients =
+    [placeholder_recipient(80, mock_owner)]
+
+  // constructing tx with no outputs to recipients
+  let tx =
+    Transaction {
+      ..get_base_transaction(listing_datum, royalty_recipients),
+      outputs: get_base_transaction(listing_datum, []).outputs,
+    }
+
+  let ctx =
+    ScriptContext {
+      transaction: tx,
       purpose: Spend(OutputReference { ..placeholder_oref(), output_index: 1 }),
     }
 

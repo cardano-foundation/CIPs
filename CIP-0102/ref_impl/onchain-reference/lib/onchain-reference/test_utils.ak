@@ -4,13 +4,32 @@ use aiken/transaction/credential.{
   Address, ScriptCredential, VerificationKeyCredential,
 }
 use aiken/transaction/value.{AssetName, PolicyId}
-use onchain_reference/common.{RoyaltyDatum, RoyaltyRecipient, royalty_tn}
+use onchain_reference/common.{
+  RoyaltyDatum, RoyaltyRecipient, VerificationKeyHash, royalty_tn,
+  to_from_per_mille_fee,
+}
 use onchain_reference/listing_utils.{Payout}
 
 pub fn placeholder_oref() {
   OutputReference {
     transaction_id: transaction.placeholder().id,
     output_index: 0,
+  }
+}
+
+// takes per mille fee & recipient vkc and outputs recipient
+pub fn placeholder_recipient(
+  fee_pml: Int,
+  address_vkh: VerificationKeyHash,
+) -> RoyaltyRecipient {
+  RoyaltyRecipient {
+    address: Address {
+      payment_credential: VerificationKeyCredential(address_vkh),
+      stake_credential: None,
+    },
+    fee: to_from_per_mille_fee(fee_pml),
+    min_fee: None,
+    max_fee: None,
   }
 }
 
@@ -93,6 +112,7 @@ pub fn payout_to_string(payout: Payout) -> String {
   )
 }
 
+// UNSAFE - this appears to have some side affects
 pub fn address_to_cred_hash(address: Address) -> String {
   when address.payment_credential is {
     VerificationKeyCredential(hash) -> string.from_bytearray(hash)
