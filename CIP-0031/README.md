@@ -1,13 +1,15 @@
 ---
 CIP: 31
 Title: Reference inputs
+Status: Active
+Category: Plutus
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Jared Corduan <jared.corduan@iohk.io>
-Status: Active
-Category: Plutus
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/159
 Created: 2021-11-29
 License: CC-BY-4.0
 ---
@@ -17,7 +19,7 @@ License: CC-BY-4.0
 We introduce a new kind of input, a _reference_ input, which allows looking at an output without spending it.
 This will facilitate access to information stored on the blockchain without the churn associated with spending and recreating UTXOs.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Datums in transaction outputs provide a way to store and access information on the blockchain.
 However, they are quite constrained in a number of ways.
@@ -98,7 +100,7 @@ transaction_body =
  }
 ```
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 The key idea of this proposal is to use UTXOs to carry information.
 But UTXOs are currently a bad fit for distributing information.
@@ -240,3 +242,17 @@ However, this would make outputs substantially bigger and more complicated.
 Reference inputs are very similar to Ergo's "data inputs".
 We chose to name them differently since "data" is already a widely used term with risk for confusion.
 We might also want to introduce other "verb" inputs in future.
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [x] Fully implemented in Cardano as of the Vasil protocol upgrade.
+
+### Implementation Plan
+
+- [x] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

@@ -1,7 +1,7 @@
 ---
 CIP: 75
 Title: Fair Stake Pool Rewards
-Status: Inactive (project area not enlisted for CIP process)
+Status: Proposed
 Category: Ledger
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
@@ -177,7 +177,7 @@ Before implementation, engineering and research teams must review the feasibilit
 4. Transaction is submitted.
 5. Protocol update is confirmed.
 
-## Implementation Plan
+### Implementation Plan
 
 Implementation can be staged to reduce shock to the network:
 
