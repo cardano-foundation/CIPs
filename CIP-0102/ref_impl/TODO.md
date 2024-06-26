@@ -5,4 +5,5 @@
   - [x] Always-Fails Validator
   - [x] Reducible Validator
 - [x] Reading a CIP 102 NFT’s royalties off chain
-- [ ] Reading and validating against CIP 102 NFT royalties on chain
+- [x] Reading and validating against CIP 102 NFT royalties on chain
+- [ ] Final Cleanup
