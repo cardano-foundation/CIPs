@@ -18,7 +18,7 @@ See [cip-0100.common.schema.json](./cip-0100.common.schema.json).
 
 CIP-100 off-chain metadata json example: [example.json](./example.json)
 
-Blake2b-256 hash of the canonicalize example (to go on-chain): `cf704961a066ba770afdd810cc98e0834206df7c0febe70405e0a5f79dece3ec`
+Blake2b-256 hash of the file (to go on-chain): `04af1b48bccbf7cf9b3e3b7952dfbdde0cc851ccb87ae6643521672cc381b00d`
 
 ### Intermediate files
 
@@ -81,21 +81,14 @@ We can go back to our [example.body.json](./example.body.json) and now add in pr
 
 By adding this information we create our [example.json](example.json).
 
-#### 6. Canonicalize example.json
+#### 6. Hash example.json
 
-To be able to create a final metadata hash which can be attached on-chain we must first canonicalize the [example.json](example.json).
-Ensure the results ends in a newline.
+To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [example.json](example.json) as is
 
-This creates [example.nq](./example.nq).
+This results in: `04af1b48bccbf7cf9b3e3b7952dfbdde0cc851ccb87ae6643521672cc381b00d`.
 
-#### 7. Hash the canonicalized example.json
-
-We then use the specified `hashAlgorithm` on [example.nq](./example.nq).
-
-This results in: `cf704961a066ba770afdd810cc98e0834206df7c0febe70405e0a5f79dece3ec`.
-
-#### 8. Submit to chain
+#### 7. Submit to chain
 
 We can then host [example.json](./example.json) somewhere easily accessible following [Best Practices](./README.md#best-practices).
 
-Then at submission time of the governance metadata anchor we can provide the on-chain transaction both the URI to the hosted [example.json](./example.json) but also the hash generated via [7.](#7-hash-the-canonicalized-examplejson).
+Then at submission time of the governance metadata anchor we can provide the on-chain transaction both the URI to the hosted [example.json](./example.json) but also the hash generated via [6.](#6-hash-examplejson).
