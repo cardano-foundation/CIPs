@@ -1,0 +1,143 @@
+; An envelope for Cardano metadata which holds the x509 metadata.
+; We do this so that the underlying metadata is not restricted to
+; Cardano ledger implementation.
+
+; uses 
+x509_roles = $x509_roles .within role-structure
+
+role-structure = [ role-version, role-body ]
+
+role-version = uint ; Version is an integer.
+role-body = { + uint => any } ; General role body is a Map of integers to anything.
+
+; Version 0 of the role registration format.
+$x509_roles /= x509-roles-v0
+
+x509-roles-v0 = [ 0, x509-roles-v0-body ]
+
+x509-roles-v0-body = {
+	? x509-certs => [ + x509_der_cert ], ; Un-ordered List of DER encoded x509 certificates
+	? c509-certs => [ + c509_cert ], ; Un-ordered List of CBOR encoded C509 certificates (or metadatum references)
+	? pub-keys => [ + simple-public-key-type ], ; Ordered list of simple public keys that are registered.
+	? revocation-list => [ + revocation-set ], ; Revocation list of certs being revoked by an issuer.
+	? role-set => role-data-set, ; Set of role registration data
+	? purpose-key-set => purpose-data-set, ; Set of purpose specific data to be registered.
+}
+
+; x509 Certificates
+x509-certs = 10 ; Un-ordered bag of X509 DER Encoded certificates
+x509_der_cert = bytes ; A DER Encoded X.509 Certificate (binary)
+
+; c509 Certificates
+c509-certs = 20 ; Un-ordered bag of C509 CBOR Encoded certificates
+c509_cert = (
+  C509CertInMetadatumReference / ; A reference to a certificate encoded in a metadatum
+  C509Certificate ; An actual certificate.
+)
+
+; C509 Certificate from https://datatracker.ietf.org/doc/draft-ietf-cose-cbor-encoded-cert/09/
+C509Certificate = [
+	TBSCertificate: bytes .cbor any, ; A CBOR Encoded C.509 Certificate (binary)	issuerSignatureValue: any, ; The issuers signature (dependent on the signature algorithm used by the certificate)]
+
+; A reference to a C509 certificate held in a metadatum.
+; if there are multiple transaction outputs that contain certificates they need to be listed individually.
+C509CertInMetadatumReference = [
+	txn_output_field: uint, ; Currently this is always 1.  It references the key of the transaction outputs to use from the transaction.
+	txn_output_index: uint,  ; The specific transaction output to use in the list of transaction outputs.
+	cert_ref: C509CertInMetadatumReferenceOffset ; Reference to the certificates in the metadatum.
+]
+
+; Which certificate/s to reference
+C509CertInMetadatumReferenceOffset = (
+	null //  ; Reference is a single cert, or an array of certs, include them all, in order listed.
+	uint // ; Reference a single cert at this offset in a CBOR array, or at this key in a CBOR map.
+	[ + uint ] ; Reference multiple certs at these offsets in a CBOR array, or at these keys in a CBOR map, in the order listed.
+)
+
+; Simple Public Keys
+; These are just signing keys of the specified type, and are not true certs
+; They are used for role keys or other uses where simple keys are sufficient
+simple-public-keys = 30 ; Simple Public Keys
+
+simple-public-key-type = $simple-public-key-types
+$simple-public-key-types /= undefined_key ; Key not defined in this array (use any previous definition)
+$simple-public-key-types /= deleted_key ; Key is to be deleted in any previously defined for this position.
+$simple-public-key-types /= ed25519-public-key ; ED25519 Public Key
+
+; Currently supported simple public key types
+ed25519-public-key = #6.32773(bstr .size 32) ; Simple public keys must be tagged to identify their type.
+
+; These entries come from https://github.com/svaarala/cbor-specs/blob/master/cbor-absent-tag.rst
+undefined_key = undefined ; No change to the key in this position of the array
+deleted_key = #6.31(undefined) ; delete the key (if any) at this position of the array
+
+; x509/c509/simple key Revocation Lists
+; Keys can only be revoked by the owner of the key or any issuer CA in the chain.
+; Revocation becomes active AFTER certs in the same transaction are processed.
+revocation-list = 40 ; Revocation List
+revocation-entry = bytes .size 16; A blake2b-128 hash of the certificate/public key to be revoked
+revocation-set = [ + revocation-entry ]
+
+; Role Registrations
+
+role-set = 100
+
+role-data-set = [ + role-data ]
+
+role-data = {
+	0: role-number,
+	? 1: role-signing-key,
+	? 2: role-encryption-key,
+	? 3: payment-key,
+	* role-extended-data-keys => role-extended-data,
+}
+
+; Role 0 is the ONLY mandatory role.
+; It defines the Validation certificate to be used to sign all registration metadata for this purpose for this identity.
+validation-role = 0
+; role-signing-key must reference a certificate, and NOT a simple key.
+; role-encryption-key must not be defined.
+; There is no other data defined for this role.
+
+; Roles 1+ are purpose specific and not defined in this document.
+role-number = uint
+role-signing-key = key-reference
+role-encryption-key = key-reference
+
+role-extended-data-keys = (10..99)
+
+role-extended-data = any
+key-reference = key-local-ref / key-hash
+
+; Offset reference to a key defined in this registration.
+; More efficient than a key hash.
+key-local-ref = [ x509-certs
+	/ c509-certs
+	/ pub-keys, key-offset ]
+
+; Offset of the key in the specified set.  0 = first entry.
+key-offset = uint
+
+; Reference to a key defined in an earlier registration
+key-hash = bytes .size 16
+
+; Reference to a transaction input/output as the payment key to use for a role
+; Payment key (n) >= 0 = Use Transaction Input Key offset (n) as the payment key
+; Payment key (n) < 0 = Use Transaction Output Key offset -(n+1) as the payment key
+; IFF a transaction output payment key is defined the payment address must also be in
+; the required_signers of the transaction to ensure the payment address is owned and controlled
+; by the entity posting the registration.
+; If the referenced payment key does not exist in the transaction, or is not witnessed the entire
+; registration is to be considered invalid.
+payment-key = int
+
+; purpose specific data - Undefined here except for the key space
+; Individual purposes can define these keys however they require.
+
+purpose-key-set = (first-purpose-key .. last-purpose-key)
+
+first-purpose-key = 200
+last-purpose-key = 299
+purpose-data-set = any
+
+; Note: any individual error in the role registration invalidates the entire registration.
