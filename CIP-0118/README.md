@@ -122,8 +122,8 @@ When the first transaction is applied to an empty `FRxO`, the requests are
 added, and we have
 
 `FRxO =
-(txId1, 0) |-> r
-(txId1, 1) |-> r'`
+((txId1, 0) |-> r,
+(txId1, 1) |-> r')`
 
 Once the second transaction is applied, the first entry is removed by the
 fulfill, so we have `FRxO = (txId1, 1) |-> r'`.
@@ -287,6 +287,15 @@ We do not expect that any functional changes are required for consensus - the on
 change needed is likely the updating of any references to the block body type,
 which will be `List (List Tx)` instead of `List Tx`.
 
+#### Mempool
+
+The mempool must switch to operating on zones instead of singleton transactions.
+It must also support adding _part of a zone_ to a block in the case of phase-2
+validation failure. That is, if a phase-2 invalid transaction is encountered
+during zone validation, subsequent transactions are not validated, and only the transactions
+validated up to and including this first phase-2 failing one are included in the
+zone. This partial zone is then included in the block.
+
 #### Network Requirements and Changes
 
 Zones replace singleton transactions as units sent across the network. Zones must
@@ -304,10 +313,15 @@ The node CLI should support the construction of the new type of transaction body
 as well as the construction and (local) validation of a zone.
 The additional commands for transaction construction include supporting the
 modification of the `requests`, `fulfills`, and `requiredTxs` fields.
+The transaction balancing must also be modified, since there are new fields
+that may now contain funds.
 
 Zone construction should give the user the ability to start a new zone and browse
 an existing one, as well as add,
-remove, and reorder transactions within an existing one.
+remove, and reorder transactions within an existing one. Determining the size of
+a zone, and submitting a zone
+to the network must be possible. Some special zone-level collateral calculation
+functionality must also be implemented (see [DDoS](#ddos)).
 
 
 #### Off-Chain
@@ -317,6 +331,7 @@ should be made up of at least the a way for users to :
 
 - track market prices of non-Ada tokens
 - communicate (partially valid) transactions
+- perform intents matching
 
 No off-chain component design is planned as part of this CIP. The reason
 for this is that we hope to encourage pluralism in the approaches to
@@ -327,9 +342,68 @@ users for the details of their usecases (see [Callout to the Community](#callout
 
 #### DDoS
 
-partially valid txs not sent across cardano network
+**Off-Chain**.
+Since we do not propose an off-chain component, we do not discuss mitigation of
+an off-chain DDoS attack, however, we note that such an attack consists of
+communicating intents that may never be fulfilled. This is because either they
+offer undesirable tokens for swaps, or set prices too high. It will be difficult
+to determine whether any intent _will_ ever be fulfilled, or even whether it was
+created with a malicious intent (spam). We recommend other approaches to mitigating this issue.
 
-collateral - enough and in the utxo
+**On-Chain (Mempool)**.
+The possibility of un-fulfillable intents is an important reason for
+transmitting only entire zones across the Cardano network. Upon validating an
+incoming zone, a node is able to
+determine whether to discard it or add it to the mempool. This is not the
+case for intent-containing transactions. If we were to allow the mempool to
+contain intent-containing transactions outside zones, such a transaction
+could be placed in a mempool indefinitely, waiting for an appropriate
+partially-valid counterpart to complete the zone. An attacker could fill up
+a node's mempool with such transactions, rendering it unable to record
+additional incoming transactions. Zone-based validation
+prevents this attack.
+
+**On-Chain (Phase-1)**.
+Since zones are size-restricted by the constraint that currently restricts the
+size of a single transaction (`maxTxSize`), we assume that the phase-1 validation cost
+has the same limitations as before. So, phase-1 validation of a single
+zone is likely to cost the same as phase-1 validation of a single transaction
+currently costs. Therefore, we conjecture that the risks of a spam attack using phase-1
+invalid entities is not increased as compared to what it currently is.
+
+**On-Chain (Phase-2)**. The above scenario describes mitigation of an attack
+which results in a DDoS by using up all the node's mempool storage. Another kind of
+DDoS attack which we must defend against is one that involves a malicious
+party sending transactions with large (i.e. memory- or CPU-use-intensive)
+failing scripts. We refer to a script failure in a transaction as a _phase-2_ failure.
+
+In the current ledger design, this is mitigated by requiring a transaction to provide
+an amount of Ada collateral that is proportional to the sum of the sizes of all
+its scripts. This collateral is collected in the case of script failure.
+A phase-2 transaction failure in the design proposed in this CIP may result in validation
+failures of subsequent transactions. E.g. if a zone is `[tx1; tx2]`,
+`tx1` specifies `txin1` as its collateral input and one of its scripts fail,
+but `tx2` indicates `txin1` as
+one of its "regular" inputs, the zone cannot be valid in the `ZONE-V` sense.
+A transaction cannot be applied if one of its inputs is missing. If we were to simply
+discard the entire zone upon coming upon this situation, the node would have
+run all scripts in `tx1` without compensation.
+
+To address this problem, we have defined the `ZONE-N` rule of `ZONE`. It requires
+that the collateral of each transaction
+
+- comes from the UTxO set to which the _zone_, rather than the transaction, is applied
+- covers the cost of running all scripts in all preceding transactions (itself included)
+
+This guarantees that the collateral can
+always be collected from any transaction in a zone.
+Also, the `ZONE-N` rule only applies whenever there is exactly one invalid transaction
+in the list, and it is the last one. Therefore, that last failing transaction
+pays enough collateral to cover the cost of running all scripts in the zone.
+Note that it is not the case that we expect that a zone will always phase-2 fail at the last transaction.
+Rather, a mempool drops subsequent transactions in the process of zone validation
+for the purpose of block construction (see [Mempool](#mempool)).
+
 
 #### Linearizability
 
