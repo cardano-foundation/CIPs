@@ -81,9 +81,9 @@ A validation zone is a list of transactions. This structure replaces singleton t
 as a unit of validation. Specifically, instead of singleton transactions,
 validation zones are
 
-(i) sent across the Cardano network
-(ii) entered into a mempool, and
-(iii) placed in block bodies.  
+- sent across the Cardano network
+- entered into a mempool, and
+- placed in block bodies.  
 
 When validating a zone (i.e. for placement in the mempool or when validating an
 incoming block), each transaction is checked against the current ledger
@@ -116,7 +116,32 @@ since unresolved requests do not belong in the UTxO set,
 this is done using a separate temporary zone structure similar to the UTxO set,
 `FRxO := UTxO`.
 
-- more stuff about temp  
+Suppose a transaction with ID `txId1` contains the requests `(0 |-> r), (1 |-> r')`,
+and another transaction with ID `txId2` contains a fulfill `(txId1, 0)`.
+When the first transaction is applied to an empty `FRxO`, the requests are
+added, and we have
+
+`FRxO =
+(txId1, 0) |-> r
+(txId1, 1) |-> r'`
+
+Once the second transaction is applied, the first entry is removed by the
+fulfill, so we have `FRxO = (txId1, 1) |-> r'`.
+
+The UTxO state as it is currently defined does not contain a temporary
+`FRxO` structure, so we define `UTxOTemp : = UTxO x FRxO`.
+For this reason, we also create new data types, including `UTxOStateTemp`
+and `LStateTemp`, that exist alongside `UTxOState` and `LState`, and
+contain `UTxOTemp` instead of `UTxO`. These temporary
+states are updated by transactions inside the zone. This design would apply
+to temporary structures needed for processing other types of intents as well.
+
+When all transactions in a
+zone have been checked and applied to the `LState`, and the zone-level
+constraints are checked (including that the temporary structures are empty), the zone transition  
+updates the "real" `LState`. This design makes it possible for all software
+that inspects the ledger state only before and after block application to remain
+unaware of the existence of any temporary structures.
 
 ### Required transactions
 
@@ -127,7 +152,7 @@ that must be included in the zone in addition to the one being validated.
 
 **Alternate Design (Decision Required)**. The `requiredTxs` design described above cannot be used to
 create an _atomic batch_ of transactions, i.e. one that guarantees that
-if one transaction is included in the zone, all the transactions in the atomic batch are
+if one transaction is included in a valid zone, all the transactions in the atomic batch are
 necessarily included in that zone.
 This is because constructing an atomic batch using this field leads to a circular
 dependency in specifying the `requiredTxs` field of all the transactions in a
@@ -176,39 +201,93 @@ B in its `requiredTxs` field.
 
 ### Ledger Rule Changes
 
-Validating a zone proceeds as follows:
+#### ZONE
 
-#### 1: Check all zone-level properties
+Currently, the top-level transaction-processing transition system in the ledger system is `LEDGERS`.
+It considers a list of transactions in the block body valid whenever `LEDGER` is valid for
+each transaction, checked in the order they appear in that list. We propose replacing `LEDGERS`
+with
 
-The following zone-level properties are checked:
+`ZONES \subseteq LEnv x LState x List (List Tx) x LState`
 
-1. (Value order) The transactions can be value ordered.
-2. (Required transactions) For every transaction, all the transactions listed in `requiredTxs` are present in the zone.
+as the top level transition, which processes each zone in the block by
+validating it with the transition
 
-If any of these fail, the zone is invalid.
+`ZONE \subseteq LEnv x LState x List Tx x LState`
 
-#### 2: Validate transactions for phase 1
+The `ZONE` system includes two rules : `ZONE-V` may be applicable when all transactions are tagged with
+`isValid` tag that is `True`, and `ZONE-N` may be applicable otherwise. The reason
+for differentiating phase-2 valid and invalid _zones_ (and not just at the level
+of individual transactions) is that it may not be possible to apply subsequent
+transactions in a zone once a single transaction is found to be phase-2 invalid.
+Recall that  
+it is not possible to exclude only _some_ transactions from a zone in a general way,
+so, unlike the existing design, the mempool is no able to reject individual zone transactions
+dependent on a preceding transaction being phase-2 valid. We design the `ZONE-N`
+rule to deal with this situation in a special way.
 
-All transactions are validated for phase 1 checks; only then are they validated for phase 2.
-If any transaction fails at any point, then the zone is invalid.
+The following checks are done by both rules :
 
-We add the following additional phase 1 checks:
+1. the sum total of the sizes of all transactions in the zone is less than the `maxTxSize`
+protocol parameter (see [Network Requirements and Changes](#network-requirements-and-changes)), and
+2. the collateral provided by each transaction `tx` for script execution is sufficient
+to cover **all scripts in all transactions preceding `tx` in the zone, including `tx` itself**
+(see [DDoS](#ddos))
+3. the `LEDGERS` transition is valid for the zone environment, transaction list,
+and initial `LStateTemp`, which is the initial `LState` of `ZONE` transition with the
+`FRxO` set to empty in `UTxOTemp`
+4. all collateral inputs must be in the initial `LState` UTxO set (see [DDoS](#ddos))
 
-1. (Resolving UTXIs) A resolving output must match with a UTXI that has already seen in the zone and has not already been resolved. The credential of the UTXI must be satisfied; this may incur a phase 2 check as usual.
-2. (No leftover UTXIs) After checking the final transaction in a zone, there must be no remaining UTXIs that have not been resolved.
-3. (Safe collateral) All collateral inputs come from outputs outside the zone.
-4. (Excess collateral) The collateral required for a transaction containing scripts is increased: the base amount is now based on the fee for the transaction and _every transaction it has a transitive validation dependency on_ within the zone.
+**`ZONE-V`**. This rule has additional checks :
 
-#### 3: Validate transactions for phase 2
+1. there are no cycles in the transaction dependency graph (see [Linearizability](#linearizability))
+2. all `requiredTxs` for all transactions in the zone are present
 
-Transactions are validated for phase 2 as usual.
+The updated state in this rule is computed by applying `LEDGERS` to the starting state,
+environment, and list of transactions in the zone.
 
-If one of the transactions is phase-2 invalid, then the following occurs:
+**`ZONE-N`**. This rule has additional checks :
 
-- The node constructs an invalidity witness for the transaction. This consists of the invalid transaction, along with every transaction that it has a transitive validation dependency on from within the zone.
-- The node posts the invalidity witness to the chain and claims the collateral associated with the failing transaction.
+1. the only transaction that is phase-2 invalid in the zone is the last transaction
 
-### Network Requirements and Changes
+The updated state in this rule is not the state computed by applying `LEDGERS`.
+We discard that state, and instead specify the updated `LState` directly.
+The only fields updated are :
+
+1. the collateral inputs are removed from the UTxO (and change returned)
+2. `fees` is updated to `fees` + the collateral amount in the last transaction of the zone
+
+#### UTXO
+
+The `UTXO` rule is updated to additionally check that the `fulfills`
+of the transaction being processed are present in the `FRxO` set.
+The `UTXO` rule checks the preservation of value (POV), which compares the `produced`
+and `consumed` value for the given transaction. The POV calculation is updated by
+adding
+
+1. the sum total value in the transaction `fulfills` to the `produced` value
+2. the sum total value in the transaction `requests` to the `consumed` value
+
+
+#### UTXOS
+
+The `UTXOS` rule is the one that actually computes the updates to
+the UTxO state done by a transaction. The UTxO set update remains the same
+as in the existing design. The `FRxO` is updated by removing
+all entries that are indexed by the values in the `fulfills` of the
+transaction, then adding all entries of the form `(txID, ix) |-> r`, where
+`txID` is the ID of the transaction being processed, and `ix |-> r` is
+in the `requests` of the transaction.
+
+### Non-Ledger Component Changes
+
+#### Consensus
+
+We do not expect that any functional changes are required for consensus - the only
+change needed is likely the updating of any references to the block body type,
+which will be `List (List Tx)` instead of `List Tx`.
+
+#### Network Requirements and Changes
 
 Zones replace singleton transactions as units sent across the network. Zones must
 therefore have IDs (e.g. zone hashes) for a node to determine whether it has
@@ -216,8 +295,57 @@ already downloaded the corresponding zone based on an ID it is observing on the 
 To maintain network functionality, zone sizes must be limited by the current `maxTxSize`
 protocol parameter.
 
-**Decision Required**. Is this an acceptable restriction for the usecases we
+**Decision Required**. Is this an acceptable constraint for the usecases we
 want to support?
+
+#### CLI
+
+The node CLI should support the construction of the new type of transaction body,
+as well as the construction and (local) validation of a zone.
+The additional commands for transaction construction include supporting the
+modification of the `requests`, `fulfills`, and `requiredTxs` fields.
+
+Zone construction should give the user the ability to start a new zone and browse
+an existing one, as well as add,
+remove, and reorder transactions within an existing one.
+
+
+#### Off-Chain
+
+The off-chain component required for the functioning of this proposal
+should be made up of at least the a way for users to :
+
+- track market prices of non-Ada tokens
+- communicate (partially valid) transactions
+
+No off-chain component design is planned as part of this CIP. The reason
+for this is that we hope to encourage pluralism in the approaches to
+off-chain implementation. Different approach are likely to be preferred by
+users for the details of their usecases (see [Callout to the Community](#callout-to-the-community))
+
+### Attack Mitigation
+
+#### DDoS
+
+partially valid txs not sent across cardano network
+
+collateral - enough and in the utxo
+
+#### Linearizability
+
+Flash loan attacks
+
+Reordering property
+
+#### Additional Risks
+
+No obvious additional risks related to the expected functionality of this
+proposal are predicted at this time. However, there are questions related to
+community behaviour, such as the the likelihood of adoption of this feature,
+and the likelihood that a robust off-chain mechanism will be build. Additionally,
+there is the risk that a more general intent-processing mechanism will be
+designed later on, subsuming this functionality (there are currently no competing
+designs or ideas, see [A Better Design](#a-better-design)).
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -461,6 +589,11 @@ We think that we can eventually move in the direction of adding more of the inte
 A major point of disagreement is about intent processing.
 As previously discussed, this proposal only focuses on intent settlement, not intent processing.
 
+
+#### Callout to the Community
+
+#### Building on Validation Zones
+
 #### A better design
 
 It may be that the best way to implement intents on Cardano is different from the approach we are taking (transactions which leave more details unspecified).
@@ -485,10 +618,10 @@ In that case such a design might entirely obsolete this one, making it an expens
 ## Stuff to do
 
 Callout to community - looking for partners for off-chain stuff
-- Risks
 - How would it benefit us
 - What guarantees are that it’ll work
-- CLI
+- other usecases
+- off-chain communication
 
 ## Copyright
 
