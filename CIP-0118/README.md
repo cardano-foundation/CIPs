@@ -61,7 +61,8 @@ A request is included for the purpose of _requesting funds_ from another transac
 in the amount specified in the value field of the request. For most swaps, the
 script locking the output is trivial (always returns `True`), since the idea
 is that anyone should be able to fulfill a swap request. We refer to an output
-locked by this type of script as `unlocked`.
+locked by this type of script as _unlocked_. We call such an
+output an _offer_ in the context of a swap.
 
 The amount of currency a transaction is offering to swap for the requested amount
 is usually placed in an unlocked _regular_ output.
@@ -74,6 +75,27 @@ Requests and fulfills are examples of a way to submit and resolve specific kind
 of _intents_. Whenever we discuss changes that are specific to the Babel fees/swaps
 usecase, we will refer to requests and fulfills. When generalization is
 possible, we say intents.
+
+### Transaction Dependencies
+
+A _value dependency_ graph is a directed graph `G` that has transactions (or their
+corresponding IDs) as its vertices, and edges constructed as follows :
+
+- if `tx1` spends an output of `tx2`, the edge `(tx2, tx1)` is in `G`
+(this type of edge is a _validation_ edge)
+- if `tx1` fulfills a request of `tx2`, the edge `(tx1, tx2)` is added to `G`
+(this type of edge is a _request_ edge)
+
+A graph `G` constructed in this way may not be simple (e.g. if a transaction spends two
+different outputs of another transaction), and may or may not be
+acyclic (e.g. it there is both a validation and a request edge between two transactions).
+
+We call `G` a value dependency graph be cause it represents the flow of value
+from one transaction to the next. Value flows from `tx2` to `tx1` when the
+assets placed in an output by `tx2` are spent by `tx1`. Value flows from `tx1`
+to `tx2` when a "loan" taken out (i.e. a request made) by `tx2` is repaid (i.e.
+fulfilled) by `tx1`. This is because `tx1` provides the assets missing from `tx2`.
+
 
 ### Validation zones
 
@@ -149,6 +171,17 @@ We add a new field to the transaction body, `requiredTxs`, which is a set of tra
 The required transactions field is illegal outside a validation zone.
 This field is included in the script context. This field specifies the transactions
 that must be included in the zone in addition to the one being validated.
+We say that `tx1` is *requirement-dependent* on `tx2` whenever `tx1` includes the ID of
+`tx2` in its `requiredTxs` field. The purpose of this field is to introduce
+a kind of dependency that is unrelated to value flow.
+
+Recall that consumption of both a request and an input of a single transaction by another
+transaction is forbidden. This means that to complete a swap, two separate transactions
+must be constructed by the same user - one that fulfills the request, and one
+that consumes an offer (usually in the form of an unlocked input). The `requiredTxs`
+allows users to guarantee that if `tx1` fulfills the request of `tx`,
+a transaction `tx2`, which consumes the offer of `tx`, must also be applied.
+This is done by specifying that the ID of `tx2` in `requiredTxs` of `tx1.`
 
 **Alternate Design (Decision Required)**. The `requiredTxs` design described above cannot be used to
 create an _atomic batch_ of transactions, i.e. one that guarantees that
@@ -167,39 +200,10 @@ but not the body of the transaction. Then, a signature is computed on the combin
 of the transaction ID and the `requiredTxs` field (instead of just the ID).
 
 
-### New Plutus Version
-
-A in the case of any ledger changes involving new transaction fields, a new Plutus
-version will be necessary to implement this CIP. The necessary changes to
-the latest existing version (V3?) include :
-
-- a new script purpose, `Fulfills`, for indicating that a script locking a request
-is being executed
-- adding all new fields (`requests`, `fulfills`, `requiredTxs`) to the script context
-
-Transactions using the new fields cannot execute scripts written in previous Plutus versions.
-
-### Transaction Dependencies
-
-There are three types of dependency between transactions which we will want to talk about.
-
-We say that transaction B is *validation-dependent* on transaction A whenever
-A must be applied to update the UTxO in ledger state before B for the reason that
-B either consumes an output of A, or B consumes an output of another transaction
-that is validation-dependent on A.
-
-We say that A is *value-dependent* on B whenever
-B must be applied to update the ledger state before A, and
-B either fulfills a request of A, or B fulfills a request of another transaction
-on which A is value-dependent. This is called a value dependency because B provides
-the funds A is requesting, so A cannot be valid unless the subsequent transaction
-B provides these funds.
-
-We say that A is *requirement-dependent* on B whenever A includes the ID of
-B in its `requiredTxs` field.
-
-
 ### Ledger Rule Changes
+
+The prototype for the changes can be found
+[here](https://github.com/IntersectMBO/formal-ledger-specifications/compare/polina-babel?expand=1)
 
 #### ZONE
 
@@ -240,7 +244,7 @@ and initial `LStateTemp`, which is the initial `LState` of `ZONE` transition wit
 
 **`ZONE-V`**. This rule has additional checks :
 
-1. there are no cycles in the transaction dependency graph (see [Linearizability](#linearizability))
+1. there are no cycles in the transaction dependency graph (see [Flash Loans](#flash-loans))
 2. all `requiredTxs` for all transactions in the zone are present
 
 The updated state in this rule is computed by applying `LEDGERS` to the starting state,
@@ -279,15 +283,57 @@ transaction, then adding all entries of the form `(txID, ix) |-> r`, where
 `txID` is the ID of the transaction being processed, and `ix |-> r` is
 in the `requests` of the transaction.
 
-### Non-Ledger Component Changes
+## System Component Changes
 
-#### Consensus
+### Ledger
+
+The ledger changes follow the specification changes outlined above, however,
+we discuss additional things to consider in the process of integrating them into
+the current ledger design in a way that follows
+its principles and constraints. The prototype for ledger changes can be found
+[here](https://github.com/IntersectMBO/cardano-ledger/compare/master...willjgould:cardano-ledger:wg/babel-fees-babel-era?expand=1#)
+
+#### New Era
+
+Since the validation zone/babel fees changes will constitute a hard fork, we define
+a new era, `Babel`, alongside the existing ones. Everything that is unchanged is inherited from `Conway`.
+Changes made to the following components require converting
+certain existing types to associated types that differ across eras.
+
+#### Block Structure
+
+All blocks types in all previous eras contain sequences of transactions.
+We must allow Babel blocks to contain zones instead.
+
+#### Ledger State
+
+**Decision Required**. Do we use `Temp` states in addition to current ledger state
+or change the main state to include the `FRxO`?
+
+#### CBOR
+
+
+
+### New Plutus Version
+
+A in the case of any ledger changes involving new transaction fields, a new Plutus
+version will be necessary to implement this CIP. The necessary changes to
+the latest existing version (V3?) include :
+
+- a new script purpose, `Fulfills`, for indicating that a script locking a request
+is being executed
+- adding all new fields (`requests`, `fulfills`, `requiredTxs`) to the script context
+
+Transactions using the new fields cannot execute scripts written in previous Plutus versions.
+Prototype is available [here](https://github.com/IntersectMBO/plutus/compare/master...willjgould:plutus:wg/babel-fees-prototyping)
+
+### Consensus
 
 We do not expect that any functional changes are required for consensus - the only
 change needed is likely the updating of any references to the block body type,
 which will be `List (List Tx)` instead of `List Tx`.
 
-#### Mempool
+### Mempool
 
 The mempool must switch to operating on zones instead of singleton transactions.
 It must also support adding _part of a zone_ to a block in the case of phase-2
@@ -296,7 +342,7 @@ during zone validation, subsequent transactions are not validated, and only the 
 validated up to and including this first phase-2 failing one are included in the
 zone. This partial zone is then included in the block.
 
-#### Network Requirements and Changes
+### Network Requirements and Changes
 
 Zones replace singleton transactions as units sent across the network. Zones must
 therefore have IDs (e.g. zone hashes) for a node to determine whether it has
@@ -307,7 +353,7 @@ protocol parameter.
 **Decision Required**. Is this an acceptable constraint for the usecases we
 want to support?
 
-#### CLI
+### CLI
 
 The node CLI should support the construction of the new type of transaction body,
 as well as the construction and (local) validation of a zone.
@@ -324,7 +370,7 @@ to the network must be possible. Some special zone-level collateral calculation
 functionality must also be implemented (see [DDoS](#ddos)).
 
 
-#### Off-Chain
+### Off-Chain
 
 The off-chain component required for the functioning of this proposal
 should be made up of at least the a way for users to :
@@ -338,9 +384,9 @@ for this is that we hope to encourage pluralism in the approaches to
 off-chain implementation. Different approach are likely to be preferred by
 users for the details of their usecases (see [Callout to the Community](#callout-to-the-community))
 
-### Attack Mitigation
+## Attacks and Mitigations
 
-#### DDoS
+### DDoS
 
 **Off-Chain**.
 Since we do not propose an off-chain component, we do not discuss mitigation of
@@ -405,11 +451,26 @@ Rather, a mempool drops subsequent transactions in the process of zone validatio
 for the purpose of block construction (see [Mempool](#mempool)).
 
 
-#### Linearizability
+### Flash Loans
 
-Flash loan attacks
+A flash loan is a form of uncollateralized lending, e.g. done for the purpose of manipulating
+the market price of an asset. Allowing unconstrained
+combinations of transaction dependencies (both validation and value) also allows
+arbitrary flash loans that can easily be resolved by a subsequent transaction in
+the zone. This would be done by first producing a request containing the flash loan amount,
+then using the loaned assets inside the zone in unconstrained ways, and finally, fulfilling
+this request by a transaction that also consumes the loaned amount.
+Using the loaned amount spent by the transaction to cover the requested amount
+allows the preservation of value equation to balance.
+In the terms of this proposal, this can be formally described as
+the value dependency graph `G` for this zone contains a cycle, or in other
+words, the value dependency graph of transactions in the zone cannot be partially ordered.
 
-Reordering property
+Our design provides protection against this type of attack.
+The `ZONE-V` rule checks that there are no cycles in the transaction value dependency graph.
+We note that `ZONE-N` does not perform this check because this rule applies
+one transaction in the zone, and only for the purpose
+of collecting collateral, which cannot perform a flash loan.
 
 #### Additional Risks
 
@@ -424,6 +485,9 @@ designs or ideas, see [A Better Design](#a-better-design)).
 ## Rationale: how does this CIP achieve its goals?
 
 ### Design
+
+We list a number of principles, requirements, and usecases to be supported by
+this proposal, and justify why the design we propose does so : 
 
 #### Value flow
 
@@ -696,6 +760,9 @@ Callout to community - looking for partners for off-chain stuff
 - What guarantees are that it’ll work
 - other usecases
 - off-chain communication
+- CBOR / block structure update
+- temp state discussion
+
 
 ## Copyright
 
