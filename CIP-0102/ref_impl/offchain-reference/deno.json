@@ -1,8 +1,0 @@
-{
-  "tasks": {
-    "generate-wallet": "deno run --allow-net --allow-read --allow-env --allow-write scripts/generate-wallet.js",
-    "print-utxos": "deno run --allow-net --allow-read --allow-env --allow-write scripts/print-utxos.ts",
-    "mint-collection": "deno run --allow-net --allow-read --allow-env --allow-write scripts/mock-frontend.ts mint-collection",
-    "get-royalties": "deno run --allow-net --allow-read --allow-env --allow-write scripts/mock-frontend.ts get-royalties"
-  }
-}
