@@ -115,6 +115,8 @@ extra =
 
 ### Examples
 
+In-code examples can be found in the [reference implementation](https://github.com/SamDelaney/CIP_102_Reference).
+
 #### Retrieve metadata as 3rd party
 
 A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalties. The steps are
@@ -162,14 +164,14 @@ See the [CIP-0068 Extension Boilerplate](https://github.com/cardano-foundation/C
 
 ### Acceptance Criteria
 
-- [ ] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved with NFT projects to review any weaknesses or areas of improvement.
-- [ ] Guidelines and examples of publication of data as well as discovery and validation should be included as part of of criteria for acceptance.
-- [ ] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Reference Implementation](./ref_impl/).
+- [x] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved with NFT projects to review any weaknesses or areas of improvement.
+- [x] Guidelines and examples of publication of data as well as discovery and validation should be included as part of of criteria for acceptance.
+- [x] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Reference Implementation](https://github.com/SamDelaney/CIP_102_Reference).
 - [ ] Implementation and use demonstrated by the community: NFT Projects, Blockchain Explorers, Wallets, Marketplaces.
 
 ### Implementation Plan
 
-- [ ] Publish open source reference implementation and instructions related to the creation, storage and reading of royalty utxos.
+- [x] Publish open source reference implementation and instructions related to the creation, storage and reading of royalty utxos.
 - [ ] Implement in open source libraries and tooling such as [Lucid](https://github.com/spacebudz/lucid), [Blockfrost](https://github.com/blockfrost/blockfrost-backend-ryo), etc.
 - [ ] Achieve additional "buy in" from existing community actors and implementors such as: blockchain explorers, token marketplaces, minting platforms, wallets.
 
