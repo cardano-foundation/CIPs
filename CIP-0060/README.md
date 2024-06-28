@@ -48,7 +48,7 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 ### Required Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| artists     | Array\<Artist\>     | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | |
+| artists     | Array\<Artist\>     | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
 | release_title| String | "release_title": "Mr. Bad Guy" | |
 | track_number | Integer | "track_number": 1 | |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
@@ -56,12 +56,12 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. |
 | copyright | String | "copyright": "℗ 1985 Sony Records" | |
 | release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc...|
-| music_metadata_version | Integer | "music_metadata_version" : 1 | Players should look for the presence of this field to determine if the token is a Music Token |
+| music_metadata_version | Integer | "music_metadata_version" : 1 | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
 
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| contributing_artists | Array\<Artist\> | "contributing_artists": ["Dolly Parton"]<br/>*or*<br/>"contributing_artists": [<br/>"Brad Paisley",<br/>"Keith Urban"<br/>] | |
+| contributing_artists | Array\<Artist\> | "contributing_artists": ["Dolly Parton"]<br/>*or*<br/>"contributing_artists": [<br/>"Brad Paisley",<br/>"Keith Urban"<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the other, but will receive performance royalties when applicable.  eg, a band would place the band name in "artists", while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
@@ -80,16 +80,16 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 | mastering_engineer | String | "mastering_engineer": "Michael Tyson" | |
 | producer | String | "producer": "Simon Cowell" | |
 | co_producer | String | "co_producer": "Shavaun Dempsey" | |
-| featured_artist | Artist | "featured_artist": {"name": "The Temptations"} | |
+| featured_artists | Artist | "featured_artist": {"name": "The Temptations"} | feautured_artists should be passed to players along with the 'artists'.  Also may include ISNI identifier within the object. |
 | recording_engineer | String | "recording_engineer": "Sharon Liston" | |
 | release_version | Integer | "release_version": 2 | |
 | parental_advisory | String | "parental_advisory": "Explicit" | Explicit/Censored/Non-Explicit
-| explicit | Boolean | "explicit": true | |
+| explicit | Boolean | "explicit": true | | *
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
 | ipi | Array\<String\> | "ipi": ["595014347","342287075","550983139"] | |
-| ipn | Array\<String\> | "ipn": ["38474593","2734040"] | |
-| isni | Array\<String\> | "isni": ["000000038578365X","0000000037234532X"] | |
+| ipn | Array\<String\> | "contributing_artists": [{"name":"Contributor", "ipn": "xxxxxxxxxxx"}] | Included within 'contributing_artists' array, associating the IPN with a specific performer |
+| isni | Array\<String\> | "artists": [{"name":"AwesomeArtist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the 'artists' array within an object so players can distinguish between similar named entities|
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
