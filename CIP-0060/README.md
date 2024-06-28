@@ -42,10 +42,13 @@ This CIP divides the additional metadata parameters into two categories of `Requ
 [CDDL Spec Version 2](./cddl/version-2.cddl)<br/>
 [CDDL Spec Version 1 (deprecated)](./cddl/version-1.cddl)
 
-### Summary of v2 Changes ##
+### Summary of v2 Changes ###
 In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_title`. `release` is a more generic name that covers all types of releases from Albums, EPs, LPs, Singles, and Compilations. At the top level, we are grouping those metadata items that relate to the release under a new key `release`. At the file for each song, there is a new `song` key that holds the metadata specific to the individual song. These changes separate the music-specific metadata from the general CIP-25/CIP-68 NFT metadata. A music player can look at just the information necessary instead of having to ignore extra NFT-related fields. CIP-68 NFTs are officially supported and an example specific to CIP-68 has been added below.
 
-### Required Fields ###
+### Summary of v3  Proposed Changes ###
+Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with.  "contributing_artists", "artists", and "featured_artists" fields are explicitly defined to reduce interpretation.  These changes are 
+
+### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
 | artists     | Array\<Artist\>     | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
