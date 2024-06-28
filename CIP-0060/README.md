@@ -61,7 +61,7 @@ In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_titl
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| contributing_artists | Array\<Artist\> | "contributing_artists": ["Dolly Parton"]<br/>*or*<br/>"contributing_artists": [<br/>"Brad Paisley",<br/>"Keith Urban"<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the other, but will receive performance royalties when applicable.  eg, a band would place the band name in "artists", while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
+| contributing_artists | Array\<Artist\> | "contributing_artists": ["Dolly Parton"]<br/>*or*<br/>"contributing_artists": [<br/>"Brad Paisley",<br/>"Keith Urban"<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in "artists", while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
