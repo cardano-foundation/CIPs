@@ -83,7 +83,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | mastering_engineer | String | "mastering_engineer": "Michael Tyson" | |
 | producer | String | "producer": "Simon Cowell" | |
 | co_producer | String | "co_producer": "Shavaun Dempsey" | |
-| featured_artists | Artist | "featured_artist": {"name": "The Temptations"} | feautured_artists should be passed to players along with the 'artists'.  Also may include ISNI identifier within the object. |
+| featured_artists | Artist | "featured_artist": {"name": "The Temptations"} | feautured_artists should be passed to players along with the 'artists'.  Also may include ISNI identifier within the object.  Should be kept minimal. |
 | recording_engineer | String | "recording_engineer": "Sharon Liston" | |
 | release_version | Integer | "release_version": 2 | |
 | parental_advisory | String | "parental_advisory": "Explicit" | Explicit/Censored/Non-Explicit
