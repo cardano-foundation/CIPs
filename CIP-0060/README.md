@@ -51,7 +51,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 ### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| artists     | Array\<String\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
+| artists     | Array\<Artist\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
 | release_title| String | "release_title": "Mr. Bad Guy" | |
 | track_number | Integer | "track_number": 1 | |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
