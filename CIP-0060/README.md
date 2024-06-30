@@ -51,7 +51,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 ### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| artists     | Map\<String,String\>     | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
+| artists     | Array\<String\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
 | release_title| String | "release_title": "Mr. Bad Guy" | |
 | track_number | Integer | "track_number": 1 | |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
@@ -64,7 +64,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| contributing_artists |  Map\<String,String\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},"name":"Keith Urban"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in "artists", while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
+| contributing_artists |  Array\<String\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},"name":"Keith Urban"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in "artists", while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
@@ -90,7 +90,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | explicit | Boolean | "explicit": true | | *
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
-| authors |  Map\<String,String\> | "authors": [{"name": "Author Name", "ipi":"595014347"},{"name":"Author Name2", "ipi":"342287075"},{"550983139"}] | IPI array changed to "authors", allowing searching and indexing by songwriter.  "name" key optional, should psuedo-anonimity be desired.|
+| authors | Array\<String\> | "authors": [{"name": "Author Name", "ipi":"595014347"},{"name":"Author Name2", "ipi":"342287075"},{"550983139"}] | IPI array changed to "authors", allowing searching and indexing by songwriter.  "name" key optional, should psuedo-anonimity be desired.|
 | ipn | Array\<String\> | "contributing_artists": [{"name":"Contributor", "ipn": "xxxxxxxxxxx"}] | Included within 'contributing_artists' array, associating the IPN with a specific performer |
 | isni | Array\<String\> | "artists": [{"name":"AwesomeArtist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the 'artists' array within an object so players can distinguish between similar named entities|
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
