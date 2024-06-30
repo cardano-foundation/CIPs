@@ -99,6 +99,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0103 | [Web-Wallet Bridge - Bulk transaction signing](./CIP-0103) | Active |
 | 0104 | [Web-Wallet Bridge - Account public key](./CIP-0104) | Proposed |
 | 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
+| 0106 | [Web-Wallet Bridge - Multisig wallets](./CIP-0106) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
 | 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
@@ -110,6 +111,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
 | 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
+| 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -118,7 +120,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-06-22</i></p>
+<p align="right"><i>Last updated on 2024-06-30</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -141,17 +143,15 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 0106? | [Web-Wallet Bridge - Multisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
 | 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
 | 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
 | 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
-| 0123? | [Bitwise operations over BuiltinByteString](https://github.com/cardano-foundation/CIPs/pull/825) |
 | 0124? | [Extend token metadata for translations](https://github.com/cardano-foundation/CIPs/pull/488) |
 | 0125? | [Arrestable native assets](https://github.com/cardano-foundation/CIPs/pull/832) |
 
-<p align="right"><i>Last updated on 2024-06-22</i></p>
+<p align="right"><i>Last updated on 2024-06-30</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -181,8 +181,9 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
 | 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
 | 0015? | [Intents for Cardano](https://github.com/cardano-foundation/CIPs/pull/779) |
+| 0016? | [Cardano URIs](https://github.com/cardano-foundation/CIPs/pull/841) |
 
-<p align="right"><i>Last updated on 2024-03-19</i></p>
+<p align="right"><i>Last updated on 2024-06-30</i></p>
 
 ## Stalled / Waiting For Authors
 
@@ -197,8 +198,9 @@ The following list contains proposals that have been under review and for which 
 - [On-chain Transaction Chaining](https://github.com/cardano-foundation/CIPs/pull/508)
 - [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385)
 - [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336)
+- [Post Quantum signatures and native wallets](https://github.com/cardano-foundation/CIPs/pull/441)
 
-<p align="right"><i>Last updated on 2023-06-09</i></p>
+<p align="right"><i>Last updated on 2023-06-30</i></p>
 
 ## Editors
 
