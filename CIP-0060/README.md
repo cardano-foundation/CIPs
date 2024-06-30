@@ -51,7 +51,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 ### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| artists     | Array\<Artist\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
+| artists     | Array\<Artist\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty", "isni":"xxxxxxxxxxxxxxx" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
 | release_title| String | "release_title": "Mr. Bad Guy" | |
 | track_number | Integer | "track_number": 1 | |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
@@ -64,7 +64,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},"name":"Keith Urban"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in "artists", while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in "artists", while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
