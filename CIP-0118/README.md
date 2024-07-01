@@ -76,7 +76,7 @@ of _intents_. Whenever we discuss changes that are specific to the Babel fees/sw
 usecase, we will refer to requests and fulfills. When generalization is
 possible, we say intents.
 
-### Transaction Dependencies
+### Transaction Dependencies and Value Flow
 
 A _value dependency_ graph is a directed graph `G` that has transactions (or their
 corresponding IDs) as its vertices, and edges constructed as follows :
@@ -90,7 +90,7 @@ A graph `G` constructed in this way may not be simple (e.g. if a transaction spe
 different outputs of another transaction), and may or may not be
 acyclic (e.g. it there is both a validation and a request edge between two transactions).
 
-We call `G` a value dependency graph be cause it represents the flow of value
+We call `G` a value dependency graph be cause it represents the _flow of value_
 from one transaction to the next. Value flows from `tx2` to `tx1` when the
 assets placed in an output by `tx2` are spent by `tx1`. Value flows from `tx1`
 to `tx2` when a "loan" taken out (i.e. a request made) by `tx2` is repaid (i.e.
@@ -369,6 +369,10 @@ a zone, and submitting a zone
 to the network must be possible. Some special zone-level collateral calculation
 functionality must also be implemented (see [DDoS](#ddos)).
 
+### Wallet and DBSync
+
+We do not anticipate drastic changes to either, but this requires further investigation.
+The DBSync will likely need to include a way to track the zone ID of transactions it records.
 
 ### Off-Chain
 
@@ -472,6 +476,37 @@ We note that `ZONE-N` does not perform this check because this rule applies
 one transaction in the zone, and only for the purpose
 of collecting collateral, which cannot perform a flash loan.
 
+The value ordering requirement is the major driving difference between the design
+in this CIP and the one published in the "Babel Fees via Limited Liabilities" paper.
+The design presented in that work prevented flash loan attacks by
+relying on the use of minting policies - the currency's minting policies is executed
+whenever a transaction changes the total (positive or negative) amount of that currency, e.g.
+a transaction 0 Ada in its inputs, but make a request with the amount of Ada
+it requires to pay transaction fees. This solution will not work for our design
+because many existing minting policies, e.g. of Ada, will fail in the usecases
+we require for this CIP. Minting policies of existing tokens cannot be changed.
+
+#### Price Manipulation and Frontrunning
+
+Flash loans have to do with price manipulation via changing the total quantities of
+tokens in existence by creating some in association with uncollateralized loans
+(we have addressed this already). It is a kind of frontrunning.
+Frontrunning has to do with the ability of certain entities to manipulate transactions
+through displacement, suppression, or insertion. This amounts to manipulating
+asset prices as well as controlling who gets to benefit from the trades.
+We conjecture that outside of the possibility of flash loans (addressed above),
+the opportunity for doing this on the Cardano network with the
+CIP features implemented
+are similar to that which existed prior to its implementation.
+
+As before,
+every block producer gets to decide which transactions/zones will be included
+in the block they are constructing, but
+the specific block producer for a given block cannot be predicted ahead of
+schedule. Also like in the current design, better offers are more likely to be
+accepted.
+
+
 #### Additional Risks
 
 No obvious additional risks related to the expected functionality of this
@@ -486,8 +521,55 @@ designs or ideas, see [A Better Design](#a-better-design)).
 
 ### Design
 
-We list a number of principles, requirements, and usecases to be supported by
-this proposal, and justify why the design we propose does so : 
+We discuss a number of principles, requirements, and usecases to be supported by
+this proposal.
+
+**Supports paying fees in currency other than Ada (Babel Fees)**. This is achieved by allowing
+users to construct transactions that do not spend any Ada inputs. Instead, the
+transaction derives its ability to pay the fee from the Ada amount specified in its requests. Usually,
+an offer is also made to compensate any user that chooses to complete the
+zone by submitting a transaction fulfilling the requested Ada amount. See
+[Usecases](#usecases). Recall here that two transactions are needed to engage with a
+Babel fee offer - one that fulfills a request, and one that accepts the offer.
+They are dependent via the `requiredTxs` field.
+
+**Supports atomic swaps**. Atomic swaps work the exact same way as paying fees in
+non-Ada currencies, with the difference being that instead of including requests of
+only Ada, a user may request an arbitrary currency (and likely cover their own fees).
+The swap offer can also contain an arbitrary currency.
+
+**Counterparty irrelevance**. A desirable property expected of a system in which
+atomic swaps are possible is that arbitrary users should have the ability to
+engage with a swap offer, i.e.
+you don’t have to specify who is on the other side of that part of the trade.
+Not allowing this significantly limits the advantages of
+having such a system. The design in this proposal naturally allows users to
+build transactions that create both offers and requests that are unlocked,
+and therefore allow arbitrary users can engage with them to perform swaps.
+
+**Does not interfere with existing ledger features**. Our design does not make
+changes to the majority of transaction application protocols, e.g.  
+governance, staking/delegation, etc. Introducing zone structure into block
+body should not affect transaction application. More formal analysis of this
+may be required.
+
+**Value flow modification makes sense**. The POV update treats 
+transaction requests as consumed value, and fulfills as produced value. This is
+in line the with the interpretation on requests as loans, and fulfills as
+paying them back. Proving in Agda the POV property is in progress. We may
+require an additional zone-level POV property to ensure no value-flow inconsistencies
+arise in the introduction of this feature.
+
+**Minimizes off-chain communication**.
+
+**Minimizes reliance of smart contracts for key usecases**.
+
+
+
+**Mitigates Attacks**. The attacks we considered (and their mitigations) are discussed in
+Attacks and Mitigations[Attacks and Mitigations](#attacks-and-mitigations).
+
+
 
 #### Value flow
 
