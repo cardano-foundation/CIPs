@@ -385,7 +385,9 @@ should be made up of at least the a way for users to :
 
 No off-chain component design is planned as part of this CIP. The reason
 for this is that we hope to encourage pluralism in the approaches to
-off-chain implementation. Different approach are likely to be preferred by
+off-chain implementation. Off-chain intents-matching solutions are also more likely
+to be less restrictive and able to evolve more quickly both in their design and the
+rates they offer. Different approach are likely to be preferred by
 users for the details of their usecases (see [Callout to the Community](#callout-to-the-community))
 
 ## Attacks and Mitigations
@@ -501,10 +503,14 @@ tokens in existence by creating some in association with uncollateralized loans
 Frontrunning has to do with the ability of certain entities to manipulate transactions
 through displacement, suppression, or insertion. This amounts to manipulating
 asset prices as well as controlling who gets to benefit from the trades.
+
 We conjecture that outside of the possibility of flash loans (addressed above),
 the opportunity for doing this on the Cardano network with the
 CIP features implemented
-are similar to that which existed prior to its implementation.
+are similar to that which existed prior to its implementation. Transaction
+cancellation (see [Cancellation](#cancellation)) plays an important role in
+preventing insertion of old (but previously unfulfilled) transactions making
+requests at unfavourable prices.
 
 As before,
 every block producer gets to decide which transactions/zones will be included
@@ -571,8 +577,7 @@ arise in the introduction of this feature.
 across the Cardano network, they are transmitted "off-chain". However, two-way
 communication is not required in our design. The validation zones feature can be used
 by either (off-chain) disseminating a transaction with unfulfilled requests
-(and waiting for a counterparty to fulfill the requests and submit the whole valid
-zone to the Cardano network), or observing an existing transaction off-chain, and
+(after which no further action is required), or observing an existing transaction off-chain, and
 fulfilling its requests before submitting it to the Cardano network. Neither require
 communicating with the counterparty who constructed the other transaction(s) in the zone.
 
@@ -583,6 +588,14 @@ This is not only cheaper in terms of transaction size and
 script-running costs, but makes it easier to make and fulfill and offer
 within a single block.
 
+**Keep order-matching logic off-chain**. Order matching is complicated task
+involving many parties with possibly competing interests. Building such a mechanism
+on-chain should only be done if the cost-benefit analysis is well in its favour.
+The Cardano platform changes we propose are fairly minor, unsophisticated, and comfortably aligned with
+existing ledger design principles (e.g. predictable outcomes of transaction application).
+This also allows the (off-chain) order-matching solutions to have a lot more flexibility
+and adaptability.
+
 **Mitigates Attacks**. The attacks we considered (and their mitigations) are discussed in
 [Attacks and Mitigations](#attacks-and-mitigations).
 
@@ -590,12 +603,10 @@ within a single block.
 
 #### Cancellation
 
-For many intent-based use cases it is useful to be able to cancel an intent.
-An extreme example of this is a high-frequency trading system, which would want to be able to update its bids and asks very frequently (which means cancelling the old ones).
-While cancellation is really an intent-processing problem, the design here affects what cancellation approaches are possible.
-
-Fully uni-directional systems like the one given here make cancellation hard, since the intents are standalone things that can be resolved without the user's further interaction.
-
+For many intent-based use cases it is useful to be able to cancel an intent, e.g.
+for the purpose of updating bids to track changes in asset prices.
+While cancellation is really an intent-processing problem, the design here affects
+what cancellation approaches are possible.
 There are a few approaches to cancellation that are compatible with the current design:
 
 - Accept the lack of cancellation.
@@ -603,7 +614,14 @@ There are a few approaches to cancellation that are compatible with the current 
     - Contrast with e.g. Cardano itself: you can't rescind a transaction once you submit it.
 - Cancel by spending an output that is required by your intent transaction, making it invalid.
     - This requires taking an expensive action on-chain, and managing the outputs that you use for this purpose.
-    - Depending on whether a normal or reference input is used, different kinds of behaviour arise, e.g. many intents that all spend a normal output "race" each other, in that only one can be settled.
+    - This also requires being able to pay the transaction fee, which may be a problem for
+    Babel fees users
+    - This is not guaranteed in the case a fulfillment occurs some time between the user's
+    decision to cancel and the cancelling transaction being placed into a block. The valid  
+    zone including the fulfillment may make it into a block before the cancellation transaction
+    (or, intentionally preferred over the cancellation by the producer)
+    - Probably should come with a system to notify intent-processing systems that
+    the cancellation has occurred, so that people do not waste time trying to fulfil it.
 - Send around unsigned intents.
     - This loses the benefits of uni-directional communication, since intents now have come back to the user to sign, but allows you to cancel things by simply refusing to sign them.
 - Use a trusted intermediary, who advertises intents but without some information that is needed to complete them (e.g. they strip the signatures and then advertise the unsigned version).
@@ -612,45 +630,73 @@ There are a few approaches to cancellation that are compatible with the current 
    - This only works if you know ahead of time when you want things to expire: you can't cancel any sooner or later than that.
 
 These approaches have different tradeoffs and different ones may be appropriate for different situations.
-A full approach to cancellation would also have to consider how to notify intent-processing systems that the cancellation has occurred, so that people do not waste time trying to fulfil it.
+A full approach to cancellation would also have to consider how to
 
 #### Callout to the Community
 
-Transactions that use UTXIs (or required transactions) cannot be put on the chain by themselves: they are fundamentally incomplete.
-As such, some kind of secondary networking is necessary to distribute these incomplete transactions to the counterparties who can complete them.
-That is: this proposal only addresses part of the intent-settlement problem, not the intent-processing problem.
+Transactions containing requests cannot be put on the chain by themselves : they are
+fundamentally incomplete. As such, some kind of secondary networking is necessary
+to distribute these incomplete transactions to the counterparties who can complete them.
+That is: this proposal only addresses part of the intent-settlement problem, not
+the intent-processing problem.
 
-The author’s belief is that this is the right way to go because while on-chain processing systems have desirable properties (e.g. they have censorship resistance properties which cannot easily be matched by off-chain systems), designing such a system is a substantial research problem, and in the mean time it may be adequate to rely on off-chain solutions, which have other desirable properties as well.
-See CPS-15 for more discussion.
+The author’s belief is that this is the right way to go because while on-chain
+processing systems have desirable properties (e.g. they have censorship resistance
+properties which cannot easily be matched by off-chain systems), designing an intent
+settlement (e.g. order-matching)
+system is a substantial research problem, and may entail different optimal solutions
+for different user needs. Also, the changes to the Cardano platform introduced in this CIP
+are merely an improvement on existing ways of doing things. If development of an off-chain
+component is done after than the on-chain changes, this will not delay users
+ability to perform desired tasks. For these reasons, the implementation of the on-chain and
+off-chain mechanisms do not need to be introduced simultaneously.
+
+However, implementing this CIP must include a callout to the community to
+implement the off-chain component. Here are examples of two broad categories of  
+design possibilities for such a component :
+
+- A shared database for all users to share the assets they are willing to trade and
+at what rates
+  - This approach is better for buyers because of transparency (market prices are easy to track)
+  - Someone has to maintain this
+  - Trust model is unclear
+  - Not everyone will want to use it, so likely multiple matching mechanism options are needed
+
+- Users keep track of rates and available assets privately
+  - No global way to track market prices
+  - Easier to order match (optimizing for a single user's profit instead of trying to be "fair")
+
+It is likely that both options will be useful.
+
 
 ## Use cases
 
-In the following we will talk about “unlocked” outputs/inputs.
-These are outputs/inputs locked with a credential that allows anyone to spend it, e.g. a “0 of n” native script.
-
 ### Open (atomic) swaps
 
-Parties A and B want to do a swap.
-A offers 42 token U, B offers 12 Ada.
+A wants to swap 10 Ada for 5 tokens `myT`.
 
-1. Party A creates a transaction T1 with an unlocked unresolved input I requiring 12 Ada, and with an unlocked output O containing 42 U.
-2. Party A sends T1 to Party B (or to some system that eventually routes it to B).
-3. Party B creates two transactions:
-    - T2 has a resolving output which resolves I, and requires T3
-    - T3 spends O
-4. Party B submits a validation zone consisting of T1, T2, and T3
+1. Party `A` creates a transaction `tx1` with
+  - an unlocked request `0` with 5 `myT` tokens,
+  - an output `0` which contains 5 `myT` tokens, and
+  - an unlocked output `1` containing 10 Ada
+  - some inputs totalling 10 Ada
+2. Party `A` sends `tx1` across some route that will get the swap offer into the hands of interested parties
+3. Party `B` sees the transaction, and creates two transactions to complete the zone:
+    - `tx2` fulfills the unlocked request `0` of `tx1`, and requires `tx3`
+    - `tx3` spends the unlocked output `1` of `tx1`
+4. Party `B` submits a validation zone consisting of `tx1`, `tx2`, and `tx3`
 
 Note that:
 
-- Party B does not need to go back to Party A to finish the swap
-- Party A’s swap proposal could be fulfilled by anyone, but Party A could restrict it by putting credentials (including scripts) on I or O.
+- Party `B` does not need to go back to Party `A` to finish the swap
+- Party `A`’s swap proposal could be fulfilled by anyone, but Party `A` could restrict it by putting credentials (including scripts) on the outputs and requests of `tx1`
+- `tx1` has an unlocked output with Ada for anyone to take, but a zone with `tx1`
+will not be valid unless some party also consumes the request (this is what guarantees
+  the swap without the need to lock the offer)
 
 Here is a diagram for an example:
 
-![](./min-usecase.png)
-
-Note that this proposal does _not_ provide a way to do more advanced kinds of swap, such as limit or market orders.
-These require the exact values to also be unknown (but constrained), which is not possible in this proposal.
+![](./min-swap.png)
 
 ### DEX aggregators
 
@@ -670,8 +716,10 @@ Here is a diagram of this for a case with two users.
 
 ### Babel fees
 
-Babel fees are just a transaction paired with a swap to cover the fees, and as such work identically to the first use case.
-The main difference is likely to be at a higher level, in terms of how price discovery and order matching work.
+Babel fees is a specific subtype of the first use case where the request is necessarily
+a quantity of Ada. Usually, it also implies that no Ada is contained in the inputs
+of the request-making transaction, and the requested Ada is used to pay transaction fees.
+
 
 ### DApp fee sponsorship
 
@@ -682,6 +730,8 @@ Party B wants to cover the fees for this.
 2. Party A sends T1 to Party B
 3. Party B creates a transaction T2 with a resolving output that resolves I
 4. Party B submits a validation zone consisting of T1 and T2
+
+### Bridges
 
 ## Towards Better Designs
 
@@ -715,6 +765,8 @@ As such, we think we can progress with this design even if we don’t have a ful
 
 ### Building on Validation Zones
 
+Note that this proposal does _not_ provide a way to do more advanced kinds of swap, such as limit or market orders.
+These require the exact values to also be unknown (but constrained), which is not possible in this proposal.
 
 
 ## Path to Active
