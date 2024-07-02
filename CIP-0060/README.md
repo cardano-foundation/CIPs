@@ -84,7 +84,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | mastering_engineer | String | "mastering_engineer": "Michael Tyson" | |
 | producer | String | "producer": "Simon Cowell" | |
 | co_producer | String | "co_producer": "Shavaun Dempsey" | |
-| featured_artists | Array\<Artist\> | "featured_artist": {"name": "The Temptations"} | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName ft. featuredArtist" .  Also may include ISNI identifier and `links` within the object.  Should be kept minimal. |
+| featured_artists | Array\<Artist\> | "featured_artists": {"name": "The Temptations"} | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)" .  Also may include ISNI identifier and `links` within the object.  Should be kept minimal. |
 | recording_engineer | String | "recording_engineer": "Sharon Liston" | |
 | release_version | Integer | "release_version": 2 | |
 | explicit | Boolean | "explicit": true | | *
