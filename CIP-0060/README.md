@@ -64,13 +64,12 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata. |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Can optionally contain `role` key, replacing `lyricist` |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
 | mood | String | "mood": "Empowered" | |
 | lyrics | URL | "lyrics": "ipfs://QmSmadTEhB9bJQ1WHq58yN1YZaJo4jv5BwVNGaePvEj4Fy"<br/>*or*<br/>"Lyrics": "https://website.com/song_lyrics.txt" |  |
-| lyricists | Array\<String\> | "lyricists": ["Paul McCartney", "John Lennon"] | |
 | special_thanks | Array\<String\> | "special_thanks": ["Your mom","Your grandma"] | |
 | visual_artist | String | "visual_artist": "beeple" | |
 | distributor | String | "distributor": "https://newm.io" | |
@@ -78,7 +77,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | publication_date | String | "publication_date": "2022-07-27" | ISO8601 Date Format |
 | catalog_number | Integer | "catalog_number": 2 | | 
 | bitrate | String | "bitrate": "256 kbit/s" | |
-| bpm     | String | "bpm": "120 BPM" | |
+| bpm | String | "bpm": "120 BPM" | |
 | mix_engineer | String | "mix_engineer": "Robert Smith II" | |
 | mastering_engineer | String | "mastering_engineer": "Michael Tyson" | |
 | producer | String | "producer": "Simon Cowell" | |
