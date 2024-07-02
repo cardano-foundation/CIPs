@@ -86,7 +86,6 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | featured_artists | Array\<Artist\> | "featured_artist": {"name": "The Temptations"} | feautured_artists should be passed to players along with the 'artists'.  Also may include ISNI identifier within the object.  Should be kept minimal. |
 | recording_engineer | String | "recording_engineer": "Sharon Liston" | |
 | release_version | Integer | "release_version": 2 | |
-| parental_advisory | String | "parental_advisory": "Explicit" | Explicit/Censored/Non-Explicit
 | explicit | Boolean | "explicit": true | | *
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
