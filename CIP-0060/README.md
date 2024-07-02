@@ -46,14 +46,14 @@ This CIP divides the additional metadata parameters into two categories of `Requ
 In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_title`. `release` is a more generic name that covers all types of releases from Albums, EPs, LPs, Singles, and Compilations. At the top level, we are grouping those metadata items that relate to the release under a new key `release`. At the file for each song, there is a new `song` key that holds the metadata specific to the individual song. These changes separate the music-specific metadata from the general CIP-25/CIP-68 NFT metadata. A music player can look at just the information necessary instead of having to ignore extra NFT-related fields. CIP-68 NFTs are officially supported and an example specific to CIP-68 has been added below.
 
 ### Summary of v3  Proposed Changes ###
-Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with.  "contributing_artists", "artists", and "featured_artists" fields are explicitly defined to reduce interpretation.  IPI array replaced with 'author' array, which includes "ipi" key.
+Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with. `contributing_artists`, `artists`, and `featured_artists` fields are explicitly defined to reduce interpretation.  `ipi` array replaced with `author` array, which includes `ipi` key.  Removed the `parental_advisory` field, as it was redundant (`explicit` being true is all players need to look for).
 
 ### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
 | artists     | Array\<Artist\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty", "isni":"xxxxxxxxxxxxxxx" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
 | release_title| String | "release_title": "Mr. Bad Guy" | |
-| track_number | Integer | "track_number": 1 | |
+| track_number | Integer | "track_number": 1 | |u
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
 | song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format |
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. |
@@ -97,7 +97,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | derived_from | String | "derived_from" : "Some other work" | |
-| links | Map\<String,String\> | "links" : {<br/>"website": "https://website.com",<br/>"twitter": "https://twitter.com/username",<br/>"discord_invite": "https://discord.gg/TEzXxjsN",<br/>"TikTok": "https://www.tiktok.com/@knucklebumpfarms",<br/>"discord_username": "MusicianPerson#8537",<br/>"instagram":"...",<br/>"facebook":"...",<br/>"soundcloud": "...",<br/>"bandcamp": "...",<br/>"spotify": "...",<br/>"apple_music": "...",<br/>...<br/>...<br/>} | |
+| links | Map\<String,String\> | artists: [<br/>"name":"Andrew Donovan", "links":{"website": "https://website.com",<br/>"twitter": "https://twitter.com/username",<br/>"discord_invite": "https://discord.gg/TEzXxjsN",<br/>"TikTok": "https://www.tiktok.com/@knucklebumpfarms",<br/>"discord_username": "MusicianPerson#8537",<br/>"instagram":"...",<br/>"facebook":"...",<br/>"soundcloud": "...",<br/>"bandcamp": "...",<br/>"spotify": "...",<br/>"apple_music": "...",<br/>...<br/>...<br/>}}] | included within `artists` and `featured_artists` arrays|
 
 ### Examples ##
 
