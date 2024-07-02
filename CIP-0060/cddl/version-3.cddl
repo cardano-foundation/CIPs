@@ -6,13 +6,13 @@ asset_name = string / bytes ; utf-8 for CIP-25 version 1, bytes for version 2
 artist_details =
   {
     name : string,                      ; artist or band name
-    ? image : string / [* string],      ; optional image of the artist
     ? isni : [* string],                ; added ISNI
     ? links: { * string => string / [* string] }, ; added links
   }
 
 release_details = 
   {
+    ? image : string / [* string],     
     ? release_title : string,
     ? copyright: string,
     ? visual_artist: string,
@@ -26,7 +26,8 @@ release_details =
     ? distributor: string,
     ? metadata_language: string,
     ? country_of_origin: string,
-    ? language: string
+    ? language: string,
+
   }
 
 author_details =
