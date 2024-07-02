@@ -66,6 +66,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
 | contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Can optionally contain `role` key, replacing `lyricist` |
+| role | string | "contributing_artists": [{"name":"Sick City", "ipn":"xxxxxxxxxxxxxxxx", "role": "guitars/vocals"}] | This optionally clarifies the contribution made by the contributor in question. |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
