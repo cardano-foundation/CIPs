@@ -373,6 +373,9 @@ functionality must also be implemented (see [DDoS](#ddos)).
 
 We do not anticipate drastic changes to either, but this requires further investigation.
 The DBSync will likely need to include a way to track the zone ID of transactions it records.
+While wallets should be able to construct request- and fulfill-containing
+transactions, is possible that additionally, some aspects of the required off-chain
+infrastructure should be supported, e.g. order-matching and communication.
 
 ### Off-Chain
 
@@ -400,7 +403,7 @@ an off-chain DDoS attack, however, we note that such an attack consists of
 communicating intents that may never be fulfilled. This is because either they
 offer undesirable tokens for swaps, or set prices too high. It will be difficult
 to determine whether any intent _will_ ever be fulfilled, or even whether it was
-created with a malicious intent (spam). We recommend other approaches to mitigating this issue.
+created with a malicious intent (spam).
 
 **On-Chain (Mempool)**.
 The possibility of un-fulfillable intents is an important reason for
@@ -561,7 +564,7 @@ build transactions that create both offers and requests that are unlocked,
 and therefore allow arbitrary users can engage with them to perform swaps.
 
 **Does not interfere with existing ledger features**. Our design does not make
-changes to the majority of transaction application protocols, e.g.  
+changes to the majority of transaction application protocols, e.g.
 governance, staking/delegation, etc. Introducing zone structure into block
 body should not affect transaction application. More formal analysis of this
 may be required.
@@ -591,6 +594,7 @@ within a single block.
 **Keep order-matching logic off-chain**. Order matching is complicated task
 involving many parties with possibly competing interests. Building such a mechanism
 on-chain should only be done if the cost-benefit analysis is well in its favour.
+For example, it appears the implementation on the [Stellar](https://stellar.org/blog/developers/introducing-automated-market-makers-on-stellar) system is not heavily used.
 The Cardano platform changes we propose are fairly minor, unsophisticated, and comfortably aligned with
 existing ledger design principles (e.g. predictable outcomes of transaction application).
 This also allows the (off-chain) order-matching solutions to have a lot more flexibility
@@ -676,10 +680,10 @@ It is likely that both options will be useful.
 A wants to swap 10 Ada for 5 tokens `myT`.
 
 1. Party `A` creates a transaction `tx1` with
-  - an unlocked request `0` with 5 `myT` tokens,
-  - an output `0` which contains 5 `myT` tokens, and
-  - an unlocked output `1` containing 10 Ada
-  - some inputs totalling 10 Ada
+    - an unlocked request `0` with 5 `myT` tokens,
+    - an output `0` which contains 5 `myT` tokens, and
+    - an unlocked output `1` containing 10 Ada
+    - some inputs totalling 10 Ada
 2. Party `A` sends `tx1` across some route that will get the swap offer into the hands of interested parties
 3. Party `B` sees the transaction, and creates two transactions to complete the zone:
     - `tx2` fulfills the unlocked request `0` of `tx1`, and requires `tx3`
@@ -693,6 +697,9 @@ Note that:
 - `tx1` has an unlocked output with Ada for anyone to take, but a zone with `tx1`
 will not be valid unless some party also consumes the request (this is what guarantees
   the swap without the need to lock the offer)
+- In step (2), we say "sends ... across some route that will get the swap offer into the hands of interested parties".
+In subsequent usecases, we instead say "send ... to party X" instead to imply that X is a party that intends to
+fulfill the sent intent(s), and has received them across the network.
 
 Here is a diagram for an example:
 
@@ -703,44 +710,66 @@ Here is a diagram for an example:
 This is a simple extension of the previous example.
 Instead of Party A, we have a set of parties A1 ... An who want to make various kinds of swap, and a batcher, Party B, who collects these and resolves them using some source of liquidity (in this example a big UTXO).
 
-1. Parties A1 ... An create transactions T1 ... Tn with unresolved inputs and outputs representing their desired trade, as in the previous example.
-2. Parties A1 ... An send T1 ... Tn to B  (or to some system that eventually routes it to B)
+1. Parties A1 ... An create transactions T1 ... Tn with requests and offers (unlocked outputs) representing their desired trade, as in the previous example.
+2. Parties A1 ... An send T1 ... Tn to B
 3. Party B creates two transactions:
-    - T(n+1) has resolving outputs for all the unresolved inputs in T1 ... Tn, and spends Party B’s liquidity UTXO O1 in order to do so, creating a new output O2 with the remainder. It also requires T(n+2)
-    - T(n+2) spends the outputs from T1 ... Tn as well as O2, creating a new increased liquidity output O3
+    - T(n+1) has fulfilling all the requests in T1 ... Tn, and spends Party B’s liquidity UTXO `u` in order to do so, creating a new entry `u'` with the remainder. It also requires T(n+2)
+    - T(n+2) spends the offers from T1 ... Tn as well as `u'`, creating a new increased liquidity output `u''`
 4. Party B submits a validation zone consisting of T1 ... T(n+2)
 
-Here is a diagram of this for a case with two users.
-
-![](./batched-swap-linearizable.png)
 
 ### Babel fees
 
-Babel fees is a specific subtype of the first use case where the request is necessarily
+Babel fees is a specific subtype of the first usecase where the request is necessarily
 a quantity of Ada. Usually, it also implies that no Ada is contained in the inputs
 of the request-making transaction, and the requested Ada is used to pay transaction fees.
 
 
-### DApp fee sponsorship
+### DApp fee and min-UTxO sponsorship
 
 Party A wants to use a dApp operated by Party B (specifically, submit a transaction using a script S associated with the dApp).
-Party B wants to cover the fees for this.
+Party B wants to cover the fees and min-UTxO value for this.
 
-1. Party A creates a transaction T1 that uses script S, and has an unresolved input I which requires Ada to cover the script fees.
+1. Party A creates a transaction T1 that uses script S, and has request `r` which requires Ada to cover the script fees.
 2. Party A sends T1 to Party B
-3. Party B creates a transaction T2 with a resolving output that resolves I
+3. Party B creates a transaction T2 that fulfills `r`
 4. Party B submits a validation zone consisting of T1 and T2
 
+Note here that no offers are present in T1 because the the point of Dapp sponsorship
+is for the Dapp to cover the fees and min-UTxO value without being compensated in
+other tokens (although the Dapp itself may require depositing assets into it).
+
 ### Bridges
+
+Centralized approaches to bridging tokens across blockchains have been developed,
+e.g. by [SingularityNET](https://singularitynet.gitbook.io/welcome-to-singularitynet/bridge/overview).
+A decentralized approach is much more difficult due to the requirement that
+there must be some way to verify data about the operation of an external piece of
+distributed software (on the side of both chains involved).
+This CIP makes the centralized version of the bridging process slightly more
+streamlined on the side of Cardano. Let B be a _trusted_ bridge. The untrusted
+case requires additional research.
+
+1. Party A sends an transaction T1 disposing of some tokens on chain D (either by burning
+  them or putting them in a special token pool) to B as well as to chain D
+2. Party A sends a transaction T2 with a request for the same amount of
+  tokens as in (1) on Cardano to B
+3. Bridge B waits for T1 to settle on D, then submits the zone `[T2; T3]` to
+  Cardano, where `T3` fulfills the request of `T2`
+
+
 
 ## Towards Better Designs
 
 It may be that the best way to implement intents on Cardano is different from the approach we are taking (transactions which leave more details unspecified).
 In that case such a design might entirely obsolete this one, making it an expensive and pointless burden to maintain in future.
 
+### Original Babel Fees Design
+
 ### Westberg’s “Smart Transactions”
 
-The design from https://github.com/input-output-hk/Developer-Experience-working-group/issues/47 has a lot of similarities to ours, in particular it follows the approach where transactions have partially unspecified inputs and outputs.
+The design [Smart Transactions](https://github.com/input-output-hk/Developer-Experience-working-group/issues/47)
+has a lot of similarities to ours, in particular it follows the approach where transactions have partially unspecified inputs and outputs.
 However, it goes much further and proposes conditions on how those can be satisfied, as well as some kind of computed conditions for updating datums.
 It also proposes that intent-processing be done by the node.
 
