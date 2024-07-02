@@ -71,7 +71,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
 | mood | String | "mood": "Empowered" | |
-| lyrics | URL | "lyrics": "ipfs://QmSmadTEhB9bJQ1WHq58yN1YZaJo4jv5BwVNGaePvEj4Fy"<br/>*or*<br/>"Lyrics": "https://website.com/song_lyrics.txt" |  |
+| lyrics | URL | "lyrics": "ipfs://QmSmadTEhB9bJQ1WHq58yN1YZaJo4jv5BwVNGaePvEj4Fy"<br/>*or*<br/>"lyrics": "https://website.com/song_lyrics.txt" |  |
 | special_thanks | Array\<String\> | "special_thanks": ["Your mom","Your grandma"] | |
 | visual_artist | String | "visual_artist": "beeple" | |
 | distributor | String | "distributor": "https://newm.io" | |
