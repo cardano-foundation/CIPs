@@ -86,7 +86,7 @@ rules unless a translation language indicates otherwise:
 
 `Constitution` vs. `constitution`
 
-- The Constitution in effect — either the "initial" one or any updated version — is unique and therefore capitalised ("Constitution") as a proper noun.
+- The Constitution in effect — either the "initial" one or any new constitution — is unique and therefore capitalised ("Constitution") as a proper noun.
 - Draft or proposed constitutions are not unique & therefore are not capitalised ("constitution") as a common noun.
 - "Cardano Constitution" is a very specific proper noun phrase (also a title) and so each word is capitalised.
 - The phrase "the Constitution", unless used non-specifically (e.g. "the constitution that voters prefer"), would generally be assumed to be _the_ Constitution and capitalised as a proper noun.
