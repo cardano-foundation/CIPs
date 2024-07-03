@@ -701,6 +701,9 @@ will not be valid unless some party also consumes the request (this is what guar
 In subsequent usecases, we instead say "send ... to party X" instead to imply that X is a party that intends to
 fulfill the sent intent(s), and has received them across the network.
 
+Note that this proposal does _not_ provide a way to do more advanced kinds of swap, such as limit or market orders.
+These require the exact values to also be unknown (but constrained), which is not possible in this proposal.
+
 Here is a diagram for an example:
 
 ![](./min-swap.png)
@@ -761,46 +764,92 @@ case requires additional research.
 
 ## Towards Better Designs
 
-It may be that the best way to implement intents on Cardano is different from the approach we are taking (transactions which leave more details unspecified).
-In that case such a design might entirely obsolete this one, making it an expensive and pointless burden to maintain in future.
-
 ### Original Babel Fees Design
+When developing this proposal based on the
+[Babel fees](https://iohk.io/en/research/library/papers/babel-fees-via-limited-liabilities/)
+paper, we have observed a number of clashes between ledger design principles and
+the proposal in the paper, as well as possible attack vectors. The key ones are :
+
+**Intoducing liabilities**.
+New ledger features must always be implemented using new transaction field, rather
+than repurposing existing ones. So, _liabilities_ (which we call requests and
+fulfills here) cannot be introduced by simply allowing negative quantities in
+regular outputs. This also necessitates the use of a special container for these
+in the ledger state, which we call the FRxO.
+
+**Checking minting policies**.
+In the original paper, we attempted to prevent flash loan attacks by forcing
+the execution of minting policies for any assets for which the total negative or
+positive quantities were changed. This was not a viable strategy for existing
+tokens, for which minting policies would overwhelmingly be unequipped to reason
+about such cases. In this proposal, we instead perform the cycle detection check
+on the transaction dependency graph.
+
 
 ### Westberg’s “Smart Transactions”
 
 The design [Smart Transactions](https://github.com/input-output-hk/Developer-Experience-working-group/issues/47)
-has a lot of similarities to ours, in particular it follows the approach where transactions have partially unspecified inputs and outputs.
-However, it goes much further and proposes conditions on how those can be satisfied, as well as some kind of computed conditions for updating datums.
+has a lot of similarities to ours, in particular it follows the approach where
+transactions have partially unspecified inputs and outputs.
+However, it goes much further and proposes conditions on how those can be satisfied,
+as well as some kind of computed conditions for updating datums.
 It also proposes that intent-processing be done by the node.
 
-We think that we can eventually move in the direction of adding more of the intent-settlement features from the proposal (e.g. conditions on values in inputs), but we should do so incrementally: even the machinery we need to support the more limited intents in this proposal is quite substantial.
-
-A major point of disagreement is about intent processing.
+We think that we can eventually move in the direction of adding more of the
+intent-settlement features from the proposal (e.g. conditions on values in inputs),
+but the major point of disagreement is about intent processing.
 As previously discussed, this proposal only focuses on intent settlement, not intent processing.
+We now briefly discuss options of how to possibly proceed in this direction.
 
 
-
--- improving consideration zones
-### Whither intents?
+### Validation zones for settling other types of intents
 
 This CIP lays the foundation for specification and resolution of intents on Cardano.
-We gain the ability to leave more parts of transactions unspecified, allowing us to express more kinds of intent.
-We believe that this is a fruitful direction that we can extend in future, although we do not plan to do so here:
+It does so by establishing the concept of a validation zone - a list of transactions that
+can be validated as a whole, but it is impossible to check if the individual transactions
+are valid outside a zone. We conjecture that infrastructure we propose can be used for processing
+other types of underspecified transactions, and therefore more sophisticated
+intents. A proof of this requires a
+fleshed-out design for the expanded intent-processing system, which is outside the
+scope of this CIP. However, possibilities include :
 
-- Any design that has separately specified, individually incomplete intents needs some kind of structure to tell the node “here are a set of several of these things, look at them together to see that they work”. Validation zones fulfil this function.
-- The general approach of gradually allowing transactions which specify fewer details seems promising. For example, we could consider trying to relax exact specifications of values into constraints.
+- Intent transactions that allow output references to be removed and replaced with their corresponding
+output data, while intent-settling transactions provide the matching output references
+for those outputs to fulfill this intent. This is the ledger component of a proposal
+for a light client solution.
 
-As such, we think we can progress with this design even if we don’t have a full picture of where we might want to go with intents, although this is a significant risk.
+- Intents that support more advanced kinds of swaps, such as limit or market orders,
+and do not require the entire quantity offered to be swapped at once.
 
-### Building on Validation Zones
+Supporting these sorts of intents require the definition of new types of temporary ledger
+state structures, as well as changes to zone-level constraints.
+We believe that this is a fruitful direction that we can extend in future, and,
+as such, we think we can progress with this design even if we don’t have a full
+picture of where we might want to go with intents, although this is a significant risk.
+However, at this time there is no proposal for a general solution, i.e. one where introducing
+the ability to process each new kind of intent does not require specific ledger
+changes. Instead, the ideal intents-processing solution using validation zones
+would support intents whose zone-level constraints and any temporary data that
+must be recorded are specified _within the zone itself_, providing much more
+flexibility in the kinds of intents that are possible.
 
-Note that this proposal does _not_ provide a way to do more advanced kinds of swap, such as limit or market orders.
-These require the exact values to also be unknown (but constrained), which is not possible in this proposal.
+It may be that the best way to implement intents on Cardano is entirely different from
+the underspecified transactions and validation zones approach we are taking here.
+In that case such a design might entirely obsolete this one, making it an expensive
+and pointless burden to maintain in future.
 
 
 ## Path to Active
 
 ### Software Readiness Level
+
+It is difficult to specify the SRL for this CIP because it effects each component
+of the Cardano node. The kind of testing required to thoroughly analyze the
+changes we propose can only be done on testnet. We estimate that the SRL
+would remain between 3 and 6 until
+
+- an era is specified into which this feature is included
+- a testnet containing this feature is launched
 
 ### Acceptance Criteria
 
@@ -811,8 +860,8 @@ These require the exact values to also be unknown (but constrained), which is no
 - Implementation of the proposed ledger changes in the formal ledger spec
 - Updated CIP Specification with full detail
 - Validation with community through Intersect
-- Implementation in the Cardano ledger
-- Deployment to mainnet
+- Implementation in the Cardano node in the context of a new era/hardfork
+- Deployment to testnet/mainnet
 
 
 
