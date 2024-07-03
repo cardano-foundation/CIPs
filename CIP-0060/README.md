@@ -101,220 +101,178 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 
 ### Examples ##
 
-#### Single ###
 ```
 {
     "721":
     {
-        "123da5e4ef337161779c6729d2acd765f7a33a833b2a21a063ef65a5":
+        "<policyId>":
         {
-            "SickCity354":
+            "<assetName>":
             {
-                "name": "SickCity354-Phil z'viel",
-                "image": "ipfs://QmQ13Cv9Wouf4rcwtNsuFhEeJVK9bEYjCYo6AN986takiu",
+                "name": "<releaseName>",
+                "image": "<mediaURL>",
                 "music_metadata_version": 2,
                 "release": {
-                    "release_type": "Single",
-                    "release_title": "C.H.I.L.L.",
-                    "distributor": "https://sickcity.xyz"
-                }
+                    "release_type": "<Single/Multiple>",
+                    "release_title": "<releaseTitle>",
+                    "distributor": "<distributor>"
+                },
                 "files":
                 [
                     {
-                        "name": "C.H.I.L.L.",
-                        "mediaType": "audio/mp3",
-                        "src": "ipfs://QmfY4ugNdYYJxpbn5BnN8yt5EmiUCznexQoQi6RTEu9SuC"
+                        "name": "<fileName>",
+                        "mediaType": "<mimeType>",
+                        "src": "<mediaURL>",
                         "song": {
-                            "song_title": "C.H.I.L.L.",
-                            "song_duration": "PT3M6S",
-                            "track_number": 1,
-                            "mood": "chillout",
+                            "song_title": "<songName>",
+                            "song_duration": "PT<minutes>M<seconds>S",
+                            "track_number": "<track#>",
+                            "mood": "<mood>",
                             "artists":
                             [
-                                { "name": "Phil z'viel" }
+                                { "name": "<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":
+                            {
+                                "<linkName>": "<url>",
+                                "<link2Name>": "<url>",
+                                "<link3Name>": "<url>"
+                            } }
                             ],
-                            "collection": "C.H.I.L.L.",
+                            "featured_artists":
+                                [
+                                {"name":"<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":{
+                                "<linkName>": "<url>",
+                                "<link2Name>": "<url>",
+                                "<link3Name>": "<url>"
+                                }}
+                                ],
+                            "contributing_artists":[
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                },
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                },
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                }
+                            ],
+                            "collection": "<collectionName>",
                             "genres":
                             [
-                                "Guitar Live Looping",
-                                "Progressive Ambient"
+                                "<genre>",
+                                "<genre>",
+                                "<genre>"
                             ],
-                            "copyright": "℗ 2022 Phil z'viel",
-                            "links":
+                            "copyright": "℗ <year/CopyrightHolder>"
+                            
+                        }
+                    },
+                    {
+                        "name": "<fileName>",
+                        "mediaType": "<mimeType>",
+                        "src": "<mediaURL>",
+                        "song": {
+                            "song_title": "<songName>",
+                            "song_duration": "PT<minutes>M<seconds>S",
+                            "track_number": "<track#>",
+                            "mood": "<mood>",
+                            "artists":
+                            [
+                                { "name": "<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":
                             {
-                                "discord_user": "Phil z'viel#4711",
-                                "twitter": "@Phil_zviel_CNFT",
-                                "website": "www.philzvielcnft.com"
-                            }
+                                "<linkName>": "<url>",
+                                "<link2Name>": "<url>",
+                                "<link3Name>": "<url>"
+                            } }
+                            ],
+                            "featured_artists":
+                                [
+                                {"name":"<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":{
+                                "<linkName>": "<url>",
+                                "<link2Name>": "<url>",
+                                "<link3Name>": "<url>"
+                                }}
+                                ],
+                            "contributing_artists":[
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                },
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                },
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                }
+                            ],
+                            "collection": "<collectionName>",
+                            "genres":
+                            [
+                                "<genre>",
+                                "<genre>",
+                                "<genre>"
+                            ],
+                            "copyright": "℗ <year/CopyrightHolder>"
+                            
+                        }
+                    },
+                    {
+                        "name": "<fileName>",
+                        "mediaType": "<mimeType>",
+                        "src": "<mediaURL>",
+                        "song": {
+                            "song_title": "<songName>",
+                            "song_duration": "PT<minutes>M<seconds>S",
+                            "track_number": "<track#>",
+                            "mood": "<mood>",
+                            "artists":
+                            [
+                                { "name": "<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":
+                            {
+                                "<linkName>": "<url>",
+                                "<link2Name>": "<url>",
+                                "<link3Name>": "<url>"
+                            } }
+                            ],
+                            "featured_artists":
+                                [
+                                {"name":"<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":{
+                                "<linkName>": "<url>",
+                                "<link2Name>": "<url>",
+                                "<link3Name>": "<url>"
+                                }}
+                                ],
+                            "contributing_artists":[
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                },
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                },
+                                {
+                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                }
+                            ],
+                            "collection": "<collectionName>",
+                            "genres":
+                            [
+                                "<genre>",
+                                "<genre>",
+                                "<genre>"
+                            ],
+                            "copyright": "℗ <year/CopyrightHolder>"
+                            
                         }
                     }
-                ],
+                    
+                ]
             }
         }
     }
 }
 ```
 
-#### Multiple ###
 
-```
-{
-    "fb818dd32539209755211ab01cde517b044a742f1bc52e5cc57b25d9":
-    {
-        "JamisonDanielStudioLife83":
-        {
-            "name": "Jamison Daniel-Studio Life",
-            "image": "ipfs://QmUBLXPgJM6oSeybv7FB15kQzbZtzPXifk9fJhLVcbCjVh",
-            "mediaType": "image/webp",
-            "version": 1,
-            "music_metadata_version": 2,
-            "release": {
-                "release_type": "Multiple",
-                "release_title": "Studio Life",
-                "producer": "Jamison Daniel",
-                "distributor": "Jamison Daniel Music",
-                "visual_artist": "Jamison Daniel",
-                "links": {
-                  "twitter": "@JamisonDMusic",
-                  "website": "jamisondaniel.com"
-                }
-            },
-            "attributes":
-            {
-                "Collection": "Basic",
-                "Number": "83/500"
-            },
-            "files":
-            [
-                {
-                    "name": "hi-res",
-                    "mediaType": "image/webp",
-                    "src": "ipfs://QmbU2Xm7swgYBQvN8cWXWVZJ1a2fMFmtFkymUu6fRogQwj"
-                },
-                {
-                    "name": "Finally (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://QmduC7pkR14K3mhmvEazoyzGsMWVF4ji45HZ1XfEracKLv",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 1,
-                        "song_title": "Finally (Master 2021)",
-                        "song_duration": "PT6M36S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "Funky Squirrel (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://QmW9sHugSArzf29JPuEC2MqjtbsNkDjd9xNUxZFLDXSDUY",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 2,
-                        "song_title": "Funky Squirrel (Master 2021)",
-                        "song_duration": "PT6M47S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "Weekend Ride (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://Qmb8fm7CkzscjjoJGVp3p7qjSVMknsk27d3cwjqM26ELVB",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 3,
-                        "song_title": "Weekend Ride (Master 2021)",
-                        "song_duration": "PT6M39S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "Rave Culture (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://QmTwvwpgE9Fx6QZsjbXe5STHb3WVmaDuxFzafqCPueCmqc",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 4,
-                        "song_title": "Rave Culture (Master 2021)",
-                        "song_duration": "PT6M39S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "Vibrate (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://QmTETraR8WvExCaanc5aGT8EAUgCojyN8YSZYbGgmzVfja",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 5,
-                        "song_title": "Vibrate (Master 2021)",
-                        "song_duration": "PT6M51S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "Top 40's (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://Qmdfr4PvuiZhi3a6EaDupGN6R33PKSy5kntwgFEzLQnPLR",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 6,
-                        "song_title": "Top 40's (Master 2021)",
-                        "song_duration": "PT6M33S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "Acid Trip (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://QmSp4Cn7qrhLTovezS1ii7ct1VAPK6Gotd2GnxnBc6ngSv",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 7,
-                        "song_title": "Acid Trip (Master 2021)",
-                        "song_duration": "PT6M7S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "For The Win (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://QmV8ihv8R6cCKsFJyFP8fhnnQjeKjS7HAAjmxMgUPftmw6",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 8,
-                        "song_title": "For The Win (Master 2021)",
-                        "song_duration": "PT6M36S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                },
-                {
-                    "name": "Sunday Sermon (Master 2021)",
-                    "mediaType": "audio/flac",
-                    "src": "ipfs://QmWux5UpX6BtYQ7pjugqRh6ySa2vVJN12iSC2AB1cAQynU",
-                    "song": {
-                        "artists": [{"name": "Jamison Daniel"}],
-                        "track_number": 9,
-                        "song_title": "Sunday Sermon (Master 2021)",
-                        "song_duration": "PT5M13S",
-                        "genres": ["electronic", "house"],
-                        "copyright": "Jamison Daniel © 2021"
-                    }
-                }
-            ]
-        }
-    }
-}
-```
-
-#### CIP-68 Single ###
+#### CIP-68 ###
 
 ```
 {
@@ -322,15 +280,15 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
     "fields": [
         {
             "map": [
-                {"k": {"bytes": "6E616D65"}, "v": {"bytes": "5369636B436974793335342D5068696C207A277669656C"}},
-                {"k": {"bytes": "696D616765"}, "v": {"bytes": "697066733A2F2F516D513133437639576F756634726377744E7375466845654A564B396245596A43596F36414E39383674616B6975"}},
+                {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded releaseName>"}},
+                {"k": {"bytes": "696D616765"}, "v": {"bytes": "<encoded mediaURL>"}},
                 {"k": {"bytes": "6D757369635F6D657461646174615F76657273696F6E"}, "v": {"int": 2}},
-                {"k": {"bytes": "72656C656173655F74797065"}, "v": {"bytes": "53696E676C65"}},
-                {"k": {"bytes": "72656c65617365"}, "v": 
+                {"k": {"bytes": "72656C65617365"}, "v": 
                     {
                         "map": [
-                            {"k": {"bytes": "72656c656173655f7469746c65"}, "v": {"bytes": "432e482e492e4c2e4c2e"}},
-                            {"k": {"bytes": "6469737472696275746f72"}, "v": {"bytes": "68747470733a2f2f7369636b636974792e78797a"}},
+                            {"k": {"bytes": "72656C656173655F74797065"}, "v": {"bytes": "<encoded Single/Multiple>"}},
+                            {"k": {"bytes": "72656C656173655F7469746C65"}, "v": {"bytes": "<encoded releaseTitle>"}},
+                            {"k": {"bytes": "6469737472696275746F72"}, "v": {"bytes": "<encoded distributor>"}}
                         ]
                     }
                 },
@@ -339,54 +297,54 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "array": [
                             {
                                 "map": [
-                                    {"k": {"bytes": "6e616d65"}, "v": {"bytes": "432e482e492e4c2e4c2e"}},
-                                    {"k": {"bytes": "6d6564696154797065"}, "v": {"bytes": "617564696f2f6d7033"}},
-                                    {"k": {"bytes": "737263"}, "v": {"bytes": "697066733a2f2f516d66593475674e6459594a7870626e35426e4e38797435456d6955437a6e6578516f5169365254457539537543"}},
-                                    {"k": {"bytes": "736f6e67"}, "v": 
+                                    {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded fileName>"}},
+                                    {"k": {"bytes": "6D6564696154797065"}, "v": {"bytes": "<encoded mimeType>"}},
+                                    {"k": {"bytes": "737263"}, "v": {"bytes": "<encoded mediaURL>"}},
+                                    {"k": {"bytes": "736F6E67"}, "v": 
                                         {
                                             "map": [
-                                                {"k": {"bytes": "736f6e675f7469746c65"}, "v": {"bytes": "432e482e492e4c2e4c2e"}},
-                                                {"k": {"bytes": "736f6e675f6475726174696f6e"}, "v": {"bytes": "5054334d3653"}},
-                                                {"k": {"bytes": "747261636b5f6e756d626572"}, "v": {"int": 1}},
-                                                {"k": {"bytes": "6d6f6f64"}, "v": {"bytes": "6368696c6c6f7574"}},
+                                                {"k": {"bytes": "736F6E675F7469746C65"}, "v": {"bytes": "<encoded songName>"}},
+                                                {"k": {"bytes": "736F6E675F6475726174696F6E"}, "v": {"bytes": "<encoded duration>"}},
+                                                {"k": {"bytes": "747261636B5F6E756D626572"}, "v": {"int": "<track#>"}},
+                                                {"k": {"bytes": "6D6F6F64"}, "v": {"bytes": "<encoded mood>"}},
                                                 {"k": {"bytes": "61727469737473"}, "v": 
                                                     {
                                                         "array": [
                                                             { 
                                                                 "map": [
-                                                                    {"k": {"bytes": "6e616d65"}, "v": {"bytes": "5068696c207a277669656c"}},
+                                                                    {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded artistName>"}},
+                                                                    {"k": {"bytes": "69736E69"}, "v": {"bytes": "<encoded ISNI>"}},
+                                                                    {"k": {"bytes": "6C696E6B73"}, "v": 
+                                                                        {
+                                                                            "map": [
+                                                                                {"k": {"bytes": "<encoded linkName>"}, "v": {"bytes": "<encoded url>"}}
+                                                                            ]
+                                                                        }
+                                                                    }
                                                                 ]
                                                             }
                                                         ]
                                                     }
                                                 },
-                                                {"k": {"bytes": "636f6c6c656374696f6e"}, "v": {"bytes": "432e482e492e4c2e4c2e"}},
-                                                {"k": {"bytes": "67656e726573"}, "v": 
+                                                {"k": {"bytes": "636F6C6C656374696F6E"}, "v": {"bytes": "<encoded collectionName>"}},
+                                                {"k": {"bytes": "67656E726573"}, "v": 
                                                     {
                                                         "array": [
-                                                            {"bytes": "477569746172204c697665204c6f6f70696e67"},
-                                                            {"bytes": "50726f677265737369766520416d6269656e74"},
+                                                            {"bytes": "<encoded genre1>"},
+                                                            {"bytes": "<encoded genre2>"},
+                                                            {"bytes": "<encoded genre3>"}
                                                         ]
                                                     }
                                                 },
-                                                {"k": {"bytes": "636f70797269676874"}, "v": {"bytes": "2117 2032303232205068696c207a277669656c"}},
-                                                {"k": {"bytes": "6c696e6b73"}, "v": 
-                                                    {
-                                                        "map": [
-                                                            {"k": {"bytes": "646973636f72645f75736572"}, "v": {"bytes": "5068696c207a277669656c2334373131"}},
-                                                            {"k": {"bytes": "74776974746572"}, "v": {"bytes": "405068696c5f7a7669656c5f434e4654"}},
-                                                            {"k": {"bytes": "77656273697465"}, "v": {"bytes": "7777772e7068696c7a7669656c636e66742e636f6d"}}
-                                                        ]
-                                                    }}
+                                                {"k": {"bytes": "636F707972696768"}, "v": {"bytes": "<encoded copyright>"}}
                                             ]
                                         }
                                     }
-
                                 ]
                             }
                         ]
                     }
-                },
+                }
             ]
         },
         {
