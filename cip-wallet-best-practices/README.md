@@ -31,6 +31,8 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 
 ### Security
 
+By documenting 
+
 - documenting best practices ensures that all wallet implementors can at least be aware, first step to conforming
 - improve security baselines, no excuses
 - may help users choose *safer* wallets
@@ -43,15 +45,27 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 
 ## Specification
 
+This specification aims to be a superset of best practices for all types of wallet.
+
 ### Meta
 
-- open source
-- should attempt to conform to standards/ formally describe
-- passcode protected
-- should allow users to do what they want, but can warn of dangerous situations
+Wallets SHOULD;
+- Open source
+- conform to accepted standards
+- use standard libraries
+- allow users to do what they want, but can warn of dangerous situations
 
-### Derivation/ Addresses
+### Censorship
 
+Wallets SHOULD;
+- allow users to do what they want, but can warn of dangerous situations
+- follow the permissionless philosophy of Cardano, and not censor.
+
+### Keys
+
+Wallets SHOULD;
+- encrypt secret keys behind a passcode, thus only being able to use the secret key when user provides passcode to decrypt.
+- never store the passcode in plain text, rather store a hash
 - single address wallets should be aware that other wallets are multi-address
 - be aware of relevant standards
 - show bech32 encoded at all times
@@ -59,6 +73,7 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 
 ### Secrets
 
+Wallets SHOULD;
 - encrypted using user's passphrase
 - decrypted secrets are in-memory for the least possible amount of time
 - any references to secret objects should be overwritten with byte arrays with 0s
@@ -68,17 +83,21 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 
 ### Transactions
 
+Wallets SHOULD;
 - inform of all assets being moved within a transaction
 - strong warnings when wallet cannot verify the inputs to a transaction
 - signing certificates with the wrong type of keys
   
 ### Staking
 
-- should allow delegation to all
-
-### dApp Connector
+If wallets allow in-app staking then wallets SHOULD;
+- allow delegation to all pools
 
 ### Governance
+
+If wallets allow in-app governance features then wallets SHOULD;
+- allow delegation to all DReps
+- allow voting on all governance actions
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -88,14 +107,16 @@ A lot of these are already followed, but it is nice to have a formal list, for p
 
 ### Acceptance Criteria
 
-- [ ]
+- [ ] Share proposal with all major Cardano wallet providers.
 - [ ]
 - [ ]
 
 ### Implementation Plan
 
-- [ ] Present this proposal to the Wallets Working Group
-- [ ] Seek input from at least five wallet implementors
+#### Solicitation of feedback
+
+- [x] Present first draft to the Wallets Working Group.
+- [ ] Seek input from at least five wallet implementors.
 
 ## Copyright
 
