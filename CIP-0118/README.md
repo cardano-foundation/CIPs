@@ -135,17 +135,17 @@ since unresolved requests do not belong in the UTxO set,
 this is done using a separate temporary zone structure similar to the UTxO set,
 `FRxO := UTxO`.
 
-Suppose a transaction with ID `txId1` contains the requests `(0 |-> r), (1 |-> r')`,
+Suppose a transaction with ID `txId1` contains the requests `(0 ↦ r), (1 ↦ r')`,
 and another transaction with ID `txId2` contains a fulfill `(txId1, 0)`.
 When the first transaction is applied to an empty `FRxO`, the requests are
 added, and we have
 
 `FRxO =
-((txId1, 0) |-> r,
-(txId1, 1) |-> r')`
+((txId1, 0) ↦ r,
+(txId1, 1) ↦ r')`
 
 Once the second transaction is applied, the first entry is removed by the
-fulfill, so we have `FRxO = (txId1, 1) |-> r'`.
+fulfill, so we have `FRxO = (txId1, 1) ↦ r'`.
 
 The UTxO state as it is currently defined does not contain a temporary
 `FRxO` structure, so we define `UTxOTemp : = UTxO x FRxO`.
@@ -276,8 +276,8 @@ The `UTXOS` rule is the one that actually computes the updates to
 the UTxO state done by a transaction. The UTxO set update remains the same
 as in the existing design. The `FRxO` is updated by removing
 all entries that are indexed by the values in the `fulfills` of the
-transaction, then adding all entries of the form `(txID, ix) |-> r`, where
-`txID` is the ID of the transaction being processed, and `ix |-> r` is
+transaction, then adding all entries of the form `(txID, ix) ↦ r`, where
+`txID` is the ID of the transaction being processed, and `ix ↦ r` is
 in the `requests` of the transaction.
 
 ## System Component Changes
