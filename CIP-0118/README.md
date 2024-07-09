@@ -70,7 +70,7 @@ is usually placed in an unlocked _regular_ output.
 
 We also define the type of fulfills, which is the same as the type of inputs, `Fulfill := Input`.
 We add another new field to the transaction body, called `fulfills`,
-which has the same type as the structure containing transaction inputs, `\powerset Input`.
+which has the same type as the structure containing transaction inputs, `Set Input`.
 
 Requests and fulfills are examples of a way to submit and resolve one specific kind
 of _intents_. Whenever we discuss changes that are specific to the Babel fees/swaps
@@ -113,11 +113,7 @@ incoming block), each transaction is checked against the current ledger
 state, however, additional checks
 are done at the zone level.
 
-Note that it may be possible that a part of a (valid) validation zone itself constitutes
-a valid validation zone, e.g. if the full zone contains no intents and therefore
-no resolving transaction. Such a zone, when observed on the network, can be
-deconstructed into smaller zone(s), which can be re-transmitted on the network.
-This is, however, considered an entirely new validation unit.
+
 
 ### Temporary Zone Structures
 
@@ -213,12 +209,12 @@ It considers a list of transactions in the block body valid whenever `LEDGER` is
 each transaction, checked in the order they appear in that list. We propose replacing `LEDGERS`
 with
 
-`ZONES \subseteq LEnv x LState x List (List Tx) x LState`
+`ZONES ⊆ LEnv x LState x List (List Tx) x LState`
 
 as the top level transition, which processes each zone in the block by
 validating it with the transition
 
-`ZONE \subseteq LEnv x LState x List Tx x LState`
+`ZONE ⊆ LEnv x LState x List Tx x LState`
 
 The `ZONE` system includes two rules : `ZONE-V` may be applicable when all transactions are tagged with
 `isValid` tag that is `True`, and `ZONE-N` may be applicable otherwise. The reason
@@ -311,7 +307,7 @@ To support this in the prototype, we've changed the block structure from:
 ```
 data Block h era
   = Block' h (TxSeq era) BSL.ByteString
-  
+
 class
   EraSegWits era
   where
@@ -325,7 +321,7 @@ To:
 ```
 data Block h era
   = Block' h (TxZones era) BSL.ByteString
-  
+
 class
   EraSegWits era
   where
@@ -335,7 +331,7 @@ class
   fromTxZones :: TxZones era -> TxStructure era (Tx era)
   toTxZones :: TxStructure era (Tx era) -> TxZones era
 ```
-  
+
 This allows us to talk about an abstract collection of transactions, `TxZones`, and also specify the concrete structure on a per-era basis. For example:
 
 ```
@@ -351,7 +347,7 @@ instance Crypto c => Core.EraSegWits (BabelEra c) where
   fromTxZones = Compose . txZonesTxns
   toTxZones = BabelTxZones . getCompose
 ```
-  
+
 For more information, search for `CIP-0118#block-structure-0` in the codebase.
 
 #### Transaction structure
@@ -363,14 +359,14 @@ data TransactionBody = TransactionBody
   , requests :: StrictSeq Request
   , requiredTxs :: Set TxIn
   }
-  
+
 type Fulfill = TxIn
 type Request = TxOut
 ```
 
 It's important to note that this structure (the `requiredTxs` being in the `TransactionBody`, rather than alongside the `TransactionBody`) is a convenience
 that allows us to sidestep difficulties with signing. It does, however, prevent us from allowing `requiredTxs` which refer to each other. This does not hinder the Babel fees use case, though.
-  
+
 For more information, search for `CIP-0118#tx-body-0` in the codebase.
 
 #### Ledger State
@@ -385,7 +381,7 @@ data LedgerStateTemp era = LedgerStateTemp
   , lstCertState :: !(CertState era)
   }
   deriving (Generic)
-  
+
 data UTxOStateTemp era = UTxOStateTemp
   { utxostUtxo :: !(UTxO era)
   , utxostFrxo :: !(FRxO era)
@@ -468,7 +464,7 @@ protocol parameter.
 **Decision Required**. Is this an acceptable constraint for the usecases we
 want to support?
 
-### CLI
+### CLI and API
 
 The node CLI should support the construction of the new type of transaction body,
 as well as the construction and (local) validation of a zone.
@@ -477,12 +473,29 @@ modification of the `requests`, `fulfills`, and `requiredTxs` fields.
 The transaction balancing must also be modified, since there are new fields
 that may now contain funds.
 
-Zone construction should give the user the ability to start a new zone and browse
+
+#### Zone Construction
+
+Zones are either
+
+- constructed from scratch locally (e.g. using the node CLI), or
+- a (possibly incomplete) zone comes across a (non-Cardano) network, and a user
+adds more transactions to it locally
+
+The CLI should support both. Zone construction should give the user the ability to start a new zone and browse
 an existing one, as well as add,
 remove, and reorder transactions within an existing one. Determining the size of
 a zone, and submitting a zone
 to the network must be possible. Some special zone-level collateral calculation
 functionality must also be implemented (see [DDoS](#ddos)).
+
+Note that it may be possible that a part of a (valid) validation zone itself constitutes
+a valid validation zone, e.g. if the full zone contains no intents and therefore
+no resolving transaction. Such a zone, when observed on the network, can be (locally)
+deconstructed into smaller zone(s), which can be re-transmitted on the network.
+The resulting smaller zone(s), however, are considered an entirely new validation units.
+
+
 
 ### Wallet and DBSync
 
@@ -541,7 +554,7 @@ zone is likely to cost the same as phase-1 validation of a single transaction
 currently costs. Therefore, we conjecture that the risks of a spam attack using phase-1
 invalid entities is not increased as compared to what it currently is.
 
-**On-Chain (Phase-2)**. The above scenario describes mitigation of an attack
+**On-Chain (Phase-2)**. The mempool attack scenario describes mitigation of an attack
 which results in a DDoS by using up all the node's mempool storage. Another kind of
 DDoS attack which we must defend against is one that involves a malicious
 party sending transactions with large (i.e. memory- or CPU-use-intensive)
@@ -550,44 +563,41 @@ failing scripts. We refer to a script failure in a transaction as a _phase-2_ fa
 In the current ledger design, this is mitigated by requiring a transaction to provide
 an amount of Ada collateral that is proportional to the sum of the sizes of all
 its scripts. This collateral is collected in the case of script failure.
-A phase-2 transaction failure in the design proposed in this CIP may result in validation
-failures of subsequent transactions. E.g. if a zone is `[tx1; tx2]`,
-`tx1` specifies `txin1` as its collateral input and one of its scripts fail,
-but `tx2` indicates `txin1` as
-one of its "regular" inputs, the zone cannot be valid in the `ZONE-V` sense.
-A transaction cannot be applied if one of its inputs is missing. If we were to simply
-discard the entire zone upon coming upon this situation, the node would have
-run all scripts in `tx1` without compensation.
-
+A phase-2 transaction failure in the design proposed in this CIP may result in phase-1 validation
+failures of subsequent transactions.
 To address this problem, we have defined the `ZONE-N` rule of `ZONE`. It requires
 that the collateral of each transaction
 
 - comes from the UTxO set to which the _zone_, rather than the transaction, is applied
 - covers the cost of running all scripts in all preceding transactions (itself included)
 
-This guarantees that the collateral can
-always be collected from any transaction in a zone.
-Also, the `ZONE-N` rule only applies whenever there is exactly one invalid transaction
-in the list, and it is the last one. Therefore, that last failing transaction
-pays enough collateral to cover the cost of running all scripts in the zone.
-Note that it is not the case that we expect that a zone will always phase-2 fail at
-the last transaction. Moreover, there is no way to check whether a `ZONE-N` valid
+This guarantees that enough collateral can
+always be collected the last transaction in a zone to cover all scripts that have been
+run during block validation as well as during mempool validation, compensating nodes
+for their validation work.
+
+The `ZONE-N` rule only applies whenever there is exactly one invalid transaction
+in the list, and it is the last one. It is not the case that we expect that a zone will always phase-2 fail at
+the last transaction. Rather, a mempool should stop validating and drop transactions
+that follow a phase-2 failing transaction, and constructs the block with the
+truncated zone (see [Mempool](#mempool)).
+
+Also, there is no way to check whether a `ZONE-N` valid
 zone is also missing transactions that preceded the phase-2 invalid transaction
 in the original zone. Only missing transactions on which the invalid transaction depends
 directly or via intermediate transactions (and either via spending its outputs or
 spending its requests) will cause a phase-1 failure. Dropping transactions that
 aren't needed for phase-1 validation of a phase-2 invalid zone will free up space
 for additional zones/transactions in a block.
-Rather, a mempool drops subsequent transactions in the process of zone validation
-for the purpose of block construction (see [Mempool](#mempool)).
+
 
 
 ### Flash Loans
 
 A flash loan is a form of uncollateralized lending, e.g. done for the purpose of manipulating
 the market price of an asset. Allowing unconstrained
-combinations of transaction dependencies (both validation and value) also allows
-arbitrary flash loans that can easily be resolved by a subsequent transaction in
+combinations of transaction dependencies (both validation- and value-) makes
+arbitrary flash loans possible that can easily be resolved by subsequent transactions in
 the zone. This would be done by first producing a request containing the flash loan amount,
 then using the loaned assets inside the zone in unconstrained ways, and finally, fulfilling
 this request by a transaction that also consumes the loaned amount.
@@ -606,19 +616,19 @@ of collecting collateral, which cannot perform a flash loan.
 The value ordering requirement is the major driving difference between the design
 in this CIP and the one published in the "Babel Fees via Limited Liabilities" paper.
 The design presented in that work prevented flash loan attacks by
-relying on the use of minting policies - the currency's minting policies is executed
-whenever a transaction changes the total (positive or negative) amount of that currency, e.g.
-a transaction 0 Ada in its inputs, but make a request with the amount of Ada
-it requires to pay transaction fees. This solution will not work for our design
-because many existing minting policies, e.g. of Ada, will fail in the usecases
+relying on the use of minting policies - a currency's minting policy is executed
+whenever a transaction changes the total (positive or negative) amount of that currency. E.g.
+if a transaction has 0 Ada in its inputs, but makes a request with the amount of Ada
+it requires to pay transaction fees, the policy-running solution will not work for our design.
+This is because many existing minting policies, e.g. of Ada, will fail in the usecases
 we require for this CIP. Minting policies of existing tokens cannot be changed.
 
 #### Price Manipulation and Frontrunning
 
 Flash loans have to do with price manipulation via changing the total quantities of
-tokens in existence by creating some in association with uncollateralized loans
-(we have addressed this already). It is a kind of frontrunning.
-Frontrunning has to do with the ability of certain entities to manipulate transactions
+tokens in existence by creating some in association with uncollateralized loans.
+They can be considered a specific a kind of frontrunning.
+Frontrunning, in general, has to do with the ability of certain entities to manipulate transactions
 through displacement, suppression, or insertion. This amounts to manipulating
 asset prices as well as controlling who gets to benefit from the trades.
 
@@ -750,6 +760,15 @@ There are a few approaches to cancellation that are compatible with the current 
 
 These approaches have different tradeoffs and different ones may be appropriate for different situations.
 A full approach to cancellation would also have to consider how to
+
+#### Era transition
+
+A hard fork (era transition) is required to implement the changes proposed above,
+currently implemented as a new `Babel` era.
+A full set of features to be included in this era must be determined and agreed upon.
+Additional development, analysis, testing, etc. will be required if more changes
+are included.
+So far, the validation zones proposal is not coupled with additional features.
 
 #### Callout to the Community
 
@@ -885,7 +904,7 @@ When developing this proposal based on the
 paper, we have observed a number of clashes between ledger design principles and
 the proposal in the paper, as well as possible attack vectors. The key ones are :
 
-**Intoducing liabilities**.
+**Introducing liabilities**.
 New ledger features must always be implemented using new transaction field, rather
 than repurposing existing ones. So, _liabilities_ (which we call requests and
 fulfills here) cannot be introduced by simply allowing negative quantities in
