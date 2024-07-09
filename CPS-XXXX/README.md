@@ -1,5 +1,5 @@
 ---
-CPS: ????
+CPS: 16
 Title: Cardano URIs
 Status: Open
 Category: Tools
