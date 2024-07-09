@@ -4,8 +4,9 @@ Title: Babel fees via validation zones
 Category: Ledger
 Status: Proposed
 Authors:
-    - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Polina Vinogradova <polina.vinogradova@iohk.io>
+    - Michael Peyton Jones <michael.peyton-jones@iohk.io>    
+    - Will Gould <will.gould@iohk.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/780
@@ -71,7 +72,7 @@ We also define the type of fulfills, which is the same as the type of inputs, `F
 We add another new field to the transaction body, called `fulfills`,
 which has the same type as the structure containing transaction inputs, `\powerset Input`.
 
-Requests and fulfills are examples of a way to submit and resolve specific kind
+Requests and fulfills are examples of a way to submit and resolve one specific kind
 of _intents_. Whenever we discuss changes that are specific to the Babel fees/swaps
 usecase, we will refer to requests and fulfills. When generalization is
 possible, we say intents.
@@ -291,7 +292,7 @@ The ledger changes follow the specification changes outlined above, however,
 we discuss additional things to consider in the process of integrating them into
 the current ledger design in a way that follows
 its principles and constraints. The prototype for ledger changes can be found
-[here](https://github.com/IntersectMBO/cardano-ledger/compare/master...willjgould:cardano-ledger:wg/babel-fees-babel-era?expand=1#)
+[here](https://github.com/IntersectMBO/cardano-ledger/pull/4477/files)
 
 #### New Era
 
@@ -305,18 +306,132 @@ certain existing types to associated types that differ across eras.
 All blocks types in all previous eras contain sequences of transactions.
 We must allow Babel blocks to contain zones instead.
 
+To support this in the prototype, we've changed the block structure from:
+
+```
+data Block h era
+  = Block' h (TxSeq era) BSL.ByteString
+  
+class
+  EraSegWits era
+  where
+  type TxSeq era = (r :: Type) | r -> era
+  fromTxSeq :: TxSeq era -> StrictSeq (Tx era)
+  toTxSeq :: StrictSeq (Tx era) -> TxSeq era
+```
+
+To:
+
+```
+data Block h era
+  = Block' h (TxZones era) BSL.ByteString
+  
+class
+  EraSegWits era
+  where
+  type TxStructure era :: Type -> Type
+  type TxZones era = (r :: Type) | r -> era
+
+  fromTxZones :: TxZones era -> TxStructure era (Tx era)
+  toTxZones :: TxStructure era (Tx era) -> TxZones era
+```
+  
+This allows us to talk about an abstract collection of transactions, `TxZones`, and also specify the concrete structure on a per-era basis. For example:
+
+```
+instance Crypto c => EraSegWits (ConwayEra c) where
+  type TxStructure (ConwayEra c) = StrictSeq
+  type TxZones (ConwayEra c) = AlonzoTxSeq (ConwayEra c)
+  fromTxZones = txSeqTxns
+  toTxZones = AlonzoTxSeq
+
+instance Crypto c => Core.EraSegWits (BabelEra c) where
+  type TxStructure (BabelEra c) = Compose StrictSeq StrictSeq
+  type TxZones (BabelEra c) = BabelTxZones (BabelEra c)
+  fromTxZones = Compose . txZonesTxns
+  toTxZones = BabelTxZones . getCompose
+```
+  
+For more information, search for `CIP-0118#block-structure-0` in the codebase.
+
+#### Transaction structure
+
+```
+data TransactionBody = TransactionBody
+  { ...
+  , fulfills :: Set Fulfill
+  , requests :: StrictSeq Request
+  , requiredTxs :: Set TxIn
+  }
+  
+type Fulfill = TxIn
+type Request = TxOut
+```
+
+It's important to note that this structure (the `requiredTxs` being in the `TransactionBody`, rather than alongside the `TransactionBody`) is a convenience
+that allows us to sidestep difficulties with signing. It does, however, prevent us from allowing `requiredTxs` which refer to each other. This does not hinder the Babel fees use case, though.
+  
+For more information, search for `CIP-0118#tx-body-0` in the codebase.
+
 #### Ledger State
 
-**Decision Required**. Do we use `Temp` states in addition to current ledger state
-or change the main state to include the `FRxO`?
+There's a choice to be made around whether we simply add a new field for `FRxO`s to the existing `LedgerState`, or use the `LedgerStateTemp` concept from the Agda specification.
+
+In our prototype, we've taken the `LedgerStateTemp` approach:
+
+```
+data LedgerStateTemp era = LedgerStateTemp
+  { lstUTxOState :: !(UTxOStateTemp era)
+  , lstCertState :: !(CertState era)
+  }
+  deriving (Generic)
+  
+data UTxOStateTemp era = UTxOStateTemp
+  { utxostUtxo :: !(UTxO era)
+  , utxostFrxo :: !(FRxO era)
+  , utxostDeposited :: Coin
+  , utxostFees :: !Coin
+  , utxostGovState :: !(GovState era)
+  , utxostStakeDistr :: !(IncrementalStake (EraCrypto era))
+  , utxostDonation :: !Coin
+  }
+  deriving (Generic)
+```
+
+This precisely describes what the rules are doing: `FRxO`s cannot exist outside of the LEDGERS rule.
+
+However, the alternative approach of adding the `FRxO` as a field to the `LedgerState` is also fine:
+
+```
+data UTxOState era = UTxOState
+  { ...
+  , utxosFrxo :: FRxO era
+  }
+  deriving (Generic)
+```
+
+It should be noted, however, that if this second approach is taken, an additional check should done in the ZONE rule to ensure that `utxosFrxo == ∅`.
 
 #### CBOR
 
+The following additions to the `.cddl` file for supporting eras should be made:
 
+```
+transaction_body =
+  { ...
+  , ? 23 : set<intent_fulfill>             ; New; Intent fulfillments
+  , ? 24 : [* intent_request]              ; New; Intent asks/ requests
+  , ? 25 : set<transaction_input>          ; New; Required transactions
+  }
+
+intent_fulfill = transaction_input
+intent_request = transaction_output
+fulfillment_request_transaction_output = [(intent_fulfill, intent_request)]
+```
 
 ### New Plutus Version
 
-A in the case of any ledger changes involving new transaction fields, a new Plutus
+As in the case of any ledger changes involving new transaction fields, a new Plutus
 version will be necessary to implement this CIP. The necessary changes to
 the latest existing version (V3?) include :
 
