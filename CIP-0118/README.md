@@ -304,6 +304,8 @@ All blocks types in all previous eras contain sequences of transactions. We must
 The component of the existing (old) block structure we're most concerned with is `TxSeq`. The purpose of `TxSeq` is to act as an abstract representation of a block's transaction structure, including some metadata.
 
 ```
+OLD BLOCK STRUCTURE
+
 data Block h era
   = Block' h (TxSeq era) BSL.ByteString
 
@@ -320,6 +322,8 @@ concrete structure of transactions (without the metadata). Note that this change
 to the needs of the Haskell ledger codebase, but the concept of a per-era block structure is universal.
 
 ```
+NEW BLOCK STRUCTURE
+
 data Block h era
   = Block' h (TxZones era) BSL.ByteString
 
@@ -336,6 +340,8 @@ class
 The important change we've made is the addition of the `TxStructure` associated type. This allows us to be very clear with our intent; we can specify what concrete type the abstract `TxZones` represents per era, rather than mapping from `StrictSeq (StrictSeq (Tx era))` in eras which don't support zones. In other words, this allows us to specify the underlying transaction structure on a per-era basis.
 
   ```
+  NEW CONCRETE INSTANCE OF TRANSACTION STRUCTURE
+
   instance Crypto c => EraSegWits (ConwayEra c) where
     type TxStructure (ConwayEra c) = StrictSeq
     ...
@@ -425,7 +431,7 @@ Note that `UTxOStateTemp` has the same fields as `UTxOState`, but with a new `ut
 
 The transient nature of this structure describes, precisely, the nature of the rules: `FRxO`s cannot exist outside of the LEDGERS rule.
 
-However, the alternative approach of adding the `FRxO` as a field to the `LedgerState` is also fine:
+However, the alternative approach of adding the `FRxO` as a field to the `LedgerState` is also acceptable:
 
 ```
 data UTxOState era = UTxOState
