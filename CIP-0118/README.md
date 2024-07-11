@@ -302,7 +302,11 @@ certain existing types to associated types that differ across eras.
 All blocks types in all previous eras contain sequences of transactions.
 We must allow Babel blocks to contain zones instead.
 
-To support this in the prototype, we've changed the block structure from:
+The key point of the existing (old) block structure is `TxSeq`.
+
+The purpose of `TxSeq` is to act as an abstract representation of a block's transaction structure, including some metadata.
+
+A `TxSeq` can be transformed into a concrete list of transactions.
 
 ```
 data Block h era
@@ -316,7 +320,9 @@ class
   toTxSeq :: StrictSeq (Tx era) -> TxSeq era
 ```
 
-To:
+We've changed the name of `TxSeq` to `TxZones`, and added a new `TxStructure` type to represent the underlying
+concrete structure of transactions (without the metadata). Note that this change is likely to be specific
+to the needs of the Haskell ledger codebase, but the concept of a per-era block structure is universal.
 
 ```
 data Block h era
@@ -332,22 +338,42 @@ class
   toTxZones :: TxStructure era (Tx era) -> TxZones era
 ```
 
-This allows us to talk about an abstract collection of transactions, `TxZones`, and also specify the concrete structure on a per-era basis. For example:
+The important change we've made is the addition of the `TxStructure` associated type.
+This allows us to be very clear with our intent; we can specify what concrete type the abstract `TxZones` represents per era, rather than mapping from `StrictSeq (StrictSeq (Tx era))` in eras which don't support zones. In other words, this allows us to specify the underlying transaction structure on a per-era basis.
 
-```
-instance Crypto c => EraSegWits (ConwayEra c) where
-  type TxStructure (ConwayEra c) = StrictSeq
-  type TxZones (ConwayEra c) = AlonzoTxSeq (ConwayEra c)
-  fromTxZones = txSeqTxns
-  toTxZones = AlonzoTxSeq
+  ```
+  instance Crypto c => EraSegWits (ConwayEra c) where
+    type TxStructure (ConwayEra c) = StrictSeq
+    ...
 
-instance Crypto c => Core.EraSegWits (BabelEra c) where
-  type TxStructure (BabelEra c) = Compose StrictSeq StrictSeq
-  type TxZones (BabelEra c) = BabelTxZones (BabelEra c)
-  fromTxZones = Compose . txZonesTxns
-  toTxZones = BabelTxZones . getCompose
-```
+  instance Crypto c => Core.EraSegWits (BabelEra c) where
+    type TxStructure (BabelEra c) = Compose StrictSeq StrictSeq
+    ...
+  ```
 
+Understand, however, that `TxStructure` itself is very specific to the Haskell ledger codebase. The important change to make is to ensure the block's transaction structure can be different depending on the era.
+
+Omitting `TxStructure` and mapping per era should also be acceptable, if desired:
+  ```
+  fromTxZones :: TxZones era -> StrictSeq (StrictSeq (Tx era))
+  toTxZones :: StrictSeq (StrictSeq (Tx era)) -> TxZones era
+  ```
+
+An example of how this looks, in full, for two eras supporting different structures:
+  ```
+  instance Crypto c => EraSegWits (ConwayEra c) where
+    type TxStructure (ConwayEra c) = StrictSeq
+    type TxZones (ConwayEra c) = AlonzoTxSeq (ConwayEra c)
+    fromTxZones = txSeqTxns
+    toTxZones = AlonzoTxSeq
+
+  instance Crypto c => Core.EraSegWits (BabelEra c) where
+    type TxStructure (BabelEra c) = Compose StrictSeq StrictSeq
+    type TxZones (BabelEra c) = BabelTxZones (BabelEra c)
+    fromTxZones = Compose . txZonesTxns
+    toTxZones = BabelTxZones . getCompose
+  ```
+  
 For more information, search for `CIP-0118#block-structure-0` in the codebase.
 
 #### Transaction structure
@@ -364,9 +390,16 @@ type Fulfill = TxIn
 type Request = TxOut
 ```
 
-It's important to note that this structure (the `requiredTxs` being in the `TransactionBody`, rather than alongside the `TransactionBody`) is a convenience
-that allows us to sidestep difficulties with signing. It does, however, prevent us from allowing `requiredTxs` which refer to each other. This does not hinder the Babel fees use case, though.
+We must add `fulfills` and `requests` fields to the transaction body of whichever eras support the new feature.
 
+The `requiredTxs` field can be added to either the transaction body, as we've done in the prototype, or to the transaction itself.
+
+It's important to note that the structure we've chosen (the `requiredTxs` being in the `TransactionBody`, rather than alongside the `TransactionBody`) is a convenience
+that allows us to sidestep difficulties with signing. It does, however, prevent us from enabling fully atomic zones. To understand why, consider the act of hashing a 
+`TransactionBody` whose `requiredTxs` refer to transactions which, themselves, refer to the `TransactionBody` being currently hashed: it wouldn't terminate.
+
+Not supporting fully atomic zones does not, however, hinder the Babel fees use case.
+  
 For more information, search for `CIP-0118#tx-body-0` in the codebase.
 
 #### Ledger State
@@ -394,7 +427,9 @@ data UTxOStateTemp era = UTxOStateTemp
   deriving (Generic)
 ```
 
-This precisely describes what the rules are doing: `FRxO`s cannot exist outside of the LEDGERS rule.
+Note that `UTxOStateTemp` has the same fields as `UTxOState`, but with a new `utxostFrxo` field for the transient `FRxO`.
+
+The transient nature of this structure describes, precisely, the nature of the rules: `FRxO`s cannot exist outside of the LEDGERS rule.
 
 However, the alternative approach of adding the `FRxO` as a field to the `LedgerState` is also fine:
 
@@ -402,6 +437,7 @@ However, the alternative approach of adding the `FRxO` as a field to the `Ledger
 data UTxOState era = UTxOState
   { ...
   , utxosFrxo :: FRxO era
+  ...
   }
   deriving (Generic)
 ```
