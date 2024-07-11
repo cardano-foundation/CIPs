@@ -333,8 +333,7 @@ class
   toTxZones :: TxStructure era (Tx era) -> TxZones era
 ```
 
-The important change we've made is the addition of the `TxStructure` associated type.
-This allows us to be very clear with our intent; we can specify what concrete type the abstract `TxZones` represents per era, rather than mapping from `StrictSeq (StrictSeq (Tx era))` in eras which don't support zones. In other words, this allows us to specify the underlying transaction structure on a per-era basis.
+The important change we've made is the addition of the `TxStructure` associated type. This allows us to be very clear with our intent; we can specify what concrete type the abstract `TxZones` represents per era, rather than mapping from `StrictSeq (StrictSeq (Tx era))` in eras which don't support zones. In other words, this allows us to specify the underlying transaction structure on a per-era basis.
 
   ```
   instance Crypto c => EraSegWits (ConwayEra c) where
