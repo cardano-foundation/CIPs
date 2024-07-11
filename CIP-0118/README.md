@@ -299,14 +299,9 @@ certain existing types to associated types that differ across eras.
 
 #### Block Structure
 
-All blocks types in all previous eras contain sequences of transactions.
-We must allow Babel blocks to contain zones instead.
+All blocks types in all previous eras contain sequences of transactions. We must allow Babel blocks to contain zones instead.
 
-The key point of the existing (old) block structure is `TxSeq`.
-
-The purpose of `TxSeq` is to act as an abstract representation of a block's transaction structure, including some metadata.
-
-A `TxSeq` can be transformed into a concrete list of transactions.
+The component of the existing (old) block structure we're most concerned with is `TxSeq`. The purpose of `TxSeq` is to act as an abstract representation of a block's transaction structure, including some metadata.
 
 ```
 data Block h era
