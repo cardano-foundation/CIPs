@@ -103,7 +103,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0107 | [URI Scheme - Block and transaction objects](./CIP-0107) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
-| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
+| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Active |
 | 0112 | [Observe script type](./CIP-0112) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
