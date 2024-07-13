@@ -113,7 +113,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
 | 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
 | 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Proposed |
-| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
+| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Proposed |
