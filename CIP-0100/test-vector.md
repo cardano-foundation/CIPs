@@ -18,7 +18,7 @@ See [cip-0100.common.schema.json](./cip-0100.common.schema.json).
 
 CIP-100 off-chain metadata json example: [example.json](./example.json)
 
-Blake2b-256 hash of the file (to go on-chain): `04af1b48bccbf7cf9b3e3b7952dfbdde0cc851ccb87ae6643521672cc381b00d`
+Blake2b-256 hash of the file (to go on-chain): `7b7d4a28a599bbb8c08b239be2645fa82d63a848320bf4760b07d86fcf1aabdc`
 
 ### Intermediate files
 
@@ -28,7 +28,7 @@ Body files, used to correctly generate author's witness:
 - [example.body.json](./example.body.json)
 - [example.body.nq](./example.body.nq)
 
-Blake2b-256 hash digest of canonicalized body: `cc4ab8ead604ddb498ed4b2916af7b454c65ac783b5d836fddf388e72a40eccb`
+Blake2b-256 hash digest of canonicalized body: `6d17e71c5793ed5945f58bf48e13bb1b3543187ab9c2afbd280a21afb4a90d35`
 
 Whole document canonical representation, used to generate final hash:
 
@@ -71,7 +71,7 @@ For our example this will result in: `cc4ab8ead604ddb498ed4b2916af7b454c65ac783b
 
 Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witness as described in [Hashing and Signatures](./README.md#hashing-and-signatures) for the chosen `witnessAlgorithm`.
 
-For the provided [example.json](./example.json), we use the keys described in [Author](#author) resulting in a `signature` of: `340c2ef8d6abda96769844ab9dca2634ae21ef97ddbfad1f8843bea1058e40d656455a2962143adc603d063bbbe27b54b88d002d23d1dff1cd0e05017cd4f506`
+For the provided [example.json](./example.json), we use the keys described in [Author](#author) resulting in a `signature` of: `68078efeff90970d2320a2bb5021d1aea81bc4907bf33d54fd17989f020719f3f5c4da3dccf7aa61d51c1e6fececd95309c37e7eef331b199cd5f8e78992ea0d`
 
 #### 5. Add `authors` and `hashAlgorithm` to example.json
 
@@ -85,7 +85,7 @@ By adding this information we create our [example.json](example.json).
 
 To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [example.json](example.json) as is
 
-This results in: `04af1b48bccbf7cf9b3e3b7952dfbdde0cc851ccb87ae6643521672cc381b00d`.
+This results in: `7b7d4a28a599bbb8c08b239be2645fa82d63a848320bf4760b07d86fcf1aabdc`.
 
 #### 7. Submit to chain
 
