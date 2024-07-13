@@ -77,7 +77,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0060 | [Music Token Metadata](./CIP-0060) | Active |
 | 0067 | [Asset Name Label Registry](./CIP-0067) | Proposed |
 | 0068 | [Datum Metadata Standard](./CIP-0068) | Active |
-| 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Proposed |
+| 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Active |
 | 0071 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
 | 0072 | [DApp Registration](./CIP-0072) | Proposed |
 | 0074 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
