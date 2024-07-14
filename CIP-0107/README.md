@@ -32,7 +32,8 @@ We extend CIP-13 with 2 new authorities for referencing blocks and transactions.
 
 Examples:
 ```
-web+cardano://block/c6a8976125193dfae11551c5e80a217403d953c08ebbd69bba904d990854011f
+web+cardano://block?hash=c6a8976125193dfae11551c5e80a217403d953c08ebbd69bba904d990854011f
+web+cardano://block?height=12345678890
 web+cardano://transaction/7704a68404facf7126fa356f1b09f0e4c552aeef454cd0daba4208f3a64372e9
 web+cardano://transaction/7704a68404facf7126fa356f1b09f0e4c552aeef454cd0daba4208f3a64372e9#1
 web+cardano://transaction/7704a68404facf7126fa356f1b09f0e4c552aeef454cd0daba4208f3a64372e9/metadata
