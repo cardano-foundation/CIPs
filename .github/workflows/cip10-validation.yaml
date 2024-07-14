@@ -1,0 +1,30 @@
+name: CIP-10 - Validate Registry JSON on Pull Request
+
+on:
+  pull_request:
+    paths:
+      - 'CIP-0010/registry.json'
+
+jobs:
+  approve: # Pre-approval step
+    runs-on: ubuntu-latest
+    steps:
+    - name: Approve
+      run: echo For security reasons, all pull requests need to be approved first before running any automated CI.
+
+  validate-json:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '21'
+
+    - name: Install dependencies
+      run: npm install ajv-cli
+
+    - name: Validate JSON against schema
+      run: npx ajv validate -s CIP-0010/registry.schema.json -d CIP-0010/registry.json  > /dev/null
