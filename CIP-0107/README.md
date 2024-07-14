@@ -22,7 +22,7 @@ CIP-13 defined two initial URL authorities, for payment links and delegating to 
 
 However, in a number of contexts, it would be useful to canonically link to other Cardano objects, such as:
 - Providing links to a transaction, to be opened in a wallet or chain explorer of the users choice
-- To provide richly interconnected metadata, such as in [CIP-100](https://github.com/cardano-foundation/CIPs/pull/556)
+- To provide richly interconnected metadata, such as in [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100)
 
 Without a canonical standard for how to define these URIs, these objects are either unaddressable, not machine-interpretable, or will suffer from a divergence of convention. Similarly, we seek to fit an existing structure, such as CIP-0013, to reduce the number of different conventions that need be supported by the ecosystem.
 
