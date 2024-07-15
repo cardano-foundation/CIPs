@@ -108,7 +108,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
 | 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
-| 0117 | [Explicit script return values](./CIP-0117) | Proposed |
+| 0117 | [Explicit script return values](./CIP-0117) | Active |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
 | 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
