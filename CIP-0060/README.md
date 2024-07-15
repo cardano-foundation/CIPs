@@ -47,26 +47,28 @@ This CIP divides the additional metadata parameters into two categories of `Requ
 In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_title`. `release` is a more generic name that covers all types of releases from Albums, EPs, LPs, Singles, and Compilations. At the top level, we are grouping those metadata items that relate to the release under a new key `release`. At the file for each song, there is a new `song` key that holds the metadata specific to the individual song. These changes separate the music-specific metadata from the general CIP-25/CIP-68 NFT metadata. A music player can look at just the information necessary instead of having to ignore extra NFT-related fields. CIP-68 NFTs are officially supported and an example specific to CIP-68 has been added below.
 
 ### Summary of v3  Proposed Changes ###
-Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with. `contributing_artists`, `artists`, and `featured_artists` fields are explicitly defined to reduce interpretation.  `ipi` array replaced with `author` array, which includes `ipi` key.  Removed the `parental_advisory` field, as it was redundant (`explicit` is all players need to look for). `lyricist` is removed and merged into `contributing_artist`, under `role`.
+Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with. `contributing_artists`, `artists`, and `featured_artists` fields are explicitly defined to reduce interpretation.  `ipi` array replaced with `author` array, which includes `ipi` key.  Removed the `parental_advisory` field, as it was redundant (`explicit` is all players need to look for). `lyricist` is removed and merged into `contributing_artist`, under `role`.  Copyright is moved to optional fields, as many situations, including AI generated content, bring forth conditions where copyright is not applicable.
 
 ### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| artists     | Array\<Artist\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty", "isni":"xxxxxxxxxxxxxxx" }<br/>] | Players should use these values to determine the song's artist.  Should be kept minimal. |
+| artists     | Array\<Artist\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty", "isni":"xxxxxxxxxxxxxxx" }<br/>] | Players should use these values to determine the song's artist, and should be kept minimal. |
 | release_title| String | "release_title": "Mr. Bad Guy" | |
 | track_number | Integer | "track_number": 1 | |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
 | song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format |
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. |
-| copyright | String | "copyright": "℗ 1985 Sony Records" | |
 | release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc...|
 | music_metadata_version | Integer | "music_metadata_version" : 1 | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
 
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as the author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Can optionally contain `role` key, replacing `lyricist` |
+| copyright | String | "copyright": "℗ 1985 Sony Records" | |
+| ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are significantly AI generated, as they may not qualify as copyrighted material |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Can optionally contain `role` key, replacing `lyricist` |
 | role | string | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"xxxxxxxxxxxxxxxx", "role": "guitars/vocals"}] | This optionally clarifies the contribution made by the contributor in question. |
+| ipn | Array\<String\> | "contributing_artists": [{"name":"Contributor", "ipn": "xxxxxxxxxxx", "role: "synths/programming/vocals"}] | Included within `contributing_artists` array, associating the IPN with a specific performer |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
@@ -91,8 +93,8 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
 | authors | Array\<Author\> | "authors": [{"name": "Author Name", "ipi":"595014347"},{"name":"Author Name2", "ipi":"342287075"},{"ipi":"550983139"}] | `ipi` array changed to "authors", allowing searching and indexing by songwriter.  `name` key optional, should psuedo-anonimity be desired.|
-| ipn | Array\<String\> | "contributing_artists": [{"name":"Contributor", "ipn": "xxxxxxxxxxx"}] | Included within `contributing_artists` array, associating the IPN with a specific performer |
-| isni | Array\<String\> | "artists": [{"name":"AwesomeArtist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the `artists` array within an object so players can distinguish between similar named entities|
+
+| isni | Array\<String\> | "artists": [{"name":"Awesome Artist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the `artists` array within an object so players can distinguish between similar named entities|
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
@@ -178,30 +180,42 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                             "mood": "<mood>",
                             "artists":
                             [
-                                { "name": "<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":
-                            {
-                                "<linkName>": "<url>",
-                                "<link2Name>": "<url>",
-                                "<link3Name>": "<url>"
-                            } }
+                            { "name": "<artistName>",
+                               "isni":"xxxxxxxxxxxxxxxxx",
+                                 "links":
+                                        {
+                                        "<linkName>": "<url>",
+                                        "<link2Name>": "<url>",
+                                        "<link3Name>": "<url>"
+                                        }
+                                }
                             ],
                             "featured_artists":
                                 [
-                                {"name":"<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":{
-                                "<linkName>": "<url>",
-                                "<link2Name>": "<url>",
-                                "<link3Name>": "<url>"
-                                }}
+                                {"name":"<artistName>",
+                                 "isni":"xxxxxxxxxxxxxxxxx",
+                                 "links":{
+                                        "<linkName>": "<url>",
+                                        "<link2Name>": "<url>",
+                                        "<link3Name>": "<url>"
+                                        }
+                                }
                                 ],
                             "contributing_artists":[
                                 {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                    "name":"<artistName>",
+                                    "ipn":"xxxxxxxxxxxx",
+                                    "role":"roleDescription"
                                 },
                                 {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                    "name":"<artistName>",
+                                    "ipn":"xxxxxxxxxxxx",
+                                    "role":"roleDescription"
                                 },
                                 {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                    "name":"<artistName>",
+                                    "ipn":"xxxxxxxxxxxx",
+                                    "role":"roleDescription"
                                 }
                             ],
                             "collection": "<collectionName>",
@@ -226,30 +240,42 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                             "mood": "<mood>",
                             "artists":
                             [
-                                { "name": "<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":
-                            {
-                                "<linkName>": "<url>",
-                                "<link2Name>": "<url>",
-                                "<link3Name>": "<url>"
-                            } }
+                                { "name": "<artistName>",
+                                  "isni":"xxxxxxxxxxxxxxxxx",
+                                  "links":
+                                        {
+                                            "<linkName>": "<url>",
+                                            "<link2Name>": "<url>",
+                                            "<link3Name>": "<url>"
+                                        }
+                                }
                             ],
                             "featured_artists":
                                 [
-                                {"name":"<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":{
-                                "<linkName>": "<url>",
-                                "<link2Name>": "<url>",
-                                "<link3Name>": "<url>"
-                                }}
+                                {"name":"<artistName>",
+                                 "isni":"xxxxxxxxxxxxxxxxx",
+                                 "links":{
+                                          "<linkName>": "<url>",
+                                          "<link2Name>": "<url>",
+                                          "<link3Name>": "<url>"
+                                          }
+                                }
                                 ],
                             "contributing_artists":[
                                 {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                    "name":"<artistName>",
+                                    "ipn":"xxxxxxxxxxxx",
+                                    "role":"roleDescription"
                                 },
                                 {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                    "name":"<artistName>",
+                                    "ipn":"xxxxxxxxxxxx",
+                                    "role":"roleDescription"
                                 },
                                 {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
+                                    "name":"<artistName>",
+                                    "ipn":"xxxxxxxxxxxx",
+                                    "role":"roleDescription"
                                 }
                             ],
                             "collection": "<collectionName>",
