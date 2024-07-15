@@ -19,11 +19,12 @@ This CIP proposes to replace the current Spend purpose with another one called S
 
 SpendMany is executed only once for the whole transaction and it comes with 2 parameters:
 - The current script hash
-- The list of the indexes of the inputs that are being spent from this script  
+- The list of the indexes of the inputs that are being spent from this script
+
 The second parameter is used to easily identify all the current script inputs in the script Context.
 
 As this change could take a while to be implemented, this CIP proposes also another quick workaround:
-we add in the Context a Map<Hash, List<InputIndex>> where the keys are the transaction's script hashes and the values are lists containing the indexes of the Inputs that come from these scripts.
+we add in the Context a ```Map<Hash, List<InputIndex>>``` where the keys are the transaction's script hashes and the values are lists containing the indexes of the Inputs that come from these scripts.
 
 ## Motivation: why is this CIP necessary?
 
@@ -34,7 +35,7 @@ Additionally, most of the times, the smart contract should also validate conditi
 Validating N inputs separately means wasting a lot of resources (computational and transaction fees) because these conditions must be checked N times.
 To circumvent this and get more performant smart contracts, the development community came up with the "Withdraw Zero" trick, which consists in using a separated WithdrawFrom script that will be executed only once for the full transaction. While this is a dirty hack used to circumvent the current status of the validator specification, it also still requires to check that the WithdrawFrom script is present for each script Input, wasting resources.
 
-These problems have been briefly discussed in CPS-0004.
+These problems have been briefly discussed in [CPS-0004](https://github.com/cardano-foundation/CIPs/pull/418).
 
 It is therefore necessary to replace the existing Spend purpose with a new one that I called SpendMany.
 The objective is to reduce the time complexity from O(n) to O(1) while keeping the development experience easy.
@@ -46,7 +47,7 @@ By using SpendMany we officially get rid of the need of using dirty hacks and un
 
 Even if it's not a dependency, this CIP works very well with the [CIP for Transaction Inputs as Unordered Set](https://github.com/cardano-foundation/CIPs/pull/758).
 
-Even if this CIP looks as an alternative to [CIP-112](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112), they can perfectly co-exist.
+Even if this CIP looks as an alternative to [CIP-112](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112), they can perfectly co-exist. Additionally this CIP drastically simplifies the development experience.
 
 If the changes formalized by this CIP can't be implemented within a reasonable timeframe, I at least suggest to implement the following change: adding in the script Context a new field called inputIndexesByScriptHashes of type ```Map<Hash, List<Int>>``` where the keys are the transaction's script hashes and the values are lists containing the indexes of the Inputs that come from these scripts.
 This change will allow to easily validate all the script inputs with either the CIP-112 or the already existing "Withdraw Zero" hack.
