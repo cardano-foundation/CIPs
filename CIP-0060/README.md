@@ -93,7 +93,6 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
 | authors | Array\<Author\> | "authors": [{"name": "Author Name", "ipi":"595014347"},{"name":"Author Name2", "ipi":"342287075"},{"ipi":"550983139"}] | `ipi` array changed to "authors", allowing searching and indexing by songwriter.  `name` key optional, should psuedo-anonimity be desired.|
-
 | isni | Array\<String\> | "artists": [{"name":"Awesome Artist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the `artists` array within an object so players can distinguish between similar named entities|
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | country_of_origin | String | "country_of_origin": "United States" | |
