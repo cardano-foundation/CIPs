@@ -67,8 +67,8 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | copyright | String | "copyright": "℗ 1985 Sony Records" | |
 | ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are significantly AI generated, as they may not qualify as copyrighted material |
 | contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Can optionally contain `role` key, replacing `lyricist` |
-| role | string | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"xxxxxxxxxxxxxxxx", "role": "guitars/vocals"}] | This optionally clarifies the contribution made by the contributor in question. |
-| ipn | Array\<String\> | "contributing_artists": [{"name":"Contributor", "ipn": "xxxxxxxxxxx", "role: "synths/programming/vocals"}] | Included within `contributing_artists` array, associating the IPN with a specific performer |
+| role | String | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"xxxxxxxxxxxxxxxx", "role": "guitars/vocals"}] | This optionally clarifies the contribution made by the contributor in question. |
+| ipn | String | "contributing_artists": [{"name":"Contributor", "ipn": "xxxxxxxxxxx", "role: "synths/programming/vocals"}] | Included within `contributing_artists` array, associating the IPN with a specific performer |
 | series | string | "series": "That's What I call Music" | |
 | collection | string | "collection": "Now Dance" | |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
@@ -93,7 +93,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
 | authors | Array\<Author\> | "authors": [{"name": "Author Name", "ipi":"595014347"},{"name":"Author Name2", "ipi":"342287075"},{"ipi":"550983139"}] | `ipi` array changed to "authors", allowing searching and indexing by songwriter.  `name` key optional, should psuedo-anonimity be desired.|
-| isni | Array\<String\> | "artists": [{"name":"Awesome Artist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the `artists` array within an object so players can distinguish between similar named entities|
+| isni | String | "artists": [{"name":"Awesome Artist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the `artists` array within an object so players can distinguish between similar named entities|
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
