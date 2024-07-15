@@ -32,29 +32,83 @@ Even when a single utxo must be validated, all the recent smart contracts allow 
 
 Additionally, most of the times, the smart contract should also validate conditions of the transaction as a whole, for example the validity range or the sum of the Values of all the Inputs.
 Validating N inputs separately means wasting a lot of resources (computational and transaction fees) because these conditions must be checked N times.
-To circumvent this and get more performant smart contracts, the development community came up with the "Withdraw Zero" trick, which consists in using a separated WithdrawFrom script that will be executed only once for the full transaction. While this is a dirty hack used to circumvent the current status of the validator specification, it also still requires to check that the WithdrawFrom script is present for each script Input.
+To circumvent this and get more performant smart contracts, the development community came up with the "Withdraw Zero" trick, which consists in using a separated WithdrawFrom script that will be executed only once for the full transaction. While this is a dirty hack used to circumvent the current status of the validator specification, it also still requires to check that the WithdrawFrom script is present for each script Input, wasting resources.
 
 These problems have been briefly discussed in CPS-0004.
 
 It is therefore necessary to replace the existing Spend purpose with a new one that I called SpendMany.
-Please note that the name doesn't necessarily need to be changed, but we will use SpendMany here to refer to this CIP changes.
+The objective is to reduce the time complexity from O(n) to O(1) while keeping the development experience easy.
+Please note that the name doesn't necessarily need to be changed, but here we will use SpendMany here to refer to these CIP changes.
 
+The SpendMany purpose completely replaces the Spend purpose, because simply adding the new purpose would require extremely difficult changes in the ledger code and because, as discussed above, it covers 100% of the Spend validation use cases.
 
-TODO
+By using SpendMany we officially get rid of the need of using dirty hacks and unnecessary computation.
 
-TODO Alternative
+Even if it's not a dependency, this CIP works very well with the [CIP for Transaction Inputs as Unordered Set](https://github.com/cardano-foundation/CIPs/pull/758).
+
+Even if this CIP looks as an alternative to [CIP-112](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112), they can perfectly co-exist.
+
+If the changes formalized by this CIP can't be implemented within a reasonable timeframe, I at least suggest to implement the following change: adding in the script Context a new field called inputIndexesByScriptHashes of type ```Map<Hash, List<Int>>``` where the keys are the transaction's script hashes and the values are lists containing the indexes of the Inputs that come from these scripts.
+This change will allow to easily validate all the script inputs with either the CIP-112 or the already existing "Withdraw Zero" hack.
 
 ## Specification
 
-TODO
+The type signature of this script type will be the same of the usual Spend validator, except without any Datum, as it can be easily derived for each input, making the type signature the same of Minting and Staking validators:
+
+```Redeemer -> ScriptContext -> () ```
+
+The type signature of the newly introduced Purpose will be:
+
+```SpendMany ByteArray List<Int>```
+
+where:
+- ByteArray is the current script hash
+- List<Int> is the list of Input indexes that must be validated by this script. These are the usual inputs that would normally trigger the execution of Spend validation logic.
+
+### Alternative workaround:
+If SpendMany can't be implemented we should at least add the field inputIndexesByScriptHashes in the script Context :
+```
+-- | TxInfo for PlutusV3
+data TxInfo = TxInfo
+  { txInfoInputs                :: [V2.TxInInfo]
+  , txInfoReferenceInputs       :: [V2.TxInInfo]
+  , txInfoOutputs               :: [V2.TxOut]
+  , txInfoFee                   :: V2.Value
+  , txInfoMint                  :: V2.Value
+  , txInfoTxCerts               :: [TxCert]
+  , txInfoWdrl                  :: Map V2.Credential Haskell.Integer
+  , txInfoValidRange            :: V2.POSIXTimeRange
+  , txInfoSignatories           :: [V2.PubKeyHash]
+  , txInfoRedeemers             :: Map ScriptPurpose V2.Redeemer
+  , txInfoData                  :: Map V2.DatumHash V2.Datum
+  , txInfoId                    :: V2.TxId
+  , txInfoVotingProcedures      :: Map Voter (Map GovernanceActionId VotingProcedure)
+  , txInfoProposalProcedures    :: [ProposalProcedure]
+  , txInfoCurrentTreasuryAmount :: Haskell.Maybe V2.Value
+  , txInfoTreasuryDonation      :: Haskell.Maybe V2.Value
+  , inputIndexesByScriptHashes  :: Map ScriptHash [Haskell.Integer] -- ^ newly introduced list of inputs for each script 
+  }
+```
 
 ## Rationale: how does this CIP achieve its goals?
 
-TODO
+This CIP removes the need of unprofessional hacks to achieve whole-transaction validation while also achieving better computational efficiency.
+A simple chnage of the Spend purpose in SpendMany can simplify the developer experience, giving visibility of all the inputs to validate at once.
+
+### Alternatives
+* We could decide to accept the withdraw-zero staking script trick as an adequate solution, and just preserve the nonsensical withdraw zero case in future language versions.
+* [CIP-112](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112) is a possible valid alternative, but makes the development experience more complicated and doesn't provide an easy list of all the inputs validated by the current validator.
 
 ## Path to Active
 
-TODO
+### Acceptance Criteria
+
+- [ ] These rules included within a official Plutus version, and released via a major hard fork.
+
+### Implementation Plan
+
+- [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
+
 
 ## Copyright
 
