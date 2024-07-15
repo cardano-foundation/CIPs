@@ -98,7 +98,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | derived_from | String | "derived_from" : "Some other work" | |
-| links | Map\<String,String\> | "artists": [<br/>"name":"Andrew Donovan", "links":{"website": "https://website.com",<br/>"twitter": "https://twitter.com/username",<br/>"discord_invite": "https://discord.gg/TEzXxjsN",<br/>"TikTok": "https://www.tiktok.com/@knucklebumpfarms",<br/>"discord_username": "MusicianPerson#8537",<br/>"instagram":"...",<br/>"facebook":"...",<br/>"soundcloud": "...",<br/>"bandcamp": "...",<br/>"spotify": "...",<br/>"apple_music": "..."}}] | included within `artists` and `featured_artists` arrays|
+| links | Map\<String,String\> | "artists": [<br/>"name":"Andrew Donovan", "links":{"website": "https://website.com",<br/>"twitter": "https://twitter.com/username",<br/>}] | included within `artists` and `featured_artists` arrays|
 
 ### Examples ##
 
