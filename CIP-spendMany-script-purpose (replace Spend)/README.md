@@ -24,7 +24,7 @@ SpendMany is executed only once for the whole transaction and it comes with 2 pa
 The second parameter is used to easily identify all the current script inputs in the script Context.
 
 As this change could take a while to be implemented, this CIP proposes also another quick workaround:
-we add in the Context a ```Map<Hash, List<InputIndex>>``` where the keys are the transaction's script hashes and the values are lists containing the indexes of the Inputs that come from these scripts.
+we add in the Context a ```Map<Hash, List<Int>>``` where the keys are the transaction's script hashes and the values are lists containing the indexes of the Inputs that come from these scripts.
 
 ## Motivation: why is this CIP necessary?
 
