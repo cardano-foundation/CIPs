@@ -1,8 +1,8 @@
 ---
 CIP: ????
-Title: Cardano Governance Identifier
+Title: Governance Identifiers
 Status: Proposed
-Category: Wallets
+Category: Tools
 Authors:
   - Ashish Prajapati <ashish@strica.io>
 Implementors: N/A
@@ -76,13 +76,14 @@ Transaction ID is always a 32 byte length, hence we can append the index bytes t
 
 
 TX ID in Hex - `0000000000000000000000000000000000000000000000000000000000000000`
+
 Gov Action index in HEX - `11` (number 17)
 
 gov action ID - `000000000000000000000000000000000000000000000000000000000000000011`
 
 bech32 - `gov_action1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpzklpgpf`
 
-## Bech32 Encoding
+### Bech32 Encoding
 
 | Prefix        | Meaning                                                 | Contents                                                          |
 | ------------- | --------------------------------------------------------| ----------------------------------------------------------------- |
@@ -132,7 +133,12 @@ By introducing a header and payload design for different keys, we can achieve sp
 
 ### Acceptance Criteria
 
-- [] implemented by various tools
+- [ ] implemented by various tools
+
+### Implementation Plan
+This CIP uses some bech32 prefixes already defined for reference by CIP-19, CIP-105, and CIP-005. This CIP does not affect any existing implementation in terms of specs, least it will be required to update the bech32 prefixes defined by these CIPs to a relevant prefix. Author to provide required pull request for affected CIPs.
+
+Wallets and Explorers to utilize the identifiers and bech32 prefixes defined in this CIP for communication and view purposes.
 
 ## Copyright
 
