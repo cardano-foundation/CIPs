@@ -7,7 +7,7 @@ Authors:
     - Matteo Coppola <m.coppola.mazzetti@gmail.com>
 Implementors: []
 Discussions:
-    - 
+    - https://github.com/cardano-foundation/CIPs/pull/858
 Created: 2024-07-13
 License: Apache-2.0
 ---
