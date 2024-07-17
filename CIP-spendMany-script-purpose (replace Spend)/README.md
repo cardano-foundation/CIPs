@@ -5,8 +5,7 @@ Category: Plutus
 Status: Proposed
 Authors:
     - Matteo Coppola <m.coppola.mazzetti@gmail.com>
-Implementors: 
-    - 
+Implementors: []
 Discussions:
     - 
 Created: 2024-07-13
