@@ -52,13 +52,13 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 ### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| artists     | Array\<Artist\>   | "artists": [<br/>  { "name": "Stevie Nicks" },<br/>{ "name": "Tom Petty", "isni":"xxxxxxxxxxxxxxx" }<br/>] | Players should use these values to determine the song's artist, and should be kept minimal. |
-| release_title| String | "release_title": "Mr. Bad Guy" | |
-| track_number | Integer | "track_number": 1 | |
-| song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" | |
+| artists     | Array\<Artist\>   | "artists": [{"Sick City":{"isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}}] | Players should use these values to determine the song's artist, and should be kept minimal. |
+| release_title| String | "release_title": "Mr. Bad Guy" | Included in `release` |
+| track_number | Integer | "track_number": 1 |  Included in `song` |
+| song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" |  Included in `song` |
 | song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format |
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. |
-| release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc...|
+| release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc.   Included in `song`|
 | music_metadata_version | Integer | "music_metadata_version" : 1 | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
 
 #### Optional Fields ###
@@ -66,7 +66,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | -------- | -------- | -------- | -------- |
 | copyright | String | "copyright": "℗ 1985 Sony Records" | Included in `song` |
 | ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are significantly AI generated, as they may not qualify as copyrighted material |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"<contributorName>":{"ipn":"<ipn>", "role":["roleDescription", "roleDescription"]} }]| Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipi` and `role` array. |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"Jimmy Lando":{"ipn":"158743685", "role":["guitars", "vocals"]} }]| Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipi` and `role` array. |
 | series | string | "series": "That's What I call Music" | Included in `song` |
 | collection | string | "collection": "Now Dance" | Included in `song` |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | Included in `song` |
@@ -74,7 +74,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | lyrics | URL | "lyrics": "ipfs://QmSmadTEhB9bJQ1WHq58yN1YZaJo4jv5BwVNGaePvEj4Fy" | Included in `song` |
 | special_thanks | Array\<String\> | "special_thanks": ["Your mom","Your grandma"] | Included in `song` |
 | visual_artist | String | "visual_artist": "beeple" | Included in `song` |
-| distributor | String | "distributor": "https://newm.io" | Included in `song` |
+| distributor | String | "distributor": "https://newm.io" | Included in `release` |
 | release_date | String | "release_date": "2022-07-27" | ISO8601 Date Format, included in `song` |
 | publication_date | String | "publication_date": "2022-07-27" | ISO8601 Date Format, included in `song` |
 | catalog_number | Integer | "catalog_number": 2 | Included in `song` | 
@@ -84,16 +84,16 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | mastering_engineer | String | "mastering_engineer": "Michael Tyson" | Included in `song` |
 | producer | String | "producer": "Simon Cowell" | Included in `song` |
 | co_producer | String | "co_producer": "Shavaun Dempsey" | Included in `song` |
-| featured_artists | Array\<Artist\> | "featured_artists": [{"<artistName>":{"isni":"<isni>", "links"{"<linkName>":"<url>}" }}] | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)" .  Includes `isni` and `links` keys.  Should be kept minimal. |
-| recording_engineer | String | "recording_engineer": "Sharon Liston" | |
-| explicit | Boolean | "explicit": true | | *
-| isrc | String | "isrc": "US-SKG-22-12345" | |
-| iswc | String | "iswc": "T-123456789-Z" | |
-| authors | Array\<Author\> | "authors": [{"<authorName":{"ipi:"<ipi>", "share":"<percentage>"}}] | Publishers and authors will be listed here, by IPI  |
+| featured_artists | Array\<Artist\> | "featured_artists": [{"Paul McCartney":{"isni":"xxxxxxxxx", "links"{"website":"www.paulmccartney.com"} }}] | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)" .  Includes `isni` and `links` keys.  Should be kept minimal. |
+| recording_engineer | String | "recording_engineer": "Sharon Liston" |  Included in `song` |
+| explicit | Boolean | "explicit": true |  Included in `song` | 
+| isrc | String | "isrc": "US-SKG-22-12345" |  Included in `song` |
+| iswc | String | "iswc": "T-123456789-Z" |  Included in `song` |
+| authors | Array\<Author\> | "authors": [{"Mark Ronson":{"ipi:"157896357", "share":"25%"}}] | Publishers and authors will be listed here, by IPI  |
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
-| country_of_origin | String | "country_of_origin": "United States" | |
-| language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
-| derived_from | String | "derived_from" : "Some other work" | |
+| country_of_origin | String | "country_of_origin": "United States" |  Included in `song` | 
+| language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 | Included in `song` |
+| derived_from | String | "derived_from" : "Some other work" |  Included in `song`|
 
 ### Examples ##
 
