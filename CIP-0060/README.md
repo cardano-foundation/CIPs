@@ -65,7 +65,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
 | copyright | String | "copyright": "℗ 1985 Sony Records" | Included in `song` |
-| ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are significantly AI generated, as they may not qualify as copyrighted material |
+| ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are significantly AI generated. |
 | contributing_artists |  Array\<Artist\> | "contributing_artists": [{"Jimmy Lando":{"ipn":"158743685", "role":["guitars", "vocals"]} }]| Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipi` and `role` |
 | series | string | "series": "That's What I call Music" | Included in `release` |
 | collection | string | "collection": "Now Dance" | Included in `release` |
