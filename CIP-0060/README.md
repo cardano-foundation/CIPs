@@ -89,7 +89,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | explicit | Boolean | "explicit": true | | *
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
-| authors | Array\<Author\> | "authors": [{"name": "publisher_name", "ipi":"595014347", "role":"publisher"},{"name":"Author Name2", "ipi":"342287075", "role":"songwriter/author"},{"ipi":"550983139"}] | `ipi` array changed to "authors", allowing searching and indexing by songwriter.  `name` key optional, should psuedo-anonimity be desired.  Publishers will be listed here, and designated within "role" key.  |
+| authors | Array\<Author\> | "authors": [{"<authorName":{"ipi:"<ipi>", "share":"<percentage>"}}] | Publishers and authors will be listed here, by IPI  |
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
@@ -105,10 +105,11 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                 "name": "<releaseName>",
                 "image": "<mediaURL>",
                 "music_metadata_version": 3,
-                "release_type": "<Single/Multiple>",
-                "release_title": "<releaseTitle>",
-                "distributor": "<distributor>"
-                
+                "release":{
+                        "release_type": "<Single/Multiple>",
+                        "release_title": "<releaseTitle>",
+                        "distributor": "<distributor>"
+                          },                
                 "files": [
                     {
                         "name": "<fileName>",
