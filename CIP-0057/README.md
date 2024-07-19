@@ -15,6 +15,7 @@ Implementors:
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/258
   - https://discord.gg/yUkkhqBnyV
+  - https://github.com/aiken-lang/aiken/issues/972
 Created: 2022-05-15
 License: CC-BY-4.0
 ---
@@ -65,13 +66,23 @@ Note that examples of specifications are given later in the document to keep the
 
 The `preamble` fields stores meta-information about the contract such as version numbers or a short description. This field is mainly meant for humans as a mean to contextualize a specification.
 
-| Fields         | Description                                                              |
-| ---            | ---                                                                      |
-| title          | A short and descriptive title of the application                         |
-| ?description   | A more elaborate description                                             |
-| ?version       | A version number for the project.                                        |
-| ?plutusVersion | The Plutus version assumed for all validators                            |
-| ?license       | A license under which the specification and contract code is distributed |
+| Fields         | Description                                                                  |
+| ---            | ---                                                                          |
+| title          | A short and descriptive title of the application                             |
+| ?description   | A more elaborate description                                                 |
+| ?version       | A version number for the project.                                            |
+| ?compiler      | Information about the compiler or framework used to produce the validator(s) |
+| ?plutusVersion | The Plutus version assumed for all validators                                |
+| ?license       | A license under which the specification and contract code is distributed     |
+
+#### compiler
+
+The `compiler` field is optional, but allows specifying metadata about the toolkit that produced the validator and blueprint.
+
+| Fields   | Description                                                      |
+| ---      | ---                                                              |
+| name     | The name of the compiler/framework/tool that generated the file. |
+| ?version | An optional version number in any format.                        |
 
 #### validators
 
