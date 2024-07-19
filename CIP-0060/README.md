@@ -64,62 +64,52 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| copyright | String | "copyright": "℗ 1985 Sony Records" | |
+| copyright | String | "copyright": "℗ 1985 Sony Records" | Included in `song` |
 | ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are significantly AI generated, as they may not qualify as copyrighted material |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Dolly Parton"}]<br/>*or*<br/>"contributing_artists": [<br/>{"name":"Brad Paisley"},{"name":"Keith Urban", "ipn":"xxxxxxxxxxx"}<br/>] | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Can optionally contain `role` key, replacing `lyricist`. |
-| role | String | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"xxxxxxxxxxxxxxxx", "role": "guitars/vocals"}] | This optionally clarifies the contribution made by the contributor in question within `contributing_artist` as well as declaring role within `authors`. |
-| ipn | String | "contributing_artists": [{"name":"Contributor", "ipn": "xxxxxxxxxxx", "role: "synths/programming/vocals"}] | Included within `contributing_artists` array, associating the IPN with a specific performer |
-| series | string | "series": "That's What I call Music" | |
-| collection | string | "collection": "Now Dance" | |
-| set | string | "set": "86 - 20 Smash Dance Hits of the Year" | |
-| mood | String | "mood": "Empowered" | |
-| lyrics | URL | "lyrics": "ipfs://QmSmadTEhB9bJQ1WHq58yN1YZaJo4jv5BwVNGaePvEj4Fy"<br/>*or*<br/>"lyrics": "https://website.com/song_lyrics.txt" |  |
-| special_thanks | Array\<String\> | "special_thanks": ["Your mom","Your grandma"] | |
-| visual_artist | String | "visual_artist": "beeple" | |
-| distributor | String | "distributor": "https://newm.io" | |
-| release_date | String | "release_date": "2022-07-27" | ISO8601 Date Format |
-| publication_date | String | "publication_date": "2022-07-27" | ISO8601 Date Format |
-| catalog_number | Integer | "catalog_number": 2 | | 
-| bitrate | String | "bitrate": "256 kbit/s" | |
-| bpm | String | "bpm": "120 BPM" | |
-| mix_engineer | String | "mix_engineer": "Robert Smith II" | |
-| mastering_engineer | String | "mastering_engineer": "Michael Tyson" | |
-| producer | String | "producer": "Simon Cowell" | |
-| co_producer | String | "co_producer": "Shavaun Dempsey" | |
-| featured_artists | Array\<Artist\> | "featured_artists": {"name": "The Temptations"} | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)" .  Also may include ISNI identifier and `links` within the object.  Should be kept minimal. |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"<contributorName>":{"ipn":"<ipn>", "role":["roleDescription", "roleDescription"]} }]| Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipi` and `role` array. |
+| series | string | "series": "That's What I call Music" | Included in `song` |
+| collection | string | "collection": "Now Dance" | Included in `song` |
+| set | string | "set": "86 - 20 Smash Dance Hits of the Year" | Included in `song` |
+| mood | String | "mood": "Empowered" | Included in `song` |
+| lyrics | URL | "lyrics": "ipfs://QmSmadTEhB9bJQ1WHq58yN1YZaJo4jv5BwVNGaePvEj4Fy" | Included in `song` |
+| special_thanks | Array\<String\> | "special_thanks": ["Your mom","Your grandma"] | Included in `song` |
+| visual_artist | String | "visual_artist": "beeple" | Included in `song` |
+| distributor | String | "distributor": "https://newm.io" | Included in `song` |
+| release_date | String | "release_date": "2022-07-27" | ISO8601 Date Format, included in `song` |
+| publication_date | String | "publication_date": "2022-07-27" | ISO8601 Date Format, included in `song` |
+| catalog_number | Integer | "catalog_number": 2 | Included in `song` | 
+| bitrate | String | "bitrate": "256 kbit/s" | Included in `song` |
+| bpm | String | "bpm": "120 BPM" | Included in `song`|
+| mix_engineer | String | "mix_engineer": "Robert Smith II" | Included in `song` |
+| mastering_engineer | String | "mastering_engineer": "Michael Tyson" | Included in `song` |
+| producer | String | "producer": "Simon Cowell" | Included in `song` |
+| co_producer | String | "co_producer": "Shavaun Dempsey" | Included in `song` |
+| featured_artists | Array\<Artist\> | "featured_artists": [{"<artistName>":{"isni":"<isni>", "links"{"<linkName>":"<url>}" }}] | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)" .  Includes `isni` and `links` keys.  Should be kept minimal. |
 | recording_engineer | String | "recording_engineer": "Sharon Liston" | |
-| release_version | Integer | "release_version": 2 | |
 | explicit | Boolean | "explicit": true | | *
 | isrc | String | "isrc": "US-SKG-22-12345" | |
 | iswc | String | "iswc": "T-123456789-Z" | |
 | authors | Array\<Author\> | "authors": [{"name": "publisher_name", "ipi":"595014347", "role":"publisher"},{"name":"Author Name2", "ipi":"342287075", "role":"songwriter/author"},{"ipi":"550983139"}] | `ipi` array changed to "authors", allowing searching and indexing by songwriter.  `name` key optional, should psuedo-anonimity be desired.  Publishers will be listed here, and designated within "role" key.  |
-| isni | String | "artists": [{"name":"Awesome Artist", "isni":"xxxx-xxxx-xxxx-xxxx"}] | Included within the `artists` array within an object so players can distinguish between similar named entities|
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | country_of_origin | String | "country_of_origin": "United States" | |
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 |
 | derived_from | String | "derived_from" : "Some other work" | |
-| links | Map\<String,String\> | "artists": [<br/>"name":"Andrew Donovan", "links":{"website": "https://website.com",<br/>"twitter": "https://twitter.com/username",<br/>}] | included within `artists` and `featured_artists` arrays|
 
 ### Examples ##
 
 ```
 {
-    "721":
-    {
-        "<policyId>":
-        {
-            "<assetName>":
-            {
+    "721": {
+        "<policyId>": {
+            "<assetName>": {
                 "name": "<releaseName>",
                 "image": "<mediaURL>",
                 "music_metadata_version": 3,
-                "release": {
-                    "release_type": "<Single/Multiple>",
-                    "release_title": "<releaseTitle>",
-                    "distributor": "<distributor>"
-                },
-                "files":
-                [
+                "release_type": "<Single/Multiple>",
+                "release_title": "<releaseTitle>",
+                "distributor": "<distributor>"
+                
+                "files": [
                     {
                         "name": "<fileName>",
                         "mediaType": "<mimeType>",
@@ -129,163 +119,106 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                             "song_duration": "PT<minutes>M<seconds>S",
                             "track_number": "<track#>",
                             "mood": "<mood>",
-                            "artists":
-                            [
-                                { "name": "<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":
-                            {
-                                "<linkName>": "<url>",
-                                "<link2Name>": "<url>",
-                                "<link3Name>": "<url>"
-                            } }
-                            ],
-                            "featured_artists":
-                                [
-                                {"name":"<artistName>", "isni":"xxxxxxxxxxxxxxxxx", "links":{
-                                "<linkName>": "<url>",
-                                "<link2Name>": "<url>",
-                                "<link3Name>": "<url>"
-                                }}
-                                ],
-                            "contributing_artists":[
+                            "artists": [
                                 {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
-                                },
-                                {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
-                                },
-                                {
-                                    "name":"<artistName>", "ipn":"xxxxxxxxxxxx", "role":"roleDescription"
-                                }
-                            ],
-                            "collection": "<collectionName>",
-                            "genres":
-                            [
-                                "<genre>",
-                                "<genre>",
-                                "<genre>"
-                            ],
-                            "copyright": "℗ <year/CopyrightHolder>"
-                            
-                        }
-                    },
-                    {
-                        "name": "<fileName>",
-                        "mediaType": "<mimeType>",
-                        "src": "<mediaURL>",
-                        "song": {
-                            "song_title": "<songName>",
-                            "song_duration": "PT<minutes>M<seconds>S",
-                            "track_number": "<track#>",
-                            "mood": "<mood>",
-                            "artists":
-                            [
-                            { "name": "<artistName>",
-                               "isni":"xxxxxxxxxxxxxxxxx",
-                                 "links":
-                                        {
-                                        "<linkName>": "<url>",
-                                        "<link2Name>": "<url>",
-                                        "<link3Name>": "<url>"
-                                        }
-                                }
-                            ],
-                            "featured_artists":
-                                [
-                                {"name":"<artistName>",
-                                 "isni":"xxxxxxxxxxxxxxxxx",
-                                 "links":{
-                                        "<linkName>": "<url>",
-                                        "<link2Name>": "<url>",
-                                        "<link3Name>": "<url>"
-                                        }
-                                }
-                                ],
-                            "contributing_artists":[
-                                {
-                                    "name":"<artistName>",
-                                    "ipn":"xxxxxxxxxxxx",
-                                    "role":"roleDescription"
-                                },
-                                {
-                                    "name":"<artistName>",
-                                    "ipn":"xxxxxxxxxxxx",
-                                    "role":"roleDescription"
-                                },
-                                {
-                                    "name":"<artistName>",
-                                    "ipn":"xxxxxxxxxxxx",
-                                    "role":"roleDescription"
-                                }
-                            ],
-                            "collection": "<collectionName>",
-                            "genres":
-                            [
-                                "<genre>",
-                                "<genre>",
-                                "<genre>"
-                            ],
-                            "copyright": "℗ <year/CopyrightHolder>"
-                            
-                        }
-                    },
-                    {
-                        "name": "<fileName>",
-                        "mediaType": "<mimeType>",
-                        "src": "<mediaURL>",
-                        "song": {
-                            "song_title": "<songName>",
-                            "song_duration": "PT<minutes>M<seconds>S",
-                            "track_number": "<track#>",
-                            "mood": "<mood>",
-                            "artists":
-                            [
-                                { "name": "<artistName>",
-                                  "isni":"xxxxxxxxxxxxxxxxx",
-                                  "links":
-                                        {
+                                    "<artistName>": {
+                                        "isni": "<isni>",
+                                        "links": {
                                             "<linkName>": "<url>",
                                             "<link2Name>": "<url>",
                                             "<link3Name>": "<url>"
                                         }
+                                    }
+                                },
+                                {
+                                    "<artistName>": {
+                                        "isni": "<isni>",
+                                        "links": {
+                                            "<linkName>": "<url>",
+                                            "<link2Name>": "<url>",
+                                            "<link3Name>": "<url>"
+                                        }
+                                    }
                                 }
                             ],
-                            "featured_artists":
-                                [
-                                {"name":"<artistName>",
-                                 "isni":"xxxxxxxxxxxxxxxxx",
-                                 "links":{
-                                          "<linkName>": "<url>",
-                                          "<link2Name>": "<url>",
-                                          "<link3Name>": "<url>"
-                                          }
+                            "featured_artists": [
+                                {
+                                    "<artistName>": {
+                                        "isni": "<isni>",
+                                        "links": {
+                                            "<linkName>": "<url>",
+                                            "<link2Name>": "<url>",
+                                            "<link3Name>": "<url>"
+                                        }
+                                    }
+                                },
+                                {
+                                    "<artistName>": {
+                                        "isni": "<isni>",
+                                        "links": {
+                                            "<linkName>": "<url>",
+                                            "<link2Name>": "<url>",
+                                            "<link3Name>": "<url>"
+                                        }
+                                    }
                                 }
-                                ],
-                            "contributing_artists":[
+                            ],
+                            "authors": [
                                 {
-                                    "name":"<artistName>",
-                                    "ipn":"xxxxxxxxxxxx",
-                                    "role":"roleDescription"
+                                    "<authorName>": {
+                                        "ipi": "<ipi>",
+                                        "share": "<percentage>"
+                                    }
                                 },
                                 {
-                                    "name":"<artistName>",
-                                    "ipn":"xxxxxxxxxxxx",
-                                    "role":"roleDescription"
+                                    "<authorName>": {
+                                        "ipi": "<ipi>",
+                                        "share": "<percentage>"
+                                    }
                                 },
                                 {
-                                    "name":"<artistName>",
-                                    "ipn":"xxxxxxxxxxxx",
-                                    "role":"roleDescription"
+                                    "<authorName>": {
+                                        "ipi": "<ipi>",
+                                        "share": "<percentage>"
+                                    }
+                                }
+                            ],
+                            "contributing_artists": [
+                                {
+                                    "<artistName>": {
+                                        "ipn": "<ipn>",
+                                        "role": [
+                                            "<roleDescription>",
+                                            "<roleDescription>"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "<artistName>": {
+                                        "ipn": "<ipn>",
+                                        "role": [
+                                            "<roleDescription>",
+                                            "<roleDescription>"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "<artistName>": {
+                                        "ipn": "xxxxxxxxxxxxxxxxx",
+                                        "role": [
+                                            "<roleDescription>",
+                                            "<roleDescription>"
+                                        ]
+                                    }
                                 }
                             ],
                             "collection": "<collectionName>",
-                            "genres":
-                            [
+                            "genres": [
                                 "<genre>",
                                 "<genre>",
                                 "<genre>"
                             ],
                             "copyright": "℗ <year/CopyrightHolder>"
-                            
                         }
                     }
                     
@@ -335,16 +268,21 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                                 {"k": {"bytes": "61727469737473"}, "v": 
                                                     {
                                                         "array": [
-                                                            { 
+                                                            {
                                                                 "map": [
-                                                                    {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded artistName>"}},
-                                                                    {"k": {"bytes": "69736E69"}, "v": {"bytes": "<encoded ISNI>"}},
-                                                                    {"k": {"bytes": "6C696E6B73"}, "v": 
+                                                                    {"k": {"bytes": "<encoded artistName>"}, "v": 
                                                                         {
                                                                             "map": [
-                                                                                {"k": {"bytes": "<encoded linkName>"}, "v": {"bytes": "<encoded url>"}},
-                                                                                {"k": {"bytes": "<encoded link2Name>"}, "v": {"bytes": "<encoded url>"}},
-                                                                                {"k": {"bytes": "<encoded link3Name>"}, "v": {"bytes": "<encoded url>"}}
+                                                                                {"k": {"bytes": "69736E69"}, "v": {"bytes": "<encoded ISNI>"}},
+                                                                                {"k": {"bytes": "6C696E6B73"}, "v": 
+                                                                                    {
+                                                                                        "map": [
+                                                                                            {"k": {"bytes": "<encoded linkName>"}, "v": {"bytes": "<encoded url>"}},
+                                                                                            {"k": {"bytes": "<encoded link2Name>"}, "v": {"bytes": "<encoded url>"}},
+                                                                                            {"k": {"bytes": "<encoded link3Name>"}, "v": {"bytes": "<encoded url>"}}
+                                                                                        ]
+                                                                                    }
+                                                                                }
                                                                             ]
                                                                         }
                                                                     }
@@ -356,16 +294,39 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                                 {"k": {"bytes": "6665617475726564_61727469737473"}, "v": 
                                                     {
                                                         "array": [
-                                                            { 
+                                                            {
                                                                 "map": [
-                                                                    {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded artistName>"}},
-                                                                    {"k": {"bytes": "69736E69"}, "v": {"bytes": "<encoded ISNI>"}},
-                                                                    {"k": {"bytes": "6C696E6B73"}, "v": 
+                                                                    {"k": {"bytes": "<encoded artistName>"}, "v": 
                                                                         {
                                                                             "map": [
-                                                                                {"k": {"bytes": "<encoded linkName>"}, "v": {"bytes": "<encoded url>"}},
-                                                                                {"k": {"bytes": "<encoded link2Name>"}, "v": {"bytes": "<encoded url>"}},
-                                                                                {"k": {"bytes": "<encoded link3Name>"}, "v": {"bytes": "<encoded url>"}}
+                                                                                {"k": {"bytes": "69736E69"}, "v": {"bytes": "<encoded ISNI>"}},
+                                                                                {"k": {"bytes": "6C696E6B73"}, "v": 
+                                                                                    {
+                                                                                        "map": [
+                                                                                            {"k": {"bytes": "<encoded linkName>"}, "v": {"bytes": "<encoded url>"}},
+                                                                                            {"k": {"bytes": "<encoded link2Name>"}, "v": {"bytes": "<encoded url>"}},
+                                                                                            {"k": {"bytes": "<encoded link3Name>"}, "v": {"bytes": "<encoded url>"}}
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {"k": {"bytes": "617574686F7273"}, "v": 
+                                                    {
+                                                        "array": [
+                                                            {
+                                                                "map": [
+                                                                    {"k": {"bytes": "<encoded authorName>"}, "v": 
+                                                                        {
+                                                                            "map": [
+                                                                                {"k": {"bytes": "697069"}, "v": {"bytes": "<encoded IPI>"}},
+                                                                                {"k": {"bytes": "7368617265"}, "v": {"bytes": "<encoded percentage>"}}
                                                                             ]
                                                                         }
                                                                     }
@@ -379,23 +340,21 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                                         "array": [
                                                             {
                                                                 "map": [
-                                                                    {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded artistName>"}},
-                                                                    {"k": {"bytes": "69706E"}, "v": {"bytes": "<encoded IPN>"}},
-                                                                    {"k": {"bytes": "726F6C65"}, "v": {"bytes": "<encoded roleDescription>"}}
-                                                                ]
-                                                            },
-                                                            {
-                                                                "map": [
-                                                                    {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded artistName>"}},
-                                                                    {"k": {"bytes": "69706E"}, "v": {"bytes": "<encoded IPN>"}},
-                                                                    {"k": {"bytes": "726F6C65"}, "v": {"bytes": "<encoded roleDescription>"}}
-                                                                ]
-                                                            },
-                                                            {
-                                                                "map": [
-                                                                    {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded artistName>"}},
-                                                                    {"k": {"bytes": "69706E"}, "v": {"bytes": "<encoded IPN>"}},
-                                                                    {"k": {"bytes": "726F6C65"}, "v": {"bytes": "<encoded roleDescription>"}}
+                                                                    {"k": {"bytes": "<encoded artistName>"}, "v": 
+                                                                        {
+                                                                            "map": [
+                                                                                {"k": {"bytes": "69706E"}, "v": {"bytes": "<encoded IPN>"}},
+                                                                                {"k": {"bytes": "726F6C65"}, "v": 
+                                                                                    {
+                                                                                        "array": [
+                                                                                            {"bytes": "<encoded roleDescription>"},
+                                                                                            {"bytes": "<encoded roleDescription>"}
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
                                                                 ]
                                                             }
                                                         ]
