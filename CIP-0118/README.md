@@ -304,7 +304,7 @@ All blocks types in all previous eras contain sequences of transactions. We must
 The component of the existing (old) block structure we're most concerned with is `TxSeq`. The purpose of `TxSeq` is to act as an abstract representation of a block's transaction structure, including some metadata.
 
 ```
-OLD BLOCK STRUCTURE
+-- OLD BLOCK STRUCTURE
 
 data Block h era
   = Block' h (TxSeq era) BSL.ByteString
@@ -322,7 +322,7 @@ concrete structure of transactions (without the metadata). Note that this change
 to the needs of the Haskell ledger codebase, but the concept of a per-era block structure is universal.
 
 ```
-NEW BLOCK STRUCTURE
+-- NEW BLOCK STRUCTURE
 
 data Block h era
   = Block' h (TxZones era) BSL.ByteString
@@ -340,7 +340,7 @@ class
 The important change we've made is the addition of the `TxStructure` associated type. This allows us to be very clear with our intent; we can specify what concrete type the abstract `TxZones` represents per era, rather than mapping from `StrictSeq (StrictSeq (Tx era))` in eras which don't support zones. In other words, this allows us to specify the underlying transaction structure on a per-era basis.
 
   ```
-  NEW CONCRETE INSTANCE OF TRANSACTION STRUCTURE
+  -- NEW CONCRETE INSTANCE OF TRANSACTION STRUCTURE
 
   instance Crypto c => EraSegWits (ConwayEra c) where
     type TxStructure (ConwayEra c) = StrictSeq
@@ -374,7 +374,8 @@ An example of how this looks, in full, for two eras supporting different structu
     toTxZones = BabelTxZones . getCompose
   ```
   
-For more information, search for `CIP-0118#block-structure-0` in the codebase.
+For more information, search for `CIP-0118#block-structure-0` in the codebase, which can be found [here](https://github.com/willjgould/cardano-ledger/tree/wg/babel-fees-prototyping-babel-erafirstrule).
+Please note that the most up-to-date prototype branch is `babel-fees-prototyping-babel-erafirstrule`.
 
 #### Transaction structure
 
