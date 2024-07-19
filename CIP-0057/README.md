@@ -416,6 +416,7 @@ Yet, whereas there's a notion of purpose on-chain that is tightly coupled to the
   - [x] [Aiken](https://aiken-lang.org/)
   - [x] [Mesh.js](https://meshjs.dev/)
   - [x] [Lucid](https://lucid.spacebudz.io/)
+  - [x] [Bloxbean/cardano-client-lib](https://github.com/bloxbean/cardano-client-lib)
   - [ ] [PyCardano](https://pycardano.readthedocs.io)
   - [ ] [Demeter](https://demeter.run/)
 
@@ -427,7 +428,8 @@ Yet, whereas there's a notion of purpose on-chain that is tightly coupled to the
   - [x] JavaScript
   - [x] TypeScript
   - [ ] Python
-- [ ] (optional) develop a tool for rendering Plutus blueprint specifications as documentation
+- [x] (optional) develop a tool for rendering Plutus blueprint specifications as documentation
+  - [paima/aiken-mdx](https://www.npmjs.com/package/@paima/aiken-mdx)
 
 ## Copyright
 
