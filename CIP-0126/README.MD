@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 126
 Title: Multi-Stake Delegation from a Single Account
 Category: Wallets
 Status: Proposed
