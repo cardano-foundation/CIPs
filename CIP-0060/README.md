@@ -78,7 +78,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | distributor | String | "distributor": "https://newm.io" | Included in `release` |
 | release_date | String | "release_date": "2022-07-27" | ISO8601 Date Format, included in `release` |
 | publication_date | String | "publication_date": "2022-07-27" | ISO8601 Date Format, included in `release` |
-| catalog_number | Integer | "catalog_number": 45934582 | Catalog numbers for digital releases should only be entered if the label or digital distributor has given a unique catalog number for the release. The catalog number should not be derived from the UPC of the release. Included in `release` | 
+| catalog_number | Integer | "catalog_number": REC#4582 | Catalog numbers for digital releases should only be entered if the label or digital distributor has given a unique catalog number for the release. Included in `release` | 
 | bitrate | String | "bitrate": "256 kbit/s" | Included in `song` |
 | bpm | String | "bpm": "120 BPM" | Included in `song`|
 | mix_engineer | String | "mix_engineer": "Robert Smith II" | Included in `song` |
