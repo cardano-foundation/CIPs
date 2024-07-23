@@ -106,7 +106,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                 "name": "<releaseName>",
                 "image": "<mediaURL>",
                 "music_metadata_version": 3,
-                "release":{
+                "release": {
                         "release_type": "<Single/Multiple>",
                         "release_title": "<releaseTitle>",
                         "distributor": "<distributor>"
@@ -220,7 +220,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                 "<genre>",
                                 "<genre>"
                             ],
-                            "copyright": {"master":"℗ <year, copyrightHolder>", "composition":"℗ <year, copyrightHolder>"}
+                            "copyright": {"master": "℗ <year, copyrightHolder>", "composition": "℗ <year, copyrightHolder>"}
                         }
                     }
                     
