@@ -10,6 +10,7 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/780
+    - https://github.com/cardano-foundation/CIPs/pull/862
 Created: 2024-03-11
 License: CC-BY-4.0
 ---
