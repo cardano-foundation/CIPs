@@ -1,5 +1,5 @@
 ---
-CIP: 0118
+CIP: 118
 Title: Babel fees via validation zones
 Category: Ledger
 Status: Proposed
