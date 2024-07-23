@@ -41,16 +41,15 @@ Music tokens on Cardano can be either NFTs or FTs and contain links to audio fil
 
 This CIP divides the additional metadata parameters into two categories of `Required` and `Optional`. When minting a music token on Cardano, you are expected to include ALL of the required fields. If you choose to include one or more of the optional fields, they must be named exactly as defined in this CIP. This will properly allow indexing apps and music players to utilize as much of your token metadata as possible without issues.
 
-[CDDL Spec Version 3 ](./cddl/version-3.cddl)<br/>
-[CDDL Spec Version 2 (deprecated)](./cddl/version-2.cddl)<br/>
+[CDDL Spec Version 3 (proposal)](./cddl/version-3.cddl)<br/>
+[CDDL Spec Version 2](./cddl/version-2.cddl)<br/>
 [CDDL Spec Version 1 (deprecated)](./cddl/version-1.cddl)
 
 ### Summary of v2 Changes ###
 In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_title`. `release` is a more generic name that covers all types of releases from Albums, EPs, LPs, Singles, and Compilations. At the top level, we are grouping those metadata items that relate to the release under a new key `release`. At the file for each song, there is a new `song` key that holds the metadata specific to the individual song. These changes separate the music-specific metadata from the general CIP-25/CIP-68 NFT metadata. A music player can look at just the information necessary instead of having to ignore extra NFT-related fields. CIP-68 NFTs are officially supported and an example specific to CIP-68 has been added below.
 
 ### Summary of v3  Proposed Changes ###
-Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with. `contributing_artists`, `artists`, and `featured_artists` fields are explicitly defined to reduce interpretation.  `ipi` array replaced with `author` array, which includes `ipi` key.  Removed the `parental_advisory` field, as it was redundant (`explicit` is all players need to look for). `lyricist` is removed and merged into `contributing_artist`, under `role`.  Copyright is moved to optional fields, as many situations, including AI generated content, Creative Commons Licensing, and Public Domain all bring forth conditions where copyright may not be applicable.
-
+Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with. `contributing_artists`, `artists`, and `featured_artists` fields are explicitly defined to reduce interpretation.  `ipi` array replaced with `author` array, which includes `ipi` key.  Removed the `parental_advisory` field, as it was redundant (`explicit` is all players need to look for). `lyricist` is removed and merged into `contributing_artist`, under `role`.  `copyright` adds `master` and `composition` to distinguish recording and composition copyright owners.
 ### Required Fields ##s#
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
@@ -59,15 +58,15 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | track_number | Integer | "track_number": 1 |  Included in `song` |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" |  Included in `song` |
 | song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format, included in `song` |
+| copyright | String | "copyright": {"master":"℗ 1985 Sony Records", "composition":"℗ 1985 Marvin Gaye"} or "copyright": {"composition":"Public Domain", "master":"℗ 2024 Cool Guy"} | Included in `song` |
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. Included in `song` |
 | release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc.   Included in `release`|
-| music_metadata_version | Integer | "music_metadata_version" : 1 | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
+| music_metadata_version | Integer | "music_metadata_version" : 3 | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
 
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| copyright | String | "copyright": "℗ 1985 Sony Records" | Included in `song` |
-| ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are significantly AI generated. |
+| ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are entirely AI generated. |
 | contributing_artists |  Array\<Artist\> | "contributing_artists": [{"Jimmy Lando":{"ipn":"158743685", "role":["guitars", "vocals"]} }]| Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipi` and `role` |
 | series | string | "series": "That's What I call Music" | Included in `release` |
 | collection | string | "collection": "Now Dance" | Included in `release` |
@@ -92,7 +91,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | isrc | String | "isrc": "US-SKG-22-12345" |  Included in `song` |
 | iswc | String | "iswc": "T-123456789-Z" |  Included in `song` |
 | authors | Array\<Author\> | "authors": [{"Mark Ronson":{"ipi:"157896357", "share":"25%"}}] | Publishers and authors will be listed here, includes `ipi`  |
-| metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 |  |
+| metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 | Included in `song` |
 | country_of_origin | String | "country_of_origin": "United States" |  Included in `song` | 
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 | Included in `song` |
 | derived_from | String | "derived_from" : "Some other work" |  Included in `song`|
@@ -221,7 +220,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                 "<genre>",
                                 "<genre>"
                             ],
-                            "copyright": "℗ <year/CopyrightHolder>"
+                            "copyright": {"master":"℗ <year/CopyrightHolder>", "composition":"℗ <year/CopyrightHolder>"}
                         }
                     }
                     
