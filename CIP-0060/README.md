@@ -41,8 +41,8 @@ Music tokens on Cardano can be either NFTs or FTs and contain links to audio fil
 
 This CIP divides the additional metadata parameters into two categories of `Required` and `Optional`. When minting a music token on Cardano, you are expected to include ALL of the required fields. If you choose to include one or more of the optional fields, they must be named exactly as defined in this CIP. This will properly allow indexing apps and music players to utilize as much of your token metadata as possible without issues.
 
-[CDDL Spec Version 3 (proposal)](./cddl/version-3.cddl)<br/>
-[CDDL Spec Version 2](./cddl/version-2.cddl)<br/>
+[CDDL Spec Version 3 ](./cddl/version-3.cddl)<br/>
+[CDDL Spec Version 2 (deprecated)](./cddl/version-2.cddl)<br/>
 [CDDL Spec Version 1 (deprecated)](./cddl/version-1.cddl)
 
 ### Summary of v2 Changes ###
@@ -220,7 +220,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                 "<genre>",
                                 "<genre>"
                             ],
-                            "copyright": {"master":"℗ <year/CopyrightHolder>", "composition":"℗ <year/CopyrightHolder>"}
+                            "copyright": {"master":"℗ <year, copyrightHolder>", "composition":"℗ <year, copyrightHolder>"}
                         }
                     }
                     
@@ -372,7 +372,14 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                                         ]
                                                     }
                                                 },
-                                                {"k": {"bytes": "636F707972696768"}, "v": {"bytes": "<encoded copyright>"}}
+                                                {"k": {"bytes": "636F707972696768"}, "v": 
+                                                    {
+                                                        "map": [
+                                                            {"k": {"bytes": "6D6173746572"}, "v": {"bytes": "<encoded ℗ <year, copyrightHolder>"}},
+                                                            {"k": {"bytes": "636F6D706F736974696F6E"}, "v": {"bytes": "<encoded ℗ <year, copyrightHolder>"}}
+                                                        ]
+                                                    }
+                                                }
                                             ]
                                         }
                                     }
