@@ -50,6 +50,19 @@
                     "type": "string",
                     "enum": [ "v1", "v2", "v3" ]
                 },
+                "compiler": {
+                    "type": "object",
+                    "required": [ "name" ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "license": {
                     "type": "string"
                 }
