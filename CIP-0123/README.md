@@ -33,18 +33,24 @@ License: CC-BY-4.0
 ## Abstract
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 
-While the Cardano network has proved to be highly reliable, it is necessary to consider how the Cardano network can be recovered in the unlikely 
-event of a major failure where the network does not recover itself.  This CIP considers three representative scenarios and explains
-in outline how the chain could recover if each of these situations were to arise: Scenario 1 -- Long-Lived Network Partition; 
-Scenario 2 -- Failure to Make Blocks for an Extended Period of Time;  Scenario 3: Bad Blocks Minted on Chain.  Successful recovery depends
-on the correct procedures being followed and good communication channels being established.  It is recommended that these communication channels are
-established now, and regular practice recoveries are undertaken, so that the community is familiar with the recovery procedures in the event that
-the chain does need to be recovered.
+While the Cardano mainnet has proven to be highly resilient, it is necessary to proactively 
+consider the possible recovery mechanisms and procedures that may be required in the unlikely 
+event of a major failure where the network is unable to recover itself. 
 
-This CIP is based on an earlier IOHK technical report that is referenced below, supplemented by
-internal documentation and discussions that have not been publicly released.
-It should be considered to be a living document that is reviewed and revised on a regular basis.
+This CIP considers three representative scenarios and addresses specific considerations relevant 
+in each case:    
 
+Scenario 1 - __Long-Lived Network Partition__    
+Scenario 2 - __Failure to Make Blocks for an Extended Period of Time__    
+Scenario 3 - __Bad Blocks Minted on Chain__    
+
+To ensure successful recovery in the event of a chain failure, it's crucial to establish effective 
+communication channels and exercise recovery procedures in advance to familiarize the community and 
+SPOs with the process.
+
+This CIP is based on an earlier IOHK technical report that is referenced below, supplemented by internal 
+documentation and discussions that have not been publicly released. It should be considered to be a living 
+document that is reviewed and revised on a regular basis.    
 
 
 ## Motivation: why is this CIP necessary?
