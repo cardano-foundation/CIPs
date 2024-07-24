@@ -934,7 +934,7 @@ case requires additional research.
 
 
 
-## Towards Better Designs
+### Towards Better Designs
 
 ### Original Babel Fees Design
 When developing this proposal based on the
