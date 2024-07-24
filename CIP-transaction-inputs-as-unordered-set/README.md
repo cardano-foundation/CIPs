@@ -7,7 +7,7 @@ Authors:
   - Jonathan Rodriguez <info@anastasialabs.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/?
+  - https://github.com/cardano-foundation/CIPs/pull/758
 Created: 2024-02-01
 License: CC-BY-4.0
 ---
