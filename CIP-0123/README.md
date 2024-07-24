@@ -227,7 +227,17 @@ Ouroboros Genesis snapshots can be used to assist with recovery.  TODO: expand t
 
 ### Using Mithril Snapshots
 
-Alternatively, Mithril snapshots can be used to assist with recovery.  TODO: expand this
+Mythril is a stake-based threshold multi-signatures scheme. One of the applications of this protocol in Cardano
+is the ability to create certified snapshots of the Cardano blockchain. Mythril snapshots allow applications
+to obtain a verified copy of the current state of the blockchain without having to download and verify the full history.
+
+SPOs on mainnet that participate in the Mythril network provide signed snapshots to a Mythril aggregator that 
+is responsible for collecting individual signatures from Mithril signers and aggregating them into a multi-signature. 
+With this capability, the Mithril aggregator can then provide certified snapshots of the Cardano blockchain.
+
+Mythril may provide an alternative solution to genesis checkpoints as a way to verify the correct state of the ledger 
+provided that it gains sufficient adoption on Mainnet and that snapshots continue to be signed by an honest majority 
+following a chain recovery event. 
 
 
 ## Recommended Actions
