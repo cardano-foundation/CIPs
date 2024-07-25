@@ -281,7 +281,7 @@ transaction, then adding all entries of the form `(txID, ix) ↦ r`, where
 `txID` is the ID of the transaction being processed, and `ix ↦ r` is
 in the `requests` of the transaction.
 
-## System Component Changes
+### System Component Changes
 
 ### Ledger
 
