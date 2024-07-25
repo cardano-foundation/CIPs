@@ -63,7 +63,7 @@ recovery mechanisms fail.
 ## Disaster Recovery Procedures
 <!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned, if not covered under an optional Versioning main heading. If a proposal defines structure of on-chain data it must include a CDDL schema in its specification.-->
 
-While recovery will need to be tailored to the actual situation, three main scenarios can be identified.
+While the exact recovery process will depend on the unique nature of the failure, there are three main scenarios we can consider.
 
 ### Scenario 1: Long-Lived Network Partition
 
@@ -94,19 +94,25 @@ would violate the required Praos guarantees.
 
 #### Remediations
 
-Disconnected nodes must be reconnected to the main chain by their operators.  This can be done
-by truncating the local block database to a point before the chain fork and then resycing
-against the main network.  This can be done by the `db-truncator` tool.
+Disconnected nodes must be reconnected to the main chain by their operators. This can be done 
+by truncating the local block database to a point before the chain fork and then resyncing 
+against the main network. This can be done using the `db-truncator` tool.
 
-Full node wallets can also be recovered in the same way, though this
-may require technical skills that the end users do not possess.  It
-may be easier, if slower, for them to simply resynchronize their nodes
-from genesis.  This could take some time.  An alternative might be to
-restore using a Mithril or other signed snapshot.  In this case, care
-needs to be taken to achieve the correct balance of trust against
-speed of recovery.  
+Full node wallets can also be recovered in the same way, though this may require technical 
+skills that the end users do not possess. It may be easier, if slower, for them to simply 
+resynchronize their nodes from genesis.
 
+Ouroboros Genesis provides additional resilience when recovering from long lived network partitions. 
+In Praos nodes resyncing from a point before the chain fork could still in some cases follow the 
+alternative chain (if it is the first one seen) and extra mechanisms may be needed to avoid this 
+possibility. In Praos, for example, this may require that all participants on the alternate chain 
+truncate the local block database prior to the partition being resolved. In Ouroboros Genesis 
+when resyncing from a point before the chain fork, the chain selection rules will ensure 
+selection of the correct path for the main chain assuming the partition has been resolved.
 
+Alternative methods to restore might include the use of Mithril or other signed snapshot. 
+In this case, care needs to be taken to achieve the correct balance of trust against speed 
+of recovery.
 
 #### Additional Effects on Cardano Users
 
