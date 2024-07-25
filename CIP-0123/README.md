@@ -188,7 +188,16 @@ and the Ouroboros Genesis snapshot is distributed across all nodes.
 #### Timing Considerations
 
 The chain will tolerate a gap of up to *3k/f* slots (36 hours with current Cardano settings).
-This period of low chain density may have other implications (TODO: describe these), for which
+A period of low chain density could have security implications that affect dynamic availability 
+and leave open the possibility for future long range attacks. This may be particularly 
+relevant should chain recovery be performed as described above (using less stake than is required 
+for an honest majority). To mitigate the presence of an extended period of low chain density we may 
+need to make use of the lightweight checkpointing mechanism in Ouroborus Genesis. Alternatively Mithril 
+could also be used to provide certified snapshots to SPOs as a means to verify the correct state of the ledger.
+
+The adoption of Mithril for fast bootstrapping by light clients and edge nodes should help to mitigate risks 
+for the types of users on the network that do not participate in consensus.
+
 Ouroboros Genesis may provide a remedy (TODO: confirm and describe this).
 
 
