@@ -255,7 +255,11 @@ One of the key requirements for successful disaster recovery will be proper enga
 It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
 
-TBC
+This CIP outlines key disaster recovery scenarios that the Cardano community should understand to mitigate
+potential network outages. As a living document, it will be regularly reviewed and updated to inform 
+stakeholders and encourage more detailed contingency planning. The CIP aims to facilitate discussions, 
+establish recovery procedures, and encourage regular recovery practice exercises to ensure preparedness 
+and validation of recovery actions in the event of an outage.
 
 ## References
 
@@ -265,13 +269,13 @@ TBC
 
 [January 2023 Block Production Temporary Outage](https://updates.cardano.intersectmbo.org/2023-04-17-ledger)
 
-[DB Truncator Tool](TODO)
+[DB Truncator Tool](https://github.com/IntersectMBO/ouroboros-consensus/tree/486753d0b7d6b0d09621d1ef8be85e5117ff3d1e/ouroboros-consensus-cardano/app)
 
-[DB Synthesizer Tool](TODO)
+[DB Synthesizer Tool](https://github.com/IntersectMBO/ouroboros-consensus/tree/486753d0b7d6b0d09621d1ef8be85e5117ff3d1e/ouroboros-consensus-cardano/app)
 
-[Ouroboros Genesis](TODO)
+[Ouroboros Genesis](https://iohk.io/en/research/library/papers/ouroboros-genesis-composable-proof-of-stake-blockchains-with-dynamic-availability/)
 
-[Mithril](TODO)
+[Mithril](https://github.com/input-output-hk/mithril)
 
 
 ## Copyright
