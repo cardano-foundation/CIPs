@@ -1,6 +1,6 @@
 ---
-CPS: ????
-Title: CPS-???? | Cardano URI Schemes
+CPS: 16
+Title: Cardano URIs
 Status: Open
 Category: Tools
 Authors:
@@ -48,7 +48,7 @@ this section for further discussion, development, and adoption by the community.
    base `web+cardano:` **scheme** and an **authority**-less path consisting of a
    payment address and an optional `amount` query parameter to specify via QR
    code or deep-link an address and amount of Lovelace to send.
-2. In 2024 a new CIP[reference needed] was proposed defining an explicit `//pay`
+2. In 2024 [a new CIP was proposed](https://github.com/cardano-foundation/CIPs/pull/843) defining an explicit `//pay`
    **authority** as well as path and query parameters to support _Native Assets_
    and transaction _Metadata_.
 
