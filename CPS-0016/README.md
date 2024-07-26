@@ -1,6 +1,6 @@
 ---
-CPS: 16
-Title: Cardano URIs
+CPS: ????
+Title: CPS-???? | Cardano URI Schemes
 Status: Open
 Category: Tools
 Authors:
@@ -8,7 +8,7 @@ Authors:
 Proposed Solutions:
   - CIP-0013: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013
   - CIP-0099: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0099
-  - CIP-0107: https://github.com/cardano-foundation/CIPs/pull/635
+  - CIP-0107: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
 Discussions:
   - https://github.com/cardano-foundation/CIPs/issues/836
   - https://github.com/cardano-foundation/CIPs/pull/559
@@ -149,7 +149,7 @@ This CPS is licensed under [CC-BY-4.0].
 
 [CIP-99]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0099
 
-[CIP-107]:https://github.com/cardano-foundation/CIPs/pull/635
+[CIP-107]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
 
 [CC-BY-4.0]:https://creativecommons.org/licenses/by/4.0/legalcode
 
