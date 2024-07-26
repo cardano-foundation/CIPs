@@ -184,7 +184,7 @@ to access individual bytes by index as a primitive operation. Thus, we can view
 a `BuiltinByteString` as an indexed collection of bytes; for any
 `BuiltinByteString` $b$ of length $n$, and any $i \in 0, 1, \ldots, n - 1$, we
 define $b\\{i\\}$ as the byte at index $i$ in $b$, as defined by the
-`builtinIndexByteString` primitive. In essence, for any `BuiltinByteString` of
+`indexByteString` primitive. In essence, for any `BuiltinByteString` of
 length `n`, we have _byte_ indexes as follows:
 
 ```
@@ -938,16 +938,16 @@ replicateByteString (n + m) w = replicateByteString n w <> replicateByteString m
 ```
 
 Additionally, for any 'in-bounds' index (that is, any index for which
-`builtinIndexByteString` won't error) `i`, we have
+`indexByteString` won't error) `i`, we have
 
 ```haskell
-builtinIndexByteString (replicateByteString n w) i = w
+indexByteString (replicateByteString n w) i = w
 ```
 
 Lastly, we have
 
 ```haskell
-builtinSizeOfByteString (replicateByteString n w) = n
+lengthByteString (replicateByteString n w) = n
 ```
 
 ## Rationale: how does this CIP achieve its goals?
