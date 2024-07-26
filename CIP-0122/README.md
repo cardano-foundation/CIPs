@@ -354,7 +354,7 @@ their lengths in bytes; see the
 for the exact specification of this. Let the result of `bitwiseLogicalAnd`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
-analogously for $b_2$, $b_r#); see the [section on the bit indexing
+analogously for $b_2$, $b_r$); see the [section on the bit indexing
 scheme](#bit-indexing-scheme) for the exact specification of this.
 
 For all $i \in 0, 1, \ldots, n - 1$, we have 
@@ -381,11 +381,11 @@ bitwiseLogicalAnd True [] [0xFF] => [0xFF]
 
 bitwiseLogicalAnd True [0xFF] [] => [0xFF]
 
-bitwiseLogicalAnd False [0xFF] [0x00] => [0x00]
+bitwiseLogicalAnd True [0xFF] [0x00] => [0x00]
 
-bitwiseLogicalAnd False [0x00] [0xFF] => [0x00]
+bitwiseLogicalAnd True [0x00] [0xFF] => [0x00]
 
-bitwiseLogicalAnd False [0x4F, 0x00] [0xF4] => [0x44, 0x00]
+bitwiseLogicalAnd True [0x4F, 0x00] [0xF4] => [0x44, 0x00]
 ```
 
 #### `bitwiseLogicalOr`
@@ -405,7 +405,7 @@ their lengths in bytes; see the
 for the exact specification of this. Let the result of `bitwiseLogicalOr`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
-analogously for $b_2$, $b_r#); see the [section on the bit indexing
+analogously for $b_2$, $b_r$); see the [section on the bit indexing
 scheme](#bit-indexing-scheme) for the exact specification of this.
 
 For all $i \in 0, 1, \ldots, n - 1$, we have 
@@ -429,11 +429,11 @@ bitwiseLogicalOr True [] [0xFF] => [0xFF]
 
 bitwiseLogicalOr True [0xFF] [] => [0xFF]
 
-bitwiseLogicalOr False [0xFF] [0x00] => [0xFF]
+bitwiseLogicalOr True [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalOr False [0x00] [0xFF] => [0xFF]
+bitwiseLogicalOr True [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalOr False [0x4F, 0x00] [0xF4] => [0xFF, 0x00]
+bitwiseLogicalOr True [0x4F, 0x00] [0xF4] => [0xFF, 0x00]
 ```
 
 #### `bitwiseLogicalXor`
@@ -453,7 +453,7 @@ their lengths in bytes; see the
 for the exact specification of this. Let the result of `bitwiseLogicalXor`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
-analogously for $b_2$, $b_r#); see the [section on the bit indexing
+analogously for $b_2$, $b_r$); see the [section on the bit indexing
 scheme](#bit-indexing-scheme) for the exact specification of this.
 
 For all $i \in 0, 1, \ldots, n - 1$, we have 
@@ -480,11 +480,11 @@ bitwiseLogicalOr True [] [0xFF] => [0xFF]
 
 bitwiseLogicalOr True [0xFF] [] => [0xFF]
 
-bitwiseLogicalOr False [0xFF] [0x00] => [0xFF]
+bitwiseLogicalOr True [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalOr False [0x00] [0xFF] => [0xFF]
+bitwiseLogicalOr True [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalOr False [0x4F, 0x00] [0xF4] => [0xBB, 0x00]
+bitwiseLogicalOr True [0x4F, 0x00] [0xF4] => [0xBB, 0x00]
 ```
 
 #### `bitwiseLogicalComplement`
@@ -526,7 +526,7 @@ bitwiseLogicalComplement [0x4F, 0xF4] => [0xB0, 0x0B]
    _index argument_.
 
 Let $b$ refer to the data argument, of length $n$ in bytes, and let $i$ refer to
-the index argument. We use $b[i]$ to refer to the value at index $i$t of $b$; see 
+the index argument. We use $b[i]$ to refer to the value at index $i$ of $b$; see 
 the [section on the bit indexing scheme](#bit-indexing-scheme) for the exact 
 specification of this.
 
