@@ -1522,7 +1522,7 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [cip-58]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0058
 [croaring]: https://github.com/RoaringBitmap/CRoaring
 [too-many-ways-1]: https://fgiesen.wordpress.com/2018/02/19/reading-bits-in-far-too-many-ways-part-1
-[conversion-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/to-from-bytestring/CIP-0121/README.md
+[conversion-cip]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0121/README.md
 [benchmarks-bits]: https://github.com/mlabs-haskell/plutus-integer-bytestring/blob/main/bench/naive/Main.hs#L74-L83
 [vector]: https://hackage.haskell.org/package/vector-0.13.1.0/docs/Data-Vector.html#v:-47--47-
 [boolean-algebra-2]: https://en.wikipedia.org/wiki/Two-element_Boolean_algebra
@@ -1531,7 +1531,8 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [blake2b]: https://en.wikipedia.org/wiki/BLAKE_(hash_function)
 [argon2]: https://en.wikipedia.org/wiki/Argon2
 [xor-crypto]: https://en.wikipedia.org/wiki/Exclusive_or#Bitwise_operation
-[cip-121-big-endian]: https://github.com/mlabs-haskell/CIPs/blob/koz/to-from-bytestring/CIP-0121/README.md#representation
+[cip-121]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0121/README.md
+[cip-121-big-endian]:https://github.com/cardano-foundation/CIPs/blob/master/CIP-0121/README.md/#representation
 [bitwise-and]: https://en.wikipedia.org/wiki/Bitwise_operation#AND
 [bitwise-or]: https://en.wikipedia.org/wiki/Bitwise_operation#OR
 [bitwise-xor]: https://en.wikipedia.org/wiki/Bitwise_operation#XOR
