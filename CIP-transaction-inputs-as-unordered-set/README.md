@@ -1,6 +1,6 @@
 ---
 CIP: xxx
-Title: Transaction Inputs as Unordered Set
+Title: Transaction Inputs as an Ordered Set
 Category: Plutus
 Status: Proposed
 Authors:
