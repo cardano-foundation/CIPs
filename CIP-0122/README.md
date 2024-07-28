@@ -20,7 +20,7 @@ We describe the semantics of a set of logical operations for Plutus
 
 - Bitwise logical AND, OR, XOR and complement;
 - Reading a bit value at a given index;
-- Setting bits value at given indices; and
+- Setting bit values at given indices; and
 - Replicating a byte a given number of times.
 
 As part of this, we also describe the bit ordering within a `BuiltinByteString`,
@@ -269,34 +269,35 @@ _byte_ indexes as follows:
 We describe precisely the operations we intend to implement, and their
 semantics. These operations will have the following signatures:
 
-* `bitwiseLogicalAnd :: BuiltinBool -> BuiltinByteString -> BuiltinByteString ->
+* `andByteString :: BuiltinBool -> BuiltinByteString -> BuiltinByteString ->
   BuiltinByteString`
-* `bitwiseLogicalOr :: BuiltinBool -> BuiltinByteString -> BuiltinByteString ->
+* `orByteString :: BuiltinBool -> BuiltinByteString -> BuiltinByteString ->
   BuiltinByteString`
-* `bitwiseLogicalXor :: BuiltinBool -> BuiltinByteString -> BuiltinByteString ->
+* `xorByteString :: BuiltinBool -> BuiltinByteString -> BuiltinByteString ->
   BuiltinByteString`
-* `bitwiseLogicalComplement :: BuiltinByteString -> BuiltinByteString`
+* `complementByteString :: BuiltinByteString -> BuiltinByteString`
 * `readBit :: BuiltinByteString -> BuiltinInteger -> BuiltinBool`
 * `writeBits :: BuiltinByteString -> [(BuiltinInteger, BuiltinBool)] ->
   BuiltinByteString`
-* `replicateByteString :: BuiltinInteger -> BuiltinInteger -> BuiltinByteString`
+* `replicateByte :: BuiltinInteger -> BuiltinInteger -> BuiltinByteString`
 
 We assume the following costing, for both memory and execution time:
 
 | Operation | Cost |
 |-----------|------|
-| `bitwiseLogicalAnd` | Linear in longest `BuiltinByteString` argument |
-| `bitwiseLogicalOr` | Linear in longest `BuiltinByteString` argument |
-| `bitwiseLogicalXor` | Linear in longest `BuiltinByteString` argument |
-| `bitwiseLogicalComplement` | Linear in `BuiltinByteString` argument |
+| `andByteString` | Linear in longest `BuiltinByteString` argument |
+| `orByteString` | Linear in longest `BuiltinByteString` argument |
+| `xorByteString` | Linear in longest `BuiltinByteString` argument |
+| `complementByteString` | Linear in `BuiltinByteString` argument |
 | `readBit` | Constant |
-| `writeBits` | Additively linear in both arguments |
-| `replicateByteString` | Linear in the _value_ of the first argument |
+| `writeBits` | Additively linear in first argument together with second and
+third argument |
+| `replicateByte` | Linear in the _value_ of the first argument |
 
 #### Padding versus truncation semantics
 
-For the binary logical operations (that is, `bitwiseLogicalAnd`,
-`bitwiseLogicalOr` and `bitwiseLogicalXor`), the we have two choices of
+For the binary logical operations (that is, `andByteString`,
+`orByteString` and `xorByteString`), the we have two choices of
 semantics when handling `BuiltinByteString` arguments of different lengths. We
 can either produce a result whose length is the _minimum_ of the two arguments
 (which we call _truncation semantics_), or produce a result whose length is the
@@ -315,8 +316,8 @@ table describes what happens to the arguments before the operation:
 | Padding   | Pad at high _byte_ indexes | Unchanged |
 | Truncation | Unchanged | Truncate high _byte_ indexes |
 
-We pad with different bytes depending on operation: for `bitwiseLogicalAnd`, we
-pad with `0xFF`, while for `bitwiseLogicalOr` and `bitwiseLogicalXor` we pad
+We pad with different bytes depending on operation: for `andByteString`, we
+pad with `0xFF`, while for `orByteString` and `xorByteString` we pad
 with `0x00` instead. We refer to arguments so changed as 
 _semantics-modified_ arguments.
 
@@ -326,20 +327,20 @@ versions of these arguments would become for each operation and each semantics:
 
 | Operation | Semantics | `x` | `y` |
 |-----------|-----------|-----|-----|
-| `bitwiseLogicalAnd` | Padding | `[0x00, 0xF0, 0xFF]` | `[0xFF, 0xF0, 0xFF]` |
-| `bitwiseLogicalAnd` | Truncation | `[0x00, 0xF0]` | `[0xFF, 0xF0]` |
-| `bitwiseLogicalOr` | Padding | `[0x00, 0xF0, 0xFF]` | `[0xFF, 0xF0, 0x00]` |
+| `andByteString` | Padding | `[0x00, 0xF0, 0xFF]` | `[0xFF, 0xF0, 0xFF]` |
+| `andByteString` | Truncation | `[0x00, 0xF0]` | `[0xFF, 0xF0]` |
+| `orByteString` | Padding | `[0x00, 0xF0, 0xFF]` | `[0xFF, 0xF0, 0x00]` |
 | `bitwiseLogicalor` | Truncation | `[0x00, 0xF0]` | `[0xFF, 0xF0]` |
-| `bitwiseLogicalXor` | Padding | `[0x00, 0xF0, 0xFF]` | `[0xFF, 0xF0, 0x00]` |
-| `bitwiseLogicalXor` | Truncation | `[0x00, 0xF0]` | `[0xFF, 0xF0]` |
+| `xorByteString` | Padding | `[0x00, 0xF0, 0xFF]` | `[0xFF, 0xF0, 0x00]` |
+| `xorByteString` | Truncation | `[0x00, 0xF0]` | `[0xFF, 0xF0]` |
 
 Based on the above, we observe that under padding semantics, the result of any
 of the listed operations would have a byte length of 3, while under truncation
 semantics, the result would have a byte length of 2 instead.
 
-#### `bitwiseLogicalAnd`
+#### `andByteString`
 
-`bitwiseLogicalAnd` takes three arguments; we name and describe them below.
+`andByteString` takes three arguments; we name and describe them below.
 
 1. Whether padding semantics should be used. If this argument is `False`,
    truncation semantics are used instead. This is the _padding semantics
@@ -351,7 +352,7 @@ Let $b_1, b_2$ refer to the semantics-modified first data argument and
 semantics-modified second data argument respectively, and let $n$ be either of 
 their lengths in bytes; see the 
 [section on padding versus truncation semantics](#padding-versus-truncation-semantics) 
-for the exact specification of this. Let the result of `bitwiseLogicalAnd`, given 
+for the exact specification of this. Let the result of `andByteString`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
 analogously for $b_2$, $b_r$); see the [section on the bit indexing
@@ -361,36 +362,36 @@ For all $i \in 0, 1, \ldots, n - 1$, we have
 $b_r\\{i\\} = b_0\\{i\\} \text{ }\\& \text{ } b_1\\{i\\}$, where $\\&$ refers to a 
 [bitwise AND][bitwise-and].
 
-Some examples of the intended behaviour of `bitwiseLogicalAnd` follow. For
+Some examples of the intended behaviour of `andByteString` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
 ```
 -- truncation semantics
-bitwiseLogicalAnd False [] [0xFF] => []
+andByteString False [] [0xFF] => []
 
-bitwiseLogicalAnd False [0xFF] [] => []
+andByteString False [0xFF] [] => []
 
-bitwiseLogicalAnd False [0xFF] [0x00] => [0x00]
+andByteString False [0xFF] [0x00] => [0x00]
 
-bitwiseLogicalAnd False [0x00] [0xFF] => [0x00]
+andByteString False [0x00] [0xFF] => [0x00]
 
-bitwiseLogicalAnd False [0x4F, 0x00] [0xF4] => [0x44]
+andByteString False [0x4F, 0x00] [0xF4] => [0x44]
 
 -- padding semantics
-bitwiseLogicalAnd True [] [0xFF] => [0xFF]
+andByteString True [] [0xFF] => [0xFF]
 
-bitwiseLogicalAnd True [0xFF] [] => [0xFF]
+andByteString True [0xFF] [] => [0xFF]
 
-bitwiseLogicalAnd True [0xFF] [0x00] => [0x00]
+andByteString True [0xFF] [0x00] => [0x00]
 
-bitwiseLogicalAnd True [0x00] [0xFF] => [0x00]
+andByteString True [0x00] [0xFF] => [0x00]
 
-bitwiseLogicalAnd True [0x4F, 0x00] [0xF4] => [0x44, 0x00]
+andByteString True [0x4F, 0x00] [0xF4] => [0x44, 0x00]
 ```
 
-#### `bitwiseLogicalOr`
+#### `orByteString`
 
-`bitwiseLogicalOr` takes three arguments; we name and describe them below.
+`orByteString` takes three arguments; we name and describe them below.
 
 1. Whether padding semantics should be used. If this argument is `False`,
    truncation semantics are used instead. This is the _padding semantics
@@ -402,7 +403,7 @@ Let $b_1, b_2$ refer to the semantics-modified first data argument and
 semantics-modified second data argument respectively, and let $n$ be either of 
 their lengths in bytes; see the 
 [section on padding versus truncation semantics](#padding-versus-truncation-semantics) 
-for the exact specification of this. Let the result of `bitwiseLogicalOr`, given 
+for the exact specification of this. Let the result of `orByteString`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
 analogously for $b_2$, $b_r$); see the [section on the bit indexing
@@ -414,31 +415,31 @@ a [bitwise OR][bitwise-or].
 
 ```
 -- truncation semantics
-bitwiseLogicalOr False [] [0xFF] => []
+orByteString False [] [0xFF] => []
 
-bitwiseLogicalOr False [0xFF] [] => []
+orByteString False [0xFF] [] => []
 
-bitwiseLogicalOr False [0xFF] [0x00] => [0xFF]
+orByteString False [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalOr False [0x00] [0xFF] => [0xFF]
+orByteString False [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalOr False [0x4F, 0x00] [0xF4] => [0xFF]
+orByteString False [0x4F, 0x00] [0xF4] => [0xFF]
 
 -- padding semantics
-bitwiseLogicalOr True [] [0xFF] => [0xFF]
+orByteString True [] [0xFF] => [0xFF]
 
-bitwiseLogicalOr True [0xFF] [] => [0xFF]
+orByteString True [0xFF] [] => [0xFF]
 
-bitwiseLogicalOr True [0xFF] [0x00] => [0xFF]
+orByteString True [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalOr True [0x00] [0xFF] => [0xFF]
+orByteString True [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalOr True [0x4F, 0x00] [0xF4] => [0xFF, 0x00]
+orByteString True [0x4F, 0x00] [0xF4] => [0xFF, 0x00]
 ```
 
-#### `bitwiseLogicalXor`
+#### `xorByteString`
 
-`bitwiseLogicalXor` takes three arguments; we name and describe them below.
+`xorByteString` takes three arguments; we name and describe them below.
 
 1. Whether padding semantics should be used. If this argument is `False`,
    truncation semantics are used instead. This is the _padding semantics
@@ -450,7 +451,7 @@ Let $b_1, b_2$ refer to the semantics-modified first data argument and
 semantics-modified second data argument respectively, and let $n$ be either of 
 their lengths in bytes; see the 
 [section on padding versus truncation semantics](#padding-versus-truncation-semantics) 
-for the exact specification of this. Let the result of `bitwiseLogicalXor`, given 
+for the exact specification of this. Let the result of `xorByteString`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
 analogously for $b_2$, $b_r$); see the [section on the bit indexing
@@ -460,38 +461,38 @@ For all $i \in 0, 1, \ldots, n - 1$, we have
 $b_r\\{i\\} = b_0\\{i\\} \text{ } \wedge \text{ } b_1\\{i\\}$, where $\wedge$ refers to 
 a [bitwise XOR][bitwise-xor].
 
-Some examples of the intended behaviour of `bitwiseLogicalXor` follow. For
+Some examples of the intended behaviour of `xorByteString` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
 ```
 -- truncation semantics
-bitwiseLogicalXor False [] [0xFF] => []
+xorByteString False [] [0xFF] => []
 
-bitwiseLogicalXor False [0xFF] [] => []
+xorByteString False [0xFF] [] => []
 
-bitwiseLogicalXor False [0xFF] [0x00] => [0xFF]
+xorByteString False [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalXor False [0x00] [0xFF] => [0xFF]
+xorByteString False [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalXor False [0x4F, 0x00] [0xF4] => [0xBB]
+xorByteString False [0x4F, 0x00] [0xF4] => [0xBB]
 
 -- padding semantics
-bitwiseLogicalOr True [] [0xFF] => [0xFF]
+orByteString True [] [0xFF] => [0xFF]
 
-bitwiseLogicalOr True [0xFF] [] => [0xFF]
+orByteString True [0xFF] [] => [0xFF]
 
-bitwiseLogicalOr True [0xFF] [0x00] => [0xFF]
+orByteString True [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalOr True [0x00] [0xFF] => [0xFF]
+orByteString True [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalOr True [0x4F, 0x00] [0xF4] => [0xBB, 0x00]
+orByteString True [0x4F, 0x00] [0xF4] => [0xBB, 0x00]
 ```
 
-#### `bitwiseLogicalComplement`
+#### `complementByteString`
 
-`bitwiseLogicalComplement` takes a single argument, of type `BuiltinByteString`;
+`complementByteString` takes a single argument, of type `BuiltinByteString`;
 let $b$ refer to that argument, and $n$ its length in bytes. Let $b_r$ be
-the result of `bitwiseLogicalComplement`; its length in bytes is also $n$. We
+the result of `complementByteString`; its length in bytes is also $n$. We
 use $b[i]$ to refer to the value at index $i$ of $b$ (and analogously for $b_r$); 
 see the [section on the bit indexing scheme](#bit-indexing-scheme) for the exact
 specification of this.
@@ -505,15 +506,15 @@ b_r[i] = \begin{cases}
         \end{cases}
 $$
 
-Some examples of the intended behaviour of `bitwiseLogicalComplement` follow. For
+Some examples of the intended behaviour of `complementByteString` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
 ```
-bitwiseLogicalComplement [] => []
+complementByteString [] => []
 
-bitwiseLogicalComplement [0x0F] => [0xF0]
+complementByteString [0x0F] => [0xF0]
 
-bitwiseLogicalComplement [0x4F, 0xF4] => [0xB0, 0x0B]
+complementByteString [0x4F, 0xF4] => [0xB0, 0x0B]
 ```
 
 #### `readBit`
@@ -582,25 +583,29 @@ readBit [0xF4, 0xFF] 10 => False
 
 #### `writeBits`
 
-`writeBits` takes two arguments: we name and describe them below.
+`writeBits` takes three arguments: we name and describe them below.
 
 1. The `BuiltinByteString` in which we want to change some bits. This is the
    _data argument_.
-2. A list of index-value pairs, indicating which positions in the data argument
-   should be changed to which value. This is the _change list argument_. Each
-   index has type `BuiltinInteger`, while each value has type `BuiltinBool`.
+2. A `BuiltinList BuiltinInteger`, indicating which bit positions in the data
+   argument are to be changed. This is the _index list argument_.
+3. A `BuiltinList BuiltinBool`, indicating, for each position from the index
+   list argument, what the new value should be. This is the _value list
+   argument_.
 
 Let $b$ refer to the data argument of length $n$ in bytes. We define `writeBits`
-recursively over the structure of the change list argument. Throughout, we use
-$b_r$ to refer to the result of `writeBits`, whose length is also $n$. We use
-$b[i]$ to refer to the value at index $i$ of $b$ (and analogously, $b_r$); see
-the [section on the bit indexing scheme](#bit-indexing-scheme) for the exact
-specification of this.
+recursively over the combined structures of the index list argument and the
+value list argument. Throughout, we use $b_r$ to refer to the result of
+`writeBits`, whose length in bytes is also $n$. We use $b[i]$ to refer to the
+value at index $i$ of $b$ (and analogously, $b_r$); see the [section on the bit
+indexing scheme](#bit-indexing-scheme) for the exact specification of this.
 
-If the change list argument is empty, we return the data argument unchanged.
-Otherwise, let $(i, v)$ be the head of the change list argument, and $\ell$ its
-tail. If $i < 0$ or $i \geq 8 \cdot n$, then `writeBits` fails. In this case,
-the resulting error message must specify at _least_ the following information:
+If either the index list argument or the value list argument is empty, we return
+the data argument unchanged. Otherwise, let $i$ be the head of the index list
+argument, $v$ the head of the value list argument, $\ell_i$ be the tail of the
+index list argument, and $\ell_v$ be the tail of the value list argument. If $i
+< 0$ or $i \geq 8 \cdot n$, then `writeBits` fails. In this case, the resulting
+error message must specify _at least_ the following information:
 
 * That `writeBits` failed due to an out-of-bounds index argument; and
 * What `BuiltinInteger` was passed as $i$.
@@ -616,92 +621,98 @@ b_r[j] = \begin{cases}
 $$
 
 Then, if we did not fail as described above, we repeat the `writeBits`
-operation, but with $b_r$ as the data argument and $\ell$ as the change list
-argument.
+operation, but with $b_r$ as the data argument, $\ell_i$ as the index list
+argument, and $\ell_v$ as the value list argument.
 
 Some examples of the intended behaviour of `writeBits` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
 ```
 -- Writing an empty BuiltinByteString fails
-writeBits [] [(0, False)] => error
+writeBits [] [0] [False] => error
 
 -- Irrespective of index
-writeBits [] [(15, False)] => error
+writeBits [] [15] [False] => error
 
 -- And value
-writeBits [] [(0, True)] => error
+writeBits [] [0] [True] => error
 
 -- And multiplicity
-writeBits [] [(0, False), (1, False)] => error
+writeBits [] [0, 1] [False, False] => error
 
 -- Negative indexes fail
-writeBits [0xFF] [((-1), False)] => error
+writeBits [0xFF] [(-1)] [False] => error
 
 -- Even when mixed with valid ones
-writeBits [0xFF] [(0, False), ((-1), True)] => error
+writeBits [0xFF] [0, (-1)] [False, True] => error
 
 -- In any position
-writeBits [0xFF] [((-1), True), (0, False)] => error
+writeBits [0xFF] [(-1), 0] [True, False] => error
 
 -- Out-of-bounds indexes fail
-writeBits [0xFF] [(8, False)] => error
+writeBits [0xFF] [8] [False] => error
 
 -- Even when mixed with valid ones
-writeBits [0xFF] [(1, False), (8, False)] => error
+writeBits [0xFF] [1, 8] [False, False] => error
 
 -- In any position
-writeBits [0xFF] [(8, False), (1, False)] => error
+writeBits [0xFF] [8, 1] [False False] => error
 
 -- Bits are written 'from the end'
-writeBits [0xFF] [(0, False)] => [0xFE]
+writeBits [0xFF] [0] [False] => [0xFE]
 
-writeBits [0xFF] [(1, False)] => [0xFD]
+writeBits [0xFF] [1] [False] => [0xFD]
 
-writeBits [0xFF] [(2, False)] => [0xFB]
+writeBits [0xFF] [2] [False] => [0xFB]
 
-writeBits [0xFF] [(3, False)] => [0xF7]
+writeBits [0xFF] [3] [False] => [0xF7]
 
-writeBits [0xFF] [(4, False)] => [0xEF]
+writeBits [0xFF] [4] [False] => [0xEF]
 
-writeBits [0xFF] [(5, False)] => [0xDF]
+writeBits [0xFF] [5] [False] => [0xDF]
 
-writeBits [0xFF] [(6, False)] => [0xBF]
+writeBits [0xFF] [6] [False] => [0xBF]
 
-writeBits [0xFF] [(7, False)] => [0x7F]
+writeBits [0xFF] [7] [False] => [0x7F]
 
 -- True value sets the bit
-writeBits [0x00] [(5, True)] => [0x20]
+writeBits [0x00] [5] [True] => [0x20]
 
 -- False value clears the bit
-writeBits [0xFF] [(5, False)] => [0xDF]
+writeBits [0xFF] [5] [False] => [0xDF]
 
 -- Larger indexes write backwards into the bytes from the end
-writeBits [0xF4, 0xFF] [(10, False)] => [0xF0, 0xFF]
+writeBits [0xF4, 0xFF] [10] [False] => [0xF0, 0xFF]
 
 -- Multiple items in a change list apply cumulatively
-writeBits [0xF4, 0xFF] [(10, False), (1, False)] => [0xF0, 0xFD]
+writeBits [0xF4, 0xFF] [10, 1] [False, False] => [0xF0, 0xFD]
 
-writeBits (writeBits [0xF4, 0xFF] [(10, False)]) [(1, False)] => [0xF0, 0xFD]
+writeBits (writeBits [0xF4, 0xFF] [10, 1] [False, False] => [0xF0, 0xFD]
 
 -- Order within a change list is unimportant among unique indexes
-writeBits [0xF4, 0xFF] [(1, False), (10, False)] => [0xF0, 0xFD]
+writeBits [0xF4, 0xFF] [1, 10] [False, False] => [0xF0, 0xFD]
 
 -- But _is_ important for identical indexes
-writeBits [0x00, 0xFF] [(10, True), (10, False)] => [0x00, 0xFF]
+writeBits [0x00, 0xFF] [10, 10] [True, False] => [0x00, 0xFF]
 
-writeBits [0x00, 0xFF] [(10, False), (10, True)] => [0x04, 0xFF]
+writeBits [0x00, 0xFF] [10, 10] [False, True] => [0x04, 0xFF]
 
 -- Setting an already set bit does nothing
-writeBits [0xFF] [(0, True)] => [0xFF]
+writeBits [0xFF] [0] [True] => [0xFF]
 
 -- Clearing an already clear bit does nothing
-writeBits [0x00] [(0, False)] => [0x00]
+writeBits [0x00] [0] [False] => [0x00]
+
+-- A short index list argument truncates the value list argument 
+writeBits [0xF4, 0xFF] [10] [False, False] => [0xF0, 0xFF]
+
+-- A short value list argument truncates the index list argument
+writeBits [0xF4, 0xFF] [10, 1] [False] => [0xF0, 0xFF]
 ```
 
-#### `replicateByteString`
+#### `replicateByte`
 
-`replicateByteString` takes two arguments; we name and describe them below.
+`replicateByte` takes two arguments; we name and describe them below.
 
 1. The desired result length, of type `BuiltinInteger`. This is the _length
    argument_.
@@ -710,51 +721,51 @@ writeBits [0x00] [(0, False)] => [0x00]
    This is the _byte argument_.
 
 Let $n$ be the length argument, and $w$ the byte argument. If $n < 0$, then
-`replicateByteString` fails. In this case, the resulting error message must specify
+`replicateByte` fails. In this case, the resulting error message must specify
 _at least_ the following information:
 
-* That `replicateByteString` failed due to a negative length argument; and
+* That `replicateByte` failed due to a negative length argument; and
 * What `BuiltinInteger` was passed as the length argument.
 
-If $n \geq 0$, and $w < 0$ or $w > 255$, then `replicateByteString` fails. In this
+If $n \geq 0$, and $w < 0$ or $w > 255$, then `replicateByte` fails. In this
 case, the resulting error message must specify _at least_ the following
 information:
 
-* That `replicateByteString` failed due to the byte argument not being a valid
+* That `replicateByte` failed due to the byte argument not being a valid
   byte; and
 * What `BuiltinInteger` was passed as the byte argument.
 
-Otherwise, let $b$ be the result of `replicateByteString`, and let $b\\{i\\}$ be the
+Otherwise, let $b$ be the result of `replicateByte`, and let $b\\{i\\}$ be the
 byte at position $i$ of $b$, as per [the section describing the bit indexing
 scheme](#bit-indexing-scheme). We have:
 
 * The length (in bytes) of $b$ is $n$; and
 * For all $i \in 0, 1, \ldots, n - 1$, $b\\{i\\} = w$.
 
-Some examples of the intended behaviour of `replicateByteString` follow. For
+Some examples of the intended behaviour of `replicateByte` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
 ```
 -- Replicating a negative number of times fails
-replicateByteString (-1) 0 => error
+replicateByte (-1) 0 => error
 
 -- Irrespective of byte argument
-replicateByteString (-1) 3 => error
+replicateByte (-1) 3 => error
 
 -- Out-of-bounds byte arguments fail
-replicateByteString 1 (-1) => error
+replicateByte 1 (-1) => error
 
-replicateByteString 1 256 => error
+replicateByte 1 256 => error
 
 -- Irrespective of length argument
-replicateByteString 4 (-1) => error
+replicateByte 4 (-1) => error
 
-replicateByteString 4 256 => error
+replicateByte 4 256 => error
 
 -- Length of result matches length argument, and all bytes are the same
-replicateByteString 0 0xFF => []
+replicateByte 0 0xFF => []
 
-replicateByteString 4 0xFF => [0xFF, 0xFF, 0xFF, 0xFF]
+replicateByte 4 0xFF => [0xFF, 0xFF, 0xFF, 0xFF]
 ```
 
 ### Laws
@@ -762,8 +773,8 @@ replicateByteString 4 0xFF => [0xFF, 0xFF, 0xFF, 0xFF]
 #### Binary operations
 
 We describe laws for all three operations that work over two
-`BuiltinByteStrings`, that is, `bitwiseLogicalAnd`, `bitwiseLogicalOr` and
-`bitwiseLogicalXor`, together, as many of them are similar (and related). We
+`BuiltinByteStrings`, that is, `andByteString`, `orByteString` and
+`xorByteString`, together, as many of them are similar (and related). We
 describe padding semantics and truncation semantics laws, as they are slightly
 different.
 
@@ -771,12 +782,12 @@ All three operations above, under both padding and truncation semantics, are
 [commutative semigroups][special-semigroups]. Thus, we have:
 
 ```haskell
-bitwiseLogicalAnd s x y = bitwiseLogicalAnd s y x
+andByteString s x y = andByteString s y x
 
-bitwiseLogicalAnd s x (bitwiseLogicalAnd s y z) = bitwiseLogicalAnd s
-(bitwiseLogicalAnd s x y) z
+andByteString s x (andByteString s y z) = andByteString s
+(andByteString s x y) z
 
--- and the same for bitwiseLogicalOr and bitwiseLogicalXor
+-- and the same for orByteString and xorByteString
 ```
 
 Note that the semantics (designated as `s` above) must be consistent in order
@@ -784,72 +795,72 @@ for these laws to hold. Furthermore, under padding semantics, all the above
 operations are [commutative monoids][commutative-monoid]:
 
 ```haskell
-bitwiseLogicalAnd True x "" = bitwiseLogicalAnd True "" x = x
+andByteString True x "" = andByteString True "" x = x
 
--- and the same for bitwiseLogicalOr and bitwiseLogicalXor
+-- and the same for orByteString and xorByteString
 ```
 
 Under truncation semantics, `""` (that is, the empty `BuiltinByteString`) acts
 instead as an [absorbing element][absorbing-element]:
 
 ```haskell
-bitwiseLogicalAnd False x "" = bitwiseLogicalAnd False "" x = ""
+andByteString False x "" = andByteString False "" x = ""
 
--- and the same for bitwiseLogicalOr and bitwiseLogicalXor
+-- and the same for orByteString and xorByteString
 ```
 
-`bitwiseLogicalAnd` and `bitwiseLogicalOr` are also [semilattices][semilattice],
+`andByteString` and `orByteString` are also [semilattices][semilattice],
 due to their idempotence:
 
 ```haskell
-bitwiseLogicalAnd s x x = x
+andByteString s x x = x
 
--- and the same for bitwiseLogicalOr
+-- and the same for orByteString
 ```
 
-`bitwiseLogicalXor` is instead involute:
+`xorByteString` is instead involute:
 
 ```haskell
-bitwiseLogicalXor s x (bitwiseLogicalXor s x x) = bitwiseLogicalXor s
-(bitwiseLogicalXor s x x) x = x
+xorByteString s x (xorByteString s x x) = xorByteString s
+(xorByteString s x x) x = x
 ```
 
-Additionally, under padding semantics, `bitwiseLogicalAnd` and
-`bitwiseLogicalOr` are [self-distributive][distributive]:
+Additionally, under padding semantics, `andByteString` and
+`orByteString` are [self-distributive][distributive]:
 
 ```haskell
-bitwiseLogicalAnd True x (bitwiseLogicalAnd True y z) = bitwiseLogicalAnd True
-(bitwiseLogicalAnd True x y) (bitwiseLogicalAnd True x z)
+andByteString True x (andByteString True y z) = andByteString True
+(andByteString True x y) (andByteString True x z)
 
-bitwiseLogicalAnd True (bitwiseLogicalAnd True x y) z = bitwiseLogicalAnd True
-(bitwiseLogicalAnd True x z) (bitwiseLogicalAnd True y z)
+andByteString True (andByteString True x y) z = andByteString True
+(andByteString True x z) (andByteString True y z)
 
--- and the same for bitwiseLogicalOr
+-- and the same for orByteString
 ```
 
-Under truncation semantics, `bitwiseLogicalAnd` is only left-distributive over
-itself, `bitwiseLogicalOr` and `bitwiseLogicalXor`:
+Under truncation semantics, `andByteString` is only left-distributive over
+itself, `orByteString` and `xorByteString`:
 
 ```haskell
-bitwiseLogicalAnd False x (bitwiseLogicalAnd False y z) = bitwiseLogicalAnd
-False (bitwiseLogicalAnd False x y) (bitwiseLogicalAnd False x z)
+andByteString False x (andByteString False y z) = andByteString
+False (andByteString False x y) (andByteString False x z)
 
-bitwiseLogicalAnd False x (bitwiseLogicalOr False y z) = bitwiseLogicalOr False
-(bitwiseLogicalAnd False x y) (bitwiseLogicalAnd False x z)
+andByteString False x (orByteString False y z) = orByteString False
+(andByteString False x y) (andByteString False x z)
 
-bitwiseLogicalAnd False x (bitwiseLogicalXor False y z) = bitwiseLogicalXor
-False (bitwiseLogicalAnd False x y) (bitwiseLogicalAnd False x z)
+andByteString False x (xorByteString False y z) = xorByteString
+False (andByteString False x y) (andByteString False x z)
 ```
 
-`bitwiseLogicalOr` under truncation semantics is left-distributive over itself
-and `bitwiseLogicalAnd`:
+`orByteString` under truncation semantics is left-distributive over itself
+and `andByteString`:
 
 ```haskell
-bitwiseLogicalOr False x (bitwiseLogicalOr False y z) = bitwiseLogicalOr False
-(bitwiseLogicalOr False x y) (bitwiseLogicalOr False x z)
+orByteString False x (orByteString False y z) = orByteString False
+(orByteString False x y) (orByteString False x z)
 
-bitwiseLogicalOr False x (bitwiseLogicalAnd False y z) = bitwiseLogicalAnd False
-(bitwiseLogicalOr False x y) (bitwiseLogicalOr False x z)
+orByteString False x (andByteString False y z) = andByteString False
+(orByteString False x y) (orByteString False x z)
 ```
 
 If the first and second data arguments to these operations have the same length,
@@ -857,38 +868,38 @@ these operations satisfy several additional laws. We describe these briefly
 below, with the added note that, in this case, padding and truncation semantics
 coincide:
 
-* `bitwiseLogicalAnd` and `bitwiseLogicalOr` form a [bounded lattice][lattice]
-* `bitwiseLogicalAnd` is [distributive][distributive] over itself, `bitwiseLogicalOr` and
-  `bitwiseLogicalXor`
-* `bitwiseLogicalOr` is [distributive][distributive] over itself and `bitwiseLogicalAnd`
+* `andByteString` and `orByteString` form a [bounded lattice][lattice]
+* `andByteString` is [distributive][distributive] over itself, `orByteString` and
+  `xorByteString`
+* `orByteString` is [distributive][distributive] over itself and `andByteString`
 
 We do not specify these laws here, as they do not hold in general. At the same
 time, we expect that any implementation of these operations will be subject to
 these laws.
 
-#### `bitwiseLogicalComplement`
+#### `complementByteString`
 
-The main law of `bitwiseLogicalComplement` is involution:
+The main law of `complementByteString` is involution:
 
 ```haskell
-bitwiseLogicalComplement (bitwiseLogicalComplement x) = x
+complementByteString (complementByteString x) = x
 ```
 
-In combination with `bitwiseLogicalAnd` and `bitwiseLogicalOr`,
-`bitwiseLogicalComplement` gives rise to the famous [De Morgan laws][de-morgan], irrespective of semantics:
+In combination with `andByteString` and `orByteString`,
+`complementByteString` gives rise to the famous [De Morgan laws][de-morgan], irrespective of semantics:
 
 ```haskell
-bitwiseLogicalComplement (bitwiseLogicalAnd s x y) = bitwiseLogicalOr s
-(bitwiseLogicalComplement x) (bitwiseLogicalComplement y)
+complementByteString (andByteString s x y) = orByteString s
+(complementByteString x) (complementByteString y)
 
-bitwiseLogicalComplement (bitwiseLogicalOr s x y) = bitwiseLogicalAnd s
-(bitwiseLogicalComplement x) (bitwiseLogicalComplement y)
+complementByteString (orByteString s x y) = andByteString s
+(complementByteString x) (complementByteString y)
 ```
 
-For `bitwiseLogicalXor`, we instead have (again, irrespective of semantics):
+For `xorByteString`, we instead have (again, irrespective of semantics):
 
 ```haskell
-bitwiseLogicalXor s x (bitwiseLogicalComplement x) = x
+xorByteString s x (complementByteString x) = x
 ```
 
 #### Bit reading and modification
@@ -901,7 +912,7 @@ The first law of `writeBits` is similar to the [set-twice law of
 lenses][lens-laws]:
 
 ```haskell
-writeBits bs [(i, b1), (i, b2)] = writeBits bs [(i, b2)]
+writeBits bs [i, i] [b1, b2] = writeBits bs [i] [b2]
 ```
 
 Together with `readBit`, we obtain the remaining two analogues to the lens
@@ -909,45 +920,45 @@ laws:
 
 ```haskell
 -- writing to an index, then reading from that index, gets you what you wrote
-readBit (writeBits bs [(i, b)]) i = b
+readBit (writeBits bs [i] [b]) i = b
 
 -- if you read from an index, then write that value to that same index, nothing
 -- happens
-writeBits bs [(i, readBit bs i)] = bs
+writeBits bs [i] [readBit bs i] = bs
 ```
 
 Furthermore, given a fixed data argument, `writeBits` acts as a [monoid
 homomorphism][monoid-homomorphism] lists under concatenation to functions:
 
 ```haskell
-writeBits bs [] = bs
+writeBits bs [] [] = bs
 
-writeBits bs (is <> js) = writeBits (writeBits bs is) js
+writeBits bs (is <> js) (v1 <> v2) = writeBits (writeBits bs is v1) js v2
 ```
 
-#### `replicateByteString`
+#### `replicateByte`
 
-Given a fixed byte argument, `replicateByteString` acts as a [monoid
+Given a fixed byte argument, `replicateByte` acts as a [monoid
 homomorphism][monoid-homomorphism] from natural numbers under addition to
 `BuiltinByteString`s under concatenation: 
 
 ```haskell
-replicateByteString 0 w = ""
+replicateByte 0 w = ""
 
-replicateByteString (n + m) w = replicateByteString n w <> replicateByteString m w
+replicateByte (n + m) w = replicateByte n w <> replicateByte m w
 ```
 
 Additionally, for any 'in-bounds' index (that is, any index for which
 `indexByteString` won't error) `i`, we have
 
 ```haskell
-indexByteString (replicateByteString n w) i = w
+indexByteString (replicateByte n w) i = w
 ```
 
 Lastly, we have
 
 ```haskell
-lengthByteString (replicateByteString n w) = n
+lengthByteString (replicateByte n w) = n
 ```
 
 ## Rationale: how does this CIP achieve its goals?
@@ -969,8 +980,8 @@ differ in several important ways. We clarify the reasoning behind our choices,
 and how they differ from existing work, below.
 
 Aside from the issues we list below, we don't consider other operations
-controversial. Indeed, `bitwiseLogicalComplement` has a direct parallel to the
-implementation in [CIP-58][cip-58], and `replicateByteString` is a direct wrapper
+controversial. Indeed, `complementByteString` has a direct parallel to the
+implementation in [CIP-58][cip-58], and `replicateByte` is a direct wrapper
 around the `replicate` function in `ByteString`. Thus, we do not discuss them
 further here.
 
@@ -983,7 +994,7 @@ in CIP-58 that were not as good (or as clear) as they could have been. In this
 regard, this CIP is a direct continuation of CIP-121; CIP-121 dealt with
 conversions between `BuiltinByteString` and `BuiltinInteger`, while this CIP
 handles bit indexing more generally, as well as 'parallel' logical operations
-that operate on all the bits of a `BuiltinByteString` in bulk. 
+that operate on all the bytes of a `BuiltinByteString` in bulk. 
 
 We describe how our work in this CIP relates to (and in some cases, supercedes)
 CIP-58, as well as how it follows on from CIP-121, in more detail below.
@@ -1114,12 +1125,12 @@ ensures that (at least for the most-significant-first arrangement), the
 following workflow doesn't produce unexpected results:
 
 1. Convert a `BuiltinInteger` to `BuiltinByteString` using
-   `builtinIntegerToByteString` with the most-significant-first endianness
+   `integerToByteString` with the most-significant-first endianness
    argument.
 2. Manipulate the bits of the result of step 1 using the operations specified 
    here.
 3. Convert the result of step 2 back to a `BuiltinInteger` using
-   `builtinByteStringToInteger` with the most-significant-first endianness
+   `byteStringToInteger` with the most-significant-first endianness
    argument.
 
 This workflow is directly relevant to Case 2. The Argon2 family of hashes use
@@ -1264,7 +1275,7 @@ reason for our choice.
 ### Padding versus truncation
 
 For the operations defined in this CIP taking two `BuiltinByteString` arguments
-(that is, `bitwiseLogicalAnd`, `bitwiseLogicalOr`, and `bitwiseLogicalXor`),
+(that is, `andByteString`, `orByteString`, and `xorByteString`),
 when the two arguments have identical lengths, the semantics are natural,
 mirroring the corresponding operations on the 
 [Boolean algebra][boolean-algebra-2] $\textbf{2}^{8n}$, where $n$ is the length 
@@ -1275,7 +1286,7 @@ we repeat some of the definitions used [in the corresponding
 section](#padding-versus-truncation-semantics).
 
 * Extend the shorter argument with the identity element (all-1s for
-  `bitwiseLogicalAnd`, all-0s otherwise) to match the length of the longer argument,
+  `andByteString`, all-0s otherwise) to match the length of the longer argument,
   then perform the operation as if on matching-length arguments. We call this
   _padding semantics_.
 * Ignore the bytes of the longer argument whose indexes would not be valid for
@@ -1304,7 +1315,7 @@ justify the benefit of having other semantics described above available.
 Consider the following operation: given a bound $k$, a 'direction' (larger or
 smaller), and an integer set, remove all elements indicates by the direction and
 $k$ (that is, either smaller than $k$ or larger than $k$, as indicated by the
-direction). This could be done using a `bitwiseLogicalAnd` and a mask. However,
+direction). This could be done using a `andByteString` and a mask. However,
 under match semantics, this mask would have to have a length equal to the
 integer set representation; under padding semantics, the mask would potentially
 only need $\Theta(k)$ length, depending on direction. This is noteworthy, as
@@ -1313,7 +1324,7 @@ value that would be discarded immediately.
 
 Consider instead the following operation: given two integer sets with different
 (upper) bounds, take their intersection, producing an integer set whose size is
-the minimum of the two. This can once again be done using `bitwiseLogicalAnd`,
+the minimum of the two. This can once again be done using `andByteString`,
 but under match semantics (or padding semantics for that matter), we would first
 have to slice the longer argument, while under truncation semantics, we wouldn't
 need to.
@@ -1403,9 +1414,10 @@ pad and truncate high in light of this.
 
 ### Bit setting
 
-`writeBits` in our description takes a change list argument, allowing
-changing multiple bits at once. This is an added complexity, and an argument can
-be made that something similar to the following operation would be sufficient:
+`writeBits` in our description takes two arguments describing changes, both of
+which are lists, allowing changing multiple bits at once. This is an added
+complexity, and an argument can be made that something similar to the following
+operation would be sufficient:
 
 ```haskell
 writeBit :: BuiltinByteString -> BuiltinInteger -> BuiltinBool ->
@@ -1413,7 +1425,7 @@ BuiltinByteString
 ```
 
 Essentially, `writeBit bs i v` would be equivalent to `writeBits bs
-[(i, v)]` as currently defined. This was the choice made by [CIP-58][cip-58],
+[i] [v]` as currently defined. This was the choice made by [CIP-58][cip-58],
 with the consideration of simplicity in mind. 
 
 At the same time, due to the immutability semantics of Plutus Core, each time
@@ -1427,8 +1439,8 @@ improvement. While we cannot avoid the worst-case copying behaviour of
 $k$, for example), and 'list packing' carries some cost, we have
 [benchmarks][benchmarks-bits] that show not only that this 'packing cost' is
 essentially zero, but that for `BuiltinByteString`s of 30 bytes or fewer,
-copying completely overwhelms the work required to modify the bits specified in
-the change list argument. This alone is good evidence for having `writeBits` instead;
+copying completely overwhelms the work required to modify the bits specified. 
+This alone is good evidence for having `writeBits` instead;
 indeed, there is prior art for doing this [in the `vector` library][vector], for
 the exact reasons we give here.
 
@@ -1436,7 +1448,7 @@ The argument could also be made whether this design should be extended to other
 primitive operations in this CIP which both take `BuiltinByteString` arguments
 and also produce `BuiltinByteString` results. We believe that this is not as
 justified as in the `writeBits` case, for several reasons. Firstly, for
-`bitwiseLogicalComplement`, it's not clear what benefit this would have at
+`complementByteString`, it's not clear what benefit this would have at
 all: the only possible signature such an operation would have is
 `[BuiltinByteString] -> [BuiltinByteString]`, which in effect would be a
 specialized form of mapping. While an argument could be made for a _general_
@@ -1448,19 +1460,19 @@ significant in theory, and likely wouldn't be in practice either. Consider
 this hypothetical operation (with fold semantics):
 
 ```haskell
-bitwiseLogicalXors :: BuiltinBool -> [BuiltinByteString] -> BuiltinByteString
+xorByteStrings :: BuiltinBool -> [BuiltinByteString] -> BuiltinByteString
 ```
 
-Simulating this operation as a fold using `bitwiseLogicalXor`, in the worst
+Simulating this operation as a fold using `xorByteString`, in the worst
 case, irrespective of padding or truncation semantics, requires $\Theta(nk)$
 time and space, where $n$ is the size of each `BuiltinByteString` in the
 argument list, and $k$ is the length of the argument list itself. Using
-`bitwiseLogicalXors` instead would reduce the space required to $\Theta(n)$, 
+`xorByteStrings` instead would reduce the space required to $\Theta(n)$, 
 but would not affect the time complexity at all. 
 
-Lastly, it is questionable whether 'bulk' operations like `bitwiseLogicalXors`
+Lastly, it is questionable whether 'bulk' operations like `xorByteStrings`
 above would see as much use as `writeBits`. In the context of Case 1,
-`bitwiseLogicalXors` corresponds to taking the symmetric difference of multiple
+`xorByteStrings` corresponds to taking the symmetric difference of multiple
 integer sets; it seems unlikely that the number of sets we'd want to do this
 with would frequently be higher than 2. However, in the same context,
 `writeBits` corresponds to constructing an integer set given a list of

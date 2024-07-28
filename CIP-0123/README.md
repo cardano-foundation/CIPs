@@ -38,7 +38,7 @@ that the operations we describe in this CIP form a useful 'completion' of the
 work in CIP-122, based on similar work done in the [earlier CIP-58][cip-58].
 
 To demonstrate why our proposed operations are useful, we re-use the cases
-provided in the [CIP-122][logic-cip], and show why the operations
+provided in the [CIP-122][cip-122], and show why the operations
 we describe would be beneficial.
 
 ### Case 1: integer set
@@ -101,7 +101,7 @@ examples. Lastly, we provide laws that any implementation of the proposed
 operations should obey.
 
 Throughout, we make use of the [bit indexing scheme][bit-indexing-scheme]
-described in a CIP-122. We also re-use the notation $x[i]$ to refer to the value
+described in [CIP-122][cip-122]. We also re-use the notation $x[i]$ to refer to the value
 of at bit index $i$ of $x$, and the notation $x\\{i\\}$ to refer to the byte at
 byte index $i$ of $x$: both are specified in CIP-122.
 
@@ -109,8 +109,8 @@ byte index $i$ of $x$: both are specified in CIP-122.
 
 Our proposed operations will have the following signatures:
 
-* ``bitwiseShift :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString``
-* ``bitwiseRotate :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString``
+* ``shiftByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString``
+* ``rotateByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinByteString``
 * ``countSetBits :: BuiltinByteString -> BuiltinInteger``
 * ``findFirstSetBit :: BuiltinByteString -> BuiltinInteger``
 
@@ -118,14 +118,14 @@ We assume the following costing, for both memory and execution time:
 
 | Operation | Execution time cost | Memory cost |
 |-----------|---------------------|-------------|
-|`bitwiseShift`| Linear in the `BuiltinByteString` argument | As execution time|
-|`bitwiseRotate` | Linear in the `BuiltinByteString` argument | As execution time |
+|`shiftByteString`| Linear in the `BuiltinByteString` argument | As execution time|
+|`rotateByteString` | Linear in the `BuiltinByteString` argument | As execution time |
 |`countSetBits` | Linear in the argument | Constant |
 |`findFirstSetBit` | Linear in the argument | Constant |
 
-#### `bitwiseShift`
+#### `shiftByteString`
 
-`bitwiseShift` takes two arguments; we name and describe them below.
+`shiftByteString` takes two arguments; we name and describe them below.
 
 1. The `BuiltinByteString` to be shifted. This is the _data argument_.
 2. The shift, whose sign indicates direction and whose magnitude indicates the
@@ -133,7 +133,7 @@ We assume the following costing, for both memory and execution time:
    `BuiltinInteger`.
 
 Let $b$ refer to the data argument, whose length in bytes is $n$, and let $i$
-refer to the shift argument. Let the result of `bitwiseShift` called with $b$
+refer to the shift argument. Let the result of `shiftByteString` called with $b$
 and $i$ be $b_r$, also of length $n$. 
 
 For all $j \in 0, 1, \ldots 8 \cdot n - 1$, we have
@@ -145,29 +145,29 @@ b_r[j] = \begin{cases}
          \end{cases}
 $$
 
-Some examples of the intended behaviour of `bitwiseShift` follow. For
+Some examples of the intended behaviour of `shiftByteString` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
 ```
 -- Shifting the empty bytestring does nothing
-bitwiseShift [] 3 => []
+shiftByteString [] 3 => []
 -- Regardless of direction
-bitwiseShift [] (-3) => []
+shiftByteString [] (-3) => []
 -- Positive shifts move bits to higher indexes, cutting off high indexes and
 -- filling low ones with zeroes
-bitwiseShift [0xEB, 0xFC] 5 => [0x7F, 0x80]
+shiftByteString [0xEB, 0xFC] 5 => [0x7F, 0x80]
 -- Negative shifts move bits to lower indexes, cutting off low indexes and
 -- filling high ones with zeroes
-bitwiseShift [0xEB, 0xFC] (-5) => [0x07, 0x5F]
+shiftByteString [0xEB, 0xFC] (-5) => [0x07, 0x5F]
 -- Shifting by the total number of bits or more clears all bytes
-bitwiseShift [0xEB, 0xFC] 16 => [0x00, 0x00]
+shiftByteString [0xEB, 0xFC] 16 => [0x00, 0x00]
 -- Regardless of direction
-bitwiseShift [0xEB, 0xFC] (-16) => [0x00, 0x00]
+shiftByteString [0xEB, 0xFC] (-16) => [0x00, 0x00]
 ```
 
-#### `bitwiseRotate`
+#### `rotateByteString`
 
-`bitwiseRotate` takes two arguments; we name and describe them below.
+`rotateByteString` takes two arguments; we name and describe them below.
 
 1. The `BuiltinByteString` to be rotated. This is the _data argument_.
 2. The rotation, whose sign indicates direction and whose magnitude indicates 
@@ -175,35 +175,35 @@ bitwiseShift [0xEB, 0xFC] (-16) => [0x00, 0x00]
    `BuiltinInteger`.
 
 Let $b$ refer to the data argument, whose length in bytes is $n$, and let $i$
-refer to the rotation argument. Let the result of `bitwiseRotate` called with $b$
+refer to the rotation argument. Let the result of `rotateByteString` called with $b$
 and $i$ be $b_r$, also of length $n$. 
 
 For all $j \in 0, 1, \ldots 8 \cdot n - 1$, we have 
 $b_r = b[(j - i) \text{ } \mathrm{mod} \text { } (8 \cdot n)]$.
 
-Some examples of the intended behaviour of `bitwiseRotate` follow. For
+Some examples of the intended behaviour of `rotateByteString` follow. For
 brevity, we write `BuiltinByteString` literals as lists of hexadecimal values.
 
 ```
 -- Rotating the empty bytestring does nothing
-bitwiseRotate [] 3 => []
+rotateByteString [] 3 => []
 -- Regardless of direction
-bitwiseRotate [] (-1) => []
+rotateByteString [] (-1) => []
 -- Positive rotations move bits to higher indexes, 'wrapping around' for high
 -- indexes into low indexes
-bitwiseRotate [0xEB, 0xFC] 5 => [0x7F, 0x9D]
+rotateByteString [0xEB, 0xFC] 5 => [0x7F, 0x9D]
 -- Negative rotations move bits to lower indexes, 'wrapping around' for low
 -- indexes into high indexes
-bitwiseRotate [0xEB, 0xFC] (-5) => [0xE7, 0x5F]
+rotateByteString [0xEB, 0xFC] (-5) => [0xE7, 0x5F]
 -- Rotation by the total number of bits does nothing
-bitwiseRotate [0xEB, 0xFC] 16 => [0xEB, 0xFC]
+rotateByteString [0xEB, 0xFC] 16 => [0xEB, 0xFC]
 -- Regardless of direction
-bitwiseRotate [0xEB, 0xFC] (-16) => [0xEB, 0xFC]
+rotateByteString [0xEB, 0xFC] (-16) => [0xEB, 0xFC]
 -- Rotation by more than the total number of bits is the same as the remainder
 -- after division by number of bits
-bitwiseRotate [0xEB, 0xFC] 21 =>[0x7F, 0x9D]
+rotateByteString [0xEB, 0xFC] 21 =>[0x7F, 0x9D]
 -- Regardless of direction, preserving sign
-bitwiseRotate [0xEB, 0xFC] (-21) => [0xE7, 0x5F]
+rotateByteString [0xEB, 0xFC] (-21) => [0xE7, 0x5F]
 ```
 
 #### `countSetBits`
@@ -257,26 +257,26 @@ findFirstSetBit [0xFF, 0xF2] => 1
 
 Throughout, we use `bitLen bs` to indicate the number of bits in `bs`; that is,
 `sizeOfByteString bs * 8`. We also make reference to [logical
-operations][logic-cip] from a previous CIP as part of specifying these laws.
+operations][cip-122] from CIP-122 as part of specifying these laws.
 
 #### Shifts and rotations
 
-We describe the laws for `bitwiseShift` and `bitwiseRotate` together, as they
-are similar. Firstly, we observe that `bitwiseShift` and `bitwiseRotate` both
+We describe the laws for `shiftByteString` and `rotateByteString` together, as they
+are similar. Firstly, we observe that `shiftByteString` and `rotateByteString` both
 form a [monoid homomorphism][monoid-homomorphism] between natural number 
 addition and function composition:
 
 ```haskell
-bitwiseShift bs 0 = bitwiseRotate bs 0 = bs
+shiftByteString bs 0 = rotateByteString bs 0 = bs
 
-bitwiseShift bs (i + j) = bitwiseShift (bitwiseShift bs i) j
+shiftByteString bs (i + j) = shiftByteString (shiftByteString bs i) j
 
-bitwiseRotate bs (i + j) = bitwiseRotate (bitwiseRotate bs i) j
+rotateByteString bs (i + j) = rotateByteString (rotateByteString bs i) j
 ```
 
-However, `bitwiseRotate`'s homomorphism is between _integer_ addition and
+However, `rotateByteString`'s homomorphism is between _integer_ addition and
 function composition: namely, `i` and `j` in the above law are allowed to have
-different signs. `bitwiseShift`'s composition law only holds if `i` and `j`
+different signs. `shiftByteString`'s composition law only holds if `i` and `j`
 don't have opposite signs: that is, if they're either both non-negative or both
 non-positive.
 
@@ -286,8 +286,8 @@ Shifts by more than the number of bits in the data argument produce an empty
 ```haskell
 -- n is non-negative
 
-bitwiseShift bs (bitLen bs + n) = 
-bitwiseShift bs (- (bitLen bs + n)) = 
+shiftByteString bs (bitLen bs + n) = 
+shiftByteString bs (- (bitLen bs + n)) = 
 replicateByteString (sizeOfByteString bs) 0x00
 ```
 
@@ -295,9 +295,9 @@ Rotations, on the other hand, exhibit 'modular roll-over':
 
 ```haskell
 -- n is non-negative
-bitwiseRotate bs (binLen bs + n) = bitwiseRotate bs n
+rotateByteString bs (binLen bs + n) = rotateByteString bs n
 
-bitwiseRotate bs (- (bitLen bs + n)) = bitwiseRotate bs (- n)
+rotateByteString bs (- (bitLen bs + n)) = rotateByteString bs (- n)
 ```
 
 Shifts clear bits at low indexes if the shift argument is positive, and at high
@@ -305,16 +305,16 @@ indexes if the shift argument is negative:
 
 ```
 -- 0 < n < bitLen bs, and 0 <= i < n
-readBit (bitwiseShift bs n) i = False
+readBit (shiftByteString bs n) i = False
 
-readBit (bitwiseShift bs (- n)) (bitLen bs - i - 1)  = False
+readBit (shiftByteString bs (- n)) (bitLen bs - i - 1)  = False
 ```
 
 Rotations instead preserve all set and clear bits, but move them around:
 
 ```
 -- 0 <= i < bitLen bs
-readBit bs i = readBit (bitwiseRotate bs j) (modInteger (i + j) (bitLen bs))
+readBit bs i = readBit (rotateByteString bs j) (modInteger (i + j) (bitLen bs))
 ```
 
 #### `countSetBits`
@@ -328,11 +328,11 @@ countSetBits "" = 0
 countSetBits (x <> y) = countSetBits x + countSetBits y
 ```
 
-`countSetBits` also demonstrates that `bitwiseRotate` indeed preserves the
+`countSetBits` also demonstrates that `rotateByteString` indeed preserves the
 number of set (and thus clear) bits:
 
 ```haskell
-countSetBits bs = countSetBits (bitwiseRotate bs i)
+countSetBits bs = countSetBits (rotateByteString bs i)
 ```
 
 There is also a relationship between the result of `countSetBits` on a given
@@ -393,7 +393,7 @@ readBit bs i = False
 Our four operations, along with their semantics, fulfil the requirements of both
 our cases, and are law-abiding, familiar, consistent and straightforward to
 implement. Furthermore, they relate directly to operations provided by
-[CIP-122][logic-cip], as well as being identical to the equivalent operations in
+[CIP-122][cip-122], as well as being identical to the equivalent operations in
 [CIP-58][cip-58]. At the same time, some alternative choices could have been
 made:
 
@@ -409,22 +409,23 @@ the choices that we did.
 
 While we chose to provide all of these operations as primitives, we could
 instead have required higher-level APIs to provide these on the basis
-of [CIP-122][logic-cip] bit reads and writes. This is indeed possible:
+of [CIP-122][cip-122] bit reads and writes. This is indeed possible:
 
-* `bitwiseShift` and `bitwiseRotate` is a loop over all bits in the data argument, 
-  which is used to construct a change list that sets appropriate bits (with the 
-  right offset), which then gets applied to a `BuiltinByteString` of the same
-  length as the data argument, but full of zero bytes.
+* `shiftByteString` and `rotateByteString` are both loops over all bits in the 
+  data argument, which are used to construct a combination of index and value 
+  lists that set appropriate bits (with the right offset), which then gets 
+  applied to a `BuiltinByteString` of the same length as the data argument, 
+  but full of zero bytes.
 * `countSetBits` is a fold over all bit indexes, incrementing an accumulator
   every time a set bit is found.
 * `findFirstSetBit` is a fold over all bit indexes, returning the first index
   with a set bit, or (-1) if none can be found.
 
-However, especially for `bitwiseShift` and `bitwiseRotate`, this comes at
-significant cost. For shifts and rotations, we have to construct a change list
-argument whose length is proportional to the Hamming weight of the data
+However, especially for `shiftByteString` and `rotateByteString`, this comes at
+significant cost. For shifts and rotations, we have to construct a list
+arguments whose length is proportional to the Hamming weight of the data
 argument. Assuming that all inputs are equally likely, this is proportional to
-the bit length of the data argument: such a change list is likely significantly
+the bit length of the data argument: such lists are likely significantly
 larger than the result of the shift or rotation, making the memory cost of such
 operations far higher than it needs to be. Given the constraints on memory and
 execution time on-chain, at minimum, these two operations would have to be
@@ -448,7 +449,7 @@ their inclusion.
 When designing our operations, we tried to keep them familiar to Haskellers,
 namely by having them behave like the similar operations from the `Bits` and
 `FiniteBits` type classes. In particular,
-`bitwiseShift` and `bitwiseRotate` act similarly given the same shift (or
+`shiftByteString` and `rotateByteString` act similarly given the same shift (or
 rotation) argument, as positive values shift left and negative ones shift 
 right. The only exception is the choice for `findFirstSetBit` to return `-1`
 when no set bits are found, which runs counter to the way `countTrailingZeros`
@@ -460,7 +461,7 @@ provide additional laws:
 ```haskell
 -- Not possible under our current definition
 -- bitLen is the bit length of the argument
-0 <= popcount bs <= bitLen bs - findFirstSet bs 
+0 <= countSetBits bs <= bitLen bs - findFirstSet bs 
 ```
 
 Under both definitions, the intent is the same: if the argument doesn't contain
@@ -551,15 +552,15 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 
 [tier-1]: https://gitlab.haskell.org/ghc/ghc/-/wikis/platforms#tier-1-platforms
 [impl]: https://github.com/mlabs-haskell/plutus-integer-bytestring/tree/koz/milestone-2
-[bit-indexing-scheme]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#bit-indexing-scheme
+[bit-indexing-scheme]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bit-indexing-scheme
 [monoid-homomorphism]: https://en.wikipedia.org/wiki/Monoid#Monoid_homomorphisms
-[logic-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-0122/CIP-0122.md
 [include-exclude]: https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle
 [cip-58]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0058
-[integer-set]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#case-1-integer-set
+[integer-set]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#case-1-integer-set
 [hamming-weight]: https://en.wikipedia.org/wiki/Hamming_weight#History_and_usage
 [hamming-distance]: https://en.wikipedia.org/wiki/Hamming_distance
 [ffs-uses]: https://en.wikipedia.org/wiki/Find_first_set#Applications
 [rank-select-dictionary]: https://en.wikipedia.org/wiki/Succinct_data_structure#Succinct_indexable_dictionaries
-[hashing]: https://github.com/mlabs-haskell/CIPs/blob/koz/logic-ops/CIP-XXX/CIP-XXX.md#case-2-hashing
+[hashing]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#case-2-hashing
 [ctz]: https://en.wikipedia.org/wiki/Find_first_set#Hardware_support
+[cip-122]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122
