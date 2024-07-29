@@ -46,7 +46,7 @@ Scenario 3 - __Bad Blocks Minted on Chain__
 
 To ensure successful recovery in the event of a chain failure, it's crucial to establish effective 
 communication channels and exercise recovery procedures in advance to familiarize the community and 
-SPOs with the process.
+stake pool operators (SPOs) with the process.
 
 This CIP is based on an earlier IOHK technical report that is referenced below, supplemented by internal 
 documentation and discussions that have not been publicly released. It should be considered to be a living 
@@ -58,7 +58,7 @@ document that is reviewed and revised on a regular basis.
 
 This CIP is needed to familiarize stakeholders with the processes and procedures that should be 
 followed in the unlikely event that the Cardano mainnet encounters a situation where the built-in 
-recovery mechanisms fail.
+on-chain recovery mechanisms fail.
 
 ## Disaster Recovery Procedures
 <!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned, if not covered under an optional Versioning main heading. If a proposal defines structure of on-chain data it must include a CDDL schema in its specification.-->
@@ -87,7 +87,7 @@ is perfectly normal.  Such forks will typically last only a few
 blocks.
 
 However, in an extreme situation, the partition may persist beyond the
-Praos rollback limit of *k* blocks (currently 2,160).  In this case, the nodes
+Praos rollback limit of *k* blocks (currently 2,160 blocks).  In this case, the nodes
 will not be able to rollback to rejoin the main chain, since this
 would violate the required Praos guarantees.
 
@@ -100,19 +100,20 @@ against the main network. This can be done using the `db-truncator` tool.
 
 Full node wallets can also be recovered in the same way, though this may require technical 
 skills that the end users do not possess. It may be easier, if slower, for them to simply 
-resynchronize their nodes from genesis.
+resynchronize their nodes fromb the start of the chain (i.e. from the genesis block).
 
 Ouroboros Genesis provides additional resilience when recovering from long lived network partitions. 
 In Praos nodes resyncing from a point before the chain fork could still in some cases follow the 
 alternative chain (if it is the first one seen) and extra mechanisms may be needed to avoid this 
-possibility. In Praos, for example, this may require that all participants on the alternate chain 
+possibility. In Praos, for example, this may require that all participants on the alternative chain 
 truncate the local block database prior to the partition being resolved. In Ouroboros Genesis 
 when resyncing from a point before the chain fork, the chain selection rules will ensure 
 selection of the correct path for the main chain assuming the partition has been resolved.
 
-Alternative methods to restore might include the use of Mithril or other signed snapshot. 
-In this case, care needs to be taken to achieve the correct balance of trust against speed 
-of recovery.
+Alternative methods to resynchronise the node to the main chain might
+include the use of Mithril or other signed snapshots.  These would
+allow faster recovery.  However, in this case, care needs to be taken
+to achieve the correct balance of trust against speed of recovery.
 
 #### Additional Effects on Cardano Users
 
@@ -127,10 +128,10 @@ evidence/validity, or the timing of transactions. End users should be
 aware of the possibility and include provisions in their contracts to
 cover this eventuality.  It may be necessary to resubmit some or all of the
 transactions that were processed on the minority chain onto the main chain.
-To avoid unexpected effects, this should be done by the end users, and not
+To avoid unexpected effects, this should be done by the end users/applications, and not
 by block producers acting on their behalf.
 
-If they are not observant, stake pool operators, full node wallets and
+If they are not observant, stake pools, full node wallets and
 other node users (e.g. explorers) could continue indefinitely on the minority
 chain.  Such users should take care to be aware of this situation and
 take steps to rejoin the main chain as quickly as possible.
@@ -180,10 +181,11 @@ donate any rewards that they receieve during recovery to the treasury.
 
 Unlike Scenario 1, no transactions will be submitted that need to be resubmitted on the chain.
 Users will, however, experience an extended period during which the chain is unavailable.
-Applications and contracts should be designed with this possibility in mind.
+Cardano applications and contracts should be designed with this possibility in mind.
 Full node wallets and other node users should recover quickly once the network is restarted
 but there may be a period of instability while network connections are re-established
 and the Ouroboros Genesis snapshot is distributed across all nodes.
+
 
 #### Timing Considerations
 
@@ -193,12 +195,12 @@ and leave open the possibility for future long range attacks. This may be partic
 relevant should chain recovery be performed as described above (using less stake than is required 
 for an honest majority). To mitigate the presence of an extended period of low chain density we may 
 need to make use of the lightweight checkpointing mechanism in Ouroborus Genesis. Alternatively Mithril 
-could also be used to provide certified snapshots to SPOs as a means to verify the correct state of the ledger.
+could also be used to provide certified snapshots to stake pools as a means to verify the correct state of the ledger.
 
 The adoption of Mithril for fast bootstrapping by light clients and edge nodes should help to mitigate risks 
 for the types of users on the network that do not participate in consensus.
 
-Ouroboros Genesis may provide a remedy (TODO: confirm and describe this).
+Ouroboros Genesis may also provide a remedy (TODO: confirm and describe this).
 
 
 ### Scenario 3: Bad Blocks Minted on Chain
@@ -212,28 +214,29 @@ point of the bad block.
 Depending on the cause of the issue and its severity, alternative remediations might be possible.  
 
 **Scenario 3.1**: if some existing node versions were able to process the block, but others were not, then
-the chain would continue to grow at a lower chain density.  SPOs would be encouraged to upgrade (or downgrade)
-to a suitable node version.  The chain density would then gradually recover to its normal level.
+the chain would continue to grow at a lower chain density.  SPOs would need to be persuaded to upgrade (or downgrade)
+to a suitable node version that would allow the chain to continue.  The chain density would then gradually recover to its normal level.
+Other users would need to upgrade (or downgrade) to a version of the node that could follow the full chain.
 
 **Scenario 3.2**: if no node version was able to process the block and a
 gap of less than *3k/f* slots existed, then the chain could be rolled
 back immediately before the bad block was created, and nodes
-restarted.  The chain would then grow as normal, with a small gap around the bad block.
-In this case, care would need to be taken that the rogue
-transaction was not accidentally reinserted into the chain.  This might involve
-clearing node mempools, applying filters on the transaction, or developing and deploying a new node version that 
+restarted from this point.  The chain would then grow as normal, with a small gap around the bad block.
+In this case, care would need to be taken that the rogue transaction was not accidentally reinserted into the chain.  
+This might involve clearing node mempools, applying filters on the transaction, or developing and deploying a new node version that 
 rejected the bad block.
 
 **Scenario 3.3**: an alternative to rolling back would be to develop and deploy a "hot-fix" node that could
-accept the bad block.  Nodes would then be able to incorporate the bad block as part of the chain,
-minting new blocks as usual.
+accept the bad block, either as an exception, or as new acceptable behaviour.  
+Nodes would then be able to incorporate the bad block as part of the chain,
+minting new blocks as usual, or following the chain.
 In this case, the bad block would persist on-chain indefinitely and future nodes
-would need to also accept the bad block.  This approach is best used when the rejected block has behaviour
-that was unanticipated, but which is benign in nature.  This approach will leave no abnormal gaps in the chain.
+would also need to accept the bad block.  Such an approach is best used when the rejected block has behaviour
+that was unanticipated, but which is benign in nature.  This will leave no abnormal gaps in the chain.
 
 **Scenario 3.4**: if more than *3k/f* slots have passed since the bad block was minted, then it will be necessary to roll back the chain immediately
 prior to the bad block as in Scenario 3.2, and then proceed as described for Scenario 2.  As with Scenario 2, this will leave
-a series of gaps in the chain interspersed with empty blocks.
+a series of gaps in the chain that are interspersed with empty blocks.
 
 #### Timing Considerations
 
@@ -249,23 +252,26 @@ Ouroboros Genesis snapshots can be used to assist with recovery.  TODO: expand t
 
 ### Using Mithril Snapshots
 
-Mythril is a stake-based threshold multi-signatures scheme. One of the applications of this protocol in Cardano
-is the ability to create certified snapshots of the Cardano blockchain. Mythril snapshots allow applications
+Mithril is a stake-based threshold multi-signatures scheme. One of the applications of this protocol in Cardano
+is to create certified snapshots of the Cardano blockchain. Mithril snapshots allow nodes or applications
 to obtain a verified copy of the current state of the blockchain without having to download and verify the full history.
 
-SPOs on mainnet that participate in the Mythril network provide signed snapshots to a Mythril aggregator that 
+SPOs on mainnet that participate in the Mithril network provide signed snapshots to a Mithril aggregator that 
 is responsible for collecting individual signatures from Mithril signers and aggregating them into a multi-signature. 
-With this capability, the Mithril aggregator can then provide certified snapshots of the Cardano blockchain.
+Using this capability, the Mithril aggregator can then provide certified snapshots of the Cardano blockchain that
+can potentially be used as a trusted source for recovery purposes.
 
-Mythril may provide an alternative solution to genesis checkpoints as a way to verify the correct state of the ledger 
-provided that it gains sufficient adoption on Mainnet and that snapshots continue to be signed by an honest majority 
-following a chain recovery event. 
+Provided that it gains sufficient adoption on Mainnet and that
+snapshots continue to be signed by an honest majority of stake pools
+following a chain recovery event, Mithril may therefore provide an
+alternative solution to Ouroboros Genesis checkpoints as a way to
+verify the correct state of the ledger
 
 
 ## Recommended Actions
 
-1. Monitor the network for periods of low density and take early action if an extended peroo.
-2. Identify a collection of block producer nodes that has sufficient stake to mint least 9 blocks in any 36 hour window.
+1. Monitor the network for periods of low density and take early action if an extended period is observed.
+2. Identify a collection of block producer nodes that has sufficient stake to mint at least 9 blocks in any 36 hour window.
 3. Set up emergency communication channels with stake pool operators and other community members.
 4. Practice disaster recovery procedures on a regular basis.
 5. Provide signed Mithril snapshots and a way for full node wallet users and others to recover from this snapshot.
@@ -275,9 +281,9 @@ following a chain recovery event.
 
 One of the key requirements for successful disaster recovery will be proper engagement with the community.
 
-1. Identify block producers who can assist with disaster recovery
-2. Discuss requirements with Intersect's Technical Working Groups and Security Council
-3. Identify and establish the right communications channels with the community
+1. Identify stake pool operators (SPOs) who can assist with disaster recovery
+2. Discuss disaster recovery requirements with Intersect's Technical Working Groups and Security Council
+3. Identify and establish the right communications channels with the community, including Intersect
 4. Set up regular disaster recovery practice sessions
 
 
