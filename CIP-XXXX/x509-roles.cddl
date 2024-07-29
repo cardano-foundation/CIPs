@@ -36,10 +36,7 @@ c509_cert = (
 )
 
 ; C509 Certificate from https://datatracker.ietf.org/doc/draft-ietf-cose-cbor-encoded-cert/09/
-C509Certificate = [
-	TBSCertificate: bytes .cbor any, ; A CBOR Encoded C.509 Certificate (binary)	
-	issuerSignatureValue: any, ; The issuers signature (dependent on the signature algorithm used by the certificate)
-]
+C509Certificate = bytes .cbor any ; A CBOR Encoded C.509 Certificate (binary)	
 
 ; A reference to a C509 certificate held in a metadatum.
 ; if there are multiple transaction outputs that contain certificates they need to be listed individually.
