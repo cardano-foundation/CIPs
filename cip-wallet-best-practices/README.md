@@ -18,12 +18,15 @@ Cardano boasts a wide and competitive wallet ecosystem.
 Diversity brings advantages but can also lead to disperse functionalities.
 
 Here we describe a common set of best practices for wallet implementors that aim to improve wallet security and user experience across the ecosystem.
-While these recommendations cannot be enforced, by documenting them, we aim to bring awareness to them for all stakeholders.
+While these recommendations cannot be enforced, by documenting them, we hope to bring awareness to them for all stakeholders.
 
 ## Motivation: why is this CIP necessary?
 
-The Cardano ecosystem enjoys a wide range of wallets, this is great for users, affording them a range of options.
-Although this can bring challenges, ecosystem level standardization can be difficult.
+Caradno's architecture is fundamentally different from many other ecosystems.
+This results in unique pitfalls for Cardano wallets which are not possible within different ecosystems.
+
+The Cardano ecosystem enjoys a wide range of wallets, which is great for users, affording them a range of options.
+Although this can bring challenges, ecosystem-level standardization can be difficult.
 
 This proposal intends to improve the security and user experience base lines for all wallets in the Cardano ecosystem.
 
@@ -31,17 +34,14 @@ The stakeholders of this proposal are wallet users and wallet implementors.
 
 ### Security
 
-By documenting 
-
-- documenting best practices ensures that all wallet implementors can at least be aware, first step to conforming
-- improve security baselines, no excuses
-- may help users choose *safer* wallets
+By publicly documenting best practices we attempt to highlight potential security improvements for wallet implementors.
+With pitfalls and solutions presented, wallets are made aware of challenges and mitigations.
 
 ### Inconsistent user experience
 
-- inherently complex things, derivation/addresses are hard to explain
-- lead to a worse experience causing people to leave the ecosystem
-- can lead to confusion for users across wallets, could lead to mistakes
+Conformity to standards results in more consistent user experience between wallets for users.
+By collating a set of wallet standards which are preferred and adopted widely, we encourage further adoption.
+This reduces the diparity between wallets, resulting in more consisten user experience.
 
 ## Specification
 
@@ -108,8 +108,6 @@ A lot of these are already followed, but it is nice to have a formal list, for p
 ### Acceptance Criteria
 
 - [ ] Share proposal with all major Cardano wallet providers.
-- [ ]
-- [ ]
 
 ### Implementation Plan
 
