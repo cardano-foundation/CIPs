@@ -31,8 +31,8 @@ x509_der_cert = bytes ; A DER Encoded X.509 Certificate (binary)
 ; c509 Certificates
 c509-certs = 20 ; Un-ordered bag of C509 CBOR Encoded certificates
 c509_cert = (
-  C509CertInMetadatumReference / ; A reference to a certificate encoded in a metadatum
-  C509Certificate ; An actual certificate.
+  C509Certificate / ; An actual certificate.
+  C509CertInMetadatumReference ; A reference to a certificate encoded in a metadatum
 )
 
 ; C509 Certificate from https://datatracker.ietf.org/doc/draft-ietf-cose-cbor-encoded-cert/09/
