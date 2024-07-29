@@ -19,7 +19,7 @@ x509-roles-v0-body = {
 	? x509-certs => [ + x509_der_cert ], ; Un-ordered List of DER encoded x509 certificates
 	? c509-certs => [ + c509_cert ], ; Un-ordered List of CBOR encoded C509 certificates (or metadatum references)
 	? pub-keys => [ + simple-public-key-type ], ; Ordered list of simple public keys that are registered.
-	? revocation-list => [ + revocation-entryt ], ; Revocation list of certs being revoked by an issuer.
+	? revocation-list => [ + revocation-entry ], ; Revocation list of certs being revoked by an issuer.
 	? role-set => role-data-set, ; Set of role registration data
 	? purpose-key-set => purpose-data-set, ; Set of purpose specific data to be registered.
 }
