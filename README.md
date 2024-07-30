@@ -152,7 +152,7 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0125? | [Arrestable native assets](https://github.com/cardano-foundation/CIPs/pull/832) |
 | 0126? | [Multi-Stake Delegation from a Single Account](https://github.com/cardano-foundation/CIPs/pull/628) |
 | 0127? | [Integration of ripemd_160 into Plutus](https://github.com/cardano-foundation/CIPs/pull/826) |
-| 0128? | [Transaction Inputs as an Ordered Set](https://github.com/cardano-foundation/CIPs/pull/758) |
+| 0128? | [Preserving Order of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/758) |
 | 0129? | [Governance Identifiers](https://github.com/cardano-foundation/CIPs/pull/857) |
 
 <p align="right"><i>Last updated on 2024-07-27</i></p>
