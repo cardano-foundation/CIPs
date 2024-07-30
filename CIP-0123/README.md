@@ -275,7 +275,7 @@ verify the correct state of the ledger
 3. Set up emergency communication channels with stake pool operators and other community members.
 4. Practice disaster recovery procedures on a regular basis.
 5. Provide signed Mithril snapshots and a way for full node wallet users and others to recover from this snapshot.
-6. Determine how to exploit Ouroboros Genesis snapshots as part of the disaster recovery process
+6. Determine how to employ Ouroboros Genesis snapshots as part of the disaster recovery process
 
 ### Community Engagement
 
