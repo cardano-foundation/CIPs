@@ -1,6 +1,6 @@
 ---
 CIP: xxx
-Title: Transaction Inputs as an Ordered Set
+Title: Preserving Order of Transaction Inputs
 Category: Plutus
 Status: Proposed
 Authors:
