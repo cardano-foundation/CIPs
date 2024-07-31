@@ -1,5 +1,5 @@
 ---
-CIP: xxx
+CIP: 128
 Title: Preserving Order of Transaction Inputs
 Category: Plutus
 Status: Proposed
