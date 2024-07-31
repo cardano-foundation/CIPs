@@ -30,7 +30,7 @@ The primary issue with the ledger ordering inputs lexicographically is that vali
 For instance, consider a spending validator that needs to access its own input and output. Each function described below necessitates traversing all inputs and outputs to fulfill such validation:
 
  ```haskell
- findOwnInput :: ScriptContext -> Maybe TxInInfo
+findOwnInput :: ScriptContext -> Maybe TxInInfo
 findOwnInput ScriptContext{scriptContextTxInfo=TxInfo{txInfoInputs}, scriptContextPurpose=Spending txOutRef} =
     find (\TxInInfo{txInInfoOutRef} -> txInInfoOutRef == txOutRef) txInfoInputs
 findOwnInput _ = Nothing
