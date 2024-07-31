@@ -59,7 +59,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | release_title| String | "release_title": "Mr. Bad Guy" | Included in `release` |
 | track_number | Integer | "track_number": 1 |  Included in `song` |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" |  Included in `song` |
-| song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format (https://www.iso.org/iso-8601-date-and-time-format.html), included in `song` |
+| song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format, included in `song`  https://www.iso.org/iso-8601-date-and-time-format.html |
 | copyright | String | "copyright": {"master":"℗ 1985 Sony Records", "composition":"℗ 1985 Marvin Gaye"}  or <br/> "copyright": {"composition":"Public Domain", "master":"℗ 2024 Cool Guy"} | Included in `song` |
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. Included in `song` |
 | release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc.   Included in `release`|
@@ -68,8 +68,12 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| ai_generated | Boolean| "ai_generated": "true"  | Used to distinguish works that are entirely AI generated. |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"Jimmy Londo":{"ipn":"158743685", "role":["guitars", "vocals"]} }]| Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipi` and `role` |
+| isni | String | "isni": "34562346245" |  Included in `song` with `artist` |
+| links | Map | [{"Sick City":{"isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}}] | Included in `artists` and `featured_artist` |
+| ai_generated | Boolean | "ai_generated": "true"  | Used to distinguish works that are entirely AI generated. |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"Jimmy Londo":{"ipn":"158743685", "role":["guitars", "vocals"]}}] or "contributing_artists": ["Some Guy", "His Friend"] | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipn` and `role`, both of which are optional |
+| ipn | String | "contributing_artists": [{"Jimmy Londo":{"ipn":"158743685", "role":["guitars", "vocals"]} }] |  Included in `song` within `contributing_artists`|
+| role | string | "contributing_artists": [{"Jimmy Londo":{"ipn":"158743685", "role":["guitars", "vocals"]} }] | Included in `song` within `contributing_artists`, declares a contributor's role/contribution to the work |
 | series | string | "series": "That's What I call Music" | Included in `release` |
 | collection | string | "collection": "Now Dance" | Included in `release` |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | Included in `song` |
@@ -87,15 +91,14 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | mastering_engineer | String | "mastering_engineer": "Michael Tyson" | Included in `song` |
 | producer | String | "producer": "Simon Cowell" | Included in `song` |
 | co_producer | String | "co_producer": "Shavaun Dempsey" | Included in `song` |
-| featured_artists | Array\<Artist\> | "featured_artists": [{"Paul McCartney":{"isni":"xxxxxxxxx", "links"{"website":"www.paulmccartney.com"} }}] | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)".  Includes `isni` and `links` keys.  Should be kept minimal. |
+| featured_artists | Array\<Artist\> | "featured_artists": [{"Paul McCartney":{"isni":"xxxxxxxxx", "links"{"website":"www.paulmccartney.com"} }}] or "featured_artists": ["Paul McCartney", "John Lennon"] | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)".  Contains `isni` and `links` keys, included in `song`  Should be kept minimal. |
 | recording_engineer | String | "recording_engineer": "Sharon Liston" |  Included in `song` |
 | explicit | Boolean | "explicit": true |  Included in `song` | 
-| isni | String | "isrc": "US-SKG-22-12345" |  Included in `song` |
 | isrc | String | "isrc": "US-SKG-22-12345" |  Included in `song` |
 | iswc | String | "iswc": "T-123456789-Z" |  Included in `song` |
-| ipi | String | "ipi": "123456789" |  Included in `song` within `authors` |
-| ipn | String | "contributing_artists": [{"Jimmy Londo":{"ipn":"158743685", "role":["guitars", "vocals"]} }] |  Included in `song` within `contributing_artists`|
-| authors | Array\<Author\> | "authors": [{"Mark Ronson":{"ipi:"157896357", "share":"25%"}}] | Publishers and authors will be listed here, includes `ipi`  |
+| authors | Array\<Author\> | "authors": [{"Mark Ronson":{"ipi:"157896357", "share":"25%"}}] or "authors": ["John Smith", "Pocahontas"] | Publishers and authors will be listed here. Contains `ipi` and `share`, included in `song` |
+| ipi | String | "authors": [{"Mark Ronson":{"ipi:"157896357", "share":"25%"}}] |  Included in `song` within `authors` |
+| share | String | "authors": [{"Mark Ronson":{"ipi:"157896357", "share":"25%"}}] |  Included in `song` within `authors`.  Total percentage of all listed authors' shares MUST equal 100% |
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 | Included in `song` |
 | country_of_origin | String | "country_of_origin": "United States" |  Included in `song` | 
 | language | String | "language": "en-US" | https://tools.ietf.org/search/bcp47 | Included in `song` |
@@ -416,6 +419,11 @@ This CIP is the result of several online meetings between many different compani
   - [x] SickCityNFT - sickcity.xyz
   - [x] NEWM - newm.io
   - [x] SoundRig - soundrig.io
+  - [x] DEMU - Demu.pro
+  - [x] The Listening Room - https://thelr.io/
+  - [x] Jukeboys
+  - [x] So Litty Records
+  - [x] Arp Radio - https://arpradio.media
 
 ### Implementation Plan
 
