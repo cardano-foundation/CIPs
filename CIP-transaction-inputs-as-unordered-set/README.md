@@ -105,7 +105,7 @@ Specifically, the inputs and reference inputs are currently represented as a set
 
 The proposed solution suggests modifying the inputs to an unordered set format:
 ```
-0 : unordered_set<transaction_input>    ; inputs
+0 : oset<transaction_input>    ; inputs
 ```
 ```
 18 : unordered_set<transaction_input> ; reference inputs; New
