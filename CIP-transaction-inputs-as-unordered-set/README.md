@@ -38,7 +38,9 @@ findOwnInput _ = Nothing
 
  ```haskell
 getContinuingOutputs :: ScriptContext -> [TxOut]
-getContinuingOutputs ctx | Just TxInInfo{txInInfoResolved=TxOut{txOutAddress}} <- findOwnInput ctx = filter (f txOutAddress) (txInfoOutputs $ scriptContextTxInfo ctx)
+getContinuingOutputs ctx
+    | Just TxInInfo{txInInfoResolved=TxOut{txOutAddress}} <- findOwnInput ctx =
+        filter (f txOutAddress) (txInfoOutputs $ scriptContextTxInfo ctx)
     where
         f addr TxOut{txOutAddress=otherAddress} = addr == otherAddress
 getContinuingOutputs _ = traceError "Lf" -- "Can't get any continuing outputs"
