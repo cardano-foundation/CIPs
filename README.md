@@ -132,12 +132,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | #     | Title |
 | ----- | --- |
 | 0039? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
-| 0056? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 0073? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
 | 0076? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
 | 0077? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 0079? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
-| 0087? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
 | 0089? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
 | 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
