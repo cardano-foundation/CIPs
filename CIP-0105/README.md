@@ -63,7 +63,7 @@ We strongly recommend that a maximum of one set of DRep keys should be associate
 #### DRep ID
 
 Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519 public DRep key (without chaincode) by creating a blake2b-224 hash digest of the key.
-As this is key-based credential it should be marked as entry `0` in a credential array.
+As this is key-based credential it should be marked as entry `0` in a credential array. *Add link to gov identifier CIP once numbered*
 
 #### Constitutional Committee Cold Keys
 
@@ -111,8 +111,8 @@ DRep keys and DRep IDs should be encoded in Bech32 with the following prefixes:
 | `drep_vk`     | CIP-1852’s DRep verification key                        | Ed25519 public key                                                |
 | `drep_xsk`    | CIP-1852’s DRep extended signing key                    | Ed25519-bip32 extended private key                                |
 | `drep_xvk`    | CIP-1852’s DRep extended verification key               | Ed25519 public key with chain code                                |
-| `drep`        | Delegate representative verification key hash (DRep ID) | blake2b\_224 digest of a delegate representative verification key |
-| `drep_script` | Delegate representative script hash (DRep ID)        | blake2b\_224 digest of a serialized delegate representative script |
+| `drep_vkh`    | Delegate representative verification key hash           | blake2b\_224 digest of a delegate representative verification key |
+| `drep_script` | Delegate representative script hash                     | blake2b\_224 digest of a serialized delegate representative script |
 
 #### Constitutional Committee Cold Keys
 
@@ -124,7 +124,7 @@ Constitutional cold keys and credential should be encoded in Bech32 with the fol
 | `cc_cold_vk`     | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                                                    |
 | `cc_cold_xsk`    | CIP-1852’s constitutional committee cold extended signing key         | Ed25519-bip32 extended private key                                     |
 | `cc_cold_xvk`    | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code                                     |
-| `cc_cold`        | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key |
+| `cc_cold_vkh`    | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key |
 | `cc_cold_script` | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
 
 #### Constitutional Committee Hot Keys
@@ -137,7 +137,7 @@ Constitutional hot keys and credential should be encoded in Bech32 with the foll
 | `cc_hot_vk`     | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                                                   |
 | `cc_hot_xsk`    | CIP-1852’s constitutional committee hot extended signing key          | Ed25519-bip32 extended private key                                    |
 | `cc_hot_xvk`    | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code                                    |
-| `cc_hot`        | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key |
+| `cc_hot_vkh`    | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key |
 | `cc_hot_script` | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script |
 
 ### Tooling Definitions
