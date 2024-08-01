@@ -31,52 +31,52 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0003 | [Wallet key generation](./CIP-0003/) | Active |
 | 0004 | [Wallet Checksums](./CIP-0004/) | Proposed |
 | 0005 | [Common Bech32 Prefixes](./CIP-0005/) | Active |
-| 0006 | [Stake Pool Extended Metadata](./CIP-0006/) | Draft |
+| 0006 | [Stake Pool Extended Metadata](./CIP-0006/) | Active |
 | 0007 | [Curve Pledge Benefit](./CIP-0007/) | Proposed |
-| 0008 | [Message Signing](./CIP-0008/) | Draft |
+| 0008 | [Message Signing](./CIP-0008/) | Active |
 | 0009 | [Protocol Parameters (Shelley Era)](./CIP-0009/) | Active |
 | 0010 | [Transaction Metadata Label Registry](./CIP-0010/) | Active |
 | 0011 | [Staking key chain for HD wallets](./CIP-0011/) | Active |
-| 0012 | [On-chain stake pool operator to delegates communication](./CIP-0012/) | Draft |
+| 0012 | [On-chain stake pool operator to delegates communication](./CIP-0012/) | Proposed |
 | 0013 | [Cardano URI Scheme](./CIP-0013/) | Proposed |
 | 0014 | [User-Facing Asset Fingerprint](./CIP-0014/) | Active |
 | 0015 | [Catalyst Registration Transaction Metadata Format](./CIP-0015/) | Active |
 | 0016 | [Cryptographic Key Serialisation Formats](./CIP-0016/) | Active |
-| 0017 | [Cardano Delegation Portfolio](./CIP-0017/) | Active |
-| 0018 | [Multi-Stake-Keys Wallets](./CIP-0018/) | Draft |
+| 0017 | [Cardano Delegation Portfolio](./CIP-0017/) | Inactive |
+| 0018 | [Multi-Stake-Keys Wallets](./CIP-0018/) | Proposed |
 | 0019 | [Cardano Addresses](./CIP-0019/) | Active |
 | 0020 | [Transaction message/comment metadata](./CIP-0020/) | Active |
-| 0021 | [Transaction requirements for interoperability with hardware wallets](./CIP-0021/) | Draft |
+| 0021 | [Transaction requirements for interoperability with hardware wallets](./CIP-0021/) | Active |
 | 0022 | [Pool operator verification](./CIP-0022/) | Active |
 | 0023 | [Fair Min Fees](./CIP-0023/) | Proposed |
 | 0024 | [Non-Centralizing Rankings](./CIP-0024/) | Proposed |
 | 0025 | [Media Token Metadata Standard](./CIP-0025/) | Active |
-| 0026 | [Cardano Off-Chain Metadata](./CIP-0026/) | Draft |
-| 0027 | [CNFT Community Royalties Standard](./CIP-0027/) | Draft |
+| 0026 | [Cardano Off-Chain Metadata](./CIP-0026/) | Active |
+| 0027 | [CNFT Community Royalties Standard](./CIP-0027/) | Active |
 | 0028 | [Protocol Parameters (Alonzo Era)](./CIP-0028/) | Active |
 | 0029 | [Phase-1 Monetary Scripts Serialization Formats](./CIP-0029/) | Active |
 | 0030 | [Cardano dApp-Wallet Web Bridge](./CIP-0030/) | Active |
 | 0031 | [Reference Inputs](./CIP-0031/) | Active |
 | 0032 | [Inline Datums](./CIP-0032/) | Active |
 | 0033 | [Reference Scripts](./CIP-0033/) | Active |
-| 0034 | [Chain ID Registry](./CIP-0034/) | Draft |
+| 0034 | [Chain ID Registry](./CIP-0034/) | Proposed |
 | 0035 | [Plutus Core Evolution](./CIP-0035) | Active |
 | 0036 | [Catalyst Registration Transaction Metadata Format](./CIP-0036) | Proposed |
 | 0037 | [Dynamic Saturation Based on Pledge](./CIP-0037) | Proposed |
 | 0040 | [Collateral Output](./CIP-0040) | Active |
 | 0042 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
 | 0045 | [Decentralized WebRTC dApp-Wallet Communication](./CIP-0045) | Active |
-| 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Proposed |
+| 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Active |
 | 0050 | [Pledge Leverage-Based Staking Rewards](./CIP-0050) | Proposed |
 | 0052 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
-| 0054 | [Cardano Smart NFTs](./CIP-0054) | Draft |
+| 0054 | [Cardano Smart NFTs](./CIP-0054) | Proposed |
 | 0055 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
 | 0057 | [Plutus Smart-Contract Blueprint](./CIP-0057) | Active |
-| 0058 | [Plutus Bitwise Primitives](./CIP-0058) | Proposed |
+| 0058 | [Plutus Bitwise Primitives](./CIP-0058) | Inactive |
 | 0059 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 0060 | [Music Token Metadata](./CIP-0060) | Active |
 | 0067 | [Asset Name Label Registry](./CIP-0067) | Proposed |
-| 0068 | [Datum Metadata Standard](./CIP-0068) | Proposed |
+| 0068 | [Datum Metadata Standard](./CIP-0068) | Active |
 | 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Proposed |
 | 0071 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
 | 0072 | [DApp Registration](./CIP-0072) | Proposed |
@@ -99,6 +99,8 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0103 | [Web-Wallet Bridge - Bulk transaction signing](./CIP-0103) | Active |
 | 0104 | [Web-Wallet Bridge - Account public key](./CIP-0104) | Proposed |
 | 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
+| 0106 | [Web-Wallet Bridge - Multisig wallets](./CIP-0106) | Proposed |
+| 0107 | [URI Scheme - Block and transaction objects](./CIP-0107) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
 | 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
@@ -106,16 +108,20 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
 | 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
+| 0117 | [Explicit script return values](./CIP-0117) | Proposed |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
+| 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
+| 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
+| 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
-| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Active |
-| 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Draft |
+| 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Proposed |
+| 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Active |
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-05-28</i></p>
+<p align="right"><i>Last updated on 2024-07-14</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -138,17 +144,16 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
 | 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 0106? | [Web-Wallet Bridge - Mutlisig wallets](https://github.com/cardano-foundation/CIPs/pull/617) |
-| 0107? | [URI Scheme - Block and transaction objects](https://github.com/cardano-foundation/CIPs/pull/635) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
-| 0117? | [Explicit script return values](https://github.com/cardano-foundation/CIPs/pull/747) |
 | 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
 | 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
-| 0121? | [Integer-ByteString conversions](https://github.com/cardano-foundation/CIPs/pull/624) |
-| 0122? | [Logical operations over BuiltinByteString](https://github.com/cardano-foundation/CIPs/pull/806) |
+| 0124? | [Extend token metadata for translations](https://github.com/cardano-foundation/CIPs/pull/488) |
+| 0125? | [Arrestable native assets](https://github.com/cardano-foundation/CIPs/pull/832) |
+| 0126? | [Multi-Stake Delegation from a Single Account](https://github.com/cardano-foundation/CIPs/pull/628) |
+| 0127? | [Integration of ripemd_160 into Plutus](https://github.com/cardano-foundation/CIPs/pull/826) |
 
-<p align="right"><i>Last updated on 2024-05-28</i></p>
+<p align="right"><i>Last updated on 2024-07-14</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -178,8 +183,9 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
 | 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
 | 0015? | [Intents for Cardano](https://github.com/cardano-foundation/CIPs/pull/779) |
+| 0016? | [Cardano URIs](https://github.com/cardano-foundation/CIPs/pull/841) |
 
-<p align="right"><i>Last updated on 2024-03-19</i></p>
+<p align="right"><i>Last updated on 2024-06-30</i></p>
 
 ## Stalled / Waiting For Authors
 
@@ -194,8 +200,9 @@ The following list contains proposals that have been under review and for which 
 - [On-chain Transaction Chaining](https://github.com/cardano-foundation/CIPs/pull/508)
 - [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385)
 - [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336)
+- [Post Quantum signatures and native wallets](https://github.com/cardano-foundation/CIPs/pull/441)
 
-<p align="right"><i>Last updated on 2023-06-09</i></p>
+<p align="right"><i>Last updated on 2023-06-30</i></p>
 
 ## Editors
 
