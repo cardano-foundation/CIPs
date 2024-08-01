@@ -45,6 +45,8 @@ Customized chain followers, at least in principle, allow for "live" rollback han
 
 General purpose query layers can also handle rollbacks just fine, but they don't propagate rollback events to dApps, because they do not possess any dApp-specific info to determine if a dApp *needs* to handle a particular rollback. dApps that work with general-purpose query layers follow pull-based architecture, rather than event subscription-based, which means they just request data as needed, instead of reacting to blockchain events.
 
+In the context of this API, rollbacks should be acknowledged as a source of potential inconsistency between data pieces returned by different queries.
+
 #### Error handling
 
 Errors should be divided in two categories:
@@ -53,6 +55,12 @@ Errors should be divided in two categories:
 - transport errors (404, 500, etc)
 
 This document should only cover domain errors.
+
+#### Pagination
+
+In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, even though it's impossible to guarantee it (due to rollbacks).
+
+Stable pagination can be achieved by letting the user refer to a particular state in time from the recent past via a slot number.
 
 ### Methods
 
