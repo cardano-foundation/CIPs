@@ -74,14 +74,17 @@ We define a byte format to combine the tx ID and the index to form a single vali
 
 Transaction ID is always a 32 byte length, hence we can append the index bytes to the tx id, please see below
 
-
+**Example 1**
 TX ID in Hex - `0000000000000000000000000000000000000000000000000000000000000000`
-
 Gov Action index in HEX - `11` (number 17)
-
 gov action ID - `000000000000000000000000000000000000000000000000000000000000000011`
-
 bech32 - `gov_action1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpzklpgpf`
+
+**Example 2**
+TX ID in Hex - `1111111111111111111111111111111111111111111111111111111111111111`
+Gov Action index in HEX - `00` (number 0) 
+gov action ID - `111111111111111111111111111111111111111111111111111111111111111100`
+bech32 - `gov_action1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygsq6dmejn`
 
 ### Bech32 Encoding
 
