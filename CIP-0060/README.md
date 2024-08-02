@@ -419,7 +419,6 @@ This CIP is the result of several online meetings between many different compani
   - [x] SickCityNFT - sickcity.xyz
   - [x] NEWM - newm.io
   - [x] SoundRig - soundrig.io
-  - [x] DEMU - Demu.pro
   - [x] The Listening Room - https://thelr.io/
   - [x] Jukeboys
   - [x] So Litty Records
