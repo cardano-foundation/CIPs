@@ -422,7 +422,6 @@ This CIP is the result of several online meetings between many different compani
   - [x] The Listening Room - https://thelr.io/
   - [x] Jukeboys
   - [x] So Litty Records
-  - [x] Arp Radio - https://arpradio.media
 
 ### Implementation Plan
 
