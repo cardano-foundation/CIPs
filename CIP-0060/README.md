@@ -26,6 +26,7 @@ Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/307
   - https://github.com/cardano-foundation/CIPs/pull/367
   - https://github.com/cardano-foundation/CIPs/pull/502
+  - https://github.com/cardano-foundation/CIPs/pull/868
 Created: 2022-07-26
 License: CC-BY-4.0
 ---
