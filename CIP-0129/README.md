@@ -139,9 +139,23 @@ By introducing a header and payload design for different keys, we can achieve sp
 - [ ] implemented by various tools
 
 ### Implementation Plan
-This CIP uses some bech32 prefixes already defined for reference by CIP-19, CIP-105, and CIP-005. This CIP does not affect any existing implementation in terms of specs, least it will be required to update the bech32 prefixes defined by these CIPs to a relevant prefix. Author to provide required pull request for affected CIPs.
+Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes defined in this CIP for communication and view purposes.
 
-Wallets and Explorers to utilize the identifiers and bech32 prefixes defined in this CIP for communication and view purposes.
+- [ ] Requires updating Ledger nano app, and Trezor. The changes can be proposed once the CIP is merged.
+- [ ] Tooling
+  - [ ] cardano-cli
+  - [ ] SPO Scripts
+  - [x] typhonjs
+- [ ] APIs
+  - [ ] Koios
+  - [x] Cardanoscan API
+  - [ ] Blockfrost
+- [ ] Explorers
+  - [x] Cardanoscan.io
+  - [ ] AdaStat.net
+- [ ] Wallets
+  - [ ] Eternl
+  - [x] Typhon Wallet
 
 ## Copyright
 
