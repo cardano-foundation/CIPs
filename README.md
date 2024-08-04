@@ -132,12 +132,10 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | #     | Title |
 | ----- | --- |
 | 0039? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
-| 0056? | [Treasury Donation](https://github.com/cardano-foundation/CIPs/pull/269) |
 | 0073? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
 | 0076? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
 | 0077? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
 | 0079? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
-| 0087? | [Maybe Datum](https://github.com/cardano-foundation/CIPs/pull/440) |
 | 0089? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
 | 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
 | 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
@@ -146,14 +144,16 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
 | 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
 | 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
-| 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/780) |
+| 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/862) |
 | 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
 | 0124? | [Extend token metadata for translations](https://github.com/cardano-foundation/CIPs/pull/488) |
 | 0125? | [Arrestable native assets](https://github.com/cardano-foundation/CIPs/pull/832) |
 | 0126? | [Multi-Stake Delegation from a Single Account](https://github.com/cardano-foundation/CIPs/pull/628) |
 | 0127? | [Integration of ripemd_160 into Plutus](https://github.com/cardano-foundation/CIPs/pull/826) |
+| 0128? | [Preserving Order of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/758) |
+| 0129? | [Governance Identifiers](https://github.com/cardano-foundation/CIPs/pull/857) |
 
-<p align="right"><i>Last updated on 2024-07-14</i></p>
+<p align="right"><i>Last updated on 2024-07-27</i></p>
 
 ## Cardano Problem Statements (CPS)
 
@@ -166,8 +166,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0011 | [Universal JSON Encoding for Domain Types](./CPS-0011) | Open |
 | 0013 | [Better builtin data structures in Plutus](./CPS-0013) | Open |
 | 0014 | [Register of CBOR Tags](./CPS-0014) | Open |
+| 0016 | [Cardano URIs](./CPS-0016) | Open |
 
-<p align="right"><i>Last updated on 2024-05-19</i></p>
+<p align="right"><i>Last updated on 2024-07-27</i></p>
 
 > 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
 
@@ -183,17 +184,14 @@ Below are listed tentative CPSs still under discussion with the community. They 
 | 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
 | 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
 | 0015? | [Intents for Cardano](https://github.com/cardano-foundation/CIPs/pull/779) |
-| 0016? | [Cardano URIs](https://github.com/cardano-foundation/CIPs/pull/841) |
 
-<p align="right"><i>Last updated on 2024-06-30</i></p>
+<p align="right"><i>Last updated on 2024-07-27</i></p>
 
 ## Stalled / Waiting For Authors
 
 The following list contains proposals that have been under review and for which actions are now awaiting updates from their original authors. Proposals stalled for several months without any updates from their authors and will eventually be closed. However, authors are invited to re-open pull requests or open new ones should they want to bring the discussion back to life.
 
-- [UPLC Serialization Optimizations](https://github.com/cardano-foundation/CIPs/pull/314)
 - [Address Resolution Through DNS](https://github.com/cardano-foundation/CIPs/pull/319)
-- [Transferring Stake Pool Ownership](https://github.com/cardano-foundation/CIPs/pull/276)
 - [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375)
 - [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
 - [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
@@ -202,7 +200,7 @@ The following list contains proposals that have been under review and for which 
 - [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336)
 - [Post Quantum signatures and native wallets](https://github.com/cardano-foundation/CIPs/pull/441)
 
-<p align="right"><i>Last updated on 2023-06-30</i></p>
+<p align="right"><i>Last updated on 2023-07-27</i></p>
 
 ## Editors
 
