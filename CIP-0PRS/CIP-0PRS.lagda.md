@@ -1,5 +1,5 @@
 ---
-Title: Peras - Faster Settlement on Cardano
+Title: Ouroboros Peras - Faster Settlement
 CIP: ?
 Category: Consensus
 Status: Proposed
