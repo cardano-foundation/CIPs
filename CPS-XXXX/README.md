@@ -27,23 +27,23 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Full determinism of transactions gives rise to valuable ledger properties, such as:
+Determinism of transactions gives rise to valuable ledger properties, such as:
 
-- "true" atomicity (the effects of a valid transaction are known before it is accepted)
-- fee predictability
+- atomicity (a transaction is either fully accepted or fully rejected without a fee)
+- predictability of monetary changes and fees
 
-However, it comes at a cost: development becomes more complicated because of the need to "re-invent" non-determinism where it is required for the dApp logic.
+However, it comes at a cost:
+
+- Development becomes more complicated because of the need to "re-invent" non-determinism where it is required for the dApp logic
+- UTxO contention limits the number of concurrent users a dApp can have
 
 Full determinism *may* be unnecessarily strict as a way to achieve the "good" properties, as the design space for the alternatives haven't been fully explored.
 
-<!-- A short (\~200 word) description of the target goals and the technical obstacles to those goals. -->
-
 ## Problem
-<!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
 
 Let's consider two types of determinism:
 
-I. **execution layer determinism**: can we predict the exact outcome of a *transaction*, if it passes? Enforced on Cardano, does not exist on EVM.
+I. **execution layer determinism**: can we predict the exact result of a *transaction*, if it passes? Enforced on Cardano, does not exist on EVM.
 
 II. **application layer determinism**: can we predict the outcome of a *user action* within a dApp, if it succeeds?
 
@@ -59,39 +59,30 @@ This solution introduces a whole set of new problems:
 - **Incentives for centralization**. Although decentralized batchers are possible, in reality designing them is more complex than building a centralized batcher bot.
 
 ## Use cases
-<!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
 
 ### Automated market maker DEX
 
-AMM DEX requires many users to interact with the same pool, every interaction changes the price available for swap to the next user.
+AMM DEX requires many users to interact with the same pool. Every interaction changes the price for swapping to the next user.
 
 Historically, the improvement of AMM DEXes over traditional order-book-style exchanges has been the ability to execute orders immediately.
 
-Currently, AMM DEXes on Cardano do not allow for high throughput without batchers. Either way, with or without batchers they are effectively no better than order books.
+Currently, AMM DEXes on Cardano do not allow for high throughput without batchers. Either way, with or without batchers they are effectively no better than order books, because immediate execution is not provided.
 
 ### Lending platform (liquidations)
 
 Liquidating many open positions at once in the presence of a dynamically changing price oracle is not reliable. Lending platform should allow a liquidation to proceed if the price is lower (or higher) than a known threshold, but in reality the need to refer to a particular UTxO containing the price datum makes it so that a liquidation may only proceed if the the price is *the same* as the one known to the liquidation bot during transaction building.
 
 ## Goals
-<!-- A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve.
-
-Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns.
-
-Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
 
 The goal of this CPS is to start a discussion about alternative ledger designs.
 There are no immediate plans to work on implementing any of the possible alternative ledger rules.
 
-### A minimal non-deterministic ledger with fully-atomic transactions
-
-
-
-
 ## Open Questions
+
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
-
+- What properties of the ledger that stem from determinism are really valuable?
+- TBD
 
 <!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
 
