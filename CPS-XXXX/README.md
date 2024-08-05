@@ -56,7 +56,7 @@ This solution introduces a whole set of new problems:
 - **Uncertain protocol liveness**. Batchers depend on someone initiating the executing transaction. The node does not provide the guarantee that a valid transaction will pass within a certain timeframe, therefore the risk of order getting stuck has to be accounted for by the user: *no immediate execution is provided*.
 - **Batcher fees and min-ada compensation**. The cost of initiating a transaction has to be compensated to the batcher. The batcher, no matter how efficient, can't take less than min-ada value (the cost of creating a UTxO), because that is the minimum ADA value a UTxO can have. The change can't be returned to the order initiator easily, because it is usually significantly lower than the min-ada.
 - **Doubled action confirmation time**. Two transactions take more time to pass, even assuming immediate order execution.
-- **Incentives for centralization**. Although decentralized batchers are possible, in reality designing them is more complex than building a centralized batcher bot.
+- **Incentives for centralization**. Although decentralized batchers are possible, in reality designing them is more complex than building a centralized batcher bot. Decentralized batchers *still* don't provide liveness guarantees: it *may just happen* that no executor bots will be available at any given time, despite the incentives.
 
 ## Use cases
 
