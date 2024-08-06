@@ -154,6 +154,8 @@ There are no immediate plans to work on implementing any of the possible alterna
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 - What properties of the ledger that stem from determinism are really valuable?
+- Is it possible to extend the current ledger with mutable shared state?
+- How to process rollbacks efficiently in the presence of mutable shared state?
 
 ## Copyright
 
