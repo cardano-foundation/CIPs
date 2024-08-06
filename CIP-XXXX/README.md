@@ -77,17 +77,18 @@ Any dApp is free to have as many "purposes" defined as suits their goals.
 
 #### Key 1: txn-inputs-hash
 
-This is a hash of the transaction inputs field from the transaction this auxiliary data was originally attached to.
-This hash anchors the auxiliary data to a particular transaction, if the auxiliary data is moved to a new transaction
-it is impossible for the txn-inputs-hash to remain the same, as UTXO's can only be spent once.
+This is a 16 bytes hash of the transaction inputs field from the transaction this auxiliary data was originally attached to. 
+The hash is generated using BLAKE2b (16 bytes). This hash anchors the auxiliary data to a particular transaction,
+if the auxiliary data is moved to a new transaction it is impossible for the txn-inputs-hash to remain the same,
+as UTXO's can only be spent once.
 
 This is a key to preventing replayability of the metadata, but is not enough by itself as it needs to be able to be
 made immutable, such that any change to this field can be detected.
 
 #### Key 2: previous_transaction_id
 
-This is a 32 byte hash of the previous transaction in a chain of registration updates made by the same user.
-The only registration which may not have it for a single user is their first.
+This is a 32 bytes hash of the previous transaction in a chain of registration updates made by the same user.
+The hash is generated using BLAKE2b (32 bytes). The only registration which may not have it for a single user is their first.
 Once their first registration is made, they may only update it.
 Any subsequent update for that user who is not properly chained to the previous transaction will be ignored as invalid.
 
@@ -120,9 +121,9 @@ To save space and overcome the metadata encoding limitations, x509 RBAC data is 
    This is the Brotli compressed registration data.
 3. The raw encoded registration data is then compressed with [ZSTD].
    This is the ZSTD compressed registration data.
-4. Which ever data is smallest, Raw, Brotli compressed or ZStd compressed is then cut into 64 byte chunks.
+4. Which ever data is smallest, Raw, Brotli compressed or ZStd compressed is then cut into 64 bytes chunks.
    All chunks must contain 64 bytes except for the last which can contain the residual.
-5. These chunks are then encoded in an array of 64 byte long byte strings.
+5. These chunks are then encoded in an array of 64 bytes long byte strings.
    The appropriate key is used to identify the compression used.
     * 10 = Raw, no compression
     * 11 = Brotli Compressed
