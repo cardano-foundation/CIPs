@@ -52,7 +52,6 @@ We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that 
     * Praos is geared towards worst case but Peras takes advantage of the opportunities afforded by the optimistic or average case (eg. when things are fine, go faster)
 
 ## Specification
-<!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned, if not covered under an optional Versioning main heading. If a proposal defines structure of on-chain data it must include a CDDL schema in its specification.-->
 
 ### Non-normative overview of the Peras protocol
 
@@ -126,14 +125,11 @@ The following formal, relational specification for Peras type checks using [Agda
 
 > [!TIP]
 > - This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
-> - Periodically diff the main branch of that repository against this commit, in order to identify any changes that need to be migrated to this document.
+> - Prior to publication, periodically diff the main branch of that repository against this commit, in order to identify any changes that need to be migrated to this document.
 
 ```agda
-module CIP-0PRS where
+module README where
 ```
-
-> [!CAUTION]
-> Rename the module when this file name changes.
 
 Most of the imports come from the [Agda Standard Library 2.0](https://github.com/agda/agda-stdlib/tree/v2.0).
 
