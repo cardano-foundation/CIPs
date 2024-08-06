@@ -40,11 +40,11 @@ For the many contributors to this proposal, see [Acknowledgements](#acknowledgem
 ## Motivation: why is this CIP necessary?
 
 CIP-1694 introduces many new concepts, entities and actors to Cardano;
-describing their implementation at the ledger level. Yet, for most ecosystem
-participants low level details are abstracted away by tooling. Creating a need
-for such tooling, to allow the utilization of new ledger features. This
-specification allows for creation of web-based tools for the utilization of
-CIP-1694's governance features.
+describing their implementation at the ledger level. This creates the need for
+new tooling with respect to governance. For the average ecosystem participant,
+the details should be abstracted away, enabling them to leverage the new ledger
+features more effectively. This specification allows for creation of web-based
+tools for the utilization of CIP-1694's governance features.
 
 Whilst CIP-30 facilitated the launch of dApp development on Cardano, it's
 functionality is limited in scope. It was written well before the emergence of
@@ -119,16 +119,6 @@ extending the API (as a plain integer, without padding). For example:
 
 #### CIP-95 Data Types
 
-#### DRepID
-
-```ts
-type DRepID = string;
-```
-
-A hex-encoded string representing a registered DRep's ID which is a Blake2b-224
-hash digest of a 32 byte Ed25519 public key, as described in
-[CIP-1694 Registered DReps](https://github.com/cardano-foundation/CIPs/blob/430f64d3e86dd67903a6bf1e611c06e5343072f3/CIP-1694/README.md#registered-dreps).
-
 ##### PubDRepKey
 
 ```ts
@@ -137,6 +127,16 @@ type PubDRepKey = string;
 
 A hex-encoded string representing 32 byte Ed25519 DRep public key, as described
 in [CIP-0105 | Conway Era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
+
+#### DRepID
+
+```ts
+type DRepID = string;
+```
+
+A hex-encoded string representing a registered DRep's ID which is a Blake2b-224
+hash digest of the above mentioned 32 byte Ed25519 public key, as described in
+[CIP-1694 Registered DReps](https://github.com/cardano-foundation/CIPs/blob/430f64d3e86dd67903a6bf1e611c06e5343072f3/CIP-1694/README.md#registered-dreps).
 
 ##### PubStakeKey
 
