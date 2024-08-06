@@ -78,9 +78,9 @@ Liquidating many open positions at once in the presence of a dynamically changin
 
 ### Non-determinism and atomicity
 
-It is easy to show that, in principle, atomic transactions are possible even if the validators accept mutable shared state.
+It is easy to show that, in principle, atomic transactions are possible even if the validators accept mutable shared state. The argument below should be considered a proof that this discussion makes sense and is worth having, rather than a concrete proposal.
 
-The key is allowing mutable state variable validation during phase-1, which must be done in constant time and memory (just like UTxO lookups).
+One of the ways to combine non-determinism and atomicity is allowing mutable state variable validation during phase-1, which must be done in constant time and memory (just like UTxO lookups).
 
 Let's assume that phase-2 scripts somehow provide a way to change the output UTxO distribution, depending on the outcome of script execution. The scripts remain fully deterministic from the ledger perspective, but the values of mutable shared state variables are not known during the construction of a transaction.
 
