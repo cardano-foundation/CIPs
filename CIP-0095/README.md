@@ -150,7 +150,7 @@ credential.
 ### Error Types
 
 For the methods described in
-[Governance Extension API](#governance-extension-api), we inherent APIError,
+[Governance Extension API](#governance-extension-api), we inherit APIError,
 DataSignError and TxSignError from
 [CIP-30's Error Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#error-types).
 
@@ -191,13 +191,13 @@ type APIError {
 
 We repurpose this error type from CIP-30, extending it's functionality. We
 extend the `ProofGeneration` error code to also include cases where DRep secret
-key is not available. We also add one new error code `DepreciatedCertificate`.
+key is not available. We also add one new error code `DeprecatedCertificate`.
 
 ```ts
 TxSignErrorCode = {
   ProofGeneration: 1,
   UserDeclined: 2,
-  DepreciatedCertificate: 3,
+  DeprecatedCertificate: 3,
 };
 type TxSignError = {
   code: TxSignErrorCode;
@@ -209,8 +209,8 @@ type TxSignError = {
   unable to sign the transaction. This is because the wallet does have some of
   the private keys required.
 - `UserDeclined` - User declined to sign the transaction.
-- `DepreciatedCertificate` - Returned regardless of user consent if the
-  transaction contains a depreciated certificate.
+- `DeprecatedCertificate` - Returned regardless of user consent if the
+  transaction contains a deprecated certificate.
 
 #### [DataSignError](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#datasignerror)
 
@@ -377,8 +377,8 @@ should be able to be recognized by supporting wallets.
 
 ##### Unsupported Inspection
 
-In the Conway ledger era two certificate types are depreciated `genesis_key_delegation` and `move_instantaneous_rewards_cert`.
-If the wallet receives a transaction containing a depreciated certificate it should return a `TxSignError` with an error code of `DepreciatedCertificate`.
+In the Conway ledger era two certificate types are deprecated `genesis_key_delegation` and `move_instantaneous_rewards_cert`.
+If the wallet receives a transaction containing a deprecated certificate it should return a `TxSignError` with an error code of `DeprecatedCertificate`.
 
 | Index | Unsupported Pre-Conway Certificates |
 | ----- | ----------------------------------- |
@@ -407,7 +407,7 @@ endpoint before building the final transaction.
 | `APIError`    | `AccountChange`          | `true` or `false` | Returned if wallet has changed account, meaning connection should be reestablished.                                               |
 | `TxSignError` | `ProofGeneration`        | `false`           | Returned if user has accepted transaction to sign, but the wallet is unable to sign because it does not have the required key(s). |
 | `TxSignError` | `UserDeclined`           | `true` or `false` | Returned if user has declined to sign the transaction.                                                                            |
-| `TxSignError` | `DepreciatedCertificate` | `true` or `false` | Returned regardless of user consent if the transaction contains a depreciated certificate.                                        |
+| `TxSignError` | `DeprecatedCertificate` | `true` or `false` | Returned regardless of user consent if the transaction contains a deprecated certificate.                                        |
 <!-- prettier-ignore-stop -->
 
 If `partialSign` is `true`, the wallet only tries to sign what it can. If
@@ -552,7 +552,7 @@ wallet has already been made via
 3. **Inspect and Sign:** The app passes the transaction to the wallet via
    `.signTx()`. The wallet inspects the content of the transaction, informing
    the user of the client app's intension. If the user confirms that they are
-   happy to sign, the wallet returns the appropriate witnesses, of payment key
+   willing to sign, the wallet returns the appropriate witnesses, of payment key
    and stake key.
 4. **Submit:** The app will add the provided witnesses into the transaction body
    and then pass the witnessed transaction back to the wallet for submission via
@@ -631,7 +631,7 @@ CIP-1694; Ada holders and DReps, this decision was three fold. Primarily, this
 is to allow these groups to utilize a web-based client to participate in
 Cardano's governance. These groups are likely less comfortable utilizing
 command-line interfaces than other groups, thus making alternatives from them is
-a priority. Secondly, the other types of actor (constitution committee member
+a priority. Secondly, the other types of actor (constitutional committee members
 and SPOs) are identified by different credentials than Ada holders and DReps,
 making their integration in this specification more complex. These alternative
 credentials are unlikely to be stored within standard wallet software which may
@@ -662,7 +662,7 @@ cold key setup. Hot and cold keys are not suited for standard light wallets.
 
 Genesis key delegation and move instantaneous reward certificates (see in
 [Shelley spec](https://github.com/IntersectMBO/cardano-ledger/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl#L117#L118))
-are not supported here because they have been depreciated in the Conway ledger
+are not supported here because they have been deprecated in the Conway ledger
 era. Furthermore, due to the lack of accessibility (require access to genesis
 keys) for these certificates it is extremely unlikely any CIP-30 implementations
 supported these.
