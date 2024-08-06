@@ -56,7 +56,7 @@ We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that 
 
 ### Non-normative overview of the Peras protocol
 
-The following informal, non-normative, pseudo-imperative summary of the Peras protocol is provided as an index into the formal Agda specification. Peras relies on a few key concepts:
+The following informal, non-normative, pseudo-imperative summary of the Peras protocol is provided as an index into the formal, normative Agda specification. Peras relies on a few key concepts:
 
 - The progression of the blockchain's *slots* is partitioned in *rounds* of equal length.
 - In each round a *committee of voters* is selected via a sortition algorithm.
@@ -1646,6 +1646,9 @@ The Praos security parameter $k_\text{praos} = 2160 \text{\,blocks} \approx 4320
 The *committee size* of $n = 900 \text{\,parties}$ corresponds to a one in a million chance of not reaching a quorum if 10% of the parties do not vote for the majority block (either because they are adversarial, offline, didn't receive the block, or chose to vote for a block on a non-preferred fork). This "no quorum" probability is equivalent to one missed quorum in every 1.2 years. The *quorum size* of $\tau = \left\lceil 3 n / 4 \right\rceil = 675 \text{\,parties}$ is computed from this.
 
 
+## Versioning
+
+This document describes the *pre-alpha* version of the Peras protocol. We anticipate a subsequent, separate CIP for an *alpha* or *beta* version of the protocol. That version will add strong guarantees for block selection prior to the voting process and will constitute a layer built upon this pre-alpha version.
 
 ## Copyright
 
