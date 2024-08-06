@@ -70,7 +70,7 @@ An AMM DEX requires many users to interact with the same pool. Every interaction
 
 Historically, the improvement of AMM DEXes over traditional order-book-style exchanges has been the ability to execute orders immediately.
 
-Currently, AMM DEXes on Cardano do not allow for high throughput without batchers. Either way, with or without batchers, they are effectively no better than order books, because immediate execution is not provided.
+Currently, AMM DEXes on Cardano do not allow for high throughput without batchers. Either way, with or without batchers, they are effectively no better than order books, because immediate execution can't be guaranteed.
 
 ### Lending platform (liquidations)
 
@@ -102,7 +102,9 @@ let price = readMutableVariable(priceVariable)
 in minimumPrice <= price && price <= maximumPrice
 ```
 
-Expressions like this can be evaluated in constant time and memory (the constants should be restrictive enough, and the time for evaluating a script should be comparable to that of transaction parsing and UTxO lookups).
+Expressions like this can be evaluated in constant time and memory, with sufficiently restrictive constants. The time required for evaluating a script should be comparable to that of transaction parsing and UTxO lookups. If the validation fails, the transaction can be discarded completely without incurring any fees.
+
+Therefore, a ledger design that accepts user-defined constant-time conditions for phase-1 validation can support both atomic and non-deterministic transactions (from the user's perspective, not the ledger's).
 
 #### On-chain liquidation example
 
