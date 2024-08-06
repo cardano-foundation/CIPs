@@ -15,27 +15,6 @@ Created: 2024-07-31
 License: Apache-2.0
 ---
 
-> [!IMPORTANT]
->
-> Decisions needed:
-> - [ ] Do we want the CIP to be type-checked by the Agda compiler?
->     - [ ] *Option 1:* Write the CIP as a single, self-contained `.lagda.md` file.
->         - *Pro:* completely self-contained
->         - *Con:* need to flatten our `src/` files into a single file
->     - [ ] *Option 2:* Put all of the Agda code in a `src/` folder within the CIP's folder.
->         - *Pro:* the existing `src/` can be copied over into the CIP, after a little clean-up
->         - *Con:* the Agda specification won't appear in the top-level CIP file, but will be reachable by links
->     - [ ] *Option 3:* Copy-and-paste the Agda code from our `src/` into the CIP
->         - *Pro:* smaller CIP file
->         - *Con:* not type-checked
-> - [ ] Should we only include the ALBA certificates in the specification? It's confusing to propose two types of certificate. Maybe the Mithril-certificate section could be moved to an appendix?
-> - [ ] The benchmarks don't properly belong in the "Specification" section, so they're being moved to "Resources".
-> - [ ] How much of the evidence and analyses should be embedded in this document versus referencing the technical reports?
-> - [ ] Editing
->     - [ ] Edit in a folder of `peras-design`
->     - [ ] Edit in a fork of the CIP repo
-> - [ ] Include the research team as CIP authors?
-> - [ ] In order to speed things up, should we also draft the meta-CIP that creates the "Consensus" category?
 
 > [!NOTE]
 > A "Consensus" category must be created by a new CIP before this CIP can be submitted within that category.
@@ -50,9 +29,6 @@ License: Apache-2.0
 > - Plutus   | Changes or additions to Plutus
 > - Ledger   | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
 > - Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
-
-* Look at [Leios spec](https://github.com/cardano-foundation/CIPs/blob/ouroboros-leios/CIP-0079/README.md) for inspiration
-* [CIP-001](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001) guidelines
 
 ## Abstract
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
@@ -95,11 +71,9 @@ The following informal, non-normative, pseudo-imperative summary of the Peras pr
 - Relevant vote certificates are typically *recorded* in a block near the start and finish of a cool-down period.
 - Certificates *expire* after a specified number of slots if they haven't been included in a block.
 
-> [!IMPORTANT]
->
-> If we retain this subsection, provide links from it to the corresponding parts of the Agda specification later in this document.
->
-> The text needs review by the research team because it risks self-plagarizing.
+> [!TIP]
+> - In the above, hyperlink the key terms to the sections defining them in the formal specification.
+> - Add a diagram illustrating the operation of Peras.
 
 The protocol keeps track of the following variables, initialized to the values below:
 
@@ -151,7 +125,10 @@ During *voting*, each party $\mathsf{P}$ does the following at the beginning of 
 
 ### Normative protocol specification in Agda
 
-The following relational specification for Peras type checks using [Agda 2.6.4.1](https://github.com/agda/agda/tree/v2.6.4.1). The repository [github:input-output-hk/peras-design](https://github.com/input-output-hk/peras-design/tree/main) provides a Nix-based environment for compiling and executing Peras's specification.
+The following formal, relational specification for Peras type checks using [Agda 2.6.4.1](https://github.com/agda/agda/tree/v2.6.4.1). The repository [github:input-output-hk/peras-design](https://github.com/input-output-hk/peras-design/tree/main) provides a Nix-based environment for compiling and executing Peras's specification.
+
+> [!TIP]
+> This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501`](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
 
 ```agda
 module CIP-0PRS where
@@ -1054,6 +1031,9 @@ A party can vote for a block, if
 - the chain is not in a cool-down phase
 
 Voting updates the party's local state and for all other parties a message is ready to be consumed immediately.
+
+> [!CAUTION]
+> Check that weighted voting is correctly represented here.
 
 ```agda
     infix 2 _⊢_⇉_
