@@ -35,21 +35,25 @@ License: Apache-2.0
 We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that introduces a voting layer for fast settlement. It is adaptively secure, supports dynamic participation, and integrates self healing. Voting provides a “boost” to blocks that receive a quorum of votes, and this dramatically reduces the roll-back probability of the boosted block and its predecessors. Fast settlement occurs in the presence of adversaries with up to one-quarter of the stake, but Praos-like safety is maintained when adversaries control more than that amount of stake. In fact, the protocol enters a “cool-down period” of Praos-like behavior when adversaries prevent voting quorums; that cool-down period is exited only when the chain has healed, achieves chain quality, and reaches a common prefix. For realistic settings of the Peras protocol parameters, blocks can be identified post-facto as being settled vs rolled-back (with overwhelming probability) after as little as two minutes. This enables use cases like partner-chains and bridges where high certainty for the status of a transaction is required in a brief time. The protocol requires the implementation of a vote-diffusion layer, certificates that aggregate votes, and one minor addition to the contents of a block.
 
 ## Motivation: why is this CIP necessary?
-<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
 
-* Define clearly what settlement is (and how it differs from finality)
-  * Checkout https://docs.google.com/spreadsheets/d/1s_LfDQ4Qg3BArMgr6GskGGzG_Ibg-VbPdMmlRWvZ75o/edit#gid=431199162
-  * See Peter Gazi comment -> settlement as a probability or measure of risk to be taken into account by users making transactions
-  * Hans's take: Settlement occurs before finality. Settled transactions can be reversible, finalized Txs are irreversible. The difference is in the degree of certainty. A settled Tx is considered valid and is likely to be included in the final, immutable history of blockchain. Depending on the specific use case, different levels of certainity might be required - i.e. a multi-day finality could be a feature of a system. It seems that in traditional finance the long settlement time is often used as an escrow - e.g. for the the buyer to verify the purchase, or for regulatory compliance to be reached. 
+Under Ouroboros Praos, settlement occurs probabilistically on the Cardano blockchain, where the probability that a block will be rolled back from the preferred chain decreases exponentially as the chain grows beyond the block and where that rate of decrease is slower when  adversarial activity is stronger [^1] . Some use cases require high assurance that a block (and the transactions within it) will not be rolled back, necessitating a potentially lengthy wait before a transaction is considered "settled" or "finalize". Some major centralized exchanges, for example, requires 15 confirmations (i.e., blocks) before a transaction is considered settled [^2] : this amounts to waiting 10 minutes before a consumer has their transacted funds or tokens available for subsequent use. This situation is not unique to Cardano: centralized exchanges generally require at least five minutes wait for most of the common blockchains [^2] . Partner chains and bridges may have stringent requirements for fast and highly certain settlement.
+
+There are several definitions of "settlement" or "finality", and precision is important when discussing these. Two noteworthy scenarios can be defined precisely.
+
+- *Ante hoc settlement probability:* "What is the probability that a transaction that I just submitted will ever be rolled back?"
+- *Post hoc settlement probability:* "Given that I submitted my transaction $x$ seconds ago and it has not yet been rolled back, what is the probability that it will ever be rolled back?"
+
+If one is unwilling or unable to re-submit a rolled-back transaction, then the *ante hoc* probability might be of most interest. This matches use cases where there is no opportunities for the parties involved in a transaction: for example, one party might have purchased physical goods and left the vendor's premises, leaving no opportunity to resubmit a rolled-back transaction. Other use cases are better suited for *post hoc* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that ever changing once they have watched the chain for that amount of time, given them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and backend infrastructure distinguish these use cases. Protocols like Peras optimize *post hoc* certainty after pre-defined waiting times.
+
+Ourboros Praos optimizes the worst-case scenario of highly adversarial conditions, but the Cardano blockchain typically operates in the absence of such a challenge. Optimistic protocols like Peras can take advantage of the "average case" of lower or no adversarial activity by settling transactions faster than Praos, but without sacrificing any of the security guarantees of Praos if the protocol (such as Peras) falls back to Praos-like behavior for a "safety and repair period" after adversarial conditions occur. Furthermore, they should do so without requiring radical or costly changes to the current `cardano-node` implementations. It is also desirable that settlement-related protocol changes do not interfere with other pending protocol changes like Genesis (security enhancement) [^3] and Leios (maximal throughput) [^4] . Fast settlement is a critical part of Cardano scaling, as describe in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI).
  
-* Explain settlement on Cardano with Ouroboros Praos
-  * Include data -> settlement probabilities (is this sensitive?)
-* Explain the required changes to Praos *maybe in terms of current limitations of Praos*
-    * Low cost solution
-    * "Overlay" protocol, adding incremental behaviour, no fundamental change to Praos
-* Distinguish from orthogonal protocol upgrades such as Genesis, Leios, etc.
-* Worst-case vs. optimistic case
-    * Praos is geared towards worst case but Peras takes advantage of the opportunities afforded by the optimistic or average case (eg. when things are fine, go faster)
+[^1]: **FIXME:** Cite the Gazi paper(s).
+
+[^2]: https://docs.google.com/spreadsheets/d/1s_LfDQ4Qg3BArMgr6GskGGzG_Ibg-VbPdMmlRWvZ75o/edit#gid=431199162
+
+[^3]: **FIXME:** Cite publications and blog posts.
+
+[^4]: **FIXME:** Cite publications and blog posts.
 
 ## Specification
 
