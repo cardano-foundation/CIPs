@@ -152,8 +152,9 @@ Below are listed tentative CIPs still under discussion with the community. They 
 | 0127? | [Integration of ripemd_160 into Plutus](https://github.com/cardano-foundation/CIPs/pull/826) |
 | 0128? | [Preserving Order of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/758) |
 | 0129? | [Governance Identifiers](https://github.com/cardano-foundation/CIPs/pull/857) |
+| 0130? | [Transaction Pieces](https://github.com/cardano-foundation/CIPs/pull/873) |
 
-<p align="right"><i>Last updated on 2024-07-27</i></p>
+<p align="right"><i>Last updated on 2024-08-06</i></p>
 
 ## Cardano Problem Statements (CPS)
 
