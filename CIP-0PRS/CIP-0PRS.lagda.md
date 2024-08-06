@@ -11,7 +11,7 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/872
-Created: 2024-07-31
+Created: 2024-08-06
 License: Apache-2.0
 ---
 
@@ -123,12 +123,13 @@ During *voting*, each party $\mathsf{P}$ does the following at the beginning of 
     - then create a vote $v = (r, \mathsf{P}, h,...)$,
     - Add $v$ to $\mathcal{V}$ and diffuse it.
 
-### Normative protocol specification in Agda
+### Normative Peras specification in Agda
 
 The following formal, relational specification for Peras type checks using [Agda 2.6.4.1](https://github.com/agda/agda/tree/v2.6.4.1). The repository [github:input-output-hk/peras-design](https://github.com/input-output-hk/peras-design/tree/main) provides a Nix-based environment for compiling and executing Peras's specification.
 
 > [!TIP]
-> This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501`](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
+> - This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
+> - Periodically diff the main branch of that repository against this commit, in order to identify any changes that need to be migrated to this document.
 
 ```agda
 module CIP-0PRS where
@@ -1206,27 +1207,38 @@ This completes for formal specification of Peras. The repository [github:input-o
 - Proofs of the soundness of the executable specification with respect to this relational one
 - Scaffolding for generating dynamic, property-based conformance tests using the Haskell [`quickcheck-dynamic`](https://hackage.haskell.org/package/quickcheck-dynamic) package.
 
-### Specification of votes
+### Specification of votes and certificates
 
-#### Overview
+The stake-proportional voting in Peras is mimicked after the _sortition_ algorithm used in Praos: specifically it is based on the use of a *verifiable random function* (VRF) by each stake-pool operator guaranteeing the following properties:
 
-Voting in Peras is mimicked after the _sortition_ algorithm used in Praos, e.g it is based on the use of a _Verifiable Random Function_ (VRF) by each stake-pool operator guaranteeing the following properties:
+- The probability for each voter to cast their vote in a given round is correlated to their share of total stake.
+- It should be computationally impossible to predict a given SPO's schedule without access to their secret key VRF key.
+- Verification of a voter's right to vote in a round should be efficiently computable.
+- A vote should be unique and non-malleable, which is a requirement for the use of efficient certificates aggregation.
 
-* The probability for each voter to cast their vote in a given round is correlated to their share of total stake,
-* It should be computationally impossible to predict a given SPO's schedule without access to their secret key VRF key,
-* Verification of a voter's right to vote in a round should be efficiently computable,
-* A vote should be unique and non-malleable. (This is a requirement for the use of efficient certificates aggregation, see [below](#alba-certificates).)
+Additionally one would like the following property to be provided by our voting scheme:
 
-Additionally we would like the following property to be provided by our voting scheme:
+- Voting should require minimal additional configuration (i.e., key management) for SPOs,
+- Voting and certificates construction should be fast in order to ensure we do not interfere with other operations happening in the node.
 
-* Voting should require minimal additional configuration (i.e., key management) for SPOs,
-* Voting and certificates construction should be fast in order to ensure we do not interfere with other operations happening in the node.
+The precise scheme and format for votes and certificates is immaterial to the protocol itself, but for reasons of efficiency (i.e., minimal resource usage) the selection of ALBA certificates, as described in proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870), is recommended for Peras.
 
-We have experimented with two different algorithms for voting, which we detail below.
+### CDDL schema for ledger
 
-#### Structure of votes
+Peras requires a single addition, `peras_cert`, the block data on the ledger. 
 
-We have used an identical structure for single `Vote`s, for both algorithms. We define this structure as a CDDL grammar, inspired by the [block header](https://github.com/input-output-hk/cardano-ledger/blob/e2aaf98b5ff2f0983059dc6ea9b1378c2112101a/eras/conway/impl/cddl-files/conway.cddl#L27) definition from cardano-ledger:
+```diff
+ block =
+   [ header
+   , transaction_bodies         : [* transaction_body]
+   , transaction_witness_sets   : [* transaction_witness_set]
+   , auxiliary_data_set         : {* transaction_index => auxiliary_data }
+   , invalid_transactions       : [* transaction_index ]
++  , ? peras_cert               : alba_certificate
+   ]
+```
+
+Votes are serialized in the following CDDL.
 
 ```cddl
 vote =
@@ -1241,7 +1253,7 @@ vote =
   ]
 ```
 
-This definition relies on the following primitive types (drawn from Ledger definitions in [crypto.cddl](https://github.com/input-output-hk/cardano-ledger/blob/e2aaf98b5ff2f0983059dc6ea9b1378c2112101a/eras/conway/impl/cddl-files/crypto.cddl#L1))
+This definition relies on the following primitive types (drawn from Ledger definitions in [crypto.cddl](https://github.com/input-output-hk/cardano-ledger/blob/e2aaf98b5ff2f0983059dc6ea9b1378c2112101a/eras/conway/impl/cddl-files/crypto.cddl#L1)).
 
 ```cddl
 round_no = uint .size 8
@@ -1253,158 +1265,23 @@ kes_signature = bytes .size 448
 kes_period = uint .size 8
 ```
 
-As already mentioned, `Vote` mimicks the block header's structure which allows Cardano nodes to reuse their existing VRF and KES keys. Some additional notes:
+As already mentioned, the vote serialization mimics the block header's structure, which allows Cardano nodes to reuse their existing VRF and KES keys. Also note the following.
 
-* Total vote size is **710 bytes** with the above definition,
-* Unless explicitly mentioned, `hash` function exclusively uses 32-bytes Blake2b-256 hashes,
-* The `voter_id` is it's pool identifier, ie. the hash of the node's cold key.
+- The total size of each vote is 710 bytes, according to the above definition.
+- Unless explicitly mentioned, the `hash` function exclusively uses 32-bytes Blake2b-256 hashes.
+- The `voter_id` is it's pool identifier (i.e., the hash of the node's cold key).
 
-#### Casting a vote
+The CDDL for the certificates that aggregate votes is specified in the proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870).
 
-A vote is _cast_ by a node using the following process which paraphrases the [actual code](https://github.com/input-output-hk/peras-design/blob/4ab6fad30b1f8c9d83e5dfb2bd6f0fe235e1395c/peras-vote/src/Peras/Voting/Vote.hs#L293)
+For ALBA certificates, assuming 1000 votes, a honest to faulty ratio of 80/20, and security parameter $λ=128$, one has the following typical measurements.
 
-1. Define _nonce_ as the hash of the _epoch nonce_ concatenated to the `peras` string and the round number voted for encoded as 64-bits big endian value,
-2. Generate a _VRF Certificate_ using the node's VRF key from this `nonce`,
-3. Use the node's KES key with current KES period to sign the VRF certificate concatenated to the _block hash_ the node is voting for,
-4. Compute _voting weight_ from the VRF certificate using _sortition_ algorithm (see details below).
-
-#### Verifying a vote
-
-[Vote verification](https://github.com/input-output-hk/peras-design/blob/34196ee6e06ee6060c189116b04a2666450c5b75/peras-vote/src/Peras/Voting/Vote.hs#L392) requires access to the current epoch's _stake distribution_ and _stake pool registration_ information.
-
-1. Lookup the `voter_id` in the stake distribution and registration map to retrieve their current stake and VRF verification key,
-2. Compute the _nonce_ (see above),
-3. Verify VRF certificate matches nonce and verification key,
-4. Verify KES signature,
-5. Verify provided KES verification key based on stake pool's registered cold verification key and KES period,
-6. Verify provided _voting weight_ according to voting algorithm.
-
-#### Approaches to voter election
-
-> [!IMPORTANT]
->
-> These subsections are about implementation more than about specification. Should we rewrite this purely as a specification? We could link to the two implementations.
-
-##### Leader-election like voting
-
-The first algorithm is basically identical to the one used for [Mithril](https://mithril.network) signatures, and is also the one envisioned for [Leios](https://leios.cardano-scaling.org) (see Appendix D of the recent Leios paper). It is based on the following principles:
-
-* The goal of the algorithm is to produce a number of votes targeting a certain threshold such that each voter receives a number of vote proportionate to $\sigma$, their fraction of total stake, according to the basic probability function $\phi(\sigma) = 1 - (1 - f)^\sigma$,
-* There are various parameters to the algorithm:
-    * $f$ is the fraction of slots that are "active" for voting
-    * $m$ is the number of _lotteries_ each voter should try to get a vote for,
-    * $k$ is the target total number of votes for each round (e.g., quorum) $k$ should be chosen such that $k = m \cdot \phi(0.5)$ to reach a majority quorum,
-* When its turn to vote comes, each node run iterates over an index $i \in [1 \dots m]$, computes a hash from the _nonce_ and the index $i$, and compares this hash with $f(\sigma)$: if it is lower than or equal, then the node has one vote.
-    * Note the computation $f(\sigma)$ is exactly identical to the one used for [leader election](https://github.com/intersectmbo/cardano-ledger/blob/f0d71456e5df5a05a29dc7c0ac9dd3d61819edc8/libs/cardano-protocol-tpraos/src/Cardano/Protocol/TPraos/BHeader.hs#L434).
-
-We [prototyped](https://github.com/input-output-hk/peras-design/blob/73eabecd272c703f1e1ed0be7eeb437d937e1179/peras-vote/src/Peras/Voting/Vote.hs#L311) this approach in Haskell.
-
-##### Sortition-like voting
-
-The second algorithm is based on the _sortition_ process initially invented by [Algorand](https://web.archive.org/web/20170728124435id_/https://people.csail.mit.edu/nickolai/papers/gilad-algorand-eprint.pdf) and [implemented](https://github.com/algorand/sortition/blob/main/sortition.cpp) in their node. It is based on the same idea, namely that a node should have a number of votes proportional to their fraction of total stake, given a target "committee size" expressed as a fraction of total stake $p$. And it uses the fact the number of votes a single node should get based on these parameters follows a binomial distribution.
-
-The process for voting is thus:
-
-* Compute the individual probability of each "coin" to win a single vote $p$ as the ratio of expected committee size over total stake.
-* Compute the binomial distribution $B(n,p)$ where $n$ is the node's stake.
-* Compute a random number between 0 and 1 using _nonce_ as the denominator over maximum possible value (e.g., all bits set to 1) for the nonce as denominator.
-* Use [bisection method](https://en.wikipedia.org/wiki/Bisection_method) to find the value corresponding to this probability in the CDF for the aforementioned distribution.
-
-This yields a vote with some _weight_ attached to it "randomly" computed so that the overall sum of weights should be around expected committee size.
-
-This method has also been [prototyped in Haskell](https://github.com/input-output-hk/peras-design/blob/73eabecd272c703f1e1ed0be7eeb437d937e1179/peras-vote/src/Peras/Voting/Vote.hs#L174).
-
-### Specification of certificates
-
-> [!CAUTION]
-> We need to commit solely to ALBA or to Mirthril, and edit this section accordingly.
-
-#### Mithril certificates
-
-Mithril certificates' construction is described in details in the [Mithril](https://iohk.io/en/research/library/papers/mithril-stake-based-threshold-multisignatures/) paper and is implemented in the [mithril network](https://github.com/input-output-hk/mithril). It's also described in the [Leios paper](https://iohk.io/en/research/library/papers/high-throughput-blockchain-consensus-under-realistic-network-assumptions/), in the appendix, as a potential voting scheme for Leios, and implicitly Peras.
-
-Mithril certificates have the following features:
-
-* They depend on BLS-curve signatures aggregation to produce a so-called _State based Threshold Multi-Signature_ that's easy to verify,
-* Each node relies on a _random lottery_ as described in the [previous section](#leader-election-like-voting) to produce a vote weighted by their share of total stake,
-* The use of BLS signatures implies nodes will need to generate and exchange specialized keys for the purpose of voting, something we know from [Mithril](https://mithril.network/doc/mithril/mithril-protocol/certificates) is somewhat tricky as it requires some form of consensus to guarantee all nodes have the exact same view of the key set.
-
-#### ALBA
-
-[Approximate Lower Bound Arguments](https://iohk.io/en/research/library/papers/approximate-lower-bound-arguments/) or _ALBAs_ in short, are a novel cryptographic algorithm based on a _telescope_ construction providing a fast way to build compact certificates out of a large number of _unique_ items. A lot more details are provided in the paper, on the [website](https://alba.cardano-scaling.org) and the [GitHub repository](https://github.com/cardano-scaling/alba) where implementation is being developed, we only provide here some key information relevant to the use of ALBAs in Peras.
-
-##### Proving & verification time
-
-ALBA's expected proving time is benchmarked in the following picture which shows mean execution time for generating a proof depending on: The _total_ number of votes, the actual number of votes ($s_p$), the honest ratio ($n_p$). Note that as proving time increases exponentially when $s_p \rightarrow total \cdot n_p$, we only show here the situation when $s_p = total$ and $s_p = total - total \cdot n_p / 2$ to ensure graph stays legible.
-![ALBA Proving Time](/img/alba-proving.png)
-
-The following diagram is an excerpt from the ALBA benchmarks highlighting verification. Note these numbers do not take into account the time for verifying individual votes. As one can observe directly from these graphs, verification time is independent from the number of items and only depends on the $n_p/n_f$ ratio.
-![ALBA Verification Time](/img/alba-verifying.png)
-
-In practice, as the number of votes is expected to be in the 1000-2000 range, and there is ample time in a round to guarantee those votes are properly delivered to all potential voting nodes (see below), we can safely assume proving time of about 5 ms, and verification time under a millisecond.
-
-##### Certificate size
-
-For a given set of parameters, namely fixed values for $\lambda_{sec}$, $\lambda_{rel}$, and $n_p/n_f$, the proof size is perfectly linear and only depends on the size of each vote.
-
-Varying the security parameter and the honest votes ratio for a fixed set of 1000 votes of size 200 yields the following diagram, showing the critical factor in proof size increase is the $n_p/n_f$ ratio: As this ratio decreases, the number of votes to include in proof grows superlinearly.
-
-![Proof size vs. λ and honest votes ratio](/img/alba-proof-size-lambda.svg)
-
-#### Benchmarks
-
-> [!WARNING]
-> The benchmarking data should be moved to the Resources section.
-
-In the following tables we compare some relevant metrics between the two different kind of certificates we studied, Mithril certificates (using BLS signatures) and ALBA certificates (using KES signatures): Size of certificate in bytes, proving time (e.g., the time to construct a single vote), aggregation time (the time to build a certificate), and verification time.
-
-For Mithril certificates, assuming parameters similar to mainnet's ($k=2422, m=20973, f=0.2$):
-
-| Feature                         | Metric |
-| ------------------------------- | ------ |
-| Certificate size                | 56 kB  |
-| Proving time (per vote)         | ~70 ms |
-| Aggregation time                | 1.2 s  |
-| Verification time (certificate) | 17 ms  |
-
-For ALBA certificates, assuming 1000 votes, a honest to faulty ratio of 80/20, and security parameter $λ=128$. Note the proving time _does not_ take into account individual vote verification time, whereas certificate's verification time _includes_ votes verification time.
-
-| Feature                         | Metric  |
-| ------------------------------- | ------- |
-| Certificate size                | 47 kB   |
-| Proving time (per vote)         | ~133 us |
-| Aggregation time                | ~5 ms   |
-| Verification time (certificate) | 15 ms   |
-|                                 |         |
-
-### Network diffusion of votes
-
-Building on [previous work](./tech-report-1#network-performance-analysis), we built a ΔQ model to evaluate the expected delay to reach _quorum_.
-The model works as follows:
-
-* We start from a base uniform distribution of single MTU latency between 2 nodes, assuming a vote fits in a single TCP frame. The base latencies are identical as the one used in previous report.
-* We then use the expected distribution of paths length for a random graph with 15 average connections, to model the latency distribution across the network, again reusing previously known values.
-* We then apply the `NToFinish 75` combinator to this distribution to compute the expected distribution to reach 75% of the votes (quorum).
-* An important assumption is that each vote diffusion across the network is expected to be independent from all other votes.
-* Verification time for a single vote is drawn from the above benchmarks, but we also want to take into account the verification time of a single vote, which we do in two different ways:
-    * One distribution assumes a node does all verifications sequentially, one vote at a time
-    * Another assumes all verifications can be done in parallel
-    * Of course, the actual verification time should be expected to be in between those 2 extremes
-
-Using the "old" version of ΔQ library based on numerical (e.g., Monte-Carlo) sampling, yields the following graph:
-![Vote diffusion](/img/vote-diffusion.svg)
-
-This graph tends to demonstrate vote diffusion should be non-problematic, with a quorum expected to be reached in under 1 second most of the time to compare with a round length of about 2 minutes.
-
-At the time of this writing, a newer version of the ΔQ library based on _piecewise polynomials_ is [available](https://github.com/DeltaQ-SD/dqsd-piecewise-poly). Our [attempts](https://github.com/input-output-hk/peras-design/blob/01206e5d4d3d5132c59bff18564ad63adc924488/Logbook.md#L302) to use it to model votes diffusion were blocked by the high computational cost of this approach and the time it takes to compute a model, specifically about 10 minutes in our case. The code for this experiment is available as a [draft PR #166](https://github.com/input-output-hk/peras-design/pull/166).
-
-In the old version of ΔQ based on numerical sampling, which have [vendored in our codebase](https://github.com/input-output-hk/peras-design/blob/a755cd033e4898c23ee4bacc9b677145497ac454/peras-delta-q/README.md#L1), we introduced a `NToFinish` combinator to model the fact we only take into account some fraction of the underlying model. In our case, we model the case where we only care about the first 75% of votes that reach a node.
-
-Given convolutions are the most computationally intensive part of a ΔQ model, it seems to us a modeling approach based on discrete sampling and vector/matrices operations would be quite efficient. We did some experiment in that direction, assessing various approaches in Haskell: A naive direct computation using [Vector](https://hackage.haskell.org/package/vector)s, FFT-based convolution using vectors, and [hmatrix](https://hackage.haskell.org/package/hmatrix)' convolution function.
-
-![Computing Convolutions](/img/convolutions.png)
-
-This quick-and-dirty spike lead us to believe we could provide a fast and accurate ΔQ modelling library using native vector operations provided by all modern architectures, and even scale to very large model using GPU libraries.
+| Metric                          |  Value |
+| ------------------------------- | -----: |
+| Certificate size                |  47 kB |
+| Proving time (per vote)         | 133 μs |
+| Vote verification (per vote)    | 161 μs |
+| Aggregation time                |   5 ms |
+| Verification time (certificate) |  15 ms |
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
@@ -1446,7 +1323,7 @@ Main benefit is that Peras drastically decreases the need to wait for confirmati
 * Exchanges?
 * DApps/service providers, basically anyone accepting or using ADAs, and anyone building some service on top of cardano with some kind of sensitivity to time
 
-## Attacks and Mitigations
+## Attack and Mitigation
 
 
 ## Resource Requirements
@@ -1454,6 +1331,36 @@ Main benefit is that Peras drastically decreases the need to wait for confirmati
 In this section, we evaluate the impact on the day-to-day operations of the Cardano network and cardano nodes of the deployment of Peras protocol, based on the data gathered over the course of project.
 
 In this section, we evaluate the impact on the day-to-day operations of the Cardano network and cardano nodes of the deployment of Peras protocol, based on the data gathered over the course of project.
+
+
+### Network diffusion of votes
+
+Building on [previous work](./tech-report-1#network-performance-analysis), we built a ΔQ model to evaluate the expected delay to reach _quorum_.
+The model works as follows:
+
+* We start from a base uniform distribution of single MTU latency between 2 nodes, assuming a vote fits in a single TCP frame. The base latencies are identical as the one used in previous report.
+* We then use the expected distribution of paths length for a random graph with 15 average connections, to model the latency distribution across the network, again reusing previously known values.
+* We then apply the `NToFinish 75` combinator to this distribution to compute the expected distribution to reach 75% of the votes (quorum).
+* An important assumption is that each vote diffusion across the network is expected to be independent from all other votes.
+* Verification time for a single vote is drawn from the above benchmarks, but we also want to take into account the verification time of a single vote, which we do in two different ways:
+    * One distribution assumes a node does all verifications sequentially, one vote at a time
+    * Another assumes all verifications can be done in parallel
+    * Of course, the actual verification time should be expected to be in between those 2 extremes
+
+Using the "old" version of ΔQ library based on numerical (e.g., Monte-Carlo) sampling, yields the following graph:
+![Vote diffusion](/img/vote-diffusion.svg)
+
+This graph tends to demonstrate vote diffusion should be non-problematic, with a quorum expected to be reached in under 1 second most of the time to compare with a round length of about 2 minutes.
+
+At the time of this writing, a newer version of the ΔQ library based on _piecewise polynomials_ is [available](https://github.com/DeltaQ-SD/dqsd-piecewise-poly). Our [attempts](https://github.com/input-output-hk/peras-design/blob/01206e5d4d3d5132c59bff18564ad63adc924488/Logbook.md#L302) to use it to model votes diffusion were blocked by the high computational cost of this approach and the time it takes to compute a model, specifically about 10 minutes in our case. The code for this experiment is available as a [draft PR #166](https://github.com/input-output-hk/peras-design/pull/166).
+
+In the old version of ΔQ based on numerical sampling, which have [vendored in our codebase](https://github.com/input-output-hk/peras-design/blob/a755cd033e4898c23ee4bacc9b677145497ac454/peras-delta-q/README.md#L1), we introduced a `NToFinish` combinator to model the fact we only take into account some fraction of the underlying model. In our case, we model the case where we only care about the first 75% of votes that reach a node.
+
+Given convolutions are the most computationally intensive part of a ΔQ model, it seems to us a modeling approach based on discrete sampling and vector/matrices operations would be quite efficient. We did some experiment in that direction, assessing various approaches in Haskell: A naive direct computation using [Vector](https://hackage.haskell.org/package/vector)s, FFT-based convolution using vectors, and [hmatrix](https://hackage.haskell.org/package/hmatrix)' convolution function.
+
+![Computing Convolutions](/img/convolutions.png)
+
+This quick-and-dirty spike lead us to believe we could provide a fast and accurate ΔQ modelling library using native vector operations provided by all modern architectures, and even scale to very large model using GPU libraries.
 
 ### Network
 
