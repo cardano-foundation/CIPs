@@ -58,6 +58,10 @@ This solution introduces a whole set of new problems:
 - **Doubled action confirmation time**. Two transactions take more time to pass, even assuming immediate order execution.
 - **Incentives for centralization**. Although decentralized batchers are possible, in reality designing them is more complex than building a centralized batcher bot. Decentralized batchers *still* don't provide liveness guarantees: it *may just happen* that no executor bots will be available at any given time, despite the incentives.
 
+### Historical context
+
+[The Extended UTXO Model paper](https://jmchapman.io/papers/eutxo.pdf) introduces an extension for the UTxO model and proves that it is as expressive as CEM (Constraint Emitting Machines).
+
 ## Use cases
 
 ### Automated market maker DEX
@@ -72,6 +76,40 @@ Currently, AMM DEXes on Cardano do not allow for high throughput without batcher
 
 Liquidating many open positions at once in the presence of a dynamically changing price oracle is not reliable. Lending platform should allow a liquidation to proceed if the price is lower (or higher) than a known threshold, but in reality the need to refer to a particular UTxO containing the price datum makes it so that a liquidation may only proceed if the the price is *the same* as the one known to the liquidation bot during transaction building.
 
+### Non-determinism and atomicity
+
+It is easy to show that, in principle, atomic transactions are possible even if the validators accept mutable shared state.
+
+The key is allowing mutable state variable validation during phase-1, which must be done in constant time and memory (just like UTxO lookups).
+
+Let's assume that phase-2 scripts somehow provide a way to change the output UTxO distribution, depending on the outcome of script execution. The scripts remain fully deterministic from the ledger perspective, but the values of mutable shared state variables are not known during the construction of a transaction.
+
+#### AMM DEX example
+
+The condition for a swap involving a liquidity pool is that the actual price must be within the user-defined slippage settings.
+
+Conceptually, this condition can be expressed like this:
+
+```haskell
+let price = readMutableVariable(priceVariable)
+in wantedPrice * (1.0 - allowedSlippage) <= price && price <= wantedPrice * (1.0 + allowedSlippage)
+```
+
+which can be pre-compiled down to:
+
+```haskell
+let price = readMutableVariable(priceVariable)
+in minimumPrice <= price && price <= maximumPrice
+```
+
+Expressions like this can be evaluated in constant time and memory (the constants should be restrictive enough, and the time for evaluating a script should be comparable to that of transaction parsing and UTxO lookups).
+
+#### On-chain liquidation example
+
+TBD
+
+<!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
+
 ## Goals
 
 The goal of this CPS is to start a discussion about alternative ledger designs.
@@ -82,9 +120,7 @@ There are no immediate plans to work on implementing any of the possible alterna
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 - What properties of the ledger that stem from determinism are really valuable?
-- TBD
 
-<!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
 
 ## Copyright
 
