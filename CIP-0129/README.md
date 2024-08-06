@@ -135,10 +135,6 @@ By introducing a header and payload design for different keys, we can achieve sp
 ## Path to Active
 
 ### Acceptance Criteria
-
-- [ ] implemented by various tools
-
-### Implementation Plan
 Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes defined in this CIP for communication and view purposes.
 
 - [ ] Requires updating Ledger nano app, and Trezor. The changes can be proposed once the CIP is merged.
@@ -156,6 +152,9 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
 - [ ] Wallets
   - [ ] Eternl
   - [x] Typhon Wallet
+
+### Implementation Plan
+Updated relevant CIPs with test vector which references these identifiers. This CIP does not require a hard fork for implementation, the goal is to use the identifies specified in this CIP for the UI, and as a medium of communication for sharing such keys and IDs (though it will be good if this CIP is also implemented at the ledger level).
 
 ## Copyright
 
