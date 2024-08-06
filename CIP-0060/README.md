@@ -15,7 +15,7 @@ Authors:
   - Kevin St.Clair <kos1777@gmail.com>
   - Brandon Loyche <dsqise@gmail.com>
   - Andrew Donovan <adonovan23@gmail.com>
-  - The Finest LLC (DBA So Litty Records) - <solittyrecords@gmail.com>
+  - The Finest LLC (DBA So Litty Records) <solittyrecords@gmail.com>
   - Cristhian Escobar <escobarcristhian18@gmail.com>
   - Gabriel Stephan Talamantes <contact@psyencelab.media>
 Implementors:
