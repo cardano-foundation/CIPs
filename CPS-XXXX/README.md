@@ -62,11 +62,11 @@ This solution introduces a whole set of new problems:
 
 ### Automated market maker DEX
 
-AMM DEX requires many users to interact with the same pool. Every interaction changes the price for swapping to the next user.
+An AMM DEX requires many users to interact with the same pool. Every interaction changes the swap price for the next user.
 
 Historically, the improvement of AMM DEXes over traditional order-book-style exchanges has been the ability to execute orders immediately.
 
-Currently, AMM DEXes on Cardano do not allow for high throughput without batchers. Either way, with or without batchers they are effectively no better than order books, because immediate execution is not provided.
+Currently, AMM DEXes on Cardano do not allow for high throughput without batchers. Either way, with or without batchers, they are effectively no better than order books, because immediate execution is not provided.
 
 ### Lending platform (liquidations)
 
