@@ -5,7 +5,7 @@ Status: Proposed
 Category: Ledger
 Authors:
     - fallen-icarus <modern.daidalos@gmail.com>
-Implementors: N/A
+Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/862#discussion_r1700138228
     - https://github.com/cardano-foundation/CIPs/pull/862#issuecomment-2266689423
@@ -424,7 +424,7 @@ transaction.
 > TODO: Does the collateral claiming mechanism (in the case of a phase 2 failure) need to be
 > changed? I do not believe so, but I am not entirely sure.
 
-## Rational: how does this CIP achieve its goal?
+## Rationale: how does this CIP achieve its goal?
 
 Thanks to the eUTxO model, transactions can safely be broken into pieces and aggregated off-chain
 without having to sacrifice any determinism. By leveraging this feature, Cardano would gain two
@@ -517,13 +517,13 @@ this is not always possible/feasible.
 
 ### Acceptance Criteria
 
-- [] It is approved by the community and the ledger/plutus teams.
+- [ ] It is approved by the community and the ledger/plutus teams.
 
 ### Implementation Plan
 
-- [] The ledger spec is updated to use transaction pieces.
-- [] Implementation of the Cardano node with a new era/hardfork.
-- [] Deployed on testnet/mainnet
+- [ ] The Ledger spec is updated to use transaction pieces.
+- [ ] Implementation in the Cardano node with a new Ledger era / hardfork
+- [ ] Deployed on testnets / Mainnet
 
 ## Copyright
 
