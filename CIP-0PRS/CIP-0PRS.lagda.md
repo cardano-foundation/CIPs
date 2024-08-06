@@ -31,11 +31,8 @@ License: Apache-2.0
 > - Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
 
 ## Abstract
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
-We propose Peras, an enhancement to the Ouroboros Praos protocol that introduces a voting layer for optimistic fast settlement. 
 
-Peras, or more precisely Ouroboros Peras, is an extension of Ouroboros Praos that addresses one of the known issues of blockchains based on Nakamoto-style consensus, namely settlement time. Peras achieves that goal while being self-healing, preserving the security of Praos, and being light on resources.
-
+We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that introduces a voting layer for fast settlement. It is adaptively secure, supports dynamic participation, and integrates self healing. Voting provides a “boost” to blocks that receive a quorum of votes, and this dramatically reduces the roll-back probability of the boosted block and its predecessors. Fast settlement occurs in the presence of adversaries with up to one-quarter of the stake, but Praos-like safety is maintained when adversaries control more than that amount of stake. In fact, the protocol enters a “cool-down period” of Praos-like behavior when adversaries prevent voting quorums; that cool-down period is exited only when the chain has healed, achieves chain quality, and reaches a common prefix. For realistic settings of the Peras protocol parameters, blocks can be identified post-facto as being settled vs rolled-back (with overwhelming probability) after as little as two minutes. This enables use cases like partner-chains and bridges where high certainty for the status of a transaction is required in a brief time. The protocol requires the implementation of a vote-diffusion layer, certificates that aggregate votes, and one minor addition to the contents of a block.
 
 ## Motivation: why is this CIP necessary?
 <!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
@@ -1282,6 +1279,9 @@ For ALBA certificates, assuming 1000 votes, a honest to faulty ratio of 80/20, a
 | Vote verification (per vote)    | 161 μs |
 | Aggregation time                |   5 ms |
 | Verification time (certificate) |  15 ms |
+
+> [!WARNING]
+> The text from here onwards is still under major revision.
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
