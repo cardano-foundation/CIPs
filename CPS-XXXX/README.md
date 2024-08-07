@@ -37,7 +37,7 @@ However, it comes at a cost:
 - The need to "re-introduce" non-determinism where it is required for the dApp logic (which is commonly done by using multiple transactions for a single user action) makes immediate execution of user actions impossible.
 - UTxO contention limits the number of concurrent users a dApp can have, because a single UTxO can be consumed by a single transaction only.
 
-Full determinism *may* be suboptimal as a way to achieve the "good" properties, as the design space for the alternatives haven't been fully explored.
+Completely avoiding mutable shared state *may* be a suboptimal way to achieve the desirable properties, as the design space for alternatives has not been fully explored.
 
 ## Problem
 
