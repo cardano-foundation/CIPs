@@ -1310,7 +1310,7 @@ The Ouroboros Peras protocol achieves the goal of fast *post facto* settlement b
 
 The following diagram quantifies the settlement-time benefits of Peras [^5] . Using the [example Peras protocol parameters](#example-peras-parameters), one has *post facto* settlement within two minutes of a transaction's being included in a block. This means that if the transaction's block is still on the preferred chain after two minutes, then it will remain there with essentially no chance of being rolled back. Strong adversarial activity prior to the two minutes might cause the block to be rolled back, but adversarial activity after that time will not roll it back. If the transaction was rolled back in the first two minutes, then it would have to be resubmitted. So, the Peras protocol provides certainty about the fate of a transaction within a brief, fixed amount of time.
 
-[^5]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#analyses-of-adversarial-scenarios
+[^5]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#settlement-probabilities
 
 > [!NOTE]
 > Redraw the following diagram:
@@ -1376,6 +1376,33 @@ For example, the partner-chain use case might leverage Peras as follows.
 
 
 ### Attack and Mitigation
+
+Three major attack vectors for Peras are (1) adversarial stake, (2) equivocation of votes or blocks, and (3) manipulation of diffusion [^7] .
+
+[^7]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#analyses-of-adversarial-scenarios
+
+An adversary with a significant amount of stake has an appreciable likelihood of becoming a member of the Peras voting committees. Unless they possess nearly at least 50% of the total stake, they would not have sufficient adversarial strength to dominate the committee and vote for the block of their choice. (Note that Praos itself would be weakened by an adversary with 50% of the total stake anyway.) If they possessed approximately at least 25% of the stake, they could choose not to vote, with the result that no quorum would be reached and the protocol would enter a cool-down period. Therefore, an adversary with that much stake can negate the benefits of Peras by repeatedly forcing into Praos-like cool downs. The plot below indicates that for modest amounts of adversarial stake and a committee size over 500, it would be extremely difficult for an adversary to force the protocol into a cool-down period.
+
+![Plot of the probability of not having an honest quorum as a function of the adversarial fraction of stake, for various mean sizes of the voting committee.](diagrams/no-honest-quorum.plot.png)
+
+A malicious party with less than 25% adversarial stake can (as in Praos) create private forks and then reveal them publicly whenever they see fit. In the context of Peras, they might try to build a fork that is longer than the public, preferred fork and then reveal it just $L$ slots before the end of the current round. Since it is then the longest chain, all parties (honest and adversarial) will likely extended it with newly forged blocks. When voting occurs at the start of the next round, that formerly adversarial chain will receive the boost and the honest fork will be abandoned. Any transactions on that honest fork will be rolled back. Essentially, a strong enough adversary has some probability of rolling back a public, honest chain's blocks between $L + U$ and $L$ in the past.
+
+![An adversary builds their chain privately and then reveals it in order to receive a boost](diagrams/adversarial-chain-receives-boost-variant.diagram.png)
+
+The plot below illustrates how shorter rounds and stronger adversaries make such attacks more likely. It is important to note that this attack cannot roll back transactions further than the last previously recorded boost (near $U + L$ in the past). This is why Peras provides an effective *post facto* finality: once a boost appears, all of the transactions prior to that are safe. Until a boost appears, blocks are at risk in Peras just as they are in Praos.
+
+![Plot of the probability of the dishonest boost as a function of the adversarial fraction of stake and the round length.](diagrams/adversarial-chain-receives-boost-variant.plot.png)
+
+> [!NOTE]
+> Redraw the diagram with it zoomed in more towards the origin.
+
+Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version to a vote to some honest nodes and a different version to the other honest nodes will not affect the outcome of voting any more than if the adversary were not to vote at all. Equivocated votes burden the nodes slightly by creating extra network traffic.
+
+Natural events or adversaries might interfere with the diffusion of votes over the network. Peras voting is not affected so long as the network diffuses at least the 75% threshold for reaching a quorum. One quarter of the votes could be lost, dishonest, or withheld. Furthermore, the Peras $L$ parameter ensures that there is plenty of time for honest blocks to diffuse and for them to be in a common prefix of the active forks before voting begins. The Peras $R$ parameter, the number of slots for which certificates (votes) are ignored once a cool-down period starts, guards against an adversary holding onto votes and then releasing them to try to revert an already-begun cool-down period.
+
+
+> [!CAUTION]
+> The remainder of this document is subject to heavy revision.
 
 
 ### Resource Requirements
