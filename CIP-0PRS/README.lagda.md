@@ -1657,10 +1657,21 @@ The *committee size* of $n = 900 \text{\,parties}$ corresponds to a one in a mil
 This document describes the *pre-alpha* version of the Peras protocol. We anticipate a subsequent, separate CIP for an *alpha* or *beta* version of the protocol. That version will add strong guarantees for block selection prior to the voting process and will constitute a layer built upon this pre-alpha version.
 
 
-## Reference
+## References
+
+- [Peras web site](https://peras.cardano-scaling.org/)
+- [Discord channel for Peras](https://discord.gg/9EgySPJk)
+- [Peras Technical Report #1](https://peras.cardano-scaling.org/docs/reports/tech-report-1)
+- [Peras Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2)
+- [Software repository for Peras design](https://github.com/input-output-hk/peras-design/)
+- [Online simulator for the Peras protocol](https://peras-simulation.cardano-scaling.org/)
+- [Scaling blockchain protocols: a research-based approach](https://www.youtube.com/watch?v=Czmg9WmSCcI).
 
 
 ## Appendix
+
+
+### Instructions for type-checking this specification
 
 
 ## Copyright
