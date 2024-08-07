@@ -33,15 +33,15 @@ There are several definitions of "settlement" or "finality", and precision is im
 
 If one is unwilling or unable to re-submit a rolled-back transaction, then the *ex ante* probability might be of most interest. This matches use cases where there is no opportunities for the parties involved in a transaction: for example, one party might have purchased physical goods and left the vendor's premises, leaving no opportunity to resubmit a rolled-back transaction. Other use cases are better suited for *post facto* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that ever changing once they have watched the chain for that amount of time, given them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and backend infrastructure distinguish these use cases. Protocols like Peras optimize *post facto* certainty after pre-defined waiting times.
 
-Ourboros Praos optimizes the worst-case scenario of highly adversarial conditions, but the Cardano blockchain typically operates in the absence of such a challenge. Optimistic protocols like Peras can take advantage of the "average case" of lower or no adversarial activity by settling transactions faster than Praos, but without sacrificing any of the security guarantees of Praos if the protocol (such as Peras) falls back to Praos-like behavior for a "safety and repair period" after adversarial conditions occur. Furthermore, they should do so without requiring radical or costly changes to the current `cardano-node` implementations. It is also desirable that settlement-related protocol changes do not interfere with other pending protocol changes like Genesis (security enhancement) [^3] and Leios (maximal throughput) [^4] . Fast settlement is a critical part of Cardano scaling, as describe in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI).
+Ourboros Praos optimizes the worst-case scenario of highly adversarial conditions, but the Cardano blockchain typically operates in the absence of such a challenge. Optimistic protocols like Peras can take advantage of the "average case" of lower or no adversarial activity by settling transactions faster than Praos, but without sacrificing any of the security guarantees of Praos if the protocol (such as Peras) falls back to Praos-like behavior for a "safety and repair period" after adversarial conditions occur. Furthermore, they should do so without requiring radical or costly changes to the current `cardano-node` implementations. It is also desirable that settlement-related protocol changes do not interfere with other pending protocol changes like Genesis (security enhancement) [^3] and Leios (maximal throughput) [^4] . Fast settlement is a critical part of Cardano scaling, as described in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI).
  
-[^1]: **FIXME:** Cite the Gazi paper(s).
+[^1]: https://eprint.iacr.org/2022/1571.pdf
 
 [^2]: https://docs.google.com/spreadsheets/d/1s_LfDQ4Qg3BArMgr6GskGGzG_Ibg-VbPdMmlRWvZ75o/edit#gid=431199162
 
-[^3]: **FIXME:** Cite publications and blog posts.
+[^3]: https://iohk.io/en/blog/posts/2024/05/08/ouroboros-genesis-design-update/
 
-[^4]: **FIXME:** Cite publications and blog posts.
+[^4]: https://iohk.io/en/research/library/papers/high-throughput-blockchain-consensus-under-realistic-network-assumptions/
 
 
 ## Specification
@@ -117,14 +117,17 @@ The diagram below illustrates the key concepts and entities in Peras. In additio
 
 ![Blockchain diagram illustrating key concepts and entities in Peras.](diagrams/simvis-blocktree.png)
 
-| Icon                                                      | Meaning                                                                                                                                                                                                                                                                        |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ![Block](diagrams/block.png)                              | A block created by a node, linked to its predecessor. Contains the block hash (truncated to 8 characters), the creator's id, the creation time, and three icons representing truth value of the three conditions presiding to inclusion of a certificate within a block logic. |
-| ![Block-certificate](diagrams/block-with-certificate.png) | A block containing a certificate on-chain. Its content is identical to a normal block but color differs to ease spotting when a certificate is included on-chain.                                                                                                              |
-| ![Certificate](diagrams/certificate.png)                  | A certificate created by a node, linked to the block it certifies. A certificate is only identified by its round number, as by construction there cannot be more than one certificate each round.                                                                              |
-| ![Vote](diagrams/vote.png)                                | A vote cast by a node, linked to the block it votes for. Contains the round number in which the vote is cast, the voter's id, and the truth values of the four different rules for casting a vote.                                                                             |
-| ![Cooldown](diagrams/cooldown.png)                        | Record a node's decision to enter cooldown period, linked to the block that triggered it. Contains the round number in which the cooldown is started, the node's id, and the truth values of the conditions that lead to the node not casting a vote and entering cooldown.    |
-| ![Node](diagrams/node.png)                                | A node in the network, identified simply by a number. This is a marker representing the state of a node: What's the tip of its best chain, the latest "live" certificate it knows (aka. _cert'_), and the latest on-chain certificate it knows (aka. _cert*_).                 |
+| Icon                                                      | Meaning                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ![Block](diagrams/block.png)                              | A block created by a node, linked to its predecessor. Contains the block hash (truncated to 8 characters), the creator's id, the creation time, and three icons representing truth value of the three conditions presiding to inclusion of a certificate within a block logic.        |
+| ![Block-certificate](diagrams/block-with-certificate.png) | A block containing a certificate on-chain. Its content is identical to a normal block but color differs to ease spotting when a certificate is included on-chain.                                                                                                                     |
+| ![Certificate](diagrams/certificate.png)                  | A certificate created by a node, linked to the block it certifies. A certificate is only identified by its round number, as by construction there cannot be more than one certificate each round.                                                                                     |
+| ![Vote](diagrams/vote.png)                                | A vote cast by a node, linked to the block it votes for. Contains the round number in which the vote is cast, the voter's id, and the truth values of the four different rules for casting a vote.                                                                                    |
+| ![Cooldown](diagrams/cooldown.png)                        | Record a node's decision to enter cooldown period, linked to the block that triggered it. Contains the round number in which the cooldown is started, the node's id, and the truth values of the conditions that lead to the node not casting a vote and entering cooldown.           |
+| ![Node](diagrams/node.png)                                | A node in the network, identified simply by a number. This is a marker representing the state of a node: What's the tip of its best chain, the latest "live" certificate it knows (aka $\mathsf{cert}^\prime$), and the latest on-chain certificate it knows (aka $\mathsf{cert}^*$). |
+
+> [!NOTE]
+> Would it be beneficial to include a more abstract diagram or a flow chart (UML or otherwise) here?
 
 An [online simulator for Peras](https://peras-simulation.cardano-scaling.org/) is available.
 
@@ -284,10 +287,10 @@ module _ ⦃ _ : Params ⦄ where
 
 The protocol requires a type for the result of hashing data, an empty value for that type, and an equality test for that type.
 
-> [!WARNING]
-> I tried to eliminate `ByteString` altogether by postulating `Hash`,
-> but it results in an error that requires `Block` to be inductive or
-> coinductive.
+> [!NOTE]
+> Show we try to eliminate `ByteString` altogether by postulating `Hash`?
+> An initial attempt at this resulted in an error that requires `Block` to be
+> inductive or coinductive.
 
 ```agda
 postulate
@@ -1065,7 +1068,7 @@ Voting updates the party's local state and for all other parties a message is re
 Rather than creating a delayed vote, an adversary can honestly create it and delay the message.
 
 > [!WARNING]
-> Is there missing code for `corrupt` that should be included right here?
+> Add a `corrupt` constructor here.
 
 #### Block creation
 
@@ -1145,7 +1148,7 @@ Block creation updates the party's local state, but for all other parties a mess
 ```
 
 > [!WARNING]
-> Is there missing code for `corrupt` that should be included right here?
+> Add a `corrupt` constructor here.
 
 #### Small-step semantics
 
@@ -1166,7 +1169,7 @@ The relation allows
 - Transitioning to next slot in the same voting round
 - Transitioning to next slot in a new voting round
 
-Note that when transitioning to the next slot we need to distinguish whether the next slot is in the same or a new voting round. This is necessary in order to detect adversarial behavior with respect to voting (adversarialy not voting
+Note that when transitioning to the next slot we need to distinguish whether the next slot is in the same or a new voting round. This is necessary in order to detect adversarial behavior with respect to voting (adversarially not voting
 in a voting round).
 
 ```agda
@@ -1666,6 +1669,7 @@ This document describes the *pre-alpha* version of the Peras protocol. We antici
 - [Software repository for Peras design](https://github.com/input-output-hk/peras-design/)
 - [Online simulator for the Peras protocol](https://peras-simulation.cardano-scaling.org/)
 - [Scaling blockchain protocols: a research-based approach](https://www.youtube.com/watch?v=Czmg9WmSCcI).
+- [Consensus Redux: Distributed Ledgers in the Face of Adversarial Supremacy](https://eprint.iacr.org/2020/1021.pdf)
 
 
 ## Appendix
