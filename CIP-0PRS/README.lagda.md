@@ -1,6 +1,6 @@
 ---
 Title: Ouroboros Peras - Faster Settlement
-CIP: '0PRS'
+CIP: 0PRS
 Category: Consensus
 Status: Proposed
 Authors:
@@ -9,12 +9,24 @@ Authors:
   - Sandro Coretti-Drayton <sandro.coretti@iohk.io>
   - Yves Hauser <yves.hauser@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
-Implementors: []
+Implementors: 
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/872
-Created: 2024-08-06
+  - https://github.com/cardano-foundation/CIPs/pull/872
+Created: 2024-08-07
 License: Apache-2.0
 ---
+
+**TO DO**
+- [ ] Resolve outstanding notes, warnings, and cautions in the text.
+    - [ ] Redraw several figures.
+    - [ ] Add `corrupted` constructors to two types in the specification.
+    - [ ] Review weighted voting in the specification.
+- [ ] Add internal hyperlinks.
+- [ ] Refine the "Path to active" section.
+- [ ] Draft the appendices.
+- [ ] Remove `iog-prelude/` folder.
+- [ ] Copy edit
+- [ ] Proofread
 
 
 ## Abstract
@@ -1523,33 +1535,28 @@ A node is expected to need to keep the following data in memory:
 Thus, Peras should not have any significant impact on the memory requirements of a node.
 
 
-> [!CAUTION]
-> The remainder of this document is subject to heavy revision.
+## Path to active
+
+- [ ] Clear evidence of stakeholder use cases that require the fast *post facto* settlement that Peras provides.
 
 
-## Path to Active
+### Acceptance criteria
+
+- [ ] The revised `cardano-node` implementations pass the node-level conformance test suites.
+- [ ] Audit.
+- [ ] Successful operation in testnet environments.
+- [ ] Community agreement on the settings for the Peras protocol parameters.
+- [ ] The upcoming CIP that establishes a *Consensus* category for CIPs may define additional acceptance criteria.
 
 
-### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
+### Implementation plan
 
-* Conformance test suite passes on cardano-node
-
-
-### Implementation Plan
-<!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
-
-* Updated CIP Specification with full detail - assuming we will publish the CIP with some details to be figured out. 
-* Need to figure out IOI/Intersect dance?
-* Sketch a generic plan
-* Some incremental deployment possible?
-    * Vote casting and diffusion
-    * Certificate baking and diffusion
-    * Chain selection based on weight as heuristic
-    * Full chain selection 
-
-
-### Integration into Cardano Node
+- [ ] Detailed node-level (as opposed to this protocol-level) specification.
+- [ ] Develop node-level conformance test suite.
+- [ ] Consider developing a "quick and dirty" implementation for large scale experiments.
+- [ ] Coordinate with related activities on other protocol enhancements (Genesis, Mithril, Leios, voting, etc.).
+- [ ] Triage by intersect Core Infrastructure and Consensus functions.
+- [ ] The upcoming CIP that establishes a *Consensus* category for CIPs may define additional requirements for the implementation plan.
 
 The following diagram summarizes a possible architecture for Peras highlighting its interactions with other components of the node.
 
