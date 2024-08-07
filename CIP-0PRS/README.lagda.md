@@ -61,9 +61,9 @@ The following informal, non-normative, pseudo-imperative summary of the Peras pr
 - Relevant vote certificates are typically *recorded* in a block near the start and finish of a cool-down period.
 - Certificates *expire* after a specified number of slots if they haven't been included in a block.
 
-> [!TIP]
+> [!NOTE]
 > - In the above, hyperlink the key terms to the sections defining them in the formal specification.
-> - Add a diagram illustrating the operation of Peras.
+
 
 The protocol keeps track of the following variables, initialized to the values below:
 
@@ -1424,115 +1424,63 @@ Natural events or adversaries might interfere with the diffusion of votes over t
 In no way does Peras weaken any of the security guarantees provided by Praos or Genesis. Under strongly adversarial conditions, where an adversary can trigger a Peras voting cool-down period, the protocol in essence reverts to the Praos (or Genesis) protocol, but for a duration somewhat longer than the Praos security parameter. Otherwise, settlement occurs at the blocks that Peras voting has boosted. The Peras protocol parameters can be tuned to adjust the settlement time or the non-settlement probabilities. Some stakeholder use cases might prefer shorter settlement times but with a higher probability of retries, or vice versa.
 
 
-> [!CAUTION]
-> The remainder of this document is subject to heavy revision.
-
-
 ### Resource Requirements
 
-In this section, we evaluate the impact on the day-to-day operations of the Cardano network and cardano nodes of the deployment of Peras protocol, based on the data gathered over the course of project.
+The impact of Peras upon nodes falls into four categories: network, CPU, memory, and storage. The [Peras Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#resources-impact-of-peras) provides supporting data, simulations, and discussion. The discussion in the following sub-sections summarizes evidence that the CPU time required to construct and verify votes and certificates is much smaller than the duration of a voting round. Similarly, the memory needed to cache votes and certificates and the disk space needed to persist certificates is trivial compared to the memory needed for the UTXO set and the disk needed for the blocks. On the networking side, ΔQ studies demonstrate that diffusion of Peras votes and certificates consumes minimal bandwidth and would not interfere with other node operations such as memory-pool and block diffusion. However, diffusion of votes and certificates across a network will still have a noticeable impact on the volume of data transfer, in the order of 20%, which might translate to increased operating costs for nodes deployed in cloud providers.
 
-In this section, we evaluate the impact on the day-to-day operations of the Cardano network and cardano nodes of the deployment of Peras protocol, based on the data gathered over the course of project.
-
-
-#### Network diffusion of votes
-
-Building on [previous work](./tech-report-1#network-performance-analysis), we built a ΔQ model to evaluate the expected delay to reach _quorum_.
-The model works as follows:
-
-* We start from a base uniform distribution of single MTU latency between 2 nodes, assuming a vote fits in a single TCP frame. The base latencies are identical as the one used in previous report.
-* We then use the expected distribution of paths length for a random graph with 15 average connections, to model the latency distribution across the network, again reusing previously known values.
-* We then apply the `NToFinish 75` combinator to this distribution to compute the expected distribution to reach 75% of the votes (quorum).
-* An important assumption is that each vote diffusion across the network is expected to be independent from all other votes.
-* Verification time for a single vote is drawn from the above benchmarks, but we also want to take into account the verification time of a single vote, which we do in two different ways:
-    * One distribution assumes a node does all verifications sequentially, one vote at a time
-    * Another assumes all verifications can be done in parallel
-    * Of course, the actual verification time should be expected to be in between those 2 extremes
-
-Using the "old" version of ΔQ library based on numerical (e.g., Monte-Carlo) sampling, yields the following graph:
-![Vote diffusion](/img/vote-diffusion.svg)
-
-This graph tends to demonstrate vote diffusion should be non-problematic, with a quorum expected to be reached in under 1 second most of the time to compare with a round length of about 2 minutes.
-
-At the time of this writing, a newer version of the ΔQ library based on _piecewise polynomials_ is [available](https://github.com/DeltaQ-SD/dqsd-piecewise-poly). Our [attempts](https://github.com/input-output-hk/peras-design/blob/01206e5d4d3d5132c59bff18564ad63adc924488/Logbook.md#L302) to use it to model votes diffusion were blocked by the high computational cost of this approach and the time it takes to compute a model, specifically about 10 minutes in our case. The code for this experiment is available as a [draft PR #166](https://github.com/input-output-hk/peras-design/pull/166).
-
-In the old version of ΔQ based on numerical sampling, which have [vendored in our codebase](https://github.com/input-output-hk/peras-design/blob/a755cd033e4898c23ee4bacc9b677145497ac454/peras-delta-q/README.md#L1), we introduced a `NToFinish` combinator to model the fact we only take into account some fraction of the underlying model. In our case, we model the case where we only care about the first 75% of votes that reach a node.
-
-Given convolutions are the most computationally intensive part of a ΔQ model, it seems to us a modeling approach based on discrete sampling and vector/matrices operations would be quite efficient. We did some experiment in that direction, assessing various approaches in Haskell: A naive direct computation using [Vector](https://hackage.haskell.org/package/vector)s, FFT-based convolution using vectors, and [hmatrix](https://hackage.haskell.org/package/hmatrix)' convolution function.
-
-![Computing Convolutions](/img/convolutions.png)
-
-This quick-and-dirty spike lead us to believe we could provide a fast and accurate ΔQ modelling library using native vector operations provided by all modern architectures, and even scale to very large model using GPU libraries.
-
-#### Network traffic
+#### Network
 
 For a fully synced nodes, the impact of Peras on network traffic is modest:
 
 * For votes, assuming $U \approx 100$, a committee size of 2000 SPOs, a single vote size of 700 bytes, means we will be adding an average of 14 kB/s to the expected traffic to each node,
 * For certificates, assuming an average of 50 kB size (half way between Mithril and ALBA sizes) means an negligible increase of 0.5 kB/s on average. Note that a node will download either votes or certificate for a given round, but never both so these numbers are not cumulative.
 
-A non fully synced nodes will have to catch-up with the _tip_ of the chain and therefore download all relevant blocks _and_ certificates. At 50% load (current [monthly load](https://cexplorer.io/usage) is 34% as of this writing), the chain produces a 45 kB block every 20 s on average. Here are back-of-the-napkin estimates of the amount of data a node would have to download (and store) for synchronizing, depending on how long it has been offline:
+A fully non-synced node will have to catch-up with the _tip_ of the chain and therefore download all relevant blocks _and_ certificates. At 50% load (current monthly load is 34% as of this writing [^9] ), the chain produces a 45 kB block every 20 s on average. Below are rough estimates of the amount of data a node would have to download (and store) for synchronizing, depending on how long it has been offline:
 
 | Time offline | Blocks (GB) | Certificates (GB) |
-|--------------|-------------|-------------------|
+| ------------ | ----------- | ----------------- |
 | 1 month      | 5.56        | 1.23              |
 | 3 months     | 16.68       | 3.69              |
 | 6 months     | 33.36       | 7.38              |
 
-#### Network costs
+The Peras [Technical Report #1](https://peras.cardano-scaling.org/docs/reports/tech-report-1#network-performance-analysis) and [Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#vote-diffusion) document network performance analysis for vote diffusion in Peras, using a ΔQ model [^10] to evaluate the expected delay to reach _quorum_. The plot below graph tends to demonstrate vote diffusion should be non-problematic, with a quorum expected to be reached in under 1 second most of the time to compare with a round length of about 2 minutes.
 
-![Typical node inbound & outbound traffic](https://peras-staging.cardano-scaling.org/assets/images/node-average-traffic-49a7cbcee8e4f05a7a42b61e445e5db9.jpg#scale50)
+![Vote diffusion](diagrams/vote-diffusion.svg)
 
-We did some research on network pricing for a few major Cloud and well-known VPS providers, based on the [share](https://pooltool.io/networkhealth) of stakes each provider is reported to support, and some typical traffic pattern as exemplified by the following picture (courtesy of Markus Gufler).
+#### Cost
 
-The next table compares the cost (in US$/month) for different outgoing data transfer volumes expressed as bytes/seconds, on similar VMs tailored to cardano-node's [hardware requirements](https://developers.cardano.org/docs/operate-a-stake-pool/hardware-requirements/) (32GB RAM, 4+ Cores, 500GB+ SSD disk). The base cost of the VM is added to the network cost to yield total costs depending on transfer rate.
+Network usage and the infrastructure for the Cardano node translates to monthly costs. This can be estimated for Peras from published network pricing for a few major Cloud and well-known VPS providers, based on the share of stakes each provider is reported to support [^11] , and some typical traffic pattern as exemplified by the following plot (courtesy of Markus Gufler).
 
-| Provider     | VM     | 50 kB/s | 125 kB/s | 250 kB/s |
-| ------------ | ------ | ------- | -------- | -------- |
-| DigitalOcean | $188   | $188    | $188     | $188     |
-| Google Cloud | $200   | $213.6  | $234     | $268     |
-| AWS          | $150 ? | $161.1  | $177.9   | $205.8   |
-| Azure        | $175   | $186    | $202     | $230     |
-| OVH          | $70    | $70     | $70      | $70      |
-| Hetzner      | $32    | $32     | $32      | $32      |
+![Typical node inbound & outbound traffic](diagrams/node-average-traffic.jpg)
 
+The next table compares the cost (in US$/month) for different outgoing data transfer volumes expressed as bytes/seconds, on similar VMs tailored to cardano-node's hardware requirements [^12] (32 GB RAM, 4+ Cores, 500 GB+ SSD disk). The base cost of the VM is added to the network cost to yield total costs depending on transfer rate [^13] . For an AWS hosted SPO, which represent about 20% of the SPOs, a 14 kB/s increase in traffic would lead to a cost increase of **\$3.8/mo** (34 GB times $0.11/GB). This represents an average across the whole network: depending on the source of the vote and its diffusion pattern, some nodes might need to send a vote to more than one downstream peer which will increase their traffic, while other nodes might end up not needing to send a single vote to their own peers. Any single node in the network is expected to download each vote _at most_ once.
 
-> [!NOTE]
-> 
-> * The AWS cost is quite hard to estimate up-front, obviously on purpose. The $150 base price is a rough average of various instances options in the target range.
-> * Google, AWS and Azure prices are based on 100% uptime and at least 1-year reservation for discounts.
-> * Cloud providers only charge _outgoing_ network traffic. The actual cost per GB depends on the destination, this table assumes all outbound traffic will be targeted outside of the provider which obviously won't be true, so it should be treated as an upper bound.
+| Provider     |     VM | 50 kB/s | 125 kB/s | 250 kB/s |
+| ------------ | -----: | ------: | -------: | -------: |
+| DigitalOcean |   $188 |    $188 |     $188 |     $188 |
+| Google Cloud |   $200 |    $214 |     $234 |     $268 |
+| AWS          | ? $150 |    $161 |     $178 |     $206 |
+| Azure        |   $175 |    $186 |     $202 |     $230 |
+| OVH          |    $70 |     $70 |      $70 |      $70 |
+| Hetzner      |    $32 |     $32 |      $32 |      $32 |
 
-For an AWS hosted SPO, which represent about 20% of the SPOs, a 14 kB/s increase in traffic would lead to a cost increase of **\$3.8/mo** (34 GB times $0.11/GB). This represents an average across the whole network: depending on the source of the vote and its diffusion pattern, some nodes might need to send a vote to more than one downstream peer which will increase their traffic, while other nodes might end up not needing to send a single vote to their own peers. Any single node in the network is expected to download each vote _at most_ once.
+[^9]: https://cexplorer.io/usage
+
+[^10]: https://iohk.io/en/research/library/papers/mind-your-outcomes-the-dqsd-paradigm-for-quality-centric-systems-development-and-its-application-to-a-blockchain-case-study/
+
+[^11]: https://pooltool.io/networkhealth
+
+[^12]: https://developers.cardano.org/docs/operate-a-stake-pool/hardware-requirements/
+
+[^13]: The AWS cost is quite hard to estimate up-front. The $150 base price is a rough average of various instances options in the target range. Google, AWS and Azure prices are based on 100% uptime and at least 1-year reservation for discounts. Cloud providers only charge _outgoing_ network traffic. The actual cost per GB depends on the destination, this table assumes all outbound traffic will be targeted outside of the provider which obviously won't be true, so it should be treated as an upper bound.
 
 #### Persistent storage
 
-Under similar assumptions, we can estimate the storage requirements entailed by Peras: Ignoring the impact of cooldown periods, which last for a period at least as long as $k$ blocks, the requirement to store certificates for every round increases node's storage by about **20%**.
-
-Votes are expected to be kept in memory so their impact on storage will be null.
+Under similar assumptions, we can estimate the storage requirements entailed by Peras: ignoring the impact of cool-down periods, which last for a period at least as long as $k$ blocks, the requirement to store certificates for every round increases node's storage by about **20%**. Votes are expected to be kept in memory so their impact on storage will be null.
 
 #### CPU
 
-In the [Votes & Certificates](#votes-certificates) section we've provided some models and benchmarks for votes generation, votes verification, certificates proving and certificates verification, and votes diffusion. Those benchmarks are based on efficient sortition-based voting and ALBAs certificate, and demonstrate the impact of Peras on computational resources for a node will be minimal. Moreover, the most recent version of the algorithm detailed in this report is designed in such a way the voting process runs in parallel with block production and diffusion and therefore is not on this critical path.
-
-Voting:
-
-* Single Voting (Binomial): 139.5 μs
-* Single Verification (binomial): 160.9 μs
-* Single Voting (Taylor): 47.02 ms
-
-The implementation takes some liberty with the necessary rigor suitable for cryptographic code, but the timings provided should be consistent with real-world production grade code. In particular, when using _nonce_ as a random value, we only use the low order 64 bits of the nonce, not the full 256 bits.
-
-#### Memory
-
-A node is expected to need to keep in memory:
-
-* Votes for the latest voting round: For a committee size of 1000 and individual vote size of 700 bytes, that's 700 kB.
-* Cached certificates for voting rounds up to settlement depth, for fast delivery to downstream nodes: With a boost of 10/certificate, settlement depth would be in the order of 216 blocks, or 4320 seconds, which represent about 10 rounds of 400 slots. Each certificate weighing 50 kB, that's another 500 kB of data a node would need to cache in memory.
-
-Peras should not have any significant impact on the memory requirements of a node.
-
-For ALBA certificates, assuming 1000 votes, a honest to faulty ratio of 80/20, and security parameter $λ=128$, one has the following typical measurements.
+The [Peras Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#votes--certificates) provides some models and benchmarks for votes generation, votes verification, certificates proving and certificates verification, and votes diffusion. Those benchmarks are based on efficient sortition-based voting and ALBAs certificate, and demonstrate the impact of Peras on computational resources for a node will be minimal. Moreover, the most recent version of the algorithm detailed in this report is designed in such a way the voting process runs in parallel with block production and diffusion and therefore is not on this critical path. For ALBA certificates, assuming 1000 votes, a honest to faulty ratio of 80/20, and security parameter $λ=128$, one has the following typical measurements.
 
 | Metric                          |  Value |
 | ------------------------------- | -----: |
@@ -1541,6 +1489,19 @@ For ALBA certificates, assuming 1000 votes, a honest to faulty ratio of 80/20, a
 | Vote verification (per vote)    | 161 μs |
 | Aggregation time                |   5 ms |
 | Verification time (certificate) |  15 ms |
+
+#### Memory
+
+A node is expected to need to keep the following data in memory:
+
+* *Votes for the latest voting round:* For a committee size of 1000 and individual vote size of 700 bytes, that amounts to 700 kB.
+* *Cached certificates for voting rounds up to settlement depth, for fast delivery to downstream nodes:* With a boost of 10/certificate, settlement depth would be in the order of 216 blocks, or 4320 seconds, which represent about 10 rounds of 400 slots. Each certificate weighing 50 kB, that's another 500 kB of data a node would need to cache in memory.
+
+Thus, Peras should not have any significant impact on the memory requirements of a node.
+
+
+> [!CAUTION]
+> The remainder of this document is subject to heavy revision.
 
 
 ## Path to Active
@@ -1754,7 +1715,10 @@ This document describes the *pre-alpha* version of the Peras protocol. We antici
 ## Appendix
 
 
-### Instructions for type-checking this specification
+### Type checking this specification
+
+> [!NOTE]
+> Provide instructions for compiling the Agda code here.
 
 
 ## Copyright
