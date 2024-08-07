@@ -5,7 +5,7 @@ Category: Metadata
 Status: Proposed
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
-    - Eysteinh
+    - Eystein Magnus Hansen <eysteinsofus@gmail.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
