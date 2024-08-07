@@ -1370,6 +1370,27 @@ For example, the partner-chain use case might leverage Peras as follows.
     - In the unlikely event that a cool-down period has been entered, wait for more confirmations.
 7. Complete the escrow contract on the partner chain.
 
+Taking Kraken as an example of a centralized exchange, we see in the following table [^7] the significant amounts of time required transactions to be treated as final. A technology like Peras would put Cardano in the cluster of faster-settling blockchains.
+
+| Blockchain | Confirmations Required | Approximate time (minutes) |
+| ---------- | ---------------------: | -------------------------: |
+| Algorand   |                     10 |                          1 |
+| Aptos      |                     50 |                          5 |
+| Avalance   |                     20 |                          1 |
+| Bitcoin    |                      3 |                         30 |
+| Cardano    |                     15 |                         10 |
+| Dogecoin   |                     40 |                         40 |
+| Ethereum   |                     70 |                         14 |
+| Polkadot   |                    n/a |                          5 |
+| Ripple     |                    n/a |                          0 |
+| Solana     |                    n/a |                          0 |
+| Tezos      |                      6 |                          3 |
+
+> [!WARNING]
+> The above table needs fact checking to make sure it does not misrepresent.
+
+[^7]: Data extracted from https://support.kraken.com/hc/en-us/articles/203325283-Cryptocurrency-deposit-processing-times on 7 August 2024.
+
 
 > [!NOTE]
 > Highlight that Peras could make Cardano a more attractive option for interoperability solutions like LayerZero, Axelar, WormHole, etc. Maybe we can even go as far to state that Peras is a pre-requisite for this? 
@@ -1377,9 +1398,9 @@ For example, the partner-chain use case might leverage Peras as follows.
 
 ### Attack and Mitigation
 
-Three major attack vectors for Peras are (1) adversarial stake, (2) equivocation of votes or blocks, and (3) manipulation of diffusion [^7] .
+Three major attack vectors for Peras are (1) adversarial stake, (2) equivocation of votes or blocks, and (3) manipulation of diffusion [^8] .
 
-[^7]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#analyses-of-adversarial-scenarios
+[^8]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#analyses-of-adversarial-scenarios
 
 An adversary with a significant amount of stake has an appreciable likelihood of becoming a member of the Peras voting committees. Unless they possess nearly at least 50% of the total stake, they would not have sufficient adversarial strength to dominate the committee and vote for the block of their choice. (Note that Praos itself would be weakened by an adversary with 50% of the total stake anyway.) If they possessed approximately at least 25% of the stake, they could choose not to vote, with the result that no quorum would be reached and the protocol would enter a cool-down period. Therefore, an adversary with that much stake can negate the benefits of Peras by repeatedly forcing into Praos-like cool downs. The plot below indicates that for modest amounts of adversarial stake and a committee size over 500, it would be extremely difficult for an adversary to force the protocol into a cool-down period.
 
@@ -1399,6 +1420,8 @@ The plot below illustrates how shorter rounds and stronger adversaries make such
 Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version to a vote to some honest nodes and a different version to the other honest nodes will not affect the outcome of voting any more than if the adversary were not to vote at all. Equivocated votes burden the nodes slightly by creating extra network traffic.
 
 Natural events or adversaries might interfere with the diffusion of votes over the network. Peras voting is not affected so long as the network diffuses at least the 75% threshold for reaching a quorum. One quarter of the votes could be lost, dishonest, or withheld. Furthermore, the Peras $L$ parameter ensures that there is plenty of time for honest blocks to diffuse and for them to be in a common prefix of the active forks before voting begins. The Peras $R$ parameter, the number of slots for which certificates (votes) are ignored once a cool-down period starts, guards against an adversary holding onto votes and then releasing them to try to revert an already-begun cool-down period.
+
+In no way does Peras weaken any of the security guarantees provided by Praos or Genesis. Under strongly adversarial conditions, where an adversary can trigger a Peras voting cool-down period, the protocol in essence reverts to the Praos (or Genesis) protocol, but for a duration somewhat longer than the Praos security parameter. Otherwise, settlement occurs at the blocks that Peras voting has boosted. The Peras protocol parameters can be tuned to adjust the settlement time or the non-settlement probabilities. Some stakeholder use cases might prefer shorter settlement times but with a higher probability of retries, or vice versa.
 
 
 > [!CAUTION]
