@@ -1308,7 +1308,7 @@ The CDDL for the certificates that aggregate votes is specified in the proposed 
 
 The Ouroboros Peras protocol achieves the goal of fast *post facto* settlement by periodically voting upon blocks of the preferred chain and giving such blocks a boost in weight if a quorum of voters vote for them in the same round. With overwhelming probability, the boost effectively "cements" the block forever unto the preferred chain, thus guarding it and prior blocks from rollbacks. The protocol operates under conditions of up to 25% adversarial stake, but reverts to the familiar Praos protocol under stronger adversarial conditions; after adversarial conditions abate, it remains in "Praos mode" for long enough to achieve chain healing, chain quality, and a common prefix. Thus, it does not weaken the worst-case security guarantees provided by Praos, though it does significantly speed settlement under "normal" non-adversarial conditions.
 
-The following diagram quantifies the settlement-time benefits of Peras [^5] . Using the [example Peras protocol parameters](#example-peras-parameters), one has *post facto* settlement within two minutes of a transaction's being included in a block. This means that if the transaction's block is still on the preferred chain after two minutes, then it will remain there with essentially no chance of being rolled back. Strong adversarial activity prior to the two minutes might cause the block to be rolled back, but adversarial activity after that time will not roll it back. If the transaction was rolled back in the first two minutes, then it would have to be resubmitted. So, the Peras protocol provides certainty about the fate of a transaction within a brief, fixed amount of time.
+The following diagram quantifies the settlement-time benefits of Peras [^5] . Using the [example Peras protocol parameters](#feasible-values=for-peras-protocol-parameters), one has *post facto* settlement within two minutes of a transaction's being included in a block. This means that if the transaction's block is still on the preferred chain after two minutes, then it will remain there with essentially no chance of being rolled back. Strong adversarial activity prior to the two minutes might cause the block to be rolled back, but adversarial activity after that time will not roll it back. If the transaction was rolled back in the first two minutes, then it would have to be resubmitted. So, the Peras protocol provides certainty about the fate of a transaction within a brief, fixed amount of time.
 
 [^5]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#settlement-probabilities
 
@@ -1394,6 +1394,29 @@ Taking Kraken as an example of a centralized exchange, we see in the following t
 
 > [!NOTE]
 > Highlight that Peras could make Cardano a more attractive option for interoperability solutions like LayerZero, Axelar, WormHole, etc. Maybe we can even go as far to state that Peras is a pre-requisite for this? 
+
+
+### Feasible values for Peras protocol parameters
+
+Based on the analyses in the [Peras Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#defining-protocol-parameters-values), a reasonable set of default protocol parameters for further study, simulation, and discussion is show in the table below. The optimal values for a real-life blockchain would depend strongly upon external requirements such as balancing settlement time against resisting adversarial behavior at high values of adversarial stake. This set of parameters is focused on the use case of knowing soon whether a block is settled or rolled back; other sets of parameters would be optimal for use cases that reduce the probability of roll-back at the expense of waiting longer for settlement.
+
+| Parameter              | Symbol           | Units   | Value | Rationale                                                            |
+| ---------------------- | ---------------- | ------- | ----: | -------------------------------------------------------------------- |
+| Round length           | $U$              | slots   |    90 | Settlement/non-settlement in under two minutes.                      |
+| Block-selection offset | $L$              | slots   |    30 | Several multiples of $\Delta$ to ensure block diffusion.             |
+| Certification boost    | $B$              | blocks  |    15 | Negligible probability to roll back boosted block.                   |
+| Security parameter     | $k_\text{peras}$ | blocks  |  3150 | Determined by the Praos security parameter and the boost.            |
+| Certificate expiration | $A$              | slots   | 27000 | Determined by the Praos security parameter and boost.                |
+| Chain-ignorance period | $R$              | rounds  |   300 | Determined by the Praos security parameter, round length, and boost. |
+| Cool-down period       | $K$              | rounds  |   780 | Determined by the Praos security parameter, round length and boost.  |
+| Committee size         | $n$              | parties |   900 | 1 ppm probability of no honest quorum at 10% adversarial stake.      |
+| Quorum size            | $\tau$           | parties |   675 | Three-quarters of committee size.                                    |
+
+A *block-selection offset* of $L = 30 \text{\,slots}$ allows plenty of time for blocks to diffuse to voters before a vote occurs. Combining this with a *round length* of $U = 90 \text{\, slots}$ ensures that there is certainty in $U + L = 120 \text{\,slots}$ as to whether a block has been cemented onto the preferred chain by the presence of a certificate for a subsequent block. That certainty of not rolling back certified blocks is provided by a *certification boost* of $B = 15 \text{\,blocks}$ because of the infinitesimal probability of forging that many blocks on a non-preferred fork within the time $U$. Thus, anyone seeing a transaction appearing in a block need wait no more than two minutes to be certain whether the transaction is on the preferred chain (effectively permanently, less than a one in a trillion probability even at 45% adversarial stake) versus having been discarded because of a roll back. Unless the transaction has a stringent time-to-live (TTL) constraint, it can be resubmitted in the first $U - L = 60 \text{\,slots}$ of the current round, or in a subsequent round.
+
+The Praos security parameter $k_\text{praos} = 2160 \text{\,blocks} \approx 43200 \text{\,slots} = 12 \text{\,hours}$ implies a ~17% probability of a longer private adversarial chain at 49% adversarial stake. At that same probability, having to overcome a $B = 15 \text{\,blocks}$ adversarial boost would require $k_\text{peras} \approx 70200 \text{\,slots} = 3510 \text{\,blocks} = 19.5 \text{\,hours}$. This determines the *certificate-expiration time* as $A = k_\text{peras} - k_\text{praos} = 27000 \text{\,slots}$, the *chain-ignorance period* as $R = \left\lceil A / U \right\rceil = 300 \text{\,rounds}$, and the *cool-down period* as $K = \left\lceil k_\text{peras} / U \right\rceil = 780 \text{\,rounds}$.
+
+The *committee size* of $n = 900 \text{\,parties}$ corresponds to a one in a million chance of not reaching a quorum if 10% of the parties do not vote for the majority block (either because they are adversarial, offline, didn't receive the block, or chose to vote for a block on a non-preferred fork). This "no quorum" probability is equivalent to one missed quorum in every 1.2 years. The *quorum size* of $\tau = \left\lceil 3 n / 4 \right\rceil = 675 \text{\,parties}$ is computed from this.
 
 
 ### Attack and Mitigation
@@ -1541,157 +1564,6 @@ The Peras component can be treated as another *chain follower* to which new bloc
 The networking layer will need to accommodate two new mini-protocols for vote and certificate diffusion. In general, there are opportunities for shared voting, certificate, and diffusion components that handle Peras, Leios, and Mithril uniformly.
 
 Prior to full-scale Peras implementation, it would be possible to develop a standalone Peras prototype built upon the existing node, where the node is modified to receive chain-weight information from Peras, which acts as a chain follower and communicates with the node via an ad-hoc mechanism. Such a protoype would run on a testnet where the measurements and experiments could be conducted.
-
-
-## Defining Protocol Parameters values
-
-In order to provide useful recommendations for the protocol parameters, we first need to understand what is their admissible range of values, e.g. the constraints stemming from practical and theoretical needs, and to analyse their impact on the settlement probabilities.
-
-
-### Settlement probabilities
-
-In the estimates below, we define the *non-settlement probability* as the probability that a transaction (or block) is rolled back. Note that this does not preclude the possibility that the transaction could be included in a later block because it remained in the memory pool of a node that produced a subsequent block. Because there are approximately 1.5 million blocks produced per year, even small probabilities of non-settlement can amount to an appreciable number of discarded blocks.
-
-
-### Case 1: Blocks without boosted descendants
-
-Blocks that are not cemented by a boost to one of their descendant (successor) blocks are most at risk for being rolled back because they are not secured by the extra weight provided by a boost.
-
-The *Variant 2* scenario in the *Adversarial chain receives boost* section above dominates the situation where a transaction is recorded in a block but an adversarial fork later is boosted by a certificate to become the preferred chain. This scenario plays out as follows:
-
-1. Both the honest chain and an initially private adversarial chain have a common prefix that follows the last boosted block.
-2. The adversary privately grows their chain and does not include transactions in the memory pool.
-3. When the time comes where the last block is first eligible for later being voted upon, the adversarial chain is published and all parties see that it is longer than the honest chain.
-4. Hence the newly published adversarial chain becomes the preferred chain, and all parties build upon that.
-5. Later, when voting occurs, the chain that had been adversarial will received the boost.
-6. Because the adversarial prefix has been boosted, there is a negligible probability that the discarded portion of the honest chain will ever become part of the preferred chain.
-7. Therefore the preferred chain does not include any transactions that were in blocks of the honest chain after the common prefix and before the adversarially boosted block.
-
-Note that this is different from the situation where a transaction is included on honest forks because such a transaction typically reaches the memory pool of the block producers on each fork and is included on each. The adversary refrains from including the transaction on their private chain.
-
-The active-slot coefficient (assumed to be 5%), the length of the rounds, and the adversary's fraction of stake determine the probability of non-settlement in such a scenario. The table below estimates this probability. For example, in the presence of a 5% adversary and a round length of 360 slots, one could expect about two blocks to be reverted per year in such an attack.
-
-| Round Length | 5% Adversary | 10% Adversary | 15% Adversary | 20% Adversary | 45% Adversary |
-| -----------: | -----------: | ------------: | ------------: | ------------: | ------------: |
-|           60 |     1.35e-02 |      3.64e-02 |      6.99e-02 |      1.15e-01 |      4.81e-01 |
-|           90 |     5.45e-03 |      1.82e-02 |      4.14e-02 |      7.77e-02 |      4.64e-01 |
-|          120 |     2.16e-03 |      9.16e-03 |      2.47e-02 |      5.31e-02 |      4.48e-01 |
-|          150 |     8.55e-04 |      4.63e-03 |      1.49e-02 |      3.66e-02 |      4.34e-01 |
-|          180 |     3.40e-04 |      2.36e-03 |      9.08e-03 |      2.55e-02 |      4.22e-01 |
-|          240 |     5.46e-05 |      6.27e-04 |      3.42e-03 |      1.25e-02 |      4.00e-01 |
-|          300 |     8.91e-06 |      1.69e-04 |      1.31e-03 |      6.27e-03 |      3.81e-01 |
-|          360 |     1.47e-06 |      4.63e-05 |      5.11e-04 |      3.18e-03 |      3.65e-01 |
-|          420 |     2.46e-07 |      1.28e-05 |      2.00e-04 |      1.63e-03 |      3.51e-01 |
-|          480 |     4.12e-08 |      3.56e-06 |      7.92e-05 |      8.37e-04 |      3.37e-01 |
-|          540 |     6.97e-09 |      9.96e-07 |      3.15e-05 |      4.33e-04 |      3.25e-01 |
-|          600 |     1.18e-09 |      2.80e-07 |      1.26e-05 |      2.25e-04 |      3.14e-01 |
-
-Using the approach of Gaži, Ren, and Russell (2023) and setting $\Delta = 5 \text{\,slots}$ to compute the upper bound on the probability of failure to settle results in similar, but not identical probabilities.
-
-| Blocks | ≈ Slots | 5% Adversary | 10% Adversary | 15% Adversary | 20% Adversary |
-| -----: | ------: | -----------: | ------------: | ------------: | ------------: |
-|      3 |      60 |     6.13e-02 |      1.41e-01 |      2.53e-01 |      3.89e-01 |
-|      4 |      80 |     2.73e-02 |      8.15e-02 |      1.73e-01 |      3.01e-01 |
-|      5 |     100 |     1.22e-02 |      4.73e-02 |      1.19e-01 |      2.34e-01 |
-|      6 |     120 |     5.46e-03 |      2.75e-02 |      8.26e-02 |      1.83e-01 |
-|      9 |     180 |     4.95e-04 |      5.55e-03 |      2.80e-02 |      8.89e-02 |
-|     12 |     240 |     4.51e-05 |      1.13e-03 |      9.65e-03 |      4.40e-02 |
-|     15 |     300 |     4.11e-06 |      2.32e-04 |      3.35e-03 |      2.20e-02 |
-|     18 |     360 |     3.75e-07 |      4.77e-05 |      1.17e-03 |      1.11e-02 |
-|     21 |     420 |     3.42e-08 |      9.83e-06 |      4.11e-04 |      5.60e-03 |
-|     24 |     480 |     3.13e-09 |      2.03e-06 |      1.44e-04 |      2.83e-03 |
-|     27 |     540 |     2.85e-10 |      4.17e-07 |      5.06e-05 |      1.44e-03 |
-|     30 |     600 |     2.60e-11 |      8.60e-08 |      1.78e-05 |      7.30e-04 |
-
-
-### Case 2: Blocks with boosted descendants
-
-Once one of a block's descendants (successors) has been boosted by a certificate, it is much more difficult for an adversary to cause it to be rolled back because they adversary must overcome both count of blocks on the preferred, honest chain and the boost that chain has already received.
-
-The *Healing from adversarial boost* section above provides the machinery for estimating the probability of an adversary building a private fork that has more weight than a preferred, honest chain that has been boosted. The scenario plays out as follows:
-
-1. Both the honest chain and an initially private adversarial chain have a common prefix that precedes the last boosted block.
-2. The adversary privately grows their chain.
-3. When the adversary's chain is becomes long enough to overcome both the honest blocks and the boost, the adversarial chain is published and all parties see that it is longer than the honest chain.
-4. Hence the newly published adversarial chain becomes the preferred chain, and all parties build upon that.
-5. Therefore the preferred chain does not include any transactions that were in blocks of the honest chain after the common prefix.
-
-Typically, the adversary would only have a round's length of slots to build sufficient blocks to overcome the boosted, honest, preferred fork. After that, the preferred fork would typically receive another boost, making it even more difficult for the adversary to overcome it. The table below shows the probability that of non-settlement for a block after the common prefix but not after the subsequent boosted block on the honest chain, given a 5% active slot coefficient and a 5 blocks/certificate boost.
-
-| Round Length | 5% Adversary | 10% Adversary | 15% Adversary | 20% Adversary | 45% Adversary |
-| -----------: | -----------: | ------------: | ------------: | ------------: | ------------: |
-|           60 |     3.09e-08 |      1.08e-06 |      8.94e-06 |      4.07e-05 |      3.10e-03 |
-|           90 |     5.91e-08 |      2.27e-06 |      2.03e-05 |      9.91e-05 |      9.36e-03 |
-|          120 |     6.32e-08 |      2.73e-06 |      2.70e-05 |      1.44e-04 |      1.74e-02 |
-|          150 |     5.01e-08 |      2.49e-06 |      2.77e-05 |      1.62e-04 |      2.57e-02 |
-|          180 |     3.31e-08 |      1.94e-06 |      2.45e-05 |      1.59e-04 |      3.37e-02 |
-|          240 |     1.07e-08 |      8.98e-07 |      1.51e-05 |      1.23e-04 |      4.74e-02 |
-|          300 |     2.73e-09 |      3.44e-07 |      7.88e-06 |      8.19e-05 |      5.80e-02 |
-|          360 |     6.15e-10 |      1.20e-07 |      3.78e-06 |      5.04e-05 |      6.62e-02 |
-|          420 |     1.29e-10 |      3.94e-08 |      1.73e-06 |      2.96e-05 |      7.23e-02 |
-|          480 |     2.57e-11 |      1.25e-08 |      7.65e-07 |      1.70e-05 |      7.70e-02 |
-|          540 |     4.98e-12 |      3.88e-09 |      3.33e-07 |      9.56e-06 |      8.05e-02 |
-|          600 |     9.43e-13 |      1.19e-09 |      1.43e-07 |      5.32e-06 |      8.31e-02 |
-
-A boost of 10 blocks/certificate makes the successful adversarial behavior even less likely.
-
-| Round Length | 5% Adversary | 10% Adversary | 15% Adversary | 20% Adversary | 45% Adversary |
-| -----------: | -----------: | ------------: | ------------: | ------------: | ------------: |
-|           60 |      < 1e-16 |      4.92e-14 |      2.98e-12 |      5.56e-11 |      2.23e-07 |
-|           90 |     7.77e-16 |      8.89e-13 |      5.65e-11 |      1.10e-09 |      4.98e-06 |
-|          120 |     3.55e-15 |      4.47e-12 |      3.01e-10 |      6.15e-09 |      3.27e-05 |
-|          150 |     8.88e-15 |      1.16e-11 |      8.39e-10 |      1.82e-08 |      1.16e-04 |
-|          180 |     1.38e-14 |      2.01e-11 |      1.59e-09 |      3.70e-08 |      2.90e-04 |
-|          240 |     1.60e-14 |      2.97e-11 |      2.87e-09 |      7.93e-08 |      9.83e-04 |
-|          300 |     1.05e-14 |      2.53e-11 |      3.08e-09 |      1.03e-07 |      2.13e-03 |
-|          360 |     4.77e-15 |      1.57e-11 |      2.48e-09 |      1.02e-07 |      3.62e-03 |
-|          420 |     1.55e-15 |      7.98e-12 |      1.67e-09 |      8.59e-08 |      5.31e-03 |
-|          480 |     4.44e-16 |      3.56e-12 |      9.96e-10 |      6.46e-08 |      7.08e-03 |
-|          540 |     4.44e-16 |      1.45e-12 |      5.49e-10 |      4.52e-08 |      8.85e-03 |
-|          600 |     2.22e-16 |      5.54e-13 |      2.86e-10 |      3.00e-08 |      1.06e-02 |
-
-A boost of 15 blocks/certificate makes the successful adversarial behavior even less likely.
-
-| Round Length | 5% Adversary | 10% Adversary | 15% Adversary | 20% Adversary | 45% Adversary |
-| -----------: | -----------: | ------------: | ------------: | ------------: | ------------: |
-|           60 |      < 1e-16 |       < 1e-16 |       < 1e-16 |       < 1e-16 |      9.81e-13 |
-|           90 |      < 1e-16 |       < 1e-16 |      2.22e-16 |      8.88e-16 |      2.24e-10 |
-|          120 |      < 1e-16 |       < 1e-16 |      2.22e-16 |      2.39e-14 |      6.59e-09 |
-|          150 |     1.11e-16 |      1.11e-16 |      2.78e-15 |      2.19e-13 |      6.90e-08 |
-|          180 |      < 1e-16 |      2.22e-16 |      1.18e-14 |      1.07e-12 |      3.91e-07 |
-|          240 |      < 1e-16 |      3.33e-16 |      7.89e-14 |      8.19e-12 |      4.29e-06 |
-|          300 |     3.33e-16 |      4.44e-16 |      2.16e-13 |      2.61e-11 |      2.07e-05 |
-|          360 |     1.11e-16 |      5.55e-16 |      3.49e-13 |      5.01e-11 |      6.26e-05 |
-|          420 |      < 1e-16 |      6.66e-16 |      4.01e-13 |      6.97e-11 |      1.42e-04 |
-|          480 |      < 1e-16 |      2.22e-16 |      3.68e-13 |      7.81e-11 |      2.65e-04 |
-|          540 |     3.33e-16 |      2.22e-16 |      2.88e-13 |      7.53e-11 |      4.35e-04 |
-|          600 |     2.22e-16 |      3.33e-16 |      2.00e-13 |      6.51e-11 |      6.47e-04 |
-
-
-### Example Peras parameters
-
-Based on the analysis of adversarial scenarios, a reasonable set of default protocol parameters for further study and simulation is show in the table below. The optimal values for a real-life blockchain would depend strongly upon external requirements such as balancing settlement time against resisting adversarial behavior at high values of adversarial stake. This set of parameters is focused on the use case of knowing soon whether a block is settled or rolled back; other sets of parameters would be optimal for use cases that reduce the probability of roll-back at the expense of waiting longer for settlement.
-
-| Parameter              | Symbol           | Units   | Value | Rationale                                                            |
-| ---------------------- | ---------------- | ------- | ----: | -------------------------------------------------------------------- |
-| Round length           | $U$              | slots   |    90 | Settlement/non-settlement in under two minutes.                      |
-| Block-selection offset | $L$              | slots   |    30 | Several multiples of $\Delta$ to ensure block diffusion.             |
-| Certification boost    | $B$              | blocks  |    15 | Negligible probability to roll back boosted block.                   |
-| Security parameter     | $k_\text{peras}$ | blocks  |  3150 | Determined by the Praos security parameter and the boost.            |
-| Certificate expiration | $A$              | slots   | 27000 | Determined by the Praos security parameter and boost.                |
-| Chain-ignorance period | $R$              | rounds  |   300 | Determined by the Praos security parameter, round length, and boost. |
-| Cool-down period       | $K$              | rounds  |   780 | Determined by the Praos security parameter, round length and boost.  |
-| Committee size         | $n$              | parties |   900 | 1 ppm probability of no honest quorum at 10% adversarial stake.      |
-| Quorum size            | $\tau$           | parties |   675 | Three-quarters of committee size.                                    |
-
-A *block-selection offset* of $L = 30 \text{\,slots}$ allows plenty of time for blocks to diffuse to voters before a vote occurs. Combining this with a *round length* of $U = 90 \text{\, slots}$ ensures that there is certainty in $U + L = 120 \text{\,slots}$ as to whether a block has been cemented onto the preferred chain by the presence of a certificate for a subsequent block. That certainty of not rolling back certified blocks is provided by a *certification boost* of $B = 15 \text{\,blocks}$ because of the infinitesimal probability of forging that many blocks on a non-preferred fork within the time $U$. Thus, anyone seeing a transaction appearing in a block need wait no more than two minutes to be certain whether the transaction is on the preferred chain (effectively permanently, less than a one in a trillion probability even at 45% adversarial stake) versus having been discarded because of a roll back. Unless the transaction has a stringent time-to-live (TTL) constraint, it can be resubmitted in the first $U - L = 60 \text{\,slots}$ of the current round, or in a subsequent round.
-
-> [!WARNING]
-> The security-related computations in the next paragraph are not rigorous with respect to the healing, chain-quality, and common-prefix times, so they need correction after the research team reviews them and proposes a better approach.
-
-The Praos security parameter $k_\text{praos} = 2160 \text{\,blocks} \approx 43200 \text{\,slots} = 12 \text{\,hours}$ implies a ~17% probability of a longer private adversarial chain at 49% adversarial stake. At that same probability, having to overcome a $B = 15 \text{\,blocks}$ adversarial boost would require $k_\text{peras} \approx 70200 \text{\,slots} = 3510 \text{\,blocks} = 19.5 \text{\,hours}$. This determines the *certificate-expiration time* as $A = k_\text{peras} - k_\text{praos} = 27000 \text{\,slots}$, the *chain-ignorance period* as $R = \left\lceil A / U \right\rceil = 300 \text{\,rounds}$, and the *cool-down period* as $K = \left\lceil k_\text{peras} / U \right\rceil = 780 \text{\,rounds}$.
-
-The *committee size* of $n = 900 \text{\,parties}$ corresponds to a one in a million chance of not reaching a quorum if 10% of the parties do not vote for the majority block (either because they are adversarial, offline, didn't receive the block, or chose to vote for a block on a non-preferred fork). This "no quorum" probability is equivalent to one missed quorum in every 1.2 years. The *quorum size* of $\tau = \left\lceil 3 n / 4 \right\rceil = 675 \text{\,parties}$ is computed from this.
 
 
 ## Versioning
