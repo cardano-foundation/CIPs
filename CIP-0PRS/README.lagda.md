@@ -1,6 +1,6 @@
 ---
 Title: Ouroboros Peras - Faster Settlement
-CIP: '????'
+CIP: '0PRS'
 Category: Consensus
 Status: Proposed
 Authors:
@@ -40,10 +40,10 @@ Under Ouroboros Praos, settlement occurs probabilistically on the Cardano blockc
 
 There are several definitions of "settlement" or "finality", and precision is important when discussing these. Two noteworthy scenarios can be defined precisely.
 
-- *Ante hoc settlement probability:* "What is the probability that a transaction that I just submitted will ever be rolled back?"
-- *Post hoc settlement probability:* "Given that I submitted my transaction $x$ seconds ago and it has not yet been rolled back, what is the probability that it will ever be rolled back?"
+- *Ex ante* settlement probability: "What is the probability that a transaction that I just submitted will ever be rolled back?"
+- *Post facto* settlement probability: "Given that I submitted my transaction $x$ seconds ago and it has not yet been rolled back, what is the probability that it will ever be rolled back?"
 
-If one is unwilling or unable to re-submit a rolled-back transaction, then the *ante hoc* probability might be of most interest. This matches use cases where there is no opportunities for the parties involved in a transaction: for example, one party might have purchased physical goods and left the vendor's premises, leaving no opportunity to resubmit a rolled-back transaction. Other use cases are better suited for *post hoc* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that ever changing once they have watched the chain for that amount of time, given them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and backend infrastructure distinguish these use cases. Protocols like Peras optimize *post hoc* certainty after pre-defined waiting times.
+If one is unwilling or unable to re-submit a rolled-back transaction, then the *ex ante* probability might be of most interest. This matches use cases where there is no opportunities for the parties involved in a transaction: for example, one party might have purchased physical goods and left the vendor's premises, leaving no opportunity to resubmit a rolled-back transaction. Other use cases are better suited for *post facto* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that ever changing once they have watched the chain for that amount of time, given them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and backend infrastructure distinguish these use cases. Protocols like Peras optimize *post facto* certainty after pre-defined waiting times.
 
 Ourboros Praos optimizes the worst-case scenario of highly adversarial conditions, but the Cardano blockchain typically operates in the absence of such a challenge. Optimistic protocols like Peras can take advantage of the "average case" of lower or no adversarial activity by settling transactions faster than Praos, but without sacrificing any of the security guarantees of Praos if the protocol (such as Peras) falls back to Praos-like behavior for a "safety and repair period" after adversarial conditions occur. Furthermore, they should do so without requiring radical or costly changes to the current `cardano-node` implementations. It is also desirable that settlement-related protocol changes do not interfere with other pending protocol changes like Genesis (security enhancement) [^3] and Leios (maximal throughput) [^4] . Fast settlement is a critical part of Cardano scaling, as describe in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI).
  
