@@ -154,7 +154,13 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
   - [x] Typhon Wallet
 
 ### Implementation Plan
-Updated relevant CIPs with test vector which references these identifiers. This CIP does not require a hard fork for implementation, the goal is to use the identifies specified in this CIP for the UI, and as a medium of communication for sharing such keys and IDs (though it will be good if this CIP is also implemented at the ledger level).
+- This CIP uses some bech32 prefixes which are already defined by CIP105 and ref by CIP005, This PR includes updates to both the CIPs with updated vector spec. The suggested changes align with the design of the original CIP005.
+
+- For key generation tools - To move faster to this CIP, current tools which implement CIP105 based bech32 prefixes do not have to implement this CIP specification. They can change the prefix according to the updates suggested in this CIP, updating bech32 prefix will be a find and replace sort of an updated and it will instantly become compatible with this CIP.
+
+- Tools like explorers and wallets - These tools can potentially support both formats to start with for the purpose of allowing users to search for drep, cold keys, hot keys as these 3 are impacted by this CIP upgrade. And can continue to show only this CIP specification, having an easy backward compatibility as well moving to this CIP standard.
+
+- This CIP does not require a hard fork for implementation, the goal is to use the identifies specified in this CIP for the UI, and as a medium of communication for sharing such keys and IDs (though it will be good if this CIP is also enforced at the ledger level, simplifying CDDL and bringing data storage efficiency).
 
 ## Copyright
 
