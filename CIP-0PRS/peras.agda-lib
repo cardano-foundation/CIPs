@@ -1,4 +1,3 @@
 name: peras
-depend: standard-library agda2hs
-include: . iog-prelude
+depend: standard-library iog-prelude
 flags: --erasure
