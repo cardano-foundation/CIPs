@@ -1,7 +1,7 @@
 ---
 CIP: 128
 Title: Preserving Order of Transaction Inputs
-Category: Plutus
+Category: Ledger
 Status: Proposed
 Authors:
   - Jonathan Rodriguez <info@anastasialabs.com>
