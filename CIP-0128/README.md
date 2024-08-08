@@ -132,7 +132,7 @@ This approach involves maintaining the current set-based representation of trans
 ## Path to Active
 
 ### Acceptance Criteria
-[] Fully implemented in Cardano.
+- [ ] Included within a Plutus version within a Cardano mainnet hardfork.
 
 ### Implementation Plan
 [] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency.
