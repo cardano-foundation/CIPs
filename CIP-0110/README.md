@@ -1,7 +1,7 @@
 ---
 CIP: 110
 Title: Plutus v1 Script References
-Status: Proposed
+Status: Active
 Category: Plutus
 Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
@@ -76,16 +76,17 @@ Given the parallel plans to include reference scripts in the cost of the transac
 
 ### Acceptance Criteria
 
-- [ ] Review of this proposal by the relevant subject matter experts
-- [ ] Implement the change in the cardano-ledger and cardano-node repositories
-- [ ] Include this change in a relevant hard fork
+- [x] Review of this proposal by the relevant subject matter experts
+- [x] Implement the change in the cardano-ledger and cardano-node repositories
+- [x] Include this change in a relevant hard fork
+  - Included within the Chang #1 hardfork
 
 ### Implementation Plan
 
-- [ ] Update the formal Agda specification
-- [ ] Implement [minFeeRefScriptCoinsPerByte] or similar approach, as described [here](https://github.com/IntersectMBO/cardano-ledger/issues/3952)
-- [ ] Update the implementation [here](https://github.com/IntersectMBO/cardano-ledger/blob/fdc366df654fc02b1668012342732d41eaa099fe/eras/babbage/impl/src/Cardano/Ledger/Babbage/TxInfo.hs#L94-L97)
- - [ ] Update property based tests to cover these scenarios
+- [x] Update the formal Agda specification
+- [x] Implement [minFeeRefScriptCoinsPerByte] or similar approach, as described [here](https://github.com/IntersectMBO/cardano-ledger/issues/3952)
+- [x] Update the implementation [here](https://github.com/IntersectMBO/cardano-ledger/blob/fdc366df654fc02b1668012342732d41eaa099fe/eras/babbage/impl/src/Cardano/Ledger/Babbage/TxInfo.hs#L94-L97)
+ - [x] Update property based tests to cover these scenarios
 
 ## Copyright
 
