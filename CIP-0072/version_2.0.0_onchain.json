@@ -9,7 +9,7 @@
           "type":"string",
           "minLength": 1,
           "maxLength": 64,
-          "pattern":"^[0-9a-fA-F]{1,64}$",
+          "pattern":"^[0-9a-zA-Z.]{1,64}$",
           "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, must be max 64 chars. Typically it is randomly generated hash by the dApp developer."
        },
        "rootHash":{
