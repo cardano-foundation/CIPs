@@ -25,7 +25,7 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 
 ## Motivation: why is this CIP necessary?
 
-### For GA submitters
+### For governance action authors
 - Provide clarity to submitters - why their proposal is unconstitutional?
 
 ### For voters
