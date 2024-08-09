@@ -24,7 +24,6 @@ License: Apache-2.0
 - [ ] Add internal hyperlinks.
 - [ ] Refine the "Path to active" section.
 - [ ] Draft the appendices.
-- [ ] Remove `iog-prelude/` folder.
 - [ ] Copy edit
 - [ ] Proofread
 
@@ -146,7 +145,7 @@ An [online simulator for Peras](https://peras-simulation.cardano-scaling.org/) i
 
 ### Normative Peras specification in Agda
 
-The following formal, relational specification for Peras type checks using [Agda 2.6.4.1](https://github.com/agda/agda/tree/v2.6.4.1). The repository [github:input-output-hk/peras-design](https://github.com/input-output-hk/peras-design/tree/main) provides a Nix-based environment for compiling and executing Peras's specification.
+The following formal, relational specification for Peras type checks using [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3). See [the Appendix](#typechecking-this-specification) for instruction on typechecking this specification with the Agda compiler.
 
 > [!TIP]
 > - This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
@@ -181,7 +180,7 @@ open import Relation.Nullary using (Dec; no; yes; ¬_; ⌊_⌋)
 open import Relation.Nullary.Decidable using (_×-dec_; ¬?)
 ```
 
-Several additional imports come from the [IOG Agda Prelude](iog-prelude/).
+Several additional imports come from the [IOG Agda Prelude](https://github.com/functionally/iog-agda-prelude/).
 
 ```agda
 open import Prelude.AssocList using (AssocList; set; _⁉_)
@@ -1594,10 +1593,23 @@ This document describes the *pre-alpha* version of the Peras protocol. We antici
 ## Appendix
 
 
-### Type checking this specification
+### Typechecking this specification
 
-> [!NOTE]
-> Provide instructions for compiling the Agda code here.
+With [Nix](https://nix.dev/install-nix.html) installed and [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, one just needs to execute the following command to run the Agda typechecker on this file:
+
+```bash
+nix build --no-link
+```
+
+Additionally, one can also open a Nix development shell and view, edit, or compile this specification in Emacs.
+
+```bash
+nix develop
+
+emacs README.lagda.md
+```
+
+The Nix flake [flake.nix](./flake.nix) contains the derivation for building this specification.
 
 
 ## Copyright
