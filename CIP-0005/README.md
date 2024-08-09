@@ -121,9 +121,10 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_test`         | Testnet address                                       | Network tag, payment credential and optional stake credential |
 | `stake`             | Mainnet stake address                                 | Network tag and stake credential                              |
 | `stake_test`        | Testnet stake address                                 | Network tag and stake credential                              |
-| `drep`              | drep identifier                                       | drep credential                                               |
-| `cc_cold`           | cc cold identifier                                    | cc cold credential                                            |
-| `cc_hot`            | cc hot identifier                                     | cc hot credential                                             |
+| `drep`              | drep identifier                                       | drep credential, see [CIP-0129]                               |
+| `cc_cold`           | cc cold identifier                                    | cc cold credential, see [CIP-0129]                            |
+| `cc_hot`            | cc hot identifier                                     | cc hot credential, see [CIP-0129]                             |
+| `gov_action`        | gov action identifier                                 | gov action ID, see [CIP-0129],                                |
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -187,3 +188,4 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 [CIP-0014]: https://github.com/cardano-foundation/CIPs/blob/645243e30b5aae109a70ec2b47af70dcc808bc56/CIP-0014
+[CIP-0129]: (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md)

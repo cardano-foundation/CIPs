@@ -63,7 +63,7 @@ We strongly recommend that a maximum of one set of DRep keys should be associate
 #### DRep ID
 
 Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519 public DRep key (without chaincode) by creating a blake2b-224 hash digest of the key.
-As this is key-based credential it should be marked as entry `0` in a credential array. DRep Identifier is further specified in [CIP-129](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md).
+As this is key-based credential it should be marked as entry `0` in a credential array. DRep Identifier is further specified in [CIP-0129](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md).
 
 #### Constitutional Committee Cold Keys
 
