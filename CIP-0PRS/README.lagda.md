@@ -180,7 +180,7 @@ open import Relation.Nullary using (Dec; no; yes; ¬_; ⌊_⌋)
 open import Relation.Nullary.Decidable using (_×-dec_; ¬?)
 ```
 
-Several additional imports come from the [IOG Agda Prelude](https://github.com/functionally/iog-agda-prelude/).
+Several additional imports come from the [IOG Agda Prelude v0.1.0.0](https://github.com/input-output-hk/iog-agda-prelude/releases/tag/v0.1.0.0).
 
 ```agda
 open import Prelude.AssocList using (AssocList; set; _⁉_)

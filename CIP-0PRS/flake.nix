@@ -28,19 +28,18 @@
               rm EverythingSafe.agda
             '';
           });
-          iog-prelude = pkgs.agdaPackages.mkDerivation {
+          iog-prelude = pkgs.agdaPackages.mkDerivation rec {
             pname = "iog-prelude";
-            version = "0.1";
+            version = "0.1.0.0";
             meta = { };
             src = pkgs.fetchFromGitHub {
               repo = "iog-agda-prelude";
-              owner = "functionally";
-              rev = "2b780014456447bfe2a936be04a0e06f3f1ebba8";
-              sha256 = "sha256-z3Or2gPin7fZzVkIhEkRVu8+KFxjNfKh6Ik5sM7qqks=";
+              owner = "input-output-hk";
+              rev = "v${version}";
+              sha256 = "sha256-OV2WvQkjyGcfsgj81tkk/tIWHBUKsPia1d2Lh3F8qf4=";
             };
             preConfigure = ''
-              echo "module Everything where" > Everything.agda
-              find src -type f | sed -e '/Dec\.agda$/d;s@^src/\(.*\)\.agda$@open import \1@;s@/@.@g' >> Everything.agda
+              mv src/Everything.agda Everything.agda
             '';
             buildInputs = [ agda-stdlib ];
           };
