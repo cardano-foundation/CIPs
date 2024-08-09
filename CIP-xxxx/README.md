@@ -140,10 +140,6 @@ The major advantage of the approach described in this proposal is in what it tak
 Exclusion of all of the irrelevant features of a regular transaction from the swaps will reduce the complexity of implementation and decrease the chance of introducing bugs into the system. This proposal is designed in the type safe spirit of Haskell, because it specifies the feature explicitly, instead of trying to abuse existing ledger rules in order to accommodate desired features. Most importantly, all transactions will continue to be balanced, as crypto gods intended them to be.
 
 
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
-
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
 
 ## Path to Active
 
