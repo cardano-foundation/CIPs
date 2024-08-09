@@ -9,7 +9,7 @@ Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
 Created: 2024-08-08
-License: CC-BY-4.0
+License: [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 ---
 
 ## Abstract
