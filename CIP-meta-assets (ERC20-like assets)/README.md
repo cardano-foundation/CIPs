@@ -52,138 +52,41 @@ data Data
     | B ByteString
 ```
 
-and we'll use the [plu-ts syntax for structs definition](https://pluts.harmoniclabs.tech/docs/onchain/Values/Structs/definition#pstruct) as an abstraction over the `Data` type.
+and we'll use the [plu-ts syntax for structs definition](https://pluts.harmoniclabs.tech/onchain/Values/Structs/definition#pstruct) as an abstraction over the `Data` type.
 
 The core idea of the implementation is to emulate the ERC20 standard; where tokens are entries in a map with addresses (or credentials in our case) as key and integers (the balances) as value. ([see the OpenZeppelin implementation for reference](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/9b3710465583284b8c4c5d2245749246bb2e0094/contracts/token/ERC20/ERC20.sol#L16));
 
 Unlike the ERC20 standard; this CIP:
 
-- allows for multiple entries with the same key (same credentials can be used for multiple accounts)
+- allows for multiple entries with the same key (same credentials can be used for multiple accounts, though not particularly useful)
 - DOES NOT include an equivalent of the `transferFrom` method; if needed it can be added by a specific implementation but it won't be considered part of the standard.
+- allows for multiple inputs (from the same sender, scripts and multisigs MAY also be used) and multiple outputs (possibly many distinct reveivers)
 
-> **NOTE**
+> **NOTE: Multiple Inputs**
 >
 > the UTxO model allows for multiple transfers in one transaction
 >
 > this would allow for a more powerful model than the account based equivalent but implies higher execution costs
 >
-> with the goal of keeping the standard interoperable and easy to understand and implement
-> in this first implementation we restricts transfers from a single account to a single account
+> with the goal of keeping the standard simple we allow a single sender
 >
-> if necessary; this restriction might be dropped in a future version of the CIP 
+> we MUST however account for multiple inputs from the same sender due to
+> the creation of new UTxOs in receiving transactions.
 
 
-The implementation requires
+with the introduction of [CIP-69](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0069) in Plutus V3 the number of contracts required are only 2, covering different purposes.
 
-- a parameterized minting policy to validate the creation of new accounts (in this CIP also referred as `accountFactory`)
-- a spending validator to manage the accounts (in this CIP also referred as `accountManager`)
+1) a `stateManager` contract
+    - with minting policy used to proof the validity of account's state utxos
+    - spending validator defining the rules to update the states
+2) a `transferManager` parametrized with the `stateManager` hash
+    - having minting policy for the tokens to be locked in the spending validator
+    - spending validator for the validation of single utxos (often just forwarding to the withdraw 0)
+    - certificate validator to allow registering the stake credentials (always succeed MAY be used) and specify the rules for de-registration (always fail MAY be used, but some logic based on the user state is RECOMMENDED)
+    - withdraw validator to validate the spending of multiple utxos.
 
-### standard data types used
+an external contract that needs to validate the transfer of a programmable token should be able to get all the necessary informations about the transfer by looking for the redeemer with withdraw purpose and `transferManager` stake credentials. 
 
-We'll need to use some data types as defined in the script context;
-
-```ts
-const PTxId = pstruct({
-    PTxId: { txId: bs }
-});
-
-const PTxOutRef = pstruct({
-    PTxOutRef: {
-        id: PTxId.type,
-        index: int
-    }
-});
-
-const PCredential = pstruct({
-    PPubKeyCredential: { pkh: bs },
-    PScriptCredential: { valHash: bs },
-});
-
-const PCurrencySymbol = palias( bs );
-```
-which are equivalent to the data:
-```hs
--- PTxId
-Constr 0 [ B txId ]
-
---- PTxOutRef
-Constr 0 [ PTxId, I index ]
-
--- PPubKeyCredential
-Constr 0 [ B pkh ]
-
--- PScriptCredential
-Constr 1 [ B valHash ]
-
--- PCurrencySymbol
-B currencySym
-```
-
-### `accountFactory` (minting policy)
-
-The `accountFactory` contract is responsabile of validating the creation of new accounts.
-
-### validation logic
-
-For the creation of the account to be considered valid (the minting policy suceeds)
-it MUST result in a single asset minted going to an address with payment credentials equalst to an hard-coded (parametrized) `accountManager` contract,
-and it is RECOMMENDED to have stake credentials equals to the stake cretentials of the user (if any) that SHOULD be inferred by the input utxo chosen to derive the name of the asset minted.
-
-The choice to preserve the stake credentials is done to facilitate the query of the user's accounts in the offchain.
-
-the standard redeemer for the `accountFactory` MUST have at least one constructor (with index `0`) with a single field being an integer,
-used to determine which input is intended to be of the user.
-
-the minimal definition would then be:
-```ts
-const AccountFactoryRdmr = pstruct({
-    New: { inputIdx: int }
-});
-```
-
-the input at the index given by the redeemer is used to deterime `userUtxoRef` (the utxo ref of the input) and `userUtxo` (the resolved input)
-
-It is then RECOMMENDED to include a second constructor for the redeemer meant to signal the burning of an asset under that policy,
-so a more complete definition would be
-```ts
-const AccountFactoryRdmr = pstruct({
-    New: { inputIdx: int }, // Mint
-    Delete: {} // Burn, not required by standard
-});
-```
-
-the data needed from the `ScriptContext` includes the following fields:
-
-- `inputs`
-- `output`
-- `mint`
-
-used as follows:
-
-- all the transaction inputs MUST NOT include any tokens having the same currency symbol of the `accountFactory` minting policy;
-optionally a specific implementation MAY require a fixed number of inputs (eg. a single input) for performance reasons.
-
-- when minting assets, only a single token under the policy MUST be minted (indipendently from the number of inputs)
-- the only asset minted MUST have an unique asset name (we suggest using the output of `[(builtin sha2_256) [(builtin serialiseData) userUtxoRef]]` where `userUtxoRef` is the utxo reference (or `PTxOutRef`) of the very first input of the transaction)
-
-- the asset minted MUST be included in an output of the transaction being validated going to the address as specified above (MUST have payment credentials of the the hard-coded `accountManager` validator, and SHOULD have stake credtentials of the user if any).
-
-- the output going to the `accountManager` validator MUST implement the following checks (in addition to the presence of the minted asset):
-    - the address' payment credential MUST have `ScriptCredential` constructor (constructor index `1`) and validator hash MUST equal the hard coded `accountManager` hash
-    - the value attached to the UTxO MUST only have 2 entries (ADA and minted token) to prevent DoS by token spam.
-    - the output datum MUST:
-        - be constructed using the `InlineDatum` consturctor (consturctor index `2`)
-        - have datum value with the [`Account` structure (explained below)](#Account) with the following fields:
-            - amount: `0`
-            - currencySym: currency symbol of the `accountFactory` minting policy (own currency symbol)
-            - credentials: the `userUtxo` address payment credentials (both public key hash and validator hash supported)
-            - state: no restrictions (up to the specific implementaiton).
-
-### `accountManager` (spending validator)
-
-The `accountManager` contract is responsabile of managing exsiting accounts and their balances.
-
-This is done using some standard redeemers and optionally some implementation-specfic ones.
 
 ### `Account`
 
@@ -199,59 +102,6 @@ const Account = pstruct({
     }
 });
 ```
-
-> **NOTE:**
->
-> the `state` field is indicated here as `data`, meaning that anything that is data-like can be used;
-> the standard redeemers will only check for not to change;
->
-> for the `state` field to be changed, some implementation-specific redeemer MAY be added
->
-> example; this is considered a valid datum definition by the standard:
->
-> ```ts
-> // implementation-specific state
-> const FreezeableAccountState = pstruct({
->     Ok: {}, // Constr index 0; free to spend
->     Frozen: {} // Constr index 1; frozen
-> });
-> 
-> const FreezeableAccount = pstruct({
->     Account: {
->         amount: int,
->         credentials: PCredential.type,
->         currencySym: PCurrencySymbol.type,
->         state: FreezeableAccountState.type
->     }
-> });
-> ```
-
-### `AccountManagerRedeemer`
-
-The `AccountManagerRedeemer` is used to comunicate the contract the intention with which the utxo is being spent.
-
-It MUST define 4 standard redeemers; none of which is meant to manipulate the state of the spending account.
-
-for this reason a specific implementation will likely have more than 4 possible redeemers that will NOT be considered standard
-(eg. a wallet implementing an interface SHOULD NOT depend on the exsistence of these additional redeemers).
-
-The minimal `AccountManagerRedeemer` is:
-
-```ts
-const AccountManagerRedeemer = pstruct({
-    Mint: { // or Burn if `amount` is negative
-        amount: int
-    },
-    Transfer: {
-        to: PCredential.type,
-        amount: int
-    },
-    Receive: {},
-    ForwardCompatibility: {}
-});
-```
-
-The validation logic is different for each redeemer.
 
 #### Common operations and values
 
@@ -366,110 +216,6 @@ transaction outputs filtered by `isOwnOutput`;
 ##### `ownInputs`
 
 transaction inputs filtered by `isOwnInput`;
-
-##### updating the `Account` datum
-
-Between all the standard redeemers it MUST be checked that the datum fields `credentials`, `currencySym` and `state` remain unchanged compared to the current datum.
-
-the `amount` field MAY change according to the purpose of the redeemer.
-
-This MAY NOT be true for any additional implementation-specific redeemer.
-
-#### `Mint`
-
-the contract being called using the `Mint` redeemer MUST succeed only if the following conditions are met:
-
-> **NOTE** 
->
-> we use `mint.amount` to describe the value of the `amount` field included in the `Mint` redeemer
-> and `account.amount` to describe the value of the `amount` field included in the input `Account` datum.
-
-- there MUST be only a single input is from the `accountManager` validator (aka. `ownInputs.length.eq( 1 )`);
-
-- the minted value in the transaction (`ctx.tx.mint`) MUST NOT include any entry with `PCurrencySymbol`
-equivalent to the one specified in the `currencySym` field of the `Account` datum (aka. no accounts are created)
-
-```ts
-const noAccountsCreated = pisEmpty.$(
-    tx.mint.filter( isOwnAssetEntry )
-);
-```
-
-- the input value coming from the `accountManager` MUST include an entry with `PCurrencySymbol`
-equivalent to the one specified in the `currencySym` field of the `Account` datum.
-
-- to prevent DoS by token spamming the output going back to the `accountManager` MUST have at most length 2.
-
-- there MUST be a single output going back to the `accountManager` contract with the following properties
-    - it MUST have an entry for the `PCurrencySymbol` specified in the `currencySym` field of the `Account` (aka. NFT is preserved)
-    - the output datum MUST be constructed using the `InlineDatum` constructor
-    - the datum fields `credentials`, `currencySym` and `state` MUST be unchanged compared to the current datum.
-    - the datum field `account.amount` MUST change based on `mint.amount` as described below:
-        - if the `mint.amount` is positive the output datum MUST 
-            be equal to the sum of `account.datum` and `mint.datum`
-        - if the `amount` field included in the `Mint` redeemer is negative (aka. we are burning)
-        the contract MUST FAIL if the sum of `mint.amount` and `account.amount` is strictly less than `0` (aka. burning more assets than how much the `Account` holds);
-        otherwhise it MUST check for the output datum `amount` field to be equal to the result of the sum
-
-#### `Transfer`
-
-The `Transfer` redeemer is used to pay an other account in the same account manager.
-
-When used as redeemer the contract checks for the following conditions to be true;
-
-- `ownInputs` to be of lenght `2`
-
-- `ownOuts` to be of lenght `2`
-
-- to prevent DoS by tokne spam, every `ownOut` value must have length of `2`
-
-- the receiver input (the `ownInput` with different `utxoRef` of the `validatingInput`)
-being spent with `Receive` redeemer
-
-- the receiver credentials present in the receiver datum (`receiverAccount.credentials`) MUST be equal to the `transfer.to` credentials present in the redeemer
-(this allows for other potential contracts in the same transaction to only need to check the `Transfer` redeemer in order to understand who are the sender and the receiver)
-
-- the sender input (`validatingInput`) MUST have the NFT according to `account.currencySym` (the input is valid)
-
-- the output with the sender's credentials MUST preserve the NFT
-
-- the sender account fields `credentials`, `currencySym` and `state` are unchanged between sender input datum and sender output datum
-
-- the receiver account fields `credentials`, `currencySym` and `state` are unchanged between receiver input datum and receiver output datum
-
-- the input sender's amount field is greather or equal than the redeemer amount (`transfer.amount`)
-
-- the output sender's amount field is equal to the input one minus `transfer.amount`
-
-- the output receiver's amount field is equal to the input one plus `transfer.amount`
-
-- the sender singned the transaction (included in `ctx.tx.signatories` if a `PPubKeyHash` or included a script input if a `PValidatorHash`)
-
-any additional check can be made based on the `account.state` (implementation specific)
-
-#### `Receive`
-
-- `ownInputs` to be of lenght `2`
-
-- the `validatingInput` includes the NFT under the datum's `currencySym` field
-
-- the sender input (the `ownInput` with different `utxoRef` of the `validatingInput`)
-being spent with `Transfer` redeemer
-
-- in the sender input `Transfer` redeemer the `amount` field is strictly grather than 0
-
-> **NOTE**
->
-> the sender input being an `ownInputs` element and being spent with `Transfer` redeemer 
-> implies that the transfer calculation is running in that validation
->
-> hence we don't need to perform the same calculation here
-
-#### `ForwardCompatibility`
-
-For the current version this redeemer SHOULD always fail.
-
-The main purpose of the redeemer is to avoid breaking compatibilities for addtional implementation specific redeemers
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It SHOULD describe alternate designs considered and related work. The rationale SHOULD provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
