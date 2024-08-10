@@ -205,7 +205,7 @@ const Account = pstruct({
 > the `state` field is indicated here as `data`, meaning that anything that is data-like can be used;
 > the standard redeemers will only check for not to change;
 >
-> for the `state` field to be changed, some implementation-specific redeemer MUST be added
+> for the `state` field to be changed, some implementation-specific redeemer MAY be added
 >
 > example; this is considered a valid datum definition by the standard:
 >
