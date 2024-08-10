@@ -117,15 +117,15 @@ That would be the most efficient representation, but there are others. We could 
 Transaction witnesses will receive a new field with a specialized type of redeemer, since they will have to supply execution units for all of the scripts in the swaps and they will require slightly different redeemer pointers:
 
 ```cddl
-swap_redeemers = { + [ swap_index : uint .size 2
-                     , tag        : swap_redeemer_tag
-                     , index      : uint .size 4
-                     ] => ex_units
-                 }
+transaction_swap_redeemers = { + [ swap_index : uint .size 2
+                             , tag        : swap_redeemer_tag
+                             , index      : uint .size 4
+                             ] => ex_units
+                             }
 
 transaction_witness_set = { ....
                           , ? 8 : nonempty_set<plutus_v4_script>
-                          , ? 9 : swap_redeemers
+                          , ? 9 : transaction_swap_redeemers
                           }
 ```
 
