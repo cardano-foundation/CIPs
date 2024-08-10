@@ -477,7 +477,7 @@ The main purpose of the redeemer is to avoid breaking compatibilities for addtio
 It MUST also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section SHOULD explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
 
-The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) was quite different by the one shown in this document
+The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) (which we could informally refer as v0) was quite different by the one shown in this document
 
 Main differences were in the proposed:
 - [use of sorted merkle trees to prove uniqueness](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58#diff-370b6563a47be474523d4f4dbfdf120c567c3c0135752afb61dc16c9a2de8d74R72) of an account during creation;
@@ -490,10 +490,14 @@ which included definitions for `TransferFrom`, `Approve` and `RevokeApproval` re
 
 after [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
 
+After a first round of community feedback, a [reviewed stadard was proposed](https://github.com/cardano-foundation/CIPs/pull/444/commits/f45867d6651f94ba53503833098d550326913a0f) (which we could informally refer to as v1).
+[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8), but after further feedback from the community it was noted that the need to spend an utxo on the receiving side could cause UTxO contention in the moment two or more parties would have wanted to send a programmable token to the same receiver at the same time.
+
+The specification proposed in this file addresses all the previous concerns.
+
 The proposal does not affect backward compatibilty being the first proposing a standard for programmability over transfers;
 
-exsisting native tokens are not conflicting for the standard, and instead are making it possible;
-it would be infact much harder to prove the validity of an utxo without a native token on it.
+exsisting native tokens are not conflicting for the standard, instead, native tokes are used in this specification for various purposes.
 
 ## Path to Active
 
@@ -506,13 +510,13 @@ it would be infact much harder to prove the validity of an utxo without a native
     - preprod testnet
 - having at least 2 different wallets integrating meta asset functionalities, mainly:
     - displayning balance of a specified meta asset if the user provides the address of the respecive account manager contract
-    - transaction creation with `Transfer` redeemers
+    - independent transaction creation with `Transfer` redeemers
 
 ### Implementation Plan
 <!-- A plan to meet those criteria. Or `N/A` if NOT applicable. -->
 
-- [x] [PoC implementation](https://github.com/HarmonicLabs/erc20-like)
-- [x] [showcase transactions](https://github.com/HarmonicLabs/erc20-like)
+- [ ] [PoC implementation](https://github.com/HarmonicLabs/erc20-like)
+- [ ] [showcase transactions](https://github.com/HarmonicLabs/erc20-like)
 - [ ] wallet implementation 
 
 ## Copyright
