@@ -139,7 +139,45 @@ The major advantage of the approach described in this proposal is in what it tak
 
 Exclusion of all of the irrelevant features of a regular transaction from the swaps will reduce the complexity of implementation and decrease the chance of introducing bugs into the system. This proposal is designed in the type safe spirit of Haskell, because it specifies the feature explicitly, instead of trying to abuse existing ledger rules in order to accommodate desired features. Most importantly, all transactions will continue to be balanced, as crypto gods intended them to be.
 
+### Comparison to `Validation zones`
 
+The CIP [Validation Zones](https://github.com/cardano-foundation/CIPs/pull/862) also solves some of the same problems, but in a very different way. It makes sense to compare properties of these two approaches, so that the community members could make an an educated decision on which approach is better for them.
+
+Technically speaking these two approaches do not conflict with each other and could be implemented together. However, since both of them solve some of the same problems, in my opinion we should avoid going that route.
+
+Both proposals allow for unbalanced transactions to be submited by separate parties that do not have mutual trust, which is the main problem we've set out to solve.
+
+These two proposals have different levels of complexity in respect of implementation, which we are not going to discuss here, since the point of this section is to figure out the difference in features that users of Cardano could evaluate.
+
+
+#### Plutus Context
+
+This proposal has one huge difference from the Validation Zones proposal, namely all of the scripts in a transaction, uncluding the ones in the swaps will see all of the transaction swaps in their context, because they get access to the full transaction. This comes with a benefit of allowing plutus scripts to make decisions on all of the individually unbalanced pieces. That being said it would come at a higher cost for scripts, unless we would also implement [cardano-ledger#3124](https://github.com/IntersectMBO/cardano-ledger/issues/3124), which we have plans on doing anyways. The biggest cost is extra complexity for script writers, since now inputs and withdrawals and minting scritps could now appear in two different places: in regular transactions and in swaps.
+
+#### Dependencies of transactions and collateral
+
+Another major difference is that swaps are constructed completely independently and it is only the top level transaction that combines them all together. This allows for an unlimited number of swaps to be constructed concurrently, while Validation zones have inherent dependency in their design: every transaction depends on all of the preceding transactions in the zone. From my understanding this dependency comes from the design of how colateral is specified in the zones.
+
+Here is a dependency graph of three swaps in a transaction:
+```
+    tx
+   / | \
+  /  |  \
+s1   s2  s3
+```
+while this is the dependency of equivalent setup of four transactions in a zone:
+
+```
+tx1 <- tx2 <- tx3 <- tx4
+```
+
+The decision of who pays for the collateral in Validation Zones comes with a natural benefit of deterring users from constructing transactions with phase2 validation, since the first transaction that fails phase2 validation is the one that pays for all scripts in all of the preceding transactions in the zone.
+
+In case of swaps it is up to the transaction builder to figure out which swaps together make up a phase2 valid transaction, because ultimately they will be paying for the collateral if any of the scripts do not succeed. In my personal opinion it is totally reasonable to put this responsibilty on the transaction builder, since ultimately that is the entity that will be making the money in this process.
+
+#### Full transaction vs a subset of features
+
+Validation Zones allow for full blown transactions that allow usage of features that are not relevant for the goal of solving unbalanced transactions and the feature of Babel Fees, for example voting, proposing, certificates etc. It makes no sense to include them in the swaps, since that would unnecessarily complicate the logic, while in Validation zones it would not make sense to exclude any of them for the same reason. This could be viewed as a benefit or a drawback, depending on one's point of view. One imporant thing to remember when concidering this point is that both of the approaches respet the same transaction size limit.
 
 ## Path to Active
 
