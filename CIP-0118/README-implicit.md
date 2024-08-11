@@ -68,6 +68,35 @@ incoming block), each transaction is checked against the current ledger
 state, however, additional checks
 are done at the zone level.
 
+#### Missing and extra assets 
+
+For a given transaction, let `produced` and `consumed` be the produced and consumed 
+values, respectively. Then
+
+extra assets/currency `:= { aid ↦ v | aid ↦ v ∈ consumed - produced , v > 0 }`
+
+missing assets/currency `:= { aid ↦ v | aid ↦ v ∈ produced - consumed , v > 0 }`
+
+### Transaction structure changes
+
+The structure of transactions has three new fields in `TxBody` : 
+
+1. `missing : Value`, which is a field computed at the time of deserialization, and is set to 
+missing assets/currency (defined above).
+2. `extra : Value`, which is a field computed at the time of deserialization, and is set to 
+extra assets/currency (defined above).
+3. `requiredTxs : TxId ↦ B`, which contains all the IDs of the transactions that have to be included 
+in the zone, associated to a boolean value that specifies whether the full `TxInfo` value for the 
+transaction with a given `txId` is exposed to Plutus scripts that are executed as part of validating 
+that transaction 
+
+### TxInfo
+
+The `TxInfo` shown to a Plutus script is replaced with `(TxInfo, List TxInfo)` where the first
+element of the pair is the usual `TxInfo`, including fields (1) and (2), the missing and extra value. 
+The second element is list of `TxInfo` values for all the transactions for which `(txId, True)` is included 
+in the `requiredTxs` of the transaction. 
+
 
 ### Ledger Rule Changes
 
@@ -97,24 +126,29 @@ Recall that
 it is not possible to exclude only _some_ transactions from a zone in a general way,
 so, unlike the existing design, the mempool is no able to reject individual zone transactions
 dependent on a preceding transaction being phase-2 valid. We design the `ZONE-N`
-rule to deal with this situation in a special way.
+rule to deal with this situation in a special way. 
 
 The following checks are done by both rules :
 
 1. the sum total of the sizes of all transactions in the zone is less than the `maxTxSize`
 protocol parameter (see [Network Requirements and Changes](#network-requirements-and-changes)), and
 2. the collateral provided by each transaction `tx` for script execution is sufficient
-to cover **all scripts in all transactions preceding `tx` in the zone, including `tx` itself**
+to cover **all scripts in all transactions preceding `tx` in the zone, including `tx` itself and all `requiredTxs`**
 (see [DDoS](#ddos))
 3. the `LEDGERS` transition is valid for the zone environment, transaction list,
 and initial `LState` of `ZONE` transition
 4. all collateral inputs must be in the initial `LState` UTxO set (see [DDoS](#ddos))
-6. no transaction in a zone spends an output of another transaction in the same zone (see [Flash Loans](#flash-loans))
-5. the sum total of the fees of all transactions in the zone is at least the sum of the 
+5. no transaction in a zone spends an output of another transaction in the same zone (see [Flash Loans](#flash-loans))
+6. the sum total of the fees of all transactions in the zone is at least the sum of the 
 required fees for all transactions in the zone (note that there are changes to fee and collateral requirements,
 discussed below)
-6. the sum of all `produced` calculations for all transactions in the zone is equal to
+7. the sum of all `produced` calculations for all transactions in the zone is equal to
 the sum of all `consumed` calculations for all transactions in that zone
+8. the scripts and datums required for witnessing each of the transactions are present in 
+the witness set of (at least one of) the transactions in the zone 
+9. a transaction corresponding to each `txId` in the set of `requiredTxs` of each transaction
+in the zone is also present in the zone
+
 
 **`ZONE-V`**. This rule has no additional checks.
 
@@ -132,13 +166,24 @@ The only fields updated are :
 1. the collateral inputs are removed from the UTxO (and change returned)
 2. `fees` is updated to `fees` + the collateral amount in the last transaction of the zone
 
+#### UTXOW 
+
+The `UTXOW` rule additionally checks that 
+
+1. If any of the three new transaction fields are non-empty, the transaction being validated has 
+only scripts written in the new version of Plutus.
+
+The following checks are removed :
+
+1. The checks that all scripts and all datums are present in the transaction is removed
+
 #### UTXO
 
 The `UTXO` rule is updated by :
 
 1. removing the `produced = consumed` check (this is moved to the `ZONE` rule)
-2. changing the `minfee` calculation to no longer include `+ pp .b` term 
-3. in `feesOK`, the collateral must now include `+ pp .b`, so that 
+2. removing the sufficient fees check from `feesOK`
+2. in `feesOK`, the collateral must now include `+ pp .b`, so that 
 
 `(coin bal * 100) ≥ᵇ (txfee * pp .collateralPercentage) + pp .b`
 
@@ -149,14 +194,6 @@ The `UTXOS` rule is the one that actually computes the updates to
 the UTxO state done by a transaction. The UTxO set update remains the same
 as in the existing design. 
 
-#### Missing and extra assets 
-
-For a given transaction, let `produced` and `consumed` be the produced and consumed 
-values, respectively. Then
-
-extra assets/currency `:= { aid ↦ v | aid ↦ v ∈ consumed - produced , v > 0 }`
-
-missing assets/currency `:= { aid ↦ v | aid ↦ v ∈ produced - consumed , v > 0 }`
 
 ### System Component Changes
 
@@ -257,7 +294,7 @@ Please note that the most up-to-date prototype branch is `babel-fees-prototyping
 
 #### Transaction structure
 
-Probably no changes
+...
 
 #### Ledger State
 
@@ -269,11 +306,11 @@ The changes follow the specification changes
 
 #### CBOR
 
-Probably no changes
+...
 
 ### New Plutus Version
 
-Probably don't need one 
+A new Plutus version is required. This version must accept the new structure of `TxInfo`.
 
 ### Consensus
 
@@ -536,12 +573,22 @@ may be required.
 **Fee and collateral payment modification makes sense**. Transaction fees have 
 three components : per-transaction, per-size, and script execution. The total size-based fees paid by 
 all transactions in a zone are always proportional to the zone's size, same as 
-in the existing design (but on the transaction level). Since the maximum zone 
+in the existing design (but on the transaction level). In this model, fees can be paid by any transaction(s) 
+in the zone, so long as the total amount is sufficient to cover all required 
+fees for all transactions. Since the maximum zone 
 size is the same as max transaction size, the per-transaction component fee is only required 
 to be paid once per zone. The collateral must always include the per-transaction 
 amount in addition to the script-execution amount of fees. Collected collateral 
 always covers fees for all scripts executed in the entire zone prior to the failing 
 script. This is ensured by the checks in the `ZONE` transition.
+
+**Scripts can inspect other transactions in the zone**. The `requiredTxs` field 
+allows users to specify additional transactions on which a given transaction 
+depends. The resulting dependency graph can be any directed acyclic graph. 
+The required transactions can, but do not have to be, shown to Plutus scripts. 
+Only new-version scripts can be run in transactions with non-trivial new fields.
+Running scripts that do not inspect additional transaction data will require 
+less execution units. 
 
 **Value flow modification makes sense**. Proving in Agda the POV property at the 
 zone level is in progress, but no problems are foreseen here. The requirement 
