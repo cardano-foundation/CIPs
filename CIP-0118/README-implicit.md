@@ -90,12 +90,17 @@ in the zone, associated to a boolean value that specifies whether the full `TxIn
 transaction with a given `txId` is exposed to Plutus scripts that are executed as part of validating 
 that transaction 
 
+The field `requiredFullTxBodies : Tx` is included in `Tx` to enable passing the full transaction data 
+to Plutus scripts. This field is computed at the time of deserialization to contain all transactions 
+corresponding to each `(txId, True)` in `requiredTxs`, with the `requiredTxs` field instantiated to `{}`.
+Possibly, this field should be of type `TxInfo` instead.
+
 ### TxInfo
 
 The `TxInfo` shown to a Plutus script is replaced with `(TxInfo, List TxInfo)` where the first
 element of the pair is the usual `TxInfo`, including fields (1) and (2), the missing and extra value. 
-The second element is list of `TxInfo` values for all the transactions for which `(txId, True)` is included 
-in the `requiredTxs` of the transaction. 
+The second element is a list of `TxInfo` values for all the transactions for which `TxInfo` (or `Tx`) is included 
+in the `requiredFullTxBodies` field.
 
 
 ### Ledger Rule Changes
@@ -133,7 +138,7 @@ The following checks are done by both rules :
 1. the sum total of the sizes of all transactions in the zone is less than the `maxTxSize`
 protocol parameter (see [Network Requirements and Changes](#network-requirements-and-changes)), and
 2. the collateral provided by each transaction `tx` for script execution is sufficient
-to cover **all scripts in all transactions preceding `tx` in the zone, including `tx` itself and all `requiredTxs`**
+to cover **the size-based fees for all transactions corresponding to transactions in `requiredTxs`**
 (see [DDoS](#ddos))
 3. the `LEDGERS` transition is valid for the zone environment, transaction list,
 and initial `LState` of `ZONE` transition
@@ -157,14 +162,10 @@ environment, and list of transactions in the zone.
 
 **`ZONE-N`**. This rule has additional checks :
 
-1. the only transaction that is phase-2 invalid in the zone is the last transaction
+1. the first transaction in the zone is phase-1 valid but phase-2 invalid
 
-The updated state in this rule is not the state computed by applying `LEDGERS`.
-We discard that state, and instead specify the updated `LState` directly.
-The only fields updated are :
-
-1. the collateral inputs are removed from the UTxO (and change returned)
-2. `fees` is updated to `fees` + the collateral amount in the last transaction of the zone
+The updated state in this rule is the state computed by applying `LEDGERS`
+by applying just that one transaction. 
 
 #### UTXOW 
 
@@ -323,8 +324,8 @@ which will be `List (List Tx)` instead of `List Tx`.
 The mempool must switch to operating on zones instead of singleton transactions.
 It must also support adding _part of a zone_ to a block in the case of phase-2
 validation failure. That is, if a phase-2 invalid transaction is encountered
-during zone validation, subsequent transactions are not validated, and only the transactions
-validated up to and including this first phase-2 failing one are included in the
+during zone validation, subsequent transactions are not validated, and only that 
+phase-2 failing transaction, together with its required transactions, are included in the
 zone. This partial zone is then included in the block.
 
 ### Network Requirements and Changes
@@ -358,7 +359,7 @@ an existing one, as well as add,
 remove, and reorder transactions within an existing one. Determining the size of
 a zone, and submitting a zone
 to the network must be possible. Some special zone-level collateral calculation
-functionality must also be implemented (see [DDoS](#ddos)).
+functionality must also be implemented to accommodate `requiredTxs` (see [DDoS](#ddos)).
 
 Note that it may be possible that a part of a (valid) validation zone itself constitutes
 a valid validation zone, e.g. if the partial zone is balanced. 
@@ -441,28 +442,23 @@ To address this problem, we have defined the `ZONE-N` rule of `ZONE`. It require
 that the collateral of each transaction
 
 - comes from the UTxO set to which the _zone_, rather than the transaction, is applied
-- covers the cost of running all scripts in all preceding transactions (itself included)
+- covers the size-based fee for the transactions corresponding to `requiredTxs` transactions 
+in addition to itself
 
-This guarantees that enough collateral can
-always be collected the last transaction in a zone to cover all scripts that have been
-run during block validation as well as during mempool validation, compensating nodes
-for their validation work.
+The `ZONE-N` rule only applies whenever there is one phase-2 invalid transaction `tx`
+in the list. The only other transactions in the zone must necessarily be 
+the transactions corresponding to `requiredTxs` specified by the invalid transaction. We do no validate
+the `requiredTxs` at all, but the memory they take up in a block must be 
+covered by collateral collected from `tx`. For this reason, the collateral of `tx` 
+must be enough to cover the requirement for `tx` itself, plus the size-based 
+fee required to cover the transactions in `requiredTxs`. 
 
-The `ZONE-N` rule only applies whenever there is exactly one invalid transaction
-in the list, and it is the last one. It is not the case that we expect that a zone will always phase-2 fail at
-the last transaction. Rather, a mempool should stop validating and drop transactions
-that follow a phase-2 failing transaction, and constructs the block with the
-truncated zone (see [Mempool](#mempool)).
-
-Also, there is no way to check whether a `ZONE-N` valid
-zone is also missing transactions that preceded the phase-2 invalid transaction
-in the original zone. Only missing transactions on which the invalid transaction depends
-directly or via intermediate transactions (and either via spending its outputs or
-spending its requests) will cause a phase-1 failure. Dropping transactions that
-aren't needed for phase-1 validation of a phase-2 invalid zone will free up space
-for additional zones/transactions in a block.
-
-
+It is not the case that we expect that a zone will always phase-2 fail at
+the last transaction. Rather, a mempool should stop validating a zone, and 
+instead construct a new zone, including only the script-failing transaction 
+and its `requiredTxs` (so that scripts can be executed on the data they require). 
+This new zone should be included 
+in the block (see [Mempool](#mempool)).
 
 ### Flash Loans
 
@@ -578,9 +574,8 @@ in the zone, so long as the total amount is sufficient to cover all required
 fees for all transactions. Since the maximum zone 
 size is the same as max transaction size, the per-transaction component fee is only required 
 to be paid once per zone. The collateral must always include the per-transaction 
-amount in addition to the script-execution amount of fees. Collected collateral 
-always covers fees for all scripts executed in the entire zone prior to the failing 
-script. This is ensured by the checks in the `ZONE` transition.
+amount in addition to the script-execution amount of fees. Collateral 
+collection works as before.
 
 **Scripts can inspect other transactions in the zone**. The `requiredTxs` field 
 allows users to specify additional transactions on which a given transaction 
