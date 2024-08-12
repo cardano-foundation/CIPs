@@ -327,20 +327,20 @@ A *party* operates a node and controls its cryptographic keys. Parties are, of c
 
 ```agda
 postulate
-  PartyId : Set
-  _≟-party_ : DecidableEquality PartyId
+  Party : Set
+  _≟-party_ : DecidableEquality Party
 
 instance
-  iDecEqPartyId : DecEq PartyId
-  iDecEqPartyId .DecEq._≟_ = _≟-party_
+  iDecEqParty : DecEq Party
+  iDecEqParty .DecEq._≟_ = _≟-party_
 ```
 
 Honest parties follow the protocol's rules, but corrupt parties might choose not to. 
 
 ```agda
-data Honesty : PartyId → Set where
-  Honest : ∀ {p : PartyId} → Honesty p
-  Corrupt : ∀ {p : PartyId} → Honesty p
+data Honesty : Party → Set where
+  Honest : ∀ {p : Party} → Honesty p
+  Corrupt : ∀ {p : Party} → Honesty p
 ```
 
 The honesty of parties participating in the protocol is represented in this specification.
@@ -369,7 +369,7 @@ record Block : Set  -- Blocks will be defined later in this specification.
 
 postulate
   LeadershipProof : Set
-  IsSlotLeader : PartyId → SlotNumber → LeadershipProof → Set
+  IsSlotLeader : Party → SlotNumber → LeadershipProof → Set
   IsBlockSignature : Block → Signature → Set
 ```
 
@@ -383,7 +383,7 @@ record VotingWeight : Set where
 
 postulate
   MembershipProof : Set
-  IsCommitteeMember : PartyId → RoundNumber → VotingWeight → MembershipProof → Set
+  IsCommitteeMember : Party → RoundNumber → VotingWeight → MembershipProof → Set
   IsVoteSignature : Vote → Signature → Set
 ```
 
@@ -395,7 +395,7 @@ postulate
 record Vote where
   constructor MkVote
   field votingRound : RoundNumber
-        creatorId   : PartyId
+        creatorId   : Party
         weight      : VotingWeight
         proofM      : MembershipProof
         blockHash   : Hash Block
@@ -488,7 +488,7 @@ record BlockBody : Set where
 record Block where
   constructor MkBlock
   field slotNumber : SlotNumber
-        creatorId : PartyId
+        creatorId : Party
         parentBlock : Hash Block
         certificate : Maybe Certificate  -- NB: New in Peras and not present in Praos.
         leadershipProof : LeadershipProof
@@ -608,7 +608,7 @@ Messages are put into an *envelope* and assigned to a party. Such messages can b
   record Envelope : Set where
     constructor ⦅_,_,_,_⦆
     field
-      partyId : PartyId
+      partyId : Party
       honesty : Honesty partyId
       message : Message
       delay : Delay
@@ -779,7 +779,7 @@ module Semantics
            ⦃ _ : Network ⦄
            {T : Set} {blockTree : TreeType T}
            {S : Set} {adversarialState₀ : S}
-           {txSelection : SlotNumber → PartyId → List Tx}
+           {txSelection : SlotNumber → Party → List Tx}
            {parties : Parties}
            where
     open Params ⦃...⦄
@@ -901,7 +901,7 @@ The small-step semantics rely on a global state, which consists of several piece
       constructor ⟦_,_,_,_,_⟧
       field
         clock : SlotNumber
-        blockTrees : AssocList PartyId T
+        blockTrees : AssocList Party T
         messages : List Envelope
         history : List Message
         adversarialState : S
@@ -965,7 +965,7 @@ Ticking the global clock increments the slot number and decrements the delay of 
 
 New messages are buffered, recorded in the global history, and will update a party's portion of the global state.
 ```agda
-    _,_,_,_⇑_ : Message → Delay → PartyId → T → State → State
+    _,_,_,_⇑_ : Message → Delay → Party → T → State → State
     m , d , p , l ⇑ M =
       record M
         { blockTrees = set p l blockTrees
@@ -981,7 +981,7 @@ New messages are buffered, recorded in the global history, and will update a par
 This occurs when a message diffuses to new parties.
 
 ```agda
-    add_to_diffuse_ : (Message × Delay × PartyId) → T → State → State
+    add_to_diffuse_ : (Message × Delay × Party) → T → State → State
     add (m@(ChainMsg x) , d , p) to t diffuse M = m , d , p , newChain t x ⇑ M
     add (m@(VoteMsg x) , d , p) to t diffuse M = m , d , p , addVote t x ⇑ M
 ```
@@ -991,7 +991,7 @@ This occurs when a message diffuses to new parties.
 A party receives messages from the global state by fetching messages assigned to the party, updating the local block tree, and putting the local state back into the global state.
 
 ```agda
-    data _⊢_[_]⇀_ : {p : PartyId} → Honesty p → State → Message → State → Set
+    data _⊢_[_]⇀_ : {p : Party} → Honesty p → State → Message → State → Set
       where
 ```
 
@@ -1028,7 +1028,7 @@ An adversarial party might delay a message.
 Votes are created with the required information about committee membership and the block being voted for.
 
 ```agda
-    createVote : SlotNumber → PartyId → VotingWeight → MembershipProof → Signature → Hash Block → Vote
+    createVote : SlotNumber → Party → VotingWeight → MembershipProof → Signature → Hash Block → Vote
     createVote s p w prf sig hb =
       record
         { votingRound = v-round s
@@ -1053,7 +1053,7 @@ Voting updates the party's local state and for all other parties a message is re
 
 ```agda
     infix 2 _⊢_⇉_
-    data _⊢_⇉_ : {p : PartyId} → Honesty p → State → State → Set where
+    data _⊢_⇉_ : {p : Party} → Honesty p → State → State → Set where
     
       honest : ∀ {p} {t} {M} {w} {π} {σ} {b}
         → let
@@ -1104,7 +1104,7 @@ Certificates are conditionally added to a block, typically near the beginning of
 Blocks are created with the require information.
 
 ```agda
-    createBlock : SlotNumber → PartyId → LeadershipProof → Signature → T → Block
+    createBlock : SlotNumber → Party → LeadershipProof → Signature → T → Block
     createBlock s p π σ t =
       record
         { slotNumber = s
@@ -1136,7 +1136,7 @@ Block creation updates the party's local state, but for all other parties a mess
 
 ```agda
     infix 2 _⊢_↷_
-    data _⊢_↷_ : {p : PartyId} → Honesty p → State → State → Set where
+    data _⊢_↷_ : {p : Party} → Honesty p → State → State → Set where
 
       honest : ∀ {p} {t} {M} {π} {σ}
         → let
@@ -1166,7 +1166,7 @@ The small-step semantics describe the evolution of the global state.
 ```agda
     variable
       M N O : State
-      p : PartyId
+      p : Party
       h : Honesty p
 ```
 
