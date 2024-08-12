@@ -85,14 +85,12 @@ The structure of transactions has three new fields in `TxBody` :
 missing assets/currency (defined above).
 2. `extra : Value`, which is a field computed at the time of deserialization, and is set to 
 extra assets/currency (defined above).
-3. `requiredTxs : TxId ↦ B`, which contains all the IDs of the transactions that have to be included 
-in the zone, associated to a boolean value that specifies whether the full `TxInfo` value for the 
-transaction with a given `txId` is exposed to Plutus scripts that are executed as part of validating 
-that transaction 
+3. `requiredTxs : Set TxId`, which contains all the IDs of the transactions that have to be included 
+in the zone
 
 The field `requiredFullTxBodies : Tx` is included in `Tx` to enable passing the full transaction data 
 to Plutus scripts. This field is computed at the time of deserialization to contain all transactions 
-corresponding to each `(txId, True)` in `requiredTxs`, with the `requiredTxs` field instantiated to `{}`.
+corresponding to each `txId` in `requiredTxs`.
 Possibly, this field should be of type `TxInfo` instead.
 
 ### TxInfo
