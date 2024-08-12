@@ -1574,6 +1574,8 @@ Prior to full-scale Peras implementation, it would be possible to develop a stan
 
 This document describes the *pre-alpha* version of the Peras protocol. We anticipate a subsequent, separate CIP for an *alpha* or *beta* version of the protocol. That version will add strong guarantees for block selection prior to the voting process and will constitute a layer built upon this pre-alpha version.
 
+This machine-readable specification is pinned to [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3), the [Agda Standard Library 2.0](https://github.com/agda/agda-stdlib/tree/v2.0), and the [IOG Agda Prelude v0.1.0.0](https://github.com/input-output-hk/iog-agda-prelude/releases/tag/v0.1.0.0) via the file [flake.lock](./flake.lock). Thus it is fully and deterministically reproducible. Future revisions of the Agda code in this specification must be type checked against either those pinned versions or an upgraded future piinning of Agda and those libraries.
+
 
 ## References
 
@@ -1621,7 +1623,7 @@ The first time one runs `agda-mode` in Emacs[^14], one might have to execute `ag
      auto-mode-alist))
 ```
 
-Finally, the Nix flake [flake.nix](./flake.nix) contains the derivation for building this specification, and its lock file [flake.lock](./flake.lock) records the commit hashes of all dependencies, thus enabling a fully reproducible build.
+Finally, the Nix flake [flake.nix](./flake.nix) contains the derivation for building this specification, and its lock file [flake.lock](./flake.lock) records the commit hashes of all dependencies, thus enabling a fully reproducible set of dependencies.
 
 [^14]: https://agda.readthedocs.io/en/v2.6.4.3/tools/emacs-mode.html
 
