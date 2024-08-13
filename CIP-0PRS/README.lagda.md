@@ -19,16 +19,10 @@ License: Apache-2.0
 **TO DO**
 - [ ] Soundness proofs are complete.
 - [ ] Resolve outstanding notes, warnings, and cautions in the text.
-    - [ ] Redraw several figures.
     - [ ] Add `corrupted` constructors to two types in the specification.
     - [ ] Review weighted voting in the specification.
     - [ ] Include statement of safety and liveness proofs in the appendix?
-- [x] Add internal hyperlinks.
-- [x] Refine the "Path to active" section.
-- [x] Draft the appendices.
-- [x] Remove `iog-prelude/` folder.
-- [x] Copy edit
-- [ ] Proofread
+- [ ] Final proofread
 
 
 ## Abstract
@@ -1318,15 +1312,17 @@ The CDDL for the [certificates](#certificates) that aggregate votes is specified
 
 The Ouroboros Peras protocol achieves the goal of fast *post facto* settlement by periodically voting upon blocks of the preferred chain and giving such blocks a boost in weight if a quorum of voters vote for them in the same round. With overwhelming probability, the boost effectively "cements" the block forever unto the preferred chain, thus guarding it and prior blocks from rollbacks. The protocol operates under conditions of up to 25% adversarial stake, but reverts to the familiar Praos protocol under stronger adversarial conditions; after adversarial conditions abate, it remains in "Praos mode" for long enough to achieve chain healing, chain quality, and a common prefix. Thus, it does not weaken the worst-case security guarantees provided by Praos, though it does significantly speed settlement under "normal" non-adversarial conditions.
 
-The following diagram quantifies the settlement-time benefits of Peras[^5]. Using the [example Peras protocol parameters](#feasible-values=for-peras-protocol-parameters), one has *post facto* settlement within two minutes of a transaction's being included in a block. This means that if the transaction's block is still on the preferred chain after two minutes, then it will remain there with essentially no chance of being rolled back. Strong adversarial activity prior to the two minutes might cause the block to be rolled back, but adversarial activity after that time will not roll it back. If the transaction was rolled back in the first two minutes, then it would have to be resubmitted. So, the Peras protocol provides certainty about the fate of a transaction within a brief, fixed amount of time.
+The following plot quantifies the settlement-time benefits of Peras[^5]. Using the [example Peras protocol parameters](#feasible-values=for-peras-protocol-parameters), one has *post facto* settlement within two minutes of a transaction's being included in a block. This means that if the transaction's block is still on the preferred chain after two minutes, then it will remain there with essentially no chance of being rolled back unless the adversarial stake is stronger than approximately 25%. The solid curves in the plot represent Peras and the dashed ones represent Praos. (The Praos probabilities are consistent with the model of Gaži, Ren, and Russell[^1].) The protocol parameters are those listed in the section [Feasible values for Peras protocol parameters](#feasible-values-for-peras-protocol-parameters), but the [Markov-chain simulation of an adversary building and then strategically revealing it a private chain](https://github.com/input-output-hk/peras-design/tree/main/peras-markov) used to make the plot simplifies the protocol in a few inessential aspects (network diffusion and the $L$ parameter) and does not model the memory pool (which mitigates short honest forks). The red curve shows the *ex ante* probability that a block included in the preferred chain remains on the preferred chain in the future, never being rolled back. The green curve shows the *post facto* probability that a block which has remained on the preferred chain for 120 slots (two minutes) remains on the preferred chain in the future. For adversarial stake less than 20%, there is only a vanishingly small probability of rolling back a block if it has "survived" long enough ($U + L$ slots) to have a descendant that received a Peras boost. (The "kink" in the solid green curve relates to the cool-down rules, the particular parameters, and the details of the Markov-chain simulation.)
+
+![Comparison of settlement times for Peras and Praos](diagrams/rollback-posterior.svg)
 
 [^5]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#settlement-probabilities
 
-> [!NOTE]
-> Redraw the following diagram:
-> - Peras vs Praos
-> - Various adversarial conditions
-> - Remove the animation
+ Strong adversarial activity prior to the two minutes might cause the block to be rolled back before then, as show in the plot below, but adversarial activity after that time will not roll it back. If the transaction was rolled back in the first two minutes, then it would have to be resubmitted. So, the Peras protocol provides certainty about the fate of a transaction within a brief, fixed amount of time.
+
+![Probability of a block being rolled back in Peras and Praos](diagrams/rollback-prior.svg)
+
+The figure below shows the race between honest parties and an adversary, with % of the stake, building a private chain. If the adversary's private chain ever becomes longer than the honest public one, then the adversary can reveal their chain publicly, shortly after which time the honest parties will adopt it as their preferred chain, with the consequence of rolling back all of the blocks on the honest chain from the time when the adversary started building privately. The Peras round length is 150 slots in this simulation, and one can see jump to the right every 150 slots the probability distribution of the honest chain's weight advantage over the private adversarial chain's weight. Each jump is a boost of 10 blocks' worth of chain weight. Even after one boost of the honest chain, the adversary has essentially no chance of ever overtaking the honest chain. The "shoulder" on the left side of the probability distribution is associated with the chain entering a cool-down period because the adversary thwarted voting, so no boost occurs.
 
 ![](diagrams/markov.gif)
 
@@ -1430,15 +1426,15 @@ Three major attack vectors for Peras are (1) adversarial stake, (2) equivocation
 
 An adversary with a significant amount of stake has an appreciable likelihood of becoming a member of the Peras voting committees. Unless they possess nearly at least 50% of the total stake, they would not have sufficient adversarial strength to dominate the committee and vote for the block of their choice. (Note that Praos itself would be weakened by an adversary with 50% of the total stake anyway.) If they possessed approximately at least 25% of the stake, they could choose not to vote, with the result that no quorum would be reached and the protocol would enter a cool-down period. Therefore, an adversary with that much stake can negate the benefits of Peras by repeatedly forcing into Praos-like cool downs. The plot below indicates that for modest amounts of adversarial stake and a committee size over 500, it would be extremely difficult for an adversary to force the protocol into a cool-down period.
 
-![Plot of the probability of not having an honest quorum as a function of the adversarial fraction of stake, for various mean sizes of the voting committee.](diagrams/no-honest-quorum.plot.png)
+![Plot of the probability of not having an honest quorum as a function of the adversarial fraction of stake, for various mean sizes of the voting committee.](diagrams/no-honest-quorum.plot.svg)
 
 A malicious party with less than 25% adversarial stake can (as in Praos) create private forks and then reveal them publicly whenever they see fit. In the context of Peras, they might try to build a fork that is longer than the public, preferred fork and then reveal it just $L$ slots before the end of the current round. Since it is then the longest chain, all parties (honest and adversarial) will likely extended it with newly forged blocks. When voting occurs at the start of the next round, that formerly adversarial chain will receive the boost and the honest fork will be abandoned. Any transactions on that honest fork will be rolled back. Essentially, a strong enough adversary has some probability of rolling back a public, honest chain's blocks between $L + U$ and $L$ in the past.
 
-![An adversary builds their chain privately and then reveals it in order to receive a boost](diagrams/adversarial-chain-receives-boost-variant.diagram.png)
+![An adversary builds their chain privately and then reveals it in order to receive a boost](diagrams/adversarial-chain-receives-boost-variant.diagram.svg)
 
 The plot below illustrates how shorter rounds and stronger adversaries make such attacks more likely. It is important to note that this attack cannot roll back transactions further than the last previously recorded boost (near $U + L$ in the past). This is why Peras provides an effective *post facto* finality: once a boost appears, all of the transactions prior to that are safe. Until a boost appears, blocks are at risk in Peras just as they are in Praos.
 
-![Plot of the probability of the dishonest boost as a function of the adversarial fraction of stake and the round length.](diagrams/adversarial-chain-receives-boost-variant.plot.png)
+![Plot of the probability of the dishonest boost as a function of the adversarial fraction of stake and the round length.](diagrams/adversarial-chain-receives-boost-variant.plot.svg)
 
 Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version to a vote to some honest nodes and a different version to the other honest nodes will not affect the outcome of voting any more than if the adversary were not to vote at all. Equivocated votes burden the nodes slightly by creating extra network traffic.
 
