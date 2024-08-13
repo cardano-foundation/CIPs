@@ -1379,7 +1379,7 @@ For example, the partner-chain use case might leverage Peras as follows.
     - In the unlikely event that a cool-down period has been entered, wait for more confirmations.
 7. Complete the escrow contract on the partner chain.
 
-<span id="#confirmations"/>Taking Kraken as an example of a centralized exchange, we see in the following table[^7] the significant amounts of time required transactions to be treated as final. A technology like Peras would put Cardano in the cluster of faster-settling blockchains.
+<span id="#confirmations"/>Taking Kraken as an example of a centralized exchange, we see in the following table[^7] the significant delay required transactions to be treated as final. A technology like Peras would put Cardano in the cluster of faster-settling blockchains.
 
 | Blockchain | Confirmations Required | Approximate time (minutes) |
 | ---------- | ---------------------: | -------------------------: |
@@ -1395,14 +1395,7 @@ For example, the partner-chain use case might leverage Peras as follows.
 | Solana     |                    n/a |                          0 |
 | Tezos      |                      6 |                          3 |
 
-> [!WARNING]
-> The above table needs fact checking to make sure it does not misrepresent.
-
 [^7]: Data extracted from https://support.kraken.com/hc/en-us/articles/203325283-Cryptocurrency-deposit-processing-times on 7 August 2024.
-
-
-> [!NOTE]
-> Highlight that Peras could make Cardano a more attractive option for interoperability solutions like LayerZero, Axelar, WormHole, etc. Maybe we can even go as far to state that Peras is a pre-requisite for this? 
 
 
 ### Feasible values for Peras protocol parameters
