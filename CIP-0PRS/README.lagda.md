@@ -22,6 +22,7 @@ License: Apache-2.0
     - [ ] Redraw several figures.
     - [ ] Add `corrupted` constructors to two types in the specification.
     - [ ] Review weighted voting in the specification.
+    - [ ] Include statement of safety and liveness proofs in the appendix?
 - [x] Add internal hyperlinks.
 - [x] Refine the "Path to active" section.
 - [x] Draft the appendices.
@@ -1616,6 +1617,14 @@ The first time one runs `agda-mode` in Emacs[^14], one might have to execute `ag
 Finally, the Nix flake [flake.nix](./flake.nix) contains the derivation for building this specification, and its lock file [flake.lock](./flake.lock) records the commit hashes of all dependencies, thus enabling a fully reproducible set of dependencies.
 
 [^14]: https://agda.readthedocs.io/en/v2.6.4.3/tools/emacs-mode.html
+
+
+### Theorems
+
+See the Agda modules [`Peras.SmallStep.*`](https://github.com/input-output-hk/peras-design/tree/main/src/Peras/SmallStep) for proofs of the properties of the Peras protocol.
+
+> [!NOTE]
+> Quote the safety and liveness properties here?
 
 
 ## Copyright
