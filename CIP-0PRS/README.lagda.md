@@ -16,32 +16,29 @@ Created: 2024-08-07
 License: Apache-2.0
 ---
 
-**TO DO**
+**Required before transitioning this PR from "draft" to "ready to review"**
 - [ ] Soundness proofs are complete.
 - [ ] Resolve outstanding notes, warnings, and cautions in the text.
-    - [ ] Add `corrupted` constructors to two types in the specification.
-    - [ ] Review weighted voting in the specification.
-    - [ ] Include statement of safety and liveness proofs in the appendix?
 - [ ] Final proofread
 
 
 ## Abstract
 
-We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that introduces a voting layer for fast settlement. It is adaptively secure, supports dynamic participation, and integrates self healing. Voting provides a “boost” to blocks that receive a quorum of votes, and this dramatically reduces the roll-back probability of the boosted block and its predecessors. Fast settlement occurs in the presence of adversaries with up to one-quarter of the stake, but Praos-like safety is maintained when adversaries control more than that amount of stake. In fact, the protocol enters a “cool-down period” of Praos-like behavior when adversaries prevent voting quorums; that cool-down period is exited only when the chain has healed, achieves chain quality, and reaches a common prefix. For realistic settings of the Peras protocol parameters, blocks can be identified post-facto as being settled vs rolled-back (with overwhelming probability) after as little as two minutes. This enables use cases like partner-chains and bridges where high certainty for the status of a transaction is required in a brief time. The protocol requires the implementation of a vote-diffusion layer, certificates that aggregate votes, and one minor addition to the contents of a block.
+We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that introduces a voting layer for fast settlement. It is adaptively secure, supports dynamic participation, and integrates self healing. Voting provides a “boost” to blocks that receive a quorum of votes, and this dramatically reduces the roll-back probability of the boosted block and its predecessors. Fast settlement occurs in the presence of adversaries with up to one-quarter of the stake, but Praos-like safety is maintained when adversaries control more than that amount of stake. In fact, the protocol enters a “cool-down period” of Praos-like behavior when adversaries prevent voting quorums; that cool-down period is exited only when the chain has healed, achieves chain quality, and reaches a common prefix. For realistic settings of the Peras protocol parameters, blocks can be identified (with overwhelming probability) *post facto* as being settled versus rolled-back after as little as two minutes. This enables use cases like partner-chains and bridges where high certainty for the status of a transaction is required in a brief time. The protocol requires the implementation of a vote-diffusion layer, certificates that aggregate votes, and one minor addition to the contents of a block.
 
 
 ## Motivation: why is this CIP necessary?
 
-Under Ouroboros Praos, settlement occurs probabilistically on the Cardano blockchain, where the probability that a block will be rolled back from the preferred chain decreases exponentially as the chain grows beyond the block and where that rate of decrease is slower when  adversarial activity is stronger[^1]. Some use cases require high assurance that a block (and the transactions within it) will not be rolled back, necessitating a potentially lengthy wait before a transaction is considered "settled" or "finalize". Some major centralized exchanges, for example, require 15 confirmations (i.e., blocks) before a transaction is considered settled[^2]: this amounts to waiting 10 minutes before a consumer has their transacted funds or tokens available for subsequent use. This situation is not unique to Cardano: centralized exchanges generally require at least five minutes wait for most of the common blockchains[^2]. Partner chains and bridges may have stringent requirements for fast and highly certain settlement.
+Under Ouroboros Praos, settlement occurs probabilistically on the Cardano blockchain, where the probability that a block will be rolled back from the preferred chain decreases exponentially as the chain grows beyond the block and where that rate of decrease is slower when adversarial activity is stronger[^1]. Some use cases require high assurance that a block (and the transactions within it) will not be rolled back, necessitating a potentially lengthy wait before a transaction is considered "settled" or "finalize". Some major centralized exchanges, for example, require fifteen confirmations (i.e., blocks) before a transaction is considered settled[^2]: this amounts to waiting ten minutes before a consumer has their transacted funds or tokens available for subsequent use. This situation is not unique to Cardano: centralized exchanges generally require at least five minutes wait for most of the common blockchains[^2]. Partner chains and bridges may have stringent requirements for fast and highly certain settlement.
 
 There are several definitions of "settlement" or "finality", and precision is important when discussing these. Two noteworthy scenarios can be defined precisely.
 
 - *Ex ante* settlement probability: "What is the probability that a transaction that I just submitted will ever be rolled back?"
 - *Post facto* settlement probability: "Given that I submitted my transaction $x$ seconds ago and it has not yet been rolled back, what is the probability that it will ever be rolled back?"
 
-If one is unwilling or unable to re-submit a rolled-back transaction, then the *ex ante* probability might be of most interest. This matches use cases where there is no opportunities for the parties involved in a transaction: for example, one party might have purchased physical goods and left the vendor's premises, leaving no opportunity to resubmit a rolled-back transaction. Other use cases are better suited for *post facto* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that ever changing once they have watched the chain for that amount of time, given them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and backend infrastructure distinguish these use cases. Protocols like Peras optimize *post facto* certainty after pre-defined waiting times.
+If one is unwilling or unable to re-submit a rolled-back transaction, then the *ex ante* probability might be of most interest. This matches use cases where there is no opportunities for the parties involved in a transaction to resubmit it: for example, one party might have purchased physical goods and left the vendor's premises, leaving no chance to resubmit a rolled-back transaction. Other use cases are better suited for *post facto* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that status ever changing once they have watched the chain for the fixed amount of time, giving them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and back-end infrastructure distinguish these use cases. Protocols like Peras optimize *post facto* certainty after predefined waiting times.
 
-Ourboros Praos optimizes the worst-case scenario of highly adversarial conditions, but the Cardano blockchain typically operates in the absence of such a challenge. Optimistic protocols like Peras can take advantage of the "average case" of lower or no adversarial activity by settling transactions faster than Praos, but without sacrificing any of the security guarantees of Praos if the protocol (such as Peras) falls back to Praos-like behavior for a "safety and repair period" after adversarial conditions occur. Furthermore, they should do so without requiring radical or costly changes to the current `cardano-node` implementations. It is also desirable that settlement-related protocol changes do not interfere with other pending protocol changes like Genesis (security enhancement)[^3] and Leios (maximal throughput)[^4]. Fast settlement is a critical part of Cardano scaling, as described in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI).
+Ouroboros Praos optimizes the worst-case scenario of highly adversarial conditions, but the Cardano blockchain typically operates in the absence of such a challenge. Optimistic protocols like Peras can take advantage of the "average case" of lower or no adversarial activity by settling transactions faster than Praos, but without sacrificing any of the security guarantees of Praos if the protocol (such as Peras) falls back to Praos-like behavior for a "safety and repair period" after adversarial conditions occur. Furthermore, protocol modification like Peras should not require radical or costly changes to the current `cardano-node` implementations. It is also desirable that settlement-related protocol changes do not interfere with other pending protocol changes like Genesis (security enhancement)[^3] and Leios (maximal throughput)[^4]. Fast settlement is a critical part of Cardano scaling, as described in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI).
  
 [^1]: https://eprint.iacr.org/2022/1571.pdf
 
@@ -64,19 +61,19 @@ The following informal, non-normative, pseudo-imperative summary of the Peras pr
 - Members of the committee may [*vote*](#votes) for a block in the history of their preferred chain.
 - A [*quorum*](#quorum) of votes during the same round for the same block is memorialized as a [*certificate*](#certificates).
 - A quorum of votes for a block gives that block's weight a [*boost*](#boost).
-- The [*weight*](#weight) of a [chain](#chains) is its length plus the total of the boosts its blocks have received.
+- The [*weight*](#weight) of a [*chain*](#chains) is its length plus the total of the boosts its blocks have received.
 - The lack of a quorum in a round typically triggers a *cool-down period* where no voting occurs.
-- Relevant vote certificates are typically *recorded* in a [block](#blocks) near the start and finish of a cool-down period.
-- Certificates [*expire*](#expiration) after a specified number of slots if they haven't been included in a block.
+- Relevant vote certificates are typically *recorded* in a [*block*](#blocks) near the start and finish of a cool-down period.
+- Certificates [*expire*](#expiration) after a specified number of slots if they have not been included in a block.
 
 The protocol keeps track of the following [variables](#block-trees), initialized to the values below:
 
-- $C_\text{pref} \gets C_\text{genesis}$: preferred chain;
-- $\mathcal{C} \gets \{C_\text{genesis}\}$: set of chains;
-- $\mathcal{V} \gets \emptyset$: set of votes;
-- $\mathsf{Certs} \gets \{\mathsf{cert}_\text{genesis}\}$: set of certificates;
-- $\mathsf{cert}^\prime \gets \mathsf{cert}_\text{genesis}$: the latest certificate seen;
-- $\mathsf{cert}^* \gets \mathsf{cert}_\text{genesis}$: the latest certificate on chain.
+- $C_\text{pref} \gets C_\text{genesis}$: preferred chain
+- $\mathcal{C} \gets \{C_\text{genesis}\}$: set of chains
+- $\mathcal{V} \gets \emptyset$: set of votes
+- $\mathsf{Certs} \gets \{\mathsf{cert}_\text{genesis}\}$: set of certificates
+- $\mathsf{cert}^\prime \gets \mathsf{cert}_\text{genesis}$: the latest certificate seen
+- $\mathsf{cert}^* \gets \mathsf{cert}_\text{genesis}$: the latest certificate on chain
 
 A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 
@@ -84,14 +81,14 @@ A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 - Add any new chains in $\mathcal{C}_\text{new}$ to $\mathcal{C}$, add any new certificates contained in chains in $\mathcal{C}_\text{new}$ to $\mathsf{Certs}$.
     -  Discard any equivocated blocks or certificates: i.e., do not add them to $\mathcal{C}$ or $\mathsf{Certs}$.
 - Add $\mathcal{V}_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
-    -  Discard any equivocated votes: i.e., do not add the to $\mathcal{V}$.
+    -  Discard any equivocated votes: i.e., do not add them to $\mathcal{V}$.
 - Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}_\mathsf{P}(\cdot)$) valid chain in $\mathcal{C}$.
-    -  *If several chains have the same weight, select the one whose tip has the smallest block hash as the preferred one.*
+    -  If several chains have the same weight, select the one whose tip has the smallest block hash as the preferred one.
     - Each party $\mathsf{P}$ assigns a certain weight to every chain $C$, based on $C$'s length and all certificates that vote for blocks in $C$ that $\mathsf{P}$ has seen so far (and thus stored in a local list $\mathsf{Certs}$).
-    - Let $\mathsf{certCount}_\mathsf{P}(C)$ denote the number of such certificates, i.e., $\mathsf{certCount}_\mathsf{P}(C) := \left| \left\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\} \right|$.
-    - Then, the weight of the chain $C$ in $\mathsf{P}$'s view is $\mathsf{Wt}_\mathsf{P}(C) := \mathsf{len}(C) + B \cdot \mathsf{certCount}_\mathsf{P}(C)$ for a protocol parameter $B$.
+    - Let $\mathsf{certCount}_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}_\mathsf{P}(C) := \left| \left\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\} \right|$.
+    - Then the weight of the chain $C$ in $\mathsf{P}$'s view is $\mathsf{Wt}_\mathsf{P}(C) := \mathsf{len}(C) + B \cdot \mathsf{certCount}_\mathsf{P}(C)$ for a protocol parameter $B$.
 - Set $\mathsf{cert}^\prime$ to the certificate with the highest round number in $\mathsf{Certs}$.
-- Set $\mathsf{cert}^*$ to the certificate with the highest round number on (i.e., included in) $C_\text{pref}$.
+- Set $\mathsf{cert}^*$ to the certificate with the highest round number present in $C_\text{pref}$.
 
 [*Block creation*](#block-creation) occurs whenever party $\mathsf{P}$ is slot leader in a slot $s$, belonging to some round $r$:
 
@@ -130,15 +127,12 @@ The diagram below illustrates the key concepts and entities in Peras. In additio
 | ![Cooldown](images/cooldown.png)                        | Record a node's decision to enter cooldown period, linked to the block that triggered it. Contains the round number in which the cooldown is started, the node's id, and the truth values of the conditions that lead to the node not casting a vote and entering cooldown.           |
 | ![Node](images/node.png)                                | A node in the network, identified simply by a number. This is a marker representing the state of a node: What's the tip of its best chain, the latest "live" certificate it knows (aka $\mathsf{cert}^\prime$), and the latest on-chain certificate it knows (aka $\mathsf{cert}^*$). |
 
-> [!NOTE]
-> Would it be beneficial to include a more abstract diagram or a flow chart (UML or otherwise) here?
-
 An [online simulator for Peras](https://peras-simulation.cardano-scaling.org/) is available.
 
 
 ### Normative Peras specification in Agda
 
-The following formal, relational specification for Peras type checks using [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3). See [the Appendix](#typechecking-this-specification) for instruction on typechecking this specification with the Agda compiler.
+The following formal, relational specification for Peras type utilizes [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3). See [the Appendix](#typechecking-this-specification) for instruction on type-checking this specification with the Agda compiler.
 
 > [!TIP]
 > - This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
@@ -291,11 +285,6 @@ module _ ⦃ _ : Params ⦄ where
 
 The protocol requires a type for the result of hashing data, an empty value for that type, and an equality test for that type.
 
-> [!NOTE]
-> Show we try to eliminate `ByteString` altogether by postulating `Hash`?
-> An initial attempt at this resulted in an error that requires `Block` to be
-> inductive or coinductive.
-
 ```agda
 postulate
   ByteString : Set
@@ -368,7 +357,7 @@ postulate
   IsBlockSignature : Block → Signature → Set
 ```
 
-The voting scheme used by Peras is specified in the proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870). It involves a *proof of membership* in a round's voting committee. The function `IsCommitteeMember` verifies a party's membership in a round's voting committee and the weight of their vote and the function `IsVoteSignature` verifies that validity of a vote's signature.
+The voting scheme used by Peras is specified in the proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870). It involves a *proof of membership* in a round's voting committee. The function `IsCommitteeMember` verifies a party's membership in a round's voting committee and the weight of their vote. The function `IsVoteSignature` verifies that validity of a vote's signature.
 
 ```agda
 record Vote : Set  -- Votes will be defined later in this specification.
@@ -403,7 +392,7 @@ record Vote where
   votingRound' = getRoundNumber votingRound
 ```
 
-Votes are valid if the party and weight are correct for the round and the vote is properly signed.
+Votes are valid if the party and weight are correct for the round and if the vote is properly signed.
 
 ```agda
 ValidVote : Vote → Set
@@ -429,7 +418,7 @@ data _∻_ : Vote → Vote → Set where
 
 #### Certificates
 
-A *certificate* attends that a quorum of votes where cast during a round for the same block.
+A *certificate* attests that a quorum of votes for the same block were cast during a round.
 
 ```agda
 record Certificate : Set where
@@ -477,7 +466,7 @@ record BlockBody : Set where
 
 #### Blocks
 
-*Blocks* are identical to those in Praos, except for rare inclusion of a certificate, which may happen near the beginning or ending of a cool-down period. The other detailed contents are irrelevant for Peras, so we represent them in a slightly simplified manner.
+*Blocks* are identical to those in Praos, except for the rare inclusion of a certificate, which may happen near the beginning or ending of a cool-down period. The other detailed contents are irrelevant for Peras, so we represent them in a slightly simplified manner.
 
 ```agda
 record Block where
@@ -631,9 +620,7 @@ module _ ⦃ _ : Params ⦄ where
     field
 ```
 
-It must also conform to properties that must hold with respect to chains, certificates and votes.
-
-In particular, the genesis tree must prefer the genesis chain, have an empty set of certificates, and have an empty set of votes.
+It must also conform to properties that must hold with respect to chains, certificates and votes. First, the genesis tree must prefer the genesis chain, have an empty set of certificates, and have an empty set of votes.
 
 ```agda
       instantiated :
@@ -851,7 +838,7 @@ Voting is allowed in a round if voting has proceeded regularly in preceding roun
       r ≥ Certificate.roundNumber (latestCertSeen t) + R
 ```
 
-- `VR-2B`: The last certificate included in a party's current chain is from a round exactly $c \cdot K$ rounds ago for some $c \in ℕ$ with $c ≥ 0$. This enforces chain quality and a common prefix before leaving a cool-down period.
+- `VR-2B`: The last certificate included in a party's current chain is from a round exactly $c \cdot K$ rounds ago for some $c \in ℕ$ with $c ≥ 0$. This enforces chain quality and common prefix before leaving a cool-down period.
 
 ```agda
     VotingRule-2B : RoundNumber → T → Set
@@ -1035,7 +1022,7 @@ Votes are created with the required information about committee membership and t
         }
 ```
 
-A party can vote for a block, if
+A party can consider voting for a block, if
 
 - the current slot is the first slot in a voting round
 - the party is a member of the voting committee
@@ -1076,11 +1063,11 @@ Rather than creating a delayed vote, an adversary can honestly create it and del
 
 #### Block creation
 
-Certificates are conditionally added to a block, typically near the beginning of ending of a cool-down period. Such recording occurs if . . .
+Certificates are conditionally added to a block, typically near the beginning or ending of a cool-down period. Such recording occurs if . . .
 
-1. There is no certificate seen (recorded) from two rounds ago
-2. The last seen certificate is not expired
-3. The last seen certificate is from a later round than the last certificate on chain
+1. There is no certificate seen (recorded) from two rounds ago,
+2. The last seen certificate is not expired, and
+3. The last seen certificate is from a later round than the last certificate on chain.
 
 ```agda
     needCert : RoundNumber → T → Maybe Certificate
@@ -1096,7 +1083,7 @@ Certificates are conditionally added to a block, typically near the beginning of
         else nothing
 ```
 
-Blocks are created with the require information.
+Blocks are created with the required information.
 
 ```agda
     createBlock : SlotNumber → Party → LeadershipProof → Signature → T → Block
@@ -1122,10 +1109,10 @@ Blocks are created with the require information.
         }
 ```
 
-A party can create a new block by adding it to the local block tree and diffuse the block creation messages to the other parties. Block creation is possible, if as in Praos.
+A party can create a new block by adding it to the local block tree and diffuse the block creation messages to the other parties. Block creation is possible, if as in Praos, . . .
 
-- the block signature is correct
-- the party is the slot leader
+- the block signature is correct, and
+- the party is the slot leader.
 
 Block creation updates the party's local state, but for all other parties a message is added to the message buffer
 
@@ -1173,8 +1160,7 @@ The relation allows
 - Transitioning to next slot in the same voting round
 - Transitioning to next slot in a new voting round
 
-Note that when transitioning to the next slot we need to distinguish whether the next slot is in the same or a new voting round. This is necessary in order to detect adversarial behavior with respect to voting (adversarially not voting
-in a voting round).
+Note that when transitioning to the next slot we need to distinguish whether the next slot is in the same or a new voting round. This is necessary in order to detect adversarial behavior with respect to voting (adversarially not voting in a voting round).
 
 ```agda
     data _↝_ : State → State → Set where
@@ -1251,8 +1237,8 @@ The stake-proportional voting in Peras mimics the _sortition_ algorithm used in 
 
 Additionally one would like the following property to be provided by the voting scheme:
 
-- Voting should require minimal additional configuration (i.e., key management) for SPOs.
-- Voting and certificates construction should be fast in order to ensure we do not interfere with other operations happening in the node.
+- Voting should require minimal additional configuration (e.g., key management) for SPOs.
+- Voting and certificate construction should be fast in order to ensure it does not interfere with other operations happening in the node.
 
 The precise scheme and format for votes and certificates is immaterial to the protocol itself, but for reasons of efficiency (i.e., minimal resource usage) the selection of ALBA certificates, as described in proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870), is recommended for Peras.
 
@@ -1310,7 +1296,7 @@ The CDDL for the [certificates](#certificates) that aggregate votes is specified
 
 ## Rationale: how does this CIP achieve its goals?
 
-The Ouroboros Peras protocol achieves the goal of fast *post facto* settlement by periodically voting upon blocks of the preferred chain and giving such blocks a boost in weight if a quorum of voters vote for them in the same round. With overwhelming probability, the boost effectively "cements" the block forever unto the preferred chain, thus guarding it and prior blocks from rollbacks. The protocol operates under conditions of up to 25% adversarial stake, but reverts to the familiar Praos protocol under stronger adversarial conditions; after adversarial conditions abate, it remains in "Praos mode" for long enough to achieve chain healing, chain quality, and a common prefix. Thus, it does not weaken the worst-case security guarantees provided by Praos, though it does significantly speed settlement under "normal" non-adversarial conditions.
+The Ouroboros Peras protocol achieves the goal of fast *post facto* settlement by periodically voting upon blocks of the preferred chain and giving such blocks a boost in weight if a quorum of voters vote for them in the same round. With overwhelming probability, the boost effectively "cements" the block forever unto the preferred chain, thus guarding it and prior blocks from rollbacks. The protocol operates under conditions of up to 25% adversarial stake, but reverts to the familiar Praos protocol under stronger adversarial conditions; after adversarial conditions abate, it remains in "Praos mode" for long enough to achieve chain healing, chain quality, and a common prefix. Thus, it does not weaken the worst-case security guarantees provided by Praos, though it does significantly speed settlement under "normal" non-adversarial conditions and under weakly adversarial conditions.
 
 The following plot quantifies the settlement-time benefits of Peras[^5]. Using the [example Peras protocol parameters](#feasible-values=for-peras-protocol-parameters), one has *post facto* settlement within two minutes of a transaction's being included in a block. This means that if the transaction's block is still on the preferred chain after two minutes, then it will remain there with essentially no chance of being rolled back unless the adversarial stake is stronger than approximately 25%. The solid curves in the plot represent Peras and the dashed ones represent Praos. (The Praos probabilities are consistent with the model of Gaži, Ren, and Russell[^1].) The protocol parameters are those listed in the section [Feasible values for Peras protocol parameters](#feasible-values-for-peras-protocol-parameters), but the [Markov-chain simulation of an adversary building and then strategically revealing it a private chain](https://github.com/input-output-hk/peras-design/tree/main/peras-markov) used to make the plot simplifies the protocol in a few inessential aspects (network diffusion and the $L$ parameter) and does not model the memory pool (which mitigates short honest forks). The red curve shows the *ex ante* probability that a block included in the preferred chain remains on the preferred chain in the future, never being rolled back. The green curve shows the *post facto* probability that a block which has remained on the preferred chain for 120 slots (two minutes) remains on the preferred chain in the future. For adversarial stake less than 20%, there is only a vanishingly small probability of rolling back a block if it has "survived" long enough ($U + L$ slots) to have a descendant that received a Peras boost. (The "kink" in the solid green curve relates to the cool-down rules, the particular parameters, and the details of the Markov-chain simulation.)
 
@@ -1322,11 +1308,11 @@ The following plot quantifies the settlement-time benefits of Peras[^5]. Using t
 
 ![Probability of a block being rolled back in Peras and Praos](images/rollback-prior.svg)
 
-The figure below shows the race between honest parties and an adversary, with % of the stake, building a private chain. If the adversary's private chain ever becomes longer than the honest public one, then the adversary can reveal their chain publicly, shortly after which time the honest parties will adopt it as their preferred chain, with the consequence of rolling back all of the blocks on the honest chain from the time when the adversary started building privately. The Peras round length is 150 slots in this simulation, and one can see jump to the right every 150 slots the probability distribution of the honest chain's weight advantage over the private adversarial chain's weight. Each jump is a boost of 10 blocks' worth of chain weight. Even after one boost of the honest chain, the adversary has essentially no chance of ever overtaking the honest chain. The "shoulder" on the left side of the probability distribution is associated with the chain entering a cool-down period because the adversary thwarted voting, so no boost occurs.
+The figure below shows the race between honest parties and a modestly powerful adversary building a private chain. If the adversary's private chain ever becomes longer than the honest public one, then the adversary can reveal their chain publicly, shortly after which time the honest parties will adopt it as their preferred chain, with the consequence of rolling back all of the blocks on the honest chain from the time when the adversary started building privately. The Peras round length is 150 slots in this simulation, and one can see jump to the right every 150 slots the probability distribution of the honest chain's weight advantage over the private adversarial chain's weight. Each jump is a boost of 10 blocks' worth of chain weight. Even after one boost of the honest chain, the adversary has essentially no chance of ever overtaking the honest chain. The "shoulder" on the left side of the probability distribution is associated with the chain entering a cool-down period because the adversary thwarted voting, so no boost occurs. (This shoulder is what causes the kink in the *post facto* Peras scenario of the plot of roll-back probability discussed near the beginning of this section.)
 
 ![](images/markov.gif)
 
-Peras is compatible with many stake-based voting schemes, which means it has synergies with protocol enhancements like Ouroboros Genesis and Leios. Because Peras only modifies Praos's chain-weight computation, its effects are mostly orthogonal to other existing and proposed aspects of Ouroboros. Peras utilizes the node's existing cryptographic primitives and keys, so it does not require any new key exchanges.
+Peras is compatible with many stake-based voting schemes, which means it has synergies with protocol enhancements like Ouroboros Genesis and Leios. Because Peras only modifies Praos's chain-weight computation and adds voting, its effects are mostly orthogonal to other existing and proposed aspects of Ouroboros. Peras utilizes the node's existing cryptographic primitives and keys, so it does not require any new key exchanges.
 
 Peras is straightforward to implement, as it requires the following additions to the node, which have minimal or modest impact on node resources[^6].
 - Chain selection that includes the boosting from certificates
@@ -1337,9 +1323,9 @@ Peras is straightforward to implement, as it requires the following additions to
 
 [^6]: https://peras.cardano-scaling.org/docs/reports/tech-report-2#resources-impact-of-peras
 
-The impact of Peras upon nodes falls into four categories: [network](#network), [CPU](#cpu), [memory](#memory), and [storage](#persistent-storage). We have provided [evidence](#votes--certificates) that the CPU time required to construct and verify votes and certificates is much smaller than the duration of a voting round. Similarly, the [memory](#memory) needed to cache votes and certificates and the [disk space](#persistent-storage) needed to persist certificates is trivial compared to the memory needed for the UTXO set and the disk needed for the blocks.
+The impact of Peras upon nodes falls into four categories: [network](#network), [CPU](#cpu), [memory](#memory), and [storage](#persistent-storage). [Evidence](#votes--certificates) is provided that the CPU time required to construct and verify votes and certificates is much smaller than the duration of a voting round. Similarly, the [memory](#memory) needed to cache votes and certificates and the [disk space](#persistent-storage) needed to persist certificates are trivial compared to that needed for the UTXO set and the disk needed for the blocks.
 
-On the networking side, our [ΔQ studies](#vote-diffusion) demonstrate that diffusion of Peras votes and certificates consumes minimal bandwidth and would not interfere with other node operations such as memory-pool and block diffusion. However, [diffusion of votes and certificates](#network-traffic) across a network will still have a noticeable impact on the _volume_ of data transfer, in the order of 20%, which might translate to increased operating costs for nodes deployed in cloud providers.
+On the networking side, [the ΔQ studies](#vote-diffusion) demonstrate that diffusion of Peras votes and certificates consumes minimal bandwidth and would not interfere with other node operations such as memory-pool and block diffusion. However, [diffusion of votes and certificates](#network-traffic) across a network will still have a noticeable impact on the _volume_ of data transfer, on the order of 20%, which might translate to increased operating costs for nodes deployed in cloud providers.
 
 The remainder of this section outlines the use cases for Peras, discusses its mitigation of attacks, and summarizes it resource requirements.
 
@@ -1355,9 +1341,9 @@ Peras primarily benefits use cases where a party needs certainty, after a fixed 
     2. If the block is not on the preferred chain, then it has been rolled back and needs to be resubmitted.
     3. If the block is on the preferred chain but there is no boost, then the chain has entered a cool-down period and the party want to wait for more confirmation, as one does currently in Praos.
 
-Note that the third ("cool down") case would only occur if voting was prevented by a substantial disruption such as widespread loss of network connectivity or an attack. Reasonable values for $U$ and $L$ are 90 and 30 seconds, respectively, which means that settled vs rolled-back would be certain in two minutes.
+Note that the third ("cool down") case would only occur if voting was prevented by a substantial disruption such as widespread loss of network connectivity or an attack. Reasonable values for $U$ and $L$ are 90 and 30 seconds, respectively, which means that settled versus rolled-back would be certain in two minutes.
 
-Specific use cases involving time-constrained, high-value transactions conform to this generic pattern. When the value at risk is low, a one-in-a-million chance of a rollback might not be as concerning as it would be for a large transaction.
+Specific use cases involving time-constrained, high-value transactions conform to this generic pattern. When the value at risk is low, a one-in-a-million chance of a rollback might not be as concerning as it would be for a large transaction. Examples follow:
 
 - Centralized exchanges, where fast settlement improves the user convenience and experience
 - Partner chains and bridges, where certainty about synchronization between two chains is essential
@@ -1376,7 +1362,7 @@ For example, the partner-chain use case might leverage Peras as follows.
     - In the unlikely event that a cool-down period has been entered, wait for more confirmations.
 7. Complete the escrow contract on the partner chain.
 
-<span id="#confirmations"/>Taking Kraken as an example of a centralized exchange, we see in the following table[^7] the significant delay required transactions to be treated as final. A technology like Peras would put Cardano in the cluster of faster-settling blockchains.
+<span id="#confirmations"/>Taking Kraken as an example of a centralized exchange, we see in the following table[^7] the significant delay required for transactions to be treated as final. A technology like Peras would put Cardano in the cluster of faster-settling blockchains.
 
 | Blockchain | Confirmations Required | Approximate time (minutes) |
 | ---------- | ---------------------: | -------------------------: |
@@ -1397,7 +1383,7 @@ For example, the partner-chain use case might leverage Peras as follows.
 
 ### Feasible values for Peras protocol parameters
 
-Based on the analyses in the [Peras Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#defining-protocol-parameters-values), a reasonable set of default [protocol parameters](#protocol-parameters) for further study, simulation, and discussion is show in the table below. The optimal values for a real-life blockchain would depend strongly upon external requirements such as balancing settlement time against resisting adversarial behavior at high values of adversarial stake. This set of parameters is focused on the use case of knowing soon whether a block is settled or rolled back; other sets of parameters would be optimal for use cases that reduce the probability of roll-back at the expense of waiting longer for settlement.
+Based on the analyses in the [Peras Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#defining-protocol-parameters-values), a reasonable set of default [protocol parameters](#protocol-parameters) for further study, simulation, and discussion is show in the table below. The optimal values for a real-life blockchain would depend somewhat upon external requirements such as balancing settlement time against resisting adversarial behavior at high values of adversarial stake. This set of parameters is focused on the use case of knowing soon whether a block is settled or rolled back; other sets of parameters would be optimal for use cases that reduce the probability of roll-back at the expense of waiting longer for settlement.
 
 | Parameter              | Symbol           | Units   | Value | Rationale                                                            |
 | ---------------------- | ---------------- | ------- | ----: | -------------------------------------------------------------------- |
@@ -1428,7 +1414,7 @@ An adversary with a significant amount of stake has an appreciable likelihood of
 
 ![Plot of the probability of not having an honest quorum as a function of the adversarial fraction of stake, for various mean sizes of the voting committee.](images/no-honest-quorum.plot.svg)
 
-A malicious party with less than 25% adversarial stake can (as in Praos) create private forks and then reveal them publicly whenever they see fit. In the context of Peras, they might try to build a fork that is longer than the public, preferred fork and then reveal it just $L$ slots before the end of the current round. Since it is then the longest chain, all parties (honest and adversarial) will likely extended it with newly forged blocks. When voting occurs at the start of the next round, that formerly adversarial chain will receive the boost and the honest fork will be abandoned. Any transactions on that honest fork will be rolled back. Essentially, a strong enough adversary has some probability of rolling back a public, honest chain's blocks between $L + U$ and $L$ in the past.
+A malicious party with less than 25% adversarial stake can (as in Praos) create private forks and then reveal them publicly whenever they see fit. In the context of Peras, they might try to build a fork that is longer than the public, preferred fork and then reveal it just $L$ slots before the end of the current round. Since it is then the longest chain, all parties (honest and adversarial) will likely extended it with newly forged blocks. When voting occurs at the start of the next round, that formerly adversarial chain will receive the boost and the honest fork will be abandoned essentially forever. Any transactions on that honest fork will be rolled back. Essentially, a strong enough adversary has some probability of rolling back a public, honest chain's blocks between $L + U$ and $L$ in the past.
 
 ![An adversary builds their chain privately and then reveals it in order to receive a boost](images/adversarial-chain-receives-boost-variant.diagram.svg)
 
@@ -1436,7 +1422,7 @@ The plot below illustrates how shorter rounds and stronger adversaries make such
 
 ![Plot of the probability of the dishonest boost as a function of the adversarial fraction of stake and the round length.](images/adversarial-chain-receives-boost-variant.plot.svg)
 
-Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version to a vote to some honest nodes and a different version to the other honest nodes will not affect the outcome of voting any more than if the adversary were not to vote at all. Equivocated votes burden the nodes slightly by creating extra network traffic.
+Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version of a vote to some honest nodes and a different version to the other honest nodes will not affect the outcome of voting any more than if the adversary were not to vote at all. Equivocated votes burden the nodes slightly by creating extra network traffic.
 
 Natural events or adversaries might interfere with the diffusion of votes over the network. Peras voting is not affected so long as the network diffuses at least the 75% threshold for reaching a quorum. One quarter of the votes could be lost, dishonest, or withheld. Furthermore, the Peras $L$ parameter ensures that there is plenty of time for honest blocks to diffuse and for them to be in a common prefix of the active forks before voting begins. The Peras $R$ parameter, the number of slots for which certificates (votes) are ignored once a cool-down period starts, guards against an adversary holding onto votes and then releasing them to try to revert an already-begun cool-down period.
 
@@ -1462,17 +1448,17 @@ A fully non-synced node will have to catch-up with the _tip_ of the chain and th
 | 3 months     | 16.68       | 3.69              |
 | 6 months     | 33.36       | 7.38              |
 
-The Peras [Technical Report #1](https://peras.cardano-scaling.org/docs/reports/tech-report-1#network-performance-analysis) and [Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#vote-diffusion) document network performance analysis for vote diffusion in Peras, using a ΔQ model[^10] to evaluate the expected delay to reach _quorum_. The plot below graph tends to demonstrate vote diffusion should be non-problematic, with a quorum expected to be reached in under 1 second most of the time to compare with a round length of about 2 minutes.
+The Peras [Technical Report #1](https://peras.cardano-scaling.org/docs/reports/tech-report-1#network-performance-analysis) and [Technical Report #2](https://peras.cardano-scaling.org/docs/reports/tech-report-2#vote-diffusion) document network performance analysis for vote diffusion in Peras, using a ΔQ model[^10] to evaluate the expected delay to reach _quorum_. The plot below shows the diffusion of a single vote (red) and the receipt and verification of a quorum of votes (green for parallel verification of votes and blue for sequential verification of votes). The graph demonstrates that vote diffusion should be non-problematic, with a quorum expected to be reached in under 1 second most of the time to compare with a round length of about 2 minutes.
 
 ![Vote diffusion](images/vote-diffusion.svg)
 
 #### Cost
 
-Network usage and the infrastructure for the Cardano node translates to monthly costs. This can be estimated for Peras from published network pricing for a few major Cloud and well-known VPS providers, based on the share of stakes each provider is reported to support[^11], and some typical traffic pattern as exemplified by the following plot (courtesy of Markus Gufler).
+Network usage and the infrastructure for the Cardano node translates to monthly costs. This can be estimated for Peras from published network pricing for a few major Cloud and well-known VPS providers, based on the share of stakes each provider is reported to support[^11], and some typical traffic pattern as exemplified by the following plot (data courtesy of Markus Gufler).
 
-![Typical node inbound & outbound traffic](images/node-average-traffic.jpg)
+![Typical node inbound & outbound traffic](images/node-average-traffic.svg)
 
-The next table compares the cost (in US$/month) for different outgoing data transfer volumes expressed as bytes/seconds, on similar VMs tailored to cardano-node's hardware requirements[^12] (32 GB RAM, 4+ Cores, 500 GB+ SSD disk). The base cost of the VM is added to the network cost to yield total costs depending on transfer rate[^13]. For an AWS hosted SPO, which represent about 20% of the SPOs, a 14 kB/s increase in traffic would lead to a cost increase of **\$3.8/mo** (34 GB times $0.11/GB). This represents an average across the whole network: depending on the source of the vote and its diffusion pattern, some nodes might need to send a vote to more than one downstream peer which will increase their traffic, while other nodes might end up not needing to send a single vote to their own peers. Any single node in the network is expected to download each vote _at most_ once.
+The next table compares the cost (in US\$/month) for different outgoing data transfer volumes expressed as bytes/seconds, on similar VMs tailored to cardano-node's hardware requirements[^12] (32 GB RAM, 4+ Cores, 500 GB+ SSD disk). The base cost of the VM is added to the network cost to yield total costs depending on transfer rate[^13]. For an AWS hosted SPO, which represent about 20% of the SPOs, a 14 kB/s increase in traffic would lead to a cost increase of **\$3.8/mo** (34 GB times \$0.11/GB). This represents an average across the whole network: depending on the source of the vote and its diffusion pattern, some nodes might need to send a vote to more than one downstream peer which will increase their traffic, while other nodes might end up not needing to send a single vote to their own peers. Any single node in the network is expected to download each vote _at most_ once.
 
 | Provider     |     VM | 50 kB/s | 125 kB/s | 250 kB/s |
 | ------------ | -----: | ------: | -------: | -------: |
@@ -1514,7 +1500,7 @@ The [Peras Technical Report #2](https://peras.cardano-scaling.org/docs/reports/t
 A node is expected to need to keep the following data in memory:
 
 * *Votes for the latest voting round:* For a committee size of 1000 and individual vote size of 700 bytes, that amounts to 700 kB.
-* *Cached certificates for voting rounds up to settlement depth, for fast delivery to downstream nodes:* With a boost of 10/certificate, settlement depth would be in the order of 216 blocks, or 4320 seconds, which represent about 10 rounds of 400 slots. Each certificate weighing 50 kB, that's another 500 kB of data a node would need to cache in memory.
+* *Cached certificates for voting rounds up to settlement depth, for fast delivery to downstream nodes:* With a boost of 10/certificate, settlement depth would be in the order of 216 blocks, or 4320 seconds, which represent about 10 rounds of 400 slots. Each certificate weighing 50 kB, that is another 500 kB of data a node would need to cache in memory.
 
 Thus, Peras should not have any significant impact on the memory requirements of a node.
 
@@ -1554,7 +1540,7 @@ The Peras component can be treated as another *chain follower* to which new bloc
 
 The networking layer will need to accommodate two new mini-protocols for vote and certificate diffusion. In general, there are opportunities for shared voting, certificate, and diffusion components that handle Peras, Leios, and Mithril uniformly.
 
-Prior to full-scale Peras implementation, it would be possible to develop a standalone Peras prototype built upon the existing node, where the node is modified to receive chain-weight information from Peras, which acts as a chain follower and communicates with the node via an ad-hoc mechanism. Such a protoype would run on a testnet where the measurements and experiments could be conducted.
+Prior to full-scale Peras implementation, it would be possible to develop a standalone Peras prototype built upon the existing node, where the node is modified to receive chain-weight information from Peras, which acts as a chain follower and communicates with the node via an ad-hoc mechanism. Such a prototype would run on a testnet where the measurements and experiments could be conducted.
 
 
 ## Versioning
