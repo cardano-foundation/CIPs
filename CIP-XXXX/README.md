@@ -77,17 +77,25 @@ Any dApp is free to have as many "purposes" defined as suits their goals.
 
 #### Key 1: txn-inputs-hash
 
-This is a 16 bytes hash of the transaction inputs field from the transaction this auxiliary data was originally attached to. 
-The hash is generated using BLAKE2b (16 bytes). This hash anchors the auxiliary data to a particular transaction,
-if the auxiliary data is moved to a new transaction it is impossible for the txn-inputs-hash to remain the same,
-as UTXO's can only be spent once.
+This is a 16-byte hash of the transaction inputs field from the transaction to which this auxiliary data
+was originally attached. The hash is generated using BLAKE2b (16 bytes). This hash anchors the auxiliary data to a 
+specific transaction. If the auxiliary data is moved to a new transaction, it is impossible for the `txn-inputs-hash` 
+to remain the same, as UTXOs can only be spent once.
+
+The transaction input fed into the hash function should be `[*[ tx_hash, tx_index ]]`, where `tx_hash` is the
+transaction hash and `tx_index` is the index of the transaction within the block.
+
+Example data
+```cddl
+   [[h'3086bad5f0232c5ecb6fdaa22ccad6797d9d9aea91c1cacaa8b97b8b56fdb4cb, 0]]
+```
 
 This is a key to preventing replayability of the metadata, but is not enough by itself as it needs to be able to be
 made immutable, such that any change to this field can be detected.
 
 #### Key 2: previous_transaction_id
 
-This is a 32 bytes hash of the previous transaction in a chain of registration updates made by the same user.
+This is a 32-byte hash of the previous transaction in a chain of registration updates made by the same user.
 The hash is generated using BLAKE2b (32 bytes). The only registration which may not have it for a single user is their first.
 Once their first registration is made, they may only update it.
 Any subsequent update for that user who is not properly chained to the previous transaction will be ignored as invalid.
