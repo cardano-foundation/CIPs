@@ -1,0 +1,6 @@
+See project Wiki: https://github.com/cardano-foundation/CIPs/wiki
+
+To view the Wiki offline:
+
+1) git clone https://github.com/cardano-foundation/CIPs.wiki.git
+2) read Home.md first, then numbered pages in lexicographic order.
