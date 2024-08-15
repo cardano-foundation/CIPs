@@ -9,14 +9,15 @@ Authors:
   - Sandro Coretti-Drayton <sandro.coretti@iohk.io>
   - Yves Hauser <yves.hauser@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
-Implementors: 
+Implementors: Intersect
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/872
-Created: 2024-08-07
+Created: 2024-08-15
 License: Apache-2.0
 ---
 
 **Required before transitioning this PR from "draft" to "ready to review"**
+- [ ] The "Consensus" category for CIPs has been created.
 - [ ] Soundness proofs are complete.
 - [ ] Resolve outstanding notes, warnings, and cautions in the text.
 - [ ] Final proofread
@@ -83,7 +84,6 @@ A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 - Add $\mathcal{V}_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
     -  Discard any equivocated votes: i.e., do not add them to $\mathcal{V}$.
 - Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}_\mathsf{P}(\cdot)$) valid chain in $\mathcal{C}$.
-    -  If several chains have the same weight, select the one whose tip has the smallest block hash as the preferred one.
     - Each party $\mathsf{P}$ assigns a certain weight to every chain $C$, based on $C$'s length and all certificates that vote for blocks in $C$ that $\mathsf{P}$ has seen so far (and thus stored in a local list $\mathsf{Certs}$).
     - Let $\mathsf{certCount}_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}_\mathsf{P}(C) := \left| \left\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\} \right|$.
     - Then the weight of the chain $C$ in $\mathsf{P}$'s view is $\mathsf{Wt}_\mathsf{P}(C) := \mathsf{len}(C) + B \cdot \mathsf{certCount}_\mathsf{P}(C)$ for a protocol parameter $B$.
@@ -1599,14 +1599,6 @@ The first time one runs `agda-mode` in Emacs[^14], one might have to execute `ag
 Finally, the Nix flake [flake.nix](./flake.nix) contains the derivation for building this specification, and its lock file [flake.lock](./flake.lock) records the commit hashes of all dependencies, thus enabling a fully reproducible set of dependencies.
 
 [^14]: https://agda.readthedocs.io/en/v2.6.4.3/tools/emacs-mode.html
-
-
-### Theorems
-
-See the Agda modules [`Peras.SmallStep.*`](https://github.com/input-output-hk/peras-design/tree/main/src/Peras/SmallStep) for proofs of the properties of the Peras protocol.
-
-> [!NOTE]
-> Quote the safety and liveness properties here?
 
 
 ## Copyright
