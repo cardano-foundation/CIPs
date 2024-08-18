@@ -72,9 +72,9 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | isni | String | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}] |  Included in `song` with `artist` |
 | links | Map | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}] | Included in `artists` and `featured_artist` |
 | ai_generated | Boolean | "ai_generated": "true"  | Used to distinguish works that are entirely AI generated. |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"158743685", "role":["guitars", "vocals"]}]  | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  Contains `ipn` and `role`, both of which are optional |
-| ipn | String | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"158743685", "role":["guitars", "vocals"]}] |  Included in `song` within `contributing_artists`|
-| role | string | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"158743685", "role":["guitars", "vocals"]}] | Included in `song` within `contributing_artists`, declares a contributor's role/contribution to the work |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Jimmy Londo", "ipi":"158743685", "role":["guitars", "vocals"]}]  | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  May contain `ipn` or `ipi` (based on use/jurisdiction, i.e. `ipi` within the US, and enables indexing of similarly named contributors) and `role`, both of which are optional |
+| ipn | String | "contributing_artists": [{"name":"Jimmy Londo", "ipi":"158743685", "role":["guitars", "vocals"]}] |  Included in `song` within `contributing_artists` where used (typically outside US, though internationally recognized.)|
+| role | string | "contributing_artists": [{"name":"Jimmy Londo", "ipi":"158743685", "role":["guitars", "vocals"]}] | Included in `song` within `contributing_artists` (declares a contributor's role/contribution to the work), as well as `authors` (establishing role in songwriting, following "Roles" from ASCAP)|
 | series | string | "series": "That's What I call Music" | Included in `release` |
 | collection | string | "collection": "Now Dance" | Included in `release` |
 | set | string | "set": "86 - 20 Smash Dance Hits of the Year" | If the song is a part of a collection of songs, such as an album, EP, live performance, etc. that is separate from this release, it can be listed here.  Included in `song` |
@@ -97,8 +97,8 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | explicit | Boolean | "explicit": true |  Included in `song` | 
 | isrc | String | "isrc": "US-SKG-22-12345" |  Included in `song` |
 | iswc | String | "iswc": "T-123456789-Z" |  Included in `song` |
-| authors | Array\<Author\> | "authors": [{"name":"Mark Ronson", "ipi:"157896357", "share":"25%"}] | Publishers and authors will be listed here. Contains `ipi` and `share`, included in `song` |
-| ipi | String | "authors": [{"name":"Mark Ronson", ipi:"157896357", "share":"25%"}] |  Included in `song` within `authors` |
+| authors | Array\<Author\> | "authors": [{"name":"Mark Ronson", "ipi:"157896357", "share":"25%"}] | Publishers and authors will be listed here. May contain `ipi`, `role`, and `share`. Included in `song` |
+| ipi | String | "authors": [{"name":"Mark Ronson", ipi:"157896357", "role":"Composer/Author", "share":"25%"}] |  Included in `song` within `authors` and `contributing_artists`|
 | share | String | "authors": [{"name":"Mark Ronson", ipi:"157896357", "share":"25%"}] |  Included in `song` within `authors`.  Total percentage of all listed authors' shares MUST equal 100% |
 | metadata_language | String | "metadata_language": "en-US" | https://tools.ietf.org/search/bcp47 | Included in `song` |
 | country_of_origin | String | "country_of_origin": "United States" |  Included in `song` | 
@@ -190,7 +190,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                             "contributing_artists": [
                                 {
                                    "name": "<artistName>",
-                                        "ipn": "<ipn>",
+                                        "ipn": "<ipi>",
                                         "role": [
                                             "<roleDescription>",
                                             "<roleDescription>"
@@ -199,7 +199,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                 },
                                  {
                                    "name": "<artistName>",
-                                        "ipn": "<ipn>",
+                                        "ipi": "<ipi>",
                                         "role": [
                                             "<roleDescription>",
                                             "<roleDescription>"
@@ -208,7 +208,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                 },
                                  {
                                    "name": "<artistName>",
-                                        "ipn": "<ipn>",
+                                        "ipi": "<ipi>",
                                         "role": [
                                             "<roleDescription>",
                                             "<roleDescription>"
@@ -336,7 +336,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                                                                     {
                                                                                         "map": [
                                                                                             {"k": {"bytes": "6E616D65"}, "v": {"bytes": "<encoded artistName>"}},
-                                                                                            {"k": {"bytes": "69706E"}, "v": {"bytes": "<encoded IPN>"}},
+                                                                                            {"k": {"bytes": "697069"}, "v": {"bytes": "<encoded IPI>"}},
                                                                                             {"k": {"bytes": "726F6C65"}, "v": 
                                                                                                 {
                                                                                                     "array": [
