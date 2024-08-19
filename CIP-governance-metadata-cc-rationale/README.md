@@ -16,22 +16,33 @@ License: CC-BY-4.0
 ## Abstract
 
 The Conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | A First Step Towards On-Chain Decentralized Governance](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md), with the addition of many new on-chain governance artifacts.
-Some of these artifacts support the linking off-chain metadata, as a way to provide context.
+Some of these artifacts support the linking of off-chain metadata, as a way to provide context to on-chain actions.
 
-The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) standard provides a base framework for how all off-chain governance metadata should be formed and handled.
-But this is intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
+The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) standard provides a base framework for how all off-chain governance metadata can be formed and handled.
+But this standard was intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
 
-This proposal aims to provide a specification for off-chain metadata vocabulary that can be used to give context to Constitutional Committee votes.
+This proposal aims to provide a specification for the off-chain metadata vocabulary that can be used to give context to Constitutional Committee votes.
 
 ## Motivation: why is this CIP necessary?
 
-### For governance action authors
-- Provide clarity to submitters - why their proposal is unconstitutional?
+The high-level motivation for this proposal is to provide a standard which improves legitimacy of Cardano's governance system.
 
-### For voters
+### Clarity for governance action authors
+
+Governance action authors are likely to have dedicated a significant amount of time to making their action meaningful and effective (as well as a significant deposit).
+If this action is not able to be ratified by the Constitution Committee, it is fair for the author to expect a reasonable explanation from the committee.
+
+Without reasonable context being provided by the constitutional committee votes, authors may struggle to iterate upon their actions, until they are deemed constitutional.
+
+### Context for other voting bodies
+
 - Provide clarity to DReps/ada holders/SPOs
   - to show that the CC is fair and reasonable
   - so the CC don't get voted out OR "no confidenced" - this instability would risk the perceived legitimacy of the system
+
+### CC Votes are different to other types of vote
+- little overlap between this and other types of vote, so we cant reuse standards as easily
+- CIP100 comment field is fine, but not up to the requirements
 
 ## Specification
 
