@@ -116,6 +116,8 @@ console.log(`Default asset name: ${getAssetString(policy, <asset_name>, "name")}
 console.log(`Localized asset name: ${getAssetString(policy, <asset_name>, "name", "de-CH")}`);
 ```
      
+## Rationale: how does this CIP achieve its goals?
+
 ## Path to Active
 
 ### Acceptance Criteria
