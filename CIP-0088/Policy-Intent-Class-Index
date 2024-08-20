@@ -1,0 +1,14 @@
+{
+  "1": {
+    "name": "Utility Pass",
+    "description: "A token that grants the holder access or rights to something."
+    },
+  "2": {
+    "name": "Collectible",
+    "description: "A collectible asset, meant to be traded on collectible marketplaces."
+    },
+  "3": {
+    "name": "Exchange Token",
+    "description: "A token of varying functionality, meant to be traded on token exchanges."
+    }
+}
