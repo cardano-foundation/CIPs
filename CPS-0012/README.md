@@ -83,7 +83,7 @@ By adjusting query shape, providers can adjust queries to suit their architectur
 
 Secondly, is the potential monetary advantages.
 Without a standard commercial providers are able to shape their data in a way to attract customers.
-A provider's business model maybe to charge per request, this incentives them to keep the data small to increase the amount of queries by customers.
+A provider's business model may be to charge per request, which incentivises them to keep the data small to increase the number of queries by customers.
 A standardized set of queries would reduce the ability for providers to do this.
 
 #### Mitigation
