@@ -31,7 +31,7 @@ relevant information under index #6, prefixed by the number of the CIP (25 or 68
 | 4     | NSFW Flag           | 0 or 1   | No       |
 | 5     | Social Media        | Array    | No       |
 | 6     | Project/Artist Name | String   | No       |
-| 7     | Policy Intent Class | String   | No       |
+| 7     | Policy Intent Class | Integer  | No       |
 
 For details on what these fields represent and how they should be structured in the metadata, please refer to
 [Token Project Details](../common/Token-Project-Details_v1.md)
