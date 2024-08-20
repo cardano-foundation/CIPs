@@ -7,7 +7,7 @@ Authors:
     - Alexey Kuleshevich <alexey.kulehsevich@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/880
 Created: 2024-08-08
 License: [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 ---
