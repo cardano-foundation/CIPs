@@ -47,6 +47,16 @@ The on-chain technical checks of power for the
 - little overlap between this and other types of vote, so we cant reuse standards as easily
 - CIP100 comment field is fine, but not up to the requirements
 
+### Inclusion in interim constitution
+
+- Article VI Section 4 of the Interim Constitution
+
+### Tooling
+
+- Allows rationales to be machine-readable (e.g. AI training)
+- Allows rationale sections to be queryable
+- Provides a structured breakdown so it is easier to maintain contexts when translating rationales
+
 ## Specification
 
 We define an initial specification for fields which SHOULD be added to CC votes.
