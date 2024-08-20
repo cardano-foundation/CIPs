@@ -15,7 +15,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Query layers services abstract away the difficulties of indexing blockchains, offering builders API interfaces to access data. 
+Query layer services abstract away the difficulties of indexing blockchains, offering builders API interfaces to access data. 
 
 Cardano's query layers lack standardization.
 This leads to suboptimal tooling, dApp and wallet architecture.
@@ -23,7 +23,7 @@ This leads to suboptimal tooling, dApp and wallet architecture.
 ## Problem
 
 Cardano nodes offer limited options for querying chain data.
-For builders, running chain indexer infrastructure can alleviate the data availability issues of the Cardano node.
+For builders, running chain indexing infrastructure can alleviate the data availability issues of the Cardano node.
 But this brings with it large overheads in running the nodes, chain followers, data storage and data access.
 
 Query layer providers offer builders the opportunity to abstract away the infrastructure complexities of Cardano data availability, usually to some cost.
@@ -66,7 +66,7 @@ Another downside of tight coupling between wallets and query layers is that, unl
 
 ### Centralization and Ecosystem Risks
 
-Inability to interchange query layer providers results in vendor lock-in. Query layer providers are disincentivized to opensource their infrastructure setup or provide a competitive service. Dependency on a fixed set of entities to run the infrastructure makes it easier for adversaries to attack dApps by taking over the infrastructure.
+The inability to interchange query layer providers results in vendor lock-in. Query layer providers are disincentivized to opensource their infrastructure setup or provide a competitive service. Dependency on a fixed set of entities to run the infrastructure makes it easier for adversaries to attack dApps by taking over the infrastructure.
 
 Having accepted standards drastically reduces the complexity and cost for new providers to develop.
 This creates a query layer marketplace where providers can be more easily compared by customers.
@@ -75,11 +75,11 @@ This creates a query layer marketplace where providers can be more easily compar
 
 Such a standard could likely face resistance to adoption.
 
-The potential risk for commercial offerings adopting this standard is the loss of an ability to diverentiate themselves from competitors via data shape.
+The potential risk for commercial offerings adopting this standard is the loss of the ability to differentiate themselves from competitors via data shape.
 
 Differentiating themselves via data shape is useful in two ways for query layer providers.
-Firstly, data providers each use their own unique infrastructure making costs of the same query are not uniform between providers.
-By adjusting query shape providers can adjust queries to suit their architecture, ensuring speed and reducing cost.
+Firstly, data providers each use their own unique infrastructure, so the costs of the same query are not uniform between providers.
+By adjusting query shape, providers can adjust queries to suit their architecture, ensuring speed and reducing cost.
 
 Secondly, is the potential monetary advantages.
 Without a standard commercial providers are able to shape their data in a way to attract customers.
@@ -88,7 +88,7 @@ A standardized set of queries would reduce the ability for providers to do this.
 
 #### Mitigation
 
-To mitigate the impact of varying provider architecture, authors of solutions should seek to involve query layer providers in development of a standard.
+To mitigate the impact of varying provider architectures, authors of solutions should seek to involve query layer providers in the development of a standard.
 This will allow providers to voice concerns over potentially expensive or awkward queries.
 
 To address loss of avenue for differentiation, via data shape standard authors should seek to ensure there are other ways in which providers can differentiate.
@@ -98,7 +98,7 @@ These could be built into the standard such as optional batching, allowing provi
 
 ### Multi-Provider Wallets
 
-Wallets may wish to allow users to bring their own data layer provider.
+Wallets may wish to allow users to bring their own data layer provider (on public or custom networks).
 By having a standard interface wallets would be able to support this, which would reduce the wallet's operating costs.
 For the users this gives them flexibility, redundancy and the option to run their wallet on their own infrastructure. 
 
