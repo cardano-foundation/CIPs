@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 124
 Title: Extend token metadata for translations
 Category: Metadata
 Status: Proposed
