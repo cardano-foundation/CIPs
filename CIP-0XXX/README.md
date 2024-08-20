@@ -19,8 +19,6 @@ Created: 2024-08-02
 License: Apache-2.0
 ---
 
-# Cardano Decentralized Message Queue
-
 ## Abstract
 
 We propose to create a decentralized message diffusion protocol leveraging the Cardano network layer. This protocol allows to follow a topic based diffusion of messages from publishers to subscribers in a decentralized way.  
@@ -29,7 +27,7 @@ The messages can be sent and received by nodes running in a non intrusive way si
 
 In this way, we can significantly reduce the cost and effort required to build a decentralised network for message diffusion by using Cardano's established infrastructure, with limited impact on the performance and no impact on the security of the Cardano network.
 
-# Motivation
+## Motivation
 
 Mithril is a protocol based on a [Stake-based Threshold Multi-signature scheme](https://iohk.io/en/research/library/papers/mithril-stake-based-threshold-multisignatures/) which leverages the Cardano SPOs to certify data from the Cardano chain in a trustless way. Mithril is currently used in the Cardano ecosystem in order to enable fast bootstrapping of full nodes and enabling secure light wallets.
 
@@ -39,9 +37,9 @@ Other protocols in the Cardano ecosystem, such as Leios and Peras (and probably 
 
 The proposed solution is described in detail below.
 
-# Specification
+## Specification
 
-## Overview
+### Overview
 
 ![Overview](./img/overview.jpg)
 
@@ -53,13 +51,13 @@ This specification proposes to create `3` new mini-protocols in the Cardano netw
     - [**Local Message Submission mini-protocol**](#Local-Message-Submission-mini-protocol): Local submission of a message to be diffused by the Cardano network.
     - [**Local Message Notification mini-protocol**](#Local-Message-Notification-mini-protocol): Local notification of a message received from the Cardano network.
 
-## Message Submission mini-protocol
+### Message Submission mini-protocol
 
-### Description
+#### Description
 
 The node to node message submission protocol is used to transfer messages between full nodes. It follows a pull-based strategy where the server asks for new messages and the client returns them back. This protocol is designed to guard both sides against resource consumption attacks from the other side in a trustless setting. There exists a local message submission protocol which is used when the server trusts a local client as described in the [following section](#Local-Message-Submission-mini-protocol).
 
-### State machine
+#### State machine
 
 | Agency ||
 |--------|------| 
@@ -86,7 +84,7 @@ stateDiagram-v2
    
 ```
 
-#### Protocol messages
+##### Protocol messages
 
 * **MsgInit**: Initial message of the protocol.
 * **MsgRequestMessageIdsNonBlocking(ack,req)**: The server asks for new message ids and acknowledges old ids. The client immediately replies (possible with an empty list).
@@ -96,7 +94,7 @@ stateDiagram-v2
 * **MsgReplyMessages([messages])**: The client replies with a list messages.
 * **MsgClientDone**: The client terminates the mini-protocol.
 
-#### Transition table
+##### Transition table
 
 | From state | Message | Parameters | To State|
 |--------|------|----|----| 
@@ -109,7 +107,7 @@ stateDiagram-v2
 | StMessages | MsgReplyMessages | [messages] | StIdle |
 | StMessageIdsBlocking | MsgDone |  | StDone |
 
-#### CDDL encoding specification
+##### CDDL encoding specification
 
 
 ```cddl
@@ -151,7 +149,7 @@ stateDiagram-v2
 30
 ```
 
-### Client and server implementation
+#### Client and server implementation
 
 This mini-protocol is designed with two goals in mind:
 * diffuse messages with high efficiency
@@ -173,9 +171,10 @@ The protocol supports blocking and non-blocking requests:
 - the server must wait until the client has at least one message available.
 - if the current queue of the server is empty, it must use a blocking request and a non-blocking request otherwise.
 
-### Protocol authentication
+#### Protocol authentication
 
-#### Message authentication mechanism
+##### Message authentication mechanism
+
 The message body is signed with the KES key of the SPO. This signature and the operational certificate of the SPO are appended to the message which is diffused.
 
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
@@ -194,7 +193,7 @@ If any of these step fails, the message is considered as invalid, which is a pro
 > 
 > If the opcert number received is strictly lower than the previous one which has been seen, it should be considered as a protocol violation.
 
-#### Cost of authentication
+##### Cost of authentication
 
 > [!NOTE]
 > Computations are based on the assumption of a **2 ms** KES signature verification time on a virtual CPU, which may vary depending on the infrastructure.
@@ -219,9 +218,9 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 | 5 min       | 1.0%           |
 | 10 min      | 0.5%           |
 
-### Network load
+#### Network load
 
-#### Mithril extra network usage
+##### Mithril extra network usage
 
 > [!NOTE]
 > The below computations of the network throughput and volume apply a multiplicative factor of **2** to the number of messages transmitted to reflect the redundancy of the diffusion mechanism.
@@ -263,9 +262,9 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 | 5 min       | 30 GB/month  | 72 GB/month  |
 | 10 min      | 15 GB/month  | 36 GB/month  |
 
-### Infrastructure extra operating costs
+#### Infrastructure extra operating costs
 
-#### Networking traffic cost
+##### Networking traffic cost
 
 > [!NOTE]  
 > - These data apply to cloud providers which bill the traffic on the volume, not the bandwidth.
@@ -279,7 +278,7 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 | Average | 0 $/GB | 0.1 $/GB |
 
 
-#### Mithril message diffusion extra networking cost
+##### Mithril message diffusion extra networking cost
 
 For a total of `3,000` SPOs sending messages, the extra networking cost incurred for a Cardano full node is:
 
@@ -290,13 +289,13 @@ For a total of `3,000` SPOs sending messages, the extra networking cost incurred
 | 5 min       | 3 $/month   | 8 $/month   |
 | 10 min      | 2 $/month   | 4 $/month   |
 
-### Possible attacks
+#### Possible attacks
 
-#### Sybil attack
+##### Sybil attack
 
 In this attack, a malicious sender would attempt to create multiple identities impersonating SPOs. This attack is completely mitigated by the [Message authentication mechanism](#Message-authentication-mechanism) as only active SPO on the Cardano chain can be authenticated and send messages. This would be considered as a protocol violation and the malicous peer would be disconnected.
 
-#### Equivocation
+##### Equivocation
 
 In this attack, a malicious SPO would send different messages to different peers. This attack needs to be handled by the receiver of the message as the network layer does not verify the content of the message body by design.
 
@@ -304,13 +303,13 @@ In the specific case of Mithril, the individual signature is unique so there wil
 - the message embeds a valid signature and it will be accepted by the receiving Mithril aggregator.
 - the message embeds an invalid signature and it will be rejected by the receiving Mithril aggregator.
 
-#### DoS attack
+##### DoS attack
 
 In this attack, a malicous SPO would try to flood the network by sending many messages at once. In that case, the network layer could detect that the throughput of messages originating from a SPO is above a threshold and consider it as a protocol violation, thus disconnecting the malicous peer. If a peer asks for N messages and receives more than N messages, then it would also be considered as a protocol violation. Also, the way mini-protocols are implemented allows to set a maximum message size.
 
-## Local Message Submission mini-protocol
+### Local Message Submission mini-protocol
 
-### Description
+#### Description
 
 The local message submission mini-protocol is used by local clients to submit message to a local node. This mini-protocol is **not** used to diffuse messages from a core node to another. 
 
@@ -319,7 +318,7 @@ The protocol follows a simple request-response pattern:
 1. The client sends a request with a single message.
 2. The server either accepts the message (and returns a confirmation) or rejects it (and returns the reason)
 
-### State machine
+#### State machine
 
 | Agency ||
 |--------|------| 
@@ -342,14 +341,14 @@ stateDiagram-v2
    
 ```
 
-#### Protocol messages
+##### Protocol messages
 
 * **MsgSubmitMessage(message)**: The client submits a message.
 * **MsgAcceptMessage**: The server accepts the message.
 * **MsgRejectMessage(reason)**: The server rejects the message and replies with a *reason*.
 * **MsgDone**: The client terminates the mini-protocol.
 
-#### Transition table
+##### Transition table
 
 | From state | Message | Parameters | To State|
 |--------|------|----|----| 
@@ -359,9 +358,9 @@ stateDiagram-v2
 | StIdle | MsgDone |  | StDone |
 
 
-## Local Message Notification mini-protocol
+### Local Message Notification mini-protocol
 
-### Description
+#### Description
 
 The local message notification mini-protocol is used by local clients to be notified about new message received by the core node. 
 
@@ -370,7 +369,7 @@ The protocol follows a simple request-response pattern:
 1. The client sends a request with a single message.
 2. The server either accepts the message (and returns a confirmation) or rejects it (and returns the reason)
 
-### State machine
+#### State machine
 
 | Agency ||
 |--------|------| 
@@ -393,7 +392,7 @@ stateDiagram-v2
    
 ```
 
-#### Protocol messages
+##### Protocol messages
 
 * **MsgNextMessage**: The client asks for the next message.
 * **MsgHasMessage(message)**: The server has received a message.
@@ -409,11 +408,11 @@ stateDiagram-v2
 | StBusy | MsgTimeoutMessage | reason | StIdle |
 | StIdle | MsgDone |  | StDone |
 
-# Rationale
+## Rationale
 
-## Why are we proposing this CIP?
+### Why are we proposing this CIP?
 
-### For Mithril
+#### For Mithril
 
 * Mithril requires strong network foundations to support interactions between its various nodes:
 
@@ -424,14 +423,14 @@ stateDiagram-v2
   * The Cardano network is very efficient for diffusion (e.g. broadcasting) which is precisely what is needed for Mithril.
   * Mithril signer node needs to run on the same machine as the Cardano block producing node (to access the KES keys). It makes sense to use the same network layer, which will also facilitate a high level of participation.
 
-### For Cardano
+#### For Cardano
 
 * Why would it be great for Cardano to support a decentralized message queue with its network?
 
   * This is a required feature to make the Cardano ecosystem scalable.
   * The design is versatile enough to support present and future use cases.
 
-# Information Diffusion Architecture
+### Information Diffusion Architecture
 
 In this section, we propose an architecture for `Cardano` and `Mithril`. Note,
 in this section, `Mithril` is used as a placeholder for a possible `Mithril`
@@ -498,15 +497,15 @@ use the KES agent, as `cardano-node` will in the near future, to securely access
 the KES key.
 
 
-# Path to Active
+## Path to Active
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 1. A Cardano node implementing the previously described mini-protocols is released for production.
 1. A message producer node (e.g. a Mithril signer) publishing messages to the local Cardano node through mini-protocols is released.
 1. A message subscriber node (e.g. a Mithril aggregator) receiving messages from the local Cardano node is released.
 
-## Implementation Plan
+### Implementation Plan
 
 > [!WARNING]  
 > A hard-fork of the Cardano chain may be required if some information, like peer ports for an overlay network, are to be registered by the SPOs on-chain.
@@ -518,7 +517,7 @@ the KES key.
 * Implement the Cardano n2n and n2c mini-protocols in the Cardano node.
 * Implement the Cardano n2c mini-protocols in Mithril signer and aggregator nodes.
 
-# Further Reading
+## References
 
 ### Cardano network
 
@@ -535,6 +534,6 @@ Networking for Cardano Shelley**: https://ouroboros-network.cardano.intersectmbo
 * **Run a Mithril Signer node (SPO)**: https://mithril.network/doc/manual/getting-started/run-signer-node/
 * **Mithril Threat Model**: https://mithril.network/doc/mithril/threat-model
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0)
