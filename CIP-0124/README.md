@@ -90,7 +90,9 @@ The extended JSON metadata standard (CIP-25) allows flexible off- and on-chain s
 ## CDDL
 
 Extended versions of CIP-25
+
 [Version 1](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0124/cddl/version_1.cddl)
+
 [Version 2](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0124/cddl/version_2.cddl)
 
 - The new `strings` properties are optional, but if included, they must be valid JSON objects.
