@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Governance metadata - Constitutional Committee vote rationale
+Title: Governance metadata - Constitutional Committee votes
 Category: Metadata
 Status: Proposed
 Authors:
@@ -21,7 +21,7 @@ Some of these artifacts support the linking of off-chain metadata, as a way to p
 The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) standard provides a base framework for how all off-chain governance metadata can be formed and handled.
 But this standard was intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
 
-This proposal aims to provide a specification for the off-chain metadata vocabulary that can be used to give context to Constitutional Committee votes.
+This proposal aims to provide a specification for the off-chain metadata vocabulary that can be used to give context to Constitutional Committee (CC) votes.
 
 ## Motivation: why is this CIP necessary?
 
@@ -29,16 +29,19 @@ The high-level motivation for this proposal is to provide a standard which impro
 
 ### Clarity for governance action authors
 
-Governance action authors are likely to have dedicated a significant amount of time to making their action meaningful and effective (as well as a significant deposit).
-If this action is not able to be ratified by the Constitution Committee, it is fair for the author to expect a reasonable explanation from the committee.
+Governance action authors are likely to have dedicated a significant amount of time to making their action meaningful and effective (as well as locking a significant deposit).
+If this action is not able to be ratified by the CC, it is fair for the author to expect a reasonable explanation from the CC.
 
-Without reasonable context being provided by the constitutional committee votes, authors may struggle to iterate upon their actions, until they are deemed constitutional.
+Without reasonable context being provided by the CC votes, authors may struggle to iterate upon their actions, until they are deemed constitutional.
+This situation would could decrease perceived legitimacy in Cardano's governance.
 
 ### Context for other voting bodies
 
-- Provide clarity to DReps/ada holders/SPOs
-  - to show that the CC is fair and reasonable
-  - so the CC don't get voted out OR "no confidenced" - this instability would risk the perceived legitimacy of the system
+By producing a standard we hope to encourage all CC members to attach rich contextual metadata to their votes.
+This context should show CC member's decision making is fair and reasonable.
+
+This context allows the other voting bodies to adequately check the power of the CC.
+The on-chain technical checks of power for the 
 
 ### CC Votes are different to other types of vote
 - little overlap between this and other types of vote, so we cant reuse standards as easily
@@ -46,7 +49,7 @@ Without reasonable context being provided by the constitutional committee votes,
 
 ## Specification
 
-We define an initial specification for fields which SHOULD be added to constitutional committee votes.
+We define an initial specification for fields which SHOULD be added to CC votes.
 
 ### Extended Vocabulary
 
@@ -94,7 +97,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 
 ### Application
 
-Constitutional committee must include all compulsory fields to be considered CIP-XXX compliant.
+CC must include all compulsory fields to be considered CIP-XXX compliant.
 As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-XXX compliant metadata.
 
 ### Test Vector
