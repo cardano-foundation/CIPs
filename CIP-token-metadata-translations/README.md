@@ -1,6 +1,6 @@
 ---
 CIP: 124
-Title: Extend token metadata for translations
+Title: CIP-25 - Extend token metadata for translations
 Category: Metadata
 Status: Proposed
 Authors:
