@@ -87,12 +87,6 @@ The extended JSON metadata standard (CIP-25) allows flexible off- and on-chain s
 }
 ```
 
-### References
-
-- CIP about Media Token Metadata Standard [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025).
-- [[ISO-639]](https://www.iso.org/standard/4767.html) language code.
-- [[ISO-3166]](https://www.iso.org/standard/63545.html) country/region code.
-
 ## CDDL
 
 Extended versions of CIP-25
@@ -213,6 +207,12 @@ This metadata standard extension is backward compatible and it doesn't affect ap
 - [ ] Propose this method in documentation and references for web3 developers.
 - [x] NMKR has supported this CIP with peer feedback.
 - [ ] NMKR has provided a pilot implementation of this localization method.
+
+## References
+
+- CIP about Media Token Metadata Standard [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025).
+- [[ISO-639]](https://www.iso.org/standard/4767.html) language code.
+- [[ISO-3166]](https://www.iso.org/standard/63545.html) country/region code.
 
 ## Copyright
 
