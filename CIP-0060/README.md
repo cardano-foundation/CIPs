@@ -63,7 +63,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format, included in `song`  https://www.iso.org/iso-8601-date-and-time-format.html |
 | copyright | String | "copyright": {"master":"℗ 1985 Sony Records", "composition":"© 1985 Marvin Gaye"}  or <br/> "copyright": {"composition":"Public Domain", "master":"℗ 2024 Cool Guy"} | Included in `song` |
 | genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. Included in `song` |
-| release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc.   Included in `release`|
+| release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc- when minting "Multiple", be mindful of transaction limit, only utilizing vital fields.   Included in `release`|
 | music_metadata_version | Integer | "music_metadata_version" : 3 | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
 
 #### Optional Fields ###
