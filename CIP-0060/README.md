@@ -234,8 +234,305 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
     }
 }
 ```
-
-
+### Album Release ###
+```
+{
+    "721": {
+        "c00d776a22ca5db986039420b2a9b3f880d593136a9e2262fabeeb58": {
+            "ZiplineFromOuterspace": {
+                "name": "Refraktal - Zipline From Outerspace",
+                "image": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                "music_metadata_version": 3,
+                "release": {
+                    "release_type": "Album/EP",
+                    "release_title": "Zipline From Outerspace",
+                    "copyright": {
+                        "master": "℗ 2024 Refraktal",
+                        "composition": "© 2024 Refraktal"
+                    },
+                    "artists": [
+                        {
+                            "name:": "Refraktal",
+                            "isni": "0000000517483974",
+                            "links": {
+                                "website": "https://refraktal.com",
+                                "exclusive_content": "https://refraktalnft.duckdns.org"
+                            }
+                        }
+                    ],
+                    "contributing_artists": [
+                        {
+                            "name": "Sudo Scientist",
+                            "ipi": "1251891449",
+                            "role": [
+                                "guitar on VOID and Lullaby for My Demons",
+                                "synth",
+                                "programming"
+                            ]
+                        },
+                        {
+                            "name": "RX the Pharm Tech",
+                            "ipi": "1251891057",
+                            "role": [
+                                "guitar on Bellywub",
+                                "synth",
+                                "programming"
+                            ]
+                        }
+                    ],
+                    "genre": [
+                        "Electronic",
+                        "Experimental",
+                        "Psychedelic"
+                    ]
+                },
+                "files": [
+                    {
+                        "name": "Void",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Void",
+                            "song_duration": "PT4M21S",
+                            "track_number": "1",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Bellywub",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Bellywub",
+                            "song_duration": "PT5M31S",
+                            "track_number": "2",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Lullaby for my Demons",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Lullaby for My Demons",
+                            "song_duration": "PT3M11S",
+                            "track_number": "3",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Meliorism",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Meliorism",
+                            "song_duration": "PT4M21S",
+                            "track_number": "4",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Zipline From Outerspace",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Zipline From Outerspace",
+                            "song_duration": "PT3M36S",
+                            "track_number": "5",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT2M12S",
+                            "track_number": "6",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "7",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "8",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "9",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "10",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "11",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "12",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "13",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "14",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "15",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "16",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "17",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "18",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "19",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    },
+                    {
+                        "name": "Another Cool Song",
+                        "mediaType": "audio/wav",
+                        "src": "ipfs://QmeeHGqiRo8gvAfhG6MuHSTKv6rQpw2bxbnDkAPYvt9jD2",
+                        "song": {
+                            "song_title": "Another Cool Song",
+                            "song_duration": "PT3M36S",
+                            "track_number": "20",
+                            "isrc": "US-SKG-22-12345",
+                            "iswc": "T-123456789-Z"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
+```
 #### CIP-68 ###
 
 ```
