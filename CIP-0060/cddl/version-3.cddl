@@ -20,6 +20,7 @@ contributing_artist_details =
   {
     name: string,
     ? ipn: string,
+    ? ipi: string,
     ? role: [* string],
   }
 
