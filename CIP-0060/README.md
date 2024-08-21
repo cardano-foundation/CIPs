@@ -51,28 +51,28 @@ This CIP divides the additional metadata parameters into two categories of `Requ
 In version 2 of the CIP-60 spec, `album_title` has been renamed to `release_title`. `release` is a more generic name that covers all types of releases from Albums, EPs, LPs, Singles, and Compilations. At the top level, we are grouping those metadata items that relate to the release under a new key `release`. At the file for each song, there is a new `song` key that holds the metadata specific to the individual song. These changes separate the music-specific metadata from the general CIP-25/CIP-68 NFT metadata. A music player can look at just the information necessary instead of having to ignore extra NFT-related fields. CIP-68 NFTs are officially supported and an example specific to CIP-68 has been added below.
 
 ### Summary of v3  Proposed Changes ###
-Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with. `contributing_artists`, `artists`, and `featured_artists` fields are explicitly defined to reduce interpretation.  `ipi` array replaced with `author` array, which includes `ipi` key.  Removed the `parental_advisory` field, as it was redundant (`explicit` is all players need to look for). `lyricist` is removed and merged into `contributing_artist`, under `role`.  `copyright` adds `master` and `composition` to distinguish recording and composition copyright owners.
+Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the entities they are associated with. `contributing_artists`, `artists`, and `featured_artists` fields are explicitly defined to reduce interpretation.  `ipi` array replaced with `author` array, which includes `ipi` key.  Removed the `parental_advisory` field, as it was redundant (`explicit` is all players need to look for). `lyricist` is removed and merged into `contributing_artist`, under `role`.  `copyright` adds `master` and `composition` to distinguish recording and composition copyright owners.  Certain fields may be included in `release` within "Album/EP" `release_type` if they are qualifying GRAM (Group Registration for Works on an Album of Music) publications. This is done in order to help conserve data in otherwise redundant entries.
 
 ### Required Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| artists     | Array\<Artist\>   | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}]  | Players should use these values to determine the song's artist, and should be kept minimal. `isni` and `links` are optional|
+| artists     | Array\<Artist\>   | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}]  | Players should use these values to determine the song's artist, and should be kept minimal. `isni` and `links` are optional.  Included in `song` for "Single" and "Multiple" releases, and in `release` for "Album/EP" types. |
 | release_title| String | "release_title": "Mr. Bad Guy" | Included in `release` |
 | track_number | Integer | "track_number": 1 |  Included in `song` |
 | song_title | String \| Array\<String\> | "song_title": "Let's Turn it On" |  Included in `song` |
 | song_duration | String | "song_duration": "PT3M21S"  | ISO8601 Duration Format, included in `song`  https://www.iso.org/iso-8601-date-and-time-format.html |
-| copyright | String | "copyright": {"master":"℗ 1985 Sony Records", "composition":"© 1985 Marvin Gaye"}  or <br/> "copyright": {"composition":"Public Domain", "master":"℗ 2024 Cool Guy"} | Included in `song` |
-| genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. Included in `song` |
-| release_type | Enum\<String\> | "release_type": "Single" | Must be one of "Single" or "Multiple". Multiple includes anything that will have multiple tracks: Album, EP, Compilation, etc- when minting "Multiple", be mindful of transaction limit, only utilizing vital fields.   Included in `release`|
-| music_metadata_version | Integer | "music_metadata_version" : 3 | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
+| copyright | String | "copyright": {"master":"℗ 1985 Sony Records", "composition":"© 1985 Marvin Gaye"}  or <br/> "copyright": {"composition": "Public Domain", "master": "℗ 2024 Cool Guy"} | Included in `release` within "Album/EP" `release_type` (ONLY IF **ALL** compositions are owned by the same artist) , and in `song` within "Single" and "Multiple" releases. |
+| genres | Array\<String\> | "genres": ["Rock","Classic Rock"] | Limited to 3 genres total. Players should ignore extra genres. Included in `song` within "Single" and "Multiple" releases, and in `release` for "Album/EP" releases should all songs share the same `genre` values. |
+| release_type | Enum\<String\> | "release_type": "Single" | Must be "Single", "Album/EP" for GRAM (Group Registration for Works on an Album of Music- https://www.copyright.gov/rulemaking/gram/) publications, or "Multiple" (for all other cases"). "Multiple" and "Album/EP" releases need to be wary of txn size limits .  Included in `release`  |
+| music_metadata_version | Integer | "music_metadata_version" : "3" | Players should look for the presence of this field to determine if the token is a Music Token.  Use integers only. |
 
 #### Optional Fields ###
 | Field | Type | Example(s) | Notes |
 | -------- | -------- | -------- | -------- |
-| isni | String | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}] |  Included in `song` with `artist` |
-| links | Map | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}] | Included in `artists` and `featured_artist` |
+| isni | String | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}] |  Included in `song` with `artists` and `featured_artists` |
+| links | Map | "artists": [{"name": "Sick City", "isni":"xxxxxxxxxxxxx", "links:{ "website":"https://sickcity.xyz"}}] | Included in `artists` and `featured_artist`, and in `release` where applicable, i.e. if a "Multiple" `release_type` is a single artist album and has recurring links |
 | ai_generated | Boolean | "ai_generated": "true"  | Used to distinguish works that are entirely AI generated. |
-| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Jimmy Londo", "ipi":"158743685", "role":["guitars", "vocals"]}]  | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  May contain `ipn` or `ipi` (based on use/jurisdiction, i.e. `ipi` within the US; enables indexing of similarly named contributors) and `role`, both of which are optional |
+| contributing_artists |  Array\<Artist\> | "contributing_artists": [{"name":"Jimmy Londo", "ipi":"158743685", "role":["guitars", "vocals"]}]  | Contributing artist are defined as any creative contributor who is not necessarily identified as an author, but will receive performance royalties when applicable.  eg, a band would place the band name in `artists`, while the band members would be listing individually here.  Should not pass to players, but readable within metadata.  May contain `ipn` or `ipi` (based on use/jurisdiction, i.e. `ipi` within the US; enables indexing of similarly named contributors) `links`, and `role`, all of which are optional |
 | ipn | String | "contributing_artists": [{"name":"Jimmy Londo", "ipn":"158743685", "role":["guitars", "vocals"]}] |  Included in `song` within `contributing_artists` where used (typically outside US, though internationally recognized.)|
 | role | string | "contributing_artists": [{"name":"Jimmy Londo", "ipi":"158743685", "role":["guitars", "vocals"]}] | Included in `song` within `contributing_artists` (declares a contributor's role/contribution to the work), as well as `authors` (establishing role in songwriting, following "Roles" from ASCAP)|
 | series | string | "series": "That's What I call Music" | Included in `release` |
@@ -84,16 +84,16 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | visual_artist | String | "visual_artist": "beeple" | Included in `release` |
 | distributor | String | "distributor": "https://newm.io" | Included in `release` |
 | release_date | String | "release_date": "2022-07-27" | ISO8601 Date Format, included in `release` |
-| publication_date | String | "publication_date": "2022-07-27" | ISO8601 Date Format, included in `release` |
+| publication_date | String | "publication_date": "2022-07-27" | ISO8601 Date Format, included in `release` https://www.iso.org/iso-8601-date-and-time-format.html |
 | catalog_number | Integer | "catalog_number": REC#4582 | Catalog numbers for digital releases should only be entered if the label or digital distributor has given a unique catalog number for the release. Included in `release` | 
 | bitrate | String | "bitrate": "256 kbit/s" | Included in `song` |
 | bpm | String | "bpm": "120 BPM" | Included in `song`|
-| mix_engineer | String | "mix_engineer": "Robert Smith II" | Included in `song` |
+| mix_engineer | String | "mix_engineer": "Robert Smith II" |  Included in `song` for "Single" and "Multiple" `release_type`, and in `release` for "Album/EP" types (if shared across the entire release, otherwise, in `song`). |
 | mastering_engineer | String | "mastering_engineer": "Michael Tyson" | Included in `song` |
-| producer | String | "producer": "Simon Cowell" | Included in `song` |
-| co_producer | String | "co_producer": "Shavaun Dempsey" | Included in `song` |
+| producer | String | "producer": "Simon Cowell" |  Included in `song` for "Single" and "Multiple" `release_type`, and in `release` for "Album/EP" types (if shared across the entire release, otherwise, in `song`). |
+| co_producer | String | "co_producer": "Shavaun Dempsey" |  Included in `song` for "Single" and "Multiple" `release_type`, and in `release` for "Album/EP" types (if shared across the entire release, otherwise, in `song`). |
 | featured_artists | Array\<Artist\> | "featured_artists": [{"name":"Paul McCartney", isni":"xxxxxxxxx", "links"{"website":"www.paulmccartney.com"} }] | `feautured_artists` should be passed to players along with the `artists`, and should be expected to appear as "artistName(s) ft. featuredArtist(s)".  Contains `isni` and `links` keys, included in `song`  Should be kept minimal. |
-| recording_engineer | String | "recording_engineer": "Sharon Liston" |  Included in `song` |
+| recording_engineer | String | "recording_engineer": "Sharon Liston" |  Included in `song` for "Single" and "Multiple" `release_type`, and in `release` for "Album/EP" types (if shared across the entire release, otherwise, in `song`). |
 | explicit | Boolean | "explicit": true |  Included in `song` | 
 | isrc | String | "isrc": "US-SKG-22-12345" |  Included in `song` |
 | iswc | String | "iswc": "T-123456789-Z" |  Included in `song` |
@@ -106,6 +106,8 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 | derived_from | String | "derived_from" : "Some other work" |  Included in `song`|
 
 ### Examples ##
+
+### Single Release ###
 
 ```
 {
