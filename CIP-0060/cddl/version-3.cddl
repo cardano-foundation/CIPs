@@ -22,11 +22,19 @@ contributing_artist_details =
     ? ipn: string,
     ? ipi: string,
     ? role: [* string],
+    ? links: { * string => string }
   }
+
+common_music_details = (
+  ? artists : [+ artist_details],
+  ? genres: [1*3 string],
+  ? copyright: { master: string, composition: string },
+  ? contributing_artists : [* contributing_artist_details]
+)
 
 release_details = 
   {
-    release_type: "Single" / "Multiple",
+    release_type: "Single" / "Multiple" / "Album/EP",
     release_title : string,
     ? distributor: string,
     ? visual_artist: string,
@@ -35,20 +43,17 @@ release_details =
     ? catalog_number: string,
     ? series: string,
     ? collection: string,
-  }
+  } // Extend with common_music_details when release_type is "Album/EP"
+  (release_details.release_type == "Album/EP" => common_music_details)
 
 song_details = 
   {
     song_title: string / [* string],
     song_duration: string .regexp "^P(?!$)(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)$",
     track_number: uint,
-    artists : [+ artist_details],
-    genres: [1*3 string],
-    copyright: { master: string, composition: string },
     
     ? featured_artists : [* artist_details],
     ? authors: [* author_details],
-    ? contributing_artists : [* contributing_artist_details],
     ? mood: string,
     ? set: string,
     ? lyrics: string,
@@ -68,7 +73,8 @@ song_details =
     ? language: string,
     ? derived_from: string,
     ? ai_generated: bool,
-  }
+  } // Include common_music_details only when release_type is not "Album/EP"
+  (release_details.release_type != "Album/EP" => common_music_details)
 
 files_details = 
   {
