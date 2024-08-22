@@ -16,15 +16,16 @@ License: CC-BY-4.0
 The CIP proposes an extension of the current Plutus functions to provide support for the efficient computation of the multi-scalar multiplication over the BLS12-381 curve. This operation is crucial in a number of cryptographic protocols that can enhance the capabilities of the Cardano blockchain.
 
 ## Motivation: why is this CIP necessary?
-Multi-scalar multiplication (MSM) is an algebraic group operation of the following form. Let $G$ be a group of prime order `p`. Let $g_0,g_1,...,g_{N-1}$ be elements of `G` and let $e_0,e_1,...,e_{N-1}$ be elements of $Z_p$. Then, the multi-scalar multiplication `M` is calculated as $M=\sum_{i=0}^{N-1} e_i \cdot g_i$.
+Multi-scalar multiplication (MSM) is an algebraic group operation of the following form. Let $G$ be a group of prime order $p$. Let $g_0, g_1, ..., g_{N-1}$ be elements of $G$ and let $e_0, e_1, ..., e_{N-1}$ be elements of $Z_p$. Then, the multi-scalar multiplication $M$ is calculated as $M=\sum_{i=0}^{N-1} e_i \cdot g_i$.
 
-This operation appears in many cryptographic protocols. Its naive implementation requires `N` scalar multiplications and `N` group additions. However, the performance can be significantly improved by employing advanced algorithms, such as the [Pippenger Approach](https://hackmd.io/@tazAymRSQCGXTUKkbh1BAg/Sk27liTW9). Moreover, it can be further optimized for a particular group type (e.g., for elliptic curve groups).
+This operation appears in many cryptographic protocols. Its naive implementation requires $N$ scalar multiplications and $N$ group additions. However, the performance can be significantly improved by employing advanced algorithms, such as the [Pippenger Approach](https://hackmd.io/@tazAymRSQCGXTUKkbh1BAg/Sk27liTW9). Moreover, it can be further optimized for a particular group type (e.g., for elliptic curve groups).
 
 Multi-scalar multiplication appears in various cryptographic protocols, such as cryptographic signatures, zero-knowledge proofs, SNARK systems, and others. It is especially important in elliptic-curve-based SNARK proof systems, where large-scale MSMs can become a bottleneck in both proving and verification algorithms.
 
 The recent Chang upgrade in Cardano included [CIP-0381](https://cips.cardano.org/cip/CIP-0381), which introduced built-in support for operations over the BLS12-381 elliptic curve (the implementation uses [blst](https://github.com/supranational/blst/tree/master) library). It made it feasible to implement various SNARK systems on-chain in Cardano. However, MSM still remains a bottleneck for many use cases. Implementing MSM naively, even using built-in functions for BLS12-381, consumes a significant portion of the computational budget of a transaction. It hinders implementation of such SNARK systems as KZG-based PLONK or Groth16, which require computations of MSM.
 
-Our [benchmarks](https://github.com/input-output-hk/plutus-msm-bench) show that MSM of 10 `G1` points over BLS12-381 curve consumes 7.74% of the computational budget of a transaction, while MSM of size more than 129 cannot fit into a single transaction at all. It impedes verification of complex circuits which might require much larger MSM.
+Our [benchmarks](https://github.com/input-output-hk/plutus-msm-bench) show that MSM of 10 $G1$ points over BLS12-381 curve consumes 7.74% of the computational budget of a transaction, while MSM of size more than 129 cannot fit into a single transaction at all. It impedes verification of complex circuits which might require much larger MSM.
+
 We also did preliminary [benchmarks](https://github.com/dkaidalov/bench-blst-msm/) to compare an [optimized blst](https://github.com/supranational/blst/blob/e99f7db0db413e2efefcfd077a4e335766f39c27/src/multi_scalar.c) implementation of MSM with naive implementation using just blst group operations. We used Rust bindings to do these benchmarks (the underlying bindings are the same as used in [cardano-base for bslt](https://github.com/IntersectMBO/cardano-base/blob/master/cardano-crypto-class/src/Cardano/Crypto/EllipticCurve/BLS12_381/Internal.hs#L353), which means we can expect similar behavior for the Haskell stack). The results for G1 group are the following (more results in the [repository](https://github.com/dkaidalov/bench-blst-msm/)):
 
 | MSM Size | MSM Optimized Average Time | MSM Naive Average Time | Ratio Naive/Optimized |
@@ -45,12 +46,14 @@ We also did preliminary [benchmarks](https://github.com/dkaidalov/bench-blst-msm
 |     2000 |                    4.108ms |              131.453ms |                 31.99 |
 |     3000 |                    5.510ms |              195.986ms |                 35.56 |
 |     4000 |                     7.00ms |              263.722ms |                 37.67 |
+
 \* _the sudden time improvement after 32 points is attributed to the inner workings of the blst library, which may operate differently for the MSM of size less than 32 (this should be carefully analyzed when establishing costing function for MSM built-in)._
 
 As it can be seen the performance improvement rises quickly with the size of the MSM. Note that the current threshold for Plutus naive implementation is 129 points per transaction. Our [blst benchmarks](https://github.com/dkaidalov/bench-blst-msm/) show that naive MSM of size 129 takes approximately the same time as optimized MSM for more than 4000 points, which gives a hint to what improvements we can expect with a Plutus built-in for MSM. Moreover, these benchmarks do not account for the Plutus overhead to call many built-in BLS12 functions while implementing the naive MSM, so the final improvement may be even larger.
 On the other hand, it is important to mention that if those points are brought into the script as input, their number would be constrained by the size of the script and by the computational complexity of points decompression. The benchmarks of points decompression in [CIP-0381](https://cips.cardano.org/cip/CIP-0381) shows that up to 300 G1 points can be passed as input to a 16kb script. However, in real cryptographic protocols typically only a part of the points involved in MSM is passed as input, while another part is computed during the execution (e.g., in PLONK-based SNARKs).
 
 The availability of MSM built-in function in Plutus language will provide more efficient and reliable means to perform this important computation. Implementing an optimized MSM manually in Plutus deemed to be infeasible because of its complexity and because it operates at the level of basic curve operations.
+
 A nonexclusive list of cryptographic protocols that would benefit from having MSM built-in for BLS12-381 curve:
 
 1. The verification of pairing-based SNARKs over BLS12-381. For instance, the size of the MSM in Groth16 verifier depends on the number of public inputs. The size of the MSM in KZG-based PLONK verifier depends on the arithmetization structure.
