@@ -1,5 +1,5 @@
 ---
-CIP: 382?
+CIP: ?
 Title: Plutus support for Multi-Scalar Multiplication over BLS12-381
 Status: Proposed
 Category: Plutus
@@ -9,6 +9,8 @@ Authors:
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
     - IOG Plutus team
+ Discussions:
+     - https://github.com/cardano-foundation/CIPs/pull/884
 Created: 2024-08-22
 License: CC-BY-4.0
 ---
