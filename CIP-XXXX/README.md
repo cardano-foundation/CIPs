@@ -9,8 +9,8 @@ Authors:
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
     - IOG Plutus team
- Discussions:
-     - https://github.com/cardano-foundation/CIPs/pull/884
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/884
 Created: 2024-08-22
 License: CC-BY-4.0
 ---
