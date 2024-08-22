@@ -16,7 +16,7 @@ License: CC-BY-4.0
 The CIP proposes an extension of the current Plutus functions to provide support for the efficient computation of the multi-scalar multiplication over the BLS12-381 curve. This operation is crucial in a number of cryptographic protocols that can enhance the capabilities of the Cardano blockchain.
 
 ## Motivation: why is this CIP necessary?
-Multi-scalar multiplication (MSM) is an algebraic group operation of the following form. Let `G` be a group of prime order `p`. Let `g_0,g_1,...,g_{N-1}` be elements of `G` and let `e_0,e_1,...,e_{N-1}` be elements of `Z_p`. Then, the multi-scalar multiplication `M` is calculated as $M=\sum_{i=0}^{N-1} e_i\dot g_i$.
+Multi-scalar multiplication (MSM) is an algebraic group operation of the following form. Let $G$ be a group of prime order `p`. Let $g_0,g_1,...,g_{N-1}$ be elements of `G` and let $e_0,e_1,...,e_{N-1}$ be elements of $Z_p$. Then, the multi-scalar multiplication `M` is calculated as $M=\sum_{i=0}^{N-1} e_i \cdot g_i$.
 
 This operation appears in many cryptographic protocols. Its naive implementation requires `N` scalar multiplications and `N` group additions. However, the performance can be significantly improved by employing advanced algorithms, such as the [Pippenger Approach](https://hackmd.io/@tazAymRSQCGXTUKkbh1BAg/Sk27liTW9). Moreover, it can be further optimized for a particular group type (e.g., for elliptic curve groups).
 
@@ -33,7 +33,7 @@ We also did preliminary [benchmarks](https://github.com/dkaidalov/bench-blst-msm
 |       20 |                  816.508µs |                1.499ms |                  1.83 |
 |       25 |                  956.735µs |                1.837ms |                  1.92 |
 |       30 |                    1.022ms |                2.055ms |                  2.01 |
-|       35 |                 428.765µs* |                2.715ms |                  6.13 |
+|       35 |                 428.765µs* |                2.715ms |                 6.13* |
 |       40 |                   469.49µs |                2.882ms |                  6.33 |
 |       45 |                  445.014µs |                3.288ms |                  7.37 |
 |       50 |                  533.669µs |                3.933ms |                  7.38 |
@@ -45,7 +45,7 @@ We also did preliminary [benchmarks](https://github.com/dkaidalov/bench-blst-msm
 |     2000 |                    4.108ms |              131.453ms |                 31.99 |
 |     3000 |                    5.510ms |              195.986ms |                 35.56 |
 |     4000 |                     7.00ms |              263.722ms |                 37.67 |
-* _the sudden time improvement after 32 points is attributed to the inner workings of the blst library, which may operate differently for the MSM of size less than 32 (this should be carefully analyzed when establishing costing function for MSM built-in)._
+\* _the sudden time improvement after 32 points is attributed to the inner workings of the blst library, which may operate differently for the MSM of size less than 32 (this should be carefully analyzed when establishing costing function for MSM built-in)._
 
 As it can be seen the performance improvement rises quickly with the size of the MSM. Note that the current threshold for Plutus naive implementation is 129 points per transaction. Our [blst benchmarks](https://github.com/dkaidalov/bench-blst-msm/) show that naive MSM of size 129 takes approximately the same time as optimized MSM for more than 4000 points, which gives a hint to what improvements we can expect with a Plutus built-in for MSM. Moreover, these benchmarks do not account for the Plutus overhead to call many built-in BLS12 functions while implementing the naive MSM, so the final improvement may be even larger.
 On the other hand, it is important to mention that if those points are brought into the script as input, their number would be constrained by the size of the script and by the computational complexity of points decompression. The benchmarks of points decompression in [CIP-0381](https://cips.cardano.org/cip/CIP-0381) shows that up to 300 G1 points can be passed as input to a 16kb script. However, in real cryptographic protocols typically only a part of the points involved in MSM is passed as input, while another part is computed during the execution (e.g., in PLONK-based SNARKs).
@@ -59,10 +59,10 @@ A nonexclusive list of cryptographic protocols that would benefit from having MS
 
 The above mentioned cryptographic protocols are used in many Cardano products, for instance:
 
--- **Partner chains** - a crucial component for the scalability of Cardano. Its interoperability with Cardano relies on the ability to construct a secure bridge for message passing. A reliable trustless bridge requires SNARK proofs for efficient proving of the partner chain state.
--- **Hydra** - a prominent layer-2 solution for scalability of Cardano. Hydra relies on a multisignature scheme, where all participants of the side channel need to agree on the new state. Moreover, Hydra tails could benefit from SNARKs for proving correct spending of a set of transactions.
--- **Mithril** - a protocol for helping to scale the adoption of Cardano and its accessibility for users. It creates certified snapshots of the Cardano blockchain allowing to obtain a verified version of the current state without having to download and verify the full history of the blockchain. Mithril utilizes a stake-based threshold multisignature scheme based on elliptic curve pairings. Even though at the moment most use cases of Mithril relies on off-chain computations, eventually the Mithril certificates might also be verified in Plutus smart contracts.
--- **ATALA** - a decentralized identification mechanism. One of the properties it can provide is anonymity: users can selectively disclose attributes of their certificate or prove statements without disclosing their identity. Up to date, the most efficient solutions for doing that use pairing-based zero-knowledge protocols.
+- **Partner chains** - a crucial component for the scalability of Cardano. Its interoperability with Cardano relies on the ability to construct a secure bridge for message passing. A reliable trustless bridge requires SNARK proofs for efficient proving of the partner chain state.
+- **Hydra** - a prominent layer-2 solution for scalability of Cardano. Hydra relies on a multisignature scheme, where all participants of the side channel need to agree on the new state. Moreover, Hydra tails could benefit from SNARKs for proving correct spending of a set of transactions.
+- **Mithril** - a protocol for helping to scale the adoption of Cardano and its accessibility for users. It creates certified snapshots of the Cardano blockchain allowing to obtain a verified version of the current state without having to download and verify the full history of the blockchain. Mithril utilizes a stake-based threshold multisignature scheme based on elliptic curve pairings. Even though at the moment most use cases of Mithril relies on off-chain computations, eventually the Mithril certificates might also be verified in Plutus smart contracts.
+- **ATALA** - a decentralized identification mechanism. One of the properties it can provide is anonymity: users can selectively disclose attributes of their certificate or prove statements without disclosing their identity. Up to date, the most efficient solutions for doing that use pairing-based zero-knowledge protocols.
 
 In conclusion, integrating multi-scalar multiplication as a core built-in within Plutus is not only essential for enhancing cryptographic capabilities, but also for optimizing on-chain computations. The current approach of naive manual implementation in Plutus is inefficient for large-scale MSMs. Incorporating this function directly will streamline these operations, reduce transaction costs, and maintain the integrity of existing tools, thereby significantly advancing the Plutus ecosystem's functionality and user experience.
 
