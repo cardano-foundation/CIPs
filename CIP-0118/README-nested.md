@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-We propose a set of changes that revolve around validation zones, a construct for allowing
+We propose a set of changes that revolve around nested transactions, a construct for composing
 certain kinds of _underspecified transactions_. In particular, for the Babel-fees usecase
 we discuss here, we allow transactions that specify
 _a swap request_. Underspecified transaction bodies are included in the 
