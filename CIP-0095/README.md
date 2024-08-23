@@ -9,9 +9,12 @@ Implementors:
   - Eternl <https://eternl.io/>
   - GeroWallet <https://gerowallet.io>
   - Lace <https://www.lace.io/>
+  - Mesh <https://meshjs.dev/>
+  - mLabs <https://mlabs.city/>
   - NuFi <https://nu.fi/>
   - Ryan Williams <ryan.williams@intersectmbo.org>
   - Typhon <https://typhonwallet.io/>
+  - Lido Nation <https://www.lidonation.com/>
   - Vespr <https://vespr.xyz/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
