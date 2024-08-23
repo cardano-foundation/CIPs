@@ -67,6 +67,11 @@ to those outputs in the UTxO set. This is included as a way to showcase that thi
 change to the ledger rules establishes the infrastructure to add additional 
 kids of supported intents (see CPS-15).
 
+Since types of supported *intents* are just specific ways in which a transaction can be underspecified,
+running scripts without supplying the `ExUnits` or collateral (as in (4) above), leaving them to be specified by 
+the top-level transaction, can be considered another type 
+of intent that is supported by this design.
+
 ## Specification
 
 For the Agda specification prototype built on top of the current ledger spec, 
@@ -139,7 +144,8 @@ We add the following new fields to `Tx` :
 A new Plutus version, `PlutusV4`, will be required, since the constraints on what it means for 
 a transaction to be valid, as well as the tx structure itself, are changed. Transactions 
 that are top-level transactions with no sub-transactions are still able to interact 
-with V3 scripts. Other transactions are not. 
+with V3 scripts. Transactions that are underspecified and/or using any new features 
+introduced here are not. 
 
 #### New script purpose
 
@@ -256,7 +262,9 @@ The `UTXOW` rule additionally checks :
 2. `subTxs` only non-empty in top-level tx
 
 Existing function that checks that required witness data is provided now 
-also checks that such data is provided for the `corInputs`. 
+also checks that such data is provided for the `corInputs`. Additionally,
+the supported language check requires that `PlutusV3` or earlier is 
+only allowed in transactions that are top-level, and do not contain sub-transactions.
 
 TODO : deal with reference inputs correctly?
 
@@ -301,7 +309,7 @@ of the transaction bodies that will be viewed).
 
 ### Collateral
 
-Enough collateral must be provided by the top-level transaction for the sum of all the 
+Enough collateral must be provided by the top-level transaction to cover the sum of all the 
 fees of all batch transactions. The collateral 
 can only ever be collected from the top-level transaction.
 The sub-txs are not obligated to provide sufficient 
