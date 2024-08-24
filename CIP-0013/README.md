@@ -185,7 +185,7 @@ For a CIP based on this principle, see [CIP-0017](https://github.com/cardano-fou
 
 - [x] There exist one or more wallets supporting Payment URIs.
   - [x] Yoroi
-  - [x] beginWallet
+  - [x] Begin Wallet
 - [x] There exist one or more wallets supporting Stake Pool URIs.
   - [ ] TBD
 - [x] There exist other CIPs or drafts defining additional URI protocols.
