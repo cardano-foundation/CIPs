@@ -192,7 +192,7 @@ For a CIP based on this principle, see [CIP-0017](https://github.com/cardano-fou
   - [x] [CIP-0099](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0099/README.md)  
 - [x] There exist one or more wallets supporting additional URI protocols.
   - [x] Yoroi (CIP-0099)
-  - [x] beginWallet (CIP-0099)
+  - [x] Begin Wallet (CIP-0099)
   - [x] VESPR (CIP-0099)  
 
 ### Implementation Plan
