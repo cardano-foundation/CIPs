@@ -41,7 +41,9 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
 - [Document](#document)
   - [Structure](#structure)
     - [Header Preamble](#header-preamble)
+    - [Translations](#translations)
     - [Repository Organization](#repository-organization)
+    - [Versioning](#versioning)
     - [Licensing](#licensing)
   - [Statuses](#statuses)
     - [Status: Proposed](#status-proposed)
@@ -53,6 +55,7 @@ The CIP process does not _by itself_ offer any form of governance. For example, 
 - [Process](#process)
   - [1. Early Stage](#1-early-stages)
     - [1.a. Authors open a pull request](#1a-authors-open-a-pull-request)
+      - [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)
     - [1.b. Authors seek feedback](#1b-authors-seek-feedback)
   - [2. Editors' role](#2-editors-role)
     - [2.a. Triage in bi-weekly meetings](#2a-triage-in-bi-weekly-meetings)
@@ -77,12 +80,13 @@ Name                                            | Description
 Preamble                                        | Headers containing metadata about the CIP ([see below](#header-preamble)).
 Abstract                                        | A short (\~200 word) description of the proposed solution and the technical issue being addressed.
 Motivation: why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
-Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations.
+Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations. <br/><br/>This section must address the [Versioning](#versioning) requirement unless this is addressed in an optional Versioning section.<br/><br/> If a proposal defines structure of on-chain data it must include a CDDL schema.
 Rationale: how does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
 Path to Active                                  | Organised in two sub-sections (see [Path to Active](#path-to-active) for detail):<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>Either a plan to meet those criteria or `N/A` if not applicable.
+_optional sections_                             | May appear in any order, or with custom titles, at author and editor discretion:<br/>**Versioning**: if [Versioning](#versioning) is not addressed in Specification<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**
 Copyright                                       | The CIP must be explicitly licensed under acceptable copyright terms ([see below](#licensing)).
 
-> **Note** Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
+> **Note** Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Subsections like _Versioning_ or _Acceptance Criteria_ should be H3 headings (e.g. `### Versioning`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
 
 ##### Header Preamble
 
@@ -91,7 +95,7 @@ Each CIP must begin with a YAML key:value style header preamble (also known as _
 Field          | Description
 ---            | ---
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
-`Title`        | A succinct and descriptive title
+`Title`        | A succinct and descriptive title.  If necessary, use a `-` delimiter to begin with an applicable classification (see [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)).
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
 `Category`     | One of the registered [categories](#categories) covering one area of the ecosystem.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
@@ -126,7 +130,7 @@ License: CC-BY-4.0
 
 ##### Repository Organization
 
-A CIP must be stored in a specific folder named after its number (4-digit, left-padded with `0`) and in a file called `README.md`. Before a number is assigned, use `????` as a placeholder number (thus naming new folders as `CIP-????`). After a number has been assigned, rename the folder.
+A CIP must be stored in a specific folder named after its number (4-digit, left-padded with `0`) and in a file called `README.md`. Before a number is assigned, a placeholder folder name should be used (e.g. `CIP-my-new-feature`). After a number has been assigned, rename the folder.
 
 Additional supporting files (such as diagrams, binary specifications, dialect grammars, JSON schemas etc.) may be added to the CIP's folder under freely chosen names.
 
@@ -140,9 +144,40 @@ CIP-0010
 
 ```
 
+##### Translations
+
+While CIPs are mainly technical documents meant to be read primarily by developers -- and thus often written in English; some may be translated into various languages to increase their outreach. Any file in a CIP folder may also include translated content satisfying the following rules:
+
+- Any translated file shall share a common basename with its original source.
+
+- Translation file basenames must have a suffix using an [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) language code, separated by a dot `.` character. (e.g. `README.fr.md`).
+
+- When no language code is provided as suffix, the default language for the document is assumed to be English (UK/US).
+
+- Translated CIPs (i.e. `README` files), must not include the original preamble. They must, however, include the following preamble as yaml frontmatter data:
+
+Field          | Description
+---            | ---
+`CIP`          | The CIP number (without leading 0)
+`Source`       | The canonical GitHub link to the original CIP document
+`Title`        | A translation of the CIP's title
+`Revision`     | Whenever possible, the commit hash (7 first hex-digits, e.g. `12ab34c`) of the source in the main repository. If the source was not committed to the main repo, use the best known translation date in ISO format (if unknown, use the date posted in the translation's PR branch).
+`Translators`  | A list of translators names and email addresses (e.g. `John Doe <john.doe@email.domain>`)
+`Language`     | An [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) code of the target language (e.g. `fr`)
+
+- Translated CIPs inherit the same licensing terms as their original sources.
+
+##### Versioning
+
+CIPs must indicate how the defined Specification is versioned.  **Note** this does not apply to the CIP text, for which annotated change logs are automatically generated and available through the GitHub UI as a history of CIP files and directories.
+
+Authors are free to describe any approach to versioning that allows versioned alterations to be added without author oversight.  Stipulating that the proposal must be superseded by another is also considered to be valid versioning.
+
+Since this is a functional definition it would typically be in one or more subsections of the Specification, but may also be placed in an optional Versioning section.
+
 ##### Licensing
 
-CIPs are licensed in the public domain. Moreso, they must be licensed under one of the following licenses. Each new CIP must identify at least one acceptable license in its preamble. In addition, each license must be referenced by its respective abbreviation below in the _"Copyright"_ section.
+CIPs are licensed in the public domain. More so, they must be licensed under one of the following licenses. Each new CIP must identify at least one acceptable license in its preamble. In addition, each license must be referenced by its respective abbreviation below in the _"Copyright"_ section.
 
 | Purpose             | Recommended License                                                                    |
 | ---                 | ---                                                                                    |
@@ -224,7 +259,7 @@ Registered categories for explicitly enlisted projects are otherwise listed belo
 Category | Description
 ---      | ---
 Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][https://github.com/cardano-foundation/CIPs/pull/456]
+Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
 Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
 
 #### Project Enlisting
@@ -256,10 +291,21 @@ Editors occasionally invite project maintainers to speak during review meetings 
 
 Proposals must be submitted to the [cardano-foundation/CIPs][Repository] repository as a pull request named after the proposal's title. The pull request title **should not** include a CIP number (and use `?` instead as number); the editors will assign one. Discussions may precede a proposal. Early reviews and discussions streamline the process down the line.
 
-> **Note** In the original comment for your pull request, please include a link to the `README.md` for the CIP in your working branch, so readers and reviewers can easily follow your work.  If this link changes (e.g. from the CIP directory being renamed), please keep this link updated.
-
 > **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
+###### Naming CIPs with similar subjects
+
+When a CIP title *and* subject matter share a common element, begin the CIP title with that common element and end it with the specifc portion, delimited with the `-` character.  Example (CIP-0095):
+
+> *Web-Wallet Bridge **-** Governance*
+
+CIP editors will help determine these common elements and, whenever necessary, rename both CIP document titles and PR titles accordingly.  The objective is to provide commonly recognisable names for similar developments (e.g. multiple extensions to another CIP or scheme).
+
+###### Link to proposal from PR first comment
+
+In the original comment for your pull request, please include a link to the directory or the `README.md` for the CIP in your working branch, so readers and reviewers can easily follow your work.  This makes it easier for editors and the community to read and review your proposal.
+
+> **Note** If this link changes (e.g. from the CIP directory being renamed), please keep this link updated.
 
 ##### 1.b. Authors seek feedback
 
@@ -334,13 +380,14 @@ The missions of an editor include, but aren't exclusively limited to, any of the
 
 Current editors are listed here below:
 
-| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] |
-| ---                               | ---                                           | ---                            | ---                            |
+| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] |
+| ---                               | ---                                           | ---                            | ---                            | ---                             |
 
 [@KtorZ]: https://github.com/KtorZ
 [@SebastienGllmt]: https://github.com/SebastienGllmt
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
+[@Crypto2099]: https://github.com/Crypto2099
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -399,8 +446,8 @@ The choice of a code of conduct follows other popular open source initiatives. I
 
 ### Implementation Plan
 
-- [ ] Rework existing draft CIPs to adopt this new format and process. In particular, CIPs affecting enlisted projects should be brought to the attention of the respective project maintainers.
-- [ ] Possibly, edit / align old CIPs preambles and sections to at least reflect also this new format.
+- [x] Rework existing draft CIPs to adopt this new format and process. In particular, CIPs affecting enlisted projects should be brought to the attention of the respective project maintainers.
+- [x] Edit / align old CIPs preambles and sections to at least reflect also this new format.
 
 ## Copyright
 
@@ -409,6 +456,7 @@ This CIP is licensed under [CC-BY-4.0][].
 [Apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [CIP-0035]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035
+[CIP-0084]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084
 [CIP-9999]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-9999
 [CIP-TEMPLATE.md]: https://github.com/cardano-foundation/CIPs/tree/master/.github/CIP-TEMPLATE.md
 [CODE_OWNERS]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners

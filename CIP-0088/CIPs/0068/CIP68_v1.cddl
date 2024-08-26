@@ -1,0 +1,7 @@
+; CIP-0068: Token Metadata Standard
+; Version: 1
+
+cip68-details = {
+    ? 0 : uint,               ; version
+    1 : token-project-details   ; [CIP-0068 Token Project Details](../common/token-project-details.cddl)
+}

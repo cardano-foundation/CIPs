@@ -1,0 +1,59 @@
+{
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
+    "$id":"https://example.com/dApp.schema.json",
+    "title": "Cardano dApp Claim",
+    "description": "Registration of Cardano dApp claim.",
+    "type":"object",
+    "properties":{
+       "subject":{
+          "type":"string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern":"^[0-9a-fA-F]{1,64}$",
+          "description":"Identifier of the claim subject (dApp). A UTF-8 encoded string, must be max 64 chars. Typically it is randomly generated hash by the dApp developer."
+       },
+       "rootHash":{
+          "type":"string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern":"^[0-9a-fA-F]{64}$",
+          "description":"blake2b-256 hash of the metadata describing the off-chain part of the dApp."
+       },
+       "metadata": {
+         "type": "array",
+         "description": "Chunks of URLs that make up the dApp's metadata (pointing to off-chain CIP-72) are arranged in an array to accommodate the 64-character limit per chunk, allowing for the support of longer URLs",
+         "items": {
+           "type": "string",
+           "minLength": 1,
+           "maxLength": 64
+         }
+       },
+       "type":{
+          "type":"object",
+          "description":"Describes the releases, if they are new or an updates.",
+          "properties":{
+             "action":{
+               "type":"string",
+               "enum":["REGISTER", "DE_REGISTER"],
+               "description":"Describes the action this certificate is claiming; i.e 'REGISTER', for a new dApp or an update, DE_REGISTER for asserting that the dApp's development is stopped, and it is deprecated. So, no further dApp's on-chain update is to be expected."
+             },
+             "comment": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "A free text field to provide details about this particular changes (64 chars limited)."
+             }
+          },
+          "required":[
+             "action"
+          ]
+       }
+    },
+    "required":[
+       "subject",
+       "rootHash",
+       "type"
+    ],
+    "additionalProperties": false
+}
+ 

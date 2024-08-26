@@ -1,24 +1,27 @@
 ---
 CIP: 28
 Title: Protocol Parameters (Alonzo Era)
-Authors: Kevin Hammond <kevin.hammond@iohk.io>
 Status: Active
-Type: Informational
+Category: Ledger
+Authors:
+  - Kevin Hammond <kevin.hammond@iohk.io>
+Implementors:
+  - IOG
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/140
 Created: 2021-10-14
-License: CC-BY-4.0
-Requires: CIP-0009
+License: Apache-2.0
 ---
 
 ## Abstract
 
 This CIP extends CIP-0009 to include the new protocol parameters that have been introduced for Alonzo, specifically those relating to the costing of Plutus scripts.  It describes the initial settings for those parameters.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 We need to document the chain of changes to the protocol parameters.  This document describes precisely the changes that have been made from CIP-0009, allowing the differences to be determined.  It thus supplements rather than replaces CIP-0009.
 
 ## Specification
-
 
 ### New Updatable Protocol Parameters
 
@@ -251,7 +254,7 @@ For simplicity, the details of the parameter settings is omitted here.
 
 There are no changes to the non-updatable protocol parameters.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 The majority of the parameters are needed to enable the use of Plutus scripts on-chain.  They relate to the fees calculations for
 transactions that include Plutus scripts.
@@ -278,12 +281,15 @@ script failure if the collateral was not available).
 
 ## Path to Active
 
-- [x] The Cardano Alonzo era is activated.
+### Acceptance Criteria
 
-### Change Log
+- [x] The Alonzo ledger era is activated.
+- [x] Documented parameters have been in operational use by Cardano Node and Ledger as of the Alonzo ledger era.
 
-See [CIP-0055: Protocol Parameters (Babbage Era)](../CIP-0055).
+### Implementation Plan
+
+- [x] Alonzo ledger era parameters are deemed correct by working groups at IOG.
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).

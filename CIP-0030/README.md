@@ -54,17 +54,17 @@ A string representing an address in either bech32 format, or hex-encoded bytes. 
 
 A hex-encoded string of the corresponding bytes.
 
-#### cbor\<T>
+#### `cbor<T>`
 
-A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Multi-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md).
+A hex-encoded string representing [CBOR](https://tools.ietf.org/html/rfc7049) corresponding to `T` defined via [CDDL](https://tools.ietf.org/html/rfc8610) either inside of the [Shelley Multi-asset binary spec](https://github.com/input-output-hk/cardano-ledger-specs/blob/0738804155245062f05e2f355fadd1d16f04cd56/shelley-ma/shelley-ma-test/cddl-files/shelley-ma.cddl) or, if not present there, from the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md).
 This representation was chosen when possible as it is consistent across the Cardano ecosystem and widely used by other tools, such as [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib), which has support to encode every type in the binary spec as CBOR bytes.
 
 #### DataSignature
 
-```
+```ts
 type DataSignature = {|
-  signature: cbor\<COSE_Sign1>,
-  key: cbor\<COSE_Key>,
+  signature: cbor<COSE_Sign1>,
+  key: cbor<COSE_Key>,
 |};
 ```
 
@@ -81,7 +81,7 @@ transaction_unspent_output = [
 
 then we define
 
-```
+```ts
 type TransactionUnspentOutput = cbor<transaction_unspent_output>
 ```
 
@@ -89,7 +89,7 @@ This allows us to use the output for constructing new transactions using it as a
 
 #### Paginate
 
-```
+```ts
 type Paginate = {|
   page: number,
   limit: number,
@@ -99,9 +99,9 @@ Used to specify optional pagination for some API calls. Limits results to {limit
 
 #### Extension
 
-An extension is an object with a single field `"cip"` that describe a CIP number extending the API (as a plain integer, without padding). For example:
+An extension is an object with a single field `"cip"` that describes a CIP number extending the API (as a plain integer, without padding). For example:
 
-```
+```ts
 { "cip": 30 }
 ```
 
@@ -109,7 +109,7 @@ An extension is an object with a single field `"cip"` that describe a CIP number
 
 #### APIError
 
-```
+```ts
 APIErrorCode {
 	InvalidRequest: -1,
 	InternalError: -2,
@@ -129,7 +129,7 @@ APIError {
 
 #### DataSignError
 
-```
+```ts
 DataSignErrorCode {
 	ProofGeneration: 1,
 	AddressNotPK: 2,
@@ -147,7 +147,7 @@ type DataSignError = {
 
 #### PaginateError
 
-```
+```ts
 type PaginateError = {|
     maxSize: number,
 |};
@@ -156,7 +156,7 @@ type PaginateError = {|
 
 #### TxSendError
 
-```
+```ts
 TxSendErrorCode = {
 	Refused: 1,
 	Failure: 2,
@@ -172,7 +172,7 @@ type TxSendError = {
 
 #### TxSignError
 
-```
+```ts
 TxSignErrorCode = {
 	ProofGeneration: 1,
 	UserDeclined: 2,
@@ -190,15 +190,31 @@ type TxSignError = {
 
 In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage. A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a `wallet` object with the following methods. The API is split into two stages to maintain the user's privacy, as the user will have to consent to `cardano.{walletName}.enable()` in order for the dApp to read any information pertaining to the user's wallet with `{walletName}` corresponding to the wallet's namespaced name of its choice.
 
-#### cardano.{walletName}.enable({ extensions: Extension[] } = {}): Promise\<API>
+#### `cardano.{walletName}.enable({ extensions: Extension[] } = {}): Promise<API>`
 
-Errors: APIError
+Errors: `APIError`
 
 This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the full API will be returned to the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time, and instead just return the `API` object.
 
 Upon start, dApp can explicitly request a list of additional functionalities they expect as a list of CIP numbers capturing those extensions. This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface. CIP-0030 provides a set of base interfaces that every wallet must support. Then, new functionalities are introduced via additional CIPs and may be all or partially supported by wallets.
 
-DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the `cardano.{walletName}.extensions` field of the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
+DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsability of wallet providers to assess whether they can support a given combination of extensions, or not. Hence wallets aren't expected to fail should they not recognize or not support a particular combination of extensions. Instead, they should decide what they enable and reflect their choice in the response to `api.getExtensions()` in the Full API. As a result, dApps may fail and inform their users or may use a different, less-efficient, strategy to cope with a lack of functionality.
+
+It is at the extension author's discretion if they wish to separate their endpoints from the base API via namespacing. Although, it is highly recommend that authors do namespace all of their extensions. If namespaced, endpoints must be preceded by `.cipXXXX.` from the `API` object, without any leading zeros.
+
+For example; CIP-0123's endpoints should be accessed by:
+```ts
+api.cip123.endpoint1()
+api.cip123.endpoint2()
+```
+
+Authors should be careful when omitting namespacing. Omission should only be considered when creating endpoints to override those defined in this specification or other extensions. Even so when overriding; the new functionality should not prevent dApps from accessing past functionality thus overriding must ensure backwards compatibility.
+
+Any namespace omission needs to be fully justified via the proposal's Rationale section, with explanation to why it is necessary. Any potential backwards compatibility considerations should be noted to give wallets and dApps a clear unambiguous direction.
+
+##### Draft or Experimental Extensions
+
+Extensions that are draft, in development, or prototyped should not use extension naming nor should they use official namspacing until assigned a CIP number. Draft extension authors are free to test their implementation endpoints by using the [Experimental API](#experimental-api). Once a CIP number is assigned implementors should move functionality out of the experimental API.
 
 ##### Can extensions depend on other extensions?
 
@@ -210,32 +226,32 @@ Yes. They all are CIPs.
 
 ##### Can extensions add their own endpoints and/or error codes?
 
-Yes. Extensions may introduce new endpoints or error codes, and modify existing ones. Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
+Yes. Extensions may introduce new endpoints or error codes, and modify existing ones. Although, it is recommended that endpoints are namespaced. Extensions may even change the rules outlined in this very proposal. The idea being that wallet providers should start off implementing this CIP, and then walk their way to implementing their chosen extensions.
 
 ##### Are wallet expected to implement all extensions?
 
 No. It's up to wallet providers to decide which extensions they ought to support.
 
 
-#### cardano.{walletName}.isEnabled(): Promise\<bool>
+#### `cardano.{walletName}.isEnabled(): Promise<bool>`
 
-Errors: APIError
+Errors: `APIError`
 
 Returns true if the dApp is already connected to the user's wallet, or if requesting access would return true without user confirmation (e.g. the dApp is whitelisted), and false otherwise. If this function returns true, then any subsequent calls to `wallet.enable()` during the current session should succeed and return the `API` object.
 
-#### cardano.{walletName}.apiVersion: String
+#### `cardano.{walletName}.apiVersion: String`
 
 The version number of the API that the wallet supports. Set to `1`.
 
-#### cardano.{walletName}.supportedExtensions: Extension[]
+#### `cardano.{walletName}.supportedExtensions: Extension[]`
 
 A list of extensions supported by the wallet. Extensions may be requested by dApps on initialization. Some extensions may be mutually conflicting and this list does not thereby reflect what extensions will be enabled by the wallet. Yet it informs on what extensions are known and can be requested by dApps if needed.
 
-#### cardano.{walletName}.name: String
+#### `cardano.{walletName}.name: String`
 
 A name for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
 
-#### cardano.{walletName}.icon: String
+#### `cardano.{walletName}.icon: String`
 
 A URI image (e.g. data URI base64 or other) for img src for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
 
@@ -245,23 +261,25 @@ Upon successful connection via `cardano.{walletName}.enable()`, a javascript obj
 
 The API chosen here is for the minimum API necessary for dApp <-> Wallet interactions without convenience functions that don't strictly need the wallet's state to work. The API here is for now also only designed for Shelley's Mary hardfork and thus has NFT support. When Alonzo is released with Plutus support this API will have to be extended.
 
-#### api.getExtensions() : Promise\<Extension[]>
+#### `api.getExtensions(): Promise<Extension[]>`
+
+Errors: `APIError`
 
 Retrieves the list of extensions enabled by the wallet. This may be influenced by the set of extensions requested in the initial `enable` request.
 
-#### api.getNetworkId(): Promise\<number>
+#### `api.getNetworkId(): Promise<number>`
 
 Errors: `APIError`
 
 Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet but other networks can possibly be returned by wallets. Those other network ID values are not governed by this document. This result will stay the same unless the connected account has changed.
 
-#### api.getUtxos(amount: cbor\<value> = undefined, paginate: Paginate = undefined): Promise\<TransactionUnspentOutput[] | null>
+#### `api.getUtxos(amount: cbor<value> = undefined, paginate: Paginate = undefined): Promise<TransactionUnspentOutput[] | null>`
 
 Errors: `APIError`, `PaginateError`
 
 If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `null` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
 
-#### api.getCollateral(params: { amount: cbor\<Coin> }): Promise\<TransactionUnspentOutput[] | null>
+#### `api.getCollateral(params: { amount: cbor<Coin> }): Promise<TransactionUnspentOutput[] | null>`
 
 Errors: `APIError`
 
@@ -278,47 +296,47 @@ The main point is to allow the wallet to encapsulate all the logic required to h
 
 The `amount` parameter is required, specified as a `string` (BigNumber) or a `number`, and the maximum allowed value must be agreed to be something like 5 ADA. Not limiting the maximum possible value might force the wallet to attempt to purify an unreasonable amount of ADA just because the dapp is doing something weird. Since by protocol the required collateral amount is always a percentage of the transaction fee, it seems that the 5 ADA limit should be enough for the foreseeable future.
 
-#### api.getBalance(): Promise\<cbor\<value>>
+#### `api.getBalance(): Promise<cbor<value>>`
 
 Errors: `APIError`
 
 Returns the total balance available of the wallet. This is the same as summing the results of `api.getUtxos()`, but it is both useful to dApps and likely already maintained by the implementing wallet in a more efficient manner so it has been included in the API as well.
 
-#### api.getUsedAddresses(paginate: Paginate = undefined): Promise\<Address[]>
+#### `api.getUsedAddresses(paginate: Paginate = undefined): Promise<Address[]>`
 
 Errors: `APIError`
 
 Returns a list of all used (included in some on-chain transaction) addresses controlled by the wallet. The results can be further paginated by `paginate` if it is not `undefined`.
 
-#### api.getUnusedAddresses(): Promise\<Address[]>
+#### `api.getUnusedAddresses(): Promise<Address[]>`
 
 Errors: `APIError`
 
 Returns a list of unused addresses controlled by the wallet.
 
-#### api.getChangeAddress(): Promise\<Address>
+#### `api.getChangeAddress(): Promise<Address>`
 
 Errors: `APIError`
 
 Returns an address owned by the wallet that should be used as a change address to return leftover assets during transaction creation back to the connected wallet. This can be used as a generic receive address as well.
 
-#### api.getRewardAddresses(): Promise\<Address[]>
+#### `api.getRewardAddresses(): Promise<Address[]>`
 
 Errors: `APIError`
 
 Returns the reward addresses owned by the wallet. This can return multiple addresses e.g. CIP-0018.
 
-#### api.signTx(tx: cbor\<transaction>, partialSign: bool = false): Promise\<cbor\<transaction_witness_set>>
+#### `api.signTx(tx: cbor<transaction>, partialSign: bool = false): Promise<cbor<transaction_witness_set>>`
 
 Errors: `APIError`, `TxSignError`
 
 Requests that a user sign the unsigned portions of the supplied transaction. The wallet should ask the user for permission, and if given, try to sign the supplied body and return a signed transaction. If `partialSign` is true, the wallet only tries to sign what it can. If `partialSign` is false and the wallet could not sign the entire transaction, `TxSignError` shall be returned with the `ProofGeneration` code. Likewise if the user declined in either case it shall return the `UserDeclined` code. Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
-#### api.signData(addr: Address, payload: Bytes): Promise\<DataSignature>
+#### `api.signData(addr: Address, payload: Bytes): Promise<DataSignature>`
 
 Errors: `APIError`, `DataSignError`
 
-This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/CIP-0008.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
+This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent should be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
 * `alg` (1) - must be set to `EdDSA` (-8)
 * `kid` (4) - Optional, if present must be set to the same value as in the `COSE_key` specified below. It is recommended to be set to the same value as in the `"address"` header.
@@ -334,7 +352,7 @@ If the payment key for `addr` is not a P2Pk address then `DataSignError` will be
 * `crv` (-1) - must be set to `Ed25519` (6)
 * `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
-#### api.submitTx(tx: cbor\<transaction>): Promise\<hash32>
+#### `api.submitTx(tx: cbor<transaction>): Promise<hash32>`
 
 Errors: `APIError`, `TxSendError`
 
@@ -364,9 +382,13 @@ We use object as extensions for now to leave room for adding fields in the futur
 
 Extensions can be seen as a smart versioning scheme. Except that, instead of being a monotonically increasing sequence of numbers, they are multi-dimensional feature set that can be toggled on and off at will. This is a versioning "à-la-carte" which is useful in a context where:
 
-1. There are multiple concurrent standardization efforts on different fronts to accomodate a rapidly evolving ecosystem;
+1. There are multiple concurrent standardization efforts on different fronts to accommodate a rapidly evolving ecosystem;
 2. Not everyone agrees and has desired to support every existing standard;
 3. There's a need from an API consumer standpoint to clearly identify what features are supported by providers.
+
+#### Namespacing Extensions
+
+By encouraging the explicit namespacing of each extension we aim to improve the usability of extensions for dApps. By allowing special cases where namespacing can be dropped we maintain good flexibility in extension design.
 
 ## Path to Active
 
@@ -383,8 +405,8 @@ Extensions can be seen as a smart versioning scheme. Except that, instead of bei
 ### Implementation Plan
 
 - [x] Provide some reference implementation of wallet providers
-  - [Berry-Pool/nami-wallet](https://github.com/Berry-Pool/nami-wallet/blob/master/src/pages/Content/injected.js)
-  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/develop/packages/yoroi-ergo-connector/src/inject.js)
+  - [Berry-Pool/nami-wallet](https://github.com/berry-pool/nami/blob/4d7539b2768464480a9cff53a2d66af9879f8534/src/pages/Content/injected.js)
+  - [Emurgo/yoroi-wallet](https://github.com/Emurgo/yoroi-frontend/blob/f4eabb25eedd564821514059479835601f8073ab/packages/yoroi-connector/example-cardano/index.js)
 
 - [x] Provide some reference implementation of the dapp connector
   - [cardano-foundation/connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)

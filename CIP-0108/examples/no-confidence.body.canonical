@@ -1,0 +1,12 @@
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashAlgorithm> "blake2b-256"@en-us .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#hashDigest> "70e79c1f12ff3c8c955bc2178a542b5994a21be163dd7655af2c5308d2643323"@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#abstract> "The current constitutional committee have not voted for the last 100 epochs, causing an inability to pass any proposals. This is a waste of resources and must be removed."@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#motivation> "In order for governance to work an __active__ constitutional committee is required, without them the system grinds to a halt and important governance actions cannot be passed."@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#rationale> "By moving into a state of no confidence, **we** the DReps are able to vote in a new constitutional committee."@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#references> _:c14n3 .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#title> "We must remove the ineffective Constitutional Committee"@en-us .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#body> _:c14n1 .
+_:c14n3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference> .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "A governance action that has been unable to pass"@en-us .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://raw.githubusercontent.com/cardano-foundation/CIPs/blob/master/CIP-0108/examples/treasury-withdrawal.jsonld"@en-us .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#referenceHash> _:c14n0 .
