@@ -35,7 +35,9 @@ with an on-chain identity.
 Currently, there is no standard way to embed a Cardano address, such as a stake address,
 or a dRep address as distinguishing name within a [x509] certificate.
 
-However, One of the defined names that can be associated with an Issuer or Subject of a certificate is a URI.
+A URI is one of the possible names that can be associated with the Issuer or Subject of a certificate.
+This URI can be referenced in the alternative name for both the Issuer and Subject of a certificate
+by using the uniformResourceIdentifier in the general name.
 [CIP-0013] does not define a method for stake or dRep addresses, etc., to be encoded in the URI scheme it defines.
 
 Allowing these addresses to be easily encoded as URIs allows them to be 100% interoperable
