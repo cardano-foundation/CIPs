@@ -128,33 +128,9 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 
 ### Proposals Under Review (CIP)
 
-Below are listed tentative CIPs still under discussion with the community. They are listed below for easing navigation and tentatively allocating numbers to avoid later clashes.
+The following link lists "candidate" CIPs still under discussion with the community; these are assigned numbers to avoid later clashes and to facilitate community discussion (see further below for stalled proposals):
 
-| #     | Title |
-| ----- | --- |
-| 0039? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
-| 0073? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
-| 0076? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
-| 0077? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
-| 0079? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
-| 0089? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
-| 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
-| 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
-| 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
-| 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
-| 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
-| 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
-| 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/862) |
-| 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
-| 0124? | [Extend token metadata for translations](https://github.com/cardano-foundation/CIPs/pull/488) |
-| 0125? | [Arrestable native assets](https://github.com/cardano-foundation/CIPs/pull/832) |
-| 0126? | [Multi-Stake Delegation from a Single Account](https://github.com/cardano-foundation/CIPs/pull/628) |
-| 0127? | [Integration of ripemd_160 into Plutus](https://github.com/cardano-foundation/CIPs/pull/826) |
-| 0129? | [Governance Identifiers](https://github.com/cardano-foundation/CIPs/pull/857) |
-| 0130? | [Transaction Pieces](https://github.com/cardano-foundation/CIPs/pull/873) |
-
-<p align="right"><i>Last updated on 2024-08-06</i></p>
+**[CIP pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECIP-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22)**
 
 ## Cardano Problem Statements (CPS)
 
@@ -176,32 +152,21 @@ Below are listed tentative CIPs still under discussion with the community. They 
 
 ### Proposals Under Review (CPS)
 
-Below are listed tentative CPSs still under discussion with the community. They are listed below for easing navigation and also tentatively allocating numbers to avoid clashes later on.
+The following link lists "candidate" CPSs still under discussion with the community; these are assigned numbers to avoid later clashes and to facilitate community discussion (see further below for stalled proposals):
 
-| #     | Title |
-| ----- | --- |
-| 0001? | [Metadata Discoverability and Trust](https://github.com/cardano-foundation/CIPs/pull/371) |
-| 0004? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
-| 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
-| 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
-| 0015? | [Intents for Cardano](https://github.com/cardano-foundation/CIPs/pull/779) |
-
-<p align="right"><i>Last updated on 2024-07-27</i></p>
+**[CPS pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECPS-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22)**
 
 ## Stalled / Waiting For Authors
 
-The following list contains proposals that have been under review and for which actions are now awaiting updates from their original authors. Proposals stalled for several months without any updates from their authors and will eventually be closed. However, authors are invited to re-open pull requests or open new ones should they want to bring the discussion back to life.
+The following links list proposals deemed ready for review but requiring further update
+from the original author(s) or other confirmation of proposal elgibility (if considered deprecated):
 
-- [Address Resolution Through DNS](https://github.com/cardano-foundation/CIPs/pull/319)
-- [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375)
-- [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
-- [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
-- [On-chain Transaction Chaining](https://github.com/cardano-foundation/CIPs/pull/508)
-- [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385)
-- [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336)
-- [Post Quantum signatures and native wallets](https://github.com/cardano-foundation/CIPs/pull/441)
+[**Stalled CIPs and CPSs**](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22%2C%22State%3A+Likely+Abandoned%22%2C%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22) - consisting of:
+* [proposals Waiting for Author](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22)
+* [proposals Likely Abandoned](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Abandoned%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+)
+* [proposals Likely Deprecated](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22)
 
-<p align="right"><i>Last updated on 2023-07-27</i></p>
+Proposals stalled without any updates from their authors will eventually be closed. However, authors are invited to re-open pull requests or open new ones should they want to bring the discussion back to life.
 
 ## Editors
 
