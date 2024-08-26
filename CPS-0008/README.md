@@ -1,7 +1,7 @@
 ---
 CPS: 8
 Title: Domain Name Resolution
-Status: Proposed
+Status: Open
 Category: Tools
 Authors:
   - Hinson Wong <hinson@cns.space>
