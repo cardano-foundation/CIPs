@@ -20,8 +20,8 @@ This CIP proposes an extension to [CIP-13] to allow easy and unambiguous encodin
 
 ## Motivation: why is this CIP necessary?
 
-[CIP-0013] defines encoding for payment addresses, however [CIP-0019] and [CIP-0105] define
-numerous other address types.
+[CIP-0013] defines encoding for payment addresses and stake pool, however [CIP-0019]
+and [CIP-0105] define numerous other address types.
 
 These addresses cannot currently be encoded into URLs unambiguously.
 This extension proposes a simple and forward compatible method of encoding such addresses into the URL scheme defined by [CIP-0013].
