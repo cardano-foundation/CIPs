@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Cardano Decentralized Message Queue
+Title: Decentralized Message Queue
 Category: ?
 Status: Proposed
 Authors:
