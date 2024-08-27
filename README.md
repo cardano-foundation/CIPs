@@ -156,7 +156,7 @@ The following link lists "candidate" CPSs still under discussion with the commun
 
 **[CPS pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECPS-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22)**
 
-## Updates under consideration
+## Updates Under Consideration
 
 The following link shows updates to existing CIPs and CPSs that have entered the review process:
 
