@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Cardano URIs - CIP-0019 Address Representation
+Title: Cardano URIs - Address Representation
 Category: Wallets
 Status: Proposed
 Authors:
