@@ -1,14 +1,13 @@
 ---
-CIP:
-  ?
-Title: Cardano URIs - CIP-0019 Address Representation
+CIP: ?
+Title: Cardano URIs - Address Representation
 Category: Wallets
 Status: Proposed
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
-Implementors: [ ]
+Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/?
+  - https://github.com/cardano-foundation/CIPs/pull/888
 Created: 2024-08-23
 License: CC-BY-4.0
 ---
