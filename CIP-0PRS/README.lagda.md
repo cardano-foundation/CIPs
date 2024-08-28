@@ -16,12 +16,6 @@ Created: 2024-08-15
 License: Apache-2.0
 ---
 
-**Required before transitioning this PR from "draft" to "ready to review"**
-- [ ] The "Consensus" category for CIPs has been created.
-- [ ] Soundness proofs are complete.
-- [ ] Resolve outstanding notes, warnings, and cautions in the text.
-- [ ] Final proofread
-
 
 ## Abstract
 
@@ -1297,6 +1291,9 @@ The CDDL for the [certificates](#certificates) that aggregate votes is specified
 ## Rationale: how does this CIP achieve its goals?
 
 The Ouroboros Peras protocol achieves the goal of fast *post facto* settlement by periodically voting upon blocks of the preferred chain and giving such blocks a boost in weight if a quorum of voters vote for them in the same round. With overwhelming probability, the boost effectively "cements" the block forever unto the preferred chain, thus guarding it and prior blocks from rollbacks. The protocol operates under conditions of up to 25% adversarial stake, but reverts to the familiar Praos protocol under stronger adversarial conditions; after adversarial conditions abate, it remains in "Praos mode" for long enough to achieve chain healing, chain quality, and a common prefix. Thus, it does not weaken the worst-case security guarantees provided by Praos, though it does significantly speed settlement under "normal" non-adversarial conditions and under weakly adversarial conditions.
+
+The diagram below illustrates why Peras provides fast settlement. If an adversary begins building a private fork, they would reveal it publicly if it ever becomes longer than the public, honestly preferred chain: once it is revealed to be longer, honest parties would build upon it, causing the rollback of the honest blocks that were built subsequent to the divergence of the honest and private chains. Peras's boosted blocks protect against rollbacks because it can be made extremely difficult for an adversary to cause a rollback of a boosted block. Thus adversaries only have an opportunity to roll back blocks after the last boosted block and before voting occurs to boost another block. Mathematically, the window of adversarial opportunity lasts for $U + L$ slots: blocks are voted upon for boosting every $U$ slots, but there is an $L$ slot delay between a block being produced and it being voted upon. Successful voting to boost a block effectively protects that block and its ancestors. Hence a transaction is at risk of rollback for typically no more that $U+L$ slots  and that risk abates once its block or a descendant block is boosted.
+![Adversarial scenario against settlement](images/block-progression-adversarial.svg)
 
 The following plot quantifies the settlement-time benefits of Peras[^5]. Using the [example Peras protocol parameters](#feasible-values=for-peras-protocol-parameters), one has *post facto* settlement within two minutes of a transaction's being included in a block. This means that if the transaction's block is still on the preferred chain after two minutes, then it will remain there with essentially no chance of being rolled back unless the adversarial stake is stronger than approximately 25%. The solid curves in the plot represent Peras and the dashed ones represent Praos. (The Praos probabilities are consistent with the model of Gaži, Ren, and Russell[^1].) The protocol parameters are those listed in the section [Feasible values for Peras protocol parameters](#feasible-values-for-peras-protocol-parameters), but the [Markov-chain simulation of an adversary building and then strategically revealing it a private chain](https://github.com/input-output-hk/peras-design/tree/main/peras-markov) used to make the plot simplifies the protocol in a few inessential aspects (network diffusion and the $L$ parameter) and does not model the memory pool (which mitigates short honest forks). The red curve shows the *ex ante* probability that a block included in the preferred chain remains on the preferred chain in the future, never being rolled back. The green curve shows the *post facto* probability that a block which has remained on the preferred chain for 120 slots (two minutes) remains on the preferred chain in the future. For adversarial stake less than 20%, there is only a vanishingly small probability of rolling back a block if it has "survived" long enough ($U + L$ slots) to have a descendant that received a Peras boost.
 
