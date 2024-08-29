@@ -102,7 +102,7 @@ stateDiagram-v2
 | StMessageIdsBlocking | MsgReplyMessageIds | [(id,size)] | StIdle |
 | StIdle | MsgRequestMessageIdsNonBlocking | ack,req | StMessageIdsNonBlocking |
 | StMessageIdsNonBlocking | MsgReplyMessageIds | [(id,size)] | StIdle |
-| StIdle | MsgRequestMessages | [ids] | StMessages |
+| StIdle | MsgRequestMessages | [id] | StMessages |
 | StMessages | MsgReplyMessages | [messages] | StIdle |
 | StMessageIdsBlocking | MsgDone |  | StDone |
 
