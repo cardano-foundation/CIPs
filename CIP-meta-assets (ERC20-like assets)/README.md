@@ -27,7 +27,9 @@ If adopted it would allow to introduce the programmability over the transfer of 
 
 The solution proposed includes (answering to the open questions of CPS-0003):
 
-1 and 2) very much like account based models, wallets supporting this standard will require to know the address of the smart contract (validator)
+1) very much like account based models, wallets supporting this standard will require to know the address of the smart contract (validator)
+
+2) the standard defines what is expected for normal transfer transaction, so that wallets can independently construct transactions
 
 3) the solution can co-exist with the existing native tokens
 
@@ -52,7 +54,116 @@ data Data
     | B ByteString
 ```
 
-and we'll use the [plu-ts syntax for structs definition](https://pluts.harmoniclabs.tech/onchain/Values/Structs/definition#pstruct) as an abstraction over the `Data` type.
+we'll use the [plu-ts syntax for structs definition](https://pluts.harmoniclabs.tech/onchain/Values/Structs/definition#pstruct) as an abstraction over the `Data` type.
+
+finally, we'll use [`mermaid`](https://mermaid.js.org/) to help with the visualization of transactions and flow of informations.
+
+In order to do so we introduce here a legend
+
+### Legend
+
+```mermaid
+flowchart TD
+
+    subgraph relations
+        direction LR
+
+        a[ ] -.-> b[ ]
+        c[ ] <-.-> d[ ]
+
+        style a fill:#FFFFFF00, stroke:#FFFFFF00;
+        style b fill:#FFFFFF00, stroke:#FFFFFF00;
+        style c fill:#FFFFFF00, stroke:#FFFFFF00;
+        style d fill:#FFFFFF00, stroke:#FFFFFF00;
+ 
+    end
+    style relations fill:#FFFFFF00, stroke:#FFFFFF00;
+
+    subgraph entities
+        direction LR
+
+        A[speding contract]
+        pkh((pkh signer))
+    end
+    style entities fill:#FFFFFF00, stroke:#FFFFFF00;
+
+    subgraph scripts
+        direction LR
+
+        mint[(minting policy)]
+        obs([withdraw 0 observer])
+    end
+    style scripts fill:#FFFFFF00, stroke:#FFFFFF00;
+
+
+    subgraph utxos
+        direction LR
+
+        subgraph input/output
+            direction LR
+            inStart[ ] --o inStop[ ]
+        
+            style inStart fill:#FFFFFF00, stroke:#FFFFFF00;
+            style inStop  fill:#FFFFFF00, stroke:#FFFFFF00;
+        end
+
+        subgraph ref_input
+            direction LR
+            refInStart[ ]-.-orefInStop[ ]
+        
+            style refInStart fill:#FFFFFF00, stroke:#FFFFFF00;
+            style refInStop  fill:#FFFFFF00, stroke:#FFFFFF00;
+        end
+
+        subgraph minted_asset
+            direction LR
+            mntInStart[ ] -.- mntInStop[ ]
+        
+            style mntInStart fill:#FFFFFF00, stroke:#FFFFFF00;
+            style mntInStop  fill:#FFFFFF00, stroke:#FFFFFF00;
+        end
+
+        subgraph burned_asset
+            direction LR
+            brnInStart[ ] -.-x brnInStop[ ]
+        
+            style brnInStart fill:#FFFFFF00, stroke:#FFFFFF00;
+            style brnInStop  fill:#FFFFFF00, stroke:#FFFFFF00;
+        end
+
+        style input/output fill:#FFFFFF00, stroke:#FFFFFF00;
+        style ref_input fill:#FFFFFF00, stroke:#FFFFFF00;
+        style minted_asset fill:#FFFFFF00, stroke:#FFFFFF00;
+        style burned_asset fill:#FFFFFF00, stroke:#FFFFFF00;
+    end
+    style utxos fill:#FFFFFF00, stroke:#FFFFFF00;
+
+
+    subgraph transactions
+        direction LR
+
+        subgraph Transaction
+            .[ ]
+            style . fill:#FFFFFF00, stroke:#FFFFFF00;
+        end
+
+        subgraph transaction
+            direction LR
+            start[ ] --> stop[ ]
+        
+            style start fill:#FFFFFF00, stroke:#FFFFFF00;
+            style stop  fill:#FFFFFF00, stroke:#FFFFFF00;
+        end
+        style transaction fill:#FFFFFF00, stroke:#FFFFFF00;
+
+    end
+    style transactions fill:#FFFFFF00, stroke:#FFFFFF00;
+
+    
+
+```
+
+### High level idea
 
 The core idea of the implementation is to emulate the ERC20 standard; where tokens are entries in a map with addresses (or credentials in our case) as key and integers (the balances) as value. ([see the OpenZeppelin implementation for reference](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/9b3710465583284b8c4c5d2245749246bb2e0094/contracts/token/ERC20/ERC20.sol#L16));
 
@@ -68,11 +179,12 @@ Unlike the ERC20 standard; this CIP:
 >
 > this would allow for a more powerful model than the account based equivalent but implies higher execution costs
 >
-> with the goal of keeping the standard simple we allow a single sender
+> with the goal of keeping the standard simple we allow only a single sender
 >
 > we MUST however account for multiple inputs from the same sender due to
 > the creation of new UTxOs in receiving transactions.
 
+### Design
 
 with the introduction of [CIP-69](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0069) in Plutus V3 the number of contracts required are only 2, covering different purposes.
 
@@ -84,6 +196,35 @@ with the introduction of [CIP-69](https://github.com/cardano-foundation/CIPs/tre
     - spending validator for the validation of single utxos (often just forwarding to the withdraw 0)
     - certificate validator to allow registering the stake credentials (always succeed MAY be used) and specify the rules for de-registration (always fail MAY be used, but some logic based on the user state is RECOMMENDED)
     - withdraw validator to validate the spending of multiple utxos.
+
+
+```mermaid
+flowchart LR
+    subgraph transferManager
+        transferManagerPolicy[(transfer manager policy)]
+        transferManagerContract[transfer manager]
+
+        transferManagerPolicy <-. stame contract .-> transferManagerContract
+        
+        transferManagerPolicy -. mints CNTs .-> transferManagerContract
+
+        transferManagerContract -- transfer --> transferManagerContract
+
+    end
+
+    subgraph stateManager
+        stateManagerPolicy[(state manager policy)]
+        stateManagerContract[state manager]
+
+        stateManagerPolicy <-. stame contract .-> stateManagerContract
+        
+        stateManagerPolicy -. mints validity NFTs .-> stateManagerContract
+    end
+
+    stateManager -. hash .-> transferManager
+
+    
+```
 
 an external contract that needs to validate the transfer of a programmable token should be able to get all the necessary informations about the transfer by looking for the redeemer with withdraw purpose and `transferManager` stake credentials. 
 
