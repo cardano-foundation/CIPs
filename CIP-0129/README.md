@@ -140,18 +140,19 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
 - [ ] Requires updating Ledger nano app, and Trezor. The changes can be proposed once the CIP is merged.
 - [ ] Tooling
   - [ ] cardano-cli
-  - [ ] SPO Scripts
+  - [x] SPO Scripts
   - [x] typhonjs
 - [ ] APIs
-  - [ ] Koios
+  - [x] Koios
   - [x] Cardanoscan API
   - [ ] Blockfrost
 - [ ] Explorers
   - [x] Cardanoscan.io
   - [ ] AdaStat.net
 - [ ] Wallets
-  - [ ] Eternl
+  - [x] Eternl
   - [x] Typhon Wallet
+  - [ ] Lace
 
 ### Implementation Plan
 - This CIP uses some bech32 prefixes which are already defined by CIP105 and ref by CIP005, This PR includes updates to both the CIPs with updated vector spec. The suggested changes align with the design of the original CIP005.
