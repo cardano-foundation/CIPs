@@ -26,7 +26,7 @@ The messages can be sent and received by nodes running in a non intrusive way si
 
 In this way, we can significantly reduce the cost and effort required to build a decentralised network for message diffusion by using Cardano's established infrastructure, with limited impact on the performance and no impact on the security of the Cardano network.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Mithril is a protocol based on a [Stake-based Threshold Multi-signature scheme](https://iohk.io/en/research/library/papers/mithril-stake-based-threshold-multisignatures/) which leverages the Cardano SPOs to certify data from the Cardano chain in a trustless way. Mithril is currently used in the Cardano ecosystem in order to enable fast bootstrapping of full nodes and enabling secure light wallets.
 
@@ -407,7 +407,7 @@ stateDiagram-v2
 | StBusy | MsgTimeoutMessage | reason | StIdle |
 | StIdle | MsgDone |  | StDone |
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?  
 
 ### Why are we proposing this CIP?
 
