@@ -230,134 +230,175 @@ flowchart LR
 an external contract that needs to validate the transfer of a programmable token should be able to get all the necessary informations about the transfer by looking for the redeemer with withdraw purpose and `transferManager` stake credentials. 
 
 
-### `Account`
+### Datums and Redeemers
 
-The `Account` data type is used as the `accountManager` datum; and is defined as follows:
+#### `Account`
+
+The `Account` data type is used as the `stateManager` datum; and is defined as follows:
 
 ```ts
 const Account = pstruct({
     Account: {
-        amount: int,
         credentials: PCredential.type,
-        currencySym: PCurrencySymbol.type,
         state: data
     }
 });
 ```
 
-#### Common operations and values
+The only rule when spending an utxo with `Account` datum is that the NFT present on the utxo
+stays in the same contract.
 
-Before proceeding with the redeemers validation logic here are some common operations and values between some of the redeemers.
+The standard does not impose any rules on the redeemer to spend the utxo,
+as updating the state is implementation-specific.
 
-##### `ownUtxoRef`
+#### `TransferRedeemer`
 
-the `accountManager` contract is meant to be used only as spending validator.
+redeemer to be used in the withdraw 0 contract
+when spending (possibly many) utxos from the `transferManager` contract.
 
-As such we can extract the utxo being spent from the `ScriptPurpose` when constructed with the `Spending` constructor and fail for the rest.
-
-```ts
-const ownUtxoRef = plet(
-    pmatch( ctx.purpose )
-    .onSpending(({ utxoRef }) => utxoRef)
-    ._( _ => perror( PTxOutRef.type ) )
-);
-```
-
-##### `validatingInput`
-
-is the input with `utxoRef` field equivalent to `ownUtxoRef`
-
-```ts
-const validatingInput = plet(
-    pmatch(
-        tx.inputs.find( i => i.utxoRef.eq( ownUtxoRef ) )
-    )
-    .onJust(({ val }) => val.resolved )
-    .onNothing(_ => perror( PTxOut.type ) )
-);
-```
-
-##### `ownCreds`
-
-from the `validatingInput`:
-
-```ts
-validatingInput.resolved.address.credential
-```
-
-##### `ownValue`
-
-from the `validatingInput`:
-
-```ts
-validatingInput.resolved.value
-```
-
-##### `isOwnOutput`
-
-given an output; we recongize the output as "own" if the attached credentials are equivalent to `ownCreds` 
-and the attached value includes an entry for the `currencySym` field in the specified in the datum (making sure the same `accountFactory` was used).
-
-> **NOTE:**
+> NOTE:
 >
-> We compare only the payment credentials; NOT the entire address
+> there is no standard datum for the `transferManager` since the utxos might not have a datum at all
 >
-> outputs that are under different stake credentials are meant only to facilitate the offchain queries, but still considered as "own"
+>
 
 ```ts
-const isOwnOutput = plet(
-    pfn([ PTxOut.type ], bool )
-    ( out => 
-        out.address.credential.eq( ownCreds )
-        // a single account manager contract might handle multiple tokens
-        .and(
-            out.value.some( ({ fst: policy }) => policy.eq( account.currencySym ) )
-        ) 
-    )
-);
+const TransferOutput = pstruct({
+    TransferOutput: {
+        credential: PCredential.type,
+        amount: int
+    }
+});
+
+const TransferRedeemer = pstruct({
+    Transfer: {
+        inputIndicies: list( int ),
+        outputs: list( TransferOutput.type ),
+        firstOutputIndex: int
+    }
+});
 ```
 
-##### `isOwnInput` 
+#### `SingleTransferRedeemer`
 
-an input is "own" if the resolved field is "own";
+redeemer to be used on a single utxo of the `transferManager`;
 
 ```ts
-const isOwnInput = plet(
-    pfn([ PTxInInfo.type ], bool )
-    ( input => isOwnOutput.$( input.resolved ) )
-);
+const SingleTransferRedeemer = pstruct({
+    Transfer: {},
+    Burn: {}
+});
 ```
 
-##### `isOwnCurrencySym`
 
-given an asset policy we might want to know if it is the one being validated.
+### Transactions
 
-this is done by comparing it with the one specified in the datum field
+#### New Account generation
 
-```ts
-const isOwnCurrSym = plet( account.currencySym.peq );
+
+```mermaid
+flowchart LR
+
+    stateManagerPolicy[(state manager policy)]
+
+    subgraph transaction
+        .[ ]
+        style . fill:#FFFFFF00, stroke:#FFFFFF00;
+    end
+
+    stateManagerContract[state manager]
+
+    stateManagerPolicy -. validity NFTs .-> transaction 
+    --o stateManagerContract
 ```
 
-##### `outIncludesNFT`
+The only purpose of this transaction is to validate the initial state at the moment of creation of an account
 
-given a transaction output is useful to check if the value includes the NFT generated from the `accountFactory`;
 
-this is done by checking that at least one of the attached value's entry satisfies `isOwnCurrencySym` for the policy.
+#### Account State Update
 
-```ts
- const outIncludesNFT = plet(
-    pfn([ PTxOut.type ], bool )
-    ( out => out.value.some( entry => isOwnCurrSym.$( entry.fst ) ) )
-);
+```mermaid
+flowchart LR
+
+    subgraph transaction
+        .[ ]
+        style . fill:#FFFFFF00, stroke:#FFFFFF00;
+    end
+
+    stateManagerContract[state manager]
+    stateManager[state manager]
+
+    stateManager --o transaction 
+    --o stateManagerContract
 ```
 
-##### `ownOuts`
+also here, the standard does not impose any rules, as state update is meant to be implementation-specific
 
-transaction outputs filtered by `isOwnOutput`;
+#### Minting Tokens
 
-##### `ownInputs`
+```mermaid
+flowchart LR
 
-transaction inputs filtered by `isOwnInput`;
+    subgraph transaction
+        .[ ]
+        style . fill:#FFFFFF00, stroke:#FFFFFF00;
+    end
+
+    transferManagerPolicy[(transfer manager policy)]
+    transferManagerContract[transfer manager]
+
+    transferManagerPolicy -. mints CNTs .->  transaction --o transferManagerContract
+
+```
+
+implementation specific
+
+#### Burning Tokens
+
+```mermaid
+flowchart LR
+
+    subgraph transaction
+        .[ ]
+        style . fill:#FFFFFF00, stroke:#FFFFFF00;
+    end
+
+    transferManagerContract[transfer manager]
+
+    transferManagerContract -- Burn --o  transaction -..-x a[ ]
+
+    style a fill:#FFFFFF00, stroke:#FFFFFF00;
+```
+
+#### Transfer
+
+```mermaid
+flowchart LR
+    transferManagerContract[transfer manager]
+    transferManagerObserver([transfer manager observer])
+
+    A[transfer manager]
+    B[transfer manager]
+    same[transfer manager]
+
+    subgraph transaction
+        .[ ]
+        style . fill:#FFFFFF00, stroke:#FFFFFF00;
+    end
+
+    transferManagerObserver -. validates inputs .-> transaction
+
+    transferManagerContract --o transaction
+    transferManagerContract -- possibly --o transaction
+    transferManagerContract -- many --o transaction
+    transferManagerContract -- inputs --o transaction
+    transferManagerContract -- (same credentials) --o transaction
+
+    transaction -- stake creds A --o A
+    transaction -- stake creds B --o B
+    transaction -- change (if needed) --o same
+```
+
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It SHOULD describe alternate designs considered and related work. The rationale SHOULD provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
