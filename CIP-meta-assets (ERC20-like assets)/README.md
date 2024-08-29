@@ -218,6 +218,8 @@ flowchart LR
         stateManagerContract[state manager]
 
         stateManagerPolicy -. mints validity NFTs .-> stateManagerContract
+
+        stateManagerContract -- mutates state --> stateManagerContract
     end
 
     stateManager -. hash .-> transferManager
