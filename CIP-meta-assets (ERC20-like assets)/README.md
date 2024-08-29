@@ -203,10 +203,11 @@ flowchart LR
     subgraph transferManager
         transferManagerPolicy[(transfer manager policy)]
         transferManagerContract[transfer manager]
+        transferManagerObserver([transfer manager observer])
 
-        transferManagerPolicy <-. stame contract .-> transferManagerContract
-        
         transferManagerPolicy -. mints CNTs .-> transferManagerContract
+
+        transferManagerContract <-. validates many inputs .-> transferManagerObserver 
 
         transferManagerContract -- transfer --> transferManagerContract
 
@@ -216,8 +217,6 @@ flowchart LR
         stateManagerPolicy[(state manager policy)]
         stateManagerContract[state manager]
 
-        stateManagerPolicy <-. stame contract .-> stateManagerContract
-        
         stateManagerPolicy -. mints validity NFTs .-> stateManagerContract
     end
 
