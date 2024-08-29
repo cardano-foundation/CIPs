@@ -179,8 +179,7 @@ The message body is signed with the KES key of the SPO. This signature and the o
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
 - Verify that the operational certificate is valid by checking that the KES verification key is signed by cold secret key.
 - Verify the KES signature of the message body with the KES verification key from the operational certificate.
-- Compute the SPO pool id by hashing the cold verification key from the operational certificate.
-- Make sure that this pool id is part of the stake distribution (the network layer will need to have access to this information).
+- Compute the SPO pool id by hashing the cold verification key from the operational certificate. Make sure that this pool id is part of the stake distribution (the network layer will need to have access to this information).
 
 If any of these step fails, the message is considered as invalid, which is a protocol violation.
 
