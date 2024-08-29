@@ -10,6 +10,7 @@ Authors:
     - Steve Wagendorp <steve.wagendorp@cardanofoundation.org>
     - Rick McCracken
     - Adam Dean
+    - Nicholas Clarke <nicholas.clarke@tweag.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/?
@@ -166,8 +167,7 @@ It should be isolated from the rest of the network.
 The chain can then be recovered by resetting the wall clocks on the group of block producing nodes,
 restarting them from the last good block on Cardano mainnet, playing forward the chain production
 at high speed (10x usual speed is recommended), while inserting new empty blocks at the slots which
-are allocated to the block producers.  An Ouroboros Genesis snapshot can be created once the recovery
-nodes have caught up to real time. The recovery nodes can then be restarted with normal settings, including
+are allocated to the block producers. The recovery nodes can then be restarted with normal settings, including
 connections to the network.  Ouroboros Genesis then allows other nodes in the network to rapidly resynchronize
 with the newly restored chain.  This would leave one or more gaps in the chain, interspersed with empty blocks.
 
@@ -247,7 +247,38 @@ have elapsed.  In case of doubt, the procedure for Scenario 3.4 should be follow
 
 ### Using Ouroboros Genesis Snapshots
 
-Ouroboros Genesis snapshots can be used to assist with recovery.  TODO: expand this
+Any of the above conditions may result in a period of lower chain density. The
+updated consensus mechanism introduced in Ouroboros Genesis  relies on making
+chain density comparisons to assist a node when catching up with the network,
+in order to reduce the reliance on having trusted peers when syncing. As
+such, low-density periods pose a potential security risk for the future; they
+are periods where a motivated adversary could perform a long-range attack by
+building a higher density chain.
+
+In order to mitigate this, Genesis introduces the concepts of lightweight
+checkpoints. A lightweight checkpoint is effectively a block point - a
+combination of block number and hash - which can be distributed along with the
+node. Unlike Mithril Snapshots (see below), Genesis lightweight snapshots are not assured by any committee - rather, they form part of the trusted codebase distributed with the node, or by other parties.
+
+When syncing, a Genesis node will refuse to validate past the block number of any lightweight checkpoint if the chain does not contain the correct block at that point.
+
+Genesis snapshots play two potential roles in disaster recovery:
+
+1. In scenarios where the network is split, a lightweight snapshot could guide
+   a node from the abandoned partition in connecting to the main partition. In
+   general this should not be needed, however, since the main partition should win
+   out in any Genesis density comparisons. This usage also falls closer to
+   scenario 2, in that it relies on an external source imposing a chain selection,
+   which must then be trusted by all parties.
+2. Following a disaster recovery procedure, a sufficient number of blocks
+   covering the low density period should be added to the list of lightweight
+   checkpoints. These would serve the purpose of  preventing a subsequent
+   long-range attack.
+
+Note that, in this second scenario, concens about the legitimacy of the
+checkpoint are much less salient. The checkpoint can be issued post disaster
+recovery, at such a time where the points it contains are in the past, and are
+both agreed upon and easy to verify for all honest parties.
 
 
 ### Using Mithril Snapshots
