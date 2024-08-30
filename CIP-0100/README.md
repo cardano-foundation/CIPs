@@ -159,7 +159,7 @@ Each author should have a witness. The witness will be an object with an `witnes
 
 Because the overall document may change, it is neccesary to hash a subset of the document that is known before any signatures are collected. This is the motivation behind the `body` field.
 
-The signature is an ed5519 signature using the attached public key, and the payload set to the blake2b-256 hash of the `body` field. Specifically, this field is canonicalized in the following way.
+The signature is an ed25519 signature using the attached public key, and the payload set to the blake2b-256 hash of the `body` field. Specifically, this field is canonicalized in the following way.
 - Canonicalize the whole document according to [this](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/) specification.
 - Identify the node-ID of the `body` node
 - Filter the canonicalized document to include the body node, and all its descendents
