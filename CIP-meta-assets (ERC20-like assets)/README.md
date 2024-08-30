@@ -374,8 +374,9 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    transferManagerContract[transfer manager]
     transferManagerObserver([transfer manager observer])
+    stateManagerContract[state manager]
+    transferManagerContract[transfer manager]
 
     A[transfer manager]
     B[transfer manager]
@@ -387,6 +388,8 @@ flowchart LR
     end
 
     transferManagerObserver -. validates inputs .-> transaction
+
+    stateManagerContract -. account state .-o transaction
 
     transferManagerContract --o transaction
     transferManagerContract -- possibly --o transaction
