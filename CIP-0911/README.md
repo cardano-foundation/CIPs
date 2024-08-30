@@ -8,8 +8,7 @@ Authors:
     - Sam Leathers <samuel.leathers@iohk.io>
     - Alex Moser <alex.moser@cardanofoundation.org>
     - Steve Wagendorp <steve.wagendorp@cardanofoundation.org>
-    - Rick McCracken
-    - Adam Dean
+    - Andrew Westberg <andrewwestberg@gmail.com>
     - Nicholas Clarke <nicholas.clarke@tweag.io>
 Implementors: []
 Discussions:
