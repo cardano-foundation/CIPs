@@ -329,6 +329,12 @@ stakeholders and encourage more detailed contingency planning. The CIP aims to f
 establish recovery procedures, and encourage regular recovery practice exercises to ensure preparedness 
 and validation of recovery actions in the event of an outage.
 
+## Change Log
+
+| Version    | Date | Description |
+| -------- | -------- | ------- |
+| 0.1  | 2024-08-30    | Initial submitted version |
+
 ## References
 
 [Cardano Disaster Recovery Plan (May 2021)](https://iohk.io/en/research/library/papers/cardano-disaster-recovery-plan/)
