@@ -378,24 +378,35 @@ flowchart LR
     stateManagerContract[state manager]
     transferManagerContract[transfer manager]
 
+    owner((owner))
+
     A[transfer manager]
     B[transfer manager]
     same[transfer manager]
 
     subgraph transaction
+        direction LR
         .[ ]
+        _[ ]
+        z[ ]
         style . fill:#FFFFFF00, stroke:#FFFFFF00;
+        style _ fill:#FFFFFF00, stroke:#FFFFFF00;
+        style z fill:#FFFFFF00, stroke:#FFFFFF00;
     end
 
     transferManagerObserver -. validates inputs .-> transaction
 
     stateManagerContract -. account state .-o transaction
+    stateManagerContract -. receiver A account state .-o transaction
+    stateManagerContract -. receiver B account state .-o transaction
 
     transferManagerContract --o transaction
     transferManagerContract -- possibly --o transaction
     transferManagerContract -- many --o transaction
     transferManagerContract -- inputs --o transaction
-    transferManagerContract -- (same credentials) --o transaction
+    transferManagerContract --o transaction
+
+    owner -. signs .-> transaction
 
     transaction -- stake creds A --o A
     transaction -- stake creds B --o B
