@@ -41,7 +41,7 @@ The purpose of this data is to lock a particular set of Auxiliary data verifiabl
 It cannot be permitted to take the Auxiliary data to another transaction and just attach it without it being detectable.
 
 Because Plutus scripts cannot access the Auxiliary Data of a transaction,
-this detection can NOT be done on-chain by ledger rules or Plutus scripts.
+this detection can **NOT** be done on-chain by ledger rules or Plutus scripts.
 This metadata is designed to be processed by off-chain processors of this information.
 
 ### Detailed description of the fields in the metadata and their purpose
@@ -139,13 +139,13 @@ To save space and overcome the metadata encoding limitations, x509 RBAC data is 
 
 Due to the potential size of x509 certificates, compression is mandatory where it will reduce the space of the encoded data.
 Any dApp can, if it chooses, only support either Brotli or ZSTD and not trial compress the data.
-A conformant dApp MUST NOT store Raw data if it can be compressed.
-A conformant dApp MUST NOT store data compressed if the compressed size is larger than the raw size.
+A conformant dApp **MUST NOT** store Raw data if it can be compressed.
+A conformant dApp **MUST NOT** store data compressed if the compressed size is larger than the raw size.
 Compressed Data can be larger than Raw Data if the data is small and not very compressible.
 This is an artifact of overhead in the codec data stream itself.
 
 The specification reserves keys 13-17 for future compression schemes.
-Even though there are multiple keys defined, ONLY 1 may be used at a time.
+Even though there are multiple keys defined, **ONLY** 1 may be used at a time.
 There is only a single list of x509 chunks, and the key is used to define the compression used only.
 
 i.e., it is invalid to use key 10 and 12 at the same time in the same envelope.
@@ -178,7 +178,7 @@ The Transaction will have 3 pieces of information that must be validated to ensu
 is carried with the correct transaction.
 
 1. The UTXO Inputs when hashed MUST == [Key 1 - Transaction Inputs Hash](#key-1-txn-inputs-hash)
-2. The [auxiliary data hash] must equal the hash of the actual auxiliary data.
+2. The [auxiliary data hash] must equal to the hash of the actual auxiliary data.
    1. This is likely always true, as it should be validated by the ledger rules.
 3. The [vkeywitness] set MUST include a signature over the transaction with the key associated with Role 0.
    1. Note: Role 0 may have multiple associated keys, in which case there must be a witness for all of them.
