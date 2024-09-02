@@ -54,14 +54,17 @@ This specification proposes to create `3` new mini-protocols in the Cardano netw
 
 #### Description
 
-The node to node message submission protocol is used to transfer messages between full nodes. It follows a pull-based strategy where the server asks for new messages and the client returns them back. This protocol is designed to guard both sides against resource consumption attacks from the other side in a trustless setting. There exists a local message submission protocol which is used when the server trusts a local client as described in the [following section](#Local-Message-Submission-mini-protocol).
+The node to node message submission protocol is used to transfer messages between full nodes. It follows a pull-based strategy where the inbound side asks for new messages and the outbound side returns them back. This protocol is designed to guard both sides against resource consumption attacks from the other side in a trustless setting. 
+
+> [!NOTE]
+> There exists a local message submission protocol which is used when the server trusts a local client as described in the [following section](#Local-Message-Submission-mini-protocol).
 
 #### State machine
 
 | Agency ||
 |--------|------| 
-| Client has Agency | StInit, StMessageIdsNonBlocking, StMessageIdsBlocking, StMessages | 
-| Server has Agency | StIdle |
+| Outbound side has Agency | StInit, StMessageIdsNonBlocking, StMessageIdsBlocking, StMessages | 
+| Inbound side has Agency | StIdle |
 
 ```mermaid
 stateDiagram-v2   
@@ -86,12 +89,12 @@ stateDiagram-v2
 ##### Protocol messages
 
 * **MsgInit**: Initial message of the protocol.
-* **MsgRequestMessageIdsNonBlocking(ack,req)**: The server asks for new message ids and acknowledges old ids. The client immediately replies (possible with an empty list).
-* **MsgRequestMessageIdsBlocking(ack,req)**: The server asks for new messages ids and acknowledges old ids. The client will block until new messages are available.
-* **MsgReplyMessageIds([(id,size)])**: The client replies with a list of available messages. The list contains pairs of message ids and the corresponding size of the message in bytes. In the blocking case the reply is guaranteed to contain at least one message. In the non-blocking case, the reply may contain an empty list.
-* **MsgRequestMessages([ids])**: The server requests messages by sending a list of message-ids.
-* **MsgReplyMessages([messages])**: The client replies with a list messages.
-* **MsgClientDone**: The client terminates the mini-protocol.
+* **MsgRequestMessageIdsNonBlocking(ack,req)**: The inbound side asks for new message ids and acknowledges old ids. The outbound side immediately replies (possible with an empty list).
+* **MsgRequestMessageIdsBlocking(ack,req)**: The inbound side asks for new messages ids and acknowledges old ids. The outbound side will block until new messages are available.
+* **MsgReplyMessageIds([(id,size)])**: The outbound side replies with a list of available messages. The list contains pairs of message ids and the corresponding size of the message in bytes. In the blocking case the reply is guaranteed to contain at least one message. In the non-blocking case, the reply may contain an empty list.
+* **MsgRequestMessages([id])**: The inbound side requests messages by sending a list of message-ids.
+* **MsgReplyMessages([messages])**: The outbound side replies with a list messages.
+* **MsgClientDone**: The outbound side terminates the mini-protocol.
 
 ##### Transition table
 
