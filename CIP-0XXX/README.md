@@ -50,6 +50,16 @@ This specification proposes to create `3` new mini-protocols in the Cardano netw
     - [**Local Message Submission mini-protocol**](#Local-Message-Submission-mini-protocol): Local submission of a message to be diffused by the Cardano network.
     - [**Local Message Notification mini-protocol**](#Local-Message-Notification-mini-protocol): Local notification of a message received from the Cardano network.
 
+> [!NOTE]
+> The terms **Message producer**, **Message consumer** and **Network node** may represent different entities depending on the concrete implementation made for a specific protocol: 
+> - the **Network node** could be either the **Cardano node** itself or **another node** implementing the mini-protocols described in this document. Opting in for one of these possibilities will depend on a careful analysis of the impact on the security of the Cardano node, impact on the load of the Cardano network, the specific network topology needed by the protocol and the needed level of coupling with the Cardano node itself (access to ledger, consensus, ...). It's worth mentioning that each protocol will implement its own version of the **Network node** by leveraging a common implementation of the mini-protocols.
+> - the message **Message producer** and **Message consumer** could be either the **Cardano node** itself or **another node** able to interact with the Cardano node through the node-to-client mini-protocols detailed in this document.
+> 
+> Here is a summary of the meanings of these terms depending on the protocol:
+> | Protocol | Message producer | Message consumer | Network node |
+> |------|------|------|------|
+> | **Mithril** | [Mithril signer](https://mithril.network/doc/mithril/mithril-network/signer) | [Mithril aggregator](https://mithril.network/doc/mithril/mithril-network/architecture) | [Mithril network node](#information-diffusion-architecture) |
+
 ### Message Submission mini-protocol
 
 #### Description
@@ -472,7 +482,7 @@ and all of them can follow this design.
 Any software included in `cardano-node` needs to undergo a rigorous development
 and review process to avoid catastrophic events.  We think that merging
 `Cardano`, a mature software, with new technologies, should be a process, and
-thus we propose first to develop `Mithril` nodes as standalone processes which
+thus we propose first to develop `Mithril network` nodes as standalone processes which
 communicate with `cardano-node` via its local interface (`node-to-client`
 protocol).  As we will see, this approach has advantages for the `Mithril`
 network and SPOs.
@@ -483,13 +493,13 @@ an overlay network, the stack needs to access stake pool information registered
 on chain. This can be done via the `node-to-client` protocol over a Unix
 socket. Since `Mithril` nodes will have their own end-points, we'll either need
 to propose a modification to the SPO registration process, which includes
-`Mithril` nodes, or we could pass incoming `mithril` connections from
+`Mithril network` nodes, or we could pass incoming `mithril` connections from
 `cardano-node` to the `Mithril` node via
 [CMSG_DATA](https://man.openbsd.org/CMSG_DATA.3).
 
 `Ouroboros-Network` outbound governor component, which is responsible for
 creating the overlay network has a built-in mechanism which churns connections
-based on a defined metric.  By developing a standalone `Mithril` node, we can
+based on a defined metric.  By developing a standalone `Mithril network` node, we can
 design metrics specific for the purpose.  This way, the `Mithril` network will
 optimise for its benefits rather than being stuck in a suboptimal solution from
 its perspective - if `Mithril` and `Cardano` were tied more strongly (e.g. as
@@ -506,7 +516,7 @@ infrastructure while still mitigating the risk of catastrophic events at the
 core of the system.
 
 Please also note that any protocols and their instances that will be built as
-part of the standalone `Mithril` node could be reused in future for `Peras` and
+part of the standalone `Mithril network` node could be reused in future for `Peras` and
 `Leios`.  It will give us even more confidence that the future core system will
 be built from components that are used in production.
 
@@ -521,13 +531,12 @@ ledger - the Cardano Core team restrains itself to not publishing new `cardano-n
 versions with significant changes across many of its subsystems - just for the
 sake of clarity of where to look if a bug is found.
 
-In this design, a `Mithril` node runs alongside a `cardano-node`, which is connected to
+In this design, a `Mithril network` node runs alongside a `cardano-node`, which is connected to
 it via a UNIX socket (`node-to-client`) protocol.  This means an SPO will run
-a `Mithril` node per `cardano-node`.  The `Mithril` node connected to BP can
+a `Mithril network` node per `cardano-node`.  The `Mithril network` node connected to BP can
 also have access to necessary keys for signing purposes. `Mithril` might also
 use the KES agent, as `cardano-node` will in the near future, to securely access
 the KES key.
-
 
 ## Path to Active
 
