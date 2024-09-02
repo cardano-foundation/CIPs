@@ -109,8 +109,10 @@ stateDiagram-v2
 | StMessages | MsgReplyMessages | [messages] | StIdle |
 | StMessageIdsBlocking | MsgDone |  | StDone |
 
-##### CDDL encoding specification
+> [!NOTE]
+> The `StInit` state is needed as it allows to start all outbound sides on the same side of the connection, which is needed as the information flows in the opposite direction with this special **message submission mini-protocol**. This is also the case with the **tx-submission mini-protocol** because information flows in the other direction than for headers with **chain-sync mini-protocol** or blocks with **block-fetch mini-protocol**.
 
+##### CDDL encoding specification
 
 ```cddl
  1
