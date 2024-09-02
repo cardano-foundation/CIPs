@@ -320,6 +320,25 @@ In the specific case of Mithril, the individual signature is unique so there wil
 
 In this attack, a malicous SPO would try to flood the network by sending many messages at once. In that case, the network layer could detect that the throughput of messages originating from a SPO is above a threshold and consider it as a protocol violation, thus disconnecting the malicous peer. If a peer asks for N messages and receives more than N messages, then it would also be considered as a protocol violation. Also, the way mini-protocols are implemented allows to set a maximum message size.
 
+#### Network node handshaking
+
+A standalone network node will use its own `handshake`. It can introduce its own protocol parameters, but quite likely it will start with `NodeToNodeVersionData`:
+
+```hs
+data NodeToNodeVersionData = NodeToNodeVersionData
+  { networkMagic  :: !NetworkMagic
+  , diffusionMode :: !DiffusionMode
+  , peerSharing   :: !PeerSharing
+  , query         :: !Bool
+  }
+  deriving (Show, Typeable, Eq)
+```
+
+* `networkMagic`: this is used for debugging purpose and to make sure the network node runs on the right network (it should be different than the existing `networkMagic`s).
+* `diffusionMode`: this would be useful if there are initiator-only nodes, e.g. a network node running next to an edge node (a wallet).
+* `peerSharing`: this will be useful to implement peer sharing in the side network if this is needed.
+* `query`: this is useful for tools like `cardano-cli ping`.
+
 ### Local Message Submission mini-protocol
 
 #### Description
