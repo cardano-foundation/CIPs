@@ -148,7 +148,7 @@ stateDiagram-v2
 30
 ```
 
-#### Client and server implementation
+#### Inbound side and outbound side implementation
 
 This mini-protocol is designed with two goals in mind:
 * diffuse messages with high efficiency
@@ -158,17 +158,26 @@ The mini-protocol is based on two pull-based operations:
 - the message consumer asks for message ids,
 - and uses these ids to request a batch of messages (which it has not received yet)
 
-The client is responsible for initiating the mini-protocol with a peer node, but the server (i.e. the other node) is the one who asks for information.
+The outbound side is responsible for initiating the mini-protocol with a peer node, but the inbound side (i.e. the other node) is the one who asks for information.
 
-The client maintains a limited size FIFO queue of outstanding messages for each of the servers it is connected to, so does the server with a mirror FIFO queue of message ids:
-- the server asks for the next message ids and acknowledges for the previous message ids received (and removed from its queue).
-- the client removes the acknowledged ids from the FIFO queue it maintains for the server.
-- the server can download the content of the messages by giving an unordered list of ids to the client.
+The outbound side maintains a limited size FIFO queue of outstanding messages for each of the inbound sides it is connected to, so does the inbound side with a mirror FIFO queue of message ids:
+- the inbound side asks for the next message ids and acknowledges for the previous message ids received (and removed from its queue).
+- the outbound side removes the acknowledged ids from the FIFO queue it maintains for the inbound side.
+- the inbound side can download the content of the messages by giving an unordered list of ids to the outbound side.
 
 The protocol supports blocking and non-blocking requests:
-- the client must reply immediately to a non-blocking request.
-- the server must wait until the client has at least one message available.
-- if the current queue of the server is empty, it must use a blocking request and a non-blocking request otherwise.
+- the outbound side must reply immediately to a non-blocking request.
+- the inbound side must wait until the outbound side has at least one message available.
+- if the current queue of the inbound side is empty, it must use a blocking request and a non-blocking request otherwise.
+
+#### Protocol invariants
+
+##### Outbound side
+- blocking request must be done if and only if the buffer of unacknowledged ids is empty (this also means that one cannot do a non-blocking request if the unacknowledged ids buffer is empty).
+- one cannot request `0` ids either through a blocking or a non-blocking request.
+
+##### Inbound side
+- it is a protocol error to send a message which id wasn't requested.
 
 #### Protocol authentication
 
