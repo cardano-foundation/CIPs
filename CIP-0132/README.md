@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 132
 Title: New Plutus Builtin dropList
 Status: Proposed
 Category: Plutus
