@@ -242,7 +242,7 @@ There is also an [integrated development environment](https://nft-playground.dev
 
 Furthermore, [a complete visual blockchain explorer](https://clg.wtf/) has been made available which utilises libcip54 and SmartNFTPortal and fully supports the reference implementation of this standard. 
 
-The first CIP54 collection has been minted on mainnet under the policy ID 1eaf3b3ffb75ff27c43c512c23c6450b307f138281efb1d690b84652 and is [availablw to see here](https://clg.wtf/policy/smart-life). [A number of other instructive example NFTs](https://nft-playground.dev/examples) have also been provided as part of the NFT Playground website.
+The first CIP54 collection has been minted on mainnet under the policy ID `1eaf3b3ffb75ff27c43c512c23c6450b307f138281efb1d690b84652` and is [available to see here](https://clg.wtf/policy/smart-life). [A number of other instructive example NFTs](https://nft-playground.dev/examples) have also been provided as part of the NFT Playground website.
 
 [Libcip54](https://github.com/kieransimkin/libcip54), [SmartNFTPortal](https://github.com/kieransimkin/SmartNFTPortal), [Cardano Looking Glass](https://github.com/kieransimkin/looking-glass) and the [NFT Playground](https://github.com/kieransimkin/cip54-playground) are all opensource - pull requests are welcome!
 
