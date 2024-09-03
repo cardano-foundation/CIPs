@@ -52,8 +52,7 @@ The implementation will break the backward compatibility for future Plutus Smart
 
 ### Implementation Plan
 
-The plan will be implemented by the Plutus Core team with assistance from the Ledger team.
-The changes will be in the "PlutusV3" ledger language at the earliest, and it is not clear which ledger era or hard fork this will arrive in.
+It is currently not planned to implement this proposal.
 
 ## Copyright
 This CIP is licensed under [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
