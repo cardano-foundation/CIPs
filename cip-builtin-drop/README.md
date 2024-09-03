@@ -6,7 +6,8 @@ Category: Plutus
 Authors:
     - Philip DiSarro <info@anastasialabs.com>
 Implementors: []
-Discussions: []
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/767
 Created: 2024-02-25
 License: CC-BY-4.0
 ---
