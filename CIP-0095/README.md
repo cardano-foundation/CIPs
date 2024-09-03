@@ -9,9 +9,13 @@ Implementors:
   - Eternl <https://eternl.io/>
   - GeroWallet <https://gerowallet.io>
   - Lace <https://www.lace.io/>
+  - Mesh <https://meshjs.dev/>
+  - mLabs <https://mlabs.city/>
   - NuFi <https://nu.fi/>
   - Ryan Williams <ryan.williams@intersectmbo.org>
   - Typhon <https://typhonwallet.io/>
+  - Lido Nation <https://www.lidonation.com/>
+  - Vespr <https://vespr.xyz/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/509
@@ -918,13 +922,19 @@ straight forward for wallets implementing both APIs.
 
 - [x] The interface is supported by three wallet providers.
   - [Nufi](https://assets.nu.fi/extension/sanchonet/nufi-cwe-sanchonet-latest.zip)
-  - [Lace](https://chromewebstore.google.com/detail/lace-sanchonet/djcdfchkaijggdjokfomholkalbffgil?hl=en)
-  - [Yoroi](https://chrome.google.com/webstore/detail/yoroi-nightly/poonlenmfdfbjfeeballhiibknlknepo/related)
+  - [Lace](https://github.com/input-output-hk/lace)
+  - [Yoroi](https://github.com/Emurgo/yoroi)
   - [demos wallet](https://github.com/Ryun1/cip95-demos-wallet)
 - [x] The interface is used by one web application to allow users to engage with
       the Conway ledger design.
   - [SanchoNet GovTool](https://sanchogov.tools)
-  - [demos test dApp](https://github.com/Ryun1/cip95-cardano-wallet-connector/tree/master)
+  - [GovTool](https://gov.tools)
+  - [cip95-cardano-wallet-connector](https://github.com/Ryun1/cip95-cardano-wallet-connector/tree/master)
+  - [drep-campaign-platform](https://github.com/IntersectMBO/drep-campaign-platform)
+- [x] The interface is supported via libraries.
+  - [Cardano JS-SDK](https://github.com/input-output-hk/cardano-js-sdk)
+  - [purescript-cip95](https://github.com/mlabs-haskell/purescript-cip95)
+  - [Mesh SDK](https://github.com/MeshJS/mesh)
 
 ### Implementation Plan
 
