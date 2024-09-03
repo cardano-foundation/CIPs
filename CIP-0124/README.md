@@ -87,7 +87,7 @@ The extended JSON metadata standard (CIP-25) allows flexible off- and on-chain s
 }
 ```
 
-## CDDL
+### CDDL
 
 Extended versions of CIP-25
 
