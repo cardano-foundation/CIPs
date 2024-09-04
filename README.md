@@ -77,7 +77,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0060 | [Music Token Metadata](./CIP-0060) | Active |
 | 0067 | [Asset Name Label Registry](./CIP-0067) | Proposed |
 | 0068 | [Datum Metadata Standard](./CIP-0068) | Active |
-| 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Proposed |
+| 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Active |
 | 0071 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
 | 0072 | [DApp Registration](./CIP-0072) | Proposed |
 | 0074 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
@@ -104,12 +104,12 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0107 | [URI Scheme - Block and transaction objects](./CIP-0107) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
-| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
+| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Active |
 | 0112 | [Observe script type](./CIP-0112) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
 | 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
-| 0117 | [Explicit script return values](./CIP-0117) | Proposed |
+| 0117 | [Explicit script return values](./CIP-0117) | Active |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
 | 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
@@ -117,7 +117,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0124 | [Extend token metadata for translations](./CIP-0124) | Proposed |
 | 0128 | [Preserving Order of Transaction Inputs](./CIP-0128) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
-| 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
+| 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Proposed |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Active |
