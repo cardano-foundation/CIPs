@@ -1,7 +1,7 @@
 ---
 CIP: ?
 Title: Decentralized Message Queue
-Category: ?
+Category: Network
 Status: Proposed
 Authors:
     - Jean-Philippe Raynaud <jp.raynaud@gmail.com>
