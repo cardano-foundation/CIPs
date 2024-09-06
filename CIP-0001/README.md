@@ -380,12 +380,13 @@ The missions of an editor include, but aren't exclusively limited to, any of the
 
 Current editors are listed here below:
 
-| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] |
-| ---                            | ---                            | ---                             |
+| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] | Thomas Vellekoop <br/> [@perturbing][] |
+| ---                            | ---                            | ---                             | ---                                    |
 
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
 [@Crypto2099]: https://github.com/Crypto2099
+[@perturbing]: https://github.com/perturbing
 
 ## Rationale: how does this CIP achieve its goals?
 

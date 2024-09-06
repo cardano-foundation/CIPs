@@ -179,10 +179,11 @@ Proposals stalled without any updates from their authors will eventually be clos
 
 ## Editors
 
-| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] |
-| ---                            | ---                            | ---                             |
+| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] | Thomas Vellekoop <br/> [@perturbing][] |
+| ---                            | ---                            | ---                             | ---                                    |
 
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
 [@Crypto2099]: https://github.com/Crypto2099
+[@perturbing]: https://github.com/perturbing
 
