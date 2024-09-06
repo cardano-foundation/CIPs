@@ -386,6 +386,7 @@ Current editors are listed here below:
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
 [@Crypto2099]: https://github.com/Crypto2099
+[@perturbing]: https://github.com/perturbing
 
 ## Rationale: how does this CIP achieve its goals?
 
