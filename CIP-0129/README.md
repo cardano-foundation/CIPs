@@ -142,13 +142,14 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
   - [ ] cardano-cli
   - [x] SPO Scripts
   - [x] typhonjs
+  - [ ] Gov Tools
 - [ ] APIs
   - [x] Koios
   - [x] Cardanoscan API
   - [ ] Blockfrost
 - [ ] Explorers
   - [x] Cardanoscan.io
-  - [ ] AdaStat.net
+  - [x] AdaStat.net
 - [ ] Wallets
   - [x] Eternl
   - [x] Typhon Wallet
