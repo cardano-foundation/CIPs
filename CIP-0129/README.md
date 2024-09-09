@@ -140,6 +140,7 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
 - [ ] Requires updating Ledger nano app, and Trezor. The changes can be proposed once the CIP is merged.
 - [ ] Tooling
   - [ ] cardano-cli
+  - [x] CNTools
   - [x] SPO Scripts
   - [x] typhonjs
   - [ ] Gov Tools
