@@ -111,7 +111,7 @@ Some addresses (types 6 and 7) carry no delegation part whatsoever. Their associ
 ##### Pointers
 
 > **Note**
-> From the Conway ledger era, new pointer addresses cannot added to Mainnet.
+> From the Conway ledger era, new pointer addresses cannot be added to Mainnet.
 
 In an address, a **chain pointer** refers to a point of the chain containing a stake key registration certificate. A point is identified by 3 coordinates:
 
