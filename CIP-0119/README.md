@@ -193,9 +193,11 @@ Therefore it was decided to allow a provision for people to submit `imageObject`
 
 This field was intended to be used by DReps who wish to identify themselves via rich metadata but are not seeking to campaign for delegations.
 By not be listed via "DRep aggregation/campaign" tools the idea is that these DReps are less likely to attract unwanted delegation from ada holders.
-These DReps could be organizations want to use their ada to vote, in a transparent way on-chain but dont wish to vote on the behalf of others.
+These DReps could be organizations want to use their ada to vote, in a transparent way on-chain but do not wish to vote on the behalf of others.
 
-It is expected that tooling such as block explorers will list DReps using `doNotList=true`. Whereas tooling built specifically for DRep campaign and delegation should respect the intent of this field.
+It is expected that tooling such as block explorers will list DReps using `doNotList=true`. Whereas tooling built specifically for DRep campaign and delegation should respect the intent of this field. 
+
+This proposal cannot force tooling to respect this desire from DReps. DReps must be aware that any information anchored on-chain can be found via tooling, and may result in delegation.
 
 ### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of expertise, and would perhaps therefore be more attractive to some delegating Ada Holders.
