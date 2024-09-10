@@ -313,20 +313,8 @@ instance
   iDecEqParty .DecEq._≟_ = _≟-party_
 ```
 
-Honest parties follow the protocol's rules, but corrupt parties might choose not to. 
-
 ```agda
-data Honesty : Party → Set where
-  Honest : ∀ {p : Party} → Honesty p
-  Corrupt : ∀ {p : Party} → Honesty p
-```
-
-The honesty of parties participating in the protocol is represented in this specification.
-
-```agda
-PartyTup = ∃[ p ] (Honesty p)
-
-Parties = List PartyTup
+Parties = List Party
 ```
 
 #### Signatures
@@ -585,10 +573,9 @@ Messages are put into an *envelope* and assigned to a party. Such messages can b
 
 ```agda
   record Envelope : Set where
-    constructor ⦅_,_,_,_⦆
+    constructor ⦅_,_,_⦆
     field
       partyId : Party
-      honesty : Honesty partyId
       message : Message
       delay : Delay
 ```
@@ -746,7 +733,6 @@ Several convenience functions are provided for extracting information about cert
 In order to define the semantics the following parameters are required.
 
 - The type of the block-tree
-- The adversarial state
 - A function that mimics the node's memory pool by selecting the transactions available to a particular party in a particular slot
 - A list of the parties participating in the protocol
 
@@ -755,7 +741,6 @@ module Semantics
            ⦃ _ : Params ⦄
            ⦃ _ : Network ⦄
            {T : Set} {blockTree : TreeType T}
-           {S : Set} {adversarialState₀ : S}
            {txSelection : SlotNumber → Party → List Tx}
            {parties : Parties}
            where
@@ -870,7 +855,6 @@ The small-step semantics rely on a global state, which consists of several piece
 - Map with local state per party
 - All the messages that have been sent but not yet been delivered
 - All the messages that have been sent
-- Adversarial state
 
 ```agda
     record State : Set where
@@ -880,7 +864,6 @@ The small-step semantics rely on a global state, which consists of several piece
         blockTrees : AssocList Party T
         messages : List Envelope
         history : List Message
-        adversarialState : S
 ```
 
 #### Progress
@@ -946,8 +929,8 @@ New messages are buffered, recorded in the global history, and will update a par
       record M
         { blockTrees = set p l blockTrees
         ; messages =
-            map (uncurry ⦅_,_, m , d ⦆)
-              (filter (¬? ∘ (p ≟-party_) ∘ proj₁) parties)
+            map ⦅_, m , d ⦆
+              (filter (¬? ∘ (p ≟-party_)) parties)
             ++ messages
         ; history = m ∷ history
         }
@@ -967,7 +950,7 @@ This occurs when a message diffuses to new parties.
 A party receives messages from the global state by fetching messages assigned to the party, updating the local block tree, and putting the local state back into the global state.
 
 ```agda
-    data _⊢_[_]⇀_ : {p : Party} → Honesty p → State → Message → State → Set
+    data _⊢_[_]⇀_ : Party → State → Message → State → Set
       where
 ```
 
@@ -976,27 +959,14 @@ An honest party consumes a message from the global message buffer and updates th
 ```agda
       honest : ∀ {p} {t t′} {m} {N} → let open State N in
           blockTrees ⁉ p ≡ just t
-        → (m∈ms : ⦅ p , Honest , m , 𝟘 ⦆ ∈ messages)
+        → (m∈ms : ⦅ p , m , 𝟘 ⦆ ∈ messages)
         → t [ m ]→ t′
           ---------------------------------------------
-        → Honest {p} ⊢
+        → p ⊢
           N [ m ]⇀ record N
             { blockTrees = set p t′ blockTrees
             ; messages = messages ─ m∈ms
             }
-```
-
-An adversarial party might delay a message.
-
-```agda
-      corrupt : ∀ {p} {as} {m} {N} → let open State N in
-           (m∈ms : ⦅ p , Corrupt , m , 𝟘 ⦆ ∈ messages)
-           ----------------------------------------------
-        →  Corrupt {p} ⊢
-           N [ m ]⇀ record N
-             { messages = m∈ms ∷ˡ= ⦅ p , Corrupt , m , 𝟙 ⦆
-             ; adversarialState = as
-             }
 ```
 
 #### Voting
@@ -1029,7 +999,7 @@ Voting updates the party's local state and for all other parties a message is re
 
 ```agda
     infix 2 _⊢_⇉_
-    data _⊢_⇉_ : {p : Party} → Honesty p → State → State → Set where
+    data _⊢_⇉_ : Party → State → State → Set where
     
       honest : ∀ {p} {t} {M} {w} {π} {σ} {b}
         → let
@@ -1045,15 +1015,10 @@ Voting updates the party's local state and for all other parties a message is re
         ∙ IsCommitteeMember p r w π
         ∙ VotingRule s t
           ───────────────────────────────────
-          Honest {p} ⊢
+          p ⊢
             M ⇉ add (VoteMsg v , 𝟘 , p) to t
                 diffuse M
 ```
-
-Rather than creating a delayed vote, an adversary can honestly create it and delay the message.
-
-> [!WARNING]
-> Add a `corrupt` constructor here.
 
 #### Block creation
 
@@ -1112,7 +1077,7 @@ Block creation updates the party's local state, but for all other parties a mess
 
 ```agda
     infix 2 _⊢_↷_
-    data _⊢_↷_ : {p : Party} → Honesty p → State → State → Set where
+    data _⊢_↷_ : Party → State → State → Set where
 
       honest : ∀ {p} {t} {M} {π} {σ}
         → let
@@ -1124,16 +1089,13 @@ Block creation updates the party's local state, but for all other parties a mess
         ∙ blockTrees M ⁉ p ≡ just t
         ∙ ValidChain (b ∷ pref)
           ───────────────────────────
-          Honest {p} ⊢
+          p ⊢
             M ↷ add (
                   ChainMsg (b ∷ pref)
                 , 𝟘
                 , p) to t
                 diffuse M
 ```
-
-> [!WARNING]
-> Add a `corrupt` constructor here.
 
 #### Small-step semantics
 
@@ -1143,7 +1105,6 @@ The small-step semantics describe the evolution of the global state.
     variable
       M N O : State
       p : Party
-      h : Honesty p
 ```
 
 The relation allows
@@ -1160,19 +1121,19 @@ Note that when transitioning to the next slot we need to distinguish whether the
     data _↝_ : State → State → Set where
 
       Fetch : ∀ {m} →
-        ∙ h ⊢ M [ m ]⇀ N
+        ∙ p ⊢ M [ m ]⇀ N
           ──────────────
           M ↝ N
 
       CreateVote :
         ∙ Fetched M
-        ∙ h ⊢ M ⇉ N
+        ∙ p ⊢ M ⇉ N
           ─────────
           M ↝ N
 
       CreateBlock :
         ∙ Fetched M
-        ∙ h ⊢ M ↷ N
+        ∙ p ⊢ M ↷ N
           ─────────
           M ↝ N
 
