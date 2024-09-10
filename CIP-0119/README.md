@@ -144,7 +144,7 @@ If the `imageObject` DOES NOT contain a base64 encoded image, the `contentUrl` M
 - If not included then the value is assumed to be `false`.
 - A `true` value means that the DRep does **not** want to campaign for delegation via tooling.
 - A `false` value means that the DRep does want to campaign for delegation via tooling and thus be shown via that tooling.
-- e.g. a DRep who does not want to appear in GovTool’s DRep Directory feature creates metadata with `donotlist=true`.
+- e.g. a DRep who does not want to appear in GovTool’s DRep Directory feature creates metadata with `doNotList=true`.
 
 ### Application
 Only the `givenName` property is listed above as compulsory, DRep metadata must include it to be considered CIP-119 compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-119 compliant metadata.
