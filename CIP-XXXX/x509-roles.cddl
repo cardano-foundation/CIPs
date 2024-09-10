@@ -110,8 +110,8 @@ key-reference = key-local-ref / key-hash
 ; Offset reference to a key defined in this registration.
 ; More efficient than a key hash.
 key-local-ref = [ x509-certs
-	/ c509-certs
-	/ pub-keys, key-offset ]
+                / c509-certs
+                / (pub-keys, key-offset) ]
 
 ; Offset of the key in the specified set.  0 = first entry.
 key-offset = uint

@@ -111,7 +111,7 @@ A PKI consists of:
 * A registration authority (RA) which verifies the identity of entities requesting their digital certificates
   to be stored at the CA;
   * Each dApp is responsible for identifying certificates relevant for its use that are stored on-chain and are their own RA.
-  * The dApp may choose to not do any identifying.
+  * The dApp may choose not to do any identifying.
   * The dApp can rely on decentralized identity to verify identity in a trustless way.
 * A central directory—i.e., a secure location in which keys are stored and indexed;
   * This is the blockchain itself.
@@ -186,8 +186,8 @@ The only feature about the certificate that impacts the role registration is tha
 may embed references to on-chain keys.
 
 In the case where a certificate does embed a reference to an on-chain key,
-the key SHOULD be present in the witness set of the transaction.
-Individual dApps can strengthen this requirement to MUST.
+the key **SHOULD** be present in the witness set of the transaction.
+Individual dApps can strengthen this requirement to **MUST**.
 
 By including the Signature in the transaction, we are able to make a verifiable link between the
 off-chain certificate and the on-chain identity.
@@ -200,12 +200,12 @@ This specification allows for C509 encoded certificates to be present in the dat
 Any C509 certificates present in the metadatum of the transaction are considered to be part of the C509
 certificate list for the purposes of this specification.
 
-A C509 certificate in a metadatum that is to be included in the registration MUST be included in the C509 certificate list
+A C509 certificate in a metadatum that is to be included in the registration **MUST** be included in the C509 certificate list
 as a reference.
 
-The reference defines the metadatum the C509 certificate can be found in the transaction,
-and the offset in that metadatum where the certificate is located.
-The Certificates MUST be in the same transaction as the Metadatum, it is not possible to refer to a certificate
+The reference defines the metadatum the C509 certificate can be found in the transaction outputs,
+and the offset in that metadatum is where the certificate is located.
+The Certificates **MUST** be in the same transaction as the Metadatum, it is not possible to refer to a certificate
 embedded in metadatum in another transaction.
 
 Certificates in metadatum that are not linked in this way are ignored for the purpose of this specification.
@@ -279,7 +279,7 @@ revoked certificate also being revoked.
 ### Role definitions
 
 Roles are defined in a list.
-A user can register for any available role, and they can enrol in more than one role in a single registration transaction.
+A user can register for any available role, and they can enroll in more than one role in a single registration transaction.
 
 The validity of the registration is as per the rules for roles defined by the dApp itself.
 
@@ -288,8 +288,8 @@ Role registration data is further divided into:
 1. [A Role number](#role-number)
 2. An [Optional reference](#reference-to-a-role-signing-key) to the roles signing key
 3. An [Optional reference](#reference-to-a-role-encryption-key) to the roles encryption key
-4. An [optional reference](#on-chain-payment-key-reference) to the on-chain payment key to use for the role.
-5. And [an optional](#role-extended-data-keys) dApp defined set of role specific data.
+4. An [Optional reference](#on-chain-payment-key-reference) to the on-chain payment key to use for the role.
+5. And an [Optional](#role-extended-data-keys) dApp defined set of role specific data.
 
 #### Role Number
 
@@ -338,8 +338,8 @@ If the key referenced does not support public key encryption, the registration i
 
 #### On-chain payment key reference
 
-Some dApps may require a user to register their payment key, so that they can be sent rewards,
-or native tokens or nft's or for other use cases.
+Some dApps may require a user to register their payment key, so that rewards can be sent,
+or native tokens or NFT's or for other use cases.
 
 Registrations like CIP-15/36 for catalyst include a payment key.
 However, a fundamental problem with these metadata standards is there is no way to validate:
@@ -353,16 +353,16 @@ A Payment key reference in this CIP solves this problem by only allowing a refer
 
 The reference is a simple signed integer.
 If the integer is positive, then it is referencing the spent UTXO in the transaction Input at the same offset.
-Because its is required to prove one can spend a UTXO to post the transaction,
+Because its required to prove one can spend a UTXO to post the transaction,
 the transaction itself proves that the Payment address being registered is both valid and owned by the registrar.
 
 If the reference is negative, then the payment key references a transaction output.
 The value is negated to get the offset into the transaction output array.
 
-If the transaction output address IS also an input to the transaction,
+If the transaction output address **IS** also an input to the transaction,
 then the same proof has already been attached to the transaction.
 
-However, if the transaction output is not also an input, the transaction MUST include the output address
+However, if the transaction output is not also an input, the transaction **MUST** include the output address
 in the required signers field, and the transaction must carry a witness proving the payment key is owned.
 
 This provides guarantees that the entity posting the registration has posted a valid payment address, and that they control it.
@@ -394,8 +394,7 @@ As this data is dApp specific it is not detailed here.
 
 Any registration metadata must be 100% valid, or the entire registration data set is rejected as invalid.
 
-For example, if three roles were registered, Role 0, 1 and 2.
-
+For example, given three roles were registered, Role 0, 1, and 2.
 Role 0 is perfectly fine, as is Role 1.
 However Role 2 has an error with the payment key.
 None of the role registrations will take effect.
@@ -405,7 +404,7 @@ None of the role registrations will take effect.
 As role registration is cumulative and each new registration for an entity on a dApp simply updates a previous
 registration, then all fields are optional.
 
-The individual posting the registration need ONLY post the data that has changed or is being added.
+The individual posting the registration **ONLY** needs to post the data that has changed or is being added.
 This is intended to minimize the amount of on-chain data.
 It does mean that a registration state can only be known by collecting all registration for an individual from the chain.
 
@@ -413,26 +412,26 @@ It does mean that a registration state can only be known by collecting all regis
 
 The very first registration must have the following features:
 
-1. It MUST have a certificate that is appropriately issued (either self signed or issued by a trusted CA).
+1. It **MUST** have a certificate that is appropriately issued (either self signed or issued by a trusted CA).
    1. The certificate requirement is defined by each dApp.
-   2. The certificate MUST link to at least 1 on-chain identity.
+   2. The certificate **MUST** link to at least 1 on-chain identity.
       dApps define what the required identities are.
       It is valid for a dApp to require multiple on-chain identities to be referenced.
       However, general validity can be inferred by the presence or lack of a referenced on-chain identity.
       1. Either currently a Stake Address; or
       2. Another on-chain identity key (such as dRep).
-   3. The transaction MUST be witnessed by ALL the Role 0 referenced on-chain identities.
-      1. If the address is not a natural address to witness the transaction, it MUST be included in the
+   3. The transaction **MUST** be witnessed by **ALL** the Role 0 referenced on-chain identities.
+      1. If the address is not a natural address to witness the transaction, it **MUST** be included in the
           required signers field of the transaction.
-          And it must appear in the witness set.
-2. It MUST have a Role 0 defined, that references the certificate.
-3. It must be signed by the Role 0 certificate.
+          And it **MUST** appear in the witness set.
+2. It **MUST** have a Role 0 defined, that references the certificate.
+3. It **MUST** be signed by the Role 0 certificate.
 
 Once the Role 0 certificate is registered, the entity is registered for the dApp.
 Provided the dApp will accept the individuals registration.
 
-Other certificates DO NOT need to have references to the on-chain identity of the user.
-However, if they do, they must be witnessed in the transaction to prove they are validly held and referenced.
+Other certificates **DO NOT** need to have references to the on-chain identity of the user.
+However, if they do, they **MUST** be witnessed in the transaction to prove they are validly held and referenced.
 
 ### De-registering
 
