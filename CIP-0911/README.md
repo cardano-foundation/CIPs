@@ -1,6 +1,6 @@
 ---
 CIP: CIP-0911?
-Title: Disaster Recovery Plan for Cardano
+Title: Disaster Recovery Plan for Mainnet
 Category: Cardano Information
 Status: Proposed
 Authors:
