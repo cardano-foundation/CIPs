@@ -838,7 +838,7 @@
       },
       "additionalProperties": false,
       "required": []
-    }
+    },
     "Ipv4": {
       "title": "Ipv4",
       "description": "IPv4 Address",
@@ -1647,6 +1647,55 @@
         "signature"
       ],
       "additionalProperties": false
+    },
+    "TransactionWitnessSet": {
+      "title": "TransactionWitnessSet",
+      "type": "object",
+      "properties": {
+        "bootstraps": {
+          "title": "BootstrapWitnesses",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/BootstrapWitness"
+          }
+        },
+        "native_scripts": {
+          "title": "NativeScripts",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/NativeScript"
+          }
+        },
+        "plutus_data": {
+          "type": "array",
+          "title": "PlutusList",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/PlutusData"
+          }
+        },
+        "plutus_scripts": {
+          "type": "array",
+          "title": "PlutusScripts",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/PlutusScript"
+          }
+        },
+        "redeemers": {
+          "type": "array",
+          "title": "Redeemers",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Redeemer"
+          }
+        },
+        "vkeywitnesses": {
+          "type": "array",
+          "title": "VkeyWitnesses",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Vkeywitness"
+          }
+        }
+      },
+      "required": []
     },
     "Transaction": {
       "type": "object",
