@@ -302,10 +302,6 @@ One of the key requirements for successful disaster recovery will be proper enga
 
 
 ## Rationale: how does this CIP achieve its goals?
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
-
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
 
 This CIP outlines key disaster recovery scenarios that the Cardano community should understand to mitigate
 potential network outages. As a living document, it will be regularly reviewed and updated to inform 
