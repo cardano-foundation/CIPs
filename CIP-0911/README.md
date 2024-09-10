@@ -46,7 +46,6 @@ followed in the unlikely event that the Cardano mainnet encounters a situation w
 on-chain recovery mechanisms fail.
 
 ## Disaster Recovery Procedures
-<!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned, if not covered under an optional Versioning main heading. If a proposal defines structure of on-chain data it must include a CDDL schema in its specification.-->
 
 While the exact recovery process will depend on the unique nature of the failure, there are three main scenarios we can consider.
 
