@@ -1,7 +1,7 @@
 ---
 CIP: 0381
 Title: Plutus support for Pairings over BLS12-381
-Status: Proposed
+Status: Active
 Category: Plutus
 Authors:
   - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
@@ -492,11 +492,12 @@ IOG internal. PR open for Plutus bindings https://github.com/input-output-hk/plu
 
 ### Acceptance Criteria
 
-- [ ] Confirmation from IOG Plutus Team that this curve support is included in a scheduled Plutus release.
+- [x] Confirmation from IOG Plutus Team that this curve support is included in a scheduled Plutus release.
+  - Included within the Chang #1 hardfork 
 
 ### Implementation Plan
 
-- [ ] Confirmation from IOG Plutus Team that [CIP-0035 Processes](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#processes) for changes to Plutus have been satisfied.
+- [x] Confirmation from IOG Plutus Team that [CIP-0035 Processes](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0035#processes) for changes to Plutus have been satisfied.
 
 ## Copyright
 
