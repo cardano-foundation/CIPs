@@ -1,6 +1,6 @@
 ---
 CIP: CIP-0911?
-Title: Disaster Recovery Plan for Mainnet
+Title: Disaster Recovery Plan for Cardano networks (including mainnet)
 Category: Tools
 Status: Proposed
 Authors:
@@ -38,12 +38,15 @@ This CIP is based on an earlier IOHK technical report that is referenced below, 
 documentation and discussions that have not been publicly released. It should be considered to be a living 
 document that is reviewed and revised on a regular basis.    
 
+Note that although the focus of disaster recovery is on Cardano mainnet, the recovery procedures are generic and apply to other Cardano
+networks, including SanchoNet, Preview, PreProd or private networks.
+
 
 ## Motivation: why is this CIP necessary?
 
 This CIP is needed to familiarize stakeholders with the processes and procedures that should be 
-followed in the unlikely event that the Cardano mainnet encounters a situation where the built-in 
-on-chain recovery mechanisms fail.
+followed in the unlikely event that the Cardano mainnet, or another Cardano network, encounters
+a situation where the built-in  on-chain recovery mechanisms fail.
 
 ## Disaster Recovery Procedures
 
@@ -71,8 +74,8 @@ is perfectly normal.  Such forks will typically last only a few
 blocks.
 
 However, in an extreme situation, the partition may persist beyond the
-Praos rollback limit of *k* blocks (currently 2,160 blocks).  In this case, the nodes
-will not be able to rollback to rejoin the main chain, since this
+Praos rollback limit of *k* blocks (currently 2,160 blocks on mainnet). 
+In this case, the nodes will not be able to rollback to rejoin the main chain, since this
 would violate the required Praos guarantees.
 
 
@@ -80,7 +83,7 @@ would violate the required Praos guarantees.
 
 Disconnected nodes must be reconnected to the main chain by their operators. This can be done 
 by truncating the local block database to a point before the chain fork and then resyncing 
-against the main network. This can be done using the `db-truncator` tool.
+against the main network, using the `db-truncator` tool, for example.
 
 Full node wallets can also be recovered in the same way, though this may require technical 
 skills that the end users do not possess. It may be easier, if slower, for them to simply 
@@ -125,9 +128,10 @@ and advise them on how to rejoin the main chain.
 
 #### Timing Considerations
 
-Partitions of less than 2,160 blocks will automatically rejoin the main chain.  With current Cardano settings, this represents
+On Cardano mainnet, partitions of less than 2,160 blocks will automatically rejoin the main chain.  With current Cardano mainnet settings, this represents
 a period of up to 12 hours during which automatic rollback will occur.  If the partition exceeds 2,160 blocks, then the
-procedure described above will be necessary to allow nodes to rejoin the main chain.
+procedure described above will be necessary to allow nodes to rejoin the main chain.  Other Cardano networks may have different
+timing characteristics.
 
 
 ### Scenario 2: Failure to Make Blocks for an Extended Period of Time
@@ -144,11 +148,11 @@ then the remediation procedures should be followed.
 
 #### Remediation
 
-Identify a small group of block producing nodes that will be used to recover the chain.  This group should have
+Identify a small group of block producing nodes that will be used to recover the chain.  For Cardano mainnet, this group should have
 sufficient delegated stake to be capable of generating at least 9 blocks in a 36 hour window.
 It should be isolated from the rest of the network.
 The chain can then be recovered by resetting the wall clocks on the group of block producing nodes,
-restarting them from the last good block on Cardano mainnet, playing forward the chain production
+restarting them from the last good block on the Cardano network, playing forward the chain production
 at high speed (10x usual speed is recommended), while inserting new empty blocks at the slots which
 are allocated to the block producers. The recovery nodes can then be restarted with normal settings, including
 connections to the network.  Ouroboros Genesis then allows other nodes in the network to rapidly resynchronize
@@ -172,7 +176,7 @@ and the Ouroboros Genesis snapshot is distributed across all nodes.
 
 #### Timing Considerations
 
-The chain will tolerate a gap of up to *3k/f* slots (36 hours with current Cardano settings).
+The chain will tolerate a gap of up to *3k/f* slots (36 hours with current Cardano mainnet settings).
 A period of low chain density could have security implications that affect dynamic availability 
 and leave open the possibility for future long range attacks. This may be particularly 
 relevant should chain recovery be performed as described above (using less stake than is required 
@@ -183,7 +187,7 @@ could also be used to provide certified snapshots to stake pools as a means to v
 The adoption of Mithril for fast bootstrapping by light clients and edge nodes should help to mitigate risks 
 for the types of users on the network that do not participate in consensus.
 
-Ouroboros Genesis may also provide a remedy (TODO: confirm and describe this).
+As described below, Ouroboros Genesis snapshots may also be useful as part of the recovery process.
 
 
 ### Scenario 3: Bad Blocks Minted on Chain
@@ -223,7 +227,7 @@ a series of gaps in the chain that are interspersed with empty blocks.
 
 #### Timing Considerations
 
-If more than *3k/f* slots have passed since the bad block was minted on-chain (36 hours with current Cardano settings),
+If more than *3k/f* slots have passed since the bad block was minted on-chain (36 hours with current Cardano mainnet settings),
 then a mix of recovery techniques will be needed, as described in Scenario 3.4.  When deciding on the correct recovery
 technique for Scenarios 3.1-3.3, consideration should be given as to whether the recovery can be successfully completed before *3k/f* slots
 have elapsed.  In case of doubt, the procedure for Scenario 3.4 should be followed.
@@ -270,21 +274,21 @@ Mithril is a stake-based threshold multi-signatures scheme. One of the applicati
 is to create certified snapshots of the Cardano blockchain. Mithril snapshots allow nodes or applications
 to obtain a verified copy of the current state of the blockchain without having to download and verify the full history.
 
-SPOs on Mainnet that participate in the Mithril network provide signed snapshots to a Mithril aggregator that 
+SPOs that participate in the Mithril network provide signed snapshots to a Mithril aggregator that 
 is responsible for collecting individual signatures from Mithril signers and aggregating them into a multi-signature. 
 Using this capability, the Mithril aggregator can then provide certified snapshots of the Cardano blockchain that
 can potentially be used as a trusted source for recovery purposes.
 
-Provided that it gains sufficient adoption on Mainnet and that
+Provided that it gains sufficient adoption on the Cardano network and that
 snapshots continue to be signed by an honest majority of stake pools
 following a chain recovery event, Mithril may therefore provide an
 alternative solution to Ouroboros Genesis checkpoints as a way to
 verify the correct state of the ledger
 
 
-## Recommended Actions
+## Recommended Actions for Cardano mainnet
 
-1. Monitor the network for periods of low density and take early action if an extended period is observed.
+1. Monitor Cardano mainnet for periods of low density and take early action if an extended period is observed.
 2. Identify a collection of block producer nodes that has sufficient stake to mint at least 9 blocks in any 36 hour window.
 3. Set up emergency communication channels with stake pool operators and other community members.
 4. Practice disaster recovery procedures on a regular basis.
