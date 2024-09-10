@@ -181,7 +181,7 @@ The following table gives the current set of reviewers for Plutus CIPs.
 
 | Name                 | Email                        | GitHub username |
 |----------------------|------------------------------|-----------------|
-| Michael Peyton Jones | michael.peyton-jones@iohk.io | michaelpj       |
+| Ziyang Liu           | ziyang.liu@iohk.io           | zliu41          |
 
 ### Changes that require a CIP
 
