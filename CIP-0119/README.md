@@ -193,7 +193,7 @@ Therefore it was decided to allow a provision for people to submit `imageObject`
 
 This field was intended for DReps who wish to identify themselves via rich metadata but are not seeking to campaign for delegations.
 By not being listed via "DRep aggregation/campaign" tools the idea is that these DReps are less likely to attract unwanted delegation from ada holders.
-These DReps could be organizations want to use their ada to vote, in a transparent way on-chain but do not wish to vote on the behalf of others.
+These DReps could be organizations that want to use their ada to vote in a transparent way on-chain but do not wish to vote on the behalf of others.
 
 It is expected that tooling such as block explorers will list DReps using `doNotList=true`. Whereas tooling built specifically for DRep campaign and delegation should respect the intent of this field. 
 
