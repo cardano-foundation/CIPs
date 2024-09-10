@@ -5,7 +5,7 @@ Category: Plutus
 Authors:
   - Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>
 Implementors: N/A
-Status: Proposed
+Status: Active
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/321
 Created: 2022-08-23
@@ -115,7 +115,8 @@ Node code must be modified.
 
 ### Acceptance Criteria
 
-- [ ] The change has been implemented in the Plutus codebase, integrated in the ledger and released through a hard-fork.
+- [x] The change has been implemented in the Plutus codebase, integrated in the ledger and released through a hard-fork.
+  - Included within the Chang #1 hardfork
 
 ### Implementation Plan
 
