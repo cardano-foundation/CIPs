@@ -526,26 +526,25 @@ module _ ⦃ _ : Params ⦄ where
   ∥ ch ∥ cts = ∣ ch ∣ + ∣ filter (_PointsInto? ch) cts ∣ * B
 ```
 
+The protocol can identify a chain by the hash of its most recent block (its tip).
+
+```agda
+tipHash : Chain → Hash Block
+tipHash [] = record { hashBytes = emptyBS }
+tipHash (b ∷ _) = hash b
+```
+
 A chain is valid if its blocks are signed and their creators were slot leaders. The chain's genesis is always valid.
 
 ```agda
 data ValidChain : Chain → Set where
   Genesis : ValidChain genesis
-  Cons : ∀ {c₁ c₂ : Chain} {b₁ b₂ : Block}
-    → IsBlockSignature b₁ (Block.signature b₁)
-    → IsSlotLeader (Block.creatorId b₁) (Block.slotNumber b₁) (Block.leadershipProof b₁)
-    → Block.parentBlock b₁ ≡ hash b₂
-    → c₂ ≡ b₂ ∷ c₁
-    → ValidChain c₂
-    → ValidChain (b₁ ∷ c₂)
-```
-
-The protocol can identify a chain by the hash of its most recent block (its tip).
-
-```agda
-tipHash : ∀ {c : Chain} → ValidChain c → Hash Block
-tipHash Genesis = record { hashBytes = emptyBS }
-tipHash (Cons {b₁ = b} _ _ _ _ _) = hash b
+  Cons : ∀ {c : Chain} {b : Block}
+    → IsBlockSignature b (Block.signature b)
+    → IsSlotLeader (Block.creatorId b) (Block.slotNumber b) (Block.leadershipProof b)
+    → Block.parentBlock b ≡ tipHash c
+    → ValidChain c
+    → ValidChain (b ∷ c)
 ```
 
 A block is said to extend a certificate on a chain if the certified block is an ancestor of or identical to the block and on the chain.
@@ -1087,7 +1086,7 @@ Blocks are created with the required information.
         ; creatorId = p
         ; parentBlock =
             let open IsTreeType
-            in tipHash (is-TreeType .valid t)
+            in tipHash (preferredChain t)
         ; certificate =
             let r = v-round s
             in needCert r t
