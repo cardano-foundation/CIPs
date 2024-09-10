@@ -42,7 +42,7 @@ The purpose of this data is to lock a particular set of Auxiliary data verifiabl
 It cannot be permitted to take the Auxiliary data to another transaction and just attach it without it being detectable.
 
 Because Plutus scripts cannot access the Auxiliary Data of a transaction,
-this detection can NOT be done on-chain by ledger rules or Plutus scripts.
+this detection can **NOT** be done on-chain by ledger rules or Plutus scripts.
 This metadata is designed to be processed by off-chain processors of this information.
 
 ### Detailed description of the fields in the metadata and their purpose
@@ -78,17 +78,26 @@ Any dApp is free to have as many "purposes" defined as suits their goals.
 
 #### Key 1: txn-inputs-hash
 
-This is a hash of the transaction inputs field from the transaction this auxiliary data was originally attached to.
-This hash anchors the auxiliary data to a particular transaction, if the auxiliary data is moved to a new transaction
-it is impossible for the txn-inputs-hash to remain the same, as UTXO's can only be spent once.
+This is a 16-byte hash of the transaction inputs field from the transaction to which this auxiliary data
+was originally attached. The hash is generated using BLAKE2b (16 bytes). This hash anchors the auxiliary data to a 
+specific transaction. If the auxiliary data is moved to a new transaction, it is impossible for the `txn-inputs-hash` 
+to remain the same, as UTXOs can only be spent once.
+
+The transaction input fed into the hash function should be `[*[ tx_hash, tx_index ]]`, where `tx_hash` is the
+transaction hash and `tx_index` is the index of the transaction within the block.
+
+Example data
+```cddl
+   [[h'3086bad5f0232c5ecb6fdaa22ccad6797d9d9aea91c1cacaa8b97b8b56fdb4cb, 0]]
+```
 
 This is a key to preventing replayability of the metadata, but is not enough by itself as it needs to be able to be
 made immutable, such that any change to this field can be detected.
 
 #### Key 2: previous_transaction_id
 
-This is a 32 byte hash of the previous transaction in a chain of registration updates made by the same user.
-The only registration which may not have it for a single user is their first.
+This is a 32-byte hash of the previous transaction in a chain of registration updates made by the same user.
+The hash is generated using BLAKE2b (32 bytes). The only registration which may not have it for a single user is their first.
 Once their first registration is made, they may only update it.
 Any subsequent update for that user who is not properly chained to the previous transaction will be ignored as invalid.
 
@@ -121,9 +130,9 @@ To save space and overcome the metadata encoding limitations, x509 RBAC data is 
    This is the Brotli compressed registration data.
 3. The raw encoded registration data is then compressed with [ZSTD].
    This is the ZSTD compressed registration data.
-4. Which ever data is smallest, Raw, Brotli compressed or ZStd compressed is then cut into 64 byte chunks.
+4. Which ever data is smallest, Raw, Brotli compressed or ZStd compressed is then cut into 64 bytes chunks.
    All chunks must contain 64 bytes except for the last which can contain the residual.
-5. These chunks are then encoded in an array of 64 byte long byte strings.
+5. These chunks are then encoded in an array of 64 bytes long byte strings.
    The appropriate key is used to identify the compression used.
     * 10 = Raw, no compression
     * 11 = Brotli Compressed
@@ -131,13 +140,13 @@ To save space and overcome the metadata encoding limitations, x509 RBAC data is 
 
 Due to the potential size of x509 certificates, compression is mandatory where it will reduce the space of the encoded data.
 Any dApp can, if it chooses, only support either Brotli or ZSTD and not trial compress the data.
-A conformant dApp MUST NOT store Raw data if it can be compressed.
-A conformant dApp MUST NOT store data compressed if the compressed size is larger than the raw size.
+A conformant dApp **MUST NOT** store Raw data if it can be compressed.
+A conformant dApp **MUST NOT** store data compressed if the compressed size is larger than the raw size.
 Compressed Data can be larger than Raw Data if the data is small and not very compressible.
 This is an artifact of overhead in the codec data stream itself.
 
 The specification reserves keys 13-17 for future compression schemes.
-Even though there are multiple keys defined, ONLY 1 may be used at a time.
+Even though there are multiple keys defined, **ONLY** 1 may be used at a time.
 There is only a single list of x509 chunks, and the key is used to define the compression used only.
 
 i.e., it is invalid to use key 10 and 12 at the same time in the same envelope.
@@ -170,7 +179,7 @@ The Transaction will have 3 pieces of information that must be validated to ensu
 is carried with the correct transaction.
 
 1. The UTXO Inputs when hashed MUST == [Key 1 - Transaction Inputs Hash](#key-1-txn-inputs-hash)
-2. The [auxiliary data hash] must equal the hash of the actual auxiliary data.
+2. The [auxiliary data hash] must equal to the hash of the actual auxiliary data.
    1. This is likely always true, as it should be validated by the ledger rules.
 3. The [vkeywitness] set MUST include a signature over the transaction with the key associated with Role 0.
    1. Note: Role 0 may have multiple associated keys, in which case there must be a witness for all of them.
