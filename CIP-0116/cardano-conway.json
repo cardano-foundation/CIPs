@@ -1507,6 +1507,185 @@
         }
       ]
     },
+    "Constitution": {
+      "title": "Constitution",
+      "type": "object",
+      "properties": {
+        "anchor": {
+          "$ref": "cardano-conway.json#/definitions/Anchor"
+        },
+        "script_hash": {
+          "$ref": "cardano-conway.json#/definitions/ScriptHash"
+        }
+      },
+      "required": [ "anchor" ]
+    },
+    "GovAction": {
+      "title": "Governance Action",
+      "type": "object",
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "Parameter Change Action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "parameter_change_action"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "protocol_param_update": {
+              "$ref": "cardano-conway.json#/definitions/ProtocolParamUpdate"
+            },
+            "policy_hash": {
+              "$ref": "cardano-conway.json#/definitions/ScriptHash"
+            }
+          },
+          "required": [ "tag", "protocol_param_update" ]
+        },
+        {
+          "type": "object",
+          "title": "Hard fork initiation action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "hard_fork_initiation_action"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "protocol_version": {
+              "$ref": "cardano-conway.json#/definitions/ProtocolVersion"
+            }
+          },
+          "required": [ "tag", "protocol_version" ]
+        },
+        {
+          "type": "object",
+          "title": "Trasury withdrawals action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "treasury_withdrawals_action"
+              ]
+            },
+            "rewards": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-babbage.json#/definitions/RewardAddress"
+                  },
+                  "value": {
+                    "$ref": "cardano-babbage.json#/definitions/UInt64"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "policy_hash": {
+              "$ref": "cardano-conway.json#/definitions/ScriptHash"
+            }
+          },
+          "required": [ ]
+        },
+        {
+          "type": "object",
+          "title": "No confidence governance action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "no_confidence"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            }
+          },
+          "required": [ "tag" ]
+        },
+        {
+          "type": "object",
+          "title": "Update committee",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "update_committee"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "members_to_remove": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/Credential"
+              }
+            },
+            "committee": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-babbage.json#/definitions/Credential"
+                  },
+                  "value": {
+                    "$ref": "cardano-babbage.json#/definitions/UInt64"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "signature_threshold": {
+              "$ref": "cardano-conway.json#/definitions/UnitInterval"
+            }
+          },
+          "required": [ "tag", "signature_threshold", "committee" ]
+        },
+        {
+          "type": "object",
+          "title": "New constitution",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "new_constitution"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "constitution": {
+              "$ref": "cardano-conway.json#/definitions/Constitution"
+            }
+          },
+          "required": [ "tag", "constitution" ]
+        },
+        {
+          "type": "object",
+          "title": "Info action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "info_action"
+              ]
+            }
+          },
+          "required": [ "tag" ]
+        }
+      ]
+    },
     "Language": {
       "title": "Language",
       "type": "string",
