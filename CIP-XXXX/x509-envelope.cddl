@@ -21,7 +21,7 @@ x509_envelope = $x509_envelope .within transaction_metadatum
 ; Structure of the x509 envelope itself.
 $x509_envelope /= {
 	0: purpose, ; What purpose does this metadata serve.
-	1: tx_inputs_hash, ; A hash of the `transaction inputs` field from the transaction the metadata is posted with.
+	1: tx_inputs_hash, ; A hash using BLAKE2b of the `transaction inputs` field from the transaction the metadata is posted with.
 	? 2: previous_transaction_id ; Previous transaction ID in the chain of registration updates for this user.
 	chunk_type => [ + x509_chunk ] ; Chunked x509 role registration data.
 	99: validation_signature ; The signature of the x509 envelope plus all other auxiliary data.
@@ -68,8 +68,8 @@ purpose = uuid-v4
 ; A V4 UUID encoded as per https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.2
 uuid-v4 = bytes .size 16
 
-; Hash of the transaction inputs this registration is attached to.
-tx_inputs_hash = bytes .size 28
+; Hash of the transaction inputs this registration is attached, using BLAKE2b.
+tx_inputs_hash = bytes .size 16
 
 ; A single x509 chunk
 ; All chunks but the last must be 64 bytes in length (not enforced by the CDDL)
