@@ -4,7 +4,8 @@ Title: x509 Replayability Protection Envelope
 Category: MetaData
 Status: Proposed
 Authors:
-    - Steven Johnson<steven.johnson@iohk.io>
+    - Steven Johnson <steven.johnson@iohk.io>
+    - Arissara Chotivichit <arissara.chotivichit@iohk.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/810
