@@ -40,7 +40,6 @@ document that is reviewed and revised on a regular basis.
 
 
 ## Motivation: why is this CIP necessary?
-<!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
 
 This CIP is needed to familiarize stakeholders with the processes and procedures that should be 
 followed in the unlikely event that the Cardano mainnet encounters a situation where the built-in 
