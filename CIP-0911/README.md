@@ -333,6 +333,5 @@ and validation of recovery actions in the event of an outage.
 
 
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms.  Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header: -->
 
  This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
