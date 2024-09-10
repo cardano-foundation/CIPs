@@ -58,9 +58,7 @@ This document should only cover domain errors.
 
 #### Pagination
 
-In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, even though it's impossible to guarantee it (due to rollbacks).
-
-Stable pagination can be achieved by letting the user refer to a particular state in time from the recent past via a slot number.
+In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, and pagination should be avoided.
 
 ### Methods
 
@@ -73,12 +71,15 @@ The payload formats used below are references to [CIP-0116 - Standard JSON encod
 
 #### UTxOs
 
+Resource name: `utxo`
+
 ##### By address
+
+Endpoint name: `address`
 
 Request:
 
 - address: `Address`
-- slot?: `UInt64`
 
 Response:
 
@@ -86,10 +87,11 @@ Response:
 
 ##### By payment credential
 
+Endpoint name: `payment_credential`
+
 Request:
 
 - credential: `Credential`
-- slot?: `UInt64`
 
 Response:
 
@@ -97,10 +99,11 @@ Response:
 
 ##### By staking credential
 
+Endpoint name: `stake_credential`
+
 Request:
 
 - credential: `Credential`
-- slot?: `UInt64`
 
 Response:
 
@@ -108,11 +111,12 @@ Response:
 
 ##### By asset
 
+Endpoint name: `asset`
+
 Request:
 
 - script_hash: `ScriptHash`
 - asset_name: `AssetName`
-- slot?: `UInt64`
 
 Response:
 
@@ -121,15 +125,12 @@ Response:
 ##### By transaction ID
 
 - transaction_hash: `TransactionHash`
-- slot?: `UInt64`
 
 Response:
 
 - `TransactionUnspentOutput[]`
 
 #### Transaction
-
-TODO: decide if we want mempool transactions, want to forbid these, or it doesn't matter.
 
 ##### By hash
 
@@ -140,6 +141,14 @@ Request:
 Response:
 
 - `Transaction`
+
+#### Transaction history
+
+##### By Address
+
+##### By payment credential
+
+##### By stake credential
 
 #### Script
 
@@ -222,10 +231,6 @@ Response:
 #### Stake pools
 
 ##### List of active stake pools
-
-Request:
-
-- slot?: `UInt64`
 
 Response:
 
