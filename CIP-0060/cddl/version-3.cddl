@@ -1,0 +1,101 @@
+string = text .size (0..64)
+policy_id = string / bytes ; hex string for CIP-25 version 1, bytes version 2
+asset_name = string / bytes ; utf-8 for CIP-25 version 1, bytes for version 2
+
+artist_details =
+  {
+    name: string,
+    ? isni : string,
+    ? links: { * string => string },
+  }
+
+author_details =
+  {
+    name: string,
+    ? ipi: string,
+    ? share: string,
+  }
+
+contributing_artist_details =
+  {
+    name: string,
+    ? ipn: string,
+    ? ipi: string,
+    ? role: [* string],
+    ? links: { * string => string }
+  }
+
+common_music_details = (
+  ? artists : [+ artist_details],
+  ? genres: [1*3 string],
+  ? copyright: { master: string, composition: string },
+  ? contributing_artists : [* contributing_artist_details]
+)
+
+release_details = 
+  {
+    release_type: "Single" / "Multiple" / "Album/EP",
+    release_title : string,
+    ? distributor: string,
+    ? visual_artist: string,
+    ? release_date: string,
+    ? publication_date: string,
+    ? catalog_number: string,
+    ? series: string,
+    ? collection: string,
+  } // Extend with common_music_details when release_type is "Album/EP"
+  (release_details.release_type == "Album/EP" => common_music_details)
+
+song_details = 
+  {
+    song_title: string / [* string],
+    song_duration: string .regexp "^P(?!$)(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)$",
+    track_number: uint,
+    
+    ? featured_artists : [* artist_details],
+    ? authors: [* author_details],
+    ? mood: string,
+    ? set: string,
+    ? lyrics: string,
+    ? special_thanks: [* string],
+    ? bitrate: string,
+    ? bpm: string,
+    ? mix_engineer: string,
+    ? mastering_engineer: string,
+    ? producer: string,
+    ? co_producer: string,
+    ? recording_engineer: string,
+    ? explicit: bool,
+    ? isrc: string,
+    ? iswc: string,
+    ? metadata_language: string,
+    ? country_of_origin: string,
+    ? language: string,
+    ? derived_from: string,
+    ? ai_generated: bool,
+  } // Include common_music_details only when release_type is not "Album/EP"
+  (release_details.release_type != "Album/EP" => common_music_details)
+
+files_details = 
+  {
+    name : string,
+    mediaType : string,
+    src : string,
+    song : song_details,
+  }  
+
+metadata_details = 
+  {
+    name : string,
+    image : string,
+    music_metadata_version: 3,
+    release: release_details,
+    files : [+ files_details],
+    
+    ? version: 1 / 2,
+    ? mediaType : string,
+    ? description : string / [* string],
+  }
+
+label_metadata = { * policy_id => { * asset_name => metadata_details } }
+metadata = { 721 : label_metadata }

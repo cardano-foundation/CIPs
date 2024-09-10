@@ -7,7 +7,7 @@ Authors:
     - Maximilian König <maximilian@mlabs.city>
 Implementors:
     - Las Safin <me@las.rs>
-Status: Proposed
+Status: Inactive (superseded by CIP-0121 and CIP-0122)
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/283
     - https://github.com/input-output-hk/plutus/issues/4252
