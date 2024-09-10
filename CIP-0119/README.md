@@ -197,7 +197,7 @@ These DReps could be organizations that want to use their ada to vote in a trans
 
 It is expected that tooling such as block explorers will list DReps using `doNotList=true`. Tooling built specifically for DRep campaign and delegation should respect the intent of this field. 
 
-This proposal cannot force tooling to respect this desire from DReps. DReps must be aware that any information anchored on-chain can be found via tooling, and may result in delegation.
+This proposal cannot force tooling to respect this desire from DReps. DReps must be aware that any information anchored on-chain can be found via tooling and may result in delegation.
 
 ### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of expertise, and would perhaps therefore be more attractive to some delegating Ada Holders.
