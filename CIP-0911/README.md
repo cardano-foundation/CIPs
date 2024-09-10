@@ -18,7 +18,6 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 
 While the Cardano mainnet has proven to be highly resilient, it is necessary to proactively 
 consider the possible recovery mechanisms and procedures that may be required in the unlikely 
