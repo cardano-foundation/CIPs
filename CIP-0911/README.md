@@ -273,7 +273,7 @@ Mithril is a stake-based threshold multi-signatures scheme. One of the applicati
 is to create certified snapshots of the Cardano blockchain. Mithril snapshots allow nodes or applications
 to obtain a verified copy of the current state of the blockchain without having to download and verify the full history.
 
-SPOs on mainnet that participate in the Mithril network provide signed snapshots to a Mithril aggregator that 
+SPOs on Mainnet that participate in the Mithril network provide signed snapshots to a Mithril aggregator that 
 is responsible for collecting individual signatures from Mithril signers and aggregating them into a multi-signature. 
 Using this capability, the Mithril aggregator can then provide certified snapshots of the Cardano blockchain that
 can potentially be used as a trusted source for recovery purposes.
