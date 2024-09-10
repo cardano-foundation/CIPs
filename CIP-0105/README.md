@@ -237,6 +237,10 @@ This is because we have modeled DRep IDs and CC credentials on stake pool operat
 
 The advantage of including a network tag would be to reduce the likelihood of mislabelling a DRep’s network of operation (eg Preview v Cardano mainnet).
 
+### Test vectors
+
+See [Test Vectors File](./test-vectors.md).
+
 ## Path to Active
 
 ### Acceptance Criteria

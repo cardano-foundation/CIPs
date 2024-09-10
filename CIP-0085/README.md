@@ -40,7 +40,7 @@ It's clear what to do for a Haskell value of one of the Plutus Core builtin type
 
 For example:
 - `1` lifts to `(con integer 1)` (easy enough)
-- `Just 1` lifts to `(delay (lam case_Nothing (lam case_Just [caseJust (con integer 1)])))` (much more complicated)
+- `Just 1` lifts to `(delay (lam case_Nothing (lam case_Just [case_Just (con integer 1)])))` (much more complicated)
 
 This means that it's difficult to specify how to do lifting for structured data.
 For example, if we want users (or the ledger!) to create Plutus Core terms representing structured data, it will be difficult to explain how to do it.
