@@ -4,7 +4,8 @@ Title: Role based Access Control Registration
 Category: MetaData
 Status: Proposed
 Authors:
-    - Steven Johnson<steven.johnson@iohk.io>
+    - Steven Johnson <steven.johnson@iohk.io>
+    - Arissara Chotivichit <arissara.chotivichit@iohk.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/811
