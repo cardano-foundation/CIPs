@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 134
 Title: Cardano URIs - Address Representation
 Category: Wallets
 Status: Proposed
