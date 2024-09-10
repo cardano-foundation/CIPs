@@ -487,6 +487,9 @@ _≟-BlockHash_ : DecidableEquality (Hash Block)
 (MkHash b₁) ≟-BlockHash (MkHash b₂) with b₁ ≟-BS b₂
 ... | yes p = yes (cong MkHash p)
 ... | no ¬p =  no (¬p ∘ cong Hash.hashBytes)
+
+genesisHash : Hash Block
+genesisHash = MkHash emptyBS
 ```
 
 #### Chains
@@ -530,7 +533,7 @@ The protocol can identify a chain by the hash of its most recent block (its tip)
 
 ```agda
 tipHash : Chain → Hash Block
-tipHash [] = record { hashBytes = emptyBS }
+tipHash [] = genesisHash
 tipHash (b ∷ _) = hash b
 ```
 
@@ -550,11 +553,10 @@ data ValidChain : Chain → Set where
 A block is said to extend a certificate on a chain if the certified block is an ancestor of or identical to the block and on the chain.
 
 ```agda
-ChainExtends : Maybe Block → Certificate → Chain → Set
-ChainExtends nothing _ _ = ⊥
-ChainExtends (just b) c =
+ChainExtends : Hash Block → Certificate → Chain → Set
+ChainExtends h c =
   Any (λ block → (hash block ≡ Certificate.blockRef c))
-    ∘ dropWhile (λ block' → ¬? (hash block' ≟-BlockHash hash b))
+    ∘ dropWhile (λ block' → ¬? (hash block' ≟-BlockHash h))
 ```
 
 #### Messages and their envelopes
@@ -714,7 +716,7 @@ It memorializes the genesis certificate.
 
 ```agda
     cert₀ : Certificate
-    cert₀ = MkCertificate (MkRoundNumber 0) (MkHash emptyBS)
+    cert₀ = MkCertificate (MkRoundNumber 0) genesisHash
 ```
 
 It conforms to the `IsTreeType` requirements.
@@ -790,9 +792,8 @@ Updating the block tree involves recording the votes and chains received via mes
 The block selected for voting is the most recent one on the preferred chain that is at least $L$ slots old.
 
 ```agda
-    BlockSelection : SlotNumber → T → Maybe Block
-    BlockSelection (MkSlotNumber s) =
-      head ∘ filter (λ {b → (Block.slotNumber' b) ≤? (s ∸ L)}) ∘ preferredChain
+    BlockSelection : SlotNumber → T → Hash Block
+    BlockSelection (MkSlotNumber s) = tipHash ∘ filter (λ {b → (Block.slotNumber' b) + L ≤? s}) ∘ preferredChain
 ```
 
 #### Rules for voting in a round
@@ -1035,9 +1036,9 @@ Voting updates the party's local state and for all other parties a message is re
             open State
             s = clock M
             r = v-round s
-            v = createVote s p w π σ (hash b)
+            v = createVote s p w π σ b
           in
-        ∙ BlockSelection s t ≡ just b
+        ∙ BlockSelection s t ≡ b
         ∙ blockTrees M ⁉ p ≡ just t
         ∙ IsVoteSignature v σ
         ∙ StartOfRound s r
