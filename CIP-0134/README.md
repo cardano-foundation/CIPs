@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 134
 Title: Cardano URIs - Address Representation
 Category: Wallets
 Status: Proposed
@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP proposes an extension to [CIP-13] to allow easy and unambiguous encoding of
+This CIP proposes an extension to [CIP-0013] to allow easy and unambiguous encoding of
 [CIP-0019]/[CIP-0105] Addresses into URL's.
 
 ## Motivation: why is this CIP necessary?
