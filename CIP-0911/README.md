@@ -1,7 +1,7 @@
 ---
 CIP: CIP-0911?
 Title: Disaster Recovery Plan for Mainnet
-Category: Cardano Information
+Category: Tools
 Status: Proposed
 Authors:
     - Kevin Hammond <kevin.hammond@iohk.io>
