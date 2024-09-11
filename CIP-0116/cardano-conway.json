@@ -114,6 +114,178 @@
       "format": "hex",
       "pattern": "^([0-9a-f][0-9a-f]){0,32}$"
     },
+    "ScriptDataHash": {
+      "title": "ScriptDataHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "TransactionMetadata": {
+      "title": "TransactionMetadata",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "cardano-conway.json#/definitions/UInt64"
+          },
+          "value": {
+            "$ref": "cardano-conway.json#/definitions/TransactionMetadatum"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "AuxiliaryDataHash": {
+      "title": "AuxiliaryDataHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "AuxiliaryData": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "$ref": "cardano-conway.json#/definitions/TransactionMetadata"
+        },
+        "native_scripts": {
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/NativeScript"
+          },
+          "type": "array"
+        },
+        "plutus_scripts": {
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/PlutusScript"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+      ],
+      "title": "AuxiliaryData",
+      "type": "object"
+    },
+    "TransactionBody": {
+      "title": "TransactionBody",
+      "type": "object",
+      "properties": {
+        "auxiliary_data_hash": {
+          "$ref": "cardano-conway.json#/definitions/AuxiliaryDataHash"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionInput"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionOutput"
+          }
+        },
+        "fee": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "certs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Certificate"
+          }
+        },
+        "collateral": {
+          "title": "Collateral Inputs",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionInput"
+          }
+        },
+        "collateral_return": {
+          "allOf": [
+            {
+              "$ref": "cardano-conway.json#/definitions/TransactionOutput"
+            },
+            {
+              "title": "Collateral Return",
+              "description": "Collateral return, introduced in CIP-40"
+            }
+          ]
+        },
+        "mint": {
+          "$ref": "cardano-conway.json#/definitions/Mint"
+        },
+        "network_id": {
+          "$ref": "cardano-conway.json#/definitions/NetworkId"
+        },
+        "reference_inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionInput"
+          }
+        },
+        "required_signers": {
+          "title": "Required signers",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+          }
+        },
+        "script_data_hash": {
+          "$ref": "cardano-conway.json#/definitions/ScriptDataHash"
+        },
+        "total_collateral": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "ttl": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "update": {
+          "$ref": "cardano-conway.json#/definitions/Update"
+        },
+        "validity_start_interval": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "withdrawals": {
+          "type": "array",
+          "minLength": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "$ref": "cardano-conway.json#/definitions/RewardAddress"
+              },
+              "value": {
+                "$ref": "cardano-conway.json#/definitions/UInt64"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "voting_procedures": {
+          "$ref": "cardano-conway.json#/definitions/VotingProcedures"
+        },
+        "proposal_procedures": {
+          "$ref": "cardano-conway.json#/definitions/ProposalProcedures"
+        },
+        "donation": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "current_treasury_value": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        }
+      },
+      "required": [
+        "inputs",
+        "outputs",
+        "fee"
+      ],
+      "additionalProperties": false
+    },
     "Credential": {
       "title": "Credential",
       "type": "object",
@@ -962,6 +1134,155 @@
       },
       "additionalProperties": false,
       "required": []
+    },
+    "Update": {
+      "title": "Update",
+      "type": "object",
+      "properties": {
+        "epoch": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "proposed_protocol_parameter_updates": {
+          "type": "object",
+          "title": "ProposedProtocolParameterUpdates",
+          "description": "A mapping from GenesisHash to ProtocolParamUpdate",
+          "patternProperties": {
+            "^[0-9a-f]{56}$": {
+              "title": "ProtocolParamUpdate for a given GenesisHash",
+              "$ref": "cardano-conway.json#/definitions/ProtocolParamUpdate"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "epoch",
+        "proposed_protocol_parameter_updates"
+      ],
+      "additionalProperties": false
+    },
+    "NetworkId": {
+      "title": "NetworkId",
+      "type": "string",
+      "enum": [
+        "testnet",
+        "mainnet"
+      ]
+    },
+    "PlutusData": {
+      "title": "PlutusData",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "title": "PlutusDataList",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "list"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/PlutusData"
+              }
+            }
+          }
+        },
+        {
+          "title": "PlutusDataConstr",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "constr"
+              ]
+            },
+            "alternative": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/PlutusData"
+              }
+            }
+          }
+        },
+        {
+          "title": "PlutusDataMap",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "map"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-conway.json#/definitions/PlutusData"
+                  },
+                  "value": {
+                    "$ref": "cardano-conway.json#/definitions/PlutusData"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "PlutusDataInteger",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "integer"
+              ]
+            },
+            "value": {
+              "$ref": "cardano-conway.json#/definitions/BigInt"
+            }
+          }
+        },
+        {
+          "title": "PlutusDataBytes",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "bytes"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "format": "hex",
+              "pattern": "^([0-9a-f][0-9a-f])*$"
+            }
+          }
+        }
+      ]
+    },
+    "UnitInterval": {
+      "title": "UnitInterval",
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "denominator": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        }
+      },
+      "additionalProperties": false
     },
     "Ipv4": {
       "title": "Ipv4",
@@ -1815,7 +2136,8 @@
       "type": "string",
       "enum": [
         "plutus_v1",
-        "plutus_v2"
+        "plutus_v2",
+        "plutus_v3"
       ]
     },
     "Mint": {
