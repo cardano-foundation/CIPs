@@ -553,8 +553,8 @@ In addition to the chain *messages* already diffused among nodes in Praos, the P
 
 ```agda
 data Message : Set where
-  ChainMsg : Chain → Message
-  VoteMsg : Vote → Message
+  ChainMsg : {c : Chain} → ValidChain c → Message
+  VoteMsg : {v : Vote} → ValidVote v → Message
 ```
 
 Diffusion of votes or blocks over the network may involve delays of a slot or more.
@@ -590,10 +590,10 @@ module _ ⦃ _ : Params ⦄ where
   
   record IsTreeType {T : Set}
                     (tree₀ : T)
-                    (newChain : T → Chain → T)
+                    (addChain : T → {c : Chain} → ValidChain c → T)
                     (allChains : T → List Chain)
                     (preferredChain : T → Chain)
-                    (addVote : T → Vote → T)
+                    (addVote : T → {v : Vote} → ValidVote v → T)
                     (votes : T → List Vote)
                     (certs : T → List Certificate)
                     (cert₀ : Certificate)
@@ -618,8 +618,8 @@ It must also conform to properties that must hold with respect to chains, certif
 The certificates in a chain newly incorporated into the block tree must equate to the certificates on the chain itself and the block tree's record of certificates.
 
 ```agda
-      extendable-chain : ∀ (t : T) (c : Chain)
-        → certs (newChain t c) ≡ certsFromChain c ++ certs t
+      extendable-chain : ∀ (t : T) {c : Chain} (vc : ValidChain c)
+        → certs (addChain t vc) ≡ certsFromChain c ++ certs t
 ```
 
 A valid block tree must have a valid preferred chain.
@@ -647,25 +647,18 @@ The preferred chain must be present in the list of all chains seen.
         → preferredChain t ∈ allChains t
 ```
 
-Only valid votes are recorded in the block tree.
-
-```agda
-      valid-votes : ∀ (t : T)
-        → All ValidVote (votes t)
-```
-
 Duplicate or equivocated votes must not be present in the block tree.
 
 ```agda
-      unique-votes : ∀ (t : T) (v : Vote)
+      unique-votes : ∀ (t : T) {v : Vote} (vv : ValidVote v)
         → let vs = votes t
           in v ∈ vs
-        → vs ≡ votes (addVote t v)
+        → vs ≡ votes (addVote t vv)
 
-      no-equivocations : ∀ (t : T) (v : Vote)
+      no-equivocations : ∀ (t : T) {v : Vote} (vv : ValidVote v)
         → let vs = votes t
           in Any (v ∻_) vs
-        → vs ≡ votes (addVote t v)
+        → vs ≡ votes (addVote t vv)
 ```
 
 Every certificate must represent a quorum of recorded votes.
@@ -691,10 +684,10 @@ The concrete block tree type (`TreeType`) manages chains, certificates, and vote
 
     field
       tree₀ : T
-      newChain : T → Chain → T
+      addChain : T → {c : Chain} → ValidChain c → T
       allChains : T → List Chain
       preferredChain : T → Chain
-      addVote : T → Vote → T
+      addVote : T → {v : Vote} → ValidVote v → T
       votes : T → List Vote
       certs : T → List Certificate
 ```
@@ -711,7 +704,7 @@ It conforms to the `IsTreeType` requirements.
 ```agda
     field
       is-TreeType : IsTreeType
-                      tree₀ newChain allChains preferredChain
+                      tree₀ addChain allChains preferredChain
                       addVote votes certs cert₀
 ```
 
@@ -763,13 +756,13 @@ Updating the block tree involves recording the votes and chains received via mes
 ```agda
     data _[_]→_ : T → Message → T → Set where
 
-      VoteReceived : ∀ {v t} →
-       ────────────────────────────
-       t [ VoteMsg v ]→ addVote t v
+      VoteReceived : ∀ {v vv t} →
+        ──────────────────────────────────
+        t [ VoteMsg {v} vv ]→ addVote t vv
 
-      ChainReceived : ∀ {c t} →
-       ──────────────────────────────
-       t [ ChainMsg c ]→ newChain t c
+      ChainReceived : ∀ {c vc t} →
+        ────────────────────────────────────
+        t [ ChainMsg {c} vc ]→ addChain t vc
 ```
 
 #### Block selection
@@ -941,7 +934,7 @@ This occurs when a message diffuses to new parties.
 
 ```agda
     add_to_diffuse_ : (Message × Delay × Party) → T → State → State
-    add (m@(ChainMsg x) , d , p) to t diffuse M = m , d , p , newChain t x ⇑ M
+    add (m@(ChainMsg x) , d , p) to t diffuse M = m , d , p , addChain t x ⇑ M
     add (m@(VoteMsg x) , d , p) to t diffuse M = m , d , p , addVote t x ⇑ M
 ```
 
@@ -957,12 +950,14 @@ A party receives messages from the global state by fetching messages assigned to
 An honest party consumes a message from the global message buffer and updates their local state.
 
 ```agda
-      honest : ∀ {p} {t t′} {m} {N} → let open State N in
-          blockTrees ⁉ p ≡ just t
-        → (m∈ms : ⦅ p , m , 𝟘 ⦆ ∈ messages)
-        → t [ m ]→ t′
-          ---------------------------------------------
-        → p ⊢
+      honest : ∀ {p} {t t′} {m} {N}
+        → let open State N
+          in
+          (m∈ms : ⦅ p , m , 𝟘 ⦆ ∈ messages) →
+        ∙ blockTrees ⁉ p ≡ just t
+        ∙ t [ m ]→ t′
+          ─────────────────────────────────────
+          p ⊢
           N [ m ]⇀ record N
             { blockTrees = set p t′ blockTrees
             ; messages = messages ─ m∈ms
@@ -1008,15 +1003,15 @@ Voting updates the party's local state and for all other parties a message is re
             r = v-round s
             v = createVote s p w π σ b
           in
+          (mem : IsCommitteeMember p r w π)
+          (sig : IsVoteSignature v σ) →
         ∙ BlockSelection s t ≡ b
         ∙ blockTrees M ⁉ p ≡ just t
-        ∙ IsVoteSignature v σ
         ∙ StartOfRound s r
-        ∙ IsCommitteeMember p r w π
         ∙ VotingRule s t
-          ───────────────────────────────────
+          ────────────────────────────────────────────
           p ⊢
-            M ⇉ add (VoteMsg v , 𝟘 , p) to t
+            M ⇉ add (VoteMsg (mem , sig) , 𝟘 , p) to t
                 diffuse M
 ```
 
@@ -1079,19 +1074,17 @@ Block creation updates the party's local state, but for all other parties a mess
     infix 2 _⊢_↷_
     data _⊢_↷_ : Party → State → State → Set where
 
-      honest : ∀ {p} {t} {M} {π} {σ}
-        → let
-            open State
-            s = clock M
-            b = createBlock s p π σ t
+      honest : ∀ {p} {t} {M} {π} {σ} →
+        let open State M
+            b = createBlock clock p π σ t
             pref = preferredChain t
           in
-        ∙ blockTrees M ⁉ p ≡ just t
-        ∙ ValidChain (b ∷ pref)
-          ───────────────────────────
+          (vc : ValidChain (b ∷ pref)) →
+        ∙ blockTrees ⁉ p ≡ just t
+          ──────────────────────────────
           p ⊢
             M ↷ add (
-                  ChainMsg (b ∷ pref)
+                  ChainMsg vc
                 , 𝟘
                 , p) to t
                 diffuse M
