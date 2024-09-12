@@ -143,7 +143,7 @@ open import Data.Bool using (Bool; if_then_else_; not; _∧_)
 open import Data.Empty using (⊥)
 open import Data.Fin using (Fin; pred)
                      renaming (zero to fzero; suc to fsuc)
-open import Data.List using (List; any; catMaybes; concat; dropWhile; filter; head; map; sum; []; _∷_; _++_)
+open import Data.List using (List; any; concat; dropWhile; filter; head; map; mapMaybe; sum; []; _∷_; _++_)
                       renaming (length to ∣_∣)
 open import Data.List.Membership.Propositional using (_∈_)
 open import Data.List.Relation.Unary.All using (All)
@@ -419,7 +419,7 @@ latestCert : Certificate → List Certificate → Certificate
 latestCert c = maximumBy c Certificate.roundNumber
   where maximumBy : {a : Set} → a → (a → ℕ) → List a → a
         maximumBy candidate _ [] = candidate
-        maximumBy {a} candidate f (x ∷ xs) =
+        maximumBy candidate f (x ∷ xs) =
           if f candidate ≤ᵇ f x
             then maximumBy x f xs
             else maximumBy candidate f xs
@@ -486,7 +486,10 @@ The linking of blocks into a *chain* is identical to Praos.
 
 ```agda
 Chain = List Block
+```
 
+The genesis chain is the empty list.
+```agda
 genesis : Chain
 genesis = []
 ```
@@ -494,7 +497,7 @@ genesis = []
 The protocol scrutinizes any certificates recorded on the chain.
 ```agda
 certsFromChain : Chain → List Certificate
-certsFromChain = catMaybes ∘ map Block.certificate
+certsFromChain = mapMaybe Block.certificate
 ```
 
 It also needs to test whether a certificate (quorum of votes) refers to a block found on a particular chain.
@@ -712,7 +715,7 @@ Several convenience functions are provided for extracting information about cert
 
 ```agda
     latestCertOnChain : T → Certificate
-    latestCertOnChain = latestCert cert₀ ∘ catMaybes ∘ map Block.certificate ∘ preferredChain
+    latestCertOnChain = latestCert cert₀ ∘ mapMaybe Block.certificate ∘ preferredChain
 
     latestCertSeen : T → Certificate
     latestCertSeen = latestCert cert₀ ∘ certs
