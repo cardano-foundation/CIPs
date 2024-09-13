@@ -872,34 +872,6 @@ Rather than keeping track of progress, we introduce a predicate stating that all
       where open State
 ```
 
-A predicate for the global state assesses that the current slot is the last slot of a voting round.
-
-```agda
-    LastSlotInRound : State → Set
-    LastSlotInRound M =
-      suc (rnd (getSlotNumber clock)) ≡ rnd (suc (getSlotNumber clock))
-      where open State M
-```
-
-Similarly, a predicate for the global state assesses that the next slot will be in a new voting round.
-
-```agda
-    NextSlotInSameRound : State → Set
-    NextSlotInSameRound M =
-      rnd (getSlotNumber clock) ≡ rnd (suc (getSlotNumber clock))
-      where open State M
-```
-
-Furthermore, there is a predicate for the global state asserting that parties of the voting committee for a the current voting round have voted. This is needed as a prerequisite for transitioning from one voting round to another.
-
-```agda
-    RequiredVotes : State → Set
-    RequiredVotes M =
-         Any (VotingRule clock ∘ proj₂) blockTrees
-       → Any (hasVote (v-round clock) ∘ proj₂) blockTrees
-      where open State M
-```
-
 #### Advancing the clock
 
 Ticking the global clock increments the slot number and decrements the delay of all the messages in the message buffer.
@@ -1135,15 +1107,7 @@ Note that when transitioning to the next slot we need to distinguish whether the
 
       NextSlot :
         ∙ Fetched M
-        ∙ NextSlotInSameRound M
           ─────────────────────
-          M ↝ tick M
-
-      NextSlotNewRound :
-        ∙ Fetched M
-        ∙ LastSlotInRound M
-        ∙ RequiredVotes M
-          ─────────────────
           M ↝ tick M
 ```
 
