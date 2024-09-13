@@ -74,7 +74,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - This SHOULD NOT support markdown text styling.
 - Compulsory
 
-#### `rationale-statement`
+#### `rationaleStatement`
 
 - A long text field.
 - Authors SHOULD use this field to fully describe their rationale.
@@ -82,7 +82,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - This SHOULD support markdown text styling.
 - Compulsory
 
-#### `precedent-discussion`
+#### `precedentDiscussion`
 
 - A long text field.
 - The author SHOULD use this field to discuss what they feel is relevant precedent.
@@ -91,12 +91,27 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - This SHOULD support markdown text styling.
 - Optional
 
-#### `counterarguments-discussion`
+#### `counterargumentDiscussion`
 
 - A long text field.
 - The author SHOULD use this field to discuss significant counter arguments to the position taken.
 - This SHOULD support markdown text styling.
 - Optional
+
+#### `conclusion`
+
+- A long text field.
+- Optional
+
+#### `internalVote`
+```
+  "internalVote": {
+    "constitutional": 0,
+    "unconstitutional": 0,
+    "abstain": 0,
+    "didNotVote": 0
+  }
+``
 
 #### `references`
 
@@ -129,10 +144,6 @@ Although through the JSON-LD mechanism further CIPs can add to the common govern
 
 - useful for users to quickly see a preview of the whole rationale
 - gives tooling the option to show a high level intro
-
-#### No `conclusion`
-
-- probably not needed
 
 ## Path to Active
 

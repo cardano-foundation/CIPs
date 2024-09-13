@@ -18,11 +18,20 @@
           }
         },
         "summary": "CIPXXX:summary",
-        "rationale-statement": "CIPXXX:rationale-statement",
-        "relevant-articles": "CIPXXX:relevant-articles",
-        "precedents": "CIPXXX:precedents",
-        "counterarguments": "CIPXXX:counterarguments",
-        "conclusion": "CIPXXX:conclusion"
+        "rationaleStatement": "CIPXXX:rationale-statement",
+        "precedentDiscussion": "CIPXXX:precedentDiscussion",
+        "counterargumentDiscussion": "CIPXXX:counterarguments",
+        "conclusion": "CIPXXX:conclusion",
+        "internalVote": {
+          "@id": "CIPXXX:internalVote",
+          "@context": {
+            "constitutional": "CIPXXX:constitutional",
+            "unconstitutional": "CIPXXX:unconstitutional",
+            "abstain": "CIPXXX:abstain",
+            "didNotVote": "CIPXXX:didNotVote"
+          }
+        }
+
       }
     },
     "authors": {
@@ -44,10 +53,16 @@
   "hashAlgorithm": "blake2b-256",
   "body": {
     "summary": "Ryan using treasury funds to buy an island is unconstitutional.",
-    "rationale-statement": "The Cardano treasury is not meant to be used for personal gain, it should be for the benefit of the community.",
-    "precedents": "No precedent",
-    "counterarguments": "It would be pretty cool.",
+    "rationaleStatement": "The Cardano treasury is not meant to be used for personal gain, it should be for the benefit of the community.",
+    "precedentDiscussion": "No precedent",
+    "counterargumentDiscussion": "It would be pretty cool.",
     "conclusion": "In conclusion spending the treasury to benefit a single dude, bad.",
+    "internalVote": {
+      "constitutional": 1,
+      "unconstitutional": 0,
+      "abstain": 0,
+      "didNotVote": 0
+    },
     "references": [
       {
         "@type": "Relevant Articles",
