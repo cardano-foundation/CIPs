@@ -116,7 +116,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 #### `references`
 
 - We extend CIP-100's references field.
-- We add to CIP-100's `@type`s, with a type of `relevant-articles`.
+- We add to CIP-100's `@type`s, with a type of `relevantArticles`.
 - Authors SHOULD use this field to list the relevant constitution articles to their argument.
 - Optional
 

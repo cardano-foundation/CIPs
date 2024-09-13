@@ -65,7 +65,7 @@
     },
     "references": [
       {
-        "@type": "Relevant Articles",
+        "@type": "relevant-articles",
         "label": "Article III section 8.",
         "uri": "https://github.com/IntersectMBO/interim-constitution/blob/main/cardano-constitution-0.txt#L231"
       },
