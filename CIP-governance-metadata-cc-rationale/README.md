@@ -111,7 +111,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
     "abstain": 0,
     "didNotVote": 0
   }
-``
+```
 
 #### `references`
 
