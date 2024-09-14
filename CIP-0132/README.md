@@ -35,11 +35,7 @@ pfix = phoistAcyclic $
 -- | Lazy if-then-else
 -- Two forces + two delays + builtinIfThenElse
 pif :: Term s PBool -> Term s a -> Term s a -> Term s a
-pif b case_true case_false = pforce $ (pforce $ punsafeBuiltin PLC.IfThenElse) # b # pdelay (f PTrue) # pdelay (f PFalse) 
- where
-   f = \case
-     PTrue -> case_true
-     PFalse -> case_false
+pif b case_true case_false = pforce $ (pforce $ punsafeBuiltin PLC.IfThenElse) # b # pdelay case_true # pdelay case_false 
      
 pelemAt' :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
 pelemAt' = phoistAcyclic $
@@ -66,6 +62,11 @@ pelemAtFast = phoistAcyclic $
     pif
       (n #> 10)
       (self # (n - 1) #$ ptail #$ ptail #$ ptail #$ ptail #$ ptail #$ ptail #$ ptail #$ ptail #$ ptail #$ ptail # xs)
+      (pelemAtFast2 # n # xs)
+
+pelemAtFast2 :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
+pelemAtFast2 = phoistAcyclic $
+  pfix #$ plam $ \self n xs ->
       (pif
          (n #> 5) 
          (self # (n - 5) #$ ptail #$ ptail #$ ptail #$ ptail #$ ptail # xs)
