@@ -266,7 +266,8 @@ when spending (possibly many) utxos from the `transferManager` contract.
 const TransferOutput = pstruct({
     TransferOutput: {
         credential: PCredential.type,
-        amount: int
+        amount: int,
+        stateIndex: int
     }
 });
 
@@ -274,7 +275,8 @@ const TransferRedeemer = pstruct({
     Transfer: {
         inputIndicies: list( int ),
         outputs: list( TransferOutput.type ),
-        firstOutputIndex: int
+        firstOutputIndex: int,
+        stateIndex: int
     }
 });
 ```
@@ -378,7 +380,7 @@ flowchart LR
     stateManagerContract[state manager]
     transferManagerContract[transfer manager]
 
-    owner((owner))
+    sender((sender))
 
     A[transfer manager]
     B[transfer manager]
@@ -396,7 +398,7 @@ flowchart LR
 
     transferManagerObserver -. validates inputs .-> transaction
 
-    stateManagerContract -. account state .-o transaction
+    stateManagerContract -. sender account state .-o transaction
     stateManagerContract -. receiver A account state .-o transaction
     stateManagerContract -. receiver B account state .-o transaction
 
@@ -406,7 +408,7 @@ flowchart LR
     transferManagerContract -- inputs --o transaction
     transferManagerContract --o transaction
 
-    owner -. signs .-> transaction
+    sender -. signs .-> transaction
 
     transaction -- stake creds A --o A
     transaction -- stake creds B --o B
