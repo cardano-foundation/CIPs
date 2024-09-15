@@ -223,8 +223,6 @@ flowchart LR
     end
 
     stateManager -. hash .-> transferManager
-
-    
 ```
 
 an external contract that needs to validate the transfer of a programmable token should be able to get all the necessary informations about the transfer by looking for the redeemer with withdraw purpose and `transferManager` stake credentials. 
@@ -251,6 +249,19 @@ stays in the same contract.
 The standard does not impose any rules on the redeemer to spend the utxo,
 as updating the state is implementation-specific.
 
+#### `TransferManagerDatum`
+
+The `Account` data type is used as the `stateManager` datum; and is defined as follows:
+
+```ts
+const TransferManagerDatum = pstruct({
+    TransferManagerDatum: {
+        userStateTokenName: PTokenName.type, // alias of bytestring
+        state: PMaybe( data ).type // wallet may use `Nothing` constructor
+    }
+});
+```
+
 #### `TransferRedeemer`
 
 redeemer to be used in the withdraw 0 contract
@@ -273,10 +284,11 @@ const TransferOutput = pstruct({
 
 const TransferRedeemer = pstruct({
     Transfer: {
-        inputIndicies: list( int ),
+        totInputAmt: int,
         outputs: list( TransferOutput.type ),
-        firstOutputIndex: int,
         stateIndex: int
+        firstOutputIndex: int,
+        // inputIndicies: list( int ), // filter
     }
 });
 ```
@@ -288,15 +300,14 @@ redeemer to be used on a single utxo of the `transferManager`;
 ```ts
 const SingleTransferRedeemer = pstruct({
     Transfer: {},
-    Burn: {}
+    Burn: {},
 });
 ```
 
 
 ### Transactions
 
-#### New Account generation
-
+#### New Account Generation Transaction
 
 ```mermaid
 flowchart LR
@@ -314,8 +325,37 @@ flowchart LR
     --o stateManagerContract
 ```
 
-The only purpose of this transaction is to validate the initial state at the moment of creation of an account
+The purpose of the "New Account generation" transaction is to create a new account for a user and validate the initial state of an account.
 
+The validation is performed in the minting policy.
+
+The minting policy MUST succeed if only one asset is created under the policy respecting the naming convention explained below, and MAY succeed if other assets are created as long as their name is NOT of length 32.
+
+The name of the asset MUST be derived from the first input's utxo reference **spent** by the minting transaction.
+
+in particular MUST be the result of applying the serialised ([`serialiseData CIP`](https://github.com/cardano-foundation/CIPs/blob/125ac054179074d832927ec9f5ff53f46098be4a/CIP-0042/README.md) and [opinionated standard serialization in Haskell](https://github.com/IntersectMBO/plutus/blob/1f31e640e8a258185db01fa899da63f9018c0e85/plutus-core/plutus-core/src/PlutusCore/Data.hs#L108)) utxo reference according to the [standard plutus v3 onchain type definition](https://github.com/IntersectMBO/plutus/blob/ed3799004eaf2040e7f978d6ab83209c2bac8157/plutus-ledger-api/src/PlutusLedgerApi/V3/Tx.hs#L66) (where `txId` is an alias of a bytestring, and NOT a bytestring wrapped in a constr 0 like previous plutus versions) to the builtin `sha3_256`.
+
+In textual uplc:
+
+```uplc
+(lam utxoRefData
+    [
+        (builtin sha3_256)
+        [
+            (builtin serialiseData)
+            utxoRefData
+        ]
+    ]
+)
+```
+
+**at all times** only **one (1)** NFT under `stateManager` policy MUST be present on a `stateManager` utxo.
+
+The transaction MUST have one output going to the `stateManager` having correct `Account` **inline** datum.
+
+by correct `Account` datum is implied the data is a constructor with index 0, first field being the credentials of the user, and second field being the state associated.
+
+Additional checks regarding the state are left to the implementation.
 
 #### Account State Update
 
@@ -334,7 +374,12 @@ flowchart LR
     --o stateManagerContract
 ```
 
-also here, the standard does not impose any rules, as state update is meant to be implementation-specific
+The purpose of this transaction is to modify the state of an account.
+
+The only two rules regarding this transaction are:
+
+1) The NFT present in the input MUST be preserved in the output going back to the `stateManager`
+2) the credentials (first field of the datum) associated to an NFT MUST be preserved for that NFT (ie. the output having the nft has `Account` datum with first field equal to the first field of the input datum). 
 
 #### Minting Tokens
 
@@ -346,14 +391,29 @@ flowchart LR
         style . fill:#FFFFFF00, stroke:#FFFFFF00;
     end
 
+    stateManager[state manager]
     transferManagerPolicy[(transfer manager policy)]
     transferManagerContract[transfer manager]
 
-    transferManagerPolicy -. mints CNTs .->  transaction --o transferManagerContract
+    stateManager -. receiver account state .-o transaction
+
+    transferManagerPolicy -. mints CNTs .->  transaction
+    -- minted CNTs --o transferManagerContract
 
 ```
 
-implementation specific
+The "Minting Tokens" transaction allows to create new programmable tokens.
+
+Programmable tokens are normal CNTs that are only present on `transferManager`
+contract with same hash as their own policy.
+
+If, by incorrect implementation of the standard, these tokens are found outside the respective transfer manager, they are no longer to be considered as programmable tokens.
+
+The transaction MUST have an output going to the `transferManager` contract with the correct [`TransferManagerDatum`](#TransferManagerDatum) **inline** datum.
+ 
+The first field of the datum MUST be the name of the NFT present on the reference input coming from the state manager.
+
+Additional, implementation-specific, arbitrary logic (eg. capped supply, or one-time mints, etc. ) MAY be added.
 
 #### Burning Tokens
 
@@ -365,12 +425,27 @@ flowchart LR
         style . fill:#FFFFFF00, stroke:#FFFFFF00;
     end
 
+    stateManager[state manager]
     transferManagerContract[transfer manager]
 
-    transferManagerContract -- Burn --o  transaction -..-x a[ ]
+    stateManager -. sender account state .-o transaction
+
+    transferManagerContract -- Burn Redeemer --o  transaction -..-x a[ ]
 
     style a fill:#FFFFFF00, stroke:#FFFFFF00;
 ```
+
+If an utxo in the `transferManager` is spent with `Burn` redeemer, the **entire** amount of the programmable token on that utxo MUST be burnt.
+
+Only **one (1)** utxo from the `transferManager` is allowed to be spent in a burn transaction.
+
+If a user desires to burn a different amount than the one currently present they should break the operation in 2 different transactions:
+
+one `Transfer` transaction to create the utxo with that amount.
+
+one `Burn` transaction spending the desired utxo.
+
+Additional, implementation-specific, arbitrary logic MAY be added.
 
 #### Transfer
 
@@ -414,6 +489,43 @@ flowchart LR
     transaction -- stake creds B --o B
     transaction -- change (if needed) --o same
 ```
+
+
+The "Transfer" transaction allows the transfer of programmable tokens from one account to another within the `transferManager` contract. This transaction involves the following components:
+
+- **transferManagerObserver**: The contract that validates the inputs and ensures the correctness of the transfer.
+- **stateManagerContract**: The contract that manages the state of the accounts involved in the transfer.
+- **transferManagerContract**: The contract that handles the actual transfer of tokens.
+
+The purpose of this transaction is to transfer tokens from the sender's account to one or more receiver accounts. The transaction MUST ensure that the transfer is valid according to the states of each account involved if necessary.
+
+The transaction MUST call the `transferManagerObserver` contract with the `TransferRedeemer`. External contracts should look for this redeemer to obtain information regarding the transfer. 
+
+Additionally, any UTxOs spent from the `transferManager` contract MUST be spent with the `SingleTransferRedeemer` with `Transfer` constructor (index `0`).
+
+The transaction MUST include:
+
+1. One or more inputs from the sender's account in the `transferManager` with `SingleTransferRedeemer` for each UTxO spent.
+2. Outputs to the receives' accounts in the `transferManager` as specified in the `TransferRedeemer` of the transfer manager observer.
+3. The `TransferRedeemer` for the `transferManager` (as observer) contract.
+4. one `Account` reference input for each of the parties involved (sender + receivers).
+
+The information in the `TransferRedeemer` MUST be validated by the observer.
+
+```ts
+const Transfer = {
+        totInputAmt: int,
+        outputs: list( TransferOutput.type ),
+        stateIndex: int
+        firstOutputIndex: int,
+        // inputIndicies: list( int ), // filter
+    }
+```
+That includes that the sum of the programmable tokens coming from the `transferManager` is stirctly equal to `totInputAmt`.
+
+There is one output for each element of the 2nd field (`outputs`) starting at the index specified by the 4th field (`firstOutputIndex`), in the same order.
+
+Each of the outputs going to the `transferManager` MUST have `TransferManagerDatum` **inline** datum, and MUST make sure the first field of the datum matches the token name of the NFT present on the respective reference input `Account`.
 
 
 ## Rationale: how does this CIP achieve its goals?
