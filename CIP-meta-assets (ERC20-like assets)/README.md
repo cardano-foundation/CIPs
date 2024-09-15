@@ -512,15 +512,6 @@ The transaction MUST include:
 
 The information in the `TransferRedeemer` MUST be validated by the observer.
 
-```ts
-const Transfer = {
-        totInputAmt: int,
-        outputs: list( TransferOutput.type ),
-        stateIndex: int
-        firstOutputIndex: int,
-        // inputIndicies: list( int ), // filter
-    }
-```
 That includes that the sum of the programmable tokens coming from the `transferManager` is stirctly equal to `totInputAmt`.
 
 There is one output for each element of the 2nd field (`outputs`) starting at the index specified by the 4th field (`firstOutputIndex`), in the same order.
