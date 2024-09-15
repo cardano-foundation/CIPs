@@ -251,7 +251,7 @@ as updating the state is implementation-specific.
 
 #### `TransferManagerDatum`
 
-The `Account` data type is used as the `stateManager` datum; and is defined as follows:
+The `TransferManagerDatum` data type is used as the `transferManager` utxo datum; and is defined as follows:
 
 ```ts
 const TransferManagerDatum = pstruct({
@@ -261,6 +261,12 @@ const TransferManagerDatum = pstruct({
     }
 });
 ```
+
+the purpose of `userStateTokenName` is to prevent the user from creating a new account at the `stateManager` with same credentials and use it for this same utxo.
+
+This makes sure only one `Account` is valid for a given utxo, even if possibly many `Account`s may exsist for the same credentials.
+
+A specific implementation MAY additionaly implement other checks to ensure unique accounts, such as centralized actors, or merkle-patricia trees.
 
 #### `TransferRedeemer`
 
