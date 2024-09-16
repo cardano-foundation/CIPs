@@ -188,6 +188,7 @@
     },
     "Voter": {
       "type": "object",
+      "title": "Voter",
       "oneOf": [
         {
           "type": "object",
@@ -1169,6 +1170,24 @@
       },
       "additionalProperties": false
     },
+    "PoolVotingThresholds": {
+      "title": "PoolVotingThresholds",
+      "type": "array",
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/UnitInterval"
+      },
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "DRepVotingThresholds": {
+      "title": "DRepVotingThresholds",
+"type": "array",
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/UnitInterval"
+      },
+      "minItems": 10,
+      "maxItems": 10
+    },
     "ProtocolParamUpdate": {
       "title": "ProtocolParamUpdate",
       "type": "object",
@@ -1246,16 +1265,16 @@
           "$ref": "cardano-conway.json#/definitions/PoolVotingThresholds"
         },
         "drep_voting_thresholds": {
-          "$ref": "cardano-conway.json#/definitions/DrepVotingThresholds"
+          "$ref": "cardano-conway.json#/definitions/DRepVotingThresholds"
         },
         "committee_min_size": {
           "$ref": "cardano-conway.json#/definitions/UInt16"
         },
         "committee_max_term_length": {
-          "$ref": "cardano-conway.json#/definitions/EpochInterval"
+          "$ref": "cardano-conway.json#/definitions/UInt32"
         },
         "gov_action_lifetime": {
-          "$ref": "cardano-conway.json#/definitions/EpochInterval"
+          "$ref": "cardano-conway.json#/definitions/UInt32"
         },
         "gov_action_deposit": {
           "$ref": "cardano-conway.json#/definitions/UInt64"
@@ -1264,7 +1283,7 @@
           "$ref": "cardano-conway.json#/definitions/UInt64"
         },
         "drep_activity": {
-          "$ref": "cardano-conway.json#/definitions/EpochInterval"
+          "$ref": "cardano-conway.json#/definitions/UInt32"
         },
         "min_fee_ref_script_cost_per_byte": {
           "$ref": "cardano-conway.json#/definitions/NonnegativeInterval"
@@ -1639,6 +1658,57 @@
         "data_hash"
       ],
       "additionalProperties": false
+    },
+    "DRep": {
+      "title": "DRep",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["key_hash"]
+            },
+            "key_hash": {
+              "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+            }
+          },
+          "required": ["tag", "keyhash"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["script_hash"]
+            },
+            "script_hash": {
+              "$ref": "cardano-conway.json#/definitions/ScriptHash"
+            }
+          },
+          "required": ["tag", "script_hash"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["always_abstain"]
+            }
+          },
+          "required": ["tag"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["always_no_confidence"]
+            }
+          },
+          "required": ["tag"]
+        }
+      ]
     },
     "Certificate": {
       "title": "Certificate",
@@ -2118,7 +2188,7 @@
       "additionalProperties": false
     },
     "GovAction": {
-      "title": "Governance Action",
+      "title": "GovAction",
       "type": "object",
       "discriminator": {
         "propertyName": "tag"
