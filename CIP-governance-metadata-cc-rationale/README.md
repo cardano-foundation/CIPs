@@ -19,7 +19,7 @@ The Conway ledger era ushers in on-chain governance for Cardano via [CIP-1694 | 
 Some of these artifacts support the linking of off-chain metadata, as a way to provide context to on-chain actions.
 
 The [CIP-100 | Governance Metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) standard provides a base framework for how all off-chain governance metadata can be formed and handled.
-But this standard was intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
+This standard was intentionally limited in scope, so that it can be expanded upon by more specific subsequent CIPs.
 
 This proposal aims to provide a specification for the off-chain metadata vocabulary that can be used to give context to Constitutional Committee (CC) votes.
 
@@ -33,7 +33,7 @@ Governance action authors are likely to have dedicated a significant amount of t
 If this action is not able to be ratified by the CC, it is fair for the author to expect a reasonable explanation from the CC.
 
 Without reasonable context being provided by the CC votes, authors may struggle to iterate upon their actions, until they are deemed constitutional.
-This situation would could decrease perceived legitimacy in Cardano's governance.
+This situation could decrease perceived legitimacy in Cardano's governance.
 
 ### Context for other voting bodies
 
@@ -41,27 +41,38 @@ By producing a standard we hope to encourage all CC members to attach rich conte
 This context should show CC member's decision making is fair and reasonable.
 
 This context allows the other voting bodies to adequately check the power of the CC.
-The on-chain technical checks of power for the 
 
-### CC Votes are different to other types of vote
-- little overlap between this and other types of vote, so we cant reuse standards as easily
-- CIP100 comment field is fine, but not up to the requirements
+### CC votes are different to other types of vote
 
-### Inclusion in interim constitution
+The CC and their votes are fundamentally very different from the other voting bodies.
+This makes reusing standards from these voting bodies problematic.
 
-- Article VI Section 4 of the Interim Constitution
+### Inclusion within interim constitution
+
+Cardano's [Interim Constitution Article VI Section 4](https://github.com/IntersectMBO/interim-constitution/blob/75155526ce850118898bd5eacf460f5d68ceb083/cardano-constitution-0.txt#L330) states:
+
+```txt
+Constitutional Committee processes shall be transparent.
+The Constitutional Committee shall publish each decision.
+When voting no on a proposal, the Committee shall set forth the basis
+for its decision with reference to specific Articles of this Constitution
+that are in conflict with a given proposal.
+```
+
+This mandates that the CC must provide rationale for at least `no` votes.
+Specifying a structure and common vocabulary for this improves the efforts to be transparent.
 
 ### Tooling
 
-- Allows rationales to be machine-readable (e.g. AI training)
-- Allows rationale sections to be queryable
-- Provides a structured breakdown so it is easier to maintain contexts when translating rationales
+By creating and implementing these metadata standards we facilitate the creation of tooling that can read and write this data.
+Such tooling greatly expands the reach and effectiveness of rationales as it allows for rich user interfaces to be created.
+i.e. translation tools, rationale comparison tools, 
 
 ## Specification
 
-We define an initial specification for fields which SHOULD be added to CC votes.
+We define a specification for fields which can be added to CC votes.
 
-### Extended Vocabulary
+### Extended Body Vocabulary
 
 The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100)'s `body` property.
 
@@ -72,53 +83,72 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - Authors SHOULD use this field to succinctly describe their rationale.
 - Authors SHOULD give a brief overview of the main arguments will support your position.
 - This SHOULD NOT support markdown text styling.
-- Compulsory
+- Compulsory.
 
 #### `rationaleStatement`
 
 - A long text field.
 - Authors SHOULD use this field to fully describe their rationale.
-- Authors SHOULD discuss their the arguments in full detail.
-- This SHOULD support markdown text styling.
-- Compulsory
+- Authors SHOULD discuss their arguments in full detail.
+- This field SHOULD support markdown text styling.
+- Compulsory.
 
 #### `precedentDiscussion`
 
 - A long text field.
 - The author SHOULD use this field to discuss what they feel is relevant precedent.
-- directly passed similar proposals (history of proposals)
-- (consider precedents can discarded when constitutions change?)
-- This SHOULD support markdown text styling.
-- Optional
+- This field SHOULD support markdown text styling.
+- Optional.
 
 #### `counterargumentDiscussion`
 
 - A long text field.
 - The author SHOULD use this field to discuss significant counter arguments to the position taken.
-- This SHOULD support markdown text styling.
-- Optional
+- This field SHOULD support markdown text styling.
+- Optional.
 
 #### `conclusion`
 
 - A long text field.
-- Optional
+- The author SHOULD use this field to conclude their rationale.
+- This SHOULD NOT support markdown text styling.
+- Optional.
 
 #### `internalVote`
-```
-  "internalVote": {
-    "constitutional": 0,
-    "unconstitutional": 0,
-    "abstain": 0,
-    "didNotVote": 0
-  }
-```
 
-#### `references`
+- A custom object field.
+- This field SHOULD be used to reflect any internal voting decisions within CC member.
+- This field SHOULD be used by members who are constructed from organizations or consortiums.
+- Optional.
 
-- We extend CIP-100's references field.
+##### `constitutional`
+
+- A positive integer.
+- The author SHOULD use this field to represent a number of internal votes for the constitutionality of the action.
+
+##### `unconstitutional`
+
+- A positive integer.
+- The author SHOULD use this field to represent a number of internal votes against the constitutionality of the action.
+
+##### `abstain`
+
+- A positive integer.
+- The author SHOULD use this field to represent a number of internal abstain votes for the action.
+
+##### `didNotVot`
+
+- A positive integer.
+- The author SHOULD use this field to represent a number of unused internal votes.
+
+### Extended `references` Vocabulary
+
+Here we extend CIP-100's `references` field.
+
+#### `relevantArticles`
+
 - We add to CIP-100's `@type`s, with a type of `relevantArticles`.
 - Authors SHOULD use this field to list the relevant constitution articles to their argument.
-- Optional
 
 ### Application
 
@@ -144,6 +174,18 @@ Although through the JSON-LD mechanism further CIPs can add to the common govern
 
 - useful for users to quickly see a preview of the whole rationale
 - gives tooling the option to show a high level intro
+
+### `rationaleStatement`
+
+### `precedentDiscussion`
+
+### `counterargumentDiscussion`
+
+### `conclusion`
+
+### `internalVote`
+
+### `relevantArticles`
 
 ## Path to Active
 
