@@ -339,8 +339,8 @@ If the key referenced does not support public key encryption, the registration i
 
 #### On-chain payment key reference
 
-Some dApps may require a user to register their payment key, so that rewards can be sent,
-or native tokens or NFT's or for other use cases.
+Some dApps may require a user to register their payment key, so that rewards (native tokens or NFT's)
+can be sent or for other use cases.
 
 Registrations like CIP-15/36 for catalyst include a payment key.
 However, a fundamental problem with these metadata standards is there is no way to validate:
@@ -353,12 +353,16 @@ It is important that payment keys be verifiable and provably owned to the regist
 A Payment key reference in this CIP solves this problem by only allowing a reference to either a transaction input or output.
 
 The reference is a simple signed integer.
-If the integer is positive, then it is referencing the spent UTXO in the transaction Input at the same offset.
+If the integer is positive, say N, it references the spent UTXO in the transaction input at index N - 1.
+For example, positive integer 1 refers to transaction input index 0.
 Because its required to prove one can spend a UTXO to post the transaction,
 the transaction itself proves that the Payment address being registered is both valid and owned by the registrar.
 
-If the reference is negative, then the payment key references a transaction output.
-The value is negated to get the offset into the transaction output array.
+If the reference is negative, say -N, it references a transaction output at index abs(N) - 1.
+The value is negated to determine the offset into the transaction output array.
+For example, negative integer -1 refers to transaction output index 0.
+
+Please note that `0` is an invalid reference.
 
 If the transaction output address **IS** also an input to the transaction,
 then the same proof has already been attached to the transaction.
