@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: 2736a9a
+Revision: 2516876
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -1014,7 +1014,8 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 
 ### Critères d’acceptation
 
-- [ ] Une nouvelle ère du grand livre est activée sur le réseau principal Cardano, qui implémente la spécification ci-dessus.
+- [x] Une nouvelle ère du grand livre est activée sur le réseau principal Cardano, qui implémente la spécification ci-dessus.
+ - Activé via le hardfork Chang #1
 
 ### Plan de mise en oeuvre
 
@@ -1039,18 +1040,18 @@ Le CIP-1694 va sans doute au-delà de la portée habituelle du processus de CIP 
 Toutefois, ce processus n’a pas encore été défini et reste une question ouverte.
 Le processus de ratification finale sera probablement un mélange de diverses idées, telles que:
 
-- [ ] Recueillir les opinions des ateliers communautaires, semblables à l’atelier du Colorado de février-mars 2023.
+- [x] Recueillir les opinions des ateliers communautaires, semblables à l’atelier du Colorado de février-mars 2023.
 - [ ] Exercer des actions de vote sur un réseau de test public, avec une participation suffisante.
 - [ ] Interrogez les fournisseurs de services établis.
 - [ ] Tirer parti de Project Catalyst pour recueillir les contributions de la communauté électorale existante (bien que petite en termes de participation active).
 
 #### Modifications apportées au corps de la transaction
 
-- [ ] De nouveaux éléments seront ajoutés au corps de la transaction, et les fonctionnalités de mise à jour et MIR existantes seront supprimées. En particulier
+- [x] De nouveaux éléments seront ajoutés au corps de la transaction, et les fonctionnalités de mise à jour et MIR existantes seront supprimées. En particulier
 
  Les actions de gouvernance et les votes comprendront deux nouveaux champs d’organe de transaction.
 
-- [ ] Trois nouveaux types de certificats seront ajoutés en plus des certificats existants :
+- [x] Trois nouveaux types de certificats seront ajoutés en plus des certificats existants :
 
   * Inscription DRep
   * Désinscription DRep
@@ -1058,7 +1059,7 @@ Le processus de ratification finale sera probablement un mélange de diverses id
 
  De même, les certificats MIR et genesis actuels seront supprimés.
 
-- [ ] Un nouvel objectif `Voting` sera ajouté aux contextes de script Plutus.
+- [x] Un nouvel objectif `Voting` sera ajouté aux contextes de script Plutus.
  Cela prévoira, en particulier, le vote aux scripts on-chain.
 
 > **Warning** Comme d’habitude, nous fournirons une spécification CDDL pour chacune de ces modifications.
