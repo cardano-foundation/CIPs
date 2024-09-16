@@ -82,12 +82,13 @@ bls12_381_G1_multiScalarMul :: [Integer] -> [bls12_381_G1_element] -> bls12_381_
 bls12_381_G2_multiScalarMul :: [Integer] -> [bls12_381_G2_element] -> bls12_381_G2_element
 ```
 
-The types **bls12_381_G1_element** and **bls12_381_G2_element** are already introduced by [CIP-0381](https://cips.cardano.org/cip/CIP-0381). Given two arrays of scalars and group elements the functions compute multi-scalar multiplication for the corresponding subgroup. The arrays of scalars and group elements must be non-empty and have equal size.
-These new functions naturally append a set of operations over BLS12-381 defined by [CIP-0381](https://cips.cardano.org/cip/CIP-0381).
+The types **bls12_381_G1_element** and **bls12_381_G2_element** are already introduced by [CIP-0381](https://cips.cardano.org/cip/CIP-0381). Given two arrays of scalars and group elements the functions compute multi-scalar multiplication for the corresponding subgroup. The arrays of scalars and group elements must be non-empty and of equal size. If the input arrays are empty or not equal, the functions must fail. These new functions naturally append a set of operations over BLS12-381 defined by [CIP-0381](https://cips.cardano.org/cip/CIP-0381).
 
 ### Cost model
 The computational impact of multi-scalar multiplication is complexified by it having dynamic-size arguments. Preliminary [benchmarks](https://github.com/dkaidalov/bench-blst-msm/) show that the computational complexity grows linearly with the size of the MSM. This should be reflected in the costing function.
-It should also be taken into account that the efficiency of the MSM algorithm may vary [depending on the blst setup](https://github.com/supranational/blst/blob/master/src/multi_scalar.c#L61).
+It should also be taken into account that the efficiency of the MSM algorithm may vary [depending on the blst setup](https://github.com/supranational/blst/blob/master/src/multi_scalar.c#L61). 
+
+There may be an extra complication in the costing procedure because all scalars have to be reduced modulo the order of the group before being passed to the blst functions (this happens [here](https://github.com/IntersectMBO/cardano-base/blob/6f9c20abdd3010e5a25356580cc968ba430101ad/cardano-crypto-class/src/Cardano/Crypto/EllipticCurve/BLS12_381/Internal.hs#L521) for the existing BLS12-381 scalar multiplication function in `cardano-crypto-class`). Presumably this is almost zero-cost for scalars already in the correct range, but if we pass in a very long list of very large scalars, the aggregated reduction time might be quite significant, and this must be taken into account in the costing function to guard against the possibility of a large amount of computation being done too cheaply.
 
 ## Rationale: how does this CIP achieve its goals?
 Integrating these functions directly into Plutus will streamline cryptographic operations, reduce transaction costs, and uphold the integrity of existing cryptographic interfaces. It addresses current inefficiencies and enhances the cryptographic capabilities of the Plutus platform.
