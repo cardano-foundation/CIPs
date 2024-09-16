@@ -1828,7 +1828,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "reg_cert"
+                "registration"
               ]
             },
             "credential": {
@@ -1852,7 +1852,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "unreg_cert"
+                "unregistration"
               ]
             },
             "credential": {
@@ -1876,7 +1876,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "vote_deleg_cert"
+                "vote_delegation"
               ]
             },
             "credential": {
@@ -1889,34 +1889,6 @@
           "required": [
             "tag",
             "credential",
-            "drep"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "title": "Vote delegation certificate",
-          "properties": {
-            "tag": {
-              "type": "string",
-              "enum": [
-                "vote_deleg_cert"
-              ]
-            },
-            "credential": {
-              "$ref": "cardano-conway.json#/definitions/Credential"
-            },
-            "pool_keyhash": {
-              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
-            },
-            "drep": {
-              "$ref": "cardano-conway.json#/definitions/DRep"
-            }
-          },
-          "required": [
-            "tag",
-            "credential",
-            "pool_keyhash",
             "drep"
           ],
           "additionalProperties": false
@@ -1928,7 +1900,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "stake_vote_deleg_cert"
+                "stake_vote_delegation"
               ]
             },
             "credential": {
@@ -1951,12 +1923,70 @@
         },
         {
           "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_registration_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash",
+            "coin"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "vote_registration_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "drep": {
+              "$ref": "cardano-conway.json#/definitions/DRep"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash",
+            "drep",
+            "coin"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
           "title": "Stake registration delegation certificate",
           "properties": {
             "tag": {
               "type": "string",
               "enum": [
-                "stake_reg_deleg_cert"
+                "stake_vote_registration_delegation"
               ]
             },
             "credential": {
@@ -1984,7 +2014,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "vote_reg_deleg_cert"
+                "vote_registration_delegation"
               ]
             },
             "credential": {
@@ -2012,7 +2042,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "stake_vote_reg_deleg_cert"
+                "stake_vote_registration_delegation"
               ]
             },
             "credential": {
@@ -2044,7 +2074,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "auth_committee_hot_cert"
+                "auth_committee_hot"
               ]
             },
             "committee_cold_credential": {
@@ -2068,7 +2098,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "resign_committee_cold_cert"
+                "resign_committee_cold"
               ]
             },
             "committee_cold_credential": {
@@ -2091,7 +2121,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "reg_drep_cert"
+                "register_drep"
               ]
             },
             "drep_credential": {
@@ -2118,7 +2148,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "unreg_drep_cert"
+                "unregister_drep"
               ]
             },
             "drep_credential": {
@@ -2142,7 +2172,7 @@
             "tag": {
               "type": "string",
               "enum": [
-                "update_drep_cert"
+                "update_drep"
               ]
             },
             "drep_credential": {
