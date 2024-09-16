@@ -28,6 +28,13 @@
       "pattern": "^(0|[1-9][0-9]*)$",
       "format": "uint64"
     },
+    "UInt16": {
+      "title": "UInt16",
+      "description": "16-bit unsigned integer",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "format": "uint16"
+    },
     "PosInt64": {
       "title": "PosInt64",
       "description": "64-bit unsigned integer, zero-excluded. 1-18446744073709551615",
@@ -169,6 +176,137 @@
       ],
       "title": "AuxiliaryData",
       "type": "object"
+    },
+    "Vote": {
+      "title": "Vote",
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "abstain"
+      ]
+    },
+    "Voter": {
+      "type": "object",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["cc_credential"]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            }
+          },
+          "required": ["tag", "credential"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["drep_credential"]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            }
+          },
+          "required": ["tag", "credential"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["spo_keyhash"]
+            },
+            "pubkey_hash": {
+              "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+            }
+          },
+          "required": ["tag", "credential"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "VotingProcedure": {
+      "title": "VotingProcedure",
+      "type": "object",
+      "properties": {
+        "vote": {
+          "$ref": "cardano-conway.json#/definitions/Vote"
+        },
+        "anchor": {
+          "$ref": "cardano-conway.json#/definitions/Anchor"
+        }
+      },
+      "required": ["vote"],
+      "additionalProperties": false
+    },
+    "VotingProcedures": {
+      "title": "VotingProcedures",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "cardano-conway.json#/definitions/Voter"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-conway.json#/definitions/GovActionId"
+                  },
+                  "value": {
+                    "$ref": "cardano-conway.json#/definitions/VotingProcedure"
+                  }
+                },
+              "required": [
+                "key",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "ProposalProcedure": {
+      "title": "ProposalProcedure",
+      "type": "object",
+      "properties": {
+        "deposit": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "reward_account": {
+          "$ref": "cardano-conway.json#/definitions/RewardAddress"
+        },
+        "gov_action": {
+          "$ref": "cardano-conway.json#/definitions/GovAction"
+        },
+        "anchor": {
+          "$ref": "cardano-conway.json#/definitions/Anchor"
+        }
+      },
+      "required": [ "deposit", "reward_account", "gov_action", "anchor" ],
+      "additionalProperties": false
+    },
+    "ProposalProcedures": {
+      "title": "ProposalProcedures",
+      "type": "array",
+      "minLength": 1,
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/ProposalProcedure"
+      }
     },
     "TransactionBody": {
       "title": "TransactionBody",
@@ -1965,9 +2103,26 @@
       },
       "required": [ "anchor" ]
     },
+    "GovActionId": {
+      "title": "GovActionId",
+      "type": "object",
+      "properties": {
+        "transaction_id": {
+          "$ref": "cardano-conway.json#/definitions/TransactionHash"
+        },
+        "gov_action_index": {
+          "$ref": "cardano-conway.json#/definitions/UInt16"
+        }
+      },
+      "required": ["transaction_id", "gov_action_index"],
+      "additionalProperties": false
+    },
     "GovAction": {
       "title": "Governance Action",
       "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
       "oneOf": [
         {
           "type": "object",
