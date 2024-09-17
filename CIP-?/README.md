@@ -6,7 +6,6 @@
 - **Authors**: Emir Olgun <emirolgun@gmail.com>
 - **Discussions-To**: https://github.com/littlefish-foundation/CIPs/discussions
 - **Status**: Proposed
-- **Type**: Standards Track
 - **Created**: 2024-09-17
 - **License**: CC-BY-4.0
 ---
