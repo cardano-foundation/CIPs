@@ -72,15 +72,15 @@ The protocol keeps track of the following [variables](#block-trees), initialized
 
 A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 
-- Fetch new chains $\mathcal{C}_\text{new}$ and votes $\mathcal{V}_\text{new}$.
-- Add any new chains in $\mathcal{C}_\text{new}$ to $\mathcal{C}$, add any new certificates contained in chains in $\mathcal{C}_\text{new}$ to $\mathsf{Certs}$.
+- Fetch new chains $\mathcal{C}\_\text{new}$ and votes $\mathcal{V}\_\text{new}$.
+- Add any new chains in $\mathcal{C}\_\text{new}$ to $\mathcal{C}$, add any new certificates contained in chains in $\mathcal{C}\_\text{new}$ to $\mathsf{Certs}$.
     -  Discard any equivocated blocks or certificates: i.e., do not add them to $\mathcal{C}$ or $\mathsf{Certs}$.
-- Add $\mathcal{V}_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
+- Add $\mathcal{V}\_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
     -  Discard any equivocated votes: i.e., do not add them to $\mathcal{V}$.
-- Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}_\mathsf{P}(\cdot)$) valid chain in $\mathcal{C}$.
+- Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}\_\mathsf{P}(\cdot)$ ) valid chain in $\mathcal{C}$.
     - Each party $\mathsf{P}$ assigns a certain weight to every chain $C$, based on $C$'s length and all certificates that vote for blocks in $C$ that $\mathsf{P}$ has seen so far (and thus stored in a local list $\mathsf{Certs}$).
-    - Let $\mathsf{certCount}_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}_\mathsf{P}(C) := \left| \left\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\} \right|$.
-    - Then the weight of the chain $C$ in $\mathsf{P}$'s view is $\mathsf{Wt}_\mathsf{P}(C) := \mathsf{len}(C) + B \cdot \mathsf{certCount}_\mathsf{P}(C)$ for a protocol parameter $B$.
+    - Let $\mathsf{certCount}\_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}\_\mathsf{P}(C) := \left| \left\\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\\} \right|$.
+    - Then the weight of the chain $C$ in $\mathsf{P}$'s view is $\mathsf{Wt}\_\mathsf{P}(C) := \mathsf{len}(C) + B \cdot \mathsf{certCount}\_\mathsf{P}(C)$ for a protocol parameter $B$.
 - Set $\mathsf{cert}^\prime$ to the certificate with the highest round number in $\mathsf{Certs}$.
 - Set $\mathsf{cert}^*$ to the certificate with the highest round number present in $C_\text{pref}$.
 
@@ -89,7 +89,7 @@ A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 - Create a new block $\mathsf{block} = (s, \mathsf{P}, h, \mathsf{cert}, ...)$, where
     - $h$ is the hash of the last block in $C_\text{pref}$,
     - $\mathsf{cert}$ is set to $\mathsf{cert}^\prime$ if
-        - there is no round-$(r-2)$ certificate in $\mathsf{Certs}$, and
+        - there is no round $(r-2)$ certificate in $\mathsf{Certs}$, and
         - $r - \mathsf{round}(\mathsf{cert}^\prime) \leq A$, and
         - $\mathsf{round}(\mathsf{cert}^\prime) > \mathsf{round}(\mathsf{cert}^*)$,
         - and to $\bot$ otherwise,
@@ -119,7 +119,7 @@ The diagram below illustrates the key concepts and entities in Peras. In additio
 | ![Certificate](images/certificate.png)                  | A certificate created by a node, linked to the block it certifies. A certificate is only identified by its round number, as by construction there cannot be more than one certificate each round.                                                                                     |
 | ![Vote](images/vote.png)                                | A vote cast by a node, linked to the block it votes for. Contains the round number in which the vote is cast, the voter's id, and the truth values of the four different rules for casting a vote.                                                                                    |
 | ![Cooldown](images/cooldown.png)                        | Record a node's decision to enter cooldown period, linked to the block that triggered it. Contains the round number in which the cooldown is started, the node's id, and the truth values of the conditions that lead to the node not casting a vote and entering cooldown.           |
-| ![Node](images/node.png)                                | A node in the network, identified simply by a number. This is a marker representing the state of a node: What's the tip of its best chain, the latest "live" certificate it knows (aka $\mathsf{cert}^\prime$), and the latest on-chain certificate it knows (aka $\mathsf{cert}^*$). |
+| ![Node](images/node.png)                                | A node in the network, identified simply by a number. This is a marker representing the state of a node: What's the tip of its best chain, the latest "live" certificate it knows, and the latest on-chain certificate it knows. |
 
 An [online simulator for Peras](https://peras-simulation.cardano-scaling.org/) is available.
 
