@@ -136,7 +136,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - A positive integer.
 - The author SHOULD use this field to represent a number of internal abstain votes for the action.
 
-##### `didNotVot`
+##### `didNotVote`
 
 - A positive integer.
 - The author SHOULD use this field to represent a number of unused internal votes.
