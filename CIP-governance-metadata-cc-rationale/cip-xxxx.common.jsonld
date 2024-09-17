@@ -1,0 +1,53 @@
+{
+    "@context": {
+        "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+        "CIPXXX": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0XXX/README.md#",
+        "hashAlgorithm": "CIP100:hashAlgorithm",
+        "body": {
+            "@id": "CIPXXX:body",
+            "@context": {
+                "references": {
+                    "@id": "CIPXXX:references",
+                    "@container": "@set",
+                    "@context": {
+                        "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+                        "Other": "CIP100:OtherReference",
+                        "label": "CIP100:reference-label",
+                        "uri": "CIP100:reference-uri",
+                        "RelevantArticles": "CIPXXX:RelevantArticles"
+                    }
+                },
+                "summary": "CIPXXX:summary",
+                "rationaleStatement": "CIPXXX:rationaleStatement",
+                "precedentDiscussion": "CIPXXX:precedentDiscussion",
+                "counterargumentDiscussion": "CIPXXX:counterargumentDiscussion",
+                "conclusion": "CIPXXX:conclusion",
+                "internalVote": {
+                    "@id": "CIPXXX:internalVote",
+                    "@context": {
+                        "constitutional": "CIPXXX:constitutional",
+                        "unconstitutional": "CIPXXX:unconstitutional",
+                        "abstain": "CIPXXX:abstain",
+                        "didNotVote": "CIPXXX:didNotVote"
+                    }
+                }
+            }
+        },
+        "authors": {
+            "@id": "CIP100:authors",
+            "@container": "@set",
+            "@context": {
+                "did": "@id",
+                "name": "http://xmlns.com/foaf/0.1/name",
+                "witness": {
+                    "@id": "CIP100:witness",
+                    "@context": {
+                        "witnessAlgorithm": "CIP100:witnessAlgorithm",
+                        "publicKey": "CIP100:publicKey",
+                        "signature": "CIP100:signature"
+                    }
+                }
+            }
+        }
+    }
+}

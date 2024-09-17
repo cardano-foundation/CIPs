@@ -5,7 +5,7 @@ Category: Metadata
 Status: Proposed
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
-    - Eystein Magnus Hansen <eysteinsofus@gmail.com>
+    - Eysteinh Magnus Hansen <eysteinsofus@gmail.com>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/878
@@ -145,9 +145,9 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 
 Here we extend CIP-100's `references` field.
 
-#### `relevantArticles`
+#### `RelevantArticles`
 
-- We add to CIP-100's `@type`s, with a type of `relevantArticles`.
+- We add to CIP-100's `@type`s, with a type of `RelevantArticles`.
 - Authors SHOULD use this field to list the relevant constitution articles to their argument.
 
 ### Application

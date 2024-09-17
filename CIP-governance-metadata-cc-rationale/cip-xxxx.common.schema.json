@@ -1,0 +1,148 @@
+{
+    "title": "CIP-XXX Common",
+    "description": "Metadata document for Cardano Constitutional Committee vote rationales, extending CIP-100",
+    "type": "object",
+    "required": ["hashAlgorithm", "authors", "body"],
+    "properties": {
+        "hashAlgorithm": {
+            "$ref": "#/definitions/hashAlgorithm"
+        },
+        "authors": {
+            "$ref": "#/definitions/authors"
+        },
+        "body": {
+            "$ref": "#/definitions/body"
+        }
+    },
+    "definitions": {
+        "hashAlgorithm": {
+            "type": "string",
+            "enum": ["blake2b-256"],
+            "title": "Hash Algorithm",
+            "description": "The algorithm used to authenticate this document externally (CIP-100)"
+        },
+        "authors": {
+            "title": "Authors",
+            "description": "The authors of this governance metadata (CIP-100)",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/author"
+            }
+        },
+        "author": {
+            "title": "Author",
+            "description": "An author endorsing the content of a metadata document (CIP-100)",
+            "type": "object",
+            "required": ["name", "witness"],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "Name"
+                },
+                "witness": {
+                    "$ref": "#/definitions/witness"
+                }
+            }
+        },
+        "Witness": {
+            "title": "Witness",
+            "description": "A witness proving that the author endorses the content of the metadata",
+            "type": "object",
+            "properties": {
+                "witnessAlgorithm": {
+                    "title": "WitnessAlgorithm",
+                    "type": "string",
+                    "enum": [
+                        "ed25519"
+                    ]
+                },
+                "publicKey": {
+                    "title": "PublicKey",
+                    "type": "string"
+                },
+                "signature": {
+                    "title": "Signature",
+                    "type": "string"
+                }
+            }
+        },
+        "body": {
+            "title": "Body",
+            "description": "The body of the metadata document that is hashed to produce a signature (CIP-100)",
+            "type": "object",
+            "required": ["summary", "rationaleStatement"],
+            "properties": {
+                "summary": {
+                    "type": "string",
+                    "title": "Summary",
+                    "description": ""
+                },
+                "rationaleStatement": {
+                    "type": "string",
+                    "title": "Rationale Statement",
+                    "description": ""
+                },
+                "precedentDiscussion": {
+                    "type": "string",
+                    "title": "Precedent Discussion",
+                    "description": ""
+                },
+                "counterargumentDiscussion": {
+                    "type": "string",
+                    "title": "Counterargument Discussion",
+                    "description": ""
+                },
+                "conclusion": {
+                    "type": "string",
+                    "title": "conclusion",
+                    "description": ""
+                }
+            }
+        },
+        "reference": {
+            "title": "Reference",
+            "description": "A reference to a document",
+            "type": "object",
+            "required": ["type", "label", "uri"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["GovernanceMetadata", "Other", "RelevantArticles"],
+                    "title": "Type"
+                },
+                "label": {
+                    "type": "string",
+                    "title": "Label"
+                },
+                "uri": {
+                    "type": "string",
+                    "title": "URI"
+                }
+            }
+        },
+        "internalVote": {
+            "title": "Internal Vote",
+            "description": "",
+            "type": "object",
+            "required": ["constitutional", "unconstitutional", "abstain", "didNotVote"],
+            "properties": {
+                "constitutional": {
+                    "type": "integer",
+                    "title": ""
+                },
+                "unconstitutional": {
+                    "type": "integer",
+                    "title": ""
+                },
+                "abstain": {
+                    "type": "integer",
+                    "title": ""
+                },
+                "didNotVote": {
+                    "type": "integer",
+                    "title": ""
+                }
+            }
+        }
+    }
+}
