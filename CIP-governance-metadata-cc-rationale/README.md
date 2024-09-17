@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 136
 Title: Governance metadata - Constitutional Committee votes
 Category: Metadata
 Status: Proposed
