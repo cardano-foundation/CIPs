@@ -497,7 +497,7 @@ flowchart LR
 ```
 
 
-The "Transfer" transaction allows the transfer of programmable tokens from one account to another within the `transferManager` contract. This transaction involves the following components:
+The `Transfer` transaction allows the transfer of programmable tokens from one account to another within the `transferManager` contract. This transaction involves the following components:
 
 - **transferManagerObserver**: The contract that validates the inputs and ensures the correctness of the transfer.
 - **stateManagerContract**: The contract that manages the state of the accounts involved in the transfer.
