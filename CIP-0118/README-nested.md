@@ -109,6 +109,7 @@ We add the following new fields to `TxBody` :
 **Decision required** Should this CIP additionally include the following :
 
 - `RdmrPtr ⇀ Redeemer` structure inside the body
+- datums inside the body
 - `requiredObservers` scripts that are checked by a transaction but are not for the purpose of validating a specific action
 
 The following field is added to `Tx`:
@@ -469,14 +470,14 @@ signed bt all the keys required by that transaction
 
 - the input to (and therefore output of) each script is predictable at the time of (underspecified) tx construction, 
 so that it is possible to compute required `ExUnits` for each of the scripts run by every sub-transaction 
-at the time of construction (but it's not compulsory)
+at the time of construction
 
-2. Contracts can only view data in transactions fixed by `requiredTxs`, rather than 
-all sub-txs
+2. Contracts can only view data in the transaction running them, except in the case 
+that a top-level tx is running a batch-observer script
 
-3. In this design, script outputs can be computed by any Babel service receiving an incoming 
-underspecified transaction, and they do not depend on the top-level transaction, 
-this makes constructing (and determining whether it is even possible to construct) 
+3. In this design, script outputs (except of batch-observers) can be computed by any Babel service receiving an incoming 
+underspecified transaction (as well as the author of the transaction), and they do not depend on the top-level transaction.
+This makes constructing (and determining whether it is even possible to construct) 
 a valid top-level transactions more straightforward. 
 
 
