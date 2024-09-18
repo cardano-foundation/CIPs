@@ -53,19 +53,21 @@ with smart contracts.
 The ledger changes we describe have been developed as a result of the discussions and 
 proposals in previous CIPs, including previous versions of validation zones proposals, 
 and Transaction Swaps. The following 
-new usecases and functionality are supported by the changes :
+new usecases and functionality (in addition to batching) are supported by the changes :
 
 1. transactions in a single batch may pay each others' fees and `minUTxOValue` ;
-2. sharing (for the purpose of deduplication) of scripts and datums across transactions 
+2. sharing (for the purpose of deduplication) of scripts across transactions 
 in a single batch ;
 3. scripts may inspect the contents of other transactions within the same batch ;
-4. the top-level transaction may provide collateral (and, optionally, the `ExUnits`
-for the scripts in its sub-transactions) ;
+4. the top-level transaction may provide collateral scripts in its sub-transactions ;
 5. a new intent we call "spend-by-output", wherein a sub-transactions may specify _outputs_ it 
 intends to spend, and the top-level transaction specifies the inputs that point 
 to those outputs in the UTxO set. This is included as a way to showcase that this 
 change to the ledger rules establishes the infrastructure to add additional 
 kids of supported intents (see CPS-15).
+6. any (top- or sub-) transaction may include script(s) that it requires to be validated as part of validation of 
+the top-level transaction of the batch as a way for sub-transactions to place constraints on the 
+batch in which they may be included.
 
 Since types of supported *intents* are just specific ways in which a transaction can be underspecified,
 running scripts without supplying the `ExUnits` or collateral (as in (4) above), leaving them to be specified by 
@@ -90,52 +92,29 @@ missing assets/currency `:= { aid ↦ v | aid ↦ v ∈ produced - consumed , v 
 
 We add the following new fields to `TxBody` : 
 
-1. `isTopLevel : Bool`\
-- whether or not a give transaction is top-level (set by builder of top level Tx)
+1. `requireBatchObservers : ℙ ScriptHash`
+- set of scripts that must be run by the top-level transaction in the batch (where `TxInfo` includes info of all batch transactions)
 
-2. `subTxs : ℙ TxId `\
-- fixes all attached sub-transactions
+2. `spendOuts : Ix ⇀ TxOut`
+- (indexed) outputs being spent 
 
-3. `requiredTxs : ℙ TxId`\
-- fixes what transactions will be shown to plutus scripts being run by this transaction 
-
-4. `spendOuts : List TxOut`\
-- outputs being spent for which inputs are provided by top-level tx
-
-5. `corInputs : ℙ TxIn`\
+3. `corInputs : ℙ TxIn`
 - inputs corresponding to `spentOuts`
 
-6. `knowsOwnUnits : Bool`\
-- toggles whether the sub-tx provides its own `ExUnits` or the top-level tx provides them
+4. `subTxIds : ℙ TxId`
+-  IDs of sub-transactions in the batch
 
-7. `subUnits : TxId ⇀ (RdmrPtr  ⇀ ExUnits)`\
-- units for sub-txs (needed when they do not provide their own)
+**Decision required** It could be better to include the sub-transactions in the body directly, or possibly in the script integrity hash
 
-We define a new record type, `Swap`, which is similar to `Tx` but avoids recursive definition 
-of `Tx` as containing a filed made up of other `Tx`s. It has the fields :
+**Decision required** Should this CIP additionally include the following :
 
-1. `stxTxBody : TxBody`\ 
-- tx body
+- `RdmrPtr ⇀ Redeemer` structure inside the body
+- `requiredObservers` scripts that are checked by a transaction but are not for the purpose of validating a specific action
 
-2. `stxWits : VKey ⇀ Sig`\
-- keys and signatures on the tx body
+The following field is added to `Tx`:
 
-3. `stxRdmrs : RdmrPtr  ⇀ Redeemer × ExUnits`\
-- redeemers for scripts
-
-4. `stxAux : Maybe AuxiliaryData`\
-- aux data
-
-The `Swap` record does not contain scripts or datums because those are necessarily provided 
-by the top-level tx to avoid duplication.
-
-We add the following new fields to `Tx` : 
-
-1. `subTxBodies : TxId ⇀ Swap`
-- sub-transaction data
-      
-2. `requiredTxBodies : TxId ⇀ TxBody`
-- other transactions visible to scripts in this transaction (may be all bodies in `subTxBodies` or only some of them)
+1.  `subTxs : List Tx` 
+- list of sub-transactions
 
 ### Plutus
 
@@ -147,19 +126,26 @@ that are top-level transactions with no sub-transactions are still able to inter
 with V3 scripts. Transactions that are underspecified and/or using any new features 
 introduced here are not. 
 
-#### New script purpose
+#### New script purposes
 
-A new tag, `SpendOut`, is introduced. This new constructor, `SpendOut : TxIn → ScriptPurpose`,
- is required to indicate 
-that a script is being run to validate spending an output, but it is identified by the input 
-provided by another transaction (in the same batch) via `corInputs` (rather than via `txins`).
+The following two new script purposes are introduced : 
+
+1. `SpendOut : Ix → ScriptPurpose`, where the index indicates that a script is being run to validate spending a specific 
+output in `spendOuts`.
+
+2. `BatchObs : ScriptHash → ScriptPurpose`, where the script has indicates the script that must be run by the top-level 
+transaction to observe the validity of the batch.
+
+`ScriptsNeeded` and `getDatum` are modified accordingly to include scripts for these purposes. `collectPhaseTwoScriptInputs` 
+also requires an additional parameter for constructing `TxInfo` to either contain lists of `TxInfo` for sub-transactions or not.
 
 #### TxInfo
 
-The `TxInfo` shown to a Plutus script is replaced with `List TxInfo` where the first
-element is the `TxInfo` of the transaction `tx` whose scripts are being run, and the subsequent
-elements in the list are `TxInfo` records for the transactions `tx` scripts are allowed to 
-inspect, i.e. those in its `requiredTxBodies`.
+The `TxInfo` shown to a PlutusV4 script has an added field :
+
+- `otherInfos : List TxInfo`, which is populated with the `TxInfo` data for all sub-transactions in the batch 
+whenever (1) the transaction for which info is being constructed is top-level, and (2) the script purpose for 
+which this info is constructed is `BatchObs`
 
 
 ### Ledger Transition Changes
@@ -192,14 +178,13 @@ calls `SWAPS` on the list of transactions in the (constructed) tx batch. The
 checks are :
 
 1. Fees are correct. `feesOK` is modified by (1) replacing `txfee` with 
-the sum total of `txfee` values of all the transactions in the batch, and 
-the total ExUnits are computed as the sum of all ExUnits in all batch transactions. 
-Note that the ExUnits are provided according to `knowsOwnUnits`.
+the sum total of `txfee` values of all the transactions in the batch.
 The per-transaction fee is collected only once for the batch. 
 
-2. Batch is balanced when `batchValid` is true. This allows un-balanced batches with failing 
+2. Batch is balanced (POV holds) implies that the batch consists of a singleton transaction containing 
+failing scripts. This condition allows un-balanced batches with failing 
 scripts (and sufficient collateral, see [Collateral](#collateral)) to still be posted on-chain. 
-Both sides of the equation now sum all of what used to be the 
+Both sides of the equation of POV now sum all of what used to be the 
 `produced` and `consumed` values for individual transactions. The value spend by `corInputs` 
 is added to the `consumed` side. 
 
@@ -207,116 +192,129 @@ is added to the `consumed` side.
 
 4. All `txins` and `corInputs` are contained in the UTxO set to which the top-level tx is being applied 
 
-5. Check that all required transactions of all batch transactions are present in `subTxs`
+5. The sum of the execution units of all transactions in a batch is less than the max for a single transaction 
 
-6. `isTopLevel` value of top-level transaction is `true`
+6. No `corInputs` provided are also provided as regular `txins` in any transaction
 
-7. `batchValid` is set the conjunction of all `isValid` tags in the batch.
+7. Check that `txins` in top-level point to `spendOuts` in the UTxO set
 
-8. Check that top-level tx provides execution units via `subUnits` for all transactions that don't specify their own execution units
-
-9. The sum of the execution units of all transactions in a batch is less than the max for a single transaction 
-
-10. No `corInputs` provided are also provided as regular `txins` in any transaction
-
-11. Check that `txins` in top-level tx correspond 1-1 to `spendOuts` in the UTxO set
+8. The list of IDs of `subTxs` contains the same IDs as in `subTxIds` and no repeating IDs
 
 To construct the batch transaction list, the original transaction prepends the 
-top-level transaction to a list of transactions corresponding to each of its
-swaps, constructed from them in the following way :
+top-level transaction to its `subTx` list.
 
-1. The body, the signatures, the redeemer pointer structure with redeemers, the 
-ExUnits, `isValid`, and the aux data are instantiated as specified in the `Swap`
-2. The datums and scripts are instantiated as those of the top-level transaction (TODO FIX THIS!)
-3. `subTxBodies` is empty
-4. `requiredTxBodies` is *either* populated by the bodies in `subTxBodies` of the top-level 
-tx that correspond to `requiredTxs` specified in the swap body
-(in the case `knowsOwnUnits` is `true` in the swap body), *or* it is 
-populated by *all* bodies in `subTxBodies` (in the case 
-`knowsOwnUnits` is `false` in the swap body) 
-(see [Setting `knowsOwnUnits`](#setting-knowsownunits))
-5. The `rdmrPtr` is *either* the one provided by the `Swap` (in the case 
-`knowsOwnUnits` is `true` in the swap body) *or* the replaced the `ExUnits`
-(in the case `knowsOwnUnits` is `false` in the swap body) 
-(see [Setting `knowsOwnUnits`](#setting-knowsownunits))
-6. `isTopLevel` is set to `false`
-7. `batchValid` is set to the `batchValid` tag of the top-level tx
+The `LEDGER` rule then calls the `SWAPS` rule on the batch list, and the same state as it itself 
+has. The result of the `LEDGER` state update is computed by `SWAPS`. 
+However, the environment for `SWAPS` is distinct from `LEnv` (see below). 
 
-TODO - limit the shown datums! these should be fixed by the transaction as they are now. 
 
 **Decision Required** Should we also require scripts to be limited to only required ones?
-Or relax this restriction?
+Or relax this restriction? With the restriction, changes to `UTXOW` are required.
 
 #### SWAP and SWAPS
 
-`SWAPS` iterates over all transaction in a batch, calling `SWAP` on each. The rule `SWAP`
-functions the way `LEDGER` did, conditioning on the `batchValid` tag to determine whether
-certificates and gov-actions need to be applied, then calling `UTXOW` to update the 
-UTxO state. 
+We define a new type, `BatchData`, which can be either 
+
+- `SingularTransaction`, which indicates that the batch contains only one transaction with no sub-txs, but this tx contains new features
+
+- `OldTransaction`, which indicates that the batch contains only one transaction with no new features (old version of Plutus can be run)
+
+- `BatchParent txid batchValid` which indicates that this batch contains a top-level tx with ID `txid`, and it has sub-txs. The conjunction of 
+all `isValid` tags of all transactions in the batch (sub- and top-) is `batchValid`.
+
+We compute :
+
+- `validPath : BatchData → Tx → Bool`, which 
+is true whenever all transactions in the batch are marked as phase-2 valid, or the singular/old transaction 
+has a true `isValid`.
+
+`SWAPS` iterates over the list of transaction in a batch, calling `SWAP` on each. The transition `SWAP`
+does exactly what `LEDGER` used to, except it is conditioned on `validPath`. 
+`SWAP` has the same state and signal as `LEDGER~, but it has a distinct environment, `SwapEnv`,
+which, in addition to containing a field containing `LEnv`, includes two other fields, 
+which are set when `LEDGER` "calls" `SWAPS` :
+
+- `bdat : BatchData` is set to the appropriate value as described above 
+
+- `reqObs : ℙ ScriptHash` is set to the `requireObservers` of the top-level transaction
 
 #### UTXOW 
 
 The `UTXOW` rule additionally checks :
 
-1. all `subTxs` have corresponding swaps attached to the transaction
-2. `subTxs` only non-empty in top-level tx
+1. `requireBatchObservers` is contained in the batch observers (in the environment)
+
+2. no sub-transactions contain sub-transactions.
 
 Existing function that checks that required witness data is provided now 
 also checks that such data is provided for the `corInputs`. Additionally,
 the supported language check requires that `PlutusV3` or earlier is 
-only allowed in transactions that are top-level, and do not contain sub-transactions.
+only allowed in (singleton) transactions that do not use new features. That is, 
+
+- are balanced 
+- have empty `requireObservers`, `spendOuts`, `conInputs`, and `subTxIds` fields.
+
+
+`UTxOEnv` contains, in addition to existing fields, 
+
+- `BatchData` (that is passed on to the `UTXO` and `UTXOS` rules), and
+- a set of batch observer script hashes (also passed on to the `UTXO` and `UTXOS` rules)
 
 TODO : deal with reference inputs correctly?
+
 
 #### UTXO
 
 The `feesOK` check, as well as the `txsize` and `produced = consumed` checks, 
 are removed from this rule (and moved to the `LEDGER` rule). 
 
-
 #### UTXOS
 
-The function `collectPhaseTwoScriptInputs` that appears in the `UTXOS` constructors 
-now receives the `requiredTxBodies` data in addition to own transaction data .
-As before, constructor of `UTXOS` checks that `isValid` is correctly specified based 
-on script execution output.
+`UTXOS` transition now conditions on 
+
+- `validPath`
+
+- `isTop`, which 
+is true whenever the ID of the transaction matches the ID of the top-level transaction in the batch.
 
 The `UTXOS` rule is updated to have three constructors :
 
-1. `Scripts-Yes` : in the case that `batchValid` is true, it removes both the 
+1. `Scripts-Yes` : in the case that `validPath` is true, it removes both the 
 `txins` and the `corInputs` from the UTxO set (in addition to all the existing 
 changes done previously by `Scripts-Yes`).
 
-2. `Scripts-No` : in the case `batchValid = false`, and `isTopLevel = false`.
+2. `Scripts-No` : in the case `validPath` is false, and `isTop` is false.
 No changes are made to the state here because collateral is only collected from the top-level transaction.
 
-3. `Scripts-No-TopLevel` : in the case `batchValid = false`, but `isTopLevel = true`.
+3. `Scripts-No-TopLevel` : in the case `validPath` is false, and `isTop` is true.
 Collateral is collected, as in the previous version of the `Scripts-No` rule. 
 
-### Setting `knowsOwnUnits`
-
-This tag is set within the transaction body to specify whether `ExUnits` for running 
-scripts are correctly specified in the `rdmrPtr` structure. Setting it to `false` 
-will require that the top-level transaction provides the `ExUnits` via the 
-`subUnits` structure. When this tag is `false` for a given sub-tx, it will 
-also receive data for all of `subTxs` via the `requiredTxBodies`, which is 
-given as input to script validation for that sub-tx.
-
-The purpose of this is to allow a given sub-tx to case split on all of the other 
-batch transaction data without having to specify which transactions scripts 
-will inspect during validation (e.g. via listing all the txIds
-of the transaction bodies that will be viewed).
-
-### Collateral
+### Collateral and Phase-2 Invalid Transactions
 
 Enough collateral must be provided by the top-level transaction to cover the sum of all the 
 fees of all batch transactions. The collateral 
 can only ever be collected from the top-level transaction.
 The sub-txs are not obligated to provide sufficient 
-collateral for their own scripts, but they may choose to. A Babel fees service [Babel Service](#babel-service)
+collateral for their own scripts, but they may choose to (this is never checked for sub-transactions). 
+A Babel fees service [Babel Service](#babel-service)
 may or may not require incoming underspecified transactions to provide their 
 own collateral, depending on whether they want to assume the risk of not being 
 compensated for running failing scripts. 
+
+If a sub-transaction passes required phase-1 checks (excluding being balanced/POV, and checks related to `spendOuts` and `corInputs`),
+it can be posted on-chain as a `SingularTrasaction`, so that it will be processed as top-level, and its collateral will be collected.
+
+### Batch Observers 
+
+Batch observers are scripts that must be run by a top-level transaction, but may be required by its sub-transactions 
+as a way to specify batch-level constraints. The have the script purpose with the tag `BatchObs` and the identifier `ScriptHash`.
+These are the only scripts that, in their `TxInfo` data, get a non-empty `otherInfos : List TxInfo` field, which is populated 
+with the infos of the sub-transactions. This is inspired by, and may be implemented in conjunction with the 
+[Observe Script Type CIP](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112). 
+
+The difference is that for a tx-observer script in the linked CIP is run on the `TxInfo` of the transaction 
+that requires it. With batch observers, the scripts are required by a sub-tx, but run with top-level input. 
+For the same top-level transaction, a regular observer and a batch observer in a transaction will get different `TxInfo`. 
 
 ### System Component Changes
 
@@ -344,12 +342,6 @@ Probably not much?
 
 Underspecified transactions cannot be communicated across the Cardano 
 network or stored in the mempool. This must be done off-chain.
-Data should probably be sent as `Tx`, rather than a 
-`Swap`, because it should include any associated scripts and datums. In the 
-reset of the off-chain discussion, we assume `Tx` data is communicated off-chain, 
-then turned into a `Swap` to be posted as a sub-tx, or as-is if it is posted 
-as a top-level tx. 
-
 This CIP does not include an off-chain component, even though one would be necessary 
 for 
 
@@ -368,11 +360,9 @@ asset at a good price.
 
 Moreover, different usecases may have different constraints on how "valid"
 they expect the underspecified transactions to be. Some may require that 
-incoming transactions are valid in every way except possibly un-balanced.
-Others may be willing to provide collateral for any (correctly constructed)
-transactions with correct `ExUnits`. Yet others may be willing to take on the risk of computing the 
-`ExUnits` for the incoming transactions, and specifying them in the top-level tx 
-they construct.
+incoming transactions are valid "enough" to collect collateral from as singular transactions.
+Some services may be willing to look at the requirements imposed by `requiredBatchObservers`, while 
+others may not be.
 
 
 #### Babel Service
@@ -384,6 +374,16 @@ alongside a full node. It would have to have a filter set for the kinds of trans
 it will engage with. There is no guarantee that every unbalanced transaction 
 will eventually be balanced by a subsequent incoming one, so each service will have 
 to solve this problem for themselves, probably using an appropriate filter.
+
+#### Batch Observers
+
+A service processing underspecified transactions (such as the Babel service) may accept incoming transactions 
+that contain non-empty `requiredObservers`. This means this service must construct batches containing these 
+transactions and also satisfy the batch-level constraints imposed by the scripts specified in their `requiredObservers` 
+in order to create valid batches.
+
+An additional high-level language may be beneficial to specify what the batch observer scripts 
+actually require of the batch, as Plutus script constraints may be difficult to work with directly.
 
 #### Light Client Service
 
@@ -458,10 +458,8 @@ underspecified transactions.
 Transaction swaps achieve almost exactly the same goals as this CIP. The main differences 
 are :
 
-1. The top-level transaction contains multiple pieces of data called `Swap`s, which 
-are actually transaction bodies paired with other required data (redeemers, etc.).
-They can are then converted to `Tx` (by attaching appropriate scripts and datums, etc.),
-and processed as individual transactions, alongside the top-level tx. As a result, 
+1. The top-level transaction contains subTxs`, which 
+are lists of transactions. They are processed as individual transactions, alongside the top-level tx. As a result, 
 
 - the `TxIn` of each output can be computed for each output underspecified transaction  
 at the time of construction 
