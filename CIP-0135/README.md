@@ -1,6 +1,6 @@
 ---
-CIP: CIP-0911?
-Title: Disaster Recovery Plan for Cardano networks (including mainnet)
+CIP: CIP-0135
+Title: Disaster Recovery Plan for Cardano networks
 Category: Tools
 Status: Proposed
 Authors:
@@ -10,7 +10,7 @@ Authors:
     - Steve Wagendorp <steve.wagendorp@cardanofoundation.org>
     - Andrew Westberg <andrewwestberg@gmail.com>
     - Nicholas Clarke <nicholas.clarke@tweag.io>
-Implementors: []
+Implementors: N/A
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/893
 Created: 2024-06-17
@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-While the Cardano mainnet has proven to be highly resilient, it is necessary to proactively 
+While the Cardano mainnet and other networks have proven to be highly resilient, it is necessary to proactively 
 consider the possible recovery mechanisms and procedures that may be required in the unlikely 
 event of a major failure where the network is unable to recover itself. 
 
@@ -38,15 +38,17 @@ This CIP is based on an earlier IOHK technical report that is referenced below, 
 documentation and discussions that have not been publicly released. It should be considered to be a living 
 document that is reviewed and revised on a regular basis.    
 
-Note that although the focus of disaster recovery is on Cardano mainnet, the recovery procedures are generic and apply to other Cardano
+Note that although the focus of disaster recovery is on Cardano mainnet, since this is the greatest risk
+of loss of funds, the recovery procedures are generic and apply to other Cardano
 networks, including SanchoNet, Preview, PreProd or private networks.
+Appropriate adjustments may need to be made to reflect differences in timing or other concerns.
 
 
 ## Motivation: why is this CIP necessary?
 
 This CIP is needed to familiarize stakeholders with the processes and procedures that should be 
 followed in the unlikely event that the Cardano mainnet, or another Cardano network, encounters
-a situation where the built-in  on-chain recovery mechanisms fail.
+a situation where the built-in on-chain recovery mechanisms fail.
 
 ## Disaster Recovery Procedures
 
@@ -312,6 +314,22 @@ potential network outages. As a living document, it will be regularly reviewed a
 stakeholders and encourage more detailed contingency planning. The CIP aims to facilitate discussions, 
 establish recovery procedures, and encourage regular recovery practice exercises to ensure preparedness 
 and validation of recovery actions in the event of an outage.
+
+## Path to Active
+
+### Acceptance criteria
+
+- [x] The proposal has been reviewed by the community and sufficiently advertised on various channels.
+    - [x] Intersect Channels
+    - [x] Cardano Forum
+    - [x] Twitter
+    - [x] Reddit
+
+- [x] All major concerns or feedback have been addressed.
+
+### Implementation Plan
+
+N/A
 
 ## Change Log
 
