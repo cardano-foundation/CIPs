@@ -319,13 +319,14 @@ and validation of recovery actions in the event of an outage.
 
 ### Acceptance criteria
 
-- [x] The proposal has been reviewed by the community and sufficiently advertised on various channels.
-    - [x] Intersect Channels
-    - [x] Cardano Forum
-    - [x] Twitter
-    - [x] Reddit
+- [ ] The proposal has been reviewed by the community and sufficiently advertised on various channels.
+    - [ ] Intersect Technical Groups
+    - [ ] Intersect Discord Channels
+    - [ ] Cardano Forum
+    - [ ] Twitter
+    - [ ] Reddit
 
-- [x] All major concerns or feedback have been addressed.
+- [ ] All major concerns or feedback have been addressed.
 
 ### Implementation Plan
 
@@ -336,6 +337,8 @@ N/A
 | Version    | Date | Description |
 | -------- | -------- | ------- |
 | 0.1  | 2024-08-30    | Initial submitted version |
+| 0.2  | 2024-09-10    | Revised version to emphasize genericity of recovery techniques |
+| 0.3  | 2024-09-18    | Revised version following CIP editors meeting |
 
 ## References
 
