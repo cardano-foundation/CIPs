@@ -50,7 +50,7 @@ This CIP is needed to familiarize stakeholders with the processes and procedures
 followed in the unlikely event that the Cardano mainnet, or another Cardano network, encounters
 a situation where the built-in on-chain recovery mechanisms fail.
 
-## Disaster Recovery Procedures
+## Specification
 
 While the exact recovery process will depend on the unique nature of the failure, there are three main scenarios we can consider.
 
@@ -288,7 +288,7 @@ alternative solution to Ouroboros Genesis checkpoints as a way to
 verify the correct state of the ledger
 
 
-## Recommended Actions for Cardano mainnet
+### Recommended Actions for Cardano mainnet
 
 1. Monitor Cardano mainnet for periods of low density and take early action if an extended period is observed.
 2. Identify a collection of block producer nodes that has sufficient stake to mint at least 9 blocks in any 36 hour window.
@@ -297,7 +297,7 @@ verify the correct state of the ledger
 5. Provide signed Mithril snapshots and a way for full node wallet users and others to recover from this snapshot.
 6. Determine how to employ Ouroboros Genesis snapshots as part of the disaster recovery process
 
-### Community Engagement
+#### Community Engagement
 
 One of the key requirements for successful disaster recovery will be proper engagement with the community.
 
