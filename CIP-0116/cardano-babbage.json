@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "cardano-babbage.json",
-  "title": "Cardano Domain Types",
+  "title": "Cardano Babbage Era Domain Types",
   "definitions": {
     "BigInt": {
       "title": "BigInt",
