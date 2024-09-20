@@ -24,11 +24,11 @@ consider the possible recovery mechanisms and procedures that may be required in
 event of a major failure where the network is unable to recover itself. 
 
 This CIP considers three representative scenarios and addresses specific considerations relevant 
-in each case:    
+in each case:  
 
-Scenario 1 - __Long-Lived Network Partition__    
-Scenario 2 - __Failure to Make Blocks for an Extended Period of Time__    
-Scenario 3 - __Bad Blocks Minted on Chain__    
+Scenario 1 - __Long-Lived Network Partition__  
+Scenario 2 - __Failure to Make Blocks for an Extended Period of Time__  
+Scenario 3 - __Bad Blocks Minted on Chain__  
 
 To ensure successful recovery in the event of a chain failure, it's crucial to establish effective 
 communication channels and exercise recovery procedures in advance to familiarize the community and 
@@ -36,7 +36,7 @@ stake pool operators (SPOs) with the process.
 
 This CIP is based on an earlier IOHK technical report that is referenced below, supplemented by internal 
 documentation and discussions that have not been publicly released. It should be considered to be a living 
-document that is reviewed and revised on a regular basis.    
+document that is reviewed and revised on a regular basis.  
 
 Note that although the focus of disaster recovery is on Cardano mainnet, since this is the greatest risk
 of loss of funds, the recovery procedures are generic and apply to other Cardano
@@ -200,7 +200,7 @@ point of the bad block.
 
 #### Remediation
 
-Depending on the cause of the issue and its severity, alternative remediations might be possible.  
+Depending on the cause of the issue and its severity, alternative remediations might be possible. 
 
 **Scenario 3.1**: if some existing node versions were able to process the block, but others were not, then
 the chain would continue to grow at a lower chain density.  SPOs would need to be persuaded to upgrade (or downgrade)
@@ -237,7 +237,7 @@ have elapsed.  In case of doubt, the procedure for Scenario 3.4 should be follow
 ### Using Ouroboros Genesis Snapshots
 
 Any of the above conditions may result in a period of lower chain density. The
-updated consensus mechanism introduced in Ouroboros Genesis  relies on making
+updated consensus mechanism introduced in Ouroboros Genesis relies on making
 chain density comparisons to assist a node when catching up with the network,
 in order to reduce the reliance on having trusted peers when syncing. As
 such, low-density periods pose a potential security risk for the future; they
@@ -261,7 +261,7 @@ Genesis snapshots play two potential roles in disaster recovery:
    which must then be trusted by all parties.
 2. Following a disaster recovery procedure, a sufficient number of blocks
    covering the low density period should be added to the list of lightweight
-   checkpoints. These would serve the purpose of  preventing a subsequent
+   checkpoints. These would serve the purpose of preventing a subsequent
    long-range attack.
 
 Note that, in this second scenario, concerns about the legitimacy of the
@@ -334,11 +334,11 @@ N/A
 
 ## Change Log
 
-| Version    | Date | Description |
+| Version | Date | Description |
 | -------- | -------- | ------- |
-| 0.1  | 2024-08-30    | Initial submitted version |
-| 0.2  | 2024-09-10    | Revised version to emphasize genericity of recovery techniques |
-| 0.3  | 2024-09-18    | Revised version following CIP editors meeting |
+| 0.1 | 2024-08-30 | Initial submitted version |
+| 0.2 | 2024-09-10 | Revised version to emphasize genericity of recovery techniques |
+| 0.3 | 2024-09-18 | Revised version following CIP editors meeting |
 
 ## References
 
