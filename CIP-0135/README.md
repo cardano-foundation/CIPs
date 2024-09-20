@@ -264,7 +264,7 @@ Genesis snapshots play two potential roles in disaster recovery:
    checkpoints. These would serve the purpose of  preventing a subsequent
    long-range attack.
 
-Note that, in this second scenario, concens about the legitimacy of the
+Note that, in this second scenario, concerns about the legitimacy of the
 checkpoint are much less salient. The checkpoint can be issued post disaster
 recovery, at such a time where the points it contains are in the past, and are
 both agreed upon and easy to verify for all honest parties.
