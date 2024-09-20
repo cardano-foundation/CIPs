@@ -163,7 +163,7 @@ with the newly restored chain.  This would leave one or more gaps in the chain, 
 ##### Rewards Donation by Recovery Block Producers
 
 In order to avoid allegations of unfair behaviour, block producing nodes that are used to recover the network should
-donate any rewards that they receieve during recovery to the treasury.
+donate any rewards that they receive during recovery to the treasury.
 
 
 #### Additional Effects on Cardano Users
