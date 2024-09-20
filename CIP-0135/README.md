@@ -183,7 +183,7 @@ A period of low chain density could have security implications that affect dynam
 and leave open the possibility for future long range attacks. This may be particularly 
 relevant should chain recovery be performed as described above (using less stake than is required 
 for an honest majority). To mitigate the presence of an extended period of low chain density we may 
-need to make use of the lightweight checkpointing mechanism in Ouroborus Genesis. Alternatively Mithril 
+need to make use of the lightweight checkpointing mechanism in Ouroborus Genesis. Alternatively, Mithril 
 could also be used to provide certified snapshots to stake pools as a means to verify the correct state of the ledger.
 
 The adoption of Mithril for fast bootstrapping by light clients and edge nodes should help to mitigate risks 
