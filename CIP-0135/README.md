@@ -320,9 +320,9 @@ and validation of recovery actions in the event of an outage.
 ### Acceptance criteria
 
 - [ ] The proposal has been reviewed by the community and sufficiently advertised on various channels.
-    - [ ] Intersect Technical Groups
-    - [ ] Intersect Discord Channels
-    - [ ] Cardano Forum
+    - [x] Intersect Technical Groups
+    - [x] Intersect Discord Channels
+    - [x] Cardano Forum
     - [ ] Twitter
     - [ ] Reddit
 
