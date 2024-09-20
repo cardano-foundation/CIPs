@@ -1,5 +1,5 @@
 ---
-CIP: CIP-0135
+CIP: 135
 Title: Disaster Recovery Plan for Cardano networks
 Category: Tools
 Status: Proposed
