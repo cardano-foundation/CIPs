@@ -89,7 +89,7 @@ against the main network, using the `db-truncator` tool, for example.
 
 Full node wallets can also be recovered in the same way, though this may require technical 
 skills that the end users do not possess. It may be easier, if slower, for them to simply 
-resynchronize their nodes fromb the start of the chain (i.e. from the genesis block).
+resynchronize their nodes from the start of the chain (i.e. from the genesis block).
 
 Ouroboros Genesis provides additional resilience when recovering from long lived network partitions. 
 In Praos nodes resyncing from a point before the chain fork could still in some cases follow the 
