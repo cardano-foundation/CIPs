@@ -890,27 +890,23 @@ Ticking the global clock increments the slot number and decrements the delay of 
 
 #### Updating the global state
 
-New messages are buffered, recorded in the global history, and will update a party's portion of the global state.
+New messages are buffered, recorded in the global history, and will update a party's portion of the global state.`
 ```agda
-    _,_,_,_⇑_ : Message → Delay → Party → T → State → State
-    m , d , p , l ⇑ M =
+    _,_⇑_ : Message → (Party → Delay) → State → State
+    m , fᵈ ⇑ M =
       record M
-        { blockTrees = set p l blockTrees
-        ; messages =
-            map ⦅_, m , d ⦆
-              (filter (¬? ∘ (p ≟-party_)) parties)
+        { messages =
+            map (λ { p → ⦅ p , m , fᵈ p ⦆}) parties
             ++ messages
         ; history = m ∷ history
         }
       where open State M
 ```
-
 This occurs when a message diffuses to new parties.
-
 ```agda
-    add_to_diffuse_ : (Message × Delay × Party) → T → State → State
-    add (m@(ChainMsg x) , d , p) to t diffuse M = m , d , p , addChain t x ⇑ M
-    add (m@(VoteMsg x) , d , p) to t diffuse M = m , d , p , addVote t x ⇑ M
+    delay_by_update_ : Message → (Party → Delay) → State → State
+    delay m@(ChainMsg x) by fᵈ update M = m , fᵈ ⇑ M
+    delay m@(VoteMsg x) by fᵈ update M = m , fᵈ ⇑ M
 ```
 
 #### Fetching
@@ -978,6 +974,7 @@ Voting updates the party's local state and for all other parties a message is re
             r = v-round s
             v = createVote s p w π σ b
           in
+          (fᵈ : Party → Delay)
           (mem : IsCommitteeMember p r w π)
           (sig : IsVoteSignature v σ) →
         ∙ BlockSelection s t ≡ b
@@ -986,8 +983,8 @@ Voting updates the party's local state and for all other parties a message is re
         ∙ VotingRule s t
           ────────────────────────────────────────────
           p ⊢
-            M ⇉ add (VoteMsg (mem , sig) , 𝟘 , p) to t
-                diffuse M
+            M ⇉ delay VoteMsg (mem , sig) by fᵈ
+                 update M
 ```
 
 #### Block creation
@@ -1054,15 +1051,13 @@ Block creation updates the party's local state, but for all other parties a mess
             b = createBlock clock p π σ t
             pref = preferredChain t
           in
+          (fᵈ : Party → Delay)
           (vc : ValidChain (b ∷ pref)) →
         ∙ blockTrees ⁉ p ≡ just t
           ──────────────────────────────
           p ⊢
-            M ↷ add (
-                  ChainMsg vc
-                , 𝟘
-                , p) to t
-                diffuse M
+            M ↷ delay ChainMsg vc by fᵈ
+                update M
 ```
 
 #### Small-step semantics
