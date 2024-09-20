@@ -239,6 +239,8 @@ which are set when `LEDGER` "calls" `SWAPS` :
 
 - `reqObs : ℙ ScriptHash` is set to the `requireObservers` of the top-level transaction
 
+- `batchScripts : ℙ Script` is set to the set of all scripts attached to all transactions in the batch
+
 #### UTXOW 
 
 The `UTXOW` rule additionally checks :
@@ -247,14 +249,19 @@ The `UTXOW` rule additionally checks :
 
 2. no sub-transactions contain sub-transactions.
 
-Existing function that checks that required witness data is provided now 
-also checks that such data is provided for the `corInputs`. Additionally,
-the supported language check requires that `PlutusV3` or earlier is 
+Other changes include :
+
+- Existing function that checks that required witness data is provided now 
+also checks that such data is provided for the `corInputs`. 
+
+- the supported language check requires that `PlutusV3` or earlier is 
 only allowed in (singleton) transactions that do not use new features. That is, 
 
-- are balanced 
-- have empty `requireObservers`, `spendOuts`, `conInputs`, and `subTxIds` fields.
+    - are balanced 
+    - have empty `requireObservers`, `spendOuts`, `conInputs`, and `subTxIds` fields.
 
+- instead of checking that all required scripts are attached to the transaction itself, 
+their presence in the environment variable containing all transactions' scripts is checked 
 
 `UTxOEnv` contains, in addition to existing fields, 
 
