@@ -1,5 +1,5 @@
 {
-    "title": "CIP-XXX Common",
+    "title": "CIP-136 Common",
     "description": "Metadata document for Cardano Constitutional Committee vote rationales, extending CIP-100",
     "type": "object",
     "required": ["hashAlgorithm", "authors", "body"],
@@ -72,6 +72,13 @@
             "type": "object",
             "required": ["summary", "rationaleStatement"],
             "properties": {
+                "references": {
+                    "title": "References",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Reference"
+                    }
+                },
                 "summary": {
                     "type": "string",
                     "title": "Summary",
