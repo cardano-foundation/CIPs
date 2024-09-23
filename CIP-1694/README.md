@@ -322,6 +322,9 @@ that will vote on their behalf. In addition, two pre-defined voting options are 
 > Any Ada holder may register themselves as a DRep and delegate to themselves if they wish to actively participate in
 > voting.
 
+> **Note**
+> Any wallet serving as the Registered Reward Wallet for a Stake Pool can be delegated to one of these Pre-defined Voting Options and doing so will serve as the default voting option selected by the SPO for all Governance Action votes, excepting Hard Fork Governance Actions. Due to the need for robust consensus around Hard Fork initiations, these votes must be met as a percentage of the stake held by all stake pools. 
+
 #### Registered DReps
 
 In Voltaire, existing stake credentials will be
@@ -488,7 +491,7 @@ Depending on the type of governance action, an action will thus be ratified when
 
 * the constitutional committee approves of the action (the number of members who vote `Yes` meets the threshold of the constitutional committee)
 * the DReps approve of the action (the stake controlled by the DReps who vote `Yes` meets a certain threshold of the total active voting stake)
-* the SPOs approve of the action (the stake controlled by the SPOs who vote `Yes` meets a certain threshold over the total delegated active stake for the epoch)
+* the SPOs approve of the action (the stake controlled by the SPOs who vote `Yes` meets a certain threshold of the total active voting stake, excepting Hard Fork Governance Actions)
 
 > **Warning**
 > As explained above, different stake distributions apply to DReps and SPOs.
@@ -515,7 +518,7 @@ The following table details the ratification requirements for each governance ac
   The DRep vote threshold that must be met as a percentage of *active voting stake*.
 
 * **SPOs**<br/>
-  The SPO vote threshold which must be met as a percentage of the stake held by all stake pools.<br/>
+  The SPO vote threshold which must be met as a certain threshold of the total active voting stake, excepting Hard Fork Governance Actions. Due to the need for robust consensus around Hard Fork initiations, these votes must be met as a percentage of the stake held by all stake pools. <br/>
   A value of - means that SPO votes do not apply.
 
 | Governance action type                                               | CC | DReps    | SPOs     |
