@@ -157,10 +157,14 @@ encoding described above, as `n` is `0` and there are no elements to encode.
 
 The following section presents the reasoning behind the above specification of a Plutus
 core builtin array type.
+
 It is important to mention that we based our decisions on the desire to keep the builtin
 language as small as possible, i.e. to not introduce types or functions
 which are not essential for definitional purposes or essential for providing a practical
 interface to users.
+
+It also discusses some alternatives or additions which should be considered as part of the
+[preliminary investigation](#implementation-plan).
 
 ### Providing safe lookups
 
@@ -184,6 +188,10 @@ would return `Nothing` for out-of-bounds lookups.
     the user wants the function to fail. Since Plutus Core is strict, it is not possible
     to pass `error` as the default value without it getting evaluated before the call and
     terminating execution immediately.
+    - As of the time of writing, builtin functions cannot be higher-order. However, that is
+    subject to change in the near future when pattern matching builtins will be supported by
+    Plutus Core. This feature would allow a safe version of `indexArray` with type `forall a .
+    Integer -> (() -> a) -> Array a -> a` to be expressible in the builtins language.
 
 3. Include `lengthOfArray` and require the user to perform appropriate length guards before
 calling `indexArray`.
@@ -209,15 +217,6 @@ A more appropriate approach would be to construct the array in bulk,
 however that would require an intermediate representation of a collection of elements. Fortunately this already exists in the builtin language in the form of builtin lists.
 We can then naturally introduce a function which transforms lists into arrays: `listToArray`.
 
-Since the only current method of constructing arrays is via `listToArray`, one may ask
-whether the `lengthOfArray` builtin is at all necessary.
-We believe that, indeed, `lengthOfArray` is redundant in the current specification. The reason is
-that traversing the list to construct the array is enough to also compute its length. 
-However, we have decided that `lengthOfArray` should be kept as future work will depend upon its
-existence. Some components of Plutus Core could be natively represented as arrays,
-and there would be no other way to access their length in constant time other than
-through a builtin.
-The [Arrays in `Data`](#arrays-in-data) section considers such a case.
 
 ### Slices
 
@@ -241,14 +240,9 @@ compatibility. Therefore, we cannot simply modify the internal representation of
 
 One idea would be to add a new builtin such as the following:
 `unConstrDataArray :: Data -> (Integer, Array Data)`. However, this builtin will
-inevitably have linear time complexity since it is based on a list traversal, so
-it does not actually solve the original problem.
-
-Since we have not currently found an adequate solution, we do not include this modification
-in the current CIP, but leave it for future work. However, it may be that this use case is
-sufficiently important that this CIP should not be implemented without also tackling this
-problem. We will consider this possibility depending on the results of the preliminary
-investigation (outlined in its section below).
+inevitably have linear time complexity since it is based on a list traversal. So
+it does not actually solve the original problem, unless it can be shown experimentally
+that, in practice, these lists are usually small enough for the transformation to be neglijible.
 
 ## Path to Active
 
@@ -264,14 +258,18 @@ the new builtins.
 
 The implementation of this CIP should not proceed without an empirical assessment of the effectiveness of the new primitives, as per the following plan:
 
-1. Implement the new primitives according to the specification.
-2. Assign a preliminary cost to the new primitives. Consider similar operations and their
+1. Implement the new primitives according to the specification, including the experimental
+versions discussed in the CIP.
+2. Assign a preliminary cost to the new builtin functions. Consider similar operations and their
 current costs.
 3. Create variants of the [existing benchmarks][4] and potentially add some more.
-4. Check that the array variants are indeed significantly faster, in both real-time
-performance and modelled costs. If they are not, find out why.
+4. From the total set of newly implemented builtins, find a minimal but practical set of
+primitives which are indeed significantly faster in both real-time performance and modelled costs.
+5. If such a set does not exist, find out why. This means that the preliminary investigation
+was not successful. If it does, revise the specification to include
+the final set of primitives.
 
-If the preliminary performance investigation is not successful, this CIP should be revised
+If the preliminary performance investigation was not successful, this CIP should be revised
 according to the findings of the experiment. Otherwise, the implementation can proceed:
 
 5. Determine the most appropriate costing functions for modelling the builtin's performance
