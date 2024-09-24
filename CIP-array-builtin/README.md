@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: New Plutus Core Builtin Type - `Array`
+Title: Plutus Core Builtin Type - `Array`
 Category: Plutus
 Status: Proposed
 Authors:
