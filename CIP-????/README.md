@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 127
 Title: `ripemd-160` hashing in Plutus Core
 Status: Proposed
 Category: Plutus
