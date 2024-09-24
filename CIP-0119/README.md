@@ -141,9 +141,10 @@ If the `imageObject` DOES NOT contain a base64 encoded image, the `contentUrl` M
 #### `doNotList`
 - Optional
 - Is a boolean expression that can be given a single value of either `true` or `false`.
-- If not included then the value is assumed to be false
-- A `true` value means that the DRep does not want to show up in tooling that displays DReps. 
-  - e.g. a DRep who does not want to appear in GovTool’s DRep Explorer feature creates metadata with donotlist as true.
+- If not included then the value is assumed to be `false`.
+- A `true` value means that the DRep does **not** want to campaign for delegation via tooling.
+- A `false` value means that the DRep does want to campaign for delegation via tooling and thus be shown via that tooling.
+- e.g. a DRep who does not want to appear in GovTool’s DRep Directory feature creates metadata with `doNotList=true`.
 
 ### Application
 Only the `givenName` property is listed above as compulsory, DRep metadata must include it to be considered CIP-119 compliant. As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-119 compliant metadata.
@@ -187,6 +188,16 @@ However it was pointed out that this may quickly lead to relatively massive (mul
 It is also the case that CIP-100 allows for metadata to be saved within a governance transaction, and including b64 encoded images directly within transactions would be troublesome due to their size. This would not be an issue with including an image file URL. 
 
 Therefore it was decided to allow a provision for people to submit `imageObject`'s with a URL only if a hash was included OR with a base64 encoded image, and allow them to make the decision as to which was most appropriate for their use case.  
+
+#### Rationale for `doNotList`
+
+This field was intended for DReps who wish to identify themselves via rich metadata but are not seeking to campaign for delegations.
+By not being listed via "DRep aggregation/campaign" tools the idea is that these DReps are less likely to attract unwanted delegation from ada holders.
+These DReps could be organizations that want to use their ada to vote in a transparent way on-chain but do not wish to vote on the behalf of others.
+
+It is expected that tooling such as block explorers will list DReps using `doNotList=true`. Tooling built specifically for DRep campaign and delegation should respect the intent of this field. 
+
+This proposal cannot force tooling to respect this desire from DReps. DReps must be aware that any information anchored on-chain can be found via tooling and may result in delegation.
 
 ### A Note on Teams
 CIP-1694 allows for DReps to be registered using a native or Plutus script credential, this implies that individuals could organise to form a team that would have a broad range of expertise, and would perhaps therefore be more attractive to some delegating Ada Holders.

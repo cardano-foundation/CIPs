@@ -30,7 +30,7 @@
             }
         }
     },
-    "hahsAlgorithm": "blake2b-256",
+    "hashAlgorithm": "blake2b-256",
     "body": {
         "paymentAddress": "addr1q86dnpkva4mm859c8ur7tjxn57zgsu6vg8pdetkdve3fsacnq7twy06u2ev5759vutpjgzfryx0ud8hzedhzerava35qwh3x34",
         "givenName": "Ryan Williams",

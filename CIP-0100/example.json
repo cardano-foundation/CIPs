@@ -44,11 +44,11 @@
     },
     "hashAlgorithm": "blake2b-256",
     "authors": [
-      { "name": "Pi Lanningham", "witness": { "witnessAlgorithm": "ed25519", "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a", "signature": "340c2ef8d6abda96769844ab9dca2634ae21ef97ddbfad1f8843bea1058e40d656455a2962143adc603d063bbbe27b54b88d002d23d1dff1cd0e05017cd4f506"}}
+      { "name": "Pi Lanningham", "witness": { "witnessAlgorithm": "ed25519", "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a", "signature": "68078efeff90970d2320a2bb5021d1aea81bc4907bf33d54fd17989f020719f3f5c4da3dccf7aa61d51c1e6fececd95309c37e7eef331b199cd5f8e78992ea0d"}}
     ],
     "body": {
       "references": [
-        { "@type": "other", "label": "CIP-100", "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md" }
+        { "@type": "Other", "label": "CIP-100", "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md" }
       ],
       "comment": "This is a test vector for CIP-100",
       "externalUpdates": [
