@@ -11,7 +11,7 @@
 ---
 
 ## Abstract
-This CIP proposes a standard for using Non-Fungible Tokens (NFTs) as authentication tokens on the Cardano blockchain, enabling decentralized Single Sign-On (SSO) capabilities. It defines a metadata structure for these authentication NFTs, providing a framework for secure, verifiable, and decentralized authentication mechanisms.
+This CIP proposes a standard for using Fungible and Non-Fungible Tokens (NFTs) as authentication tokens on the Cardano blockchain, enabling decentralized Single Sign-On (SSO) capabilities. It defines a metadata structure for these authentication NFTs, providing a framework for secure, verifiable, and decentralized authentication mechanisms.
 
 ## Motivation
 As blockchain technology continues to evolve, there's a growing need for decentralized authentication systems that leverage the inherent security, transparency, and immutability of distributed ledgers. Traditional authentication mechanisms often rely on centralized authorities and are susceptible to single points of failure and security breaches. By using NFTs as authentication tokens, we can create unique, verifiable credentials secured by the blockchain, enabling users to authenticate across multiple platforms without relying on centralized identity providers. This approach enhances user privacy, data control, and aligns with the decentralized ethos of blockchain technology.
