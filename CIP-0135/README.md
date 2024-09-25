@@ -319,12 +319,10 @@ and validation of recovery actions in the event of an outage.
 
 ### Acceptance criteria
 
-- [ ] The proposal has been reviewed by the community and sufficiently advertised on various channels.
+- [x] The proposal has been reviewed by the community and sufficiently advertised on various channels.
     - [x] Intersect Technical Groups
     - [x] Intersect Discord Channels
     - [x] Cardano Forum
-    - [ ] Twitter
-    - [ ] Reddit
 
 - [ ] All major concerns or feedback have been addressed.
 
