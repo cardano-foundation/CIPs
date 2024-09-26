@@ -154,6 +154,7 @@ open import Data.Nat using (NonZero; Ordering; suc; ℕ; _≤_; _≥_; _>_; _≤
 open import Data.Nat.Properties using (_≟_)
 open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Sum using (_⊎_)
+open import Data.Unit using (⊤)
 open import Function.Base using (_∘_)
 open import Relation.Binary using (DecidableEquality)
 open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; cong)
@@ -410,6 +411,9 @@ record Certificate : Set where
         
   roundNumber : ℕ
   roundNumber = getRoundNumber round
+
+postulate
+  _≟-certificate_ : DecidableEquality Certificate
 ```
 
 The protocol places special emphasis on the most recent certificate among a set of certificates.
@@ -478,8 +482,10 @@ _≟-BlockHash_ : DecidableEquality (Hash Block)
 
 genesisHash : Hash Block
 genesisHash = MkHash emptyBS
-```
 
+cert₀ : Certificate
+cert₀ = MkCertificate (MkRoundNumber 0) genesisHash
+```
 #### Chains
 
 The linking of blocks into a *chain* is identical to Praos.
@@ -548,6 +554,12 @@ ChainExtends : Hash Block → Certificate → Chain → Set
 ChainExtends h c =
   Any (λ block → (hash block ≡ Certificate.blockRef c))
     ∘ dropWhile (λ block' → ¬? (hash block' ≟-BlockHash h))
+
+Extends : Hash Block → Certificate → List Chain → Set
+Extends h c
+  with c ≟-certificate cert₀
+Extends h c | yes _ = λ _ → ⊤
+Extends h c | no _ = Any (ChainExtends h c)
 ```
 
 #### Messages and their envelopes
@@ -695,17 +707,9 @@ The concrete block tree type (`TreeType`) manages chains, certificates, and vote
       certs : T → List Certificate
 ```
 
-It memorializes the genesis certificate.
-
-```agda
-    cert₀ : Certificate
-    cert₀ = MkCertificate (MkRoundNumber 0) genesisHash
-```
-
 It conforms to the `IsTreeType` requirements.
 
 ```agda
-    field
       is-TreeType : IsTreeType
                       tree₀ addChain allChains preferredChain
                       addVote votes certs cert₀
@@ -793,7 +797,7 @@ Voting is allowed in a round if voting has proceeded regularly in preceding roun
 ```agda
     VotingRule-1B : SlotNumber → T → Set
     VotingRule-1B s t =
-      Any (ChainExtends (BlockSelection s t) (latestCertSeen t)) (allChains t)
+      Extends (BlockSelection s t) (latestCertSeen t) (allChains t)
 ```
 
 - `VR-1`: Both `VR-1A` and `VR-1B` hold, which is the situation typically occurring when the voting has regularly occurred in preceding rounds.
@@ -1018,8 +1022,7 @@ Blocks are created with the required information.
         { slotNumber = s
         ; creatorId = p
         ; parentBlock =
-            let open IsTreeType
-            in tipHash (preferredChain t)
+            tipHash (preferredChain t)
         ; certificate =
             let r = v-round s
             in needCert r t
