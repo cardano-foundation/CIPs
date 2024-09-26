@@ -678,9 +678,6 @@ Duplicate or equivocated votes must not be present in the block tree.
 
 Every certificate must represent a quorum of recorded votes.
 
-> [!CAUTION]
-> Check that weighted voting is correctly represented here.
-
 ```agda
       quorum-cert : ∀ (t : T) (b : Block) (r : ℕ)
         →  (sum ∘ map Vote.votingWeight) (filter (λ {v →
@@ -963,9 +960,6 @@ A party can consider voting for a block, if
 - the chain is not in a cool-down phase
 
 Voting updates the party's local state and for all other parties a message is ready to be consumed immediately.
-
-> [!CAUTION]
-> Check that weighted voting is correctly represented here.
 
 ```agda
     infix 2 _⊢_⇉_
