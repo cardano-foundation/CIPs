@@ -182,24 +182,31 @@ checks are :
 the sum total of `txfee` values of all the transactions in the batch.
 The per-transaction fee is collected only once for the batch. 
 
-2. Batch is balanced (POV holds) implies that the batch consists of a singleton transaction containing 
-failing scripts. This condition allows un-balanced batches with failing 
-scripts (and sufficient collateral, see [Collateral](#collateral)) to still be posted on-chain. 
-Both sides of the equation of POV now sum all of what used to be the 
+2. No regular inputs in any transaction are in also included as `corInputs` of the top-level tx
+
+3. All `txins` and `corInputs` are contained in the UTxO set to which the top-level tx is being applied 
+
+4. `corInputs` in top-level tx point to the same (unordered) list of outputs in the UTxO set 
+as the list given by `spendOuts` 
+
+5. If the batch is not made up of a single transaction with failing scripts, the batch 
+must be balanced (POV holds). Both sides of the equation of POV now sum all of what used to be the 
 `produced` and `consumed` values for individual transactions. The value spend by `corInputs` 
-is added to the `consumed` side. 
+is added to the `consumed` side.*
 
-3. Transaction size (which includes top-level and all sub-transactions) is below max for a single transaction
+6. Transaction size (which includes top-level and all sub-transactions) is below max for a single transaction
 
-4. All `txins` and `corInputs` are contained in the UTxO set to which the top-level tx is being applied 
+7. The sum of the execution units of all transactions in a batch is less than the max for a single transaction 
 
-5. The sum of the execution units of all transactions in a batch is less than the max for a single transaction 
+8. The list of IDs of `subTxs` contains the same IDs as in `subTxIds` 
 
-6. No `corInputs` provided are also provided as regular `txins` in any transaction
+9. There are no repeating transaction IDs in `subTxs`
 
-7. Check that `txins` in top-level point to `spendOuts` in the UTxO set
-
-8. The list of IDs of `subTxs` contains the same IDs as in `subTxIds` and no repeating IDs
+(*) By not requiring a single transaction with failing scripts to be balanced, we allow Babel services
+to post on-chain phase-1 valid transactions for which they have already used their resources 
+to check scripts (and found that one or more failed). Such transactions will be processed by 
+collecting collateral only, so none of their other actions, including moving assets, will be applied,
+and therefore will not affect the ledger.  
 
 To construct the batch transaction list, the original transaction prepends the 
 top-level transaction to its `subTx` list.
@@ -273,8 +280,12 @@ TODO : deal with reference inputs correctly?
 
 #### UTXO
 
-The `feesOK` check, as well as the `txsize` and `produced = consumed` checks, 
+The `feesOK` check, the `txsize` check, the `produced = consumed` check, 
+and the check that `txins` are contained in the UTxO set,
 are removed from this rule (and moved to the `LEDGER` rule). 
+
+The check that only top-level transactions may contain a non-empty 
+`corInputs` field is added. 
 
 #### UTXOS
 
@@ -330,8 +341,8 @@ For the same top-level transaction, a regular observer and a batch observer in a
 
 The ledger changes follow the specification changes outlined above.
 The ledger prototype introducing the new era containing 
-the changes as described in the specification can be found here.
-TODO fix this link
+the changes as described in the specification can be found [here](https://github.com/willjgould/cardano-ledger/tree/wg/babel-rework).
+
 
 #### CBOR
 
