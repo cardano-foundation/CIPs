@@ -86,9 +86,19 @@ A user wants to mint a new NFT. The off-chain dataset is checked to ensure the N
 
 A user wants to burn an existing NFT. The off-chain dataset is checked to verify the NFT’s existence. A deletion proof is generated to validate the removal of the NFT from the dataset. The proof is included in the redeemer, and the UTxO output contains the new compact representation of the dataset along with the authorization token/NFT.
 
-### Rationale
+## Rationale
 
-This proposal allows dynamic minting and burning of NFTs in a secure, decentralized and scalable way. The combination of off-chain datasets, on-chain compact representations ensures that the Cardano blockchain remains efficient while maintaining NFT uniqueness.
+The proposal describes in this CIP achieves the goal of ensuring the uniqueness of NFTs minted on the Cardano blockchain by using an off-chain data structure to track the minting and burning of NFTs, and storing the hash of this data structure together with the proofs on the blockchain. This allows the on-chain code to verify the uniqueness of an NFT at minting time, without requiring the entire data structure to be stored on the blockchain.
+
+Also, it allows anyone to independently build the off-chain data tree by retrieving on-chain minting/burning transactions. Therefore, there is no need for centralized solutions to validate the integrity of the tree, promoting decentralization and transparency within the Cardano ecosystem. Though, any - even un-trusted or adversarial - 3rd-party services can be used to be queried for a proof.
+
+The use of compact representation of the off-chain data structure allows for efficient and secure tracking of the minting and burning of NFTs.
+
+The constructed proof should provide proofs for membership, non-membership, addition, and deletion, with a proof size that scales logarithmically or better with the number of elements.
+
+The use of an accumulator to represent the state allows for the updated state to be verified and recorded on the blockchain in a single transaction. This simplifies the process of updating the state, and reduces the risk of errors or disputes.
+
+As the result, this proposal would allow dynamic minting and burning of NFTs in a secure, decentralized and scalable way. The combination of off-chain datasets, on-chain compact representations together with the cryptographic proofs ensure that the Cardano blockchain remains efficient while maintaining NFT uniqueness.
 
 This approach ensures:
 
@@ -120,7 +130,6 @@ The acceptance criteria for this CIP to become active are as follows:
 
 The implementation plan for this CIP is as follows:
 
-- [ ] The solution described in the CIP will be implemented and tested - on the Cardano blockchain by the proposer of the CIP.
 - [ ] The proposer will submit the implementation for review and approval by subject matter experts.
 - [ ] The proposer will make the implementation and the CIP available for review and feedback by the community.
 - [ ] The proposer will address and resolve any concerns or issues raised during the review and testing process.
