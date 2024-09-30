@@ -324,7 +324,7 @@ and validation of recovery actions in the event of an outage.
     - [x] Intersect Discord Channels
     - [x] Cardano Forum
 
-- [ ] All major concerns or feedback have been addressed.
+- [x] All major concerns or feedback have been addressed.
 
 ### Implementation Plan
 
