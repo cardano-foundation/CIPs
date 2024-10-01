@@ -216,7 +216,11 @@ The following list of features with missing support on particular hardware devic
 Keystone supports everything described here.
 
 Additionally KeyStone devices support:
-- 
+- `proposal procedures`
+- `stake_vote_deleg_cert`
+- `stake_reg_deleg_cert`
+- `vote_reg_deleg_cert`
+- `stake_vote_reg_deleg_cert`
 
 #### Ledger: Nano S Plus, Nano X, Stax
 
