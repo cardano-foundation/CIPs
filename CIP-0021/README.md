@@ -146,6 +146,10 @@ In this exceptional case, auxiliary data must be encoded in their "tuple" format
 
 The `auxiliary_scripts` must be an array of length 0.
 
+### Versioning
+
+This proposal will be updated alongside new versions of HW wallet firmware and tooling.
+
 ## Rationale: how does this CIP achieve its goals?
 
 ### Canonical CBOR serialization format
@@ -207,9 +211,16 @@ We think that votes and DRep certificates are rare and substantially distinguish
 
 The following list of features with missing support on particular hardware devices is subject to occasional changes. Some features might be added, but some could also be removed (e.g. if they take too much space needed for other features).
 
+#### Keystone
+
+Keystone supports everything described here.
+
+Additionally KeyStone devices support:
+- 
+
 #### Ledger: Nano S Plus, Nano X, Stax
 
-Everything described here as allowed should (eventually) work on these devices.
+Everything described here as allowed should work on these devices.
 
 #### Ledger: Nano S
 
