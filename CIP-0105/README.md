@@ -1,11 +1,20 @@
 ---
 CIP: 105
 Title: Conway era Key Chains for HD Wallets
-Status: Proposed
+Status: Active
 Category: Wallets
 Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
-Implementors: []
+Implementors:
+  - Eternl <https://eternl.io/>
+  - Lace <https://www.lace.io/>
+  - Mesh <https://meshjs.dev/>
+  - NuFi <https://nu.fi/>
+  - Ryan Williams <ryan.williams@intersectmbo.org>
+  - Pawel Jackobs <pawel.jakubas-ext@cardanofoundation.org>
+  - Typhon <https://typhonwallet.io/>
+  - Vespr <https://vespr.xyz/>
+  - Yoroi <https://yoroi-wallet.com/>
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/597
 Created: 2023-09-22
@@ -250,11 +259,14 @@ See [Test Vectors File](./test-vectors.md).
   - [Lace](https://chromewebstore.google.com/detail/lace-sanchonet/djcdfchkaijggdjokfomholkalbffgil?hl=en)
   - [Yoroi](https://chrome.google.com/webstore/detail/yoroi-nightly/poonlenmfdfbjfeeballhiibknlknepo/related)
   - [demos wallet](https://github.com/Ryun1/cip95-demos-wallet)
-- [ ] The consitutional committee derivation paths are used by two implementations.
+- [x] The constitutional committee derivation paths are used by two implementations.
+  - [csl-examples](https://github.com/Ryun1/csl-examples/)
+  - [cardano-addresses](https://github.com/IntersectMBO/cardano-addresses/)
 
 ### Implementation Plan
 
-- [ ] Author to provide an example implementation inside a HD wallet.
+- [x] Author to provide an example implementation inside a HD wallet.
+  - [csl-examples/cip-1852-keys.js](https://github.com/Ryun1/csl-examples/blob/main/examples/CIP-1852/cip-1852-keys.js)
 
 ## Copyright
 
