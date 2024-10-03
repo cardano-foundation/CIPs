@@ -1015,19 +1015,10 @@ Blocks are created with the required information.
       record
         { slotNumber = s
         ; creatorId = p
-        ; parentBlock =
-            tipHash (preferredChain t)
-        ; certificate =
-            let r = v-round s
-            in needCert r t
+        ; parentBlock = tipHash (preferredChain t)
+        ; certificate = needCert (v-round s) t
         ; leadershipProof = π
-        ; bodyHash =
-            let txs = txSelection s p
-            in BlockBody.blockHash
-                 record
-                   { blockHash = hash txs
-                   ; payload = txs
-                   }
+        ; bodyHash = hash (txSelection s p)
         ; signature = σ
         }
 ```
