@@ -8,7 +8,7 @@ Authors:
     - Ana Pantilie <ana.pantilie@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/921
 Created: YYYY-MM-DD
 License: CC-BY-4.0
 ---
