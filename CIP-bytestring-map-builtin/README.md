@@ -61,7 +61,7 @@ We propose the following set of builtin functions to accompany the new builtin t
 1. `insertBSMap :: forall v . ByteString -> v -> ByteStringMap v -> ByteStringMap v`
     - it returns a map with the input key updated to the new value, silently discarding any previous value
     - it uses logarithmic time in the `ByteStringMap` argument, linear time in the `ByteString` argument, and logarithmic memory in the `ByteStringMap` argument
-2. `lookupBSMap :: forall a v . ByteString -> (() -> a) -> ByteStringMap v -> a`
+2. `lookupBSMap :: forall v . ByteString -> (() -> v) -> ByteStringMap v -> v`
     - it returns the value for a given key in the map; if the key is missing, it returns the default value of type `() -> a` 
     - its implementation depends on, as of the time of writing, ongoing work in supporting higher-order builtin functions; see the next section for the motivation behind this choice
     - it uses logarithmic time in the `ByteStringMap` argument, linear time in the `ByteString` argument and constant memory
@@ -99,7 +99,7 @@ Map lookups are essential, so we must provide `lookupBSMap`, but there remains t
 
 As mentioned earlier, we have decided to base the implementation of this builtin on an upcoming feature, because it is the least invasive way of providing a total implementation and it leverages future improvements to the builtins language.
 
-With the proposed signature of `lookupBSMap`, users will be able to provide any default value for when the lookup fails, including `error` or `False`. Therefore, `lookupBSMap` subsumes a membership check operation as well.
+With the proposed signature of `lookupBSMap`, users will be able to provide any default value for when the lookup fails, including `error`.
 
 ### Traversing `ByteStringMap`s
 
