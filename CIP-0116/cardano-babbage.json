@@ -1010,7 +1010,9 @@
                 "$ref": "cardano-babbage.json#/definitions/PlutusData"
               }
             }
-          }
+          },
+          "required": ["tag", "contents"],
+          "additionalProperties": false
         },
         {
           "title": "PlutusDataConstr",
@@ -1030,7 +1032,9 @@
                 "$ref": "cardano-babbage.json#/definitions/PlutusData"
               }
             }
-          }
+          },
+          "required": ["tag", "alternative", "data"],
+          "additionalProperties": false
         },
         {
           "title": "PlutusDataMap",
@@ -1052,10 +1056,13 @@
                   "value": {
                     "$ref": "cardano-babbage.json#/definitions/PlutusData"
                   }
-                }
+                },
+                "additionalProperties": false
               }
             }
-          }
+          },
+          "required": ["tag", "contents"],
+          "additionalProperties": false
         },
         {
           "title": "PlutusDataInteger",
@@ -1070,7 +1077,9 @@
             "value": {
               "$ref": "cardano-babbage.json#/definitions/BigInt"
             }
-          }
+          },
+          "required": ["tag", "value"],
+          "additionalProperties": false
         },
         {
           "title": "PlutusDataBytes",
@@ -1086,7 +1095,9 @@
               "format": "hex",
               "pattern": "^([0-9a-f][0-9a-f])*$"
             }
-          }
+          },
+          "required": ["tag", "value"],
+          "additionalProperties": false
         }
       ]
     },
@@ -1101,6 +1112,7 @@
           "$ref": "cardano-babbage.json#/definitions/UInt64"
         }
       },
+      "required": ["numerator", "denominator"],
       "additionalProperties": false
     },
     "Ipv4": {
