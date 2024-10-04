@@ -126,11 +126,7 @@ An [online simulator for Peras](https://peras-simulation.cardano-scaling.org/) i
 
 ### Normative Peras specification in Agda
 
-The following formal, relational specification for Peras type utilizes [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3). See [the Appendix](#typechecking-this-specification) for instruction on type-checking this specification with the Agda compiler.
-
-> [!TIP]
-> - This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
-> - Prior to publication, periodically diff the main branch of that repository against this commit, in order to identify any changes that need to be migrated to this document.
+The following formal, relational specification for Peras type utilizes [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3). See [the Appendix](#typechecking-this-specification) for instruction on type-checking this specification with the Agda compiler and see [github:input-output-hk/peras-design](https://github.com/input-output-hk/peras-design/) for proofs and other modules related to this specification.
 
 ```agda
 module README where
