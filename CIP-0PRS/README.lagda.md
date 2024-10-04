@@ -72,15 +72,15 @@ The protocol keeps track of the following [variables](#block-trees), initialized
 
 A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 
-- Fetch new chains $\mathcal{C}_\text{new}$ and votes $\mathcal{V}_\text{new}$.
-- Add any new chains in $\mathcal{C}_\text{new}$ to $\mathcal{C}$, add any new certificates contained in chains in $\mathcal{C}_\text{new}$ to $\mathsf{Certs}$.
+- Fetch new chains $\mathcal{C}\_\text{new}$ and votes $\mathcal{V}\_\text{new}$.
+- Add any new chains in $\mathcal{C}\_\text{new}$ to $\mathcal{C}$, add any new certificates contained in chains in $\mathcal{C}\_\text{new}$ to $\mathsf{Certs}$.
     -  Discard any equivocated blocks or certificates: i.e., do not add them to $\mathcal{C}$ or $\mathsf{Certs}$.
-- Add $\mathcal{V}_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
+- Add $\mathcal{V}\_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
     -  Discard any equivocated votes: i.e., do not add them to $\mathcal{V}$.
-- Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}_\mathsf{P}(\cdot)$) valid chain in $\mathcal{C}$.
+- Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}\_\mathsf{P}(\cdot)$ ) valid chain in $\mathcal{C}$.
     - Each party $\mathsf{P}$ assigns a certain weight to every chain $C$, based on $C$'s length and all certificates that vote for blocks in $C$ that $\mathsf{P}$ has seen so far (and thus stored in a local list $\mathsf{Certs}$).
-    - Let $\mathsf{certCount}_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}_\mathsf{P}(C) := \left| \left\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\} \right|$.
-    - Then the weight of the chain $C$ in $\mathsf{P}$'s view is $\mathsf{Wt}_\mathsf{P}(C) := \mathsf{len}(C) + B \cdot \mathsf{certCount}_\mathsf{P}(C)$ for a protocol parameter $B$.
+    - Let $\mathsf{certCount}\_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}\_\mathsf{P}(C) := \left| \left\\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\\} \right|$.
+    - Then the weight of the chain $C$ in $\mathsf{P}$'s view is $\mathsf{Wt}\_\mathsf{P}(C) := \mathsf{len}(C) + B \cdot \mathsf{certCount}\_\mathsf{P}(C)$ for a protocol parameter $B$.
 - Set $\mathsf{cert}^\prime$ to the certificate with the highest round number in $\mathsf{Certs}$.
 - Set $\mathsf{cert}^*$ to the certificate with the highest round number present in $C_\text{pref}$.
 
@@ -89,7 +89,7 @@ A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 - Create a new block $\mathsf{block} = (s, \mathsf{P}, h, \mathsf{cert}, ...)$, where
     - $h$ is the hash of the last block in $C_\text{pref}$,
     - $\mathsf{cert}$ is set to $\mathsf{cert}^\prime$ if
-        - there is no round-$(r-2)$ certificate in $\mathsf{Certs}$, and
+        - there is no round $(r-2)$ certificate in $\mathsf{Certs}$, and
         - $r - \mathsf{round}(\mathsf{cert}^\prime) \leq A$, and
         - $\mathsf{round}(\mathsf{cert}^\prime) > \mathsf{round}(\mathsf{cert}^*)$,
         - and to $\bot$ otherwise,
@@ -119,18 +119,14 @@ The diagram below illustrates the key concepts and entities in Peras. In additio
 | ![Certificate](images/certificate.png)                  | A certificate created by a node, linked to the block it certifies. A certificate is only identified by its round number, as by construction there cannot be more than one certificate each round.                                                                                     |
 | ![Vote](images/vote.png)                                | A vote cast by a node, linked to the block it votes for. Contains the round number in which the vote is cast, the voter's id, and the truth values of the four different rules for casting a vote.                                                                                    |
 | ![Cooldown](images/cooldown.png)                        | Record a node's decision to enter cooldown period, linked to the block that triggered it. Contains the round number in which the cooldown is started, the node's id, and the truth values of the conditions that lead to the node not casting a vote and entering cooldown.           |
-| ![Node](images/node.png)                                | A node in the network, identified simply by a number. This is a marker representing the state of a node: What's the tip of its best chain, the latest "live" certificate it knows (aka $\mathsf{cert}^\prime$), and the latest on-chain certificate it knows (aka $\mathsf{cert}^*$). |
+| ![Node](images/node.png)                                | A node in the network, identified simply by a number. This is a marker representing the state of a node: What's the tip of its best chain, the latest "live" certificate it knows, and the latest on-chain certificate it knows. |
 
 An [online simulator for Peras](https://peras-simulation.cardano-scaling.org/) is available.
 
 
 ### Normative Peras specification in Agda
 
-The following formal, relational specification for Peras type utilizes [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3). See [the Appendix](#typechecking-this-specification) for instruction on type-checking this specification with the Agda compiler.
-
-> [!TIP]
-> - This is based on [github:input-output-hk/peras-design/1afae5e35a6f6e484d87df7926f3cf8d02d10501](https://github.com/input-output-hk/peras-design/commit/1afae5e35a6f6e484d87df7926f3cf8d02d10501).
-> - Prior to publication, periodically diff the main branch of that repository against this commit, in order to identify any changes that need to be migrated to this document.
+The following formal, relational specification for Peras type utilizes [Agda 2.6.4.3](https://github.com/agda/agda/tree/v2.6.4.3). See [the Appendix](#typechecking-this-specification) for instruction on type-checking this specification with the Agda compiler and see [github:input-output-hk/peras-design](https://github.com/input-output-hk/peras-design/) for proofs and other modules related to this specification.
 
 ```agda
 module README where
@@ -143,7 +139,7 @@ open import Data.Bool using (Bool; if_then_else_; not; _∧_)
 open import Data.Empty using (⊥)
 open import Data.Fin using (Fin; pred)
                      renaming (zero to fzero; suc to fsuc)
-open import Data.List using (List; any; catMaybes; concat; dropWhile; filter; head; map; sum; []; _∷_; _++_)
+open import Data.List using (List; any; concat; dropWhile; filter; head; map; mapMaybe; sum; []; _∷_; _++_)
                       renaming (length to ∣_∣)
 open import Data.List.Membership.Propositional using (_∈_)
 open import Data.List.Relation.Unary.All using (All)
@@ -152,8 +148,9 @@ open import Data.List.Relation.Unary.Any using (Any; any?; _─_)
 open import Data.Maybe using (Maybe; just; nothing)
 open import Data.Nat using (NonZero; Ordering; suc; ℕ; _≤_; _≥_; _>_; _≤?_; _<ᵇ_; _≤ᵇ_; _+_; _∸_; _*_; _/_; _%_)
 open import Data.Nat.Properties using (_≟_)
-open import Data.Product using (proj₁; proj₂; uncurry; ∃-syntax; _×_; _,_)
+open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Sum using (_⊎_)
+open import Data.Unit using (⊤)
 open import Function.Base using (_∘_)
 open import Relation.Binary using (DecidableEquality)
 open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; cong)
@@ -313,20 +310,8 @@ instance
   iDecEqParty .DecEq._≟_ = _≟-party_
 ```
 
-Honest parties follow the protocol's rules, but corrupt parties might choose not to. 
-
 ```agda
-data Honesty : Party → Set where
-  Honest : ∀ {p : Party} → Honesty p
-  Corrupt : ∀ {p : Party} → Honesty p
-```
-
-The honesty of parties participating in the protocol is represented in this specification.
-
-```agda
-PartyTup = ∃[ p ] (Honesty p)
-
-Parties = List PartyTup
+Parties = List Party
 ```
 
 #### Signatures
@@ -422,6 +407,9 @@ record Certificate : Set where
         
   roundNumber : ℕ
   roundNumber = getRoundNumber round
+
+postulate
+  _≟-certificate_ : DecidableEquality Certificate
 ```
 
 The protocol places special emphasis on the most recent certificate among a set of certificates.
@@ -431,7 +419,7 @@ latestCert : Certificate → List Certificate → Certificate
 latestCert c = maximumBy c Certificate.roundNumber
   where maximumBy : {a : Set} → a → (a → ℕ) → List a → a
         maximumBy candidate _ [] = candidate
-        maximumBy {a} candidate f (x ∷ xs) =
+        maximumBy candidate f (x ∷ xs) =
           if f candidate ≤ᵇ f x
             then maximumBy x f xs
             else maximumBy candidate f xs
@@ -487,15 +475,23 @@ _≟-BlockHash_ : DecidableEquality (Hash Block)
 (MkHash b₁) ≟-BlockHash (MkHash b₂) with b₁ ≟-BS b₂
 ... | yes p = yes (cong MkHash p)
 ... | no ¬p =  no (¬p ∘ cong Hash.hashBytes)
-```
 
+genesisHash : Hash Block
+genesisHash = MkHash emptyBS
+
+cert₀ : Certificate
+cert₀ = MkCertificate (MkRoundNumber 0) genesisHash
+```
 #### Chains
 
 The linking of blocks into a *chain* is identical to Praos.
 
 ```agda
 Chain = List Block
+```
 
+The genesis chain is the empty list.
+```agda
 genesis : Chain
 genesis = []
 ```
@@ -503,7 +499,7 @@ genesis = []
 The protocol scrutinizes any certificates recorded on the chain.
 ```agda
 certsFromChain : Chain → List Certificate
-certsFromChain = catMaybes ∘ map Block.certificate
+certsFromChain = mapMaybe Block.certificate
 ```
 
 It also needs to test whether a certificate (quorum of votes) refers to a block found on a particular chain.
@@ -526,36 +522,40 @@ module _ ⦃ _ : Params ⦄ where
   ∥ ch ∥ cts = ∣ ch ∣ + ∣ filter (_PointsInto? ch) cts ∣ * B
 ```
 
+The protocol can identify a chain by the hash of its most recent block (its tip).
+
+```agda
+tipHash : Chain → Hash Block
+tipHash [] = genesisHash
+tipHash (b ∷ _) = hash b
+```
+
 A chain is valid if its blocks are signed and their creators were slot leaders. The chain's genesis is always valid.
 
 ```agda
 data ValidChain : Chain → Set where
   Genesis : ValidChain genesis
-  Cons : ∀ {c₁ c₂ : Chain} {b₁ b₂ : Block}
-    → IsBlockSignature b₁ (Block.signature b₁)
-    → IsSlotLeader (Block.creatorId b₁) (Block.slotNumber b₁) (Block.leadershipProof b₁)
-    → Block.parentBlock b₁ ≡ hash b₂
-    → c₂ ≡ b₂ ∷ c₁
-    → ValidChain c₂
-    → ValidChain (b₁ ∷ c₂)
-```
-
-The protocol can identify a chain by the hash of its most recent block (its tip).
-
-```agda
-tipHash : ∀ {c : Chain} → ValidChain c → Hash Block
-tipHash Genesis = record { hashBytes = emptyBS }
-tipHash (Cons {b₁ = b} _ _ _ _ _) = hash b
+  Cons : ∀ {c : Chain} {b : Block}
+    → IsBlockSignature b (Block.signature b)
+    → IsSlotLeader (Block.creatorId b) (Block.slotNumber b) (Block.leadershipProof b)
+    → Block.parentBlock b ≡ tipHash c
+    → ValidChain c
+    → ValidChain (b ∷ c)
 ```
 
 A block is said to extend a certificate on a chain if the certified block is an ancestor of or identical to the block and on the chain.
 
 ```agda
-ChainExtends : Maybe Block → Certificate → Chain → Set
-ChainExtends nothing _ _ = ⊥
-ChainExtends (just b) c =
+ChainExtends : Hash Block → Certificate → Chain → Set
+ChainExtends h c =
   Any (λ block → (hash block ≡ Certificate.blockRef c))
-    ∘ dropWhile (λ block' → ¬? (hash block' ≟-BlockHash hash b))
+    ∘ dropWhile (λ block' → ¬? (hash block' ≟-BlockHash h))
+
+Extends : Hash Block → Certificate → List Chain → Set
+Extends h c
+  with c ≟-certificate cert₀
+Extends h c | yes _ = λ _ → ⊤
+Extends h c | no _ = Any (ChainExtends h c)
 ```
 
 #### Messages and their envelopes
@@ -564,8 +564,8 @@ In addition to the chain *messages* already diffused among nodes in Praos, the P
 
 ```agda
 data Message : Set where
-  ChainMsg : Chain → Message
-  VoteMsg : Vote → Message
+  ChainMsg : {c : Chain} → ValidChain c → Message
+  VoteMsg : {v : Vote} → ValidVote v → Message
 ```
 
 Diffusion of votes or blocks over the network may involve delays of a slot or more.
@@ -584,10 +584,9 @@ Messages are put into an *envelope* and assigned to a party. Such messages can b
 
 ```agda
   record Envelope : Set where
-    constructor ⦅_,_,_,_⦆
+    constructor ⦅_,_,_⦆
     field
       partyId : Party
-      honesty : Honesty partyId
       message : Message
       delay : Delay
 ```
@@ -602,10 +601,10 @@ module _ ⦃ _ : Params ⦄ where
   
   record IsTreeType {T : Set}
                     (tree₀ : T)
-                    (newChain : T → Chain → T)
+                    (addChain : T → {c : Chain} → ValidChain c → T)
                     (allChains : T → List Chain)
                     (preferredChain : T → Chain)
-                    (addVote : T → Vote → T)
+                    (addVote : T → {v : Vote} → ValidVote v → T)
                     (votes : T → List Vote)
                     (certs : T → List Certificate)
                     (cert₀ : Certificate)
@@ -630,8 +629,8 @@ It must also conform to properties that must hold with respect to chains, certif
 The certificates in a chain newly incorporated into the block tree must equate to the certificates on the chain itself and the block tree's record of certificates.
 
 ```agda
-      extendable-chain : ∀ (t : T) (c : Chain)
-        → certs (newChain t c) ≡ certsFromChain c ++ certs t
+      extendable-chain : ∀ (t : T) {c : Chain} (vc : ValidChain c)
+        → certs (addChain t vc) ≡ certsFromChain c ++ certs t
 ```
 
 A valid block tree must have a valid preferred chain.
@@ -659,31 +658,21 @@ The preferred chain must be present in the list of all chains seen.
         → preferredChain t ∈ allChains t
 ```
 
-Only valid votes are recorded in the block tree.
-
-```agda
-      valid-votes : ∀ (t : T)
-        → All ValidVote (votes t)
-```
-
 Duplicate or equivocated votes must not be present in the block tree.
 
 ```agda
-      unique-votes : ∀ (t : T) (v : Vote)
+      unique-votes : ∀ (t : T) {v : Vote} (vv : ValidVote v)
         → let vs = votes t
           in v ∈ vs
-        → vs ≡ votes (addVote t v)
+        → vs ≡ votes (addVote t vv)
 
-      no-equivocations : ∀ (t : T) (v : Vote)
+      no-equivocations : ∀ (t : T) {v : Vote} (vv : ValidVote v)
         → let vs = votes t
           in Any (v ∻_) vs
-        → vs ≡ votes (addVote t v)
+        → vs ≡ votes (addVote t vv)
 ```
 
 Every certificate must represent a quorum of recorded votes.
-
-> [!CAUTION]
-> Check that weighted voting is correctly represented here.
 
 ```agda
       quorum-cert : ∀ (t : T) (b : Block) (r : ℕ)
@@ -703,27 +692,19 @@ The concrete block tree type (`TreeType`) manages chains, certificates, and vote
 
     field
       tree₀ : T
-      newChain : T → Chain → T
+      addChain : T → {c : Chain} → ValidChain c → T
       allChains : T → List Chain
       preferredChain : T → Chain
-      addVote : T → Vote → T
+      addVote : T → {v : Vote} → ValidVote v → T
       votes : T → List Vote
       certs : T → List Certificate
-```
-
-It memorializes the genesis certificate.
-
-```agda
-    cert₀ : Certificate
-    cert₀ = MkCertificate (MkRoundNumber 0) (MkHash emptyBS)
 ```
 
 It conforms to the `IsTreeType` requirements.
 
 ```agda
-    field
       is-TreeType : IsTreeType
-                      tree₀ newChain allChains preferredChain
+                      tree₀ addChain allChains preferredChain
                       addVote votes certs cert₀
 ```
 
@@ -731,7 +712,7 @@ Several convenience functions are provided for extracting information about cert
 
 ```agda
     latestCertOnChain : T → Certificate
-    latestCertOnChain = latestCert cert₀ ∘ catMaybes ∘ map Block.certificate ∘ preferredChain
+    latestCertOnChain = latestCert cert₀ ∘ mapMaybe Block.certificate ∘ preferredChain
 
     latestCertSeen : T → Certificate
     latestCertSeen = latestCert cert₀ ∘ certs
@@ -745,7 +726,6 @@ Several convenience functions are provided for extracting information about cert
 In order to define the semantics the following parameters are required.
 
 - The type of the block-tree
-- The adversarial state
 - A function that mimics the node's memory pool by selecting the transactions available to a particular party in a particular slot
 - A list of the parties participating in the protocol
 
@@ -754,7 +734,6 @@ module Semantics
            ⦃ _ : Params ⦄
            ⦃ _ : Network ⦄
            {T : Set} {blockTree : TreeType T}
-           {S : Set} {adversarialState₀ : S}
            {txSelection : SlotNumber → Party → List Tx}
            {parties : Parties}
            where
@@ -777,13 +756,13 @@ Updating the block tree involves recording the votes and chains received via mes
 ```agda
     data _[_]→_ : T → Message → T → Set where
 
-      VoteReceived : ∀ {v t} →
-       ────────────────────────────
-       t [ VoteMsg v ]→ addVote t v
+      VoteReceived : ∀ {v vv t} →
+        ──────────────────────────────────
+        t [ VoteMsg {v} vv ]→ addVote t vv
 
-      ChainReceived : ∀ {c t} →
-       ──────────────────────────────
-       t [ ChainMsg c ]→ newChain t c
+      ChainReceived : ∀ {c vc t} →
+        ────────────────────────────────────
+        t [ ChainMsg {c} vc ]→ addChain t vc
 ```
 
 #### Block selection
@@ -791,9 +770,8 @@ Updating the block tree involves recording the votes and chains received via mes
 The block selected for voting is the most recent one on the preferred chain that is at least $L$ slots old.
 
 ```agda
-    BlockSelection : SlotNumber → T → Maybe Block
-    BlockSelection (MkSlotNumber s) =
-      head ∘ filter (λ {b → (Block.slotNumber' b) ≤? (s ∸ L)}) ∘ preferredChain
+    BlockSelection : SlotNumber → T → Hash Block
+    BlockSelection (MkSlotNumber s) = tipHash ∘ filter (λ {b → (Block.slotNumber' b) + L ≤? s}) ∘ preferredChain
 ```
 
 #### Rules for voting in a round
@@ -812,7 +790,7 @@ Voting is allowed in a round if voting has proceeded regularly in preceding roun
 ```agda
     VotingRule-1B : SlotNumber → T → Set
     VotingRule-1B s t =
-      Any (ChainExtends (BlockSelection s t) (latestCertSeen t)) (allChains t)
+      Extends (BlockSelection s t) (latestCertSeen t) (allChains t)
 ```
 
 - `VR-1`: Both `VR-1A` and `VR-1B` hold, which is the situation typically occurring when the voting has regularly occurred in preceding rounds.
@@ -870,7 +848,6 @@ The small-step semantics rely on a global state, which consists of several piece
 - Map with local state per party
 - All the messages that have been sent but not yet been delivered
 - All the messages that have been sent
-- Adversarial state
 
 ```agda
     record State : Set where
@@ -880,7 +857,6 @@ The small-step semantics rely on a global state, which consists of several piece
         blockTrees : AssocList Party T
         messages : List Envelope
         history : List Message
-        adversarialState : S
 ```
 
 #### Progress
@@ -891,34 +867,6 @@ Rather than keeping track of progress, we introduce a predicate stating that all
     Fetched : State → Set
     Fetched = All (λ { z → Envelope.delay z ≢ 𝟘 }) ∘ messages
       where open State
-```
-
-A predicate for the global state assesses that the current slot is the last slot of a voting round.
-
-```agda
-    LastSlotInRound : State → Set
-    LastSlotInRound M =
-      suc (rnd (getSlotNumber clock)) ≡ rnd (suc (getSlotNumber clock))
-      where open State M
-```
-
-Similarly, a predicate for the global state assesses that the next slot will be in a new voting round.
-
-```agda
-    NextSlotInSameRound : State → Set
-    NextSlotInSameRound M =
-      rnd (getSlotNumber clock) ≡ rnd (suc (getSlotNumber clock))
-      where open State M
-```
-
-Furthermore, there is a predicate for the global state asserting that parties of the voting committee for a the current voting round have voted. This is needed as a prerequisite for transitioning from one voting round to another.
-
-```agda
-    RequiredVotes : State → Set
-    RequiredVotes M =
-         Any (VotingRule clock ∘ proj₂) blockTrees
-       → Any (hasVote (v-round clock) ∘ proj₂) blockTrees
-      where open State M
 ```
 
 #### Advancing the clock
@@ -939,27 +887,23 @@ Ticking the global clock increments the slot number and decrements the delay of 
 
 #### Updating the global state
 
-New messages are buffered, recorded in the global history, and will update a party's portion of the global state.
+New messages are buffered, recorded in the global history, and will update a party's portion of the global state.`
 ```agda
-    _,_,_,_⇑_ : Message → Delay → Party → T → State → State
-    m , d , p , l ⇑ M =
+    _,_⇑_ : Message → (Party → Delay) → State → State
+    m , fᵈ ⇑ M =
       record M
-        { blockTrees = set p l blockTrees
-        ; messages =
-            map (uncurry ⦅_,_, m , d ⦆)
-              (filter (¬? ∘ (p ≟-party_) ∘ proj₁) parties)
+        { messages =
+            map (λ { p → ⦅ p , m , fᵈ p ⦆}) parties
             ++ messages
         ; history = m ∷ history
         }
       where open State M
 ```
-
 This occurs when a message diffuses to new parties.
-
 ```agda
-    add_to_diffuse_ : (Message × Delay × Party) → T → State → State
-    add (m@(ChainMsg x) , d , p) to t diffuse M = m , d , p , newChain t x ⇑ M
-    add (m@(VoteMsg x) , d , p) to t diffuse M = m , d , p , addVote t x ⇑ M
+    delay_by_update_ : Message → (Party → Delay) → State → State
+    delay m@(ChainMsg x) by fᵈ update M = m , fᵈ ⇑ M
+    delay m@(VoteMsg x) by fᵈ update M = m , fᵈ ⇑ M
 ```
 
 #### Fetching
@@ -967,36 +911,25 @@ This occurs when a message diffuses to new parties.
 A party receives messages from the global state by fetching messages assigned to the party, updating the local block tree, and putting the local state back into the global state.
 
 ```agda
-    data _⊢_[_]⇀_ : {p : Party} → Honesty p → State → Message → State → Set
+    data _⊢_[_]⇀_ : Party → State → Message → State → Set
       where
 ```
 
 An honest party consumes a message from the global message buffer and updates their local state.
 
 ```agda
-      honest : ∀ {p} {t t′} {m} {N} → let open State N in
-          blockTrees ⁉ p ≡ just t
-        → (m∈ms : ⦅ p , Honest , m , 𝟘 ⦆ ∈ messages)
-        → t [ m ]→ t′
-          ---------------------------------------------
-        → Honest {p} ⊢
+      honest : ∀ {p} {t t′} {m} {N}
+        → let open State N
+          in
+          (m∈ms : ⦅ p , m , 𝟘 ⦆ ∈ messages) →
+        ∙ blockTrees ⁉ p ≡ just t
+        ∙ t [ m ]→ t′
+          ─────────────────────────────────────
+          p ⊢
           N [ m ]⇀ record N
             { blockTrees = set p t′ blockTrees
             ; messages = messages ─ m∈ms
             }
-```
-
-An adversarial party might delay a message.
-
-```agda
-      corrupt : ∀ {p} {as} {m} {N} → let open State N in
-           (m∈ms : ⦅ p , Corrupt , m , 𝟘 ⦆ ∈ messages)
-           ----------------------------------------------
-        →  Corrupt {p} ⊢
-           N [ m ]⇀ record N
-             { messages = m∈ms ∷ˡ= ⦅ p , Corrupt , m , 𝟙 ⦆
-             ; adversarialState = as
-             }
 ```
 
 #### Voting
@@ -1024,36 +957,29 @@ A party can consider voting for a block, if
 
 Voting updates the party's local state and for all other parties a message is ready to be consumed immediately.
 
-> [!CAUTION]
-> Check that weighted voting is correctly represented here.
-
 ```agda
     infix 2 _⊢_⇉_
-    data _⊢_⇉_ : {p : Party} → Honesty p → State → State → Set where
+    data _⊢_⇉_ : Party → State → State → Set where
     
       honest : ∀ {p} {t} {M} {w} {π} {σ} {b}
         → let
             open State
             s = clock M
             r = v-round s
-            v = createVote s p w π σ (hash b)
+            v = createVote s p w π σ b
           in
-        ∙ BlockSelection s t ≡ just b
+          (fᵈ : Party → Delay)
+          (mem : IsCommitteeMember p r w π)
+          (sig : IsVoteSignature v σ) →
+        ∙ BlockSelection s t ≡ b
         ∙ blockTrees M ⁉ p ≡ just t
-        ∙ IsVoteSignature v σ
         ∙ StartOfRound s r
-        ∙ IsCommitteeMember p r w π
         ∙ VotingRule s t
-          ───────────────────────────────────
-          Honest {p} ⊢
-            M ⇉ add (VoteMsg v , 𝟘 , p) to t
-                diffuse M
+          ────────────────────────────────────────────
+          p ⊢
+            M ⇉ delay VoteMsg (mem , sig) by fᵈ
+                 update M
 ```
-
-Rather than creating a delayed vote, an adversary can honestly create it and delay the message.
-
-> [!WARNING]
-> Add a `corrupt` constructor here.
 
 #### Block creation
 
@@ -1085,20 +1011,10 @@ Blocks are created with the required information.
       record
         { slotNumber = s
         ; creatorId = p
-        ; parentBlock =
-            let open IsTreeType
-            in tipHash (is-TreeType .valid t)
-        ; certificate =
-            let r = v-round s
-            in needCert r t
+        ; parentBlock = tipHash (preferredChain t)
+        ; certificate = needCert (v-round s) t
         ; leadershipProof = π
-        ; bodyHash =
-            let txs = txSelection s p
-            in BlockBody.blockHash
-                 record
-                   { blockHash = hash txs
-                   ; payload = txs
-                   }
+        ; bodyHash = hash (txSelection s p)
         ; signature = σ
         }
 ```
@@ -1112,28 +1028,21 @@ Block creation updates the party's local state, but for all other parties a mess
 
 ```agda
     infix 2 _⊢_↷_
-    data _⊢_↷_ : {p : Party} → Honesty p → State → State → Set where
+    data _⊢_↷_ : Party → State → State → Set where
 
-      honest : ∀ {p} {t} {M} {π} {σ}
-        → let
-            open State
-            s = clock M
-            b = createBlock s p π σ t
+      honest : ∀ {p} {t} {M} {π} {σ} →
+        let open State M
+            b = createBlock clock p π σ t
             pref = preferredChain t
           in
-        ∙ blockTrees M ⁉ p ≡ just t
-        ∙ ValidChain (b ∷ pref)
-          ───────────────────────────
-          Honest {p} ⊢
-            M ↷ add (
-                  ChainMsg (b ∷ pref)
-                , 𝟘
-                , p) to t
-                diffuse M
+          (fᵈ : Party → Delay)
+          (vc : ValidChain (b ∷ pref)) →
+        ∙ blockTrees ⁉ p ≡ just t
+          ──────────────────────────────
+          p ⊢
+            M ↷ delay ChainMsg vc by fᵈ
+                update M
 ```
-
-> [!WARNING]
-> Add a `corrupt` constructor here.
 
 #### Small-step semantics
 
@@ -1143,7 +1052,6 @@ The small-step semantics describe the evolution of the global state.
     variable
       M N O : State
       p : Party
-      h : Honesty p
 ```
 
 The relation allows
@@ -1160,33 +1068,25 @@ Note that when transitioning to the next slot we need to distinguish whether the
     data _↝_ : State → State → Set where
 
       Fetch : ∀ {m} →
-        ∙ h ⊢ M [ m ]⇀ N
+        ∙ p ⊢ M [ m ]⇀ N
           ──────────────
           M ↝ N
 
       CreateVote :
         ∙ Fetched M
-        ∙ h ⊢ M ⇉ N
+        ∙ p ⊢ M ⇉ N
           ─────────
           M ↝ N
 
       CreateBlock :
         ∙ Fetched M
-        ∙ h ⊢ M ↷ N
+        ∙ p ⊢ M ↷ N
           ─────────
           M ↝ N
 
       NextSlot :
         ∙ Fetched M
-        ∙ NextSlotInSameRound M
           ─────────────────────
-          M ↝ tick M
-
-      NextSlotNewRound :
-        ∙ Fetched M
-        ∙ LastSlotInRound M
-        ∙ RequiredVotes M
-          ─────────────────
           M ↝ tick M
 ```
 
