@@ -155,4 +155,4 @@ Three approaches are under active consideration or development to address the se
 
 ## Copyright
 
-This CIP is licensed under .[Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
