@@ -55,19 +55,26 @@ proposals in previous CIPs, including previous versions of validation zones prop
 and Transaction Swaps. The following 
 new usecases and functionality (in addition to batching) are supported by the changes :
 
-1. transactions in a single batch may pay each others' fees and `minUTxOValue` ;
-2. sharing (for the purpose of deduplication) of scripts across transactions 
-in a single batch ;
-3. scripts may inspect the contents of other transactions within the same batch ;
-4. the top-level transaction may provide collateral scripts in its sub-transactions ;
-5. a new intent we call "spend-by-output", wherein a sub-transactions may specify _outputs_ it 
-intends to spend, and the top-level transaction specifies the inputs that point 
-to those outputs in the UTxO set. This is included as a way to showcase that this 
-change to the ledger rules establishes the infrastructure to add additional 
-kids of supported intents (see CPS-15).
-6. any (top- or sub-) transaction may include script(s) that it requires to be validated as part of validation of 
-the top-level transaction of the batch as a way for sub-transactions to place constraints on the 
-batch in which they may be included.
+1. transactions can be batched
+- batch contains one top-level transaction, with multiple possible sub-transactions ;
+
+2. the batch must be balanced, but individual transactions in it do not have to be, so 
+- transactions in a single batch may pay each others' fees and minUTxOValue ;
+- unbalanced transactions can be interpreted as swap offers, getting resolved within a complete batch ;
+
+3. scripts data is shared across all transactions in a single batch 
+- enables script deduplication ;
+
+4. batch observer scripts enable sub-transactions to specify properties required of batches in which they may be included 
+- design inspired by script observers ;
+
+5. the top-level transaction must provide collateral scripts in its sub-transactions 
+- sub-transactions are not required to cover their own collateral ;
+
+6. a new intent we call "spend-by-output", wherein a sub-transaction may specify outputs it 
+- intends to spend, and the top-level transaction specifies the inputs that point to those outputs in the UTxO set ;
+- example of possible additional supported intents (see CPS-15)
+potentially useful for LC functionality ;
 
 Since types of supported *intents* are just specific ways in which a transaction can be underspecified,
 running scripts without supplying the `ExUnits` or collateral (as in (4) above), leaving them to be specified by 
