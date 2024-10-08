@@ -82,7 +82,7 @@ bls12_381_G1_multiScalarMul :: [Integer] -> [bls12_381_G1_element] -> bls12_381_
 bls12_381_G2_multiScalarMul :: [Integer] -> [bls12_381_G2_element] -> bls12_381_G2_element
 ```
 
-The types **bls12_381_G1_element** and **bls12_381_G2_element** are already introduced by [CIP-0381](https://cips.cardano.org/cip/CIP-0381). Given two arrays of scalars and group elements the functions compute multi-scalar multiplication for the corresponding subgroup. The arrays of scalars and group elements must be non-empty and of equal size. If the input arrays are empty or not equal, the functions must fail. These new functions naturally append a set of operations over BLS12-381 defined by [CIP-0381](https://cips.cardano.org/cip/CIP-0381).
+The types **bls12_381_G1_element** and **bls12_381_G2_element** are already introduced by [CIP-0381](https://cips.cardano.org/cip/CIP-0381). Given two arrays of scalars and group elements the functions compute multi-scalar multiplication for the corresponding subgroup. The arrays of scalars and group elements must be non-empty and of equal size. If the input arrays are empty or not equal, the functions must fail. These new functions naturally extend a set of operations over BLS12-381 defined by [CIP-0381](https://cips.cardano.org/cip/CIP-0381).
 
 ### Cost model
 The computational impact of multi-scalar multiplication is complicated by it having dynamic-size arguments. Preliminary [benchmarks](https://github.com/dkaidalov/bench-blst-msm/) show that the computational complexity grows linearly with the size of the MSM. This should be reflected in the costing function.
