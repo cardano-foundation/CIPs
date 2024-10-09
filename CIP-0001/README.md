@@ -21,7 +21,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-A Cardano Improvement Proposal (CIP) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP  provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
+A Cardano Improvement Proposal (CIP) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
@@ -34,6 +34,8 @@ CIPs aim to address two challenges mainly:
 2. The need to propose and discuss changes to the protocol or established practice of the ecosystem.
 
 The CIP process does not _by itself_ offer any form of governance. For example, it does not govern the process by which proposed changes to the Cardano protocol are implemented and deployed. Yet, it is a crucial, community-driven component of the governance decision pipeline as it helps to collect thoughts and proposals in an organised fashion. Additionally, specific projects may choose to actively engage with the CIP process for some or all changes to their project.
+
+This document outlines the technical structure of the CIP and the technical requirements of the submission and review process.  The history, social features and human elements of the CIP process are described the [CIP repository Wiki][Wiki].
 
 ## Specification
 
@@ -324,6 +326,9 @@ As much as possible, commenters/reviewers shall remain unbiased in their judgeme
 
 By opening pull requests or posting comments, commenters and authors agree to our [Code of Conduct][CoC]. Any comment infringing this code of conduct shall be removed or altered without prior notice.
 
+> **Note** For acceptability guidelines, including a concise review checklist, see 
+[CIP Wiki > CIPs for Reviewers & Authors](https://github.com/cardano-foundation/CIPs/wiki/2.-CIPs-for-Reviewers-&-Authors).
+
 #### 2. Editors' role
 
 ##### 2.a. Triage in bi-weekly meetings
@@ -340,7 +345,7 @@ A dedicated Discord channel may also be created for some long-running discussion
 
 #### 3. Merging CIPs in the repository
 
-Once a proposal has reached all requirements for its target status (as explained in [Statuses](#Statuses)) and has been sufficiently and faithfully discussed by community members, it is merged with its target status.
+Once a proposal has reached all requirements for its target status (as explained in [Statuses](#statuses)) and has been sufficiently and faithfully discussed by community members, it is merged with its target status.
 
 > **Warning** Ideas deemed unsound shall be rejected with justifications or withdrawn by the authors. Similarly, proposals that appear abandoned by their authors shall be rejected until resurrected by their authors or another community member.
 
@@ -357,6 +362,8 @@ Once merged, implementors shall execute the CIP's _'Implementation Plan'_, if an
 Besides, once all of the _'Path to Active'_ requirements have been met, authors shall make another pull request to change their CIP's status to _'Active'_. Editors may also do this on occasion.
 
 ### Editors
+
+For a full, current description of Editor workflow, see [CIP Wiki > CIPs for Editors](https://github.com/cardano-foundation/CIPs/wiki/3.-CIPs-for-Editors).
 
 #### Missions
 
@@ -473,4 +480,5 @@ This CIP is licensed under [CC-BY-4.0][].
 [RFC 822]: https://www.ietf.org/rfc/rfc822.txt
 [Repository]: https://github.com/cardano-foundation/CIPs/pulls
 [CoC]: https://github.com/cardano-foundation/CIPs/tree/master/CODE_OF_CONDUCT.md
-[Discord]: https://discord.gg/Jy9YM69Ezf
+[Discord]: https://discord.gg/J8sGdCuKhs
+[Wiki]: https://github.com/cardano-foundation/CIPs/wiki
