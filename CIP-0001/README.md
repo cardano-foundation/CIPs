@@ -1,6 +1,6 @@
 ---
 CIP: 1
-Title: Cardano Improvement Proposals
+Title: CIP Process
 Status: Active
 Category: Meta
 Authors:
@@ -9,6 +9,7 @@ Authors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Duncan Coutts <duncan.coutts@iohk.io>
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Robert Phair <rphair@cosd.com>
 Implementors: N/A
 Discussions:
     - https://github.com/cardano-foundation/cips/pull/366
@@ -110,7 +111,7 @@ For example:
 ```yaml
 ---
 CIP: 1
-Title: Cardano Improvement Proposals
+Title: CIP Process
 Status: Active
 Category: Meta
 Authors:
@@ -120,10 +121,16 @@ Authors:
     - Duncan Coutts <duncan.coutts@iohk.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/1
+    - https://github.com/cardano-foundation/cips/pull/366
 Created: 2020-03-21
 License: CC-BY-4.0
 ---
+```
+
+Especially because Markdown link syntax is not supported in the header preamble, labels can be added to clarify list items; e.g.:
+```
+Implementors:
+    - Mlabs: https://mlabs.city
 ```
 
 > **Note** A reference template is available in [.github/CIP-TEMPLATE.md][CIP-TEMPLATE.md]

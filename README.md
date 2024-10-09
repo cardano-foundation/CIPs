@@ -26,7 +26,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 
 | #    | Title | Status |
 | ---- | --- | --- |
-| 0001 | [CIP process](./CIP-0001/) | Active |
+| 0001 | [CIP Process](./CIP-0001/) | Active |
 | 0002 | [Coin Selection Algorithms for Cardano](./CIP-0002/) | Active |
 | 0003 | [Wallet key generation](./CIP-0003/) | Active |
 | 0004 | [Wallet Checksums](./CIP-0004/) | Proposed |
