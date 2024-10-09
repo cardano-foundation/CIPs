@@ -252,7 +252,7 @@ This must be subdivided into two sub-sections:
 
 CIPs are classified into distinct categories that help organise (and thus, find) them. Categories are meant to be flexible and evolve as new domains emerge. Authors may leave the category as `?` should they not be sure under which category their proposal falls; editors will eventually assign one or reject the proposal altogether should it relate to an area where the CIP process does not apply.
 
-Submission in these categories can be used whenever appropriate without following any particular submission guidelines:
+Submissions can be made to these categories whenever relevant, without following any particular submission guidelines:
 
 Category | Description
 ---      | ---
