@@ -251,40 +251,48 @@ This must be subdivided into two sub-sections:
 
 CIPs are classified into distinct categories that help organise (and thus, find) them. Categories are meant to be flexible and evolve as new domains emerge. Authors may leave the category as `?` should they not be sure under which category their proposal falls; editors will eventually assign one or reject the proposal altogether should it relate to an area where the CIP process does not apply.
 
-At present, we consider the following list of initial categories:
+Submission in these categories can be used whenever appropriate without following any particular submission guidelines:
 
-Category               | Description
----                    | ---
-Meta                   | Designates meta-CIPs, such as this one, which typically serves another category or group of categories.
-Wallets                | For standardisation across wallets (hardware, full-node or light).
-Tokens                 | About tokens (fungible or non-fungible) and minting policies in general.
-Metadata               | For proposals around metadata (on-chain or off-chain).
-Tools                  | A broad category for ecosystem tools not falling into any other category.
+Category | Description
+---      | ---
+Meta     | Designates meta-CIPs, such as this one, which typically serve another category or group of categories
+Wallets  | For standardisation across wallets (hardware, full-node or light)
+Tokens   | About tokens (fungible or non-fungible) and minting policies in general
+Metadata | For proposals around metadata (on-chain or off-chain)
+Tools    | A broad category for ecosystem features not falling into any other category
 
-Additionally, projects of the ecosystem may explicitly enlist as new categories. The following section describes how projects can engage with the CIP process.
-
-Registered categories for explicitly enlisted projects are otherwise listed below.
+Additionally, representatives of ecosystem categories may explicitly _enlist_ their categories (see next section) to suggest a closer relationship with the CIP process.  The following categories are confirmed as enslisted according to CIPs which define that relationship:
 
 Category | Description
 ---      | ---
 Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
 Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
-Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
+
+These tenatively enlisted categories await CIPs to describe any enlistment relationship:
+
+Category  | Description
+---       | ---
+Catalyst  | For proposals affecting Project Catalyst or the Jörmungandr project
+Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
+Network   | Specifications and implementations of Cardano's network protocols and applications
 
 #### Project Enlisting
 
-Projects of the Cardano ecosystem that intend to follow the CIP process must explicitly enlist themselves and commit to the following:
+Project representatives intending to follow an "enlisted" category above agree to coordinate with related development by sharing efforts to review and validate new proposals.
+It should be noted that single organisations can no longer repesent any ecosystem or development category, which makes these enlistment guidelines both decentralised and cooperative, including whenver possible:
 
-- a) allocating time to **review** proposals from actors of the community when solicited by editors (i.e. after one first round of reviews);
-- b) defining additional rules and processes whereby external actors can engage with their project as part of the CIP process;
-- c) defining boundaries within their project for which the CIP process does apply;
-- d) writing CIPs for significant changes introduced in their projects when it applies.
+- allocating time to **review** proposals from actors of the community when solicited by editors (i.e. after one first round of reviews);
+- defining additional rules and processes whereby external actors can engage with their project as part of the CIP process;
+- defining boundaries within their project for which the CIP process does apply;
+- establishing points of contact and any designated reviews for a category;
+- agreeing upon how proposals move from the state of idea (i.e. CIP) to actual implementation work;
+- writing CIPs for significant changes introduced in their projects when it applies.
 
-Enlisting for the CIP process happens by creating a CIP. That CIP must encapsulate the information listed above, as well as any other pieces of information deemed helpful to future authors. Of course, only team members of a target project can author such a proposal.
+Any guidelines for this cooperation should be described by a dedicated CIP whenever possible.  When such a CIP is posted or supersedes another one, it will be entered into the above table in the Categories section.  Participants of enlisted categories should follow the requirements outlined in that CIP and should update such proposals whenever these requirements or relationships change.
 
-> **Warning** A positive review by the maintainers of a project does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors. The maintainers of the project may volunteer to participate in implementation, but also may not. Projects' maintainers ultimately define how a proposal can move from the state of idea (i.e. CIP) to actual implementation work. We, however, expect each team that enlists in the CIP process to provide clarity on these elements as they enlist.
+> **Warning** A positive review by any enlisted project representative does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors.
 
-Editors occasionally invite project maintainers to speak during review meetings and solicit them for ultimate approvals of proposals affecting a project under their authority. Said differently, CIPs that concern (part of) an enlisted project will only be merged after explicit acceptance of the enlisted reviewers.
+Editors occasionally invite representatives from enlisted categories to speak during review meetings and solicit them for ultimate approvals of proposals in their area of expertise.
 
 > **Note** Optionally, projects may show their enlisting using the following badge on their introductory README: ![](https://github.com/cardano-foundation/CIPs](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/.github/badge.svg)
 >
@@ -299,6 +307,8 @@ Editors occasionally invite project maintainers to speak during review meetings 
 ##### 1.a. Authors open a pull request
 
 Proposals must be submitted to the [cardano-foundation/CIPs][Repository] repository as a pull request named after the proposal's title. The pull request title **should not** include a CIP number (and use `?` instead as number); the editors will assign one. Discussions may precede a proposal. Early reviews and discussions streamline the process down the line.
+
+> **Note** Pull requests should not include implementation code: any code bases should instead be provided as links to a code repository.
 
 > **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
