@@ -18,7 +18,7 @@ A [Cardano Problem Statement (CPS)](./CIP-9999) is a formalised document for the
 
 Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in `#developers` in Cardano Ambassadors Slack.
 
-CIP editors facilitate discussions and progress submissions on GitHub, reviewing progress in bi-weekly meetings held [on Discord](https://discord.gg/J8sGdCuKhs) which are open to the public. The Discord server also has channels for CIP-based developer working groups.
+CIP editors facilitate discussions and progress submissions on GitHub, reviewing progress in bi-weekly meetings held [on Discord](https://discord.gg/J8sGdCuKhs) which are open to the public. The Discord server also has channels for developer working groups to discuss details and implementations of selected CIPs.
 
 > **Note** To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
 
