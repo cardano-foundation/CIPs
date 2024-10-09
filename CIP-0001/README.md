@@ -267,7 +267,7 @@ Category | Description
 Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
 Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
 
-These tenatively enlisted categories await CIPs to describe any enlistment relationship:
+These tentatively enlisted categories await CIPs to describe any enlistment relationship:
 
 Category  | Description
 ---       | ---
