@@ -12,7 +12,7 @@ For more about the human factors of the CIP process, and to learn how to get inv
 
 A [Cardano Problem Statement (CPS)](./CIP-9999) is a formalised document for the Cardano ecosystem and the name of the process by which such documents are produced and listed. CPSs are meant to complement CIPs and live side-by-side in the CIP repository as first-class citizens.
 
-> **Note** For new CPS, a reference template is available in [.github/CPS-TEMPLATE.md](.github/CPS-TEMPLATE.md)
+> **Note** For new CPSs, a reference template is available in [.github/CPS-TEMPLATE.md](.github/CPS-TEMPLATE.md)
 
 ## Communication Channels
 
