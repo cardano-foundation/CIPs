@@ -29,9 +29,7 @@ The Cardano Foundation intends CIPs to be the primary mechanisms for proposing n
 ## Motivation: why is this CIP necessary?
 
 CIPs aim to address two challenges mainly:
-
 1. The need for various parties to agree on a common approach to ease the interoperability of tools or interfaces.
-
 2. The need to propose and discuss changes to the protocol or established practice of the ecosystem.
 
 The CIP process does not _by itself_ offer any form of governance. For example, it does not govern the process by which proposed changes to the Cardano protocol are implemented and deployed. Yet, it is a crucial, community-driven component of the governance decision pipeline as it helps to collect thoughts and proposals in an organised fashion. Additionally, specific projects may choose to actively engage with the CIP process for some or all changes to their project.
