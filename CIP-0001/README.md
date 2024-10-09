@@ -412,6 +412,12 @@ Current editors are listed here below:
 [@Crypto2099]: https://github.com/Crypto2099
 [@perturbing]: https://github.com/perturbing
 
+Emeritus editors:
+- Frederic Johnson - [@crptmppt](https://github.com/crptmppt)
+- Sebastien Guillemot - [@SebastienGllmt](https://github.com/SebastienGllmt)
+- Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
+- Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
+
 ## Rationale: how does this CIP achieve its goals?
 
 ### Key changes from CIP-0001 (version 1)
