@@ -4,9 +4,9 @@ A [Cardano Improvement Proposal (CIP)](./CIP-0001) is a formalised design docume
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-For more about the and human factors of the CIP process, and to learn how to get involved, click the Wiki tab above **[CIP Wiki](https://github.com/cardano-foundation/CIPs/wiki)**.
+For more about the human factors of the CIP process, and to learn how to get involved, click the Wiki tab above (**[CIP Wiki](https://github.com/cardano-foundation/CIPs/wiki)**).
 
-> **Note** For new CIP, a reference template is available in [.github/CIP-TEMPLATE.md](.github/CIP-TEMPLATE.md)
+> **Note** For new CIPs, a reference template is available in [.github/CIP-TEMPLATE.md](.github/CIP-TEMPLATE.md)
 
 ## Cardano Problem Statements (CPS)
 
