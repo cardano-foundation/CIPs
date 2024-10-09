@@ -183,7 +183,7 @@ CIPs must indicate how the defined Specification is versioned.  **Note** this do
 
 Authors are free to describe any approach to versioning that allows versioned alterations to be added without author oversight.  Stipulating that the proposal must be superseded by another is also considered to be valid versioning.
 
-A single Versioning scheme can be placed either as a subsection of the Specification section or in an optional Versioning top-level section near the end.  If the Specification contains multiple specification subsections, each of these can have a Versioning subsection with it.
+A single Versioning scheme can be placed either as a subsection of the Specification section or in an optional Versioning top-level section near the end.  If the Specification contains multiple specification subsections, each of these can have a Versioning subsection within it.
 
 ##### Licensing
 
