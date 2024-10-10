@@ -78,7 +78,7 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 
 #### `summary`
 
-- A short text field. Limited to `200` characters.
+- A short text field. Limited to `300` characters.
 - Authors SHOULD use this field to clearly state their stance on the issue.
 - Authors SHOULD use this field to succinctly describe their rationale.
 - Authors SHOULD give a brief overview of the main arguments will support your position.

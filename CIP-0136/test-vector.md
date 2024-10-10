@@ -19,7 +19,7 @@ See [cip-0136.common.schema.json](./cip-0136.common.schema.json).
 ### Treasury Withdrawal is Unconstitutional
 
 Example metadata document file: [treasury-withdrawal-unconstitutional.jsonld](./examples/treasury-withdrawal-unconstitutional.jsonld).
-Blake2b-256 of the file content (to go onchain): ``
+Blake2b-256 of the file content (to go onchain): `267e27b987740d55ad4f5eb945ee20f2a9fdbeb604dad4f237276065044da926`
 
 #### Intermediate files
 
@@ -47,4 +47,7 @@ Public verification key (hex):
 Public verification key hash (hex): `0fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42`
 
 Mainnet public enterprize address (hex): `610fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42`
+
+
+
 
