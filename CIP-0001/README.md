@@ -313,7 +313,7 @@ Proposals must be submitted to the [cardano-foundation/CIPs][Repository] reposit
 
 ###### Naming CIPs with similar subjects
 
-When a CIP title *and* subject matter share a common element, begin the CIP title with that common element and end it with the specifc portion, delimited with the `-` character.  Example (CIP-0095):
+When a CIP title *and* subject matter share a common element, begin the CIP title with that common element and end it with the specific portion, delimited with the `-` character.  Example (CIP-0095):
 
 > *Web-Wallet Bridge **-** Governance*
 
