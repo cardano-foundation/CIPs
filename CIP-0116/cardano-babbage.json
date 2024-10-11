@@ -146,7 +146,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -164,7 +164,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -180,10 +180,10 @@
               "$ref": "cardano-babbage.json#/definitions/PosInt64"
             }
           },
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       },
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Value": {
       "title": "Value",
@@ -199,7 +199,7 @@
       "required": [
         "coin"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "TransactionHash": {
       "title": "TransactionHash",
@@ -224,7 +224,7 @@
         "transaction_id",
         "index"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "PlutusScript": {
       "title": "PlutusScript",
@@ -243,7 +243,7 @@
         "language",
         "bytes"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "NativeScript": {
       "title": "NativeScript",
@@ -266,7 +266,7 @@
               "$ref": "cardano-babbage.json#/definitions/Ed25519KeyHash"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "pubkey"
@@ -289,7 +289,7 @@
               }
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "scripts"
@@ -312,7 +312,7 @@
               }
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "scripts"
@@ -338,7 +338,7 @@
               "$ref": "cardano-babbage.json#/definitions/UInt32"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "scripts",
@@ -359,7 +359,7 @@
               "$ref": "cardano-babbage.json#/definitions/UInt64"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "slot"
@@ -379,7 +379,7 @@
               "$ref": "cardano-babbage.json#/definitions/UInt64"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "slot"
@@ -412,7 +412,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "NativeScript",
@@ -432,7 +432,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -510,7 +510,7 @@
         "input",
         "output"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "TransactionMetadatum": {
       "title": "TransactionMetadatum",
@@ -543,7 +543,7 @@
                   "key",
                   "value"
                 ],
-                "additionalProperties": false
+                "unevaluatedProperties": false
               }
             }
           },
@@ -551,7 +551,7 @@
             "tag",
             "contents"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -572,7 +572,7 @@
             "tag",
             "contents"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -590,7 +590,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -610,7 +610,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "Metadata String",
@@ -632,7 +632,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -666,7 +666,7 @@
         }
       },
       "required": [],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "ExUnitPrices": {
       "title": "ExUnitPrices",
@@ -679,7 +679,7 @@
           "$ref": "cardano-babbage.json#/definitions/UnitInterval"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "mem_price",
         "step_price"
@@ -700,7 +700,7 @@
         "mem",
         "steps"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "ProtocolVersion": {
       "title": "ProtocolVersion",
@@ -717,7 +717,7 @@
         "major",
         "minor"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "ProtocolParamUpdate": {
       "title": "ProtocolParamUpdate",
@@ -793,7 +793,7 @@
           "$ref": "cardano-babbage.json#/definitions/UnitInterval"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": []
     },
     "Update": {
@@ -813,14 +813,14 @@
               "$ref": "cardano-babbage.json#/definitions/ProtocolParamUpdate"
             }
           },
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       },
       "required": [
         "epoch",
         "proposed_protocol_parameter_updates"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "ScriptDataHash": {
       "title": "ScriptDataHash",
@@ -845,7 +845,7 @@
           "key",
           "value"
         ],
-        "additionalProperties": false
+        "unevaluatedProperties": false
       }
     },
     "AuxiliaryDataHash": {
@@ -875,7 +875,7 @@
         }
       },
       "required": [],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "TransactionBody": {
       "title": "TransactionBody",
@@ -969,7 +969,7 @@
                 "$ref": "cardano-babbage.json#/definitions/UInt64"
               }
             },
-            "additionalProperties": false
+            "unevaluatedProperties": false
           }
         }
       },
@@ -978,7 +978,7 @@
         "outputs",
         "fee"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "NetworkId": {
       "title": "NetworkId",
@@ -1012,7 +1012,7 @@
             }
           },
           "required": ["tag", "contents"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataConstr",
@@ -1034,7 +1034,7 @@
             }
           },
           "required": ["tag", "alternative", "data"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataMap",
@@ -1057,12 +1057,12 @@
                     "$ref": "cardano-babbage.json#/definitions/PlutusData"
                   }
                 },
-                "additionalProperties": false
+                "unevaluatedProperties": false
               }
             }
           },
           "required": ["tag", "contents"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataInteger",
@@ -1079,7 +1079,7 @@
             }
           },
           "required": ["tag", "value"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataBytes",
@@ -1097,7 +1097,7 @@
             }
           },
           "required": ["tag", "value"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -1113,7 +1113,7 @@
         }
       },
       "required": ["numerator", "denominator"],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Ipv4": {
       "title": "Ipv4",
@@ -1163,7 +1163,7 @@
           "required": [
             "tag"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1183,7 +1183,7 @@
               "$ref": "cardano-babbage.json#/definitions/DNSName"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "dns_name"
@@ -1202,7 +1202,7 @@
               "$ref": "cardano-babbage.json#/definitions/DNSName"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "dns_name"
@@ -1242,7 +1242,7 @@
           "$ref": "cardano-babbage.json#/definitions/PoolMetadataHash"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "url",
         "hash"
@@ -1302,7 +1302,7 @@
         "reward_account",
         "vrf_keyhash"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "GenesisHash": {
       "title": "GenesisHash",
@@ -1360,11 +1360,11 @@
                   "key",
                   "value"
                 ],
-                "additionalProperties": false
+                "unevaluatedProperties": false
               }
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "pot",
             "rewards"
@@ -1386,7 +1386,7 @@
               "$ref": "cardano-babbage.json#/definitions/UInt64"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "pot",
             "amount"
@@ -1418,7 +1418,7 @@
             "tag",
             "credential"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1437,7 +1437,7 @@
             "tag",
             "credential"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1460,7 +1460,7 @@
             "credential",
             "pool_keyhash"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1479,7 +1479,7 @@
             "tag",
             "pool_params"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1503,7 +1503,7 @@
             "pool_keyhash",
             "epoch"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1531,7 +1531,7 @@
             "genesis_delegate_hash",
             "vrf_keyhash"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1550,7 +1550,7 @@
             "tag",
             "move_instantaneous_rewards"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -1589,7 +1589,7 @@
                 "asset_name",
                 "amount"
               ],
-              "additionalProperties": false
+              "unevaluatedProperties": false
             }
           }
         },
@@ -1597,7 +1597,7 @@
           "script_hash",
           "assets"
         ],
-        "additionalProperties": false
+        "unevaluatedProperties": false
       }
     },
     "Ed25519Signature": {
@@ -1639,7 +1639,7 @@
         "signature",
         "vkey"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "RedeemerTag": {
       "title": "RedeemerTag",
@@ -1674,7 +1674,7 @@
         "index",
         "ex_units"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Vkeywitness": {
       "title": "Vkeywitness",
@@ -1691,7 +1691,7 @@
         "vkey",
         "signature"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "TransactionWitnessSet": {
       "title": "TransactionWitnessSet",
@@ -1764,7 +1764,7 @@
         "is_valid",
         "witness_set"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "VRFCert": {
       "title": "VRFCert",
@@ -1783,7 +1783,7 @@
         "output",
         "proof"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "KESVKey": {
       "title": "KESVKey",
@@ -1840,7 +1840,7 @@
         "sequence_number",
         "sigma"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "HeaderBody": {
       "title": "HeaderBody",
@@ -1877,7 +1877,7 @@
           "$ref": "cardano-babbage.json#/definitions/ProtocolVersion"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "block_number",
         "slot",
@@ -1905,7 +1905,7 @@
         "body_signature",
         "header_body"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Block": {
       "title": "Block",
@@ -1920,7 +1920,7 @@
               "$ref": "cardano-babbage.json#/definitions/AuxiliaryData"
             }
           },
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         "header": {
           "$ref": "cardano-babbage.json#/definitions/Header"
@@ -1951,7 +1951,7 @@
           }
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "auxiliary_data_set",
         "header",
