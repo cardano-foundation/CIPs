@@ -6,7 +6,7 @@ The Cardano Foundation intends CIPs to be the primary mechanisms for proposing n
 
 For more about the human factors of the CIP process, and to learn how to get involved, click the Wiki tab above (**[CIP Wiki](https://github.com/cardano-foundation/CIPs/wiki)**).
 
-> **Note** For new CIPs, a reference template is available in [.github/CIP-TEMPLATE.md](.github/CIP-TEMPLATE.md)
+> **Note** For new CIPs, a reference template is available in [.github/CIP-TEMPLATE.md](./.github/CIP-TEMPLATE.md)
 
 ## Cardano Problem Statements (CPS)
 
