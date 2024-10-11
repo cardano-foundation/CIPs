@@ -130,8 +130,8 @@ License: CC-BY-4.0
 
 Especially because Markdown link syntax is not supported in the header preamble, labels can be added to clarify list items; e.g.:
 ```yaml
-Implementors:
-    - Mlabs: https://mlabs.city
+Discussions:
+    - Original-PR: https://github.com/cardano-foundation/CIPs/pull/366
 ```
 
 > **Note** A reference template is available in [.github/CIP-TEMPLATE.md][CIP-TEMPLATE.md]
