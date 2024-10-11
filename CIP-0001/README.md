@@ -122,7 +122,7 @@ Authors:
     - Duncan Coutts <duncan.coutts@iohk.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/cips/pull/366
+    - https://github.com/cardano-foundation/CIPs/pull/366
 Created: 2020-03-21
 License: CC-BY-4.0
 ---
