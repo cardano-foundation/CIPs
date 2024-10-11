@@ -260,7 +260,7 @@ Tokens   | About tokens (fungible or non-fungible) and minting policies in gener
 Metadata | For proposals around metadata (on-chain or off-chain)
 Tools    | A broad category for ecosystem features not falling into any other category
 
-Additionally, representatives of ecosystem categories may explicitly _enlist_ their categories (see next section) to suggest a closer relationship with the CIP process.  The following categories are confirmed as enslisted according to CIPs which define that relationship:
+Additionally, representatives of ecosystem categories may explicitly _enlist_ their categories (see next section) to suggest a closer relationship with the CIP process. The following categories are confirmed as enlisted according to CIPs which define that relationship:
 
 Category | Description
 ---      | ---
