@@ -129,7 +129,7 @@ License: CC-BY-4.0
 ```
 
 Especially because Markdown link syntax is not supported in the header preamble, labels can be added to clarify list items; e.g.:
-```
+```yaml
 Implementors:
     - Mlabs: https://mlabs.city
 ```
