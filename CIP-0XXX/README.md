@@ -353,7 +353,7 @@ data NodeToNodeVersionData = NodeToNodeVersionData
 
 #### Description
 
-The local message submission mini-protocol is used by local clients to submit message to a local node. This mini-protocol is **not** used to diffuse messages from a core node to another. 
+The local message submission mini-protocol is used by local clients to submit message to a local network node. This mini-protocol is **not** used to diffuse messages from a network node to another. 
 
 The protocol follows a simple request-response pattern:
 
@@ -404,7 +404,7 @@ stateDiagram-v2
 
 #### Description
 
-The local message notification mini-protocol is used by local clients to be notified about new message received by the core node. 
+The local message notification mini-protocol is used by local clients to be notified about new message received by the network node. 
 
 The protocol follows a simple request-response pattern:
 
