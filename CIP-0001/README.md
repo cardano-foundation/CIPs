@@ -293,7 +293,7 @@ Any guidelines for this cooperation should be described by a dedicated CIP whene
 
 Editors occasionally invite representatives from enlisted categories to speak during review meetings and solicit them for ultimate approvals of proposals in their area of expertise.
 
-> **Note** Optionally, projects may show their enlisting using the following badge on their introductory README: ![](https://github.com/cardano-foundation/CIPs](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/.github/badge.svg)
+**Note** Optionally, projects may show their enlisting using the following badge on their introductory README: ![https://github.com/cardano-foundation/CIPs](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/.github/badge.svg)
 >
 > ```md
 > ![https://github.com/cardano-foundation/CIPs](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/.github/badge.svg)
