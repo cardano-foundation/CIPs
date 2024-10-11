@@ -42,7 +42,7 @@ Unfortunately, the builtin language has a significant limitation: it does not al
 
 Why are higher-order builtin functions necessary? Map keys must be processed (or simply, just compared) in order to be able to build and operate over well-defined maps. For arbitrary key types, that would only be possible by passing the required processing or comparison functions as arguments to the builtin functions.
 
-The only way to implement a builtin map with a (builtin) polymorphic key type would be to modify the builtins language itself. A compiler would have to only allow the construction of maps with key types which are known a priori to posess some property (such as a total ordering). The Plutus Core evaluator would have to check for this as well. The implementation itself would not be too complicated, but we must first consider how this would change the formal semantics of the builtins language.
+The only way to implement a builtin map with a (builtin) polymorphic key type would be to modify the builtins language itself. A compiler would have to only allow the construction of maps with key types which are known a priori to possess some property (such as a total ordering). The Plutus Core evaluator would have to check for this as well. The implementation itself would not be too complicated, but we must first consider how this would change the formal semantics of the builtins language.
 
 Given the above, the only immediate solution is to implement a builtin map type which is specialised to `ByteString` keys but remains polymorphic in the value type. We believe that this solution should be good enough for most practical use-cases, and maybe even surpass a fully polymorphic map type in performance.
 
