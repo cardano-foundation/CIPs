@@ -52,13 +52,13 @@ This specification proposes to create `3` new mini-protocols in the Cardano netw
 
 > [!NOTE]
 > The terms **Message producer**, **Message consumer** and **Network node** may represent different entities depending on the concrete implementation made for a specific protocol: 
-> - the **Network node** could be either the **Cardano node** itself or **another node** implementing the mini-protocols described in this document. Opting in for one of these possibilities will depend on a careful analysis of the impact on the security of the Cardano node, impact on the load of the Cardano network, the specific network topology needed by the protocol and the needed level of coupling with the Cardano node itself (access to ledger, consensus, ...). It's worth mentioning that each protocol will implement its own version of the **Network node** by leveraging a common implementation of the mini-protocols.
-> - the message **Message producer** and **Message consumer** could be either the **Cardano node** itself or **another node** able to interact with the Cardano node through the node-to-client mini-protocols detailed in this document.
+> - the **Network node** could be either the **Cardano node** itself or a **Decentralized Message Queue node** or **DMQ node** implementing the mini-protocols described in this document. Opting in for one of these possibilities will depend on a careful analysis of the impact on the security of the Cardano node, impact on the load of the Cardano network, the specific network topology needed by the protocol and the needed level of coupling with the Cardano node itself (access to ledger, consensus, ...). It's worth mentioning that each protocol will implement its own version of the **Network node** by leveraging a common implementation of the mini-protocols.
+> - the message **Message producer** and **Message consumer** could be either the **Cardano node** itself or **another node** able to interact with the **Network node** through the node-to-client mini-protocols detailed in this document.
 > 
 > Here is a summary of the meanings of these terms depending on the protocol:
 > | Protocol | Message producer | Message consumer | Network node |
 > |------|------|------|------|
-> | **Mithril** | [Mithril signer](https://mithril.network/doc/mithril/mithril-network/signer) | [Mithril aggregator](https://mithril.network/doc/mithril/mithril-network/architecture) | [Mithril network node](#information-diffusion-architecture) |
+> | **Mithril** | [Mithril signer](https://mithril.network/doc/mithril/mithril-network/signer) | [Mithril aggregator](https://mithril.network/doc/mithril/mithril-network/architecture) | [DMQ node](#information-diffusion-architecture) |
 
 ### Message Submission mini-protocol
 
@@ -482,19 +482,19 @@ and all of them can follow this design.
 Any software included in `cardano-node` needs to undergo a rigorous development
 and review process to avoid catastrophic events.  We think that merging
 `Cardano`, a mature software, with new technologies, should be a process, and
-thus we propose first to develop `Mithril network` nodes as standalone processes which
+thus we propose first to develop `Decentralized Message Queue (DMQ)` nodes as standalone processes which
 communicate with `cardano-node` via its local interface (`node-to-client`
 protocol).  As we will see, this approach has advantages for the `Mithril`
 network and SPOs.
 
 `Ouroboros-Network` (ON) is, to a large extent, an agnostic network stack,
-which can be adapted to be used by both `Cardano` and `Mithril`. To construct
+which can be adapted to be used by both `Cardano` and `DMQ` nodes. To construct
 an overlay network, the stack needs to access stake pool information registered
 on chain. This can be done via the `node-to-client` protocol over a Unix
-socket. Since `Mithril` nodes will have their own end-points, we'll either need
+socket. Since `DMQ` nodes will have their own end-points, we'll either need
 to propose a modification to the SPO registration process, which includes
-`Mithril network` nodes, or we could pass incoming `mithril` connections from
-`cardano-node` to the `Mithril` node via
+`Mithril` instantiated `DMQ` nodes, or we could pass incoming `Mithril` connections from
+`cardano-node` to the `DMQ` node via
 [CMSG_DATA](https://man.openbsd.org/CMSG_DATA.3).
 
 `Ouroboros-Network` outbound governor component, which is responsible for
@@ -516,25 +516,26 @@ infrastructure while still mitigating the risk of catastrophic events at the
 core of the system.
 
 Please also note that any protocols and their instances that will be built as
-part of the standalone `Mithril network` node could be reused in future for `Peras` and
+part of the standalone `DMQ` node could be reused in future for `Peras` and
 `Leios`.  It will give us even more confidence that the future core system will
 be built from components that are used in production.
 
-`Cardano` and `Mithril`, as separate executables, can still be packaged
+`Cardano` and `DMQ` nodes, as separate executables, can still be packaged
 together, lowering the barrier of participation. When run separately, the SPO
 is also in better control of the resources dedicated to each process - this is
 important for the health of both systems.
 
-Another benefit of such a design is that `Mithril` can be developed on its own
+Another benefit of such a design is that `DMQ` node can be developed on its own
 pace, not affected by significant changes in other parts of the system like
 ledger - the Cardano Core team restrains itself to not publishing new `cardano-node`
 versions with significant changes across many of its subsystems - just for the
 sake of clarity of where to look if a bug is found.
 
-In this design, a `Mithril network` node runs alongside a `cardano-node`, which is connected to
+In this design, a `DMQ` node runs alongside a `cardano-node`, which is connected to
 it via a UNIX socket (`node-to-client`) protocol.  This means an SPO will run
-a `Mithril network` node per `cardano-node`.  The `Mithril network` node connected to BP can
-also have access to necessary keys for signing purposes. `Mithril` might also
+a `DMQ` node instantiated for `Mithril` per `cardano-node`. Future protocols will run 
+their custom instantiated  new `DMQ` node instance.  The `DMQ` node connected to BP can
+also have access to necessary keys for signing purposes. `DMQ` node might also
 use the KES agent, as `cardano-node` will in the near future, to securely access
 the KES key.
 
