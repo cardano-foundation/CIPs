@@ -64,15 +64,23 @@ The plots below illustrate the significant frequency of blocks that are nearly f
 | ![Distribution of block sizes](images/block-size-1blk.svg) | ![Distribution of block sizes](images/block-size-6min.svg) |
 | ![Distribution of block sizes](images/block-size-6hr.svg)  | ![Distribution of block sizes](images/block-size.svg)      |
 
-> [!NOTE]
-> It's quite a bit more work to repeat these plots for Plutus execution units, but that might be motivating.
-
 Of particular interest is the following plot that shows the distribution of the length of runs of consecutive blocks that are all larger than 80 kB. Occasionally, there are stretches of more than ten blocks being almost full, and in one case there was a series of 194 almost-full blocks. These long periods of nearly full blocks may be correlated with long waits between the time a user submits a transaction to the memory pool and the time it appears in a block.
 
 ![Runs of nearly-full blocks](images/block-run.svg)
 
 > [!NOTE]
 > The log scale on the plot above hides the rare cases in the tail. Consider using a square-root or other custom scale so that viewers can see the whole dynamic range of the data.
+
+The following plots illustrate the situation for memory and execution units relative to the maximum allowed for a block. This confirms the rule of thumb that Plutus memory is a tighter constraint than Plutus steps. A not-insignificant number of blocks are close to or at the Plutus execution limits.
+
+|                                                               |                                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------------ |
+| ![Distribution of block sizes](images/block-mem.svg)          | ![Distribution of block sizes](images/block-steps.svg)       |
+| ![Distribution of block sizes](images/block-memory-epoch.svg) | ![Distribution of block sizes](images/block-steps-epoch.svg) |
+
+More concerning are the situations shown below where consecutive blocks are near or at the Plutus execution budget. In one case twenty-five consecutive blocks were near that limit.
+
+![Runs of nearly-full blocks](images/block-ex-run.svg)
 
 ## Use cases
 
@@ -91,9 +99,10 @@ Even with the existing rate of transactions on the Cardano mainnet, there are pe
 ## Goals
 
 1. Develop precise requirements for transaction and script-execution throughput for Cardano mainnet, categorized by use case and metrics for quality of service.
-2. Increase transaction throughput in terms of number, size, and execution units and provide evidence that the proposed techniques meet stakeholder requirements.
-3. Investigate and semi-quantitatively compare throughput techniques such as input endorsers, zero-knowledge technologies, transaction prioritization, offloading work (Mithril, partner chains, etc.), and protocol-parameter changes.
-4. Propose methods for guaranteeing specific levels of throughput, including priority tiers and reservations.
+2. Propose safe increases in the maximum block size and Plutus execution limits for blocks.
+3. Increase transaction throughput in terms of number, size, and execution units and provide evidence that the proposed techniques meet stakeholder requirements.
+4. Investigate and semi-quantitatively compare throughput techniques such as input endorsers, zero-knowledge technologies, transaction prioritization, offloading work (Mithril, partner chains, etc.), and protocol-parameter changes.
+5. Propose methods for guaranteeing specific levels of throughput, including priority tiers and reservations.
 
 In addition to the goals above, it is advisable to avoid the following:
 
