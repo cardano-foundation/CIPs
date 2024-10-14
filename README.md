@@ -1,24 +1,24 @@
 ## Cardano Improvement Proposals (CIPs)
 
-A [Cardano Improvement Proposal (CIP)](./CIP-0001) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP  provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
+A [Cardano Improvement Proposal (CIP)](./CIP-0001) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-> **Note** For new CIP, a reference template is available in [.github/CIP-TEMPLATE.md](.github/CIP-TEMPLATE.md)
+For more about the human factors of the CIP process, and to learn how to get involved, click the Wiki tab above (**[CIP Wiki](https://github.com/cardano-foundation/CIPs/wiki)**).
+
+> **Note** For new CIPs, a reference template is available in [.github/CIP-TEMPLATE.md](./.github/CIP-TEMPLATE.md)
 
 ## Cardano Problem Statements (CPS)
 
 A [Cardano Problem Statement (CPS)](./CIP-9999) is a formalised document for the Cardano ecosystem and the name of the process by which such documents are produced and listed. CPSs are meant to complement CIPs and live side-by-side in the CIP repository as first-class citizens.
 
-> **Note** For new CPS, a reference template is available in [.github/CPS-TEMPLATE.md](.github/CPS-TEMPLATE.md)
+> **Note** For new CPSs, a reference template is available in [.github/CPS-TEMPLATE.md](./.github/CPS-TEMPLATE.md)
 
 ## Communication Channels
 
 Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in `#developers` in Cardano Ambassadors Slack.
 
-CIP editors will review discussions and progress in bi-weekly meetings held [on Discord](https://discord.gg/Jy9YM69Ezf), then transcribe and summarise them [in the BikweeklyMeetings folder](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings).
-
-CIP Editors meetings are public, recorded, and [published on Youtube](https://www.youtube.com/playlist?list=PL831pmH4tfw1YkMK4FhBzoHyuSaadjdxn): do join and participate in discussions/PRs of significance to you.
+CIP editors facilitate discussions and progress submissions on GitHub, reviewing progress in bi-weekly meetings held [on Discord](https://discord.gg/J8sGdCuKhs) which are open to the public. The Discord server also has channels for developer working groups to discuss details and implementations of selected CIPs.
 
 > **Note** To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
 
@@ -26,7 +26,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 
 | #    | Title | Status |
 | ---- | --- | --- |
-| 0001 | [CIP process](./CIP-0001/) | Active |
+| 0001 | [CIP Process](./CIP-0001/) | Active |
 | 0002 | [Coin Selection Algorithms for Cardano](./CIP-0002/) | Active |
 | 0003 | [Wallet key generation](./CIP-0003/) | Active |
 | 0004 | [Wallet Checksums](./CIP-0004/) | Proposed |

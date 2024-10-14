@@ -1,6 +1,6 @@
 ---
 CIP: 1
-Title: Cardano Improvement Proposals
+Title: CIP Process
 Status: Active
 Category: Meta
 Authors:
@@ -9,30 +9,32 @@ Authors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Duncan Coutts <duncan.coutts@iohk.io>
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+    - Robert Phair <rphair@cosd.com>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/cips/pull/366
-    - https://github.com/cardano-foundation/cips/pull/331
+    - https://github.com/cardano-foundation/CIPs/pull/366
+    - https://github.com/cardano-foundation/CIPs/pull/331
     - https://github.com/cardano-foundation/CIPs/tree/3da306f3bfe89fa7de8fe1bf7a436682aeee25c5/CIP-0001#abstract
+    - https://github.com/cardano-foundation/CIPs/pull/924
 Created: 2020-03-21
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
-A Cardano Improvement Proposal (CIP) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP  provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
+A Cardano Improvement Proposal (CIP) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is, how the CIP process functions, the role of the CIP Editors, and how users should go about proposing, discussing, and structuring a CIP.
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
 ## Motivation: why is this CIP necessary?
 
 CIPs aim to address two challenges mainly:
-
 1. The need for various parties to agree on a common approach to ease the interoperability of tools or interfaces.
-
 2. The need to propose and discuss changes to the protocol or established practice of the ecosystem.
 
 The CIP process does not _by itself_ offer any form of governance. For example, it does not govern the process by which proposed changes to the Cardano protocol are implemented and deployed. Yet, it is a crucial, community-driven component of the governance decision pipeline as it helps to collect thoughts and proposals in an organised fashion. Additionally, specific projects may choose to actively engage with the CIP process for some or all changes to their project.
+
+This document outlines the technical structure of the CIP and the technical requirements of the submission and review process.  The history, social features and human elements of the CIP process are described the [CIP repository Wiki][Wiki].
 
 ## Specification
 
@@ -110,7 +112,7 @@ For example:
 ```yaml
 ---
 CIP: 1
-Title: Cardano Improvement Proposals
+Title: CIP Process
 Status: Active
 Category: Meta
 Authors:
@@ -120,10 +122,16 @@ Authors:
     - Duncan Coutts <duncan.coutts@iohk.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/1
+    - https://github.com/cardano-foundation/CIPs/pull/366
 Created: 2020-03-21
 License: CC-BY-4.0
 ---
+```
+
+Especially because Markdown link syntax is not supported in the header preamble, labels can be added to clarify list items; e.g.:
+```yaml
+Discussions:
+    - Original-PR: https://github.com/cardano-foundation/CIPs/pull/366
 ```
 
 > **Note** A reference template is available in [.github/CIP-TEMPLATE.md][CIP-TEMPLATE.md]
@@ -169,11 +177,11 @@ Field          | Description
 
 ##### Versioning
 
-CIPs must indicate how the defined Specification is versioned.  **Note** this does not apply to the CIP text, for which annotated change logs are automatically generated and available through the GitHub UI as a history of CIP files and directories.
+CIPs must indicate how the defined Specification is versioned.  **Note** this does not apply to the CIP text, for which annotated change logs are automatically generated and [available through the GitHub UI](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/viewing-and-comparing-commits/differences-between-commit-views) as a history of CIP files and directories.
 
 Authors are free to describe any approach to versioning that allows versioned alterations to be added without author oversight.  Stipulating that the proposal must be superseded by another is also considered to be valid versioning.
 
-Since this is a functional definition it would typically be in one or more subsections of the Specification, but may also be placed in an optional Versioning section.
+A single Versioning scheme can be placed either as a subsection of the Specification section or in an optional Versioning top-level section near the end.  If the Specification contains multiple specification subsections, each of these can have a Versioning subsection within it.
 
 ##### Licensing
 
@@ -242,42 +250,50 @@ This must be subdivided into two sub-sections:
 
 CIPs are classified into distinct categories that help organise (and thus, find) them. Categories are meant to be flexible and evolve as new domains emerge. Authors may leave the category as `?` should they not be sure under which category their proposal falls; editors will eventually assign one or reject the proposal altogether should it relate to an area where the CIP process does not apply.
 
-At present, we consider the following list of initial categories:
+Submissions can be made to these categories whenever relevant, without following any particular submission guidelines:
 
-Category               | Description
----                    | ---
-Meta                   | Designates meta-CIPs, such as this one, which typically serves another category or group of categories.
-Wallets                | For standardisation across wallets (hardware, full-node or light).
-Tokens                 | About tokens (fungible or non-fungible) and minting policies in general.
-Metadata               | For proposals around metadata (on-chain or off-chain).
-Tools                  | A broad category for ecosystem tools not falling into any other category.
+Category | Description
+---      | ---
+Meta     | Designates meta-CIPs, such as this one, which typically serve another category or group of categories
+Wallets  | For standardisation across wallets (hardware, full-node or light)
+Tokens   | About tokens (fungible or non-fungible) and minting policies in general
+Metadata | For proposals around metadata (on-chain or off-chain)
+Tools    | A broad category for ecosystem features not falling into any other category
 
-Additionally, projects of the ecosystem may explicitly enlist as new categories. The following section describes how projects can engage with the CIP process.
-
-Registered categories for explicitly enlisted projects are otherwise listed below.
+Additionally, representatives of ecosystem categories may explicitly _enlist_ their categories (see next section) to suggest a closer relationship with the CIP process. The following categories are confirmed as enlisted according to CIPs which define that relationship:
 
 Category | Description
 ---      | ---
 Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
 Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
-Catalyst | For proposals affecting Project Catalyst or the Jörmungandr project, following the process described in ?
+
+These tentatively enlisted categories await CIPs to describe any enlistment relationship:
+
+Category  | Description
+---       | ---
+Catalyst  | For proposals affecting Project Catalyst or the Jörmungandr project
+Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
+Network   | Specifications and implementations of Cardano's network protocols and applications
 
 #### Project Enlisting
 
-Projects of the Cardano ecosystem that intend to follow the CIP process must explicitly enlist themselves and commit to the following:
+Project representatives intending to follow an "enlisted" category above agree to coordinate with related development by sharing efforts to review and validate new proposals.
+It should be noted that single organisations can no longer represent any ecosystem or development category, which makes these enlistment guidelines both decentralised and cooperative, including whenever possible:
 
-- a) allocating time to **review** proposals from actors of the community when solicited by editors (i.e. after one first round of reviews);
-- b) defining additional rules and processes whereby external actors can engage with their project as part of the CIP process;
-- c) defining boundaries within their project for which the CIP process does apply;
-- d) writing CIPs for significant changes introduced in their projects when it applies.
+- allocating time to **review** proposals from actors of the community when solicited by editors (i.e. after one first round of reviews);
+- defining additional rules and processes whereby external actors can engage with their project as part of the CIP process;
+- defining boundaries within their project for which the CIP process does apply;
+- establishing points of contact and any designated reviews for a category;
+- agreeing upon how proposals move from the state of idea (i.e. CIP) to actual implementation work;
+- writing CIPs for significant changes introduced in their projects when it applies.
 
-Enlisting for the CIP process happens by creating a CIP. That CIP must encapsulate the information listed above, as well as any other pieces of information deemed helpful to future authors. Of course, only team members of a target project can author such a proposal.
+Any guidelines for this cooperation should be described by a dedicated CIP whenever possible.  When such a CIP is posted or supersedes another one, it will be entered into the above table in the Categories section.  Participants of enlisted categories should follow the requirements outlined in that CIP and should update such proposals whenever these requirements or relationships change.
 
-> **Warning** A positive review by the maintainers of a project does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors. The maintainers of the project may volunteer to participate in implementation, but also may not. Projects' maintainers ultimately define how a proposal can move from the state of idea (i.e. CIP) to actual implementation work. We, however, expect each team that enlists in the CIP process to provide clarity on these elements as they enlist.
+> **Warning** A positive review by any enlisted project representative does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors.
 
-Editors occasionally invite project maintainers to speak during review meetings and solicit them for ultimate approvals of proposals affecting a project under their authority. Said differently, CIPs that concern (part of) an enlisted project will only be merged after explicit acceptance of the enlisted reviewers.
+Editors occasionally invite representatives from enlisted categories to speak during review meetings and solicit them for ultimate approvals of proposals in their area of expertise.
 
-> **Note** Optionally, projects may show their enlisting using the following badge on their introductory README: ![](https://github.com/cardano-foundation/CIPs](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/.github/badge.svg)
+**Note** Optionally, projects may show their enlisting using the following badge on their introductory README: ![https://github.com/cardano-foundation/CIPs](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/.github/badge.svg)
 >
 > ```md
 > ![https://github.com/cardano-foundation/CIPs](https://raw.githubusercontent.com/cardano-foundation/CIPs/master/.github/badge.svg)
@@ -291,11 +307,13 @@ Editors occasionally invite project maintainers to speak during review meetings 
 
 Proposals must be submitted to the [cardano-foundation/CIPs][Repository] repository as a pull request named after the proposal's title. The pull request title **should not** include a CIP number (and use `?` instead as number); the editors will assign one. Discussions may precede a proposal. Early reviews and discussions streamline the process down the line.
 
+> **Note** Pull requests should not include implementation code: any code bases should instead be provided as links to a code repository.
+
 > **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
 ###### Naming CIPs with similar subjects
 
-When a CIP title *and* subject matter share a common element, begin the CIP title with that common element and end it with the specifc portion, delimited with the `-` character.  Example (CIP-0095):
+When a CIP title *and* subject matter share a common element, begin the CIP title with that common element and end it with the specific portion, delimited with the `-` character.  Example (CIP-0095):
 
 > *Web-Wallet Bridge **-** Governance*
 
@@ -317,6 +335,9 @@ As much as possible, commenters/reviewers shall remain unbiased in their judgeme
 
 By opening pull requests or posting comments, commenters and authors agree to our [Code of Conduct][CoC]. Any comment infringing this code of conduct shall be removed or altered without prior notice.
 
+> **Note** For acceptability guidelines, including a concise review checklist, see 
+[CIP Wiki > CIPs for Reviewers & Authors](https://github.com/cardano-foundation/CIPs/wiki/2.-CIPs-for-Reviewers-&-Authors).
+
 #### 2. Editors' role
 
 ##### 2.a. Triage in bi-weekly meetings
@@ -333,7 +354,7 @@ A dedicated Discord channel may also be created for some long-running discussion
 
 #### 3. Merging CIPs in the repository
 
-Once a proposal has reached all requirements for its target status (as explained in [Statuses](#Statuses)) and has been sufficiently and faithfully discussed by community members, it is merged with its target status.
+Once a proposal has reached all requirements for its target status (as explained in [Statuses](#statuses)) and has been sufficiently and faithfully discussed by community members, it is merged with its target status.
 
 > **Warning** Ideas deemed unsound shall be rejected with justifications or withdrawn by the authors. Similarly, proposals that appear abandoned by their authors shall be rejected until resurrected by their authors or another community member.
 
@@ -350,6 +371,8 @@ Once merged, implementors shall execute the CIP's _'Implementation Plan'_, if an
 Besides, once all of the _'Path to Active'_ requirements have been met, authors shall make another pull request to change their CIP's status to _'Active'_. Editors may also do this on occasion.
 
 ### Editors
+
+For a full, current description of Editor workflow, see [CIP Wiki > CIPs for Editors](https://github.com/cardano-foundation/CIPs/wiki/3.-CIPs-for-Editors).
 
 #### Missions
 
@@ -387,6 +410,12 @@ Current editors are listed here below:
 [@Ryun1]: https://github.com/Ryun1
 [@Crypto2099]: https://github.com/Crypto2099
 [@perturbing]: https://github.com/perturbing
+
+Emeritus editors:
+- Frederic Johnson - [@crptmppt](https://github.com/crptmppt)
+- Sebastien Guillemot - [@SebastienGllmt](https://github.com/SebastienGllmt)
+- Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
+- Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -466,4 +495,5 @@ This CIP is licensed under [CC-BY-4.0][].
 [RFC 822]: https://www.ietf.org/rfc/rfc822.txt
 [Repository]: https://github.com/cardano-foundation/CIPs/pulls
 [CoC]: https://github.com/cardano-foundation/CIPs/tree/master/CODE_OF_CONDUCT.md
-[Discord]: https://discord.gg/Jy9YM69Ezf
+[Discord]: https://discord.gg/J8sGdCuKhs
+[Wiki]: https://github.com/cardano-foundation/CIPs/wiki
