@@ -1044,6 +1044,7 @@
           "$ref": "cardano-conway.json#/definitions/PosInt64"
         }
       },
+      "required": ["numerator", "denominator"],
       "unevaluatedProperties": false
     },
     "PoolVotingThresholds": {
