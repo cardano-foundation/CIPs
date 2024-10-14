@@ -278,7 +278,7 @@ Network   | Specifications and implementations of Cardano's network protocols an
 #### Project Enlisting
 
 Project representatives intending to follow an "enlisted" category above agree to coordinate with related development by sharing efforts to review and validate new proposals.
-It should be noted that single organisations can no longer repesent any ecosystem or development category, which makes these enlistment guidelines both decentralised and cooperative, including whenver possible:
+It should be noted that single organisations can no longer represent any ecosystem or development category, which makes these enlistment guidelines both decentralised and cooperative, including whenever possible:
 
 - allocating time to **review** proposals from actors of the community when solicited by editors (i.e. after one first round of reviews);
 - defining additional rules and processes whereby external actors can engage with their project as part of the CIP process;
