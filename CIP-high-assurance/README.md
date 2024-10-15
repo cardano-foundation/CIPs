@@ -1,7 +1,7 @@
 ---
 CIP: XXX
 Title: High Assurance Best Practices
-Category: Meta
+Category: Tools
 Status: Draft
 Authors:
  - Romain Soulat <romain.soulat@iohk.io>
