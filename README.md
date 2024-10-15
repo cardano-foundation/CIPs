@@ -116,8 +116,6 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Proposed |
 | 0124 | [Extend token metadata for translations](./CIP-0124) | Proposed |
 | 0128 | [Preserving Order of Transaction Inputs](./CIP-0128) | Proposed |
-| 0133 | [Plutus support for Multi-Scalar Multiplication over BLS12-381](./CIP-0133) | Proposed |
-| 0134 | [Cardano URIs - Address Representation](./CIP-0134) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
