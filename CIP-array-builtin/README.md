@@ -272,7 +272,7 @@ the final set of primitives.
 If the preliminary performance investigation was not successful, this CIP should be revised
 according to the findings of the experiment. Otherwise, the implementation can proceed:
 
-5. Determine the most appropriate costing functions for modelling the builtin's performance
+6. Determine the most appropriate costing functions for modelling the builtin's performance
 and assign costs accordingly.
 6. Add the new builtin type and functions to the appropriate sections in the [Plutus Core
 Specification][2].
