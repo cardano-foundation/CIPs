@@ -144,7 +144,7 @@
           "key",
           "value"
         ],
-        "additionalProperties": false
+        "unevaluatedProperties": false
       }
     },
     "AuxiliaryDataHash": {
@@ -154,7 +154,7 @@
       "pattern": "^[0-9a-f]{64}$"
     },
     "AuxiliaryData": {
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "metadata": {
           "$ref": "cardano-conway.json#/definitions/TransactionMetadata"
@@ -201,7 +201,7 @@
             }
           },
           "required": ["tag", "credential"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -214,7 +214,7 @@
             }
           },
           "required": ["tag", "credential"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -227,7 +227,7 @@
             }
           },
           "required": ["tag", "credential"],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -243,7 +243,7 @@
         }
       },
       "required": ["vote"],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "VotingProcedures": {
       "title": "VotingProcedures",
@@ -270,7 +270,7 @@
                 "key",
                 "value"
               ],
-              "additionalProperties": false
+              "unevaluatedProperties": false
             }
           }
         },
@@ -278,7 +278,7 @@
           "key",
           "value"
         ],
-        "additionalProperties": false
+        "unevaluatedProperties": false
       }
     },
     "ProposalProcedure": {
@@ -299,7 +299,7 @@
         }
       },
       "required": [ "deposit", "reward_account", "gov_action", "anchor" ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "ProposalProcedures": {
       "title": "ProposalProcedures",
@@ -402,7 +402,7 @@
                 "$ref": "cardano-conway.json#/definitions/UInt64"
               }
             },
-            "additionalProperties": false
+            "unevaluatedProperties": false
           }
         },
         "voting_procedures": {
@@ -423,7 +423,7 @@
         "outputs",
         "fee"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Credential": {
       "title": "Credential",
@@ -448,7 +448,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -466,7 +466,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -482,10 +482,10 @@
               "$ref": "cardano-conway.json#/definitions/PosInt64"
             }
           },
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       },
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Value": {
       "title": "Value",
@@ -501,7 +501,7 @@
       "required": [
         "coin"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "TransactionHash": {
       "title": "TransactionHash",
@@ -526,7 +526,7 @@
         "transaction_id",
         "index"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "PlutusScript": {
       "title": "PlutusScript",
@@ -545,7 +545,7 @@
         "language",
         "bytes"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "NativeScript": {
       "title": "NativeScript",
@@ -568,7 +568,7 @@
               "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "pubkey"
@@ -591,7 +591,7 @@
               }
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "scripts"
@@ -614,7 +614,7 @@
               }
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "scripts"
@@ -640,7 +640,7 @@
               "$ref": "cardano-conway.json#/definitions/UInt32"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "scripts",
@@ -661,7 +661,7 @@
               "$ref": "cardano-conway.json#/definitions/UInt64"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "slot"
@@ -681,7 +681,7 @@
               "$ref": "cardano-conway.json#/definitions/UInt64"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "slot"
@@ -714,7 +714,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "NativeScript",
@@ -734,7 +734,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -812,7 +812,7 @@
         "input",
         "output"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "TransactionMetadatum": {
       "title": "TransactionMetadatum",
@@ -845,7 +845,7 @@
                   "key",
                   "value"
                 ],
-                "additionalProperties": false
+                "unevaluatedProperties": false
               }
             }
           },
@@ -853,7 +853,7 @@
             "tag",
             "contents"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -874,7 +874,7 @@
             "tag",
             "contents"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -892,7 +892,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -912,7 +912,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "title": "Metadata String",
@@ -934,7 +934,7 @@
             "tag",
             "value"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -980,7 +980,7 @@
         }
       },
       "required": [],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "ExUnitPrices": {
       "title": "ExUnitPrices",
@@ -993,7 +993,7 @@
           "$ref": "cardano-conway.json#/definitions/UnitInterval"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "mem_price",
         "step_price"
@@ -1014,7 +1014,7 @@
         "mem",
         "steps"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "ProtocolVersion": {
       "title": "ProtocolVersion",
@@ -1031,7 +1031,7 @@
         "major",
         "minor"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "NonnegativeInterval": {
       "title": "NonnegativeInterval",
@@ -1044,7 +1044,8 @@
           "$ref": "cardano-conway.json#/definitions/PosInt64"
         }
       },
-      "additionalProperties": false
+      "required": ["numerator", "denominator"],
+      "unevaluatedProperties": false
     },
     "PoolVotingThresholds": {
       "title": "PoolVotingThresholds",
@@ -1165,7 +1166,7 @@
           "$ref": "cardano-conway.json#/definitions/NonnegativeInterval"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": []
     },
     "Update": {
@@ -1185,14 +1186,14 @@
               "$ref": "cardano-conway.json#/definitions/ProtocolParamUpdate"
             }
           },
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       },
       "required": [
         "epoch",
         "proposed_protocol_parameter_updates"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "NetworkId": {
       "title": "NetworkId",
@@ -1224,7 +1225,9 @@
                 "$ref": "cardano-conway.json#/definitions/PlutusData"
               }
             }
-          }
+          },
+          "required": ["tag", "contents"],
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataConstr",
@@ -1244,7 +1247,9 @@
                 "$ref": "cardano-conway.json#/definitions/PlutusData"
               }
             }
-          }
+          },
+          "required": ["tag", "alternative", "data"],
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataMap",
@@ -1266,10 +1271,13 @@
                   "value": {
                     "$ref": "cardano-conway.json#/definitions/PlutusData"
                   }
-                }
+                },
+                "unevaluatedProperties": false
               }
             }
-          }
+          },
+          "required": ["tag", "contents"],
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataInteger",
@@ -1284,7 +1292,9 @@
             "value": {
               "$ref": "cardano-conway.json#/definitions/BigInt"
             }
-          }
+          },
+          "required": ["tag", "value"],
+          "unevaluatedProperties": false
         },
         {
           "title": "PlutusDataBytes",
@@ -1300,7 +1310,9 @@
               "format": "hex",
               "pattern": "^([0-9a-f][0-9a-f])*$"
             }
-          }
+          },
+          "required": ["tag", "value"],
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -1315,7 +1327,8 @@
           "$ref": "cardano-conway.json#/definitions/UInt64"
         }
       },
-      "additionalProperties": false
+      "required": ["numerator", "denominator"],
+      "unevaluatedProperties": false
     },
     "Ipv4": {
       "title": "Ipv4",
@@ -1365,7 +1378,7 @@
           "required": [
             "tag"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1385,7 +1398,7 @@
               "$ref": "cardano-conway.json#/definitions/DNSName"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "dns_name"
@@ -1404,7 +1417,7 @@
               "$ref": "cardano-conway.json#/definitions/DNSName"
             }
           },
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "required": [
             "tag",
             "dns_name"
@@ -1444,7 +1457,7 @@
           "$ref": "cardano-conway.json#/definitions/PoolMetadataHash"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "url",
         "hash"
@@ -1504,7 +1517,7 @@
         "reward_account",
         "vrf_keyhash"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "GenesisHash": {
       "title": "GenesisHash",
@@ -1533,7 +1546,7 @@
         "url",
         "data_hash"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "DRep": {
       "title": "DRep",
@@ -1552,7 +1565,7 @@
               "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
             }
           },
-          "required": ["tag", "keyhash"]
+          "required": ["tag", "key_hash"]
         },
         {
           "type": "object",
@@ -1610,7 +1623,7 @@
             "tag",
             "credential"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1629,7 +1642,7 @@
             "tag",
             "credential"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1652,7 +1665,7 @@
             "credential",
             "pool_keyhash"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1671,7 +1684,7 @@
             "tag",
             "pool_params"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1695,7 +1708,7 @@
             "pool_keyhash",
             "epoch"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1719,7 +1732,7 @@
             "credential",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1743,7 +1756,7 @@
             "credential",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1767,7 +1780,7 @@
             "credential",
             "drep"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1795,7 +1808,7 @@
             "pool_keyhash",
             "drep"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1822,7 +1835,7 @@
             "pool_keyhash",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1853,7 +1866,7 @@
             "drep",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1881,7 +1894,7 @@
             "pool_keyhash",
             "drep"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1909,7 +1922,7 @@
             "drep",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1941,7 +1954,7 @@
             "drep",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1965,7 +1978,7 @@
             "committee_cold_credential",
             "committee_hot_credential"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -1988,7 +2001,7 @@
             "committee_cold_credential",
             "tag"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -2015,7 +2028,7 @@
             "drep_credential",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -2039,7 +2052,7 @@
             "drep_credential",
             "coin"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         {
           "type": "object",
@@ -2062,7 +2075,7 @@
             "tag",
             "drep_credential"
           ],
-          "additionalProperties": false
+          "unevaluatedProperties": false
         }
       ]
     },
@@ -2091,7 +2104,7 @@
         }
       },
       "required": ["transaction_id", "gov_action_index"],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "GovAction": {
       "title": "GovAction",
@@ -2163,14 +2176,14 @@
                     "$ref": "cardano-conway.json#/definitions/UInt64"
                   }
                 },
-                "additionalProperties": false
+                "unevaluatedProperties": false
               }
             },
             "policy_hash": {
               "$ref": "cardano-conway.json#/definitions/ScriptHash"
             }
           },
-          "required": [ ]
+          "required": ["tag"]
         },
         {
           "type": "object",
@@ -2219,7 +2232,7 @@
                     "$ref": "cardano-conway.json#/definitions/UInt64"
                   }
                 },
-                "additionalProperties": false
+                "unevaluatedProperties": false
               }
             },
             "signature_threshold": {
@@ -2298,7 +2311,7 @@
                 "asset_name",
                 "amount"
               ],
-              "additionalProperties": false
+              "unevaluatedProperties": false
             }
           }
         },
@@ -2306,7 +2319,7 @@
           "script_hash",
           "assets"
         ],
-        "additionalProperties": false
+        "unevaluatedProperties": false
       }
     },
     "Ed25519Signature": {
@@ -2348,7 +2361,7 @@
         "signature",
         "vkey"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "RedeemerTag": {
       "title": "RedeemerTag",
@@ -2385,7 +2398,7 @@
         "index",
         "ex_units"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Vkeywitness": {
       "title": "Vkeywitness",
@@ -2402,7 +2415,7 @@
         "vkey",
         "signature"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "TransactionWitnessSet": {
       "title": "TransactionWitnessSet",
@@ -2475,7 +2488,7 @@
         "is_valid",
         "witness_set"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "VRFCert": {
       "title": "VRFCert",
@@ -2494,7 +2507,7 @@
         "output",
         "proof"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "KESVKey": {
       "title": "KESVKey",
@@ -2551,7 +2564,7 @@
         "sequence_number",
         "sigma"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "HeaderBody": {
       "title": "HeaderBody",
@@ -2588,7 +2601,7 @@
           "$ref": "cardano-conway.json#/definitions/ProtocolVersion"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "block_number",
         "slot",
@@ -2616,7 +2629,7 @@
         "body_signature",
         "header_body"
       ],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "Block": {
       "title": "Block",
@@ -2631,7 +2644,7 @@
               "$ref": "cardano-conway.json#/definitions/AuxiliaryData"
             }
           },
-          "additionalProperties": false
+          "unevaluatedProperties": false
         },
         "header": {
           "$ref": "cardano-conway.json#/definitions/Header"
@@ -2662,7 +2675,7 @@
           }
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "required": [
         "auxiliary_data_set",
         "header",
