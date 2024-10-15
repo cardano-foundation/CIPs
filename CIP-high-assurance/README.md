@@ -7,7 +7,7 @@ Authors:
  - Romain Soulat <romain.soulat@iohk.io>
 Implementors: []
 Discussions:
- - Intersect's Plutus Working Group
+ - https://github.com/cardano-foundation/CIPs/pull/926
 
 Created: 2024-06-20
 License: CC-BY-4.0
