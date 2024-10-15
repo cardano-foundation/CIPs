@@ -5,7 +5,7 @@ Category: Tools
 Status: Draft
 Authors:
  - Romain Soulat <romain.soulat@iohk.io>
-Implementers: []
+Implementors: []
 Discussions:
  - Intersect's Plutus Working Group
 
