@@ -1,6 +1,6 @@
 ---
 CIP: XXX
-Title: High Assurance Software
+Title: High Assurance Best Practices
 Category: Meta
 Status: Draft
 Authors:
