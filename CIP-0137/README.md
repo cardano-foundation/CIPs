@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 137
 Title: Decentralized Message Queue
 Category: Network
 Status: Proposed
