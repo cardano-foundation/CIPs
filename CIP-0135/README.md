@@ -2,7 +2,7 @@
 CIP: 135
 Title: Disaster Recovery Plan for Cardano networks
 Category: Tools
-Status: Proposed
+Status: Active
 Authors:
     - Kevin Hammond <kevin.hammond@iohk.io>
     - Sam Leathers <samuel.leathers@iohk.io>
