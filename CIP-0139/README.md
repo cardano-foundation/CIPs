@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 139
 Title: Plutus Core Builtin Type - `ByteStringMap`
 Category: Plutus
 Status: Proposed
