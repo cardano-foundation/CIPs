@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 138
 Title: Plutus Core Builtin Type - `Array`
 Category: Plutus
 Status: Proposed
