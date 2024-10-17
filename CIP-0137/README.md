@@ -179,6 +179,7 @@ The outbound side maintains a limited size FIFO queue of outstanding messages fo
 - the inbound side asks for the next message ids and acknowledges for the previous message ids received (and removed from its queue).
 - the outbound side removes the acknowledged ids from the FIFO queue it maintains for the inbound side.
 - the inbound side can download the content of the messages by giving an unordered list of ids to the outbound side.
+- the outbound side reply omits any message that may have become invalid in the meantime.
 
 The protocol supports blocking and non-blocking requests:
 - the outbound side must reply immediately to a non-blocking request.
@@ -193,6 +194,38 @@ The protocol supports blocking and non-blocking requests:
 
 ##### Inbound side
 - it is a protocol error to send a message which id wasn't requested.
+
+#### Message invalidation
+
+##### Message invalidation mechanism
+
+In order to bound the resource requirements needed to store the messages in a network node, their lifetime should be limited. A time to live can be set as a protocol parameter for each topic, and once the timespan has elapsed the message is discarded in the internal state of the network node. The time to live can be based on the timestamp of reception of the message on the network node or on the block number embedded in the message.
+
+##### Cost of valid message storage
+
+> [!NOTE]
+> Computations are based on the assumption of a **30 minutes** TTL for messages and are assuming that the messages are stored once in the memory of the network node (i.e. the aforementioned FIFO queues store reference to the messages).
+
+For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
+
+- the maximum number of valid messages stored by a node at any given time is:
+
+| Send period | Messages in memory |
+|-------------|--------------------|
+| 1 min       | 45 k               |
+| 2 min       | 23 k               |
+| 5 min       | 9 k                |
+| 10 min      | 5 k                |
+
+- the maximum extra memory for the valid messages stored by a node at any given time is:
+
+| Send period | Lower bound | Upper bound |
+|-------------|-------------|-------------|
+| 1 min       | 51 MB       | 124 MB      |
+| 2 min       | 26 MB       | 62 MB       |
+| 5 min       | 11 MB       | 25 MB       |
+| 10 min      | 6 MB        | 13 MB       |
+
 
 #### Protocol authentication
 
@@ -259,7 +292,7 @@ The following tables gather figures about expected network load in the case of *
 | messageBody | 360 B | 2,000 B |
 | blockNumber | 4 B | 4 B |
 | kesSignature | 448 B | 448 B |
-| operationalCertificate | 304 B | 304 Bytes |
+| operationalCertificate | 304 B | 304 B |
 
 | Message | Lower bound | Upper bound |
 |--------|------|------|
