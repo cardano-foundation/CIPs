@@ -64,7 +64,7 @@ In CIP-30, pagination is not reliable, because there is no guarantee that the se
 ### Transports
 
 The API can be implemented across several transports. The goal is to allow several different clients, possibly written in different languages with it.
-For this reason we provide an Openapi schema and a more general JSON-rcp one. These are generated from the same set of data, the Openapi one is meant to be a specification for interacting with this API through HTTP, while the JSON-rpc one can be followed with transports such as websockets, or when the API is exposed through an injected javascript object.
+For this reason we provide an [Openapi schema](./open-api.json) and a more general [JSON-rcp](./json-rpc.json) one. These are generated from the same set of data, the Openapi one is meant to be a specification for interacting with this API through HTTP, while the JSON-rpc one can be followed with transports such as websockets, or when the API is exposed through an injected javascript object.
 
 
 ### Methods
@@ -74,7 +74,7 @@ This section contains transport-agnostic method descriptions & their parameter l
 The scope of this section is loosely based on a [comparison table for existing Cardano query layers](./Query_Layer_API_Comparison.md).
 The goal is to make it so that the API could be implemented via simple adapters that transform requests and responses to the appropriate formats.
 
-The payload formats used below are either references to [CIP-0116 - Standard JSON encoding for Domain Types](https://cips.cardano.org/cip/CIP-0116), which specifies cardano domain types via a JSON schema, or references to the [Query Layer JSON schema]() which we defined in this CIP to define some types that are not present in the CDDL spec.
+The payload formats used below are either references to [CIP-0116 - Standard JSON encoding for Domain Types](https://cips.cardano.org/cip/CIP-0116), which specifies cardano domain types via a JSON schema, or references to the [Query Layer JSON schema](./query-layer.json) which we defined in this CIP to define some types that are not present in the CDDL spec.
 
 
 #### Utxos
