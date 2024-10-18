@@ -1,0 +1,4 @@
+name: peras
+depend: standard-library iog-prelude
+include: .
+flags: --erasure
