@@ -28,7 +28,7 @@ This proposal makes use of the onchain metadata pattern established in [CIP-0068
     1. [Royalty Datum](#500-royalty-datum-standard)
     1. [Reference Datum](#reference-datum-standard)
 1. [Examples](#examples)
-    1. [Datum Selection](TODO)
+    1. [Royalty Token Construction](#constructing-the-royalty-token)
     1. [Reading Metadata](#retrieving-metadata)
     1. [Variable Fee Calculation](#example-of-onchain-variable-fee-calculation)
 1. [Rationale](#rationale-how-does-this-cip-achieve-its-goals)
@@ -143,22 +143,29 @@ In the case of ambiguity, users/dapps may choose whichever policy they wish to h
 
 In-code examples can be found in the [reference implementation](https://github.com/SamDelaney/CIP_102_Reference).
 
+### Constructing the Royalty Token
+
+A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalty token. The steps are
+1. Retrieve the reference datum of the utxo containing the reference token `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
+2. Check the `extra` field of the reference datum for a `royalty_included` flag - denoted here as [flag].
+3. Construct `royalty NFT` from `user token` and `royalty_included`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty[flag]`
+
 ### Retrieving metadata
 
 #### Retrieve metadata as 3rd party
 
-A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalties. The steps are
+A third party has a CIP-102 compliant NFT and they want to look up the royalties. The steps are
 
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty`
+1. Construct `royalty NFT` from `user token` as indicated [above](#constructing-the-royalty-token)
 2. Look up `royalty NFT` and find the output it's locked in.
 3. Get the datum from the output and look up metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
-#### Retrieve metadata from a Plutus validator
+#### Retrieve metadata in a Plutus validator
 
-We want to bring the royalty metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` in the Plutus validator context. To do this we
+We want to bring the royalty metadata of a CIP-102 compliant NFT into the Plutus validator context. To do this we
 
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty` (off-chain)
+1. Construct `royalty NFT` from `user token` as indicated [above](#constructing-the-royalty-token) (off-chain)
 2. Look up `royalty NFT` and find the output it's locked in. (off-chain)
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `royalty NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
