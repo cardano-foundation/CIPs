@@ -66,25 +66,37 @@
       "title": "RewardAddress",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(stake1|stake_test1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(stake1|stake_test1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "stake1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5egfu2p0u"
+      ]
     },
     "ByronAddress": {
       "title": "ByronAddress",
       "type": "string",
       "format": "base58",
-      "pattern": "^[1-9A-HJ-NP-Za-km-z]+$"
+      "pattern": "^[1-9A-HJ-NP-Za-km-z]+$",
+      "examples": [
+        "37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na"
+      ]
     },
     "EnterpriseAddress": {
       "title": "EnterpriseAddress",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "addr1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5eg0yu80w"
+      ]
     },
     "BaseAddress": {
       "title": "BaseAddress",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "addr1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5eg0yu80w"
+      ]
     },
     "Address": {
       "title": "Address",
@@ -119,7 +131,13 @@
       "title": "AssetName",
       "type": "string",
       "format": "hex",
-      "pattern": "^([0-9a-f][0-9a-f]){0,32}$"
+      "pattern": "^([0-9a-f][0-9a-f]){0,32}$",
+      "examples": [
+        "",
+        "504154415445",
+        "1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209",
+        "7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373"
+      ]
     },
     "ScriptDataHash": {
       "title": "ScriptDataHash",
@@ -509,7 +527,13 @@
       "format": "hex",
       "pattern": "^[0-9a-f]{64}$",
       "maxLength": 64,
-      "minLength": 64
+      "minLength": 64,
+      "examples": [
+        "eca40340fa6e65d964915ba4bc8bd811a0493d263ffe95875291114cbb2d0686",
+        "7420a723bf4ee4417ec1aa2262ff60921270681e7a9d537132cbcc82917e8006",
+        "fbc1da46d62a431e69855ad48a6b49b0e2aaafc6fd3dc4a066c6851b7bd31a91",
+        "c6726192662abeab149098095eabe004ecbec47f5e564748ab0d394affca47d9"
+      ]
     },
     "TransactionInput": {
       "title": "TransactionInput",
@@ -786,7 +810,8 @@
                 }
               }
             }
-          ]
+          ],
+          "unevaluatedProperties": false
         },
         "script_ref": {
           "$ref": "cardano-conway.json#/definitions/ScriptRef"
@@ -1430,7 +1455,10 @@
       "type": "string",
       "description": "blake2b_256 digest of a VRF verification key, encoded as bech32",
       "pattern": "^vrf_vkh[02-9ac-hj-np-z]*",
-      "format": "bech32"
+      "format": "bech32",
+      "examples": [
+        "vrf_vkh3ak4chlh2xj9tw3jjwxdgs7v2uq6ev86l03vw"
+      ]
     },
     "URL": {
       "title": "URL",
@@ -1467,7 +1495,10 @@
       "title": "PoolPubKeyHash",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(pool1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(pool1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "pool12a39rkzfylvn9wfe8j6y8ucq6g2l4mw4azj70y0gd8ejczznyj2"
+      ]
     },
     "PoolParams": {
       "title": "PoolParams",
