@@ -42,31 +42,46 @@
       "title": "DRepId",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(drep1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(drep1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "drep1ygqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq7vlc9n"
+      ]
     },
     "CCColdId": {
       "title": "CCColdId",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(cc_cold1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(cc_cold1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "cc_cold1zvqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6kflvs"
+      ]
     },
     "CCHotId": {
       "title": "CCHotId",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(cc_hot1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(cc_hot1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "cc_hot1qgqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqvcdjk7"
+      ]
     },
     "ProposalId": {
       "title": "ProposalId",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(gov_action1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(gov_action1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "gov_action1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpzklpgpf"
+      ]
     },
     "PoolPubKeyHash": {
       "title": "PoolPubKeyHash",
       "type": "string",
       "format": "bech32",
-      "pattern": "^(pool1)[02-9ac-hj-np-z]*$"
+      "pattern": "^(pool1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "pool12a39rkzfylvn9wfe8j6y8ucq6g2l4mw4azj70y0gd8ejczznyj2"
+      ]
     },
     "TransactionHash": {
       "title": "TransactionHash",
@@ -74,7 +89,13 @@
       "format": "hex",
       "pattern": "^[0-9a-f]{64}$",
       "maxLength": 64,
-      "minLength": 64
+      "minLength": 64,
+      "examples": [
+        "eca40340fa6e65d964915ba4bc8bd811a0493d263ffe95875291114cbb2d0686",
+        "7420a723bf4ee4417ec1aa2262ff60921270681e7a9d537132cbcc82917e8006",
+        "fbc1da46d62a431e69855ad48a6b49b0e2aaafc6fd3dc4a066c6851b7bd31a91",
+        "c6726192662abeab149098095eabe004ecbec47f5e564748ab0d394affca47d9"
+      ]
     },
     "Vote": {
       "title": "Vote",

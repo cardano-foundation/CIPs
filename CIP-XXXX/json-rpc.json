@@ -423,6 +423,16 @@
       "type": "object",
       "$ref": "query-layer.json#/definitions/DRepInfo"
     },
+    "drep/stake_credential:request": {
+      "title": "drep by stake_credential (request)",
+      "type": "object",
+      "$ref": "cardano-conway.json#/definitions/RewardAddress"
+    },
+    "drep/stake_credential:response": {
+      "title": "drep by stake_credential (response)",
+      "type": "object",
+      "$ref": "query-layer.json#/definitions/DRepInfo"
+    },
     "committee/all:request": {
       "title": "committee by all (request)",
       "type": "object",
