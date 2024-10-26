@@ -13,8 +13,6 @@ Created: 2022-10-14
 License: CC-BY-4.0
 ---
 
-# CIP-9999: Cardano Problem Statements
-
 ## Abstract
 
 A Cardano Problem Statement (CPS) is a formalized document for the Cardano ecosystem and the name of the process by which such documents are produced and listed. CPSs are meant to complement CIPs and live side-by-side in the CIP repository as first-class citizens.
@@ -187,7 +185,7 @@ This section is meant to _save time_, especially for problem statement authors w
 
 ### Implementation Plan
 
-- [ ] Schedule a retrospective in 2-3 months to assess the effectiveness of the process
+- [x] Confirm after repeated cycles of CPS submissions, reviews, and merges that the CPS process is both effective and accessible to the community.
 
 ## Copyright
 

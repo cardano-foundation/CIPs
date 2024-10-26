@@ -232,6 +232,11 @@ In order for this standard to be active, the following should be true:
  - At least 1 widely used *consumer* of governance metadata (such as a blockchain explorer, governance explorer, voting dashboard, etc)
  - At least 1 CIP in the "Proposed" status that outlines additional fields to extend this metadata
 
+### Community Tooling
+Below you can find a growing list of community tools which let you sign / verify / canonize / manipulate governance metadata JSON-LD data:
+- [cardano-signer](https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-100--cip-108--cip-119-mode) : A tool to sign with author secret keys, verify signatures, canonize the body content (Linux/Arm/Win/Mac)
+- [cardano-governance-metadata-lib](https://github.com/SundaeSwap-finance/cardano-governance-metadata) : A rust library for interacting with Cardano Governance Metadata conforming to CIP-100 (rust)
+
 ### Implementation Plan
 
 The key stages to get this proposal to active, and the motivation for why each stage is valuable, is outlined below:

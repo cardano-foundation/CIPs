@@ -1,7 +1,7 @@
 ---
 CIP: 1694
 Title: A First Step Towards On-Chain Decentralized Governance
-Status: Proposed
+Status: Active
 Category: Ledger
 Authors:
     - Jared Corduan <jared.corduan@iohk.io>
@@ -1032,7 +1032,8 @@ We solve the long-term participation problem by not allowing reward withdrawals
 
 ### Acceptance Criteria
 
-- [ ] A new ledger era is enabled on the Cardano mainnet, which implements the above specification.
+- [x] A new ledger era is enabled on the Cardano mainnet, which implements the above specification.
+ - Enabled via Chang #1 hardfork 
 
 ### Implementation Plan
 
@@ -1057,18 +1058,18 @@ CIP-1694 arguably goes beyond the usual scope of the CIP process and there is a 
 However, that process is yet to be defined and it remains an open question.
 The final ratification process is likely to be a blend of various ideas, such as:
 
-- [ ] Gather opinions from community-held workshops, akin to the Colorado workshop of February-March 2023.
+- [x] Gather opinions from community-held workshops, akin to the Colorado workshop of February-March 2023.
 - [ ] Exercise voting actions on a public testnet, with sufficient participation.
 - [ ] Poll the established SPOs.
 - [ ] Leverage Project Catalyst to gather inputs from the existing voting community (albeit small in terms of active stake).
 
 #### Changes to the transaction body
 
-- [ ] New elements will be added to the transaction body, and existing update and MIR capabilities will be removed. In particular,
+- [x] New elements will be added to the transaction body, and existing update and MIR capabilities will be removed. In particular,
 
   The governance actions and votes will comprise two new transaction body fields.
 
-- [ ] Three new kinds of certificates will be added in addition to the existing ones:
+- [x] Three new kinds of certificates will be added in addition to the existing ones:
 
   * DRep registration
   * DRep de-registration
@@ -1076,7 +1077,7 @@ The final ratification process is likely to be a blend of various ideas, such as
 
   And similarly, the current MIR and genesis certificates will be removed.
 
-- [ ] A new `Voting` purpose will be added to Plutus script contexts.
+- [x] A new `Voting` purpose will be added to Plutus script contexts.
   This will provide, in particular, the vote to on-chain scripts.
 
 > **Warning** As usual, we will provide a CDDL specification for each of those changes.
