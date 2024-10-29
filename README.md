@@ -120,6 +120,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0133 | [Plutus support for Multi-Scalar Multiplication over BLS12-381](./CIP-0133) | Proposed |
 | 0134 | [Cardano URIs - Address Representation](./CIP-0134) | Proposed |
 | 0135 | [Disaster Recovery Plan for Cardano networks](./CIP-0135) | Active |
+| 0137 | [Decentralized Message Queue](./CIP-0137) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -128,7 +129,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-10-16</i></p>
+<p align="right"><i>Last updated on 2024-10-29</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
