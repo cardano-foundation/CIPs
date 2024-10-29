@@ -23,6 +23,7 @@ Discussions:
     - <https://twitter.com/danny_cryptofay/status/1631606919071776768>
     - <https://www.youtube.com/watch?v=2hCnmMG1__8>
     - <https://www.youtube.com/watch?v=KiLhhOVXQOg>
+    - <https://github.com/cardano-foundation/CIPs/pull/916>
 Created: 2022-11-18
 License: CC-BY-4.0
 ---
