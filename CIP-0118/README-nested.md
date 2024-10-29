@@ -509,7 +509,7 @@ a valid top-level transactions more straightforward.
 ### CIP-0118 "Validation Zones-implicit"
 
 The key difference between the Validation Zones-implicit design and this design is that 
-this design does not require as many (any?) major changes to be made to the operation 
+this design does not require any changes to be made to the operation 
 of the mempool. This is achieved by building a top-level transaction that includes 
 a list of sub-transactions, rather than modifying block structure to contain 
 such lists of transactions directly. Also, this design allows `ExUnits` to be specified by the top-level transaction for 
