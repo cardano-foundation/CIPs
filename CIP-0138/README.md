@@ -242,7 +242,7 @@ One idea would be to add a new builtin such as the following:
 `unConstrDataArray :: Data -> (Integer, Array Data)`. However, this builtin will
 inevitably have linear time complexity since it is based on a list traversal. So
 it does not actually solve the original problem, unless it can be shown experimentally
-that, in practice, these lists are usually small enough for the transformation to be neglijible.
+that, in practice, these lists are usually small enough for the transformation to be negligible.
 
 ## Path to Active
 
