@@ -23,11 +23,11 @@ certain kinds of _underspecified transactions_. Such transactions specify an int
 but are missing certain data to perform this action. This data must be provided by a subsequent 
 transaction. In particular, for the Babel-fees usecase
 we discuss here, we allow transactions that are unbalanced, i.e. specify
-_a swap_. This request can be fulfilled by another transaction providing the 
+_a swap_. This intent can be fulfilled by another transaction providing the 
 funds requested in the swap (missing in the transaction), and accepting the offered funds
-(extra funds in the transaction). Underspecified transaction bodies are included in the 
-body of a _top-level_ transactions alongside. We call the 
-set of transactions containing the top-level transaction and the _sub-transactions_
+(extra funds in the transaction). Transactions containing intents must be included in  
+a _top-level_ transaction. We call the 
+set of transactions containing the top-level transaction together with the _sub-transactions_
 it includes a _batch_. Applying a complete batch results in a valid ledger update, 
 however, applying each of the individual transactions may not. For example, insufficient 
 fees or collateral may be provided, missing witness info, etc.
@@ -36,7 +36,7 @@ fees or collateral may be provided, missing witness info, etc.
 
 This CIP provides a partial solution to the problems described in 
 [CPS-15](https://github.com/cardano-foundation/CIPs/pull/779).
-In particular, it describes some ledger changes that allow intent settlement
+In particular, it describes some ledger changes that allow settlement
 of intents that require “counterparty irrelevance”, including many of the swap use cases
 and dApp fee sponsorship. The motivation behind designing this solution is _Babel fees_,
 which is a requirement to support "paying transaction fees in a non-Ada currency".
@@ -175,12 +175,6 @@ to
 
 `LEDGERS -> LEDGER -> SWAPS -> SWAP -> UTXOW -> UTXO -> UTXOS`
 
-**Decision Required** It may be that
-
-`LEDGERS -> SWAPS -> SWAP -> LEDGER -> UTXOW -> UTXO -> UTXOS`
-
-Is a transition order that is closer to the previous usage of these transitions. 
-
 
 #### `LEDGER` and `LEDGERS`
 
@@ -221,14 +215,14 @@ to check scripts (and found that one or more failed). Such transactions will be 
 collecting collateral only, so none of their other actions, including moving assets, will be applied,
 and therefore will not affect the ledger.  
 
-**Batch Information** To construct the batch transaction list, the original transaction prepends the 
+To construct the transaction list representing the complete batch, the original transaction prepends the 
 top-level transaction to its `subTx` list.
 
 The `LEDGER` rule then calls the `SWAPS` rule on the batch list, and the same state as it itself 
 has. The result of the `LEDGER` state update is computed by `SWAPS`. 
 However, the environment for `SWAPS` is distinct from `LEnv` (see below). 
 
-We define a new type, `BatchData`, to allow `LEDGER` to indicate to `SWAPS` via its environment
+**Batch Information**  We define a new type, `BatchData`, to allow `LEDGER` to indicate to `SWAPS` via its environment
 the batch info required for correctly processing it. The type has constructors :
 
 - `SingularTransaction`, which indicates that the batch contains only one transaction with no sub-txs, but this tx contains new features
