@@ -488,6 +488,54 @@
         }
       },
       "required": ["proposal_id", "vote_tx_hash", "vote"]
+    },
+    "EraInfo": {
+      "type": "object",
+      "title": "EraInfo",
+      "properties": {
+        "time": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "slot": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "epoch": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        }
+      },
+      "required": ["time", "slot", "epoch"]
+    },
+    "EraParameters": {
+      "type": "object",
+      "title": "EraParameters",
+      "properties": {
+        "epoch_length": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "slot_length": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "safe_zone": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        }
+      },
+      "required": ["epoch_length", "slot_length", "safe_zone"]
+    },
+    "EraSummary": {
+      "type": "object",
+      "title": "EraSummary",
+      "properties": {
+        "start": {
+          "$ref": "query-layer.json#/definitions/EraInfo"
+        },
+        "end": {
+          "$ref": "query-layer.json#/definitions/EraInfo"
+        },
+        "parameters": {
+          "$ref": "query-layer.json#/definitions/EraParameters"
+        }
+      },
+      "required": ["start", "end", "parameters"]
     }
   }
 }

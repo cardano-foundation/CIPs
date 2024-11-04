@@ -64,7 +64,8 @@ In CIP-30, pagination is not reliable, because there is no guarantee that the se
 ### Transports
 
 The API can be implemented across several transports. The goal is to allow several different clients, possibly written in different languages with it.
-For this reason we provide an [Openapi schema](./open-api.json) and a more general [JSON-rcp](./json-rpc.json) one. These are generated from the same set of data, the Openapi one is meant to be a specification for interacting with this API through HTTP, while the JSON-rpc one can be followed with transports such as websockets, or when the API is exposed through an injected javascript object.
+For this reason we provide an [Openapi schema](./open-api.json), a [JSON-rcp](./json-rpc.json) schema, and an interface for an [injected Javascript](./ts-api.md) object in Typescript.
+We generate these interfaces from a high level specification of the endpoints [source](./link-to-ql-impl), ensuring that the information is consistent and easily updatable for different choices of transport layer.
 
 
 ### Methods

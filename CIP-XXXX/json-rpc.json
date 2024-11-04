@@ -4,7 +4,7 @@
   "title": "Cardano Query Layer types",
   "definitions": {
     "utxos/asset:request": {
-      "title": "utxos by asset (request)",
+      "title": "utxos by asset",
       "type": "object",
       "properties": {
         "asset_name": {
@@ -16,7 +16,7 @@
       }
     },
     "utxos/asset:response": {
-      "title": "utxos by asset (response)",
+      "title": "utxos by asset",
       "type": "object",
       "properties": {
         "utxos": {
@@ -35,12 +35,12 @@
       }
     },
     "utxos/transaction_hash:request": {
-      "title": "utxos by transaction_hash (request)",
+      "title": "utxos by transaction_hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/TransactionHash"
     },
     "utxos/transaction_hash:response": {
-      "title": "utxos by transaction_hash (response)",
+      "title": "utxos by transaction_hash",
       "type": "object",
       "properties": {
         "utxos": {
@@ -59,12 +59,12 @@
       }
     },
     "utxos/address:request": {
-      "title": "utxos by address (request)",
+      "title": "utxos by address",
       "type": "object",
       "$ref": "cardano-babbage.json#/definitions/Address"
     },
     "utxos/address:response": {
-      "title": "utxos by address (response)",
+      "title": "utxos by address",
       "type": "object",
       "properties": {
         "utxos": {
@@ -83,12 +83,12 @@
       }
     },
     "utxos/payment_credential:request": {
-      "title": "utxos by payment_credential (request)",
+      "title": "utxos by payment_credential",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/Credential"
     },
     "utxos/payment_credential:response": {
-      "title": "utxos by payment_credential (response)",
+      "title": "utxos by payment_credential",
       "type": "object",
       "properties": {
         "utxos": {
@@ -107,12 +107,12 @@
       }
     },
     "utxos/stake_credential:request": {
-      "title": "utxos by stake_credential (request)",
+      "title": "utxos by stake_credential",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/RewardAddress"
     },
     "utxos/stake_credential:response": {
-      "title": "utxos by stake_credential (response)",
+      "title": "utxos by stake_credential",
       "type": "object",
       "properties": {
         "utxos": {
@@ -131,58 +131,46 @@
       }
     },
     "block/number:request": {
-      "title": "block by number (request)",
+      "title": "block by number",
       "type": "object",
-      "properties": {
-        "block_number": {
-          "$ref": "cardano-conway.json#/definitions/UInt64"
-        }
-      }
+      "$ref": "cardano-conway.json#/definitions/UInt64"
     },
     "block/number:response": {
-      "title": "block by number (response)",
+      "title": "block by number",
       "type": "object",
-      "properties": {
-        "block": {
-          "anyOf": [
-            {
-              "$ref": "cardano-conway.json#/definitions/Block"
-            },
-            {
-              "$ref": "cardano-babbage.json#/definitions/Block"
-            }
-          ]
+      "anyOf": [
+        {
+          "$ref": "cardano-conway.json#/definitions/Block"
+        },
+        {
+          "$ref": "cardano-babbage.json#/definitions/Block"
         }
-      }
+      ]
     },
     "block/hash:request": {
-      "title": "block by hash (request)",
+      "title": "block by hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/BlockHash"
     },
     "block/hash:response": {
-      "title": "block by hash (response)",
+      "title": "block by hash",
       "type": "object",
-      "properties": {
-        "block": {
-          "anyOf": [
-            {
-              "$ref": "cardano-conway.json#/definitions/Block"
-            },
-            {
-              "$ref": "cardano-babbage.json#/definitions/Block"
-            }
-          ]
+      "anyOf": [
+        {
+          "$ref": "cardano-conway.json#/definitions/Block"
+        },
+        {
+          "$ref": "cardano-babbage.json#/definitions/Block"
         }
-      }
+      ]
     },
     "transaction/hash:request": {
-      "title": "transaction by hash (request)",
+      "title": "transaction by hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/TransactionHash"
     },
     "transaction/hash:response": {
-      "title": "transaction by hash (response)",
+      "title": "transaction by hash",
       "type": "object",
       "anyOf": [
         {
@@ -194,16 +182,12 @@
       ]
     },
     "transactions/block_number:request": {
-      "title": "transactions by block_number (request)",
+      "title": "transactions by block_number",
       "type": "object",
-      "properties": {
-        "block_number": {
-          "$ref": "cardano-conway.json#/definitions/UInt64"
-        }
-      }
+      "$ref": "cardano-conway.json#/definitions/UInt64"
     },
     "transactions/block_number:response": {
-      "title": "transactions by block_number (response)",
+      "title": "transactions by block_number",
       "type": "object",
       "properties": {
         "transactions": {
@@ -222,12 +206,12 @@
       }
     },
     "transactions/block_hash:request": {
-      "title": "transactions by block_hash (request)",
+      "title": "transactions by block_hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/BlockHash"
     },
     "transactions/block_hash:response": {
-      "title": "transactions by block_hash (response)",
+      "title": "transactions by block_hash",
       "type": "object",
       "properties": {
         "transactions": {
@@ -246,95 +230,79 @@
       }
     },
     "datum/hash:request": {
-      "title": "datum by hash (request)",
+      "title": "datum by hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/DataHash"
     },
     "datum/hash:response": {
-      "title": "datum by hash (response)",
+      "title": "datum by hash",
       "type": "object",
-      "properties": {
-        "datum": {
-          "$ref": "cardano-conway.json#/definitions/PlutusData"
-        }
-      }
+      "$ref": "cardano-conway.json#/definitions/PlutusData"
     },
     "plutus_script/hash:request": {
-      "title": "plutus_script by hash (request)",
+      "title": "plutus_script by hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/ScriptHash"
     },
     "plutus_script/hash:response": {
-      "title": "plutus_script by hash (response)",
+      "title": "plutus_script by hash",
       "type": "object",
-      "properties": {
-        "plutus_script": {
-          "anyOf": [
-            {
-              "$ref": "cardano-conway.json#/definitions/PlutusScript"
-            },
-            {
-              "$ref": "cardano-babbage.json#/definitions/PlutusScript"
-            }
-          ]
+      "anyOf": [
+        {
+          "$ref": "cardano-conway.json#/definitions/PlutusScript"
+        },
+        {
+          "$ref": "cardano-babbage.json#/definitions/PlutusScript"
         }
-      }
+      ]
     },
     "native_script/hash:request": {
-      "title": "native_script by hash (request)",
+      "title": "native_script by hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/ScriptHash"
     },
     "native_script/hash:response": {
-      "title": "native_script by hash (response)",
+      "title": "native_script by hash",
       "type": "object",
-      "properties": {
-        "native_script": {
-          "$ref": "cardano-conway.json#/definitions/NativeScript"
-        }
-      }
+      "$ref": "cardano-conway.json#/definitions/NativeScript"
     },
     "metadata/transaction_hash:request": {
-      "title": "metadata by transaction_hash (request)",
+      "title": "metadata by transaction_hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/TransactionHash"
     },
     "metadata/transaction_hash:response": {
-      "title": "metadata by transaction_hash (response)",
+      "title": "metadata by transaction_hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/TransactionMetadatum"
     },
     "protocol_parameters/latest:request": {
-      "title": "protocol_parameters (latest) (request)",
+      "title": "protocol_parameters (latest)",
       "type": "object",
       "properties": {}
     },
     "protocol_parameters/latest:response": {
-      "title": "protocol_parameters (latest) (response)",
+      "title": "protocol_parameters (latest)",
       "type": "object",
       "$ref": "query-layer.json#/definitions/ProtocolParams"
     },
     "protocol_parameters/epoch:request": {
-      "title": "protocol_parameters by epoch (request)",
+      "title": "protocol_parameters by epoch",
       "type": "object",
-      "properties": {
-        "epoch_number": {
-          "$ref": "cardano-conway.json#/definitions/UInt32"
-        }
-      }
+      "$ref": "cardano-conway.json#/definitions/UInt32"
     },
     "protocol_parameters/epoch:response": {
-      "title": "protocol_parameters by epoch (response)",
+      "title": "protocol_parameters by epoch",
       "type": "object",
       "$ref": "query-layer.json#/definitions/ProtocolParams"
     },
     "votes/cc_id:request": {
-      "title": "votes by cc_id (request)",
+      "title": "votes by cc_id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/CCHotId"
     },
     "votes/cc_id:response": {
-      "title": "votes by cc_id (response)",
+      "title": "votes by cc_id",
       "type": "object",
       "properties": {
         "votes": {
@@ -346,12 +314,12 @@
       }
     },
     "votes/spo_id:request": {
-      "title": "votes by spo_id (request)",
+      "title": "votes by spo_id",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
     },
     "votes/spo_id:response": {
-      "title": "votes by spo_id (response)",
+      "title": "votes by spo_id",
       "type": "object",
       "properties": {
         "votes": {
@@ -363,12 +331,12 @@
       }
     },
     "votes/drep_id:request": {
-      "title": "votes by drep_id (request)",
+      "title": "votes by drep_id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/DRepId"
     },
     "votes/drep_id:response": {
-      "title": "votes by drep_id (response)",
+      "title": "votes by drep_id",
       "type": "object",
       "properties": {
         "votes": {
@@ -380,12 +348,12 @@
       }
     },
     "votes/proposal_id:request": {
-      "title": "votes by proposal_id (request)",
+      "title": "votes by proposal_id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/ProposalId"
     },
     "votes/proposal_id:response": {
-      "title": "votes by proposal_id (response)",
+      "title": "votes by proposal_id",
       "type": "object",
       "properties": {
         "votes": {
@@ -397,12 +365,12 @@
       }
     },
     "drep/all:request": {
-      "title": "drep by all (request)",
+      "title": "drep (all)",
       "type": "object",
       "properties": {}
     },
     "drep/all:response": {
-      "title": "drep by all (response)",
+      "title": "drep (all)",
       "type": "object",
       "properties": {
         "dreps": {
@@ -414,32 +382,32 @@
       }
     },
     "drep/id:request": {
-      "title": "drep by id (request)",
+      "title": "drep by id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/DRepId"
     },
     "drep/id:response": {
-      "title": "drep by id (response)",
+      "title": "drep by id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/DRepInfo"
     },
     "drep/stake_credential:request": {
-      "title": "drep by stake_credential (request)",
+      "title": "drep by stake_credential",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/RewardAddress"
     },
     "drep/stake_credential:response": {
-      "title": "drep by stake_credential (response)",
+      "title": "drep by stake_credential",
       "type": "object",
       "$ref": "query-layer.json#/definitions/DRepInfo"
     },
     "committee/all:request": {
-      "title": "committee by all (request)",
+      "title": "committee (all)",
       "type": "object",
       "properties": {}
     },
     "committee/all:response": {
-      "title": "committee by all (response)",
+      "title": "committee (all)",
       "type": "object",
       "properties": {
         "cc_members": {
@@ -451,22 +419,22 @@
       }
     },
     "committee/id:request": {
-      "title": "committee by id (request)",
+      "title": "committee by id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/CCHotId"
     },
     "committee/id:response": {
-      "title": "committee by id (response)",
+      "title": "committee by id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/CCMember"
     },
     "pool/all:request": {
-      "title": "pool by all (request)",
+      "title": "pool (all)",
       "type": "object",
       "properties": {}
     },
     "pool/all:response": {
-      "title": "pool by all (response)",
+      "title": "pool (all)",
       "type": "object",
       "properties": {
         "pools": {
@@ -478,22 +446,22 @@
       }
     },
     "pool/id:request": {
-      "title": "pool by id (request)",
+      "title": "pool by id",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
     },
     "pool/id:response": {
-      "title": "pool by id (response)",
+      "title": "pool by id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/Pool"
     },
     "proposal/all:request": {
-      "title": "proposal by all (request)",
+      "title": "proposal (all)",
       "type": "object",
       "properties": {}
     },
     "proposal/all:response": {
-      "title": "proposal by all (response)",
+      "title": "proposal (all)",
       "type": "object",
       "properties": {
         "proposals": {
@@ -505,14 +473,31 @@
       }
     },
     "proposal/id:request": {
-      "title": "proposal by id (request)",
+      "title": "proposal by id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/ProposalId"
     },
     "proposal/id:response": {
-      "title": "proposal by id (response)",
+      "title": "proposal by id",
       "type": "object",
       "$ref": "query-layer.json#/definitions/Proposal"
+    },
+    "era/summary:request": {
+      "title": "era summary",
+      "type": "object",
+      "properties": {}
+    },
+    "era/summary:response": {
+      "title": "era summary",
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "array",
+          "items": {
+            "$ref": "query-layer.json#/definitions/EraSummary"
+          }
+        }
+      }
     }
   }
 }

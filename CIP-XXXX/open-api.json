@@ -7,14 +7,14 @@
   "paths": {
     "/utxos/asset": {
       "get": {
-        "summary": "utxos by asset (request)",
+        "summary": "utxos by asset",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "utxos by asset (response)",
+                  "title": "utxos by asset",
                   "type": "object",
                   "properties": {
                     "utxos": {
@@ -61,14 +61,14 @@
     },
     "/utxos/transaction_hash": {
       "get": {
-        "summary": "utxos by transaction_hash (request)",
+        "summary": "utxos by transaction_hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "utxos by transaction_hash (response)",
+                  "title": "utxos by transaction_hash",
                   "type": "object",
                   "properties": {
                     "utxos": {
@@ -107,14 +107,14 @@
     },
     "/utxos/address": {
       "get": {
-        "summary": "utxos by address (request)",
+        "summary": "utxos by address",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "utxos by address (response)",
+                  "title": "utxos by address",
                   "type": "object",
                   "properties": {
                     "utxos": {
@@ -153,14 +153,14 @@
     },
     "/utxos/payment_credential": {
       "get": {
-        "summary": "utxos by payment_credential (request)",
+        "summary": "utxos by payment_credential",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "utxos by payment_credential (response)",
+                  "title": "utxos by payment_credential",
                   "type": "object",
                   "properties": {
                     "utxos": {
@@ -199,14 +199,14 @@
     },
     "/utxos/stake_credential": {
       "get": {
-        "summary": "utxos by stake_credential (request)",
+        "summary": "utxos by stake_credential",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "utxos by stake_credential (response)",
+                  "title": "utxos by stake_credential",
                   "type": "object",
                   "properties": {
                     "utxos": {
@@ -245,27 +245,23 @@
     },
     "/block/number": {
       "get": {
-        "summary": "block by number (request)",
+        "summary": "block by number",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "block by number (response)",
+                  "title": "block by number",
                   "type": "object",
-                  "properties": {
-                    "block": {
-                      "anyOf": [
-                        {
-                          "$ref": "cardano-conway.json#/definitions/Block"
-                        },
-                        {
-                          "$ref": "cardano-babbage.json#/definitions/Block"
-                        }
-                      ]
+                  "anyOf": [
+                    {
+                      "$ref": "cardano-conway.json#/definitions/Block"
+                    },
+                    {
+                      "$ref": "cardano-babbage.json#/definitions/Block"
                     }
-                  }
+                  ]
                 }
               }
             }
@@ -276,7 +272,7 @@
         },
         "parameters": [
           {
-            "name": "block_number",
+            "name": "u_int64",
             "in": "query",
             "required": true,
             "schema": {
@@ -288,27 +284,23 @@
     },
     "/block/hash": {
       "get": {
-        "summary": "block by hash (request)",
+        "summary": "block by hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "block by hash (response)",
+                  "title": "block by hash",
                   "type": "object",
-                  "properties": {
-                    "block": {
-                      "anyOf": [
-                        {
-                          "$ref": "cardano-conway.json#/definitions/Block"
-                        },
-                        {
-                          "$ref": "cardano-babbage.json#/definitions/Block"
-                        }
-                      ]
+                  "anyOf": [
+                    {
+                      "$ref": "cardano-conway.json#/definitions/Block"
+                    },
+                    {
+                      "$ref": "cardano-babbage.json#/definitions/Block"
                     }
-                  }
+                  ]
                 }
               }
             }
@@ -331,14 +323,14 @@
     },
     "/transaction/hash": {
       "get": {
-        "summary": "transaction by hash (request)",
+        "summary": "transaction by hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "transaction by hash (response)",
+                  "title": "transaction by hash",
                   "type": "object",
                   "anyOf": [
                     {
@@ -370,14 +362,14 @@
     },
     "/transactions/block_number": {
       "get": {
-        "summary": "transactions by block_number (request)",
+        "summary": "transactions by block_number",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "transactions by block_number (response)",
+                  "title": "transactions by block_number",
                   "type": "object",
                   "properties": {
                     "transactions": {
@@ -404,7 +396,7 @@
         },
         "parameters": [
           {
-            "name": "block_number",
+            "name": "u_int64",
             "in": "query",
             "required": true,
             "schema": {
@@ -416,14 +408,14 @@
     },
     "/transactions/block_hash": {
       "get": {
-        "summary": "transactions by block_hash (request)",
+        "summary": "transactions by block_hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "transactions by block_hash (response)",
+                  "title": "transactions by block_hash",
                   "type": "object",
                   "properties": {
                     "transactions": {
@@ -462,20 +454,16 @@
     },
     "/datum/hash": {
       "get": {
-        "summary": "datum by hash (request)",
+        "summary": "datum by hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "datum by hash (response)",
+                  "title": "datum by hash",
                   "type": "object",
-                  "properties": {
-                    "datum": {
-                      "$ref": "cardano-conway.json#/definitions/PlutusData"
-                    }
-                  }
+                  "$ref": "cardano-conway.json#/definitions/PlutusData"
                 }
               }
             }
@@ -498,27 +486,23 @@
     },
     "/plutus_script/hash": {
       "get": {
-        "summary": "plutus_script by hash (request)",
+        "summary": "plutus_script by hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "plutus_script by hash (response)",
+                  "title": "plutus_script by hash",
                   "type": "object",
-                  "properties": {
-                    "plutus_script": {
-                      "anyOf": [
-                        {
-                          "$ref": "cardano-conway.json#/definitions/PlutusScript"
-                        },
-                        {
-                          "$ref": "cardano-babbage.json#/definitions/PlutusScript"
-                        }
-                      ]
+                  "anyOf": [
+                    {
+                      "$ref": "cardano-conway.json#/definitions/PlutusScript"
+                    },
+                    {
+                      "$ref": "cardano-babbage.json#/definitions/PlutusScript"
                     }
-                  }
+                  ]
                 }
               }
             }
@@ -541,20 +525,16 @@
     },
     "/native_script/hash": {
       "get": {
-        "summary": "native_script by hash (request)",
+        "summary": "native_script by hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "native_script by hash (response)",
+                  "title": "native_script by hash",
                   "type": "object",
-                  "properties": {
-                    "native_script": {
-                      "$ref": "cardano-conway.json#/definitions/NativeScript"
-                    }
-                  }
+                  "$ref": "cardano-conway.json#/definitions/NativeScript"
                 }
               }
             }
@@ -577,14 +557,14 @@
     },
     "/metadata/transaction_hash": {
       "get": {
-        "summary": "metadata by transaction_hash (request)",
+        "summary": "metadata by transaction_hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "metadata by transaction_hash (response)",
+                  "title": "metadata by transaction_hash",
                   "type": "object",
                   "$ref": "cardano-conway.json#/definitions/TransactionMetadatum"
                 }
@@ -609,14 +589,14 @@
     },
     "/protocol_parameters/latest": {
       "get": {
-        "summary": "protocol_parameters (latest) (request)",
+        "summary": "protocol_parameters (latest)",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "protocol_parameters (latest) (response)",
+                  "title": "protocol_parameters (latest)",
                   "type": "object",
                   "$ref": "query-layer.json#/definitions/ProtocolParams"
                 }
@@ -632,14 +612,14 @@
     },
     "/protocol_parameters/epoch": {
       "get": {
-        "summary": "protocol_parameters by epoch (request)",
+        "summary": "protocol_parameters by epoch",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "protocol_parameters by epoch (response)",
+                  "title": "protocol_parameters by epoch",
                   "type": "object",
                   "$ref": "query-layer.json#/definitions/ProtocolParams"
                 }
@@ -652,7 +632,7 @@
         },
         "parameters": [
           {
-            "name": "epoch_number",
+            "name": "u_int32",
             "in": "query",
             "required": true,
             "schema": {
@@ -664,14 +644,14 @@
     },
     "/votes/cc_id": {
       "get": {
-        "summary": "votes by cc_id (request)",
+        "summary": "votes by cc_id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "votes by cc_id (response)",
+                  "title": "votes by cc_id",
                   "type": "object",
                   "properties": {
                     "votes": {
@@ -703,14 +683,14 @@
     },
     "/votes/spo_id": {
       "get": {
-        "summary": "votes by spo_id (request)",
+        "summary": "votes by spo_id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "votes by spo_id (response)",
+                  "title": "votes by spo_id",
                   "type": "object",
                   "properties": {
                     "votes": {
@@ -742,14 +722,14 @@
     },
     "/votes/drep_id": {
       "get": {
-        "summary": "votes by drep_id (request)",
+        "summary": "votes by drep_id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "votes by drep_id (response)",
+                  "title": "votes by drep_id",
                   "type": "object",
                   "properties": {
                     "votes": {
@@ -781,14 +761,14 @@
     },
     "/votes/proposal_id": {
       "get": {
-        "summary": "votes by proposal_id (request)",
+        "summary": "votes by proposal_id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "votes by proposal_id (response)",
+                  "title": "votes by proposal_id",
                   "type": "object",
                   "properties": {
                     "votes": {
@@ -820,14 +800,14 @@
     },
     "/drep/all": {
       "get": {
-        "summary": "drep by all (request)",
+        "summary": "drep (all)",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "drep by all (response)",
+                  "title": "drep (all)",
                   "type": "object",
                   "properties": {
                     "dreps": {
@@ -850,14 +830,14 @@
     },
     "/drep/id": {
       "get": {
-        "summary": "drep by id (request)",
+        "summary": "drep by id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "drep by id (response)",
+                  "title": "drep by id",
                   "type": "object",
                   "$ref": "query-layer.json#/definitions/DRepInfo"
                 }
@@ -882,14 +862,14 @@
     },
     "/drep/stake_credential": {
       "get": {
-        "summary": "drep by stake_credential (request)",
+        "summary": "drep by stake_credential",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "drep by stake_credential (response)",
+                  "title": "drep by stake_credential",
                   "type": "object",
                   "$ref": "query-layer.json#/definitions/DRepInfo"
                 }
@@ -914,14 +894,14 @@
     },
     "/committee/all": {
       "get": {
-        "summary": "committee by all (request)",
+        "summary": "committee (all)",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "committee by all (response)",
+                  "title": "committee (all)",
                   "type": "object",
                   "properties": {
                     "cc_members": {
@@ -944,14 +924,14 @@
     },
     "/committee/id": {
       "get": {
-        "summary": "committee by id (request)",
+        "summary": "committee by id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "committee by id (response)",
+                  "title": "committee by id",
                   "type": "object",
                   "$ref": "query-layer.json#/definitions/CCMember"
                 }
@@ -976,14 +956,14 @@
     },
     "/pool/all": {
       "get": {
-        "summary": "pool by all (request)",
+        "summary": "pool (all)",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "pool by all (response)",
+                  "title": "pool (all)",
                   "type": "object",
                   "properties": {
                     "pools": {
@@ -1006,14 +986,14 @@
     },
     "/pool/id": {
       "get": {
-        "summary": "pool by id (request)",
+        "summary": "pool by id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "pool by id (response)",
+                  "title": "pool by id",
                   "type": "object",
                   "$ref": "query-layer.json#/definitions/Pool"
                 }
@@ -1038,14 +1018,14 @@
     },
     "/proposal/all": {
       "get": {
-        "summary": "proposal by all (request)",
+        "summary": "proposal (all)",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "proposal by all (response)",
+                  "title": "proposal (all)",
                   "type": "object",
                   "properties": {
                     "proposals": {
@@ -1068,14 +1048,14 @@
     },
     "/proposal/id": {
       "get": {
-        "summary": "proposal by id (request)",
+        "summary": "proposal by id",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "proposal by id (response)",
+                  "title": "proposal by id",
                   "type": "object",
                   "$ref": "query-layer.json#/definitions/Proposal"
                 }
@@ -1096,6 +1076,36 @@
             }
           }
         ]
+      }
+    },
+    "/era/summary": {
+      "get": {
+        "summary": "era summary",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "era summary",
+                  "type": "object",
+                  "properties": {
+                    "summary": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "query-layer.json#/definitions/EraSummary"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        },
+        "parameters": []
       }
     }
   },
@@ -6446,6 +6456,66 @@
               "proposal_id",
               "vote_tx_hash",
               "vote"
+            ]
+          },
+          "EraInfo": {
+            "type": "object",
+            "title": "EraInfo",
+            "properties": {
+              "time": {
+                "$ref": "query-layer.json#/definitions/UInt64"
+              },
+              "slot": {
+                "$ref": "query-layer.json#/definitions/UInt64"
+              },
+              "epoch": {
+                "$ref": "query-layer.json#/definitions/UInt32"
+              }
+            },
+            "required": [
+              "time",
+              "slot",
+              "epoch"
+            ]
+          },
+          "EraParameters": {
+            "type": "object",
+            "title": "EraParameters",
+            "properties": {
+              "epoch_length": {
+                "$ref": "query-layer.json#/definitions/UInt32"
+              },
+              "slot_length": {
+                "$ref": "query-layer.json#/definitions/UInt32"
+              },
+              "safe_zone": {
+                "$ref": "query-layer.json#/definitions/UInt32"
+              }
+            },
+            "required": [
+              "epoch_length",
+              "slot_length",
+              "safe_zone"
+            ]
+          },
+          "EraSummary": {
+            "type": "object",
+            "title": "EraSummary",
+            "properties": {
+              "start": {
+                "$ref": "query-layer.json#/definitions/EraInfo"
+              },
+              "end": {
+                "$ref": "query-layer.json#/definitions/EraInfo"
+              },
+              "parameters": {
+                "$ref": "query-layer.json#/definitions/EraParameters"
+              }
+            },
+            "required": [
+              "start",
+              "end",
+              "parameters"
             ]
           }
         }
