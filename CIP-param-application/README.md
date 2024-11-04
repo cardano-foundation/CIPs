@@ -43,7 +43,7 @@ builtinApplyParams :: BuiltinByteString -> [BuiltinData] -> ScriptHash
 
 Where the first argument is the unapplied script's CBOR, and
 the `BuiltinData` list is all the parameters that are to be applied in order.
-Finally the result will be hash of the applied script.
+Finally, output will be the hash of the applied script.
 
 
 ### Cost Model
