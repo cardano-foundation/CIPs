@@ -72,7 +72,7 @@ In short, we'll get:
 Implementing such a validation on-chain would involve a few steps.
 
 First, the whole target contract has to be wrapped within an outer function
-which the parameters will be applied to it. This leads to single occurances of
+which the parameters will be applied to. This leads to single occurances of
 the parameters throughout the script's CBOR.
 
 Secondly, each parameter will be required to have fixed lengths in order to
