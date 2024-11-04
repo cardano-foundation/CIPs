@@ -23,18 +23,11 @@ Complex contracts tend to depend on multiple scripts, and in some cases,
 validation from scripts with some unknown parameters are required.
 
 As a simple example, assume a minting script which needs to validate that the
-destination of its token is a a parameterized spending that is uniquely
+destination of its token is a parameterized spending script that is uniquely
 instantiated for a user.
 
-The current solution involves wrapping the spending script with an inner lambda,
-expecting the parameters as hashed values to ensure their constant lengths, and
-expect each parameter to be provided via the redeemer. This approach allows
-slicing unapplied CBOR of the applied script at specific indexes in order to
-validate the presence of the expected hash.
-
-This, however, is a costly and relatively complex approach.
-
-With our proposed builtin function, the minting script of the example above can
+The [current solution](#alternatives), is costly and relatively complex. With
+our proposed builtin function, the minting script of the example above can
 be provided with the unapplied script (either directly or indirectly), and have
 arbitrary values applied to it as parameters.
 
@@ -42,7 +35,7 @@ arbitrary values applied to it as parameters.
 
 ### Function Definition
 
-we propose the Plutus builtin function `builtinApplyParams`, with the following
+We propose the Plutus builtin function `builtinApplyParams`, with the following
 type signature:
 ```hs
 builtinApplyParams :: BuiltinByteString -> [BuiltinData] -> ScriptHash
@@ -60,13 +53,49 @@ TODO
 
 ## Rationale: how does this CIP achieve its goals?
 
-With a builtin function, we'll get cheap and simple on-chain parameter
-validation. Consequently, this will enable easier implementation of advanced
-contracts with enhanced guarantees.
+Using the [provided example](#motivation-why-is-this-cip-necessary), the minting
+script can have access to the unapplied script:
+* Either by direct inclusion as a parameter (which can lead to a large script size)
+* Or providing a UTxO as a parameter that houses the unapplied script so that
+  the minting script can read it without becoming excessively large
+
+Furthermore, arbitrary parameters can be provided via the redeemer which can be
+used to generate an instance's script hash.
+
+In short, we'll get:
+* Easier and cheaper parameter verification on-chain
+* A more automation friendly build for such architectures
+* Less error prone builds
 
 ### Alternatives 
 
-Please see example above under the [motivation section](#motivation-why-is-this-cip-necessary).
+Continuing to use the [example above](#motivation-why-is-this-cip-necessary), implementing
+such a validation on-chain would involve a few key steps.
+
+First, the whole target contract has to be wrapped within an outer function
+which the parameters will be applied to it. This leads to single occurances of
+the parameters throughout the script's CBOR.
+
+Secondly, each parameter will be required to have fixed lengths in order to
+allow validation of the bytes surrounding parameters. This can be achieved by
+assuming these parameters are all hashes, and that their corresponding values
+will be provided via the redeemer.
+
+Next, in order to validate a given script is an instance of a known script,
+first few bytes of an instance must be provided (up until where the parameter is
+placed). With this "prefix" at hand, the instance's CBOR can be constructed
+on-chain as such:
+```hs
+let appliedCBOR =
+  prefix <> param0 <> paramHeader <> param1 <> paramHeader <> param2 <> postfix
+```
+
+Where `postfix` is similar to `prefix`, but for the rest of the script until its
+end. Note that `paramHeader` can be reused based on the presumption that all
+parameters are of equal lengths.
+
+Finally, this `appliedCBOR` can be hashed to attain its corresponding script
+credential.
 
 ## Path to Active
 
