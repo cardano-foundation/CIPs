@@ -64,13 +64,12 @@ used to generate an instance's script hash.
 
 In short, we'll get:
 * Easier and cheaper parameter verification on-chain
-* A more automation friendly build for such architectures
+* A more automation-friendly build for such architectures
 * Less error prone builds
 
 ### Alternatives 
 
-Continuing to use the [example above](#motivation-why-is-this-cip-necessary), implementing
-such a validation on-chain would involve a few key steps.
+Implementing such a validation on-chain would involve a few steps.
 
 First, the whole target contract has to be wrapped within an outer function
 which the parameters will be applied to it. This leads to single occurances of
@@ -82,7 +81,7 @@ assuming these parameters are all hashes, and that their corresponding values
 will be provided via the redeemer.
 
 Next, in order to validate a given script is an instance of a known script,
-first few bytes of an instance must be provided (up until where the parameter is
+first bytes of an instance must be provided (up until where the parameters are
 placed). With this "prefix" at hand, the instance's CBOR can be constructed
 on-chain as such:
 ```hs
