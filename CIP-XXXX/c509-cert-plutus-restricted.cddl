@@ -1,7 +1,7 @@
 ; This c509 Certificate format is based upon:
 ; https://datatracker.ietf.org/doc/draft-ietf-cose-cbor-encoded-cert/11/
-; And is restricted/customized to better enable compatibility with Plutus scripts
-; that would consume them, without losing necessary features of x509
+; and is restricted / customized to enhance compatibility with Plutus scripts 
+; that consume them, without losing essential X.509 features.
 ; Not all x509 features are supported and some fields have different semantics to improve
 ; certificate size and ability to be processed by Plutus Scripts.
 
