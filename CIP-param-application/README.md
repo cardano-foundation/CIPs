@@ -4,11 +4,13 @@ Title: On-Chain Parameter Application
 Status: Proposed
 Category: Plutus
 Authors:
+    - Philip DiSarro <info@anastasialabs.com>
     - Keyan M. <keyanmaskoot@gmail.com>
+    - Microproofs <kwhitemsg@gmail.com>
 Implementors: []
 Discussions: 
-    - https://github.com/cardano-foundation/CIPs/pull/999/
-Created: 2024-11-04
+    - https://github.com/cardano-foundation/CIPs/pull/934/
+Created: 2024-11-06
 License: CC-BY-4.0
 ---
 
