@@ -6,7 +6,7 @@ Category: Governance
 Authors:
   - Adam Dean <adam@crypto2099.io>
   - Adam Rusch <adam@rusch.me>
-  - Kyle Solomon <>
+  - Kyle Solomon <adosiatech@gmail.com>
 Proposed Solutions:
   - TBD
 Discussions:
@@ -107,5 +107,6 @@ directly.
 
 ## Copyright
 
-This CPS is licensed
-under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CPS is licensed under
+[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
