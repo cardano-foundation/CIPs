@@ -93,23 +93,22 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 There are some choices that will need to be done while translating the CIP-30 API to JSON. The types defined in [CIP-0116](./link) should provide almost all that is required, but types for errors, and other domain types used by CIP-30 will need to be added as well.
 Furthermore, CIP-30 specifies options for pagination. While useful in practice, pagination has turned out to be complex to implement properly and is not supported in [CIP-XXXX](./). CIP authors should decide wether to attempt to support the pagination from CIP-30 or to drop it completely.
 
-### Transaction building API
-
-The new proposed interface allows to submit transactions directly as native JS objects.
-It is currently not clear if it is worth adding a layer to the wallet connector to standardize transaction building.
-
-APIs for transaction building also come in many flavors: there are prominent examples both of "declarative APIs", that allow building the transaction by specifying a set of constraints
-that the transaction must respect, and the "imperative API", that allows building a transaction object directly. These two APIs don't necessarily rule each other out:
-some implementations mix the two with input or transaction builders.
-
-The CIP authors should decide if they want to add this interface to the CIP directly, or perhaps leave it as future work.
-Should a transaction building API be added, our recommendation would be to aim to make it as close as possible with 
-[cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib) which is widely used in the ecosystem and would be easy to adopt by many wallets.
-
 ### Other CIP-30 improvements
 
 There are a few other issues with CIP-30 that are raised in CPS-0010. Since this CPS is advocating for a replacement to CIP-30, it would make sense to resolve some of those issues. However, since the update we are advocating for is already quite substantial, an argument can also be made to delay further changes to future and more specific CIPs.
 
+### Transaction building API
+
+By revamping CIP-30 to directly accept JSON rather than CBOR, we potentially relieve the dApp from having to use an external library to build transactions. Users can simply build and submit the JSON translation of the CDDL `Transaction` object.
+It is currently not clear if it is worth adding a specialized API to the wallet to help with transaction building. The main argument for doing so is that often times when adding something to a transaction (like an input, or a mint) you need to also add something else (i.e. a witness). This makes building the transaction object directly more cumbersome and error prone, while an intermediate API could make this process more straightforward.
+
+However, APIs for transaction building also come in many flavors: there are prominent examples both of "declarative APIs", that allow building the transaction by specifying a set of constraints that the transaction must respect,
+and the "imperative API", that allows building a transaction object directly. These two APIs don't necessarily rule each other out:
+some implementations mix the two through input or transaction builders.
+
+The CIP authors should decide if they want to add this interface to the CIP directly, or perhaps leave it as future work.
+Should a transaction building API be added, our recommendation would be to aim to make it as close as possible with 
+[cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib) which is widely used in the ecosystem and would be easy to adopt by many wallets.
 
 --------
 
