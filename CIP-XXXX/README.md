@@ -29,10 +29,11 @@ See [CPS-12](https://github.com/cardano-foundation/CIPs/pull/625) for motivation
 
 The goal of this proposal is to define a standard, JSON-based, transport-agnostic query layer for wallets to implement which covers enough functionalities to be useful to a wide set of dApps.
 
-We will start by discussing existing query layer designs for dApps, so we can properly define the use case for this CIP. Next, we will define the query layer API.
-We attempt to define the API in a transport-agnostic way: the request and return types for each endpoint are as defined in CIP-0116, with a few notable exception where the corresponding CDDL type lacked some useful information (more on this can be found in the `Methods` section). Finally we end this section with some notes on rollbacks and pagination.
+We will start by discussing existing query layer designs for dApps, so we can properly define the use case for this CIP. 
+Next, we will define the query layer API.
+We attempt to define the API in a transport-agnostic way: the request and return types for each endpoint are as defined in CIP-0116, with a few notable exception where the corresponding CDDL type lacked some useful information (more on this can be found in the `Methods` section). Finally, we end this section with some notes on rollbacks and pagination.
 
-### Existing Query Layer designs
+#### Existing Query Layer designs
 
 There are two approaches to Cardano dApp development:
 
@@ -44,7 +45,7 @@ The first approach allows for lower runtime resource consumption, but a general-
 
 In this proposal, we are focusing on general-purpose querying only.
 
-### Methods
+### Query Layer API
 
 This section contains descriptions for methods & their parameter lists.
 
@@ -55,9 +56,13 @@ The payload formats used below are either references to [CIP-0116 - Standard JSO
 
 [View the list of endpoints here](./endpoints.md)
 
-### Versioning
+#### Versioning
 
 The API has an endpoint that must return the current version of the API implemented. While the CIP is in preparation, the version shall be set to 0.0.0. The moment this CIP is merged the version should be set to 1.0.0, and all implementations should return that as the current version. Any changes to the API should come in form of PRs to this CIP. Every change must update the version in accordance to SemVer.
+
+### Pagination
+
+In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, and pagination should be avoided.
 
 ### Transports
 
@@ -75,7 +80,7 @@ General purpose query layers can also handle rollbacks just fine, but they don't
 
 In the context of this API, rollbacks should be acknowledged as a source of potential inconsistency between data pieces returned by different queries.
 
-### Error handling
+#### Error handling
 
 Errors should be divided in two categories:
 
@@ -84,9 +89,9 @@ Errors should be divided in two categories:
 
 Here we will only specify the domain errors. Users should also handle transport specific errors that can occur when interacting with the API.
 
-#### Error Types
+##### Error Types
 
-##### APIError
+###### APIError
 
 ```
 APIErrorCode {
@@ -107,10 +112,6 @@ APIError {
 - AccountChange - The account has changed. The dApp should call wallet.enable() to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
 
 Note that the error codes and their meaning are copied from [CIP-30](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apierror). The reason is that this API will most likely live "alongside" the CIP-30 API, so unifying the error types reduces burden on the users.
-
-#### Pagination
-
-In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, and pagination should be avoided.
 
 ## Rationale: how does this CIP achieve its goals?
 
