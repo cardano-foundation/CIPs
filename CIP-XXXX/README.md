@@ -56,19 +56,16 @@ The payload formats used below are either references to [CIP-0116 - Standard JSO
 
 [View the list of endpoints here](./endpoints.md)
 
-#### Versioning
-
-The API has an endpoint that must return the current version of the API implemented. While the CIP is in preparation, the version shall be set to 0.0.0. The moment this CIP is merged the version should be set to 1.0.0, and all implementations should return that as the current version. Any changes to the API should come in form of PRs to this CIP. Every change must update the version in accordance to SemVer.
-
-### Pagination
-
-In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, and pagination should be avoided.
-
 ### Transports
 
 The API can be implemented across several transports. The goal is to allow several different clients, possibly written in different languages, to interact with wallets.
 For this reason we provide an [Openapi schema](./open-api.json), a [JSON-rcp](./json-rpc.json) schema, and an interface for an [injected Javascript](./ts-api.md) object in Typescript.
 We generate these interfaces from a high level specification of the endpoints [source](./link-to-ql-impl), ensuring that the information is consistent and easily updatable for different choices of transport layer.
+
+### Pagination
+
+In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, and pagination should be avoided.
+
 
 ### Handling of rollbacks
 
@@ -112,6 +109,10 @@ APIError {
 - AccountChange - The account has changed. The dApp should call wallet.enable() to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
 
 Note that the error codes and their meaning are copied from [CIP-30](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030#apierror). The reason is that this API will most likely live "alongside" the CIP-30 API, so unifying the error types reduces burden on the users.
+
+### Versioning
+
+The API has an endpoint that must return the current version of the API implemented. While the CIP is in preparation, the version shall be set to 0.0.0. The moment this CIP is merged the version should be set to 1.0.0, and all implementations should return that as the current version. Any changes to the API should come in form of PRs to this CIP. Every change must update the version in accordance to SemVer.
 
 ## Rationale: how does this CIP achieve its goals?
 
