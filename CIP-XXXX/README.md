@@ -281,6 +281,51 @@ Treasury so these funds may recirculate into future budgets, but this is not
 mandatory to leave room for creative surplus management strategies to be
 developed and/or proposed.
 
+<hr />
+
+#### Rule: Withdrawals Reference Budgets
+
+##### Definition
+
+Every _Treasury Withdrawal Action_ **MUST** reference a ratified and currently
+valid _Budget Info Action_.
+
+##### Rationale
+
+To avoid strange edge cases where a Treasury Withdrawal may be invalid or over
+budget compared to the previous year's budget but become valid once a new budget
+goes into effect, we require that all withdrawals must explicitly reference the
+budget against wish they seek to draw. This also simplifies future auditing of
+budgets and withdrawals as they can be easily cross-referenced.
+
+<hr />
+
+#### Rule: Decentralized Processes
+
+##### Definition
+
+To promote equitable access to Treasury funds and mitigate risk, no singular
+entity **SHOULD** be administrator for more than 85% of any budget or budget
+category. The remaining balance **MAY** be assigned to an alternate
+administrator as part of the budget proposal or **MAY** be left unassigned and
+left to community determination via direct _Treasury Withdrawal_ proposals.
+
+##### Rationale
+
+The entire point of trustless and decentralized systems like blockchain and 
+cryptocurrency is to achieve security through decentralization and ensure that
+access remains permissionless. This principle must be carried forward with 
+respect to budget processes and access.
+
+While "centralized" orchestrators and administrators can be much more efficient
+in sourcing vendors and managing milestones, this also creates a danger where
+vendors may be unfairly discriminated against by said orchestrator.
+
+By reserving some amount of overall budget allocation to be managed either by
+an independent administrator(s) or directly via on-chain community governance
+we can ensure that there is always some amount of funding available to every
+actor within the ecosystem.
+
 ## Rationale: how does this CIP achieve its goals?
 
 This CIP achieves its goals by providing steering and direction to budget
