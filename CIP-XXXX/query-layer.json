@@ -1,0 +1,541 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "query-layer.json",
+  "title": "Cardano Query Layer Types",
+  "definitions": {
+    "UInt16": {
+      "title": "UInt16",
+      "description": "16-bit unsigned integer",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "format": "uint16"
+    },
+    "UInt32": {
+      "title": "UInt32",
+      "description": "32-bit unsigned integer",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "UInt64": {
+      "title": "UInt64",
+      "description": "64-bit unsigned integer",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "format": "uint64"
+    },
+    "PosInt64": {
+      "title": "PosInt64",
+      "description": "64-bit unsigned integer, zero-excluded. 1-18446744073709551615",
+      "type": "string",
+      "pattern": "^([1-9][0-9]*)$",
+      "format": "posint64"
+    },
+    "Int128": {
+      "title": "Int128",
+      "description": "128-bit signed integer",
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]*)$",
+      "format": "int128"
+    },
+    "DRepId": {
+      "title": "DRepId",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(drep1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "drep1ygqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq7vlc9n"
+      ]
+    },
+    "CCColdId": {
+      "title": "CCColdId",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(cc_cold1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "cc_cold1zvqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6kflvs"
+      ]
+    },
+    "CCHotId": {
+      "title": "CCHotId",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(cc_hot1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "cc_hot1qgqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqvcdjk7"
+      ]
+    },
+    "ProposalId": {
+      "title": "ProposalId",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(gov_action1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "gov_action1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpzklpgpf"
+      ]
+    },
+    "PoolPubKeyHash": {
+      "title": "PoolPubKeyHash",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(pool1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "pool12a39rkzfylvn9wfe8j6y8ucq6g2l4mw4azj70y0gd8ejczznyj2"
+      ]
+    },
+    "TransactionHash": {
+      "title": "TransactionHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64,
+      "examples": [
+        "eca40340fa6e65d964915ba4bc8bd811a0493d263ffe95875291114cbb2d0686",
+        "7420a723bf4ee4417ec1aa2262ff60921270681e7a9d537132cbcc82917e8006",
+        "fbc1da46d62a431e69855ad48a6b49b0e2aaafc6fd3dc4a066c6851b7bd31a91",
+        "c6726192662abeab149098095eabe004ecbec47f5e564748ab0d394affca47d9"
+      ]
+    },
+    "Vote": {
+      "title": "Vote",
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "abstain"
+      ]
+    },
+    "PlutusV1CostModel": {
+      "title": "PlutusV1CostModel",
+      "type": "array",
+      "items": {
+        "$ref": "query-layer.json#/definitions/Int128"
+      },
+      "maxItems": 166,
+      "minItems": 166
+    },
+    "PlutusV2CostModel": {
+      "title": "PlutusV2CostModel",
+      "type": "array",
+      "items": {
+        "$ref": "query-layer.json#/definitions/Int128"
+      },
+      "maxItems": 175,
+      "minItems": 175
+    },
+    "PlutusV3CostModel": {
+      "title": "PlutusV3CostModel",
+      "type": "array",
+      "items": {
+        "$ref": "query-layer.json#/definitions/Int128"
+      },
+      "maxItems": 251,
+      "minItems": 251
+    },
+    "CostModels": {
+      "title": "CostModels",
+      "type": "object",
+      "properties": {
+        "plutus_v1": {
+          "$ref": "query-layer.json#/definitions/PlutusV1CostModel"
+        },
+        "plutus_v2": {
+          "$ref": "query-layer.json#/definitions/PlutusV2CostModel"
+        },
+        "plutus_v3": {
+          "$ref": "query-layer.json#/definitions/PlutusV3CostModel"
+        }
+      },
+      "required": [],
+      "unevaluatedProperties": false
+    },
+    "UnitInterval": {
+      "title": "UnitInterval",
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "denominator": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        }
+      },
+      "required": ["numerator", "denominator"],
+      "unevaluatedProperties": false
+    },
+    "NonnegativeInterval": {
+      "title": "NonnegativeInterval",
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "denominator": {
+          "$ref": "query-layer.json#/definitions/PosInt64"
+        }
+      },
+      "required": ["numerator", "denominator"],
+      "unevaluatedProperties": false
+    },
+    "ExUnitPrices": {
+      "title": "ExUnitPrices",
+      "type": "object",
+      "properties": {
+        "mem_price": {
+          "$ref": "query-layer.json#/definitions/UnitInterval"
+        },
+        "step_price": {
+          "$ref": "query-layer.json#/definitions/UnitInterval"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": [
+        "mem_price",
+        "step_price"
+      ]
+    },
+    "ExUnits": {
+      "title": "ExUnits",
+      "type": "object",
+      "properties": {
+        "mem": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "steps": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        }
+      },
+      "required": [
+        "mem",
+        "steps"
+      ],
+      "unevaluatedProperties": false
+    },
+    "ProtocolVersion": {
+      "title": "ProtocolVersion",
+      "type": "object",
+      "properties": {
+        "major": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "minor": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        }
+      },
+      "required": [
+        "major",
+        "minor"
+      ],
+      "unevaluatedProperties": false
+    },
+    "PoolVotingThresholds": {
+      "title": "PoolVotingThresholds",
+      "type": "array",
+      "items": {
+        "$ref": "query-layer.json#/definitions/UnitInterval"
+      },
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "DRepVotingThresholds": {
+      "title": "DRepVotingThresholds",
+      "type": "array",
+      "items": {
+        "$ref": "query-layer.json#/definitions/UnitInterval"
+      },
+      "minItems": 10,
+      "maxItems": 10
+    },
+    "ProtocolParamUpdate": {
+      "title": "ProtocolParamUpdate",
+      "type": "object",
+      "properties": {
+        "ada_per_utxo_byte": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "collateral_percentage": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "cost_models": {
+          "$ref": "query-layer.json#/definitions/CostModels"
+        },
+        "d": {
+          "$ref": "query-layer.json#/definitions/UnitInterval"
+        },
+        "execution_costs": {
+          "$ref": "query-layer.json#/definitions/ExUnitPrices"
+        },
+        "expansion_rate": {
+          "$ref": "query-layer.json#/definitions/UnitInterval"
+        },
+        "key_deposit": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "max_block_body_size": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "max_block_ex_units": {
+          "$ref": "query-layer.json#/definitions/ExUnits"
+        },
+        "max_block_header_size": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "max_collateral_inputs": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "max_epoch": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "max_tx_ex_units": {
+          "$ref": "query-layer.json#/definitions/ExUnits"
+        },
+        "max_tx_size": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "max_value_size": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "min_pool_cost": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "minfee_a": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "minfee_b": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "n_opt": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "pool_deposit": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "pool_pledge_influence": {
+          "$ref": "query-layer.json#/definitions/UnitInterval"
+        },
+        "protocol_version": {
+          "$ref": "query-layer.json#/definitions/ProtocolVersion"
+        },
+        "treasury_growth_rate": {
+          "$ref": "query-layer.json#/definitions/UnitInterval"
+        },
+        "pool_voting_thresholds": {
+          "$ref": "query-layer.json#/definitions/PoolVotingThresholds"
+        },
+        "drep_voting_thresholds": {
+          "$ref": "query-layer.json#/definitions/DRepVotingThresholds"
+        },
+        "committee_min_size": {
+          "$ref": "query-layer.json#/definitions/UInt16"
+        },
+        "committee_max_term_length": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "gov_action_lifetime": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "gov_action_deposit": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "drep_deposit": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "drep_activity": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "min_fee_ref_script_cost_per_byte": {
+          "$ref": "query-layer.json#/definitions/NonnegativeInterval"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": []
+    },
+    "ProtocolParams": {
+      "title": "ProtocolParams",
+      "type": "object",
+      "description": "Protocol parameters",
+      "allOf": [{
+        "$ref": "query-layer.json#/definitions/ProtocolParamUpdate"
+      }],
+      "required": [
+        "ada_per_utxo_byte",
+        "collateral_percentage",
+        "cost_models",
+        "d",
+        "execution_costs",
+        "expansion_rate",
+        "key_deposit",
+        "max_block_body_size",
+        "max_block_ex_units",
+        "max_block_header_size",
+        "max_collateral_inputs",
+        "max_epoch",
+        "max_tx_ex_units",
+        "max_tx_size",
+        "max_value_size",
+        "min_pool_cost",
+        "minfee_a",
+        "minfee_b",
+        "n_opt",
+        "pool_deposit",
+        "pool_pledge_influence",
+        "protocol_version",
+        "treasury_growth_rate",
+        "pool_voting_thresholds",
+        "drep_voting_thresholds",
+        "committee_min_size",
+        "committee_max_term_length",
+        "gov_action_lifetime",
+        "gov_action_deposit",
+        "drep_deposit",
+        "drep_activity",
+        "min_fee_ref_script_cost_per_byte"
+      ],
+      "unevaluatedProperties": false
+    },
+    "DRepInfo": {
+      "type": "object",
+      "title": "DRepInfo",
+      "properties": {
+        "drep_id": {
+          "$ref": "query-layer.json#/definitions/DRepId"
+        },
+        "amount": {
+          "$ref": "query-layer.json#/definitions/PosInt64"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": ["drep_id", "amount", "active"],
+      "unevaluatedProperties": false
+    },
+    "CCMember": {
+      "type": "object",
+      "title": "CCMember",
+      "properties": {
+        "cc_cold_key": {
+          "$ref": "query-layer.json#/definitions/CCColdId"
+        },
+        "cc_hot_key": {
+          "$ref": "query-layer.json#/definitions/CCHotId"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["authorised", "not_authorised", "resigned"]
+        }
+      },
+      "required": ["cc_cold_key", "cc_hot_key", "status"],
+      "unevaluatedProperties": false
+    },
+    "Pool": {
+      "type": "object",
+      "title": "Pool",
+      "properties": {
+        "pool_id": {
+          "$ref": "query-layer.json#/definitions/PoolPubKeyHash"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "retiring", "retired"]
+        },
+        "active_stake": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "live_stake": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        }
+      },
+      "required": ["pool_id", "status", "active_stake", "live_stake"],
+      "unevaluatedProperties": false
+    },
+    "Proposal": {
+      "type": "object",
+      "title": "Proposal",
+      "properties": {
+        "proposal_id": {
+          "$ref": "query-layer.json#/definitions/ProposalId"
+        },
+        "ratified_epoch": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "enacted_epoch": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "expired_epoch": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "expiration": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        }
+      },
+      "required": ["proposal_id"],
+      "unevaluatedProperties": false
+    },
+    "VoteInfo": {
+      "type": "object",
+      "title": "VoteInfo",
+      "properties": {
+        "proposal_id": {
+          "$ref": "query-layer.json#/definitions/ProposalId"
+        },
+        "vote_tx_hash": {
+          "$ref": "query-layer.json#/definitions/TransactionHash"
+        },
+        "vote": {
+          "$ref": "query-layer.json#/definitions/Vote"
+        }
+      },
+      "required": ["proposal_id", "vote_tx_hash", "vote"]
+    },
+    "EraInfo": {
+      "type": "object",
+      "title": "EraInfo",
+      "properties": {
+        "time": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "slot": {
+          "$ref": "query-layer.json#/definitions/UInt64"
+        },
+        "epoch": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        }
+      },
+      "required": ["time", "slot", "epoch"]
+    },
+    "EraParameters": {
+      "type": "object",
+      "title": "EraParameters",
+      "properties": {
+        "epoch_length": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "slot_length": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        },
+        "safe_zone": {
+          "$ref": "query-layer.json#/definitions/UInt32"
+        }
+      },
+      "required": ["epoch_length", "slot_length", "safe_zone"]
+    },
+    "EraSummary": {
+      "type": "object",
+      "title": "EraSummary",
+      "properties": {
+        "start": {
+          "$ref": "query-layer.json#/definitions/EraInfo"
+        },
+        "end": {
+          "$ref": "query-layer.json#/definitions/EraInfo"
+        },
+        "parameters": {
+          "$ref": "query-layer.json#/definitions/EraParameters"
+        }
+      },
+      "required": ["start", "end", "parameters"]
+    }
+  }
+}
