@@ -59,8 +59,8 @@ The payload formats used below are either references to [CIP-0116 - Standard JSO
 ### Transports
 
 The API can be implemented across several transports. The goal is to allow several different clients, possibly written in different languages, to interact with wallets.
-For this reason we provide an [Openapi schema](./open-api.json), a [JSON-rcp](./json-rpc.json) schema, and an interface for an [injected Javascript](./ts-api.md) object in Typescript.
-We generate these interfaces from a high level specification of the endpoints [source](./link-to-ql-impl), ensuring that the information is consistent and easily updatable for different choices of transport layer.
+For this reason we provide an [Openapi schema](./open-api.json), a [JSON-RPC](./json-rpc.json) schema, and an interface for an [injected Javascript](./ts-api.md) object in Typescript.
+We generate these interfaces from a high level specification of the endpoints [source](https://github.com/mlabs-haskell/query-layer-impl), ensuring that the information is consistent and easily updatable for different choices of transport layer.
 
 ### Pagination
 
@@ -121,7 +121,7 @@ The API has an endpoint that must return the current version of the API implemen
 It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
 -->
 
-This CIP originates from the work layed out in the wallet working group, and specifically to address [CPS-012](https://github.com/klntsky/CIPs/blob/klntsky/query-layer-cps/CPS-0012/README.md)
+This CIP originates from the work layed out in the wallet working group, and specifically to address [CPS-012](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0012/README.md)
 
 This CPS initiative originated in the discussion about [Extensive Wallet Standard CIP](https://github.com/cardano-foundation/CIPs/pull/620) on the CIP Discord server ([invite](https://discord.gg/P59aNVN8zu))
 in the [`#general`](https://discord.com/channels/971785110770831360/992011119872970762/1176567729017327737) channel, continuing in a dedicated [`#query-layer-standard`](https://discord.com/channels/971785110770831360/1178763938389823598) channel.
