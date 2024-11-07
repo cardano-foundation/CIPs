@@ -82,7 +82,7 @@ proposed budget.
 > Lovelace, the smallest, non-divisible unit of currency on the Cardano mainnet
 > blockchain.
 
-### Constitutional Mandates
+### Constitutional Requirements
 
 The following requirements are currently specified within the content of the
 Cardano (Draft) Constitution as specified in
@@ -111,7 +111,7 @@ the [Motiviaton](#motivation-why-is-this-cip-necessary).
   be considered ratified after receiving approval from greater than 50% of
   active voting stake from DRep voters.
 
-### Budget Requirements
+### CIP Budget Requirements
 
 The following requirements are only specified here, within the context of the
 CIP process. Individual requirements **MUST** include a rationale and any
@@ -155,6 +155,8 @@ Using custodial funds in governance is similarly problematic:
    the will of the entire community through any on- or off-chain governance
    systems.
 
+<hr />
+
 #### Rule: Administrator Transparency
 
 ##### Definition
@@ -169,6 +171,8 @@ Individual budgets are likely to account for large amounts of value both in Ada
 and fiat computation. The responsible parties to manage and oversee the budget
 process should be publicly disclosed to bring confidence and accountability to
 the Cardano community.
+
+<hr />
 
 #### Rule: Radical Transparency
 
@@ -187,6 +191,8 @@ and subsequently to contractor(s) engaging in work as part of the budget
 process. Co-mingling (pooling) funds from various buckets decreases transparency
 and should not be tolerated.
 
+<hr />
+
 #### Rule: Conflict Resolution
 
 ##### Definition
@@ -201,6 +207,8 @@ Cardano Community following the same criteria as budget approval.
 By defining a _forum selection clause_ within the scope of the
 community-approved budget we can reduce uncertainty for both the administrators
 and the community should a conflict or dispute arise.
+
+<hr />
 
 #### Rule: Administrator Fees
 
@@ -217,6 +225,8 @@ or malicious administrative costs that severely deplete the spendable funds. In
 alignment with the goal of community transparency, it's important that all
 administrative costs of budget management be disclosed as part of the budget
 process.
+
+<hr />
 
 #### Rule: Applicable Period
 
@@ -240,6 +250,8 @@ should be considered valid.
 This provides an easy first point of indexing for governance actors to verify
 withdrawal validity and also prevents treasury withdrawals against historical
 budgets outside their validity period.
+
+<hr />
 
 #### Rule: Maximum Spend and Surplus Definitions
 
