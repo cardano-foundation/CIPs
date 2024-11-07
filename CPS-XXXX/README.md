@@ -12,6 +12,7 @@ Proposed Solutions:
 Discussions:
   - https://lu.ma/constitution
   - https://github.com/Crypto2099/draft-constitution/issues/5
+  - https://github.com/cardano-foundation/CIPs/pulls/935
 Created: 2024-11-04
 License: CC-BY-4.0
 ---
