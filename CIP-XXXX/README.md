@@ -1,6 +1,6 @@
 ---
 CIP: ???
-Title: Social Governance | Budget and Withdrawal Guardrails
+Title: Social Governance - Budget and Withdrawal Guardrails
 Category: Governance
 Status: Proposed
 Authors:
