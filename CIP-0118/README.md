@@ -1,1014 +1,616 @@
 ---
 CIP: 118
-Title: Validation Zones
+Title: Nested Transactions
 Category: Ledger
 Status: Proposed
 Authors:
-    - Polina Vinogradova <polina.vinogradova@iohk.io>
-    - Michael Peyton Jones <michael.peyton-jones@iohk.io>    
+    - Polina Vinogradova <polina.vinogradova@iohk.io>  
     - Will Gould <will.gould@iohk.io>
+    - Alexey (if he wants!)
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/780
     - https://github.com/cardano-foundation/CIPs/pull/862
+    - https://github.com/cardano-foundation/CIPs/pull/880
 Created: 2024-03-11
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
-We propose a set of changes that revolve around validation zones, a construct for allowing
-certain kinds of _underspecified transactions_. In particular, for the Babel-fees usecase
-we discuss here, we allow transactions that specify
-_part of a swap request_. A validation zone is a list of transactions such that
-earlier transactions in the list may be underspecified, while later transactions must
-complete all partial specifications. In the Babel-fees usecase, the completion of a
-specification is the fulfillment of a swap request.
-We discuss how validation zones for the Babel fees usecase can be
-generalized to a template for addressing a number of use cases from CPS-15.
+We propose a set of changes that revolve around nested transactions, a construct for composing
+certain kinds of _underspecified transactions_. Such transactions specify an intended action,
+but are missing certain data to perform this action. This data must be provided by a subsequent 
+transaction. In particular, for the Babel-fees usecase
+we discuss here, we allow transactions that are unbalanced, i.e. specify
+_a swap_. This intent can be fulfilled by another transaction providing the 
+funds requested in the swap (missing in the transaction), and accepting the offered funds
+(extra funds in the transaction). Transactions containing intents must be included in  
+a _top-level_ transaction. We call the 
+set of transactions containing the top-level transaction together with the _sub-transactions_
+it includes a _batch_. Applying a complete batch results in a valid ledger update, 
+however, applying each of the individual transactions may not. For example, insufficient 
+fees or collateral may be provided, missing witness info, etc.
 
 ## Motivation: why is this CIP necessary?
 
-This CIP provides a partial solution to the problems described in CPS-15.
-In particular, it describes some ledger changes that allow intent settlement
+This CIP provides a partial solution to the problems described in 
+[CPS-15](https://github.com/cardano-foundation/CIPs/pull/779).
+In particular, it describes some ledger changes that allow settlement
 of intents that require “counterparty irrelevance”, including many of the swap use cases
 and dApp fee sponsorship. The motivation behind designing this solution is _Babel fees_,
 which is a requirement to support "paying transaction fees in a non-Ada currency".
 The Babel-fees usecase is a special case of a swap. Supporting swaps is very desirable functionality for cryptocurrency
 ledgers.
 
-Some of the primary contenders for implementing swaps
-are two-way off-chain communication (co-signing a single swapping transaction),
-smart contracts implementing DEX functionality, or ledger changes implementing
-an on-chain order matching DEX. We argue that our solution is the most versatile,
-least expensive for users, and maintains formal guarantees
-of the current Cardano ledger, among other benefits.
+There are off-chain solutions being developed for the purpose of achieving the same 
+(major) goals, including fee coverage, atomic swaps, DApp fee sponsorship, 
+collateral sponsorship, etc. This gives us indication that it is a worthy pursuit 
+to solve this problem at the ledger level, in a way that is cheaper, more convenient, 
+maintains formal guarantees, requires less off-chain communication, and does not require deposits or interaction 
+with smart contracts. 
 
-We discuss additional possible solutions to problems outlined
-in CPS-15 that could make use of much of the same validation zones infrastructure,
-but with varying kinds of underspecified transactions.
+The ledger changes we describe have been developed as a result of the discussions and 
+proposals in previous CIPs, including previous versions of validation zones proposals, 
+and Transaction Swaps. The following 
+new usecases and functionality are supported by the changes :
+
+1. transactions can be batched
+- batch contains one top-level transaction, with multiple possible sub-transactions ;
+
+2. the batch must be balanced, but individual transactions in it do not have to be, so 
+- transactions in a single batch may pay each others' fees and minUTxOValue ;
+- unbalanced transactions can be interpreted as swap offers, getting resolved within a complete batch ;
+
+3. script data is shared across all transactions in a single batch 
+- enables script deduplication ;
+
+4. batch observer scripts enable sub-transactions to specify properties required of batches in which they may be included 
+- design inspired by script observers ;
+
+5. the top-level transaction must provide collateral for all scripts in its sub-transactions 
+- sub-transactions are not required to cover their own collateral ;
+
+6. a new intent we call "spend-by-output", wherein a sub-transaction may specify outputs it 
+- intends to spend, and the top-level transaction specifies the inputs that point to those outputs in the UTxO set ;
+- example of possible additional supported intents (see CPS-15)
+potentially useful for LC functionality ;
+
+We note that the functionality added by (4) makes it possible to specify any and all intents that *do not require
+the relaxation of existing ledger rules*. That is, a user can specify any intent (action or property) the rest of the batch 
+must satisfy without violating existing ledger rules. Adding support for intents that *do require ledger rule relaxations*, such 
+the ones in (2, 3, 5, 6) above, must be done 
+more carefully to ensure secure operation of the ledger program.  
 
 
 ## Specification
 
+For the Agda specification prototype built on top of the current ledger spec, 
+see [Agda spec](https://github.com/IntersectMBO/formal-ledger-specifications/compare/polina-nested-txs).
 
-### Requests and Fulfills
+### Missing and extra assets 
 
-We define the type of requests, which is the same as the type of outputs, `Request := Output`.
-We add a new field to the transaction body, called `requests`,
-which has the same type as the structure containing transaction outputs, `Ix -> Request`,
-which enumerates requests in a transaction using natural number indexes.
+For a given transaction body, let `produced` and `consumed` be the produced and consumed 
+values, respectively. Then
 
-A request is included for the purpose of _requesting funds_ from another transaction to complete a swap,
-in the amount specified in the value field of the request. For most swaps, the
-script locking the output is trivial (always returns `True`), since the idea
-is that anyone should be able to fulfill a swap request. We refer to an output
-locked by this type of script as _unlocked_. We call such an
-output an _offer_ in the context of a swap.
+extra assets/currency `:= { aid ↦ v | aid ↦ v ∈ consumed - produced , v > 0 }`
 
-The amount of currency a transaction is offering to swap for the requested amount
-is usually placed in an unlocked _regular_ output.
+missing assets/currency `:= { aid ↦ v | aid ↦ v ∈ produced - consumed , v > 0 }`
 
-We also define the type of fulfills, which is the same as the type of inputs, `Fulfill := Input`.
-We add another new field to the transaction body, called `fulfills`,
-which has the same type as the structure containing transaction inputs, `Set Input`.
+### Transaction structure changes
 
-Requests and fulfills are examples of a way to submit and resolve one specific kind
-of _intents_. Whenever we discuss changes that are specific to the Babel fees/swaps
-usecase, we will refer to requests and fulfills. When generalization is
-possible, we say intents.
+We add the following new fields to `TxBody` : 
 
-### Transaction Dependencies and Value Flow
+1. `requireBatchObservers : ℙ ScriptHash`
+- set of scripts that must be run by the top-level transaction in the batch (where `TxInfo` includes info of all batch transactions)
 
-A _value dependency_ graph is a directed graph `G` that has transactions (or their
-corresponding IDs) as its vertices, and edges constructed as follows :
+2. `spendOuts : Ix ⇀ TxOut`
+- (indexed) outputs being spent 
 
-- if `tx1` spends an output of `tx2`, the edge `(tx2, tx1)` is in `G`
-(this type of edge is a _validation_ edge)
-- if `tx1` fulfills a request of `tx2`, the edge `(tx1, tx2)` is added to `G`
-(this type of edge is a _request_ edge)
+3. `corInputs : ℙ TxIn`
+- inputs corresponding to `spentOuts`
 
-A graph `G` constructed in this way may not be simple (e.g. if a transaction spends two
-different outputs of another transaction), and may or may not be
-acyclic (e.g. it there is both a validation and a request edge between two transactions).
+4. `subTxIds : ℙ TxId`
+-  IDs of sub-transactions in the batch
 
-We call `G` a value dependency graph be cause it represents the _flow of value_
-from one transaction to the next. Value flows from `tx2` to `tx1` when the
-assets placed in an output by `tx2` are spent by `tx1`. Value flows from `tx1`
-to `tx2` when a "loan" taken out (i.e. a request made) by `tx2` is repaid (i.e.
-fulfilled) by `tx1`. This is because `tx1` provides the assets missing from `tx2`.
+The following field is added to `Tx`:
 
+1.  `subTxs : List Tx` 
+- list of sub-transactions
 
-### Validation zones
+**Note** In the Agda spec, the transaction body contains `subTxIds : ℙ TxId`. The Haskell implementation aligns 
+with this to avoid confusion. A better design will be to include the full sub-transactions 
+directly in the body of the top-level transaction, making `Tx` a recursive type. 
+However, the recursive types design is more difficult to represent in Agda. 
 
-A validation zone is a list of transactions. This structure replaces singleton transactions
-as a unit of validation. Specifically, instead of singleton transactions,
-validation zones are
+**Note** The era which will include this CIP may be combined with the following additional changes :
 
-- sent across the Cardano network
-- entered into a mempool, and
-- placed in block bodies.  
+- `RdmrPtr ⇀ Redeemer` structure inside the body
+- datums inside the body
+- `requiredObservers` scripts that are checked by a transaction but are not for the purpose of validating a specific action (see 
+[CIP-0112](https://github.com/cardano-foundation/CIPs/pull/749))
 
-When validating a zone (i.e. for placement in the mempool or when validating an
-incoming block), each transaction is checked against the current ledger
-state, however, additional checks
-are done at the zone level.
+### Plutus
 
+#### New version
 
+A new Plutus version, `PlutusV4`, will be required, since the constraints on what it means for 
+a transaction to be valid, as well as the tx structure itself, are changed. Transactions 
+that are top-level transactions with no sub-transactions are still able to interact 
+with V3 scripts. Transactions that are underspecified and/or using any new features 
+introduced here are not. 
 
-### Temporary Zone Structures
+#### New script purposes
 
-A transaction may be  
-submitting or resolving intents (possibly simultaneously, for distinct intents).
-In the process of zone validation, unresolved intents in transactions are recorded in
-_temporary data structures_.
-These structures cannot be communicated across zones,
-and must be empty after applying the final transaction of a valid zone, i.e.
-all intents are resolved. Since transactions
-within a zone manipulate these temporary structures, it may be impossible to
-determine if a transaction is valid outside of a zone, or if a zone can/will ever
-be completed by future transactions (resolving the temporary structures).
+The following two new script purposes are introduced (together with script purpose tags with the same names) : 
 
-In the Babel fees/swaps usecase,
-processing of fulfills and requests is done in the same way as processing
-regular transaction inputs and outputs within a given ledger state. However,
-since unresolved requests do not belong in the UTxO set,
-this is done using a separate temporary zone structure similar to the UTxO set,
-`FRxO := UTxO`.
+1. `SpendOut : Ix → ScriptPurpose`, where the index indicates that a script is being run to validate spending a specific 
+output in `spendOuts`.
 
-Suppose a transaction with ID `txId1` contains the requests `(0 ↦ r), (1 ↦ r')`,
-and another transaction with ID `txId2` contains a fulfill `(txId1, 0)`.
-When the first transaction is applied to an empty `FRxO`, the requests are
-added, and we have
+2. `BatchObs : ScriptHash → ScriptPurpose`, where the script has indicates the script that must be run by the top-level 
+transaction to observe the validity of the batch.
 
-`FRxO =
-((txId1, 0) ↦ r,
-(txId1, 1) ↦ r')`
+`ScriptsNeeded` and `getDatum` are modified accordingly to include scripts for these purposes. `collectPhaseTwoScriptInputs` 
+also requires an additional parameter for constructing `TxInfo` to either contain lists of `TxInfo` for sub-transactions or not.
 
-Once the second transaction is applied, the first entry is removed by the
-fulfill, so we have `FRxO = (txId1, 1) ↦ r'`.
+#### TxInfo
 
-The UTxO state as it is currently defined does not contain a temporary
-`FRxO` structure, so we define `UTxOTemp : = UTxO x FRxO`.
-For this reason, we also create new data types, including `UTxOStateTemp`
-and `LStateTemp`, that exist alongside `UTxOState` and `LState`, and
-contain `UTxOTemp` instead of `UTxO`. These temporary
-states are updated by transactions inside the zone. This design would apply
-to temporary structures needed for processing other types of intents as well.
+The `TxInfo` shown to a PlutusV4 script has an added field :
 
-When all transactions in a
-zone have been checked and applied to the `LState`, and the zone-level
-constraints are checked (including that the temporary structures are empty), the zone transition  
-updates the "real" `LState`. This design makes it possible for all software
-that inspects the ledger state only before and after block application to remain
-unaware of the existence of any temporary structures.
-
-### Required transactions
-
-We add a new field to the transaction body, `requiredTxs`, which is a set of transaction IDs.
-The required transactions field is illegal outside a validation zone.
-This field is included in the script context. This field specifies the transactions
-that must be included in the zone in addition to the one being validated.
-We say that `tx1` is *requirement-dependent* on `tx2` whenever `tx1` includes the ID of
-`tx2` in its `requiredTxs` field. The purpose of this field is to introduce
-a kind of dependency that is unrelated to value flow.
-
-Recall that consumption of both a request and an input of a single transaction by another
-transaction is forbidden. This means that to complete a swap, two separate transactions
-must be constructed by the same user - one that fulfills the request, and one
-that consumes an offer (usually in the form of an unlocked input). The `requiredTxs`
-allows users to guarantee that if `tx1` fulfills the request of `tx`,
-a transaction `tx2`, which consumes the offer of `tx`, must also be applied.
-This is done by specifying that the ID of `tx2` in `requiredTxs` of `tx1.`
-
-**Alternate Design (Decision Required)**. The `requiredTxs` design described above cannot be used to
-create an _atomic batch_ of transactions, i.e. one that guarantees that
-if one transaction is included in a valid zone, all the transactions in the atomic batch are
-necessarily included in that zone.
-This is because constructing an atomic batch using this field leads to a circular
-dependency in specifying the `requiredTxs` field of all the transactions in a
-batch, as they must include each others' IDs in the computation of their own IDs.
-This design is nevertheless sufficient for the purpose of the Babel
-fees/swaps usecase, as its implementation only relies on unidirectional
-(non-circular) dependencies.
-
-Depending on whether atomic batches are a desirable feature, an alternate design
-may be implemented. In this design, `requiredTxs` is included in the transaction,
-but not the body of the transaction. Then, a signature is computed on the combination
-of the transaction ID and the `requiredTxs` field (instead of just the ID).
+- `otherInfos : List TxInfo`, which is populated with the `TxInfo` data for all sub-transactions in the batch 
+whenever both hold : (1) the transaction for which info is being constructed is top-level, and (2) the script purpose for 
+which this info is constructed is `BatchObs`.
 
 
-### Ledger Rule Changes
+### Ledger Transition Changes
 
 The prototype for the changes can be found
-[here](https://github.com/IntersectMBO/formal-ledger-specifications/compare/polina-babel?expand=1)
+[here](https://github.com/IntersectMBO/formal-ledger-specifications/compare/polina-nested-txs)
 
-#### ZONE
+The transition structure is changed from 
 
-Currently, the top-level transaction-processing transition system in the ledger system is `LEDGERS`.
-It considers a list of transactions in the block body valid whenever `LEDGER` is valid for
-each transaction, checked in the order they appear in that list. We propose replacing `LEDGERS`
-with
+`LEDGERS -> LEDGER -> UTXOW -> UTXO -> UTXOS` 
 
-`ZONES ⊆ LEnv x LState x List (List Tx) x LState`
+to 
 
-as the top level transition, which processes each zone in the block by
-validating it with the transition
+`LEDGERS -> LEDGER -> SWAPS -> SWAP -> UTXOW -> UTXO -> UTXOS`
 
-`ZONE ⊆ LEnv x LState x List Tx x LState`
 
-The `ZONE` system includes two rules : `ZONE-V` may be applicable when all transactions are tagged with
-`isValid` tag that is `True`, and `ZONE-N` may be applicable otherwise. The reason
-for differentiating phase-2 valid and invalid _zones_ (and not just at the level
-of individual transactions) is that it may not be possible to apply subsequent
-transactions in a zone once a single transaction is found to be phase-2 invalid.
-Recall that  
-it is not possible to exclude only _some_ transactions from a zone in a general way,
-so, unlike the existing design, the mempool is no able to reject individual zone transactions
-dependent on a preceding transaction being phase-2 valid. We design the `ZONE-N`
-rule to deal with this situation in a special way.
+#### `LEDGER` and `LEDGERS`
 
-The following checks are done by both rules :
+The transition `LEDGERS` still calls the `LEDGER` transition for each transaction in the given block,
+but `LEDGER` does not case split on the `isValid` tag. Instead, `LEDGER` performs
+a number of checks that require inspection of the top-level transaction as well as 
+the sub-transactions, such as the check that the entire batch is balanced, then 
+calls `SWAPS` on the list of transactions in the (constructed) tx batch. The 
+checks are :
 
-1. the sum total of the sizes of all transactions in the zone is less than the `maxTxSize`
-protocol parameter (see [Network Requirements and Changes](#network-requirements-and-changes)), and
-2. the collateral provided by each transaction `tx` for script execution is sufficient
-to cover **all scripts in all transactions preceding `tx` in the zone, including `tx` itself**
-(see [DDoS](#ddos))
-3. the `LEDGERS` transition is valid for the zone environment, transaction list,
-and initial `LStateTemp`, which is the initial `LState` of `ZONE` transition with the
-`FRxO` set to empty in `UTxOTemp`
-4. all collateral inputs must be in the initial `LState` UTxO set (see [DDoS](#ddos))
+1. Fees are correct. `feesOK` is modified by (1) replacing `txfee` with 
+the sum total of `txfee` values of all the transactions in the batch.
+The per-transaction fee is collected only once for the batch. 
 
-**`ZONE-V`**. This rule has additional checks :
+2. No regular inputs in any transaction are in also included as `corInputs` of the top-level tx
 
-1. there are no cycles in the transaction dependency graph (see [Flash Loans](#flash-loans))
-2. all `requiredTxs` for all transactions in the zone are present
+3. All `txins` and `corInputs` are contained in the UTxO set to which the top-level tx is being applied 
 
-The updated state in this rule is computed by applying `LEDGERS` to the starting state,
-environment, and list of transactions in the zone.
+4. `corInputs` in top-level tx point to the same (unordered) list of outputs in the UTxO set 
+as the list given by `spendOuts` 
 
-**`ZONE-N`**. This rule has additional checks :
+5. If the batch is not made up of a single transaction with failing scripts, the batch 
+must be balanced (POV holds). Both sides of the equation of POV now sum all of what used to be the 
+`produced` and `consumed` values for individual transactions. The value spend by `corInputs` 
+is added to the `consumed` side.*
 
-1. the only transaction that is phase-2 invalid in the zone is the last transaction
+6. Transaction size (which includes top-level and all sub-transactions) is below max for a single transaction
 
-The updated state in this rule is not the state computed by applying `LEDGERS`.
-We discard that state, and instead specify the updated `LState` directly.
-The only fields updated are :
+7. The sum of the execution units of all transactions in a batch is less than the max for a single transaction 
 
-1. the collateral inputs are removed from the UTxO (and change returned)
-2. `fees` is updated to `fees` + the collateral amount in the last transaction of the zone
+8. The list of IDs of `subTxs` contains the same IDs as in `subTxIds` 
+
+9. There are no repeating transaction IDs in `subTxs`
+
+(*) By not requiring a single transaction with failing scripts to be balanced, we allow Babel services
+to post on-chain phase-1 valid transactions for which they have already used their resources 
+to check scripts (and found that one or more failed). Such transactions will be processed by 
+collecting collateral only, so none of their other actions, including moving assets, will be applied,
+and therefore will not affect the ledger.  
+
+To construct the transaction list representing the complete batch, the original transaction prepends the 
+top-level transaction to its `subTx` list.
+
+The `LEDGER` rule then calls the `SWAPS` rule on the batch list, and the same state as it itself 
+has. The result of the `LEDGER` state update is computed by `SWAPS`. 
+However, the environment for `SWAPS` is distinct from `LEnv` (see below). 
+
+**Batch Information**  We define a new type, `BatchData`, to allow `LEDGER` to indicate to `SWAPS` via its environment
+the batch info required for correctly processing it. The type has constructors :
+
+- `SingularTransaction`, which indicates that the batch contains only one transaction with no sub-txs, but this tx contains new features
+
+- `OldTransaction`, which indicates that the batch contains only one transaction with no new features (old version of Plutus can be run)
+
+- `BatchParent txid batchValid` which indicates that this batch contains a top-level tx with ID `txid`, and it has sub-txs. The conjunction of 
+all `isValid` tags of all transactions in the batch (sub- and top-) is `batchValid`.
+
+We compute also compute `validPath : BatchData → Tx → Bool`, which 
+is true whenever all transactions in the batch are marked as phase-2 valid, or the singular/old transaction 
+has a true `isValid`.
+
+**`SWAPS` Environment** `SWAPS` has the same state and signal as `LEDGER`, but it has a distinct environment, `SwapEnv`,
+which is set when `LEDGER` calls `SWAPS` :
+
+- `lenv : LEnv` is set to the `LEnv` of the `LEDGER` transition
+
+- `bdat : BatchData` is set to the appropriate computed value as described above 
+
+- `reqObs : ℙ ScriptHash` is set to the `requireObservers` of the top-level transaction
+
+- `bScripts : ℙ Script` is set to the union of all scripts attached to all transactions in the batch
+
+- `valP : Bool` is set to the result of the `validPath bdat tx` computation
+
+**NOTE** Should we also require scripts to be limited to only required ones?
+Or relax this restriction? With the restriction, changes to `UTXOW` are required.
+
+**NOTE :** A possible improvement to the design may entail sharing of in-line (reference) scripts and datums across transactions.
+This will require collecting all in-line scripts and datums at this stage, and potentially including them in 
+the context.
+
+#### SWAP and SWAPS
+
+`SWAPS` iterates over the list of transaction in a batch, calling `SWAP` on each. The transition `SWAP`
+does exactly what `LEDGER` used to, except it is conditioned on the `validPath` value it gets in its environment. 
+To call the `UTXOW` rule, `SWAP` specifies the signal as the same `tx` that was its signal, and 
+sets the (new additional) `UTxOEnv` environment variables as follows
+
+- `bObs : ℙ ScriptHash` to `reqObs` in `SwapEnv`
+- `batchData : BatchData` to `bdat` in `SwapEnv`
+- `validPath : Bool` to `valP` in `SwapEnv`
+- `isTop : Bool` to `True` if batch data is `BatchParent txid batchValid`, and the ID of the signal transaction is equal to `txid`
+- `batchScripts : ℙ Script` to `bScripts` in `SwapEnv`
+
+#### UTXOW 
+
+The `UTXOW` rule additionally checks :
+
+1. `requireBatchObservers` is contained in the batch observers (in the environment)
+
+2. no sub-transactions contain sub-transactions.
+
+Other changes include :
+
+- Existing function that checks that required witness data is provided now 
+also checks that such data is provided for the `corInputs`. 
+
+- the supported language check requires that `PlutusV3` or earlier is 
+only allowed in (singleton) transactions that do not use new features. That is, 
+
+    - are balanced 
+    - have empty `requireObservers`, `spendOuts`, `conInputs`, and `subTxIds` fields.
+
+- instead of checking that all required scripts are attached to the transaction itself, 
+their presence in the environment variable containing all transactions' scripts is checked 
+
+`UTxOEnv` contains, in addition to existing fields, 
+
+- `BatchData` (that is passed on to the `UTXO` and `UTXOS` rules), and
+- a set of batch observer script hashes (also passed on to the `UTXO` and `UTXOS` rules)
+
 
 #### UTXO
 
-The `UTXO` rule is updated to additionally check that the `fulfills`
-of the transaction being processed are present in the `FRxO` set.
-The `UTXO` rule checks the preservation of value (POV), which compares the `produced`
-and `consumed` value for the given transaction. The POV calculation is updated by
-adding
+The `feesOK` check, the `txsize` check, the `produced = consumed` check, 
+and the check that `txins` are contained in the UTxO set,
+are removed from this rule (and moved to the `LEDGER` rule). 
 
-1. the sum total value in the transaction `fulfills` to the `produced` value
-2. the sum total value in the transaction `requests` to the `consumed` value
-
+The check that only top-level transactions may contain a non-empty 
+`corInputs` field is added. 
 
 #### UTXOS
 
-The `UTXOS` rule is the one that actually computes the updates to
-the UTxO state done by a transaction. The UTxO set update remains the same
-as in the existing design. The `FRxO` is updated by removing
-all entries that are indexed by the values in the `fulfills` of the
-transaction, then adding all entries of the form `(txID, ix) ↦ r`, where
-`txID` is the ID of the transaction being processed, and `ix ↦ r` is
-in the `requests` of the transaction.
+`UTXOS` transition now conditions on 
+
+- `validPath`
+
+- `isTop`, which 
+is true whenever the ID of the transaction matches the ID of the top-level transaction in the batch.
+
+The `UTXOS` rule is updated to have three constructors :
+
+1. `Scripts-Yes` : in the case that `validPath` is true, it removes both the 
+`txins` and the `corInputs` from the UTxO set (in addition to all the existing 
+changes done previously by `Scripts-Yes`).
+
+2. `Scripts-No` : in the case `validPath` is false, and `isTop` is false.
+No changes are made to the state here because collateral is only collected from the top-level transaction.
+
+3. `Scripts-No-TopLevel` : in the case `validPath` is false, and `isTop` is true.
+Collateral is collected, as in the previous version of the `Scripts-No` rule. 
+
+### Collateral and Phase-2 Invalid Transactions
+
+Enough collateral must be provided by the top-level transaction to cover the sum of all the 
+fees of all batch transactions. The collateral 
+can only ever be collected from the top-level transaction.
+The sub-txs are not obligated to provide sufficient 
+collateral for their own scripts, but they may choose to (this is never checked for sub-transactions). 
+A Babel fees service [Babel Service](#babel-service)
+may or may not require incoming underspecified transactions to provide their 
+own collateral, depending on whether they want to assume the risk of not being 
+compensated for running failing scripts. 
+
+If a sub-transaction passes required phase-1 checks (excluding being balanced/POV, and checks related to `spendOuts` and `corInputs`),
+it can be posted on-chain as a `SingularTrasaction`, so that it will be processed as top-level, and its collateral will be collected.
+
+### Batch Observers 
+
+Batch observers are scripts that must be run by a top-level transaction, but may be required by its sub-transactions 
+as a way to specify batch-level constraints. The have the script purpose with the tag `BatchObs` and the identifier `ScriptHash`.
+These are the only scripts that, in their `TxInfo` data, get a non-empty `otherInfos : List TxInfo` field, which is populated 
+with the infos of the sub-transactions. This is inspired by, and may be implemented in conjunction with the 
+[Observe Script Type CIP](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112). 
+
+The difference is that for a tx-observer script in the linked CIP is run on the `TxInfo` of the transaction 
+that requires it. With batch observers, the scripts are required by a sub-tx, but run with top-level input. 
+For the same top-level transaction, a regular observer and a batch observer in a transaction will get different `TxInfo`. 
+
+Batch observers are a way to specify any intents that to not require changes to the ledger rules. For example, 
+I may include a payment in my sub-transaction to specific address, and require via a batch observer that 
+any transaction that completes this 
+batch must execute some particular script. In this case, my intent is to get a party to interact with that contract. 
 
 ### System Component Changes
 
 ### Ledger
 
-The ledger changes follow the specification changes outlined above, however,
-we discuss additional things to consider in the process of integrating them into
-the current ledger design in a way that follows
-its principles and constraints. The prototype for ledger changes can be found
-[here](https://github.com/IntersectMBO/cardano-ledger/pull/4477/files)
+The ledger changes follow the specification changes outlined above.
+The ledger prototype introducing the new era containing 
+the changes as described in the specification can be found [here](https://github.com/willjgould/cardano-ledger/tree/wg/babel-rework).
 
-#### New Era
 
-Since the validation zone/babel fees changes will constitute a hard fork, we define
-a new era, `Babel`, alongside the existing ones. Everything that is unchanged is inherited from `Conway`.
-Changes made to the following components require converting
-certain existing types to associated types that differ across eras.
+#### CDDL
 
-#### Block Structure
+See [CDDL](https://github.com/willjgould/cardano-ledger/blob/wg/babel-rework/eras/babel/impl/cddl-files/babel.cddl).
 
-All blocks types in all previous eras contain sequences of transactions. We must allow Babel blocks to contain zones instead.
-
-The component of the existing (old) block structure we're most concerned with is `TxSeq`. The purpose of `TxSeq` is to act as an abstract representation of a block's transaction structure, including some metadata.
-
-```
--- OLD BLOCK STRUCTURE
-
-data Block h era
-  = Block' h (TxSeq era) BSL.ByteString
-
-class
-  EraSegWits era
-  where
-  type TxSeq era = (r :: Type) | r -> era
-  fromTxSeq :: TxSeq era -> StrictSeq (Tx era)
-  toTxSeq :: StrictSeq (Tx era) -> TxSeq era
-```
-
-We've changed the name of `TxSeq` to `TxZones`, and added a new `TxStructure` type to represent the underlying
-concrete structure of transactions (without the metadata). Note that this change is likely to be specific
-to the needs of the Haskell ledger codebase, but the concept of a per-era block structure is universal.
-
-```
--- NEW BLOCK STRUCTURE
-
-data Block h era
-  = Block' h (TxZones era) BSL.ByteString
-
-class
-  EraSegWits era
-  where
-  type TxStructure era :: Type -> Type
-  type TxZones era = (r :: Type) | r -> era
-
-  fromTxZones :: TxZones era -> TxStructure era (Tx era)
-  toTxZones :: TxStructure era (Tx era) -> TxZones era
-```
-
-The important change we've made is the addition of the `TxStructure` associated type. This allows us to be very clear with our intent; we can specify what concrete type the abstract `TxZones` represents per era, rather than mapping from `StrictSeq (StrictSeq (Tx era))` in eras which don't support zones. In other words, this allows us to specify the underlying transaction structure on a per-era basis.
-
-  ```
-  -- NEW CONCRETE INSTANCE OF TRANSACTION STRUCTURE
-
-  instance Crypto c => EraSegWits (ConwayEra c) where
-    type TxStructure (ConwayEra c) = StrictSeq
-    ...
-
-  instance Crypto c => Core.EraSegWits (BabelEra c) where
-    type TxStructure (BabelEra c) = Compose StrictSeq StrictSeq
-    ...
-  ```
-
-Understand, however, that `TxStructure` itself is very specific to the Haskell ledger codebase. The important change to make is to ensure the block's transaction structure can be different depending on the era.
-
-Omitting `TxStructure` and mapping per era should also be acceptable, if desired:
-  ```
-  fromTxZones :: TxZones era -> StrictSeq (StrictSeq (Tx era))
-  toTxZones :: StrictSeq (StrictSeq (Tx era)) -> TxZones era
-  ```
-
-An example of how this looks, in full, for two eras supporting different structures:
-  ```
-  instance Crypto c => EraSegWits (ConwayEra c) where
-    type TxStructure (ConwayEra c) = StrictSeq
-    type TxZones (ConwayEra c) = AlonzoTxSeq (ConwayEra c)
-    fromTxZones = txSeqTxns
-    toTxZones = AlonzoTxSeq
-
-  instance Crypto c => Core.EraSegWits (BabelEra c) where
-    type TxStructure (BabelEra c) = Compose StrictSeq StrictSeq
-    type TxZones (BabelEra c) = BabelTxZones (BabelEra c)
-    fromTxZones = Compose . txZonesTxns
-    toTxZones = BabelTxZones . getCompose
-  ```
-
-For more information, search for `CIP-0118#block-structure-0` in the codebase, which can be found [here](https://github.com/willjgould/cardano-ledger/tree/wg/babel-fees-prototyping-babel-erafirstrule).
-Please note that the most up-to-date prototype branch is `babel-fees-prototyping-babel-erafirstrule`.
-
-#### Transaction structure
-
-```
-data TransactionBody = TransactionBody
-  { ...
-  , fulfills :: Set Fulfill
-  , requests :: StrictSeq Request
-  , requiredTxs :: Set TxIn
-  }
-
-type Fulfill = TxIn
-type Request = TxOut
-```
-
-We must add `fulfills` and `requests` fields to the transaction body of whichever eras support the new feature.
-
-The `requiredTxs` field can be added to either the transaction body, as we've done in the prototype, or to the transaction itself.
-
-It's important to note that the structure we've chosen (the `requiredTxs` being in the `TransactionBody`, rather than alongside the `TransactionBody`) is a convenience
-that allows us to sidestep difficulties with signing. It does, however, prevent us from enabling fully atomic zones. To understand why, consider the act of hashing a
-`TransactionBody` whose `requiredTxs` refer to transactions which, themselves, refer to the `TransactionBody` being currently hashed: it wouldn't terminate.
-
-Not supporting fully atomic zones does not, however, hinder the Babel fees use case.
-
-For more information, search for `CIP-0118#tx-body-0` in the codebase.
-
-#### Ledger State
-
-There's a choice to be made around whether we simply add a new field for `FRxO`s to the existing `LedgerState`, or use the `LedgerStateTemp` concept from the Agda specification.
-
-In our prototype, we've taken the `LedgerStateTemp` approach:
-
-```
-data LedgerStateTemp era = LedgerStateTemp
-  { lstUTxOState :: !(UTxOStateTemp era)
-  , lstCertState :: !(CertState era)
-  }
-  deriving (Generic)
-
-data UTxOStateTemp era = UTxOStateTemp
-  { utxostUtxo :: !(UTxO era)
-  , utxostFrxo :: !(FRxO era)
-  , utxostDeposited :: Coin
-  , utxostFees :: !Coin
-  , utxostGovState :: !(GovState era)
-  , utxostStakeDistr :: !(IncrementalStake (EraCrypto era))
-  , utxostDonation :: !Coin
-  }
-  deriving (Generic)
-```
-
-Note that `UTxOStateTemp` has the same fields as `UTxOState`, but with a new `utxostFrxo` field for the transient `FRxO`.
-
-The transient nature of this structure describes, precisely, the nature of the rules: `FRxO`s cannot exist outside of the LEDGERS rule.
-
-However, the alternative approach of adding the `FRxO` as a field to the `LedgerState` is also acceptable:
-
-```
-data UTxOState era = UTxOState
-  { ...
-  , utxosFrxo :: FRxO era
-  ...
-  }
-  deriving (Generic)
-```
-
-It should be noted, however, that if this second approach is taken, an additional check should done in the ZONE rule to ensure that `utxosFrxo == ∅`.
-
-#### CBOR
-
-The following additions to the `.cddl` file for supporting eras should be made:
+The transaction body is as follows ("`...`" stands for unchanged existing fields) :
 
 ```
 transaction_body =
-  { ...
-  , ? 23 : set<intent_fulfill>             ; New; Intent fulfillments
-  , ? 24 : [* intent_request]              ; New; Intent asks/ requests
-  , ? 25 : set<transaction_input>          ; New; Required transactions
+  { 0 : set<transaction_input>             ; inputs
+  , ...
+  , ? 23 : set<$hash32>                    ; New; Swaps
+  , ? 24 : set<scripthash>                 ; New; Observer Scripts
+  , ? 25 : [* spend_out]                   ; New; Spend Outs
+  , ? 26 : set<cor_input>                  ; New; Cor Inputs
   }
-
-intent_fulfill = transaction_input
-intent_request = transaction_output
-fulfillment_request_transaction_output = [(intent_fulfill, intent_request)]
 ```
+
+The transaction is :
+
+```
+transaction =
+  [ transaction_body
+  , ...
+  , swaps / null
+  ]
+```
+
+Swaps (i.e. sub-transactions) are :
+
+```
+swaps = [ * transaction ]
+transaction_index = uint .size 2
+```
+
+New redeemer tags must be added :
+
+```
+redeemer_tag =
+    0 ; Spending
+  / 1 ; Minting
+  / 2 ; Certifying
+  / 3 ; Rewarding
+  / 4 ; Voting
+  / 5 ; Proposing
+  / 6 ; SpendOut
+  / 7 ; BatchObs
+```
+
 
 ### New Plutus Version
 
-As in the case of any ledger changes involving new transaction fields, a new Plutus
-version will be necessary to implement this CIP. The necessary changes to
-the latest existing version (V3?) include :
+The Plutus prototype, changing the 
+[context](https://github.com/willjgould/plutus/blob/wg/batch-observers/plutus-ledger-api/src/PlutusLedgerApi/V4/Contexts.hs).
+The fork link is [here](https://github.com/willjgould/plutus/tree/wg/batch-observers). 
 
-- a new script purpose, `Fulfills`, for indicating that a script locking a request
-is being executed
-- adding all new fields (`requests`, `fulfills`, `requiredTxs`) to the script context
+### Network and Consensus Changes
 
-Transactions using the new fields cannot execute scripts written in previous Plutus versions.
-Prototype is available [here](https://github.com/IntersectMBO/plutus/compare/master...willjgould:plutus:wg/babel-fees-prototyping)
+With this design, it is likely minimal changes will be required.
 
-### Consensus
+### Off-Chain Component Architecture
 
-We do not expect that any functional changes are required for consensus - the only
-change needed is likely the updating of any references to the block body type,
-which will be `List (List Tx)` instead of `List Tx`.
+Underspecified transactions cannot be communicated across the Cardano 
+network or stored in the mempool. This must be done off-chain.
+This CIP does not include an off-chain component, even though one would be necessary 
+for 
 
-### Mempool
+- communicating, 
+- storing, and 
+- matching 
 
-The mempool must switch to operating on zones instead of singleton transactions.
-It must also support adding _part of a zone_ to a block in the case of phase-2
-validation failure. That is, if a phase-2 invalid transaction is encountered
-during zone validation, subsequent transactions are not validated, and only the transactions
-validated up to and including this first phase-2 failing one are included in the
-zone. This partial zone is then included in the block.
+such transactions. The reason 
+for this is that different usecases may require different off-chain architecture. 
+In particular, different usecases will have specific configurations of the 
+kinds of transactions or requests they are interested in engaging with. 
+For example, an individual user may care only about offers of a specific token. 
+A light client server cares about transactions that do not specify their own inputs,
+and instead specify `spendOuts`. An exchange may care about offers of any popular 
+asset at a good price. 
 
-### Network Requirements and Changes
-
-Zones replace singleton transactions as units sent across the network. Zones must
-therefore have IDs (e.g. zone hashes) for a node to determine whether it has
-already downloaded the corresponding zone based on an ID it is observing on the network.
-To maintain network functionality, zone sizes must be limited by the current `maxTxSize`
-protocol parameter.
-
-**Decision Required**. Is this an acceptable constraint for the usecases we
-want to support?
-
-### CLI and API
-
-The node CLI should support the construction of the new type of transaction body,
-as well as the construction and (local) validation of a zone.
-The additional commands for transaction construction include supporting the
-modification of the `requests`, `fulfills`, and `requiredTxs` fields.
-The transaction balancing must also be modified, since there are new fields
-that may now contain funds.
+Moreover, different usecases may have different constraints on how "valid"
+they expect the underspecified transactions to be. Some may require that 
+incoming transactions are valid "enough" to collect collateral from as singular transactions.
+Some services may be willing to look at the requirements imposed by `requiredBatchObservers`, while 
+others may not be.
 
 
-#### Zone Construction
+#### Babel Service
 
-Zones are either
+A Babel service is the catch-all name we use here to refer to a service that is interested 
+in engaging with underspecified unbalanced transactions. Communication channels between such services and users constructing 
+unbalanced transactions are required. Such a service can be run by anyone, probably 
+alongside a full node. It would have to have a filter set for the kinds of transactions 
+it will engage with. There is no guarantee that every unbalanced transaction 
+will eventually be balanced by a subsequent incoming one, so each service will have 
+to solve this problem for themselves, probably using an appropriate filter.
 
-- constructed from scratch locally (e.g. using the node CLI), or
-- a (possibly incomplete) zone comes across a (non-Cardano) network, and a user
-adds more transactions to it locally
+#### Batch Observers
 
-The CLI should support both. Zone construction should give the user the ability to start a new zone and browse
-an existing one, as well as add,
-remove, and reorder transactions within an existing one. Determining the size of
-a zone, and submitting a zone
-to the network must be possible. Some special zone-level collateral calculation
-functionality must also be implemented (see [DDoS](#ddos)).
+A service processing underspecified transactions (such as the Babel service) may accept incoming transactions 
+that contain non-empty `requiredObservers`. This means this service must construct batches containing these 
+transactions and also satisfy the batch-level constraints imposed by the scripts specified in their `requiredObservers` 
+in order to create valid batches.
 
-Note that it may be possible that a part of a (valid) validation zone itself constitutes
-a valid validation zone, e.g. if the full zone contains no intents and therefore
-no resolving transaction. Such a zone, when observed on the network, can be (locally)
-deconstructed into smaller zone(s), which can be re-transmitted on the network.
-The resulting smaller zone(s), however, are considered an entirely new validation units.
+An additional high-level language may be beneficial to specify what the batch observer scripts 
+actually require of the batch, as Plutus script constraints may be difficult to work with directly.
 
+#### Light Client Service
 
+The design outlined here can facilitate a trustless LC service.
+Light clients may use the `corInputs` and `spendOuts` features to execute the following protocol.
+LC is the light client, and SP is the service provider. We assume there exists a 
+high-level language in which a light client can specify what they want a 
+transaction constructed for them by the SP to do, e.g. pay `x` amount from my 
+wallet to some other wallet, or mint some NFT. 
 
-### Wallet and DBSync
+1. LC -> SP : a high-level specification `s` 
+2. SP : construct a `tx` that 
+- meets `s`, 
+- includes one input `i` from SP's wallet
+- includes a payment to SP for light-client services
+3. SP : replace all inputs except `i` in `tx` with corresponding `spendOuts` from the UTxO set to make `tx'`
+4. SP -> LC : `tx'`
+5. LC : checks `tx'` meets `s`, signs it
+6. LC -> SP : signed `tx'`
+7. SP : constructs top-level `tx''` that provides the `corInputs` for `tx'`
+8. SP : submits to Cardano the top-level `tx''` with sub-tx `tx'`
 
-We do not anticipate drastic changes to either, but this requires further investigation.
-The DBSync will likely need to include a way to track the zone ID of transactions it records.
-While wallets should be able to construct request- and fulfill-containing
-transactions, is possible that additionally, some aspects of the required off-chain
-infrastructure should be supported, e.g. order-matching and communication.
-
-### Off-Chain
-
-The off-chain component required for the functioning of this proposal
-should be made up of at least the a way for users to :
-
-- track market prices of non-Ada tokens
-- communicate (partially valid) transactions
-- perform intents matching
-
-No off-chain component design is planned as part of this CIP. The reason
-for this is that we hope to encourage pluralism in the approaches to
-off-chain implementation. Off-chain intents-matching solutions are also more likely
-to be less restrictive and able to evolve more quickly both in their design and the
-rates they offer. Different approach are likely to be preferred by
-users for the details of their usecases (see [Callout to the Community](#callout-to-the-community))
-
-## Attacks and Mitigations
-
-### DDoS
-
-**Off-Chain**.
-Since we do not propose an off-chain component, we do not discuss mitigation of
-an off-chain DDoS attack, however, we note that such an attack consists of
-communicating intents that may never be fulfilled. This is because either they
-offer undesirable tokens for swaps, or set prices too high. It will be difficult
-to determine whether any intent _will_ ever be fulfilled, or even whether it was
-created with a malicious intent (spam).
-
-**On-Chain (Mempool)**.
-The possibility of un-fulfillable intents is an important reason for
-transmitting only entire zones across the Cardano network. Upon validating an
-incoming zone, a node is able to
-determine whether to discard it or add it to the mempool. This is not the
-case for intent-containing transactions. If we were to allow the mempool to
-contain intent-containing transactions outside zones, such a transaction
-could be placed in a mempool indefinitely, waiting for an appropriate
-partially-valid counterpart to complete the zone. An attacker could fill up
-a node's mempool with such transactions, rendering it unable to record
-additional incoming transactions. Zone-based validation
-prevents this attack.
-
-**On-Chain (Phase-1)**.
-Since zones are size-restricted by the constraint that currently restricts the
-size of a single transaction (`maxTxSize`), we assume that the phase-1 validation cost
-has the same limitations as before. So, phase-1 validation of a single
-zone is likely to cost the same as phase-1 validation of a single transaction
-currently costs. Therefore, we conjecture that the risks of a spam attack using phase-1
-invalid entities is not increased as compared to what it currently is.
-
-**On-Chain (Phase-2)**. The mempool attack scenario describes mitigation of an attack
-which results in a DDoS by using up all the node's mempool storage. Another kind of
-DDoS attack which we must defend against is one that involves a malicious
-party sending transactions with large (i.e. memory- or CPU-use-intensive)
-failing scripts. We refer to a script failure in a transaction as a _phase-2_ failure.
-
-In the current ledger design, this is mitigated by requiring a transaction to provide
-an amount of Ada collateral that is proportional to the sum of the sizes of all
-its scripts. This collateral is collected in the case of script failure.
-A phase-2 transaction failure in the design proposed in this CIP may result in phase-1 validation
-failures of subsequent transactions.
-To address this problem, we have defined the `ZONE-N` rule of `ZONE`. It requires
-that the collateral of each transaction
-
-- comes from the UTxO set to which the _zone_, rather than the transaction, is applied
-- covers the cost of running all scripts in all preceding transactions (itself included)
-
-This guarantees that enough collateral can
-always be collected the last transaction in a zone to cover all scripts that have been
-run during block validation as well as during mempool validation, compensating nodes
-for their validation work.
-
-The `ZONE-N` rule only applies whenever there is exactly one invalid transaction
-in the list, and it is the last one. It is not the case that we expect that a zone will always phase-2 fail at
-the last transaction. Rather, a mempool should stop validating and drop transactions
-that follow a phase-2 failing transaction, and constructs the block with the
-truncated zone (see [Mempool](#mempool)).
-
-Also, there is no way to check whether a `ZONE-N` valid
-zone is also missing transactions that preceded the phase-2 invalid transaction
-in the original zone. Only missing transactions on which the invalid transaction depends
-directly or via intermediate transactions (and either via spending its outputs or
-spending its requests) will cause a phase-1 failure. Dropping transactions that
-aren't needed for phase-1 validation of a phase-2 invalid zone will free up space
-for additional zones/transactions in a block.
-
-
-
-### Flash Loans
-
-A flash loan is a form of uncollateralized lending, e.g. done for the purpose of manipulating
-the market price of an asset. Allowing unconstrained
-combinations of transaction dependencies (both validation- and value-) makes
-arbitrary flash loans possible that can easily be resolved by subsequent transactions in
-the zone. This would be done by first producing a request containing the flash loan amount,
-then using the loaned assets inside the zone in unconstrained ways, and finally, fulfilling
-this request by a transaction that also consumes the loaned amount.
-Using the loaned amount spent by the transaction to cover the requested amount
-allows the preservation of value equation to balance.
-In the terms of this proposal, this can be formally described as
-the value dependency graph `G` for this zone contains a cycle, or in other
-words, the value dependency graph of transactions in the zone cannot be partially ordered.
-
-Our design provides protection against this type of attack.
-The `ZONE-V` rule checks that there are no cycles in the transaction value dependency graph.
-We note that `ZONE-N` does not perform this check because this rule applies
-one transaction in the zone, and only for the purpose
-of collecting collateral, which cannot perform a flash loan.
-
-The value ordering requirement is the major driving difference between the design
-in this CIP and the one published in the "Babel Fees via Limited Liabilities" paper.
-The design presented in that work prevented flash loan attacks by
-relying on the use of minting policies - a currency's minting policy is executed
-whenever a transaction changes the total (positive or negative) amount of that currency. E.g.
-if a transaction has 0 Ada in its inputs, but makes a request with the amount of Ada
-it requires to pay transaction fees, the policy-running solution will not work for our design.
-This is because many existing minting policies, e.g. of Ada, will fail in the usecases
-we require for this CIP. Minting policies of existing tokens cannot be changed.
-
-#### Price Manipulation and Frontrunning
-
-Flash loans have to do with price manipulation via changing the total quantities of
-tokens in existence by creating some in association with uncollateralized loans.
-They can be considered a specific a kind of frontrunning.
-Frontrunning, in general, has to do with the ability of certain entities to manipulate transactions
-through displacement, suppression, or insertion. This amounts to manipulating
-asset prices as well as controlling who gets to benefit from the trades.
-
-We conjecture that outside of the possibility of flash loans (addressed above),
-the opportunity for doing this on the Cardano network with the
-CIP features implemented
-are similar to that which existed prior to its implementation. Transaction
-cancellation (see [Cancellation](#cancellation)) plays an important role in
-preventing insertion of old (but previously unfulfilled) transactions making
-requests at unfavourable prices.
-
-As before,
-every block producer gets to decide which transactions/zones will be included
-in the block they are constructing, but
-the specific block producer for a given block cannot be predicted ahead of
-schedule. Also like in the current design, better offers are more likely to be
-accepted.
-
-
-#### Additional Risks
-
-No obvious additional risks related to the expected functionality of this
-proposal are predicted at this time. However, there are questions related to
-community behaviour, such as the the likelihood of adoption of this feature,
-and the likelihood that a robust off-chain mechanism will be build. Additionally,
-there is the risk that a more general intent-processing mechanism will be
-designed later on, subsuming this functionality (there are currently no competing
-designs or ideas, see [Towards Better Designs](#towards-better-designs)).
+Note that `tx'` may also be unbalanced, simultaneously allowing the LC 
+to make a payment in a non-Ada token for the service. This design ensures that 
+an LC cannot construct a fully valid transaction from `tx'`, since they do not have access to 
+the current UTxO (presumably, if they did, they would construct their own valid transaction).
+It also ensures that the SP is paid (in step 2) for their services. 
 
 ## Rationale: how does this CIP achieve its goals?
 
-### Design
+The primary purpose of this CIP is to enable Babel Fees. Our design allows users to perform arbitrary 
+swaps without two-way off-chain communication, and with counterparty irrelevance. This simulates
+fee payment in arbitrary currency whenever another use is willing 
+to accept the non-primary asset offer in exchange for paying the transaction fee. This is the core 
+requirement of Babel fees. In addition, the goal of this design is to lay the groundwork for 
+supporting more general intents and the possibility of extending to additional ones. 
+We have done so by adding the following set of features :
 
-We discuss a number of principles, requirements, and usecases to be supported by
-this proposal.
+1. transactions can be batched
+- batch contains one top-level transaction, with multiple possible sub-transactions ;
 
-**Supports paying fees in currency other than Ada (Babel Fees)**. This is achieved by allowing
-users to construct transactions that do not spend any Ada inputs. Instead, the
-transaction derives its ability to pay the fee from the Ada amount specified in its requests. Usually,
-an offer is also made to compensate any user that chooses to complete the
-zone by submitting a transaction fulfilling the requested Ada amount. See
-[Usecases](#usecases). Recall here that two transactions are needed to engage with a
-Babel fee offer - one that fulfills a request, and one that accepts the offer.
-They are dependent via the `requiredTxs` field.
+2. the batch must be balanced, but individual transactions in it do not have to be, so 
+- transactions in a single batch may pay each others' fees and minUTxOValue ;
+- unbalanced transactions can be interpreted as swap offers, getting resolved within a complete batch ;
 
-**Supports atomic swaps**. Atomic swaps work the exact same way as paying fees in
-non-Ada currencies, with the difference being that instead of including requests of
-only Ada, a user may request an arbitrary currency (and likely cover their own fees).
-The swap offer can also contain an arbitrary currency.
+3. script data is shared across all transactions in a single batch 
+- enables script deduplication ;
 
-**Counterparty irrelevance**. A desirable property expected of a system in which
-atomic swaps are possible is that arbitrary users should have the ability to
-engage with a swap offer, i.e.
-you don’t have to specify who is on the other side of that part of the trade.
-Not allowing this significantly limits the advantages of
-having such a system. The design in this proposal naturally allows users to
-build transactions that create both offers and requests that are unlocked,
-and therefore allow arbitrary users can engage with them to perform swaps.
+4. batch observer scripts enable sub-transactions to specify properties required of batches in which they may be included 
+- design inspired by script observers ;
+- represents all possible intents that do not require ledger rule relaxation ;
 
-**Does not interfere with existing ledger features**. Our design does not make
-changes to the majority of transaction application protocols, e.g.
-governance, staking/delegation, etc. Introducing zone structure into block
-body should not affect transaction application. More formal analysis of this
-may be required.
+5. the top-level transaction must provide collateral for all scripts in its sub-transactions 
+- sub-transactions are not required to cover their own collateral ;
 
-**Value flow modification makes sense**. The updated POV update treats
-transaction requests as consumed value, and fulfills as produced value. This is
-in line the with the interpretation on requests as loans, and fulfills as
-paying them back. Proving in Agda the POV property is in progress. We may
-require an additional zone-level POV property to ensure no value-flow inconsistencies
-arise in the introduction of this feature.
-
-**Minimizes off-chain communication**. Because unfulfilled offers cannot be sent
-across the Cardano network, they are transmitted "off-chain". However, two-way
-communication is not required in our design. The validation zones feature can be used
-by either (off-chain) disseminating a transaction with unfulfilled requests
-(after which no further action is required), or observing an existing transaction off-chain, and
-fulfilling its requests before submitting it to the Cardano network. Neither require
-communicating with the counterparty who constructed the other transaction(s) in the zone.
-
-**Minimizes reliance of smart contracts for key usecases**. This CIP allows
-swaps to be performed without the use of smart contracts (at least ones that are
-not simply unlocked), as shown in [Usecases](#usecases).
-This is not only cheaper in terms of transaction size and
-script-running costs, but makes it easier to make and fulfill and offer
-within a single block.
-
-**Keep order-matching logic off-chain**. Order matching is complicated task
-involving many parties with possibly competing interests. Building such a mechanism
-on-chain should only be done if the cost-benefit analysis is well in its favour.
-For example, it appears the implementation on the [Stellar](https://stellar.org/blog/developers/introducing-automated-market-makers-on-stellar) system is not heavily used.
-The Cardano platform changes we propose are fairly minor, unsophisticated, and comfortably aligned with
-existing ledger design principles (e.g. predictable outcomes of transaction application).
-This also allows the (off-chain) order-matching solutions to have a lot more flexibility
-and adaptability.
-
-**Mitigates Attacks**. The attacks we considered (and their mitigations) are discussed in
-[Attacks and Mitigations](#attacks-and-mitigations).
-
-### Other considerations
-
-#### Cancellation
-
-For many intent-based use cases it is useful to be able to cancel an intent, e.g.
-for the purpose of updating bids to track changes in asset prices.
-While cancellation is really an intent-processing problem, the design here affects
-what cancellation approaches are possible.
-There are a few approaches to cancellation that are compatible with the current design:
-
-- Accept the lack of cancellation.
-    - This is fine for use cases that don't care so much about cancellation, e.g. Babel fees: there we expect fast settlement and we don't expect the user to change their mind.
-    - Contrast with e.g. Cardano itself: you can't rescind a transaction once you submit it.
-- Cancel by spending an output that is required by your intent transaction, making it invalid.
-    - This requires taking an expensive action on-chain, and managing the outputs that you use for this purpose.
-    - This also requires being able to pay the transaction fee, which may be a problem for
-    Babel fees users
-    - This is not guaranteed in the case a fulfillment occurs some time between the user's
-    decision to cancel and the cancelling transaction being placed into a block. The valid  
-    zone including the fulfillment may make it into a block before the cancellation transaction
-    (or, intentionally preferred over the cancellation by the producer)
-    - Probably should come with a system to notify intent-processing systems that
-    the cancellation has occurred, so that people do not waste time trying to fulfil it.
-- Send around unsigned intents.
-    - This loses the benefits of uni-directional communication, since intents now have come back to the user to sign, but allows you to cancel things by simply refusing to sign them.
-- Use a trusted intermediary, who advertises intents but without some information that is needed to complete them (e.g. they strip the signatures and then advertise the unsigned version).
-   - This lets the user go offline but retain many of the benefits of the previous approach.
-- Set short TTLs on intent transactions so if they aren't settled quickly they become invalid.
-   - This only works if you know ahead of time when you want things to expire: you can't cancel any sooner or later than that.
-
-These approaches have different tradeoffs and different ones may be appropriate for different situations.
-A full approach to cancellation would also have to consider how to
-
-#### Era transition
-
-A hard fork (era transition) is required to implement the changes proposed above,
-currently implemented as a new `Babel` era.
-A full set of features to be included in this era must be determined and agreed upon.
-Additional development, analysis, testing, etc. will be required if more changes
-are included.
-So far, the validation zones proposal is not coupled with additional features.
-
-#### Callout to the Community
-
-Transactions containing requests cannot be put on the chain by themselves : they are
-fundamentally incomplete. As such, some kind of secondary networking is necessary
-to distribute these incomplete transactions to the counterparties who can complete them.
-That is: this proposal only addresses part of the intent-settlement problem, not
-the intent-processing problem.
-
-The author’s belief is that this is the right way to go because while on-chain
-processing systems have desirable properties (e.g. they have censorship resistance
-properties which cannot easily be matched by off-chain systems), designing an intent
-settlement (e.g. order-matching)
-system is a substantial research problem, and may entail different optimal solutions
-for different user needs. Also, the changes to the Cardano platform introduced in this CIP
-are merely an improvement on existing ways of doing things. If development of an off-chain
-component is done after than the on-chain changes, this will not delay users
-ability to perform desired tasks. For these reasons, the implementation of the on-chain and
-off-chain mechanisms do not need to be introduced simultaneously.
-
-However, implementing this CIP must include a callout to the community to
-implement the off-chain component. Here are examples of two broad categories of  
-design possibilities for such a component :
-
-- A shared database for all users to share the assets they are willing to trade and
-at what rates
-  - This approach is better for buyers because of transparency (market prices are easy to track)
-  - Someone has to maintain this
-  - Trust model is unclear
-  - Not everyone will want to use it, so likely multiple matching mechanism options are needed
-
-- Users keep track of rates and available assets privately
-  - No global way to track market prices
-  - Easier to order match (optimizing for a single user's profit instead of trying to be "fair")
-
-It is likely that both options will be useful.
-
+6. a new intent we call "spend-by-output", wherein a sub-transaction may specify outputs it 
+- intends to spend, and the top-level transaction specifies the inputs that point to those outputs in the UTxO set ;
+- example of possible additional supported intents (see CPS-15)
+potentially useful for LC functionality ;
 
 ## Use cases
 
 ### Open (atomic) swaps
 
-A wants to swap 10 Ada for 5 tokens `myT`.
-
-1. Party `A` creates a transaction `tx1` with
-    - an unlocked request `0` with 5 `myT` tokens,
-    - an output `0` which contains 5 `myT` tokens, and
-    - an unlocked output `1` containing 10 Ada
-    - some inputs totalling 10 Ada
-2. Party `A` sends `tx1` across some route that will get the swap offer into the hands of interested parties
-3. Party `B` sees the transaction, and creates two transactions to complete the zone:
-    - `tx2` fulfills the unlocked request `0` of `tx1`, and requires `tx3`
-    - `tx3` spends the unlocked output `1` of `tx1`
-4. Party `B` submits a validation zone consisting of `tx1`, `tx2`, and `tx3`
-
-Note that:
-
-- Party `B` does not need to go back to Party `A` to finish the swap
-- Party `A`’s swap proposal could be fulfilled by anyone, but Party `A` could restrict it by putting credentials (including scripts) on the outputs and requests of `tx1`
-- `tx1` has an unlocked output with Ada for anyone to take, but a zone with `tx1`
-will not be valid unless some party also consumes the request (this is what guarantees
-  the swap without the need to lock the offer)
-- In step (2), we say "sends ... across some route that will get the swap offer into the hands of interested parties".
-In subsequent usecases, we instead say "send ... to party X" instead to imply that X is a party that intends to
-fulfill the sent intent(s), and has received them across the network.
-
-Note that this proposal does _not_ provide a way to do more advanced kinds of swap, such as limit or market orders.
-These require the exact values to also be unknown (but constrained), which is not possible in this proposal.
-
-Here is a diagram for an example:
-
-![](./min-swap.png)
+A user wants to swap 10 Ada for 5 tokens `myT`. He creates an unbalanced transaction `tx` that 
+has extra 10 Ada, but is short 5 `myT`. 
+Any counterparty that sees this transaction can create a top-level 
+transaction `tx'` that includes `tx` as a sub-transaction. The transaction 
+`tx'` would have extra 5 `myT`, and be short 10 Ada. 
 
 ### DEX aggregators
 
-This is a simple extension of the previous example.
-Instead of Party A, we have a set of parties A1 ... An who want to make various kinds of swap, and a batcher, Party B, who collects these and resolves them using some source of liquidity (in this example a big UTXO).
-
-1. Parties A1 ... An create transactions T1 ... Tn with requests and offers (unlocked outputs) representing their desired trade, as in the previous example.
-2. Parties A1 ... An send T1 ... Tn to B
-3. Party B creates two transactions:
-    - T(n+1) has fulfilling all the requests in T1 ... Tn, and spends Party B’s liquidity UTXO `u` in order to do so, creating a new entry `u'` with the remainder. It also requires T(n+2)
-    - T(n+2) spends the offers from T1 ... Tn as well as `u'`, creating a new increased liquidity output `u''`
-4. Party B submits a validation zone consisting of T1 ... T(n+2)
-
+A DEX aggregator running a Babel service would set its filter to only accept transactions 
+trading tokens it is interested in, and are being traded at a favourable price. 
+It may or may not require incoming transactions to cover their own fees and/or collateral. 
+In the case a set of sub-transactions is not fully balanced, and the aggregator is interested 
+in participating in the exchange offers within the batch, it would have to include its own 
+liquidity pool as one of the inputs 
+in the top-level transaction, and output any extra tokens to its updated liquidity pool UTxO.  
 
 ### Babel fees
 
-Babel fees is a specific subtype of the first usecase where the request is necessarily
+Babel fees is a specific subtype of the first usecase where the missing assets are necessarily
 a quantity of Ada. Usually, it also implies that no Ada is contained in the inputs
-of the request-making transaction, and the requested Ada is used to pay transaction fees.
+of such a transaction, and the missing Ada goes towards paying transaction fees.
 
 
 ### DApp fee and min-UTxO sponsorship
 
-Party A wants to use a dApp operated by Party B (specifically, submit a transaction using a script S associated with the dApp).
-Party B wants to cover the fees and min-UTxO value for this.
-
-1. Party A creates a transaction T1 that uses script S, and has request `r` which requires Ada to cover the script fees.
-2. Party A sends T1 to Party B
-3. Party B creates a transaction T2 that fulfills `r`
-4. Party B submits a validation zone consisting of T1 and T2
-
-Note here that no offers are present in T1 because the the point of Dapp sponsorship
-is for the Dapp to cover the fees and min-UTxO value without being compensated in
-other tokens (although the Dapp itself may require depositing assets into it).
-
-### Bridges
-
-Centralized approaches to bridging tokens across blockchains have been developed,
-e.g. by [SingularityNET](https://singularitynet.gitbook.io/welcome-to-singularitynet/bridge/overview).
-A decentralized approach is much more difficult due to the requirement that
-there must be some way to verify data about the operation of an external piece of
-distributed software (on the side of both chains involved).
-This CIP makes the centralized version of the bridging process slightly more
-streamlined on the side of Cardano. Let B be a _trusted_ bridge. The untrusted
-case requires additional research.
-
-1. Party A sends an transaction T1 disposing of some tokens on chain D (either by burning
-  them or putting them in a special token pool) to B as well as to chain D
-2. Party A sends a transaction T2 with a request for the same amount of
-  tokens as in (1) on Cardano to B
-3. Bridge B waits for T1 to settle on D, then submits the zone `[T2; T3]` to
-  Cardano, where `T3` fulfills the request of `T2`
+DApp may run a Babel service which only cares only about transactions interacting with a 
+certain DApp, discarding all other incoming transactions immediately. This service 
+may include calculating ExUnits, paying fees/minUTxO for, and providing collateral for such 
+underspecified transactions. 
 
 
+### Comparison with Other Designs
 
-### Towards Better Designs
+### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
 
-### Original Babel Fees Design
-When developing this proposal based on the
-[Babel fees](https://iohk.io/en/research/library/papers/babel-fees-via-limited-liabilities/)
-paper, we have observed a number of clashes between ledger design principles and
-the proposal in the paper, as well as possible attack vectors. The key ones are :
+Transaction swaps achieve almost exactly the same goals as this CIP. The main differences 
+are :
 
-**Introducing liabilities**.
-New ledger features must always be implemented using new transaction field, rather
-than repurposing existing ones. So, _liabilities_ (which we call requests and
-fulfills here) cannot be introduced by simply allowing negative quantities in
-regular outputs. This also necessitates the use of a special container for these
-in the ledger state, which we call the FRxO.
+1. The top-level transaction contains subTxs`, which 
+are lists of transactions. They are processed as individual transactions, alongside the top-level tx. As a result, 
 
-**Checking minting policies**.
-In the original paper, we attempted to prevent flash loan attacks by forcing
-the execution of minting policies for any assets for which the total negative or
-positive quantities were changed. This was not a viable strategy for existing
-tokens, for which minting policies would overwhelmingly be unequipped to reason
-about such cases. In this proposal, we instead perform the cycle detection check
-on the transaction dependency graph.
+- the `TxIn` of each output can be computed for each output underspecified transaction  
+at the time of construction 
+
+- the `TxId` of the transaction for each entry in the UTxO set is necessarily 
+signed bt all the keys required by that transaction
+
+- the input to (and therefore output of) each script is predictable at the time of (underspecified) tx construction, 
+so that it is possible to compute required `ExUnits` for each of the scripts run by every sub-transaction 
+at the time of construction
+
+2. Contracts can only view data in the transaction running them, except in the case 
+that a top-level tx is running a batch-observer script
+
+3. In this design, script outputs (except of batch-observers) can be computed by any Babel service receiving an incoming 
+underspecified transaction (as well as the author of the transaction), and they do not depend on the top-level transaction.
+This makes constructing (and determining whether it is even possible to construct) 
+a valid top-level transactions more straightforward. 
 
 
-### Westberg’s “Smart Transactions”
+### CIP-0118 "Validation Zones-implicit"
 
-The design [Smart Transactions](https://github.com/input-output-hk/Developer-Experience-working-group/issues/47)
-has a lot of similarities to ours, in particular it follows the approach where
-transactions have partially unspecified inputs and outputs.
-However, it goes much further and proposes conditions on how those can be satisfied,
-as well as some kind of computed conditions for updating datums.
-It also proposes that intent-processing be done by the node.
-
-We think that we can eventually move in the direction of adding more of the
-intent-settlement features from the proposal (e.g. conditions on values in inputs),
-but the major point of disagreement is about intent processing.
-As previously discussed, this proposal only focuses on intent settlement, not intent processing.
-We now briefly discuss options of how to possibly proceed in this direction.
-
+The key difference between the Validation Zones-implicit design and this design is that 
+this design does not require as many (any?) major changes to be made to the operation 
+of the mempool. This is achieved by building a top-level transaction that includes 
+a list of sub-transactions, rather than modifying block structure to contain 
+such lists of transactions directly. Also, this design allows `ExUnits` to be specified by the top-level transaction for 
+sub-transactions.
 
 ### Validation zones for settling other types of intents
 
-This CIP lays the foundation for specification and resolution of intents on Cardano.
-It does so by establishing the concept of a validation zone - a list of transactions that
-can be validated as a whole, but it is impossible to check if the individual transactions
-are valid outside a zone. We conjecture that infrastructure we propose can be used for processing
-other types of underspecified transactions, and therefore more sophisticated
-intents. A proof of this requires a
-fleshed-out design for the expanded intent-processing system, which is outside the
-scope of this CIP. However, possibilities include :
-
-- Intent transactions that allow output references to be removed and replaced with their corresponding
-output data, while intent-settling transactions provide the matching output references
-for those outputs to fulfill this intent. This is the ledger component of a proposal
-for a light client solution.
-
-- Intents that support more advanced kinds of swaps, such as limit or market orders,
-and do not require the entire quantity offered to be swapped at once.
-
-Supporting these sorts of intents require the definition of new types of temporary ledger
-state structures, as well as changes to zone-level constraints.
-We believe that this is a fruitful direction that we can extend in future, and,
-as such, we think we can progress with this design even if we don’t have a full
-picture of where we might want to go with intents, although this is a significant risk.
-However, at this time there is no proposal for a general solution, i.e. one where introducing
-the ability to process each new kind of intent does not require specific ledger
-changes. Instead, the ideal intents-processing solution using validation zones
-would support intents whose zone-level constraints and any temporary data that
-must be recorded are specified _within the zone itself_, providing much more
-flexibility in the kinds of intents that are possible.
-
-It may be that the best way to implement intents on Cardano is entirely different from
-the underspecified transactions and validation zones approach we are taking here.
-In that case such a design might entirely obsolete this one, making it an expensive
-and pointless burden to maintain in future.
+We provide the example of the *intent to spend an output* as proof that this nested 
+transaction design can support additional intents in the future, as discussed 
+in the CPS-15. 
 
 
 ## Path to Active
@@ -1031,9 +633,12 @@ would remain between 3 and 6 until
 
 - Implementation of the proposed ledger changes in the formal ledger spec
 - Updated CIP Specification with full detail
-- Validation with community through Intersect
+- Community acceptance through Intersect
 - Implementation in the Cardano node in the context of a new era/hardfork
 - Deployment to testnet/mainnet
+
+## Links to implementations
+
 
 
 
