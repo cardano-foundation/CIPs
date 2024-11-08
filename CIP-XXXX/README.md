@@ -134,8 +134,6 @@ We have attempted to define a minimal API to cover many use cases, but we expect
 - [ ] Build at least one protocol adapter for any of the existing query layers that implements this spec
 - [ ] Build at least one offchain library integration
 
-<!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
-
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms.  Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header: -->
 
