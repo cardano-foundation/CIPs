@@ -24,8 +24,6 @@ See [CPS-12](https://github.com/cardano-foundation/CIPs/pull/625) for motivation
 
 ## Specification
 
-<!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned, if not covered under an optional Versioning main heading. If a proposal defines structure of on-chain data it must include a CDDL schema in its specification.-->
-
 The goal of this proposal is to define a standard, JSON-based, transport-agnostic query layer for wallets to implement which covers enough functionalities to be useful to a wide set of dApps.
 
 We will start by discussing existing query layer designs for dApps, so we can properly define the use case for this CIP. 
