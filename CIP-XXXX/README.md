@@ -23,7 +23,7 @@ intended to be generally useful to any dApp with User roles.
 
 ## Motivation: why is this CIP necessary?
 
-CIP-36 contains a limited form of role registration limited to voter and dRep registrations.
+CIP-0036 contains a limited form of role registration limited to voter and dRep registrations.
 
 However, Project Catalyst has a large (and growing) number of roles identified in the system, all of
 which can benefit from on-chain registration.
@@ -43,16 +43,16 @@ An individual dApp may have its own unique list of roles it wishes users to regi
 Roles are such that an individual user may hold multiple roles, one of the purposes of this
 CIP is to allow the user to unambiguously assert they are acting in the capacity of a selected role.
 
-CIP-36 offers a "purpose" field, but offers no way to manage it, and offers no way to allow it to be used unambiguously.
+CIP-0036 offers a "purpose" field, but offers no way to manage it, and offers no way to allow it to be used unambiguously.
 The "purpose" field therefore is insufficient for the needs of identifying roles.
 
-CIP-36 also does not allow the voting key to be validated.
+CIP-0036 also does not allow the voting key to be validated.
 This makes it impossible to determine if the registration voting key is usable, and owned by the registering user, or has
 been duplicated from another registration on-chain or is just a random number.
 
 It also offers no way to identify the difference between a voter registering for themselves, and a voter registering to be a dRep.
 
-These are some of the key reasons, CIP-36 is insufficient for future Project Catalyst needs.
+These are some of the key reasons, CIP-0036 is insufficient for future Project Catalyst needs.
 
 Registering for various roles and having role-specific keys is generally useful for any dApp.
 While this CIP is motivated to solve problems with Project Catalyst, it is also intended to be generally applicable to other dApps.
@@ -60,9 +60,9 @@ While this CIP is motivated to solve problems with Project Catalyst, it is also 
 There are a number of interactions with a user in a dApp like Catalyst which require authentication.
 However, forcing all authentication through a wallet has several disadvantages.
 
-* Wallets only are guaranteed to provide `signData` if they implement CIP30, and that only allows a single signature.
-* There are multiple keys controlled by a wallet, and it's useful to ensure that all keys reflected are valid.
-* It's equally important to ensure that registrations prove custody/ownership of certain on-chain identities,
+* Wallets only are guaranteed to provide `signData` if they implement CIP-0030, and that only allows a single signature.
+* There are multiple keys controlled by a wallet, and it is useful to ensure that all keys reflected are valid.
+* It is equally important to ensure that registrations prove custody/ownership of certain on-chain identities,
   such as registered stake address or dRep registration.
 * Metadata in a transaction is inaccessible to Plutus scripts.
 * Wallets could present raw data to be signed to the user, and that makes the UX poor because the user would have difficulty
@@ -104,7 +104,7 @@ A PKI consists of:
   * Each dApp *MAY* control its own CA,  the user trusts the dApp as CA implicitly (or explicitly) by using the dApp.
   * It is also permissible for root certificates to be self signed, effectively each user becomes their own CA.
   * However all Certificates are associated with blockchain addresses, typically one or more Stake Public Key.
-    * A certificate could be associated with multiple Stake Addresses, Payment Addresses or DRep Public Keys, as required.
+    * A certificate could be associated with multiple Stake Addresses, Payment Addresses, or DRep Public Keys, as required.
   * A dApp may require that a well known public CA is used.
   The chain of trust can extend off chain to centralized CAs.
   * DAOs or other organizations can also act as a CA for their members.
@@ -131,7 +131,7 @@ We intentionally take advantage of the significant existing code bases and infra
 
 #### Certificate formats
 
-x.509 certificates can be encoded in:
+X.509 certificates can be encoded in:
 
 * Binary DER format
 * [CBOR Encoded X.509 Certificates][C509].
@@ -162,24 +162,28 @@ Each dApp may have further validity requirements beyond those stated herein.
 
 At a high level, Role registration will collect the following data:
 
-1. An [optional list](#x509-certificate-lists) of DER format x509 certificates.
+1. An [optional list](#x509-certificate-lists) of DER format X.509 certificates.
 2. An [optional list](#x509-certificate-lists) of [CBOR Encoded X.509 Certificates][C509]
 3. An [optional list](#simple-public-keys) list of tagged simple public keys.
 4. An [optional certificate revocation](#certificate-revocation-list) set.
 5. An [optional set](#role-definitions) of role registration data.
 6. An [optional list](#dapp-specific-registration-data) of purpose specific data.
 
-### x509 Certificate Lists
+### X.509 Certificate Lists
 
 There can be two lists of certificates.
+1. X.509 Certificate
+2. CBOR Encoded X.509 Certificate (C509)
 They are functionally identical and differ only in the format of the certificate itself.
 
-DER Format certificates are used when the only certificate source is a legacy off-chain certificate.
-These are not preferred because they can be transcoded into c509 format, and are usually larger than their c509 equivalent.
-However, it is recognized that legacy support for x509 DER format certificates is important, and they are supported.
+*DER Format certificates* are used when the only certificate source is a legacy off-chain certificate. 
+While these are supported for legacy purposes, they are not preferred because:
+- They can be converted (or "transcoded") into C509 format.
+- They tend to be larger than their C509 equivalents.
 
-Preferably all certificates will either be uniquely encoded as c509 encoded certificates,
-or will be transcoded from a DER format x509 certificate into it's c509 equivalent.
+Preferably all certificates will either be 
+- Uniquely encoded as C509 encoded certificates, or
+- Transcoded from a DER format X.509 certificate into its C509 equivalent.
 
 The certificate lists are unsorted, and are simply a method of publishing a new certificate on-chain.
 
@@ -191,10 +195,10 @@ the key **SHOULD** be present in the witness set of the transaction.
 Individual dApps can strengthen this requirement to **MUST**.
 
 By including the Signature in the transaction, we are able to make a verifiable link between the
-off-chain certificate and the on-chain identity.
-This can not be forged.
+off-chain certificate and the on-chain identity. 
+This process is secure and cannot be forged.
 
-#### Plutus access to x509 certificates
+#### Plutus access to X.509 certificates
 
 Plutus is currently incapable of reading any metadata attached to a transaction.
 This specification allows for C509 encoded certificates to be present in the datum output of the transaction itself.
@@ -310,16 +314,17 @@ other extended roles are defined as Role 1+.
 #### Reference to a role signing key
 
 Each role can optionally be used to sign data.
-If the role is intended to sign data, the key it uses to sign must be declared in this field.
+If the role is intended to sign data, the key it uses to sign **MUST** be declared in this field.
 This is a reference to either a registered certificate for the identity posting the registration,
 or one of the defined simple public keys.
 
 A dApp can define is roles allow the use of certificates, or simple public keys, or both.
 
-Role 0 MUST have a signing key, and it must be a certificate.
-Simple keys can not be used for signing against Role 0.
+Role 0 Key Requirements:
+- Role 0 **MUST** have a signing key, and it **MUST** be a certificate.
+- Simple keys can not be used for signing against Role 0.
 
-The reason for this is the Role 0 certificate MUST include a reference to the on-chain identity/s to be bound to the registration.
+The reason for this is the Role 0 certificate **MUST** include a reference to the on-chain identity/s to be bound to the registration.
 Simple public keys can not contain this reference, which is why they are not permissible for Role 0 keys.
 
 A reference to a key/certificate can be a cert in the same registration, or any previous registration.
@@ -329,10 +334,11 @@ is registered for the role.
 #### Reference to a role encryption key
 
 A Role may require the ability to transfer encrypted data.
-The registration can include the Public key use by the role to encrypt the roles data.
-Due to the way public key encryption works, this key can only be used to send encrypted data to the holder of the public key.
-However, when two users have registered public keys,
-they can use them off-chain to perform key exchange and communicate privately between themselves.
+In this case, the registration can include the public key used by the role to encrypt the roles data.
+
+Public key encryption works with a pair of keys: a public key (which is shared and can be used by anyone) and a private key (which is kept secret by the owner). The public key can only be used to encrypt data that can then only be decrypted by the holder of the corresponding private key.
+
+When two users have their public keys registered, they can use these keys off-chain to securely exchange information, such as performing a key exchange or encrypting messages that can only be read by the holder of the private key.
 
 The Role encryption key must be a reference to a key that supports public key encryption, and not just a signing key.
 If the key referenced does not support public key encryption, the registration is invalid.
@@ -342,7 +348,7 @@ If the key referenced does not support public key encryption, the registration i
 Some dApps may require a user to register their payment key, so that rewards (native tokens or NFT's)
 can be sent or for other use cases.
 
-Registrations like CIP-15/36 for catalyst include a payment key.
+Registrations like CIP-0015/CIP-0036 for catalyst include a payment key.
 However, a fundamental problem with these metadata standards is there is no way to validate:
 
 1. The payment key declared is valid and capable of receiving payments.
