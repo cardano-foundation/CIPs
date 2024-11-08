@@ -105,19 +105,16 @@ role-encryption-key = key-reference
 role-extended-data-keys = (10..99)
 
 role-extended-data = any
-key-reference = key-local-ref / key-hash
+key-reference = key-local-ref
 
 ; Offset reference to a key defined in this registration.
 ; More efficient than a key hash.
-key-local-ref = [ x509-certs
-                / c509-certs
-                / (pub-keys, key-offset) ]
+key-local-ref = [ (x509-certs, offset)
+                / (c509-certs, offset)
+                / (pub-keys,   offset) ]
 
-; Offset of the key in the specified set.  0 = first entry.
-key-offset = uint
-
-; Reference to a key defined in an earlier registration
-key-hash = bytes .size 16
+; Offset of the item in the specified set.  0 = first entry.
+offset = uint
 
 ; Reference to a transaction input/output as the payment key to use for a role
 ; Payment key (n) >= 0 = Use Transaction Input Key offset (n) as the payment key
