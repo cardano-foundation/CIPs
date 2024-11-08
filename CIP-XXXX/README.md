@@ -15,7 +15,6 @@ Version: 0.0.0
 ---
 
 ## Abstract
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 
 A transport-agnostic query layer specification for use in dApps and wallets.
 
