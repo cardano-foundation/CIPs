@@ -125,7 +125,6 @@ We have attempted to define a minimal API to cover many use cases, but we expect
 ## Path to Active
 
 ### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 
 - [ ] There is at least one protocol adapter for any of the existing query layers that implements this spec, that can be run.
 - [ ] There is at least one offchain library that implements a provider interface for this CIP, effectively making it usable with the protocol adapter in production.
