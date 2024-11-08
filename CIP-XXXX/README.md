@@ -130,7 +130,6 @@ We have attempted to define a minimal API to cover many use cases, but we expect
 - [ ] There is at least one offchain library that implements a provider interface for this CIP, effectively making it usable with the protocol adapter in production.
 
 ### Implementation Plan
-<!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
 
 - [ ] Build at least one protocol adapter for any of the existing query layers that implements this spec
 - [ ] Build at least one offchain library integration
