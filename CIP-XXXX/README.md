@@ -113,11 +113,6 @@ The API has an endpoint that must return the current version of the API implemen
 
 ## Rationale: how does this CIP achieve its goals?
 
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
-
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
-
 This CIP originates from the work layed out in the wallet working group, and specifically to address [CPS-012](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0012/README.md)
 
 This CPS initiative originated in the discussion about [Extensive Wallet Standard CIP](https://github.com/cardano-foundation/CIPs/pull/620) on the CIP Discord server ([invite](https://discord.gg/P59aNVN8zu))
