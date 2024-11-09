@@ -30,29 +30,41 @@ We are trying to create a scheme which is generic and becomes the accepted stand
 To that end, the smart contract which has been defined attempts to be the most simple and generic possible whilst allowing the affirmer (and only the affirmer) to revoke their affirmation. No fee is required (aside from the inherent blockchain fees), the smart contract contains nothing specific to the author's websites or implementation. It is designed so that it can be integrated into any blockchain explorer, wallet or dApp. 
 
 ## Specification
-[v1 of the affirmation contract](affirmation.ak)
+[v1 of the affirmation contract](affirmation.ak)  
 
+Definitions:  
+**target** - the recipient of the affirmation  
+**source** - the creator of the affirmation (the person or entity who is vouching for them)  
+**target hash** - if the **target** is a normal wallet, this should be their stake key hash. If the **target** is a script, this should be the script hash  
+**source hash** - if the **source** is a normal wallet, this should be their stake key hash. If the **source** is a script, this should be the script hash  
+**affirmation script** - any script which conforms to this specification (details below)  
+**script hash** - the hash of the **affirmation script**  
+**affirmation address** - An address where the spending part is **script hash** and the delegation part is **target hash**  
 
-Definitions: 
-*target* - the recipient of the affirmation
+An affirmation consists of a UTxO at the **affirmation address** with an inline datum containing the **source hash**. To be valid, this UTxO must contain one token minted by the **affirmation script**, and the **affirmation script** itself must be valid as defined below:
 
-*source* - the creator of the affirmation (the person or entity who is vouching for them)
-
-*target hash* - if the *target* is a normal wallet, this should be their stake key hash. If the *target* is a script, this should be the script hash
-
-*source hash* - if the *source* is a normal wallet, this should be their stake key hash. If the *source* is a script, this should be the script hash
-
-*affirmation script* - any script which conforms to this specification (details below)
-
-*script hash* - the hash of the *affirmation script*
-
-*affirmation address* - An address where the spending part is *script hash* and the delegation part is *target hash*
-
-An affirmation consists of a UTxO at the *affirmation address* with an inline datum containing the *source hash*. To be valid, this UTxO must contain one token minted by the *affirmation script*. 
-
-A valid *affirmation script* _MUST_ allow minting exactly one token at a time, it _MUST_ ensure that it receives a signature matching the *source hash* or is otherwise authorized by *source*, it _MUST_ ensure that the output containing the newly minted token contains an inline datum with a matching *source hash*, it _MUST_ also ensure that this output it sent to an address where the spending part is equal to the *script hash*. In order to enable revokation, the script should allow spending, and _MUST_ ensure that it receives a signature matching *source hash* or is otherwise authorized by *source* and _MUST_ ensure that exactly one token matching the *affirmation script*'s policy ID is burned. 
+A valid **affirmation script** _MUST_ allow minting exactly one token at a time, it _MUST_ ensure that it receives a signature matching the **source hash** or is otherwise authorized by **source**, it _MUST_ ensure that the output containing the newly minted token contains an inline datum with a matching **source hash**, it _MUST_ also ensure that this output it sent to an address where the spending part is equal to the **script hash**. In order to enable revokation, the script should allow spending, and _MUST_ ensure that it receives a signature matching **source hash** or is otherwise authorized by **source** and _MUST_ ensure that exactly one token matching the **affirmation script**'s policy ID is burned. 
 
 MeshJS (the Typescript Cardano library) [has been updated](https://github.com/MeshJS/mesh/commit/fbfc8dd922ddf4c4df0d59f5fbd4f260af34da5d) so that it knows how to build these transactions, so you can do it in one easy step if you're in TS/JS. [A Python implementation](https://github.com/kieransimkin/affirmation-graph/blob/main/examples/affirm.py) is also available. 
+
+### Datum specification 
+```cddl
+keyhash = bytes .size 28
+datum = #6.121([keyhash])
+```
+
+Example datum as JSON:
+
+```json
+{
+    "constructor": 0,
+    "fields": [
+        {
+            "bytes": "4ec65f9ad80492c187df2d9d7428d5c1fef10de7687cdf9356170816"
+        }
+    ]
+}
+```
 
 ### Versioning
 Any change to the specification will result in a new smart contract, and consequently a new script hash will be generated. Since we draw the affirmation graph by monitoring for UTxOs with the script hash as the payment part of their address, it is desirable to keep new versions to a minimum - as every additional version will effectively create an entirely separate graph, as well as increasing the monitoring overhead for anyone wishing to draw the graph, and require anyone wishing to implement the affirm and revoke actions into their own code to interact with multiple contract endpoints.
