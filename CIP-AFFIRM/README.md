@@ -35,11 +35,17 @@ To that end, the smart contract which has been defined attempts to be the most s
 
 Definitions: 
 *target* - the recipient of the affirmation
+
 *source* - the creator of the affirmation (the person or entity who is vouching for them)
+
 *target hash* - if the *target* is a normal wallet, this should be their stake key hash. If the *target* is a script, this should be the script hash
+
 *source hash* - if the *source* is a normal wallet, this should be their stake key hash. If the *source* is a script, this should be the script hash
+
 *affirmation script* - any script which conforms to this specification (details below)
+
 *script hash* - the hash of the *affirmation script*
+
 *affirmation address* - An address where the spending part is *script hash* and the delegation part is *target hash*
 
 An affirmation consists of a UTxO at the *affirmation address* with an inline datum containing the *source hash*. To be valid, this UTxO must contain one token minted by the *affirmation script*. 
