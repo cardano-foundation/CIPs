@@ -142,7 +142,8 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
   - [x] CNTools
   - [x] SPO Scripts
   - [x] typhonjs
-  - [ ] Gov Tools
+  - [x] Gov Tools
+  - [x] cardano-signer
 - [ ] APIs
   - [x] Koios
   - [x] Cardanoscan API
