@@ -7,7 +7,8 @@ Authors:
   - Kieran Simkin <hi@clg.wtf>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/938
+    - https://forum.cardano.org/t/introducing-the-affirmation-graph-request-for-comment/138320
 Created: 2024-10-26
 License: CC-BY-4.0
 ---
