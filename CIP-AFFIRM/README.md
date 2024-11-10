@@ -35,27 +35,28 @@ To that end, a smart contract conforming to this specification has been defined 
 [v1 of the affirmation contract](affirmation.ak)  
 
 Definitions:  
-**target** - the recipient of the affirmation  
-**source** - the creator of the affirmation (the person or entity who is vouching for them)  
-**target hash** - if the **target** is a normal wallet, this should be their stake key hash. If the **target** is a script, this should be the script hash  
-**source hash** - if the **source** is a normal wallet, this should be their stake key hash. If the **source** is a script, this should be the script hash  
-**affirmation contract** - any smart contract which conforms to this specification (details below)  
-**contract hash** - the hash of the **affirmation contract**  
-**affirmation address** - An address where the spending part is **contract hash** and the delegation part is **target hash**  
+==target== - the recipient of the affirmation  
+==source== - the creator of the affirmation (the person or entity who is vouching for them)  
+==target hash== - if the ==target== is a normal wallet, this should be their stake key hash. If the ==target== is a script, this should be the script hash  
+==source hash== - if the ==source== is a normal wallet, this should be their stake key hash. If the ==source== is a script, this should be the script hash  
+==affirmation contract== - any smart contract which conforms to this specification (details below)  
+==contract hash== - the hash of the ==affirmation contract==  
+==affirmation address== - An address where the spending part is ==contract hash== and the delegation part is ==target hash==  
 
-An affirmation consists of a UTxO at the **affirmation address** with an inline datum containing the **source hash**. To be valid, this UTxO must contain one token minted by the **affirmation contract**, and the **affirmation contract** itself must be valid as defined below:
+An affirmation consists of a UTxO at the ==affirmation address== with an inline datum containing the ==source hash==. To be valid, this UTxO must contain one token minted by the ==affirmation contract==, and the ==affirmation contract== itself must be valid as defined below:
 
-A valid **affirmation contract** _MUST_ allow minting exactly one token at a time. In order to mint:
-  - it _MUST_ ensure that it receives a signature matching the **source hash** or is otherwise authorized by **source**, 
-  - it _MUST_ ensure that the output containing the newly minted token contains an inline datum with a matching **source hash** and 
-  - it _MUST_ ensure that this output it sent to an address where the spending part is equal to the **contract hash**.  
-In order to enable revokation, the contract should allow spending. When spending, the contract:
-  - _MUST_ ensure that it receives a signature matching the **source hash** in the datum, or is otherwise authorized by **source** and 
-  - _MUST_ ensure that exactly one token matching the **affirmation contract**'s policy ID is burned. 
+A valid ==affirmation contract== _MUST_ allow minting exactly one token at a time. In order to mint:  
+  - it _MUST_ ensure that it receives a signature matching the ==source hash== or is otherwise authorized by ==source==, 
+  - it _MUST_ ensure that the output containing the newly minted token contains an inline datum with a matching ==source hash== and 
+  - it _MUST_ ensure that this output it sent to an address where the spending part is equal to the ==contract hash==.
 
-A generic **affirmation contract** has been provided which meets these requirements - you should use that unless you have specific requirements which are not met by that script.
+In order to enable revokation, the contract should allow spending. When spending, the contract:  
+  - _MUST_ ensure that it receives a signature matching the ==source hash== in the datum, or is otherwise authorized by ==source== and 
+  - _MUST_ ensure that exactly one token matching the ==affirmation contract=='s policy ID is burned. 
 
-It should be noted that if you do write your own custom **affirmation contract**, your affirmations will not automatically be picked up by the [affirmation graph indexer](https://github.com/kieransimkin/affirmation-graph-index) - this is because the indexer maintains a list of known valid affirmation contracts. If you wish to add your contract to the list you should submit a pull request to the indexer repository in which you must prove that your contract meets the requirements detailed above - only then will your affirmations be included in the global Affirmation Graph. If in doubt, simply use the generic affirmation contract that has been provided as part of this CIP unless you have a good reason not to. 
+A generic ==affirmation contract== has been provided which meets these requirements - you should use that unless you have specific requirements which are not met by that script.
+
+It should be noted that if you do write your own custom ==affirmation contract==, your affirmations will not automatically be picked up by the [affirmation graph indexer](https://github.com/kieransimkin/affirmation-graph-index) - this is because the indexer maintains a list of known valid affirmation contracts. If you wish to add your contract to the list you should submit a pull request to the indexer repository in which you must prove that your contract meets the requirements detailed above - only then will your affirmations be included in the global Affirmation Graph. If in doubt, simply use the generic affirmation contract that has been provided as part of this CIP unless you have a good reason not to. 
 
 MeshJS (the Typescript Cardano library) [has been updated](https://github.com/MeshJS/mesh/commit/fbfc8dd922ddf4c4df0d59f5fbd4f260af34da5d) so that it knows how to build these transactions, so you can do it in one easy step if you're in TS/JS. [A Python implementation](https://github.com/kieransimkin/affirmation-graph/blob/main/examples/affirm.py) is also available. 
 
@@ -79,7 +80,7 @@ Example datum as JSON:
 ```
 
 ### Versioning
-This is version 1 of the affirmation graph specification - any material change in the specification will necesssarily require a new smart contract, which will result in new set of **affirmation addresses**. Consequently an affirmation contract will always target a specific version of the specification. Any new version of this specification should be separately defined in its own CIP.
+This is version 1 of the affirmation graph specification - any material change in the specification will necesssarily require a new smart contract, which will result in new set of ==affirmation addresses==. Consequently an affirmation contract will always target a specific version of the specification. Any new version of this specification should be separately defined in its own CIP.
 
 ## Rationale: how does this CIP achieve its goals?
 It could be argued that, with enough Ada, it is always possible to create many wallets and then submit affirmations for yourself - thus returning the system to being weighted by how much Ada you have - however, this would be a failure to understand the purpose of a decentralized Affirmation Graph - in a this regime, each individual person is responsible for interrogating the graph to establish a trust score for a particular wallet - but they have complete freedom on how they choose to interpret the graph - for example, you could decide to only trust wallets that have been affirmed by a specific person (perhaps yourself, or a person you know who has affirmed a lot of people and whose judgement you trust), or only trust wallets that have a minimum number of affirmations from anyone, or you could specify that at least two of your friends must have affirmed a wallet. You could even require that a centralized KYC provider has affirmed a wallet - this would allow actual KYC gating in a semi-decentralized manner - multiple KYC providers might exist, and you might choose to give a higher trust rating to some than others, perhaps depending on how thorough their ID verification process is. Other providers might exist which offer affirmations in return for proving you own a unique Facebook or Google account. 
