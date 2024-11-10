@@ -174,7 +174,7 @@ At a high level, Role registration will collect the following data:
 There can be two lists of certificates.
 1. X.509 Certificate
 2. CBOR Encoded X.509 Certificate (C509)
-They are functionally identical and differ only in the format of the certificate itself.
+Functionally, these two types are identical, differing only in their encoding format.
 
 *DER Format certificates* are used when the only certificate source is a legacy off-chain certificate. 
 While these are supported for legacy purposes, they are not preferred because:
@@ -184,8 +184,6 @@ While these are supported for legacy purposes, they are not preferred because:
 Preferably all certificates will either be 
 - Uniquely encoded as C509 encoded certificates, or
 - Transcoded from a DER format X.509 certificate into its C509 equivalent.
-
-The certificate lists are unsorted, and are simply a method of publishing a new certificate on-chain.
 
 The only feature about the certificate that impacts the role registration is that certificates
 may embed references to on-chain keys.
@@ -197,6 +195,9 @@ Individual dApps can strengthen this requirement to **MUST**.
 By including the Signature in the transaction, we are able to make a verifiable link between the
 off-chain certificate and the on-chain identity. 
 This process is secure and cannot be forged.
+
+For more details on how certificates are stored, refer to the section on
+[Storing Certificates and Public Key](#storing-certificates-and-public-key)
 
 #### Plutus access to X.509 certificates
 
@@ -222,48 +223,14 @@ This is only limited by the transaction itself.
 
 Rather than require full certificates, dApps can use simple public keys.
 The simple public key list is for that purpose.
-The list acts as an array,  the index in the array is the offset of the key.
-
-CBOR allows for array elements to be skipped or marked as undefined.
-
-The actual set of simple public keys registered is the union set of all simple public keys registered on-chain.
-This allows simple public keys to be securely rotated or removed from a registration.
-
-CBOR allows elements of an array to be skipped or marked as absent using [CBOR Undefined/Absent Tags].
-
-An element in the array marked "undefined" (`0xf7`) is used to indicate that no change to that array position is to be made.
-An element in the array marked "absent" (`0xd8 0x1f 0xf7`) is used to indicate that any key at this position is revoked.
-
-Using these two element we can define the array as the union of all arrays and keys can be freely altered or removed.
-
-Examples:
-
-```txt
-[Key 1, Key 2, Key 3] +
-[undefined, absent, undefined]
-```
-
-would result in:
-
-```txt
-[Key 1, undefined, Key 3]
-```
-
-If this was followed with:
-
-```txt
-[undefined, undefined, undefined, undefined, Key 5]
-```
-
-we would then have the resultant set of keys:
-
-```txt
-[Key 1, undefined, Key 3, undefined, Key 5]
-```
+The list acts as an array, the index in the array is the offset of the key.
 
 The latest key set is what is currently active for the role.
 
 These keys are usable to sign data for a role, but are not a replacement for certificates, and some roles may not allow their use.
+
+For more details on how public keys are stored, refer to the section on
+[Storing Certificates and Public Key](#storing-certificates-and-public-key)
 
 ### Certificate Revocation List
 
@@ -465,6 +432,46 @@ Note: in the case of a CA revoked certificate,
 the subject must have registered a new Role 0 certificate before the issuer revokes it.
 
 Otherwise, they will become de-registered when the issuer revokes their certificate, and they must then completely re-register.
+
+### Storing certificates and public key
+X.509 certificates, C509 certificates, and public keys are stored in an array. This array follows specific rules for managing changes and updates to the items it contains.
+
+CBOR allows elements of an array to be skipped or marked as absent using [CBOR Undefined/Absent Tags].
+- Undefined (`0xf7`): This tag indicates that no change should be made to the corresponding element in the array.
+- Absent (`0xd8 0x1f 0xf7`): This tag is used to mark an element as revoked, meaning that any key at that position is considered invalid or removed.
+
+Examples:
+
+```txt
+[Key 1, Key 2, Key 3] +
+[undefined, absent, undefined]
+```
+
+would result in:
+
+```txt
+[Key 1, undefined, Key 3]
+```
+Here, Key 2 has been removed (marked as `absent`), and Key 1 and Key 3 remain unchanged (the `undefined` entries indicate no modification to these positions).
+
+If this was followed with:
+
+```txt
+[undefined, undefined, undefined, undefined, Key 5]
+```
+
+we would then have the resultant set of keys:
+
+```txt
+[Key 1, undefined, Key 3, undefined, Key 5]
+```
+In this case, the new Key 5 has been added to the array, and the previous keys remain intact with `undefined` markers indicating no change.
+
+**Notes**
+For certificates, marking it as absent does not mark the certificate as invalid, but it means the certificate
+is not listed in the current list anymore. To revoke the certificate, it must be listed in 
+[certificate-revocation-list](#certificate-revocation-list)
+
 
 ## Rationale: how does this CIP achieve its goals?
 
