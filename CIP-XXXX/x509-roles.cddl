@@ -107,13 +107,12 @@ validation-role = 0
 
 ; Roles 1+ are purpose specific and not defined in this document.
 role-number = uint
-role-signing-key = key-reference
-role-encryption-key = key-reference
+role-signing-key = key-local-ref
+role-encryption-key = key-local-ref
 
 role-extended-data-keys = (10..99)
 
 role-extended-data = any
-key-reference = key-local-ref
 
 ; Offset reference to a key defined in this registration.
 ; More efficient than a key hash.
