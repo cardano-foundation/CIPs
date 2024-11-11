@@ -28,7 +28,7 @@ The goal of this proposal is to define a standard, JSON-based, transport-agnosti
 
 We will start by discussing existing query layer designs for dApps, so we can properly define the use case for this CIP. 
 Next, we will define the query layer API.
-We attempt to define the API in a transport-agnostic way: the request and return types for each endpoint are as defined in CIP-0116, with a few notable exception where the corresponding CDDL type lacked some useful information (more on this can be found in the `Methods` section). Finally, we end this section with some notes on rollbacks and pagination.
+We attempt to define the API in a transport-agnostic way: the request and return types for each endpoint are as defined in CIP-0116, with a few notable exception where the corresponding CDDL type lacked some useful information (more on this can be found in the `Query Layer API` section). Finally, we end this section with some notes on rollbacks and pagination.
 
 #### Existing Query Layer designs
 
