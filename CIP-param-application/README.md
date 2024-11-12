@@ -16,9 +16,9 @@ License: CC-BY-4.0
 
 ## Abstract
 We propose a new Plutus builtin function `builtinApplyParams` with the
-signature `BuiltinByteString -> [BuiltinData] -> ScriptHash` in order to enable
-simple and low cost on-chain check for validating instances of unapplied
-scripts.
+signature `BuiltinByteString -> [BuiltinByteString] -> BuiltinByteString` in
+order to enable simple and low cost on-chain check for validating instances of
+unapplied scripts.
 
 ## Motivation: why is this CIP necessary?
 Complex contracts tend to depend on multiple scripts, and in some cases,
@@ -40,12 +40,13 @@ arbitrary values applied to it as parameters.
 We propose the Plutus builtin function `builtinApplyParams`, with the following
 type signature:
 ```hs
-builtinApplyParams :: BuiltinByteString -> [BuiltinData] -> ScriptHash
+builtinApplyParams :: BuiltinByteString -> [BuiltinByteString] -> BuiltinByteString
 ```
 
 Where the first argument is the unapplied script's CBOR, and
-the `BuiltinData` list is all the parameters that are to be applied in order.
-Finally, output will be the hash of the applied script.
+the `BuiltinByteString` list is CBOR bytes of all the parameters that are to be
+applied in order. Finally, output will be the fully/partially applied script
+CBOR.
 
 
 ### Cost Model
