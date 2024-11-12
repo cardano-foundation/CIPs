@@ -360,16 +360,16 @@
         ]
       }
     },
-    "/transactions/block_number": {
+    "/transaction/block_number": {
       "get": {
-        "summary": "transactions by block_number",
+        "summary": "transaction by block_number",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "transactions by block_number",
+                  "title": "transaction by block_number",
                   "type": "object",
                   "properties": {
                     "transactions": {
@@ -406,16 +406,16 @@
         ]
       }
     },
-    "/transactions/block_hash": {
+    "/transaction/block_hash": {
       "get": {
-        "summary": "transactions by block_hash",
+        "summary": "transaction by block_hash",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "transactions by block_hash",
+                  "title": "transaction by block_hash",
                   "type": "object",
                   "properties": {
                     "transactions": {
@@ -1246,7 +1246,6 @@
             "format": "hex",
             "pattern": "^([0-9a-f][0-9a-f]){0,32}$",
             "examples": [
-              "",
               "504154415445",
               "1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209",
               "7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373"
@@ -4055,7 +4054,6 @@
             "format": "hex",
             "pattern": "^([0-9a-f][0-9a-f]){0,32}$",
             "examples": [
-              "",
               "504154415445",
               "1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209",
               "7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373"

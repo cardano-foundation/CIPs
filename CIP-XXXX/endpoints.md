@@ -1,6 +1,24 @@
 # Endpoints
 
-This document contains a list of endpoints for a universal query layer. Each section is named after a resource, and each subsection defines different ways to obtain that resource.
+This document contains a list of endpoints for a universal query layer. Each section is named after a resource that can be obtained from the query layer, and each subsection defines different ways to obtain that resource.
+
+
+## Contents
+
+1. [Utxos](#utxos)
+1. [Block](#block)
+1. [Transaction](#transaction)
+1. [Datum](#datum)
+1. [Plutus Script](#plutus-script)
+1. [Native Script](#native-script)
+1. [Metadata](#metadata)
+1. [Protocol Parameters](#protocol-parameters)
+1. [Votes](#votes)
+1. [Drep](#drep)
+1. [Committee](#committee)
+1. [Pool](#pool)
+1. [Proposal](#proposal)
+1. [Era](#era)
 
 ## Utxos
 
@@ -18,7 +36,7 @@ Get all UTxOs that contain some of the specified asset
 
 ```
 {
-  "asset_name": "5368656e4d6963726f555344",
+  "asset_name": "504154415445",
   "minting_policy_hash": "fa055f570e99cfd65e86a5e4488220f5a2cfd8f2be90d98f54d3eafa"
 }
 ```
@@ -529,13 +547,11 @@ Get the transaction with the supplied transaction hash
 ```
 </details>
 
-## Transactions
-
 ### Block Number
 
 Get all transactions contained in the block with the supplied block number []
 
-[Link to OpenApi endpoint](https://mlabs-haskell.github.io/query-layer-impl/index.html#/default/get_transactions_block_number)
+[Link to OpenApi endpoint](https://mlabs-haskell.github.io/query-layer-impl/index.html#/default/get_transaction_block_number)
 
 #### Request
 
@@ -628,7 +644,7 @@ Get all transactions contained in the block with the supplied block number []
 
 Get all transactions contained in the block with the supplied block hash
 
-[Link to OpenApi endpoint](https://mlabs-haskell.github.io/query-layer-impl/index.html#/default/get_transactions_block_hash)
+[Link to OpenApi endpoint](https://mlabs-haskell.github.io/query-layer-impl/index.html#/default/get_transaction_block_hash)
 
 #### Request
 
@@ -1254,7 +1270,7 @@ Votes cast on the supplied proposal
 ```
 </details>
 
-## DRep
+## Drep
 
 ### All
 

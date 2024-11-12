@@ -181,13 +181,13 @@
         }
       ]
     },
-    "transactions/block_number:request": {
-      "title": "transactions by block_number",
+    "transaction/block_number:request": {
+      "title": "transaction by block_number",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/UInt64"
     },
-    "transactions/block_number:response": {
-      "title": "transactions by block_number",
+    "transaction/block_number:response": {
+      "title": "transaction by block_number",
       "type": "object",
       "properties": {
         "transactions": {
@@ -205,13 +205,13 @@
         }
       }
     },
-    "transactions/block_hash:request": {
-      "title": "transactions by block_hash",
+    "transaction/block_hash:request": {
+      "title": "transaction by block_hash",
       "type": "object",
       "$ref": "cardano-conway.json#/definitions/BlockHash"
     },
-    "transactions/block_hash:response": {
-      "title": "transactions by block_hash",
+    "transaction/block_hash:response": {
+      "title": "transaction by block_hash",
       "type": "object",
       "properties": {
         "transactions": {
