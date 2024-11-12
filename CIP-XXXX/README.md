@@ -61,8 +61,10 @@ We generate these interfaces from a high level specification of the endpoints [s
 
 ### Pagination
 
-In CIP-30, pagination is not reliable, because there is no guarantee that the set of UTxOs does not change between calls. This behavior is not suitable for DeFi: consistency should be prioritized, and pagination should be avoided.
-
+In CIP-30, pagination is not reliable: because there is no guarantee that the set of UTxOs does not change between calls. On the other hand, there are good reasons to want to paginate responses, especially when designing an universal query layer. There are, generally, no bounds on the number of results that will be returned by many of the queries we want the API to cover (e.g. there is no way to control how many UTxOs might ever be at a given script address).
+Even if we remove pagination from this API, we still have the issue that the underlying provider being used to fetch the data, could be using pagination itself. While this is somewhat of an "implementation detail", it can still lead to issues for end-users interacting with this API.
+In this CIP, we have decided to remove pagination from the API. While very useful to have, it introduces potential issues about consistency of the results that affect both dApp developers and end users.
+We hope to revisit this topic in a future CIP, to come up with a solution that does not force us to pick between consistency and efficiency.
 
 ### Handling of rollbacks
 
