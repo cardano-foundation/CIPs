@@ -1,6 +1,6 @@
 ---
 CPS: 17
-Title: Faster Settlement
+Title: Settlement Speed
 Category: Consensus
 Status: Open
 Authors:
