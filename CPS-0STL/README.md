@@ -20,25 +20,22 @@ Existing and emerging Cardano use cases would greatly benefit from faster "settl
 
 ## Problem
 
-Fast settlement is a critical part of Cardano scaling, as described in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI). Under Ouroboros Praos, settlement occurs probabilistically on the Cardano blockchain, where the probability that a block will be rolled back from the preferred chain decreases exponentially as the chain grows beyond the block and where that rate of decrease is slower when adversarial activity is stronger. Some use cases require high assurance that a block (and the transactions within it) will not be rolled back, necessitating a potentially lengthy wait before a transaction is considered "settled" or "finalize". Some major centralized exchanges, for example, require fifteen confirmations (i.e., blocks) before a transaction is considered settled: this amounts to waiting ten minutes before a consumer has their transacted funds or tokens available for subsequent use. This situation is not unique to Cardano: centralized exchanges generally require at least five minutes wait for most of the common blockchains. Partner chains and bridges may have stringent requirements for fast and highly certain settlement.
+Fast settlement is a critical part of Cardano scaling, as described in [*Scaling blockchain protocols: a research-based approach*](https://www.youtube.com/watch?v=Czmg9WmSCcI). Under Ouroboros Praos, settlement occurs probabilistically on the Cardano blockchain, where the probability that a block will be rolled back from the preferred chain decreases exponentially as the chain grows beyond the block and where that rate of decrease is slower when adversarial activity is stronger. Some use cases require high assurance that a block (and the transactions within it) will not be rolled back, necessitating a potentially lengthy wait before a transaction is considered "settled" or "finalize". Some major centralized exchanges, for example, require fifteen confirmations (i.e., blocks) before a transaction is considered settled: this amounts to waiting ten minutes before a consumer has their transacted funds or tokens available for subsequent use. This situation is not unique to Cardano: centralized exchanges generally require at least five minutes wait for most of the common blockchains. Partner chains, Dapps, or bridges may have stringent requirements for fast and highly certain settlement.
 
-There are several definitions of "settlement" or "finality", and precision is important when discussing these. Two noteworthy scenarios can be defined precisely.
+There are several definitions of "settlement" or "finality", and precision is important when discussing these. Two noteworthy scenarios can be defined precisely. Both scenarios are expressed in terms of the probability a transaction or block that's been observed _locally_ to be part of the chain will be rolled-back in the future. Remember that rollbacks are the natural consequence of the eventually consistent nature of blockchains.
 
 - *Ex ante* settlement probability: "What is the probability that a transaction that I just submitted will ever be rolled back?"
-- *Post facto* settlement probability: "Given that I submitted my transaction $x$ seconds ago and it has not yet been rolled back, what is the probability that it will ever be rolled back?"
+- *Ex post facto* settlement probability: "Given that I submitted my transaction $x$ seconds ago and it has not yet been rolled back, what is the probability that it will ever be rolled back?"
 
 Even better would be to have an on-chain indication that transactions up to a particular point have been settled with high probability.
 
 If one is unwilling or unable to re-submit a rolled-back transaction, then the *ex ante* probability might be of most interest. This matches use cases where there is no opportunities for the parties involved in a transaction to resubmit it: for example, one party might have purchased physical goods and left the vendor's premises, leaving no chance to resubmit a rolled-back transaction.
 
-Other use cases are better suited for *post facto* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that status ever changing once they have watched the chain for the fixed amount of time, giving them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and back-end infrastructure distinguish these use cases. Protocol research has historically focused on optimizing *post facto* certainty after predefined waiting times.
+Other use cases are better suited for *ex post facto* settlement: for example, a partner chain, bridge, or decentralized exchange can monitor the ledger for a fixed time and see that the transaction either is not or is rolled back, knowing that there is only a vanishingly small chance of that status ever changing once they have watched the chain for the fixed amount of time, giving them an opportunity to re-submit the transaction if it was rolled back. Both opportunity and back-end infrastructure distinguish these use cases. Protocol research has historically focused on optimizing *ex post facto* certainty after predefined waiting times.
 
-Settlement failures (i.e., roll backs) can occur naturally as short forks occur due to multiple slot leaders being elected in the same slot or due to network delays. Under typical uncongested conditions such forks often do not create settlement failures because a user's transaction tends to the diffuse throughout the global memory pool and is included in a block on each of the honest, naturally occurring forks. Careful observation might reveal that the transaction was rolled back from one fork but was adopted on the newly preferred fork. Cardano tooling should routinely deal with such situations even though they are rarely apparent to or affect end users. Most wallets do not display information about such short forks and rollbacks to users. Short forks occur hourly at local Cardano nodes, but globally visible forks are much less common, and anecdotal evidence indicates that rollbacks of more than three blocks never occur on a large scale on Cardano `mainnet`.  (There may be one exception to this, however, where a longer rollback is said to have occurred.) As with settlement, a precise definition of near-global rollbacks is required to measure and discuss this phenomenon in detail.
+Settlement failures (i.e., roll backs, "slot battles", and "height battles") can occur naturally as short forks occur due to multiple slot leaders being elected in the same slot or due to network delays. Under typical uncongested conditions such forks often do not create settlement failures because a user's transaction tends to the diffuse throughout the global memory pool and is included in a block on each of the honest, naturally occurring forks. Careful observation might reveal that the transaction was rolled back from one fork but was adopted on the newly preferred fork. Cardano tooling should routinely deal with such situations even though they are rarely apparent to or affect end users. Most wallets do not display information about such short forks and rollbacks to users. Short forks occur hourly at local Cardano nodes, but globally visible forks are much less common, and anecdotal evidence indicates that rollbacks of more than three blocks never occur on a large scale on Cardano `mainnet`.  (There may be one exception to this, however, where a longer rollback is said to have occurred.) As with settlement, a precise definition of near-global rollbacks is required to measure and discuss this phenomenon in detail.
 
 Casual perusal of information about Cardano on the internet reveals a wide variety of conflicting explanations and assertions regarding settlement and finality. The terms "settlement" and "finality" are not clearly defined in the context of Cardano and statements about them range from saying that only one block/confirmation is required to consider a transaction settled to 2160 blocks or 12 hours is required for settlement. The Ouroboros security parameter *k* also seems poorly described.
-
-> [!NOTE]
-> Are there internal IO, CF, or Intersect computations or measurements that could be included in this section?
 
 Many centralized exchanges have published the number of confirmations (blocks) required for them to consider a transaction settled. Taking Kraken as an example,[^1] we see in the following table the significant delay required for transactions to be treated as final. Cardano is not among the cluster of fast-settling blockchains. (Note that the following table contains internal contradictions between the "confirmation" column and the "time" column, a situation which further highlights imprecise understanding of settlement.)
 
@@ -57,14 +54,9 @@ Many centralized exchanges have published the number of confirmations (blocks) r
 | Tezos      |                      6 |                          3 |
 [^1]: Data extracted from [https://support.kraken.com/hc/en-us/articles/203325283-Cryptocurrency-deposit-processing-times](https://support.kraken.com/hc/en-us/articles/203325283-Cryptocurrency-deposit-processing-times) on 7 August 2024.
 
-> [!NOTE]
-> Add data from other exchanges to the table above, and provide citations.
+Cardano Dapps and DEXes vary quite a bit regarding how many confirmations they require before they consider a transaction settled. As few as one confirmation is required for some Dapps, but other require twelve hours.
 
-Cardano Dapps and DEXes vary quite a bit regarding how many confirmations they require before they consider a transaction settled.
-
-> [!NOTE]
-> Collect settlement-requirement data for prominent Dapps and DEXes, and display in a table.
-
+When Cardano becomes used by large institutions or nation states, attacks on settlement may become more attractive and lucrative. Hence, it is not safe to assume that stake-based and grinding attacks will not occur in the future.
 
 ## Use cases
 
@@ -92,8 +84,7 @@ For example, the partner-chain use case might leverage faster settlement as foll
 	1. If the transaction settled, complete the escrow contract on the partner chain.
 	2. If the transaction was rolled back, resubmit it.
 
-> [!NOTE]
-> Write out detailed use cases, preferably contributed by stakeholders.
+Two prominent use cases are the Cardano-Midnight ZK Bridge and the Cardano-Bitcoin BOS Grail Bridge. These bridges and partner chains likely will require fast settlement on Cardano if they intend to keep chains in sync and rapidly move value to/from Cardano.
 
 
 ## Goals
@@ -117,10 +108,10 @@ It addition to the goals above, it is advisable to avoid the following potential
 2. Do not weaken Ouroboros security or substantially enlarge its attack surface.
 3. Minimize changes that increase the resource usages of Cardano nodes or the cost of operating them.
 
-Three approaches are under active consideration or development to address the settlement and finality problem.
+Three approaches are under active consideration or development to address the settlement and finality problem. The first two mitigate stake-based and grinding attacks, respectively.
 
 - *Voting approaches* strengthen the weight of the preferred chain, making it extremely difficult to roll back blocks on the prefix of the chain that was made weightier by a quorum (consensus) of stake-based votes. [Ouroboros Peras](https://github.com/cardano-foundation/CIPs/pull/872) is an example of this. This approach does not mitigate CPU-resource attacks.
-- *Anti-grinding approaches* make prohibitively expensive any attacks that rely on CPU resources to weaken cryptographic guarantees of the pseudo-randomness of the slot-leadership schedule. This approach does not mitigate stake-based attacks.
+- *Anti-grinding approaches* make prohibitively expensive any attacks that rely on CPU resources to weaken cryptographic guarantees of the pseudo-randomness of the slot-leadership schedule. This approach does not mitigate stake-based attacks, but grinding requires some stake in order to manipulate the slot-leadership schedule.
 - *The protocol-parameter approach* simply lowers the active slot coefficient (currently set to 5% of the slots on `mainnet`) to a somewhat lower value, so that the block production rate and settlement are faster. This approach can only moderately shorten settlement times and does not mitigate against the aforementioned attacks.
 
 
