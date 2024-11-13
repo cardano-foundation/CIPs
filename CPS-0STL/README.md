@@ -1,5 +1,5 @@
 ---
-CPS: 0STL
+CPS: 17
 Title: Faster Settlement
 Category: Consensus
 Status: Open
