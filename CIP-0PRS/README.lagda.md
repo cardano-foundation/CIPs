@@ -1276,7 +1276,7 @@ Even for adversarial stake less of 50%, there is only a vanishingly small probab
 
 The figure below shows the race between honest parties and a modestly powerful adversary building a private chain. If the adversary's private chain ever becomes longer than the honest public one, then the adversary can reveal their chain publicly, shortly after which time the honest parties will adopt it as their preferred chain, with the consequence of rolling back all of the blocks on the honest chain from the time when the adversary started building privately. The Peras round length is 150 slots in this simulation, and one can see jump to the right every 150 slots the probability distribution of the honest chain's weight advantage over the private adversarial chain's weight. Each jump is a boost of 10 blocks' worth of chain weight. Even after one boost of the honest chain, the adversary has essentially no chance of ever overtaking the honest chain. The "shoulder" on the left side of the probability distribution is associated with the chain entering a cool-down period because the adversary thwarted voting, so no boost occurs.
 
-![](images/markov.gif)
+![Animation of Markov-chain simulation of honest vs adversarial behavior](images/markov.gif)
 
 ### Why Peras is practical to implement
 
