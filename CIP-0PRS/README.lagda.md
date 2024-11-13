@@ -21,7 +21,8 @@ License: Apache-2.0
 
 We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that introduces a voting layer for fast settlement. It is adaptively secure, supports dynamic participation, and integrates self healing. Voting provides a “boost” to blocks that receive a quorum of votes, and this dramatically reduces the roll-back probability of the boosted block and its predecessors. Fast settlement occurs in the presence of adversaries with up to one-quarter of the stake, but Praos-like safety is maintained when adversaries control more than that amount of stake. In fact, the protocol enters a “cool-down period” of Praos-like behavior when adversaries prevent voting quorums; that cool-down period is exited only when the chain has healed, achieves chain quality, and reaches a common prefix. For realistic settings of the Peras protocol parameters, blocks can be identified (with overwhelming probability) *ex post facto* as being settled versus rolled-back after as little as two minutes. This enables use cases like partner-chains and bridges where high certainty for the status of a transaction is required in a brief time. The protocol requires the implementation of a vote-diffusion layer, certificates that aggregate votes, and one minor addition to the contents of a block.
 
-## Table of Contents
+<details>
+  <summary><h2>Table of contents</h2></summary>
 
 - [Motivation: why is this CIP necessary](#motivation-why-is-this-cip-necessary)
 - [Specification](#specification)
@@ -78,6 +79,7 @@ We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that 
     - [Typechecking this specification](#typechecking-this-specification)
 - [Copyright](#copyright)
 
+</details>
 
 ## Motivation: why is this CIP necessary?
 
