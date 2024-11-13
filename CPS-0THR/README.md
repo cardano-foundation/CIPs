@@ -15,19 +15,6 @@ License: Apache-2.0
 
 # CIP-???? Greater Transaction Throughput
 
-> [!NOTE]
-> The structure of a CPS file is summarized in the table below:
-> 
-> | Name                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-> | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-> | Preamble            | Headers containing metadata about the CPS.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-> | Abstract            | A short (\~200 word) description of the target goals and the technical obstacles to those goals.                                                                                                                                                                                                                                                                                                                                                                                                                   |
-> | Problem             | A more detailed description of the problem and its context. This section should explain what motivates the writing of the CPS document.                                                                                                                                                                                                                                                                                                                                                                            |
-> | Use cases           | A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are unsuitable.                                                                                                                                                                                                                                                                                  |
-> | Goals               | A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve. <br/><br/>Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns. <br/><br/>Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. |
-> | Open Questions      | A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their _'Rationale'_ section and provide an argued answer to each.                                                                                                                                                                              |
-> | _optional sections_ | If necessary, these sections may also be included in any order:<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**<br>Do not add material in an optional section if it pertains to one of the standard sections.                                                                                                                                                                                                                                                                                       |
-> | Copyright           | The CPS must be explicitly licensed under acceptable copyright terms.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 ## Abstract
 
@@ -68,9 +55,6 @@ Of particular interest is the following plot that shows the distribution of the 
 
 ![Runs of nearly-full blocks](images/block-run.svg)
 
-> [!NOTE]
-> The log scale on the plot above hides the rare cases in the tail. Consider using a square-root or other custom scale so that viewers can see the whole dynamic range of the data.
-
 The following plots illustrate the situation for memory and execution units relative to the maximum allowed for a block. This confirms the rule of thumb that Plutus memory is a tighter constraint than Plutus steps. A not-insignificant number of blocks are close to or at the Plutus execution limits.
 
 |                                                               |                                                              |
@@ -86,15 +70,14 @@ More concerning are the situations shown below where consecutive blocks are near
 
 Even with the existing rate of transactions on the Cardano mainnet, there are periods where throughput-limits delay the inclusion of transactions in blocks and hamper settlement. Growing and emerging use cases will exacerbate the situation.
 
-- Time-sensitive applications like DEXes and Dapps require prompt inclusion of their transactions on the blockchain, and any delay also translates to a delay in settlement. See also [CPS-???? Faster Settlement](https://github.com/cardano-foundation/CIPs/pull/922).
+- Time-sensitive applications like DEXes and Dapps require prompt inclusion of their transactions on the blockchain, and any delay also translates to a delay in settlement. See also [CPS-17 Faster Settlement](https://github.com/cardano-foundation/CIPs/pull/922).
 - Newly released high-profile Cardano applications tend to create congestion as many users experiment and transact with the new capabilities shortly after they become available. Greater transaction throughput will improve the initial experience of new users of those applications, and some of those new users may be new to Cardano. *First impressions are important.*
 - Partner chains, bridges, and oracles rely on quality of service guarantees that support a regular and predictable rhythm of their transactions being included in blocks. Delays in such transactions' inclusion in blocks can cascade to Dapps that interact with such services. Delays on oracles result in stale data being provided to Dapps or in Dapps having to wait for the updated oracle state to be posted. Delays on partner chains or bridges result in bottlenecks in the transfer of funds or information between chains.
 - Transaction "scoopers" and "batchifiers" work most efficiently when high throughput is possible.
 - Air drops are well known to have caused spikes in network load and block utilization.
 - Any of the above use cases that also involve executing Plutus scripts add an additional requirement of execution-unit throughput in addition to transaction-size throughput. Applications that do complex validation encounter this extra dimension of resource usage.
 
-> [!NOTE]
-> Specific existing or anticipated projects might want to chime in here with the details of their use cases and with metrics for desired throughput.
+The advent of the Cardano-Midnight ZK bridge and the prospect of a Cardano-Bitcoin BOS Grail bridge promise to significantly increase the transaction load on the Cardano mainnet.
 
 ## Goals
 
