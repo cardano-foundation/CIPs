@@ -93,6 +93,8 @@ For [Treasury Withdrawal](#treasury-withdrawal), this will result in: `68d6fe270
 
 Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures), for `cip-0008` refer to [CIP-108 New Witness Type](./README.md#new-witness-type).
 
+One tool for Ed25519 signatures is [Ed25519 Online Tool](https://cyphr.me/ed25519_tool/ed.html).
+
 For [Treasury Withdrawal](#treasury-withdrawal), we use the keys described in [Author](#author) resulting in: `a476985b4cc0d457f247797611799a6f6a80fc8cb7ec9dcb5a8223888d0618e30de165f3d869c4a0d9107d8a5b612ad7c5e42441907f5b91796f0d7187d64a01`.
 
 ### 5. Add other properties to example.jsonld
@@ -107,7 +109,7 @@ For [Treasury Withdrawal](#treasury-withdrawal), this will result in [treasury-w
 
 ### 6. Hash example.jsonld
 
-To be able to create a final metadata hash which can be attached on-chain we  we simply hash the content of the file [Treasury Withdrawal](#treasury-withdrawal.jsonld) as is.
+To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [Treasury Withdrawal](#treasury-withdrawal.jsonld) as is.
 
 This results is: `311b148ca792007a3b1fee75a8698165911e306c3bc2afef6cf0145ecc7d03d4`.
 
