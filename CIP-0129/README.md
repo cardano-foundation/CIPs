@@ -15,18 +15,18 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This specification describes the structure and the bech32 format of the identifiers for DRep, CC keys, and Gov Actions
+This Cardano Improvement Proposal (CIP) defines a standardized structure for encoding and representing various governance and credential identifiers, specifically designed for DRep, Constitutional Committee (CC) keys, and Governance Actions within the Conway era. This specification introduces a single-byte header that encapsulates metadata related to the key type and credential type, allowing identifiers to retain critical metadata even when stored as byte arrays. By encoding this metadata directly into the bech32 format, we enhance both usability and interoperability across Cardano infrastructure and tools.
 
 ## Motivation: why is this CIP necessary?
 
-Cardano Conway era introduces new credentials for different actors, and introduces proposal procedures for governance actions. It is required to be able to find, link, share these identifiers in bytes form across the tooling and community.
+The Conway era on Cardano introduces new governance features, requiring unique and identifiable credentials for roles such as DReps, Constitutional Committee members, and distinct governance actions. Existing infrastructure and tools that process bech32 identifiers often decode and store the raw byte data for efficiency, unintentionally stripping away the metadata embedded in the bech32 prefix. This CIP addresses that limitation by embedding metadata into a structured single-byte header, allowing credentials to be stored in byte form without losing essential metadata. This standardization facilitates seamless linkage, sharing, and compatibility of governance identifiers across the ecosystem, supporting a robust and interoperable governance framework in Cardano.
 
 ## Specification
 
 ### Introduction
-We define a bytes representation for the various credentials and identifiers along with the their bech32 prefixes in this CIP. Taking inspiration from the Cardano addresses bytes format, we define an 8 byte header and a payload to define the key, which look similar to the reward address byte form but with a new specification and using the governance credentials.
+We define a bytes representation for the various credentials and identifiers along with the their bech32 prefixes in this CIP. Taking inspiration from the Cardano addresses bytes format, we define an 8 bit header and a payload to define the key, which look similar to the reward address byte format but with a new specification and using the governance credentials.
 
-In this CIP, We also define a simple bech32 prefix for gov actions, which does not have a credential. Gov actions only contain transaction ID bytes and an index, defined in the Gov Action Section below.
+In this CIP, We also define a simple bech32 prefix for gov actions, which does not have a credential. Gov actions only contain transaction ID bytes and an index, defined in the Gov Action Section below. The chosen prefixes for each identifier align with Cardano's established naming convention used in ledger specification, ensuring easy recognition and minimizing confusion within the ecosystem.
 
 ### Binary format
 
@@ -59,7 +59,7 @@ Key Type (`t t t t . . . .`)      | Key
 
 The second half of the header (bits [3;0]) refers to the credential type which can have the values and types as summarized in the table below,
 
-We *reserve* the values 0 and 1, as these are used in the Cardano Address Network tag. By not using these values we will make the gov identifies not become accidentally compatible with a valid address.
+We *reserve* the values 0 and 1 to prevent accidental conflicts with Cardano Address Network tags, ensuring that governance identifiers remain distinct and are not inadvertently processed as addresses.
 
 Credential Type (`. . . . c c c c`)   | Semantic
 ---                                   | ---
@@ -129,7 +129,9 @@ Bech32 - `drep1ygqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq7vlc9n`
 
 ## Rationale: how does this CIP achieve its goals?
 
-By introducing a header and payload design for different keys, we can achieve specifying credentials in a hex format (bytes), being able to share and use across tooling is possible. We also specify bech32 prefixes for user friendly identification of the identifiers.
+This CIP achieves its objectives by introducing a unified header and payload structure for governance-related keys, allowing for metadata to be directly embedded within the byte-level representation of each identifier. By defining a single-byte header that includes both key type and credential type, the proposal provides a consistent, compact format that retains crucial metadata even when stored or transmitted as raw byte arrays. This specification is designed to be forward-compatible, with a capacity to support up to 16 key types, allowing it to evolve with Cardano’s governance and credential requirements.
+
+This approach aligns with existing Cardano address encoding practices while adding specificity for governance keys in the Conway era. By also defining distinct bech32 prefixes for each identifier type, the CIP enhances user-friendliness and makes it easier for tooling and infrastructure to recognize, validate, and link these identifiers within the ecosystem. This design ensures governance identifiers are not only interoperable across platforms but also intuitive and accessible, paving the way for streamlined governance interactions within Cardano’s tooling and community.
 
 
 ## Path to Active
@@ -163,7 +165,7 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
 
 - Tools like explorers and wallets - These tools can potentially support both formats to start with for the purpose of allowing users to search for drep, cold keys, hot keys as these 3 are impacted by this CIP upgrade. And can continue to show only this CIP specification, having an easy backward compatibility as well moving to this CIP standard.
 
-- This CIP does not require a hard fork for implementation, the goal is to use the identifies specified in this CIP for the UI, and as a medium of communication for sharing such keys and IDs (though it will be good if this CIP is also enforced at the ledger level, simplifying CDDL and bringing data storage efficiency).
+- This CIP does not require a hard fork for implementation, the goal is to use the identifies specified in this CIP for the UI, and as a medium of communication for sharing such keys and IDs.
 
 ## Copyright
 

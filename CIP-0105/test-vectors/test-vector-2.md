@@ -43,6 +43,14 @@ Hex: `70344fe0329bbacbb33921e945daed181bd66889333eb73f3bb10ad8e4669976a523761cec
 
 Bech32: `drep_xvk1wq6ylcpjnwavhveey855tkhdrqdav6yfxvltw0emky9d3erxn9m22gmkrnkyrqn8922eycuwwqt64q4wds2ssdmlgp5dqq9gem6k5vq23ph3c`
 
+
+#### [DEPRECATED] Verification key hash (DRep ID)
+
+Hex: `1ed314af7d3ff8fcd320c73eb58524d774ca38733ee00ebca81bd63a`
+
+Bech32: `drep1rmf3ftma8lu0e5eqculttpfy6a6v5wrn8msqa09gr0tr5rgcuy9`
+
+
 #### Verification key hash (DRep VKH)
 
 Hex: `1ed314af7d3ff8fcd320c73eb58524d774ca38733ee00ebca81bd63a`
