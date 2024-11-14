@@ -219,16 +219,22 @@ This CIP previously also lacked `_vkh` key definitions, which are now added abov
 
 #### DRep Keys
 
+| Prefix          | Meaning                                                               | Contents                                                              |
+| --------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `drep`        | Delegate representative verification key hash (DRep ID) | blake2b\_224 digest of a delegate representative verification key  |
 | `drep_script` | Delegate representative script hash (DRep ID)           | blake2b\_224 digest of a serialized delegate representative script |
 
 #### Constitutional Committee Cold Keys
 
+| Prefix          | Meaning                                                               | Contents                                                              |
+| --------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `cc_cold`        | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key   |
 | `cc_cold_script` | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
 
 #### Constitutional Committee Hot Keys
 
+| Prefix          | Meaning                                                               | Contents                                                              |
+| --------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `cc_hot`        | Constitutional committee hot verification key hash (hot credential) | blake2b\_224 digest of a consitutional committee hot verification key   |
 | `cc_hot_script` | Constitutional committee hot script hash (hot credential)           | blake2b\_224 digest of a serialized constitutional committee hot script |
 
