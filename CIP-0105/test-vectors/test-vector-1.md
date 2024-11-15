@@ -42,19 +42,27 @@ Hex: `f74d7ac30513ac1825715fd0196769761fca6e7f69de33d04ef09a0c417a752b1d84110299
 
 Bech32: `drep_xvk17axh4sc9zwkpsft3tlgpjemfwc0u5mnld80r85zw7zdqcst6w543mpq3q2vkjy3nw8x7n8asw4es78dyl4q7u7kwlwn7yy0sugxfrjs6z25qe`
 
-#### Verification key hash (DRep ID)
+
+#### [DEPRECATED] Verification key hash (DRep ID)
 
 Hex: `a5b45515a3ff8cb7c02ce351834da324eb6dfc41b5779cb5e6b832aa`
 
 Bech32: `drep15k6929drl7xt0spvudgcxndryn4kmlzpk4meed0xhqe25nle07s`
 
-#### Script 1 hash (DRep ID)
+
+#### Verification key hash (DRep VKH)
+
+Hex: `a5b45515a3ff8cb7c02ce351834da324eb6dfc41b5779cb5e6b832aa`
+
+Bech32: `drep_vkh15k6929drl7xt0spvudgcxndryn4kmlzpk4meed0xhqe254czjh2`
+
+#### Script 1 hash (DRep Script Hash)
 
 Hex: `d0657126dbf0c135a7224d91ca068f5bf769af6d1f1df0bce5170ec5`
 
 Bech32: `drep_script16pjhzfkm7rqntfezfkgu5p50t0mkntmdruwlp089zu8v29l95rg`
 
-#### Script 2 hash (DRep ID)
+#### Script 2 hash (DRep Script Hash)
 
 Hex: `ae5acf0511255d647c84b3184a2d522bf5f6c5b76b989f49bd383bdd`
 
