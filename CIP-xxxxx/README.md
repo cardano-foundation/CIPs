@@ -192,12 +192,6 @@ Returns the CBOR-encoded redeemer.
 
 This endpoint will now optionally return an error if the smart Wallet is a multiparty schema and signatures need to be gathered from multiple parties asynchronously.
 
-### Removed API endpoints
-When connecting to a wallet using this extension the following endpoints will be disabled:
-
-#### `api.getCollateral(params: { amount: CBOR<Coin> })`: Promise<TransactionUnspentOutput[] | null>
-
-Collateral will be provided as an optional field in the `ScriptRequirement` object. This will allow the wallet to provide the collateral when needed, and the DApp to know if the wallet can provide collateral or not for various validation scenarios on the same wallet.
 
 #### `api.signData(addr: Address, payload: Bytes)`: Promise<DataSignature>
 
