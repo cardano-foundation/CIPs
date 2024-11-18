@@ -65,7 +65,7 @@ type KeyHash = String
 
 Script requirements encapsulate all the possible requirements for a transaction to be valid. It includes the following fields:
 
-- collateral: The list of inputs that can be used as collateral for the transaction.
+- collateral: The input that can be used as collateral for the transaction.
 - inputs: The list of inputs that must be used as inputs for the transaction.
 - reference_inputs: The list of inputs that must be used as reference inputs for the transaction.
 - outputs: The list of outputs that must be included in the transaction.
@@ -74,13 +74,13 @@ Script requirements encapsulate all the possible requirements for a transaction 
 - withdrawals: The list of withdrawals that must be included in the transaction.
 - validity_range: The validity range that the transaction must be valid in.
 - signatories: The list of signatories that must sign the transaction.
-- redeemers: The list of redeemers required for the transaction, if secret is true, the secretId will be provided to retrieve the secret from the wallet. 
-- datums: The list of datums that should be used in the transaction for the change outputs.
+- redeemers: The list of redeemers required for the transaction, if the type is secret, the secretId will be provided to retrieve the secret from the wallet, if the type is signature, the redeemer will be a pair of [DataSpec, Signature].
+- datums: The list of datums that should be used in the transaction for the change outputs, the wallet will use the first datum in the list that is valid for the current transaction, if more than one datum is valid, the wallet will use separate datums for each change output.
 
 
 ```ts
 type ScriptRequirement = {
-  collateral?: List<cbor<transaction_unspent_output>>,
+  collateral?: cbor<transaction_unspent_output>,
   inputs?: List<cbor<transaction_unspent_output>>,
   reference_inputs?: List<cbor<transaction_unspent_output>>,
   outputs?: List<transaction_output>,
@@ -90,15 +90,24 @@ type ScriptRequirement = {
   validity_range?: ValidityRange,
   signatories?: List<KeyHash>,
   redeemers?: Dict<ScriptPurpose, Redeemer>,
-  datums?: Dict<Hash<Blake2b_256, Data>, Data>
+  datums?: List<Hash<Blake2b_256, Data>, Data>
 }
 ```
 
 ```ts
-type Redeemer = {
-  secret: Bool,
-  redeemer: Bytes | SecretId,
+type Redeemer = 
+  | { type: RedeemerType.Data, redeemer: string }
+  | { type: RedeemerType.Secret, redeemer: SecretId }
+  | { type: RedeemerType.Signature, redeemer: [DataSpec, Primitive] };
+
+enum RedeemerType {
+  Data = 1,
+  Secret = 2,
+  Signature = 3,
 }
+
+type DataSpec = string;
+type Primitive = string;
 ```
 
 #### ValidityRange
@@ -142,7 +151,7 @@ Returns a list of `ScriptRequirement` that will be used to validate any transact
 
 For wallets with multiple spend conditions, separate entries in the list should be used to represent each spend condition. Wallet providers should implement UX to allow users to order the list of `ScriptRequirement` from most to least preferred. DApps should use the first entry in the list that is valid for the current transaction or select one based on the logic of their use-case.
 
-#### `api.cipxxxx.getScript()`: Promise[<number<plutusVersion>>],<CBOR<plutusScript>>
+#### `api.cipxxxx.getScript()`: Promise[<number<plutusVersion>>,<CBOR<plutusScript>>]
 
 Errors: `APIError`
 
@@ -164,7 +173,6 @@ Errors: `APIError`, `CompletedTxError`
 
 If the transaction is not ready, the wallet should throw a `CompletedTxError` with the appropriate error code. If the transaction is ready, the wallet should return the CBOR-encoded transaction and the signatures.
 
-
 #### `api.cipxxxx.getSecret(secretId: String)`: Promise<String>
 
 Errors: `APIError`
@@ -172,6 +180,11 @@ Errors: `APIError`
 Returns the secret associated with the given secretId. The secret should be returned as a hex-encoded string. 
 
 Wallets should request authorization from the user before returning the secret to the DApp.
+
+#### `api.cipxxxx.signRedeemer(data: Data, primitive : encriptionPrimitive  )`: Promise<CBOR<redeemer>>
+
+Errors: `APIError`
+Returns the CBOR-encoded redeemer.
 
 ### Altered API endpoints
 
@@ -204,8 +217,8 @@ By altering the API endpoints and adding new ones, we can provide the necessary 
 
 ### Implementation Plan
 
-- [ ] Provide some reference implementation of wallet providers
-    - [leo42/BroClanWallet](#incomplete)
+- [x] Provide some reference implementation of wallet providers
+    - [leo42/BroClanWallet](#inProgress)
 
 ## Copyright
 
