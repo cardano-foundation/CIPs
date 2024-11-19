@@ -83,7 +83,7 @@ Open questions when designing light client protocols for Cardano's consensus alg
 - How to compress the size of Cardano state proofs?
 
 ## References
-- [[1](https://a16zcrypto.com/posts/article/an-introduction-to-light-clients)] Sorgente, M. (2023) Don’t trust, verify: An introduction to light clients, a16z crypto. Available at: https://a16zcrypto.com/posts/article/an-introduction-to-light-clients (Accessed: 18 November 2024).
+- [[1](https://a16zcrypto.com/posts/article/an-introduction-to-light-clients)] Sorgente, M. (2023) Don’t trust, verify: An introduction to light clients, a16z crypto. (Accessed: 18 November 2024).
 - [[2](https://eprint.iacr.org/2021/1657.pdf)] Panagiotis Chatzigiannis, Foteini Baldimtsi, and Konstantinos Chalkias. (2021). SoK: Blockchain Light Clients.
 - [[3](https://bitcoin.org/bitcoin.pdf)] Nakamoto, S. (2008) Bitcoin: A Peer-to-Peer Electronic Cash System.
 - [[4](https://assets-global.website-files.com/661e3b1622f7c56970b07a4c/662a7a89ce097389c876db57_BitSNARK__Grail.pdf)] Ariel Futoransky, Yago and Gadi Guy. (2024). BitSNARK & Grail: Bitcoin Rails for Unlimited Smart Contracts & Scalability.
