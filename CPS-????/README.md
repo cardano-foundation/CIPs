@@ -51,7 +51,7 @@ For the sake of common language we are using [[2](https://eprint.iacr.org/2021/1
 Building a light client protocol involves enabling full nodes—those that participate in consensus and have sufficient blockchain state information—to generate proofs about the ledger's state. These proofs can be verified by a client that does not participate in consensus and does not need to download the entire blockchain. Instead, the client can request specific data, such as account balances, transaction inclusion, or submit transactions using the correct state (e.g., the UTXO set) for inclusion in future blocks.
 
 In a trust-minimized setup, there is no need to rely on a single entity or group (as in typical notary schemes) to validate query results. Existing light client protocols generally use one of four approaches to achieve this:
-- **Header Verification and Consensus Evolution** Commonly used in PoW blockchains, this verifies block headers without the full block body. For PoS chains like Cardano, challenges such as long-range attacks and minimal header information complicate this method. Solutions include overlay networks where validators (e.g., Stake Pool Operators) sign state proofs. Mithril’s recently introduced features partially address this.
+- **Header Verification and Consensus Evolution** Commonly used in PoW blockchains, this verifies block headers without the full block body. For PoS chains like Cardano, challenges such as long-range attacks and minimal header information complicate this method. Solutions include overlay networks where validators (e.g., Stake Pool Operators) sign state proofs. [Mithril’s](https://github.com/input-output-hk/mithril) recently introduced features partially address this.
 - **Compressed State Representations** Cryptographic methods like SNARKs can generate proofs of state inclusion (e.g., transactions) without full state data. However, applying zero-knowledge proofs to Cardano’s consensus and ledger rules is currently infeasible. Mithril could provide SNARK-based certificates verifying claims tied to operator stake.
 - **Stateless Protocols** Techniques that remove state altogether, as seen in the Mina protocol, offer an alternative.
 - **Game-Theoretic Approaches** Smart contracts use locked collateral (e.g., in “arbiter” contracts) to discourage dishonesty, leveraging economic incentives to ensure trustworthiness.
@@ -64,9 +64,9 @@ While rollbacks deeper than 10 blocks are rare, applications requiring certainty
 
 ## Use cases
 Like already mentioned above there are numerous use cases for blockchain light clients in general and in particular for Cardano. The most prominent ones known to the authors of this CPS at the time of writing are:
-- Light Client based wallets, that provide a more trust-minimized approach for users interacting for value exchange with the blockchain compared to the typical CIP-30 non-custodial wallets while at the same time not requiring significant hardware resources for users to run a full node wallet like cardano-wallet as a standalone application or in combination with the Daedalus frontend.
-- Enable Dapps running on devices or in environments with limited available resources like on mobile- or IoT devices and in browser environments
-- Enable light client based cross blockchain communication protocols like IBC and others
+- **Light Client based wallets**, that provide a trust-minimized approach for users interacting with the blockchain compared to the typical CIP-30 non-custodial wallets while at the same time not requiring significant hardware resources for users to run a full node wallet like cardano-wallet as a standalone application or in combination with the Daedalus frontend.
+- Enable **Dapps** running on devices or in environments with **limited available resources** like on mobile- or IoT devices and in browser environments.
+- Enable **light client based cross blockchain communication protocols** like IBC and others.
 
 ## Goals
 Like previously described the CPS aims to provide a root and common point of reference for others that are trying to implement light client protocols for Cardano. Concrete projects currently working on implementations or evaluating possibilities for light client protocols on Cardano are:
@@ -74,7 +74,7 @@ Like previously described the CPS aims to provide a root and common point of ref
 - Lace related research from the IOG research teams
 - BitcoinOS related work to provide the technical decentralized, trust-minimized bridging between Bitcoin and Cardano based on [[4](https://assets-global.website-files.com/661e3b1622f7c56970b07a4c/662a7a89ce097389c876db57_BitSNARK__Grail.pdf)]
 
-The CPS does not provide a concrete solution for a light client protocol. Those shall be defined in CIPs, referring back to this CPS. There is currently a draft CIP in the works to reflect the work done so far on the [Mithril](https://github.com/input-output-hk/mithril) based light client used within the IBC project mentioned above.
+The CPS does not provide a concrete solution for a light client protocol. Those shall be defined in CIPs, referring back to this CPS. There is currently a draft CIP in the works to reflect the work done so far on the Mithril based light client used within the IBC project mentioned above.
 
 ## Open Questions
 Open questions when designing light client protocols for Cardano's consensus algorithm are:
