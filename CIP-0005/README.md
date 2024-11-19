@@ -92,35 +92,52 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Hashes
 
-| Prefix             | Meaning                                                               | Contents                                                                 |
-| ---                | ---                                                                   | ---                                                                      |
-| `asset`            | Fingerprint of a native asset for human comparison                    | See [CIP-0014]                                                           |
-| `pool`             | Pool operator verification key hash (pool ID)                         | blake2b\_224 digest of an operator verification key                      |
-| `script`           | Script hash                                                           | blake2b\_224 digest of a serialized transaction script                   |
-| `addr_vkh`         | Address verification key hash                                         | blake2b\_224 digest of a payment verification key                        |
-| `addr_shared_vkh`  | Shared address verification key hash                                  | blake2b\_224 digest of a payment verification key                        |
-| `policy_vkh`       | Policy verification key hash                                          | blake2b\_224 digest of a policy verification key                         |
-| `stake_vkh`        | Stake address verification key hash                                   | blake2b\_224 digest of a delegation verification key                     |
-| `stake_shared_vkh` | Shared stake address verification key hash                            | blake2b\_224 digest of a delegation verification key                     |
-| `req_signer_vkh`   | Required signer verification key hash                                 | blake2b\_224 digest of a required signer verification key                |
-| `vrf_vkh`          | VRF verification key hash                                             | blake2b\_256 digest of a VRF verification key                            |
-| `datum`            | Output datum hash                                                     | blake2b\_256 digest of output datum                                      |
-| `script_data`      | Script data hash                                                      | blake2b\_256 digest of script data                                       |
+| Prefix                 | Meaning                                                               | Contents                                                                 |
+| ---                    | ---                                                                   | ---                                                                      |
+| `asset`                | Fingerprint of a native asset for human comparison                    | See [CIP-0014]                                                           |
+| `pool`                 | Pool operator verification key hash (pool ID)                         | blake2b\_224 digest of an operator verification key                      |
+| `script`               | Script hash                                                           | blake2b\_224 digest of a serialized transaction script                   |
+| `addr_vkh`             | Address verification key hash                                         | blake2b\_224 digest of a payment verification key                        |
+| `addr_shared_vkh`      | Shared address verification key hash                                  | blake2b\_224 digest of a payment verification key                        |
+| `policy_vkh`           | Policy verification key hash                                          | blake2b\_224 digest of a policy verification key                         |
+| `stake_vkh`            | Stake address verification key hash                                   | blake2b\_224 digest of a delegation verification key                     |
+| `stake_shared_vkh`     | Shared stake address verification key hash                            | blake2b\_224 digest of a delegation verification key                     |
+| `req_signer_vkh`       | Required signer verification key hash                                 | blake2b\_224 digest of a required signer verification key                |
+| `vrf_vkh`              | VRF verification key hash                                             | blake2b\_256 digest of a VRF verification key                            |
+| `datum`                | Output datum hash                                                     | blake2b\_256 digest of output datum                                      |
+| `script_data`          | Script data hash                                                      | blake2b\_256 digest of script data                                       |
+| `drep_vkh`             | Delegate representative verification key hash                         | blake2b\_224 digest of a delegate representative verification key        |
+| `drep_script`          | Delegate representative script hash                                   | blake2b\_224 digest of a serialized delegate representative script       |
+| `cc_cold_vkh`          | Constitutional committee cold verification key hash                   | blake2b\_224 digest of a consitutional committee cold verification key   |
+| `cc_cold_script`       | Constitutional committee cold script hash                             | blake2b\_224 digest of a serialized constitutional committee cold script |
+| `cc_hot_vkh`           | Constitutional committee hot verification key hash                    | blake2b\_224 digest of a consitutional committee hot verification key    |
+| `cc_hot_script`        | Constitutional committee hot script hash                              | blake2b\_224 digest of a serialized constitutional committee hot script  |
+
+### Miscellaneous
+
+| Prefix              | Meaning                                               | Contents                                                      |
+| ---                 | ---                                                   | ---                                                           |
+| `addr`              | Mainnet address                                       | Network tag, payment credential and optional stake credential |
+| `addr_test`         | Testnet address                                       | Network tag, payment credential and optional stake credential |
+| `stake`             | Mainnet stake address                                 | Network tag and stake credential                              |
+| `stake_test`        | Testnet stake address                                 | Network tag and stake credential                              |
+| `drep`              | drep identifier                                       | drep credential, see [CIP-0129]                               |
+| `cc_cold`           | cc cold identifier                                    | cc cold credential, see [CIP-0129]                            |
+| `cc_hot`            | cc hot identifier                                     | cc hot credential, see [CIP-0129]                             |
+| `gov_action`        | gov action identifier                                 | gov action ID, see [CIP-0129],                                |
+
+
+### Deprecated Governance Prefixes
+The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by CIP-0105, and are deprecated. Please see CIP-0105 for the detailed deprecation information, and details to upgrade to [CIP-0129].
+
+For detailed information on the new specification and the rationale behind the upgrade, please refer to [CIP-0129].
+
 | `drep`             | Delegate representative verification key hash (DRep ID)               | blake2b\_224 digest of a delegate representative verification key        |
 | `drep_script`      | Delegate representative script hash (DRep ID)                         | blake2b\_224 digest of a serialized delegate representative script       |
 | `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key   |
 | `cc_cold_script`   | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
 | `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key    |
 | `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
-
-### Miscellaneous
-
-| Prefix           | Meaning                                               | Contents                                                      |
-| ---              | ---                                                   | ---                                                           |
-| `addr`           | Mainnet address                                       | Network tag, payment credential and optional stake credential |
-| `addr_test`      | Testnet address                                       | Network tag, payment credential and optional stake credential |
-| `stake`          | Mainnet stake address                                 | Network tag and stake credential                              |
-| `stake_test`     | Testnet stake address                                 | Network tag and stake credential                              |
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -184,3 +201,4 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 [CIP-0014]: https://github.com/cardano-foundation/CIPs/blob/645243e30b5aae109a70ec2b47af70dcc808bc56/CIP-0014
+[CIP-0129]: (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md)
