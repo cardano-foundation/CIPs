@@ -40,6 +40,29 @@ Quality-of-service guarantees can also be crucial for smart contracts that rely 
 
 Thus, while the need for raw throughput is one aspect of blockchain performance, the ability to ensure a predictable and stable processing time for transactions is equally important for many applications. Addressing this challenge involves optimizing the underlying network protocol, enhancing transaction prioritization mechanisms, or implementing features that can deliver the necessary guarantees for latency-sensitive use cases. As more sophisticated applications continue to emerge on blockchain platforms, meeting these requirements will be essential to ensuring that the technology can support a diverse range of real-world use cases effectively.
 
+### Urgency 
+
+While recent improvements like reference scripts have provided some relief, throughput limitations persist and will become increasingly critical as on-chain activity grows. This is evidenced by events like the launches of SundaeSwap and Snek.fun, where application-level queue times reached days and order processing was severely limited due to block capacity constraints. This hinders Cardano's ability to compete and attract wider adoption.
+
+While theoretical maximum TPS provides an indication of potential capacity, real-time TPS offers a more accurate reflection of current network capabilities. Looking at other ecosystem, [the data](https://chainspect.app/dashboard) reveals that the maximum recorded TPS for Solana was 7229 TPS, for Base 93 TPS and for Arbitrum 944 TPS. These figures are relevant for attracting new projects and investments to an ecosystem. Throughput, finality times and gas fees are among the primary technical attributes that projects look for when choosing which web3 network to pick. 
+
+| Blockchain | Max Recorded TPS |
+|---|---|
+| Cardano | 12 |
+| Solana | 7229 |
+| Algorand | 5716 |
+| Hedera | 3302 |
+| BNB | 1731 |
+| Arbitrum | 944 |
+| Base | 293 |
+| Polygon | 429 |
+| NEAR | 342 |
+| Ethereum | 62 |
+
+Source for table data: https://chainspect.app/dashboard
+
+To achieve a sustainable and thriving ecosystem, Cardano needs to handle significantly higher transaction volumes at current or lower fee levels. This necessitates a proactive approach to scaling that goes beyond addressing sporadic spikes in activity and focuses on supporting the growth required for long-term network profitability without relying on inflation. This aligns with the vision of scaling Cardano to support nation-state level usage by 2030.
+
 ## Problem
 
 Historical data indicates that an appreciable fraction of the blocks on the Cardano mainnet have been nearly full and that periods of high utilization can last for minutes. In such situations it is likely that additional transactions queue up in the nodes' memory pool, awaiting inclusion in a future block. Needless to say, block congestion correlates directly with transaction throughput. With the current average block-production rate of one per twenty seconds, that queuing can translate into unacceptably long waits for a transaction to be included in a block and receive its first confirmation. Even without the additional demand anticipated when new projects come online in the future, there sometimes are periods where user experience is degraded by limited throughput.
