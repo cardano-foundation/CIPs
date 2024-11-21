@@ -87,10 +87,10 @@ Open questions when designing light client protocols for Cardano's consensus alg
 ## Copyright
 This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
-- [^1]: [Representing IOHK research on Light Wallets or cryptocurrency wallets in general (Accessed: 18 November 2024).](https://iohk.io/en/research/library/papers/sok-a-taxonomy-of-cryptocurrency-wallets/)
-- [^2]: [Interchain Foundation. (2024). Inter-blockchain Communication Protocol specification.](https://github.com/cosmos/ibc)
-- [^3]: [Ariel Futoransky, Yago and Gadi Guy. (2024). BitSNARK & Grail: Bitcoin Rails for Unlimited Smart Contracts & Scalability.](https://assets-global.website-files.com/661e3b1622f7c56970b07a4c/662a7a89ce097389c876db57_BitSNARK__Grail.pdf)
-- [^4]: [Sorgente, M. (2023) Don’t trust, verify: An introduction to light clients, a16z crypto. (Accessed: 18 November 2024).](https://a16zcrypto.com/posts/article/an-introduction-to-light-clients)
-- [^5]: [Panagiotis Chatzigiannis, Foteini Baldimtsi, and Konstantinos Chalkias. (2021). SoK: Blockchain Light Clients.](https://eprint.iacr.org/2021/1657.pdf)
-- [^6]: [Nakamoto, S. (2008) Bitcoin: A Peer-to-Peer Electronic Cash System.](https://bitcoin.org/bitcoin.pdf)
-- [^7]: [Cardano Foundation IBC incubator project on GitHub.](https://github.com/cardano-foundation/cardano-ibc-incubator)
+[^1]: [Representing IOHK research on Light Wallets or cryptocurrency wallets in general (Accessed: 18 November 2024).](https://iohk.io/en/research/library/papers/sok-a-taxonomy-of-cryptocurrency-wallets/)
+[^2]: [Interchain Foundation. (2024). Inter-blockchain Communication Protocol specification.](https://github.com/cosmos/ibc)
+[^3]: [Ariel Futoransky, Yago and Gadi Guy. (2024). BitSNARK & Grail: Bitcoin Rails for Unlimited Smart Contracts & Scalability.](https://assets-global.website-files.com/661e3b1622f7c56970b07a4c/662a7a89ce097389c876db57_BitSNARK__Grail.pdf)
+[^4]: [Sorgente, M. (2023) Don’t trust, verify: An introduction to light clients, a16z crypto. (Accessed: 18 November 2024).](https://a16zcrypto.com/posts/article/an-introduction-to-light-clients)
+[^5]: [Panagiotis Chatzigiannis, Foteini Baldimtsi, and Konstantinos Chalkias. (2021). SoK: Blockchain Light Clients.](https://eprint.iacr.org/2021/1657.pdf)
+[^6]: [Nakamoto, S. (2008) Bitcoin: A Peer-to-Peer Electronic Cash System.](https://bitcoin.org/bitcoin.pdf)
+[^7]: [Cardano Foundation IBC incubator project on GitHub.](https://github.com/cardano-foundation/cardano-ibc-incubator)
