@@ -368,6 +368,45 @@ This can include information such as ADA Handles, or reputation data associated 
 
 As this data is dApp specific it is not detailed here.
 
+### Storing certificates and public key
+X.509 certificates, C509 certificates, and public keys are stored in an array. This array follows specific rules for managing changes and updates to the items it contains.
+
+CBOR allows elements of an array to be skipped or marked as absent using [CBOR Undefined/Absent Tags].
+- Undefined (`0xf7`): This tag indicates that no change should be made to the corresponding element in the array.
+- Absent (`0xd8 0x1f 0xf7`): This tag is used to mark an element as revoked, meaning that any key at that position is considered invalid or removed.
+
+Examples:
+
+```txt
+[Key 1, Key 2, Key 3] +
+[undefined, absent, undefined]
+```
+
+would result in:
+
+```txt
+[Key 1, undefined, Key 3]
+```
+Here, Key 2 has been removed (marked as `absent`), and Key 1 and Key 3 remain unchanged (the `undefined` entries indicate no modification to these positions).
+
+If this was followed with:
+
+```txt
+[undefined, undefined, undefined, undefined, Key 5]
+```
+
+we would then have the resultant set of keys:
+
+```txt
+[Key 1, undefined, Key 3, undefined, Key 5]
+```
+In this case, the new Key 5 has been added to the array, and the previous keys remain intact with `undefined` markers indicating no change.
+
+**Notes**
+For certificates, marking it as absent does not mark the certificate as invalid, but it means the certificate
+is not listed in the current list anymore. To revoke the certificate, it must be listed in 
+[certificate-revocation-list](#certificate-revocation-list)
+
 ### Registration validity
 
 Any registration metadata must be 100% valid, or the entire registration data set is rejected as invalid.
@@ -432,46 +471,6 @@ Note: in the case of a CA revoked certificate,
 the subject must have registered a new Role 0 certificate before the issuer revokes it.
 
 Otherwise, they will become de-registered when the issuer revokes their certificate, and they must then completely re-register.
-
-### Storing certificates and public key
-X.509 certificates, C509 certificates, and public keys are stored in an array. This array follows specific rules for managing changes and updates to the items it contains.
-
-CBOR allows elements of an array to be skipped or marked as absent using [CBOR Undefined/Absent Tags].
-- Undefined (`0xf7`): This tag indicates that no change should be made to the corresponding element in the array.
-- Absent (`0xd8 0x1f 0xf7`): This tag is used to mark an element as revoked, meaning that any key at that position is considered invalid or removed.
-
-Examples:
-
-```txt
-[Key 1, Key 2, Key 3] +
-[undefined, absent, undefined]
-```
-
-would result in:
-
-```txt
-[Key 1, undefined, Key 3]
-```
-Here, Key 2 has been removed (marked as `absent`), and Key 1 and Key 3 remain unchanged (the `undefined` entries indicate no modification to these positions).
-
-If this was followed with:
-
-```txt
-[undefined, undefined, undefined, undefined, Key 5]
-```
-
-we would then have the resultant set of keys:
-
-```txt
-[Key 1, undefined, Key 3, undefined, Key 5]
-```
-In this case, the new Key 5 has been added to the array, and the previous keys remain intact with `undefined` markers indicating no change.
-
-**Notes**
-For certificates, marking it as absent does not mark the certificate as invalid, but it means the certificate
-is not listed in the current list anymore. To revoke the certificate, it must be listed in 
-[certificate-revocation-list](#certificate-revocation-list)
-
 
 ## Rationale: how does this CIP achieve its goals?
 
