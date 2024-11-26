@@ -7,6 +7,7 @@ Authors:
   - Leo
 Implementors: NA
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/798
 Created: 2023-10-12
 License: CC-BY-4.0
 ---
