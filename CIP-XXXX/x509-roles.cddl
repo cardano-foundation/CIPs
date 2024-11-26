@@ -93,7 +93,7 @@ role-data-set = [ + role-data ]
 role-data = {
 	0: role-number,
 	? 1: role-signing-key,
-	? 2: role-encryption-key,
+	? 2: role-encryption-key, ; Currently not supported
 	? 3: payment-key,
 	* role-extended-data-keys => role-extended-data,
 }
@@ -131,6 +131,8 @@ offset = uint
 ; by the entity posting the registration.
 ; If the referenced payment key does not exist in the transaction, or is not witnessed the entire
 ; registration is to be considered invalid.
+; Note that reference to transaction input is currently unsupported due to the limitation
+; of past transaction references.
 payment-key = int
 
 ; purpose specific data - Undefined here except for the key space
