@@ -1,5 +1,5 @@
 ---
-CIP: ???
+CIP: 141
 Title: Web-Wallet Bridge - Plutus wallets
 Status: Proposed
 Category: Wallets
