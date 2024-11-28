@@ -129,25 +129,28 @@
         },
         "internalVote": {
             "title": "Internal Vote",
-            "description": "",
+            "description": "Used to reflect voting intents of individuals within the committee member",
             "type": "object",
-            "required": ["constitutional", "unconstitutional", "abstain", "didNotVote"],
             "properties": {
                 "constitutional": {
                     "type": "integer",
-                    "title": ""
+                    "title": "Constitutional Internal Vote Total"
                 },
                 "unconstitutional": {
                     "type": "integer",
-                    "title": ""
+                    "title": "Unconstitutional Internal Vote Total"
                 },
                 "abstain": {
                     "type": "integer",
-                    "title": ""
+                    "title": "Abstain Internal Vote Total"
                 },
                 "didNotVote": {
                     "type": "integer",
-                    "title": ""
+                    "title": "Total of individuals who did not vote"
+                },
+                "againstVote": {
+                    "type": "integer",
+                    "title": "Total of individuals who did not want the member to vote"
                 }
             }
         }

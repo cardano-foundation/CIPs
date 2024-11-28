@@ -125,21 +125,31 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 
 - A positive integer.
 - The author SHOULD use this field to represent a number of internal votes for the constitutionality of the action.
+- Optional.
 
 ##### `unconstitutional`
 
 - A positive integer.
 - The author SHOULD use this field to represent a number of internal votes against the constitutionality of the action.
+- Optional.
 
 ##### `abstain`
 
 - A positive integer.
 - The author SHOULD use this field to represent a number of internal abstain votes for the action.
+- Optional.
 
 ##### `didNotVote`
 
 - A positive integer.
 - The author SHOULD use this field to represent a number of unused internal votes.
+- Optional.
+
+##### `againstVote`
+
+- A positive integer.
+- The author SHOULD use this field to represent a number of internal votes to not vote on the action.
+- Optional.
 
 ### Extended `references` Vocabulary
 
