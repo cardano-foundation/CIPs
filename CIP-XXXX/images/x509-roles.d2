@@ -1,0 +1,49 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+
+    # Terminal theme code
+    theme-id: 300
+  }
+}
+
+classes: {
+  NONE: {style.opacity: 0}
+  RBAC_TABLE: {
+    shape: sql_table
+    style: {
+      border-radius: 15
+    }
+  }
+}
+
+title: |md
+  # x509 RBAC Metadata
+| {
+  shape: text
+  near: top-center
+  style: {
+    font-size: 25
+  }
+}
+
+a_block: "" {
+  rbac: "x509 Role based Access Control" {
+    class: RBAC_TABLE
+    ? 10=x509 certs: "[ + DER Certs ]"
+    ? 20=c509 certs: "[ + CBOR Certs ]"
+    ? 30=public keys: "[ + Public Keys ]"
+    ? 40=revocation set: "[ + Revoked Cert hash]"
+    "? 100=Role Data Set": "[ + Role Data ]"
+  }
+
+  role_data: "Role Data" {
+    class: RBAC_TABLE
+    0=role number: "uint"
+    ? 1=role-signing-key: "Key Reference"
+    ? 2=role-encryption-key: "Key Reference"
+    ? 3=payment-key: "OnChain Payment Key Reference"
+    ? 10-99=Role Specific Data: "Variable per Role"
+  }
+  rbac."? 100=Role Data Set" -> role_data
+}
