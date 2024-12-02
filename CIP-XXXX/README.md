@@ -373,7 +373,7 @@ X.509 certificates, C509 certificates, and public keys are stored in an array. T
 
 CBOR allows elements of an array to be skipped or marked as absent using [CBOR Undefined/Absent Tags].
 - Undefined (`0xf7`): This tag indicates that no change should be made to the corresponding element in the array.
-- Absent (`0xd8 0x1f 0xf7`): This tag is used to mark an element as revoked, meaning that any key at that position is considered invalid or removed.
+- Absent (`0xd8 0x1f 0xf7`): This tag is used to mark an element as removed, meaning that any key at that position is considered removed.
 
 Examples:
 
