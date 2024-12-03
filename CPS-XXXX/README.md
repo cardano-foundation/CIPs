@@ -53,28 +53,22 @@ Cardano should live up to its [11 blockchain tenets](<https://iohk.io/en/blog/po
 
 6. What effect could any change have on the solution to [issue #2913: Consensus should favor expected slot height to ward off delay attack](<https://github.com/IntersectMBO/ouroboros-network/issues/2913>)?
 
-## Arguments against correcting this unfairness
+### Arguments against correcting this unfairness
 1. It doesn't matter where the block producer is warehoused because block production is like a virtual service that can be run from anywhere.  What really matters is ownership of the pledge and stake, not ownership of the computing hardware.  If you live on the other side of the world, just rent a virtual server in Frankfurt or Los Angeles for your block producer.
-
-- Centralising Cardano infrastructure to data centres potentially hands control over the software, as well as selective control over block propagation between nodes, to BigTech data centre owners.
+  - Centralising Cardano infrastructure to data centres potentially hands control over the software, as well as selective control over block propagation between nodes, to BigTech data centre owners.
 
 2. The internet infrastructure is centred in USA and USA is more politically stable and less likely to have its internet infrastructure compromised through acts of war.  If conflict between USA, China, and Russia ensues then the undersea cables to Japan, Australia and New Zealand could get damaged.  Therefore it makes sense that Cardano block production should be slightly advantaged in USA and slightly disadvantaged in Japan, Australia and New Zealand.
-
-- Japan, Australia and New Zealand are very politically stable and it might actually be a good idea to _fairly_ incentivise participation from people living in those areas.  If internet connectivity was to be affected by cyber warfare, the targets of such attacks may not be predictable today.
-
-- The bottom line is that if I have 0.001% of stake in the system then I should get 0.001% of access to the system.  Likewise with scaling that up, if good actors possess 51% of the stake then they should have 51% of the control, as this is a fundamental assumption protecting Cardano.  I hope that the Cardano community won't step away from this fundamental mathematics based approach in favour of some sort of subjective human inference about where they think block producers should be warehoused for political or other reasons.
+  - Japan, Australia and New Zealand are very politically stable and it might actually be a good idea to _fairly_ incentivise participation from people living in those areas.  If internet connectivity was to be affected by cyber warfare, the targets of such attacks may not be predictable today.
+  - The bottom line is that if I have 0.001% of stake in the system then I should get 0.001% of access to the system.  Likewise with scaling that up, if good actors possess 51% of the stake then they should have 51% of the control, as this is a fundamental assumption protecting Cardano.  I hope that the Cardano community won't step away from this fundamental mathematics based approach in favour of some sort of subjective human inference about where they think block producers should be warehoused for political or other reasons.
 
 3. Internet transmission is improving so in the future 1 second might be sufficient for block propagation across the entire globe.
-
-- This unfairness problem doesn't seem hard to fix.  If / when internet speeds improve then it should be straightforward to recalibrate the software again.
+  - This unfairness problem doesn't seem hard to fix.  If / when internet speeds improve then it should be straightforward to recalibrate the software again.
 
 4. Won't halving or one-third'ing the number of potential leader slots reduce the number of blocks and therefore reduce the throughput?
-
-- Possible solution 1 also involves adjusting other parameters so that the target rate of block production remains unchanged.  Actually, it seems likely that the realised throughput would slightly increase.  The reason for this is that [possible solution 1](#Possible-Solutions) would eliminate forks caused by 1 second propagation delays which currently are wasted throughput.
+  - Possible solution 1 also involves adjusting other parameters so that the target rate of block production remains unchanged.  Actually, it seems likely that the realised throughput would slightly increase.  The reason for this is that [possible solution 1](#Possible-Solutions) would eliminate forks caused by 1 second propagation delays which currently are wasted throughput.
 
 5. If my pool is located close to the majority then I am benefitting from this unfairness so why should I vote for this to be fixed?
-
-- See section: [Goals](#Goals).  Hopefully most people in Cardano want to build a fair system for everyone no matter where they live.
+  - See section: [Goals](#Goals).  Hopefully most people in Cardano want to build a fair system for everyone no matter where they live.
 
 ## Copyright
 This CIP is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
