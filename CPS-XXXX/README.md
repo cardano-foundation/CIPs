@@ -31,6 +31,23 @@ Even the high quality infrastructure of a first world country like Australia is 
 
 Considering that most stake pools are competing over 1% or less in fees, these are big numbers.  The obvious solution for the remote pool is to move its block producer to a server housed in USA or Europe.  This illustrates not only the centralisation problem created, but also the reduction in security that flows from running a block producer on someone elses computing hardware.
 
+## Example
+This block was produced by my locally controlled block producer in Australia.  [It was a full block 86.57kB in size, containing 64 transactions, and 66.17kB of scripts](<https://cexplorer.io/block/c740f9ce8b25410ddb938ff8c42e12738c18b7fd040ae5224c53fb45f04b3ba0>)
+
+These are the delays (from beginning of the slot) before each of _my own relays_ included this block in their chains by extending their tips:
+
+- Relay 1 (ARM on same LAN) --> Delayed=0.263s
+- Relay 2 (AMD on adjacent LAN) --> Delayed=0.243s
+- Relay 3 (ARM approx 5 Km away) --> Delayed=0.288s
+- Relay 4 (AMD Contabo vps in USA) --> Delayed=2.682s
+- Relay 5 (ARM Netcup vps in USA) --> Delayed=1.523s
+
+The above block delay values were obtained using [this script](<https://github.com/TerminadaPool/cardano-node-debian/blob/main/bin/cn-monitor-block-delay>) running on each relay.
+
+The [average propagation delay by nodes pinging such data to pooltool was 1.67 seconds](<https://pooltool.io/realtime/11169975>)
+
+Fortunately on this occasion no other block producer was leader for the subsequent slot.  But, if there had been they probably would not have received my block in time and consequently would have produced their block upon the previous one creating a fork.
+
 ## Goals
 Cardano should live up to its [11 blockchain tenets](<https://iohk.io/en/blog/posts/2024/10/11/the-11-blockchain-tenets-towards-a-blockchain-bill-of-rights/>) proposed by Prof Aggelos Kiayias, in particular T8 and T11 which speak to treating participants fairly without asymmetries.
 
