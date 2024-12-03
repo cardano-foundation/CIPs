@@ -12,8 +12,6 @@ Created: 2024-10-22
 License: CC-BY-4.0
 ---
 
-# CPS-XXXX: Ouroboros not accounting for typical global network delays causes centralisation
-
 ## Abstract
 An underlying assumption in the design of Cardano's Ouroboros protocol is that the probability of a stake pool being permitted to update the ledger is proportional to the relative stake of that pool.  However, the current implementation does not properly realise this design goal.
 
