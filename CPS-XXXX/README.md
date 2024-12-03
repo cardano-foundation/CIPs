@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Ouroboros not accounting for typical global network delays causes centralisation
+Title: Block Delay Centralisation
 Status: Open
 Category: ?
 Authors:
