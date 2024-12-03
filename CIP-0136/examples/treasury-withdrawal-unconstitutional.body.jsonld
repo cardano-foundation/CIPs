@@ -3,7 +3,6 @@
     "@language": "en-us",
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP136": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#",
-    "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
         "@id": "CIP136:body",
         "@context": {
@@ -34,25 +33,8 @@
                 }
             }
         }
-    },
-    "authors": {
-        "@id": "CIP100:authors",
-        "@container": "@set",
-        "@context": {
-            "did": "@id",
-            "name": "http://xmlns.com/foaf/0.1/name",
-            "witness": {
-                "@id": "CIP100:witness",
-                "@context": {
-                    "witnessAlgorithm": "CIP100:witnessAlgorithm",
-                    "publicKey": "CIP100:publicKey",
-                    "signature": "CIP100:signature"
-                }
-            }
-        }
     }
   },
-  "hashAlgorithm": "blake2b-256",
   "body": {
     "summary": "Ryan using treasury funds to buy an island is unconstitutional!",
     "rationaleStatement": "The Cardano treasury is not meant to be used for personal gain, it should be for the benefit of the community.",
@@ -77,15 +59,5 @@
         "uri": "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"
       }
     ]
-  },
-  "authors": [
-    {
-      "name": "Ryan Williams",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "ad071d5a032c6e0eb7ee0ad4422728d0991bc0865473b4e2b0694356448790b0c90a50827cd355fba89fe2c7095b46179a4d3990642cdced6af2cd1363e6af0d"
-      }
-    }
-  ]
+  }
 }

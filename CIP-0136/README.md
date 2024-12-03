@@ -66,7 +66,7 @@ Specifying a structure and common vocabulary for this improves the efforts to be
 
 By creating and implementing these metadata standards we facilitate the creation of tooling that can read and write this data.
 Such tooling greatly expands the reach and effectiveness of rationales as it allows for rich user interfaces to be created.
-i.e. translation tools, rationale comparison tools, 
+i.e. translation tools, rationale comparison tools.
 
 ## Specification
 
@@ -162,12 +162,10 @@ Here we extend CIP-100's `references` field.
 
 ### Application
 
-CC must include all compulsory fields to be considered CIP-XXX compliant.
-As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-XXX compliant metadata.
+CC must include all compulsory fields to be considered CIP-136 compliant.
+As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-136 compliant metadata.
 
 ### Test Vector
-
-// todo
 
 See [test-vector.md](./test-vector.md) for examples.
 
@@ -178,42 +176,50 @@ Although through the JSON-LD mechanism further CIPs can add to the common govern
 
 ## Rationale: how does this CIP achieve its goals?
 
-// todo - fill in details
+By providing a peer reviewed structure for CC vote rationale, we encourage detailed voting rationales increasing the legitimacy of CC votes within the governance system.
 
 ### `summary`
 
-- useful for users to quickly see a preview of the whole rationale
-- gives tooling the option to show a high level intro
+We include compulsory summary with limited size to allow for the creation of tooling which layers of inspection to vote rationale.
+This allows readers to get a summary of a rationale at a high level before reading all the details.
 
 ### `rationaleStatement`
 
+This field allows for a very long-form discussion of their rationale.
+This is compulsory because it forms the core of their rationale.
+
+By setting some fields to compulsory we ensure a minimum amount of data for downstream tools to expect to render.
+
 ### `precedentDiscussion`
+
+This is a dedicated field to be able to discuss specific precedent of votes.
+By separating this from `rationaleStatement` we encourage specific discussion of precedence as well as clear separation in tooling.
 
 ### `counterargumentDiscussion`
 
-### `conclusion`
+This is a dedicated field to be able to discuss counterarguments from those proposed in the other fields.
+By separating this from `rationaleStatement` we encourage specific discussion of counterarguments as well as clear separation in tooling.
 
 ### `internalVote`
 
+This field, gives the ability for CC members who are operated by multiple individuals to share insights on specific voting choice of the individuals.
+This could add additional context to the workings and opinions of the individuals who operate the CC member.
+
 ### `relevantArticles`
+
+By providing a new type to CIP-100 `References` we encourage tooling to differentiate clearly `References` to the constitution from other types of `Reference`.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] This standard is supported by two different tooling providers used to submit governance actions to chain.
+- [ ] This standard is supported by two separate tools, which create and submit CC votes.
 - [ ] This standard is supported by two different chain indexing tools, used to read and render metadata.
 
 ### Implementation Plan
 
-#### Solicitation of feedback
-
-- [ ] Run two online workshops to gather insights from stakeholders.
-- [ ] Seek community answers on all [Open Questions](#open-questions).
-
-#### Implementation
-
-- [ ] Author to provide example metadata and schema files.
+- [x] Seek feedback from individuals who are members of current Interim Constitutional Committee.
+- [ ] Author to provide test vectors, examples, and schema files.
 
 ## Copyright
 

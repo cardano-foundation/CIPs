@@ -82,27 +82,27 @@
                 "summary": {
                     "type": "string",
                     "title": "Summary",
-                    "description": ""
+                    "description": "The summary of the voting rationale"
                 },
                 "rationaleStatement": {
                     "type": "string",
                     "title": "Rationale Statement",
-                    "description": ""
+                    "description": "The summary of the voting rationale"
                 },
                 "precedentDiscussion": {
                     "type": "string",
                     "title": "Precedent Discussion",
-                    "description": ""
+                    "description": "Discussion of existing precedent"
                 },
                 "counterargumentDiscussion": {
                     "type": "string",
                     "title": "Counterargument Discussion",
-                    "description": ""
+                    "description": "Discussion of counter points to the rationale"
                 },
                 "conclusion": {
                     "type": "string",
                     "title": "conclusion",
-                    "description": ""
+                    "description": "Closing conclusion of the rationale"
                 }
             }
         },
