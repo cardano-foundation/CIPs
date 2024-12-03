@@ -8,6 +8,7 @@ Authors:
 Proposed Solutions: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/943
+  - https://forum.cardano.org/t/problem-with-increasing-blocksize-or-processing-requirements/140044
 Created: 2024-10-22
 License: CC-BY-4.0
 ---
