@@ -3,7 +3,8 @@ CPS: ?
 Title: Ouroboros not accounting for typical global network delays causes centralisation
 Status: Open
 Category: ?
-Authors: Terminada
+Authors:
+  - Terminada
 Proposed Solutions: []
 Discussions: https://github.com/cardano-foundation/CIPs/pull/?
 Created: 2024-10-22
