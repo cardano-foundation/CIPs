@@ -6,7 +6,8 @@ Category: ?
 Authors:
   - Terminada
 Proposed Solutions: []
-Discussions: https://github.com/cardano-foundation/CIPs/pull/?
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/943
 Created: 2024-10-22
 License: CC-BY-4.0
 ---
