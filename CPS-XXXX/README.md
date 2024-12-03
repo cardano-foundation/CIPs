@@ -2,7 +2,7 @@
 CPS: ?
 Title: Block Delay Centralisation
 Status: Open
-Category: ?
+Category: Consensus
 Authors:
   - Terminada
 Proposed Solutions: []
