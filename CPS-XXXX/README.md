@@ -54,7 +54,7 @@ Note that this example is worse than average.  Maybe the general internet was mo
 
 2. [Last block produced by TERM pool - Australia](<https://cexplorer.io/block/43a4d4cfe86fd577f6445eeabe5ad35e31620ce9393e436a6317bba2ee95d463>) - [pooltool average propagation time = 1.38s](<https://pooltool.io/realtime/11175932>)
 
-3. [Last block produced by JSP pool - Japan]{<https://cexplorer.io/block/3dd07cd06fc4ba282e8f45e1a37328a1238646caa71ef5f85c360573b9544c9c>) - [pooltool average propagation = 1.08s](<https://pooltool.io/realtime/11171397>)
+3. [Last block produced by JSP pool - Japan](<https://cexplorer.io/block/3dd07cd06fc4ba282e8f45e1a37328a1238646caa71ef5f85c360573b9544c9c>) - [pooltool average propagation = 1.08s](<https://pooltool.io/realtime/11171397>)
 
 4. [Last block produced by AICHI pool - Japan](<https://cexplorer.io/block/7205814b191344b5d3292acdd5ee8394ff5e338e4a869d51501915d4d7a7dad3>) - [pooltool average propagation = 1.55s](<https://pooltool.io/realtime/11171393>)
 
