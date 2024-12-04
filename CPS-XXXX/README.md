@@ -99,7 +99,7 @@ Cardano should live up to its [11 blockchain tenets](<https://iohk.io/en/blog/po
     - Well maybe by spending an extra $800/month on a high CoS fibre link it might be possible to achieve almost as low block propagation times as someone in USA/EU using a cheap consumer grade home internet connection costing $50/month.  So I can either pay an extra $800/month to get less fork battles or I can save on the up front network connection costs but lose a similar amount of money in rewards due to the extra fork battles.  Either way, a disadvantage persists if I house my pool in a geographically decentralised area such as Australia.  The way to rectify this competitive disadvantage is to warehouse my BP in a data centre in USA/EU.
 
 6. If my pool is located close to the majority then I am benefitting from this unfairness so why should I vote for this to be fixed?
-  - See section: [Goals](#Goals).  Hopefully most people in Cardano want to build a fair system for everyone no matter where they live.
+    - See section: [Goals](#Goals).  Hopefully most people in Cardano want to build a fair system for everyone no matter where they live.
 
 ## Copyright
 This CIP is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
