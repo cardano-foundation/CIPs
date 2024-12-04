@@ -31,8 +31,8 @@ Even the high quality infrastructure of a first world country like Australia is 
 
 Considering that most stake pools are competing over 1% or less in fees, these are big numbers.  The obvious solution for the remote pool is to move its block producer to a server housed in USA or Europe.  This illustrates not only the centralisation problem created, but also the reduction in security that flows from running a block producer on someone elses computing hardware.
 
-## Example
-This block was produced by my locally controlled block producer in Australia.  [It was a full block 86.57kB in size, containing 64 transactions, and 66.17kB of scripts](<https://cexplorer.io/block/c740f9ce8b25410ddb938ff8c42e12738c18b7fd040ae5224c53fb45f04b3ba0>)
+## Examples
+1. This block was produced by my locally controlled block producer in Australia.  [It was a full block 86.57kB in size, containing 64 transactions, and 66.17kB of scripts](<https://cexplorer.io/block/c740f9ce8b25410ddb938ff8c42e12738c18b7fd040ae5224c53fb45f04b3ba0>)
 
 These are the delays (from beginning of the slot) before each of _my own relays_ included this block in their chains by extending their tips:
 
@@ -47,6 +47,16 @@ The above block delay values were obtained using [this script](<https://github.c
 The [average propagation delay by nodes pinging such data to pooltool was 1.67 seconds](<https://pooltool.io/realtime/11169975>)
 
 Fortunately on this occasion no other block producer was leader for the subsequent slot.  But, if there had been they probably would not have received my block in time and consequently would have produced their block upon the previous one creating a fork.
+
+Note that this example is worse than average.  Maybe the general internet was more congestion than usual on this occasion?  [Pooltool reports the following average propagation delays for TERM pool](<https://pooltool.io/pool/08f05bcfaada3bb5c038b8c88c6b502ceabfd9978973159458c6535b/metrics>):
+- Producer = 1.141s
+- Receiver = 0.722s
+
+2. [Last block produced by TERM pool - Australia](<https://cexplorer.io/block/43a4d4cfe86fd577f6445eeabe5ad35e31620ce9393e436a6317bba2ee95d463>) - [pooltool average propagation time = 1.38s](<https://pooltool.io/realtime/11175932>)
+
+3. [Last block produced by JSP pool - Japan]{<https://cexplorer.io/block/3dd07cd06fc4ba282e8f45e1a37328a1238646caa71ef5f85c360573b9544c9c>) - [pooltool average propagation = 1.08s](<https://pooltool.io/realtime/11171397>)
+
+4. [Last block produced by AICHI pool - Japan](<https://cexplorer.io/block/7205814b191344b5d3292acdd5ee8394ff5e338e4a869d51501915d4d7a7dad3>) - [pooltool average propagation = 1.55s](<https://pooltool.io/realtime/11171393>)
 
 ## Goals
 Cardano should live up to its [11 blockchain tenets](<https://iohk.io/en/blog/posts/2024/10/11/the-11-blockchain-tenets-towards-a-blockchain-bill-of-rights/>) proposed by Prof Aggelos Kiayias, in particular T8 and T11 which speak to treating participants fairly without asymmetries.
@@ -73,19 +83,22 @@ Cardano should live up to its [11 blockchain tenets](<https://iohk.io/en/blog/po
 
 ### Arguments against correcting this unfairness
 1. It doesn't matter where the block producer is warehoused because block production is like a virtual service that can be run from anywhere.  What really matters is ownership of the pledge and stake, not ownership of the computing hardware.  If you live on the other side of the world, just rent a virtual server in Frankfurt or Los Angeles for your block producer.
-  - Centralising Cardano infrastructure to data centres potentially hands control over the software, as well as selective control over block propagation between nodes, to BigTech data centre owners.
+    - Centralising Cardano infrastructure to data centres potentially hands control over the software, as well as selective control over block propagation between nodes, to BigTech data centre owners.
 
 2. The internet infrastructure is centred in USA and USA is more politically stable and less likely to have its internet infrastructure compromised through acts of war.  If conflict between USA, China, and Russia ensues then the undersea cables to Japan, Australia and New Zealand could get damaged.  Therefore it makes sense that Cardano block production should be slightly advantaged in USA and slightly disadvantaged in Japan, Australia and New Zealand.
-  - Japan, Australia and New Zealand are very politically stable and it might actually be a good idea to _fairly_ incentivise participation from people living in those areas.  If internet connectivity was to be affected by cyber warfare, the targets of such attacks may not be predictable today.
-  - The bottom line is that if I have 0.001% of stake in the system then I should get 0.001% of access to the system.  Likewise with scaling that up, if good actors possess 51% of the stake then they should have 51% of the control, as this is a fundamental assumption protecting Cardano.  I hope that the Cardano community won't step away from this fundamental mathematics based approach in favour of some sort of subjective human inference about where they think block producers should be warehoused for political or other reasons.
+    - Japan, Australia and New Zealand are very politically stable and it might actually be a good idea to _fairly_ incentivise participation from people living in those areas.  If internet connectivity was to be affected by cyber warfare, the targets of such attacks may not be predictable today.
+    - The bottom line is that if I have 0.001% of stake in the system then I should get 0.001% of access to the system.  Likewise with scaling that up, if good actors possess 51% of the stake then they should have 51% of the control, as this is a fundamental assumption protecting Cardano.  I hope that the Cardano community won't step away from this fundamental mathematics based approach in favour of some sort of subjective human inference about where they think block producers should be warehoused for political or other reasons.
 
 3. Internet transmission is improving so in the future 1 second might be sufficient for block propagation across the entire globe.
-  - This unfairness problem doesn't seem hard to fix.  If / when internet speeds improve then it should be straightforward to recalibrate the software again.
+    - This unfairness problem doesn't seem hard to fix.  If / when internet speeds improve then it should be straightforward to recalibrate the software again.
 
 4. Won't halving or one-third'ing the number of potential leader slots reduce the number of blocks and therefore reduce the throughput?
-  - Possible solution 1 also involves adjusting other parameters so that the target rate of block production remains unchanged.  Actually, it seems likely that the realised throughput would slightly increase.  The reason for this is that [possible solution 1](#Possible-Solutions) would eliminate forks caused by 1 second propagation delays which currently are wasted throughput.
+    - Possible solution 1 also involves adjusting other parameters so that the target rate of block production remains unchanged.  Actually, it seems likely that the realised throughput would slightly increase.  The reason for this is that [possible solution 1](#Possible-Solutions) would eliminate forks caused by 1 second propagation delays which currently are wasted throughput.
 
-5. If my pool is located close to the majority then I am benefitting from this unfairness so why should I vote for this to be fixed?
+5. Anyone running a stake pool should use an Enterprise Ethernet True Business Grade point-to-point Fibre Service with High Class of Service (CoS).  IE: A 1:1 contended service with guarantees around contention, frame delay, and a few other parameters.  If you do this fram Australia then you should be able to get your block propagation times to less than 1 second.
+    - Well maybe by spending an extra $800/month on a high CoS fibre link it might be possible to achieve almost as low block propagation times as someone in USA/EU using a cheap consumer grade home internet connection costing $50/month.  So I can either pay an extra $800/month to get less fork battles or I can save on the up front network connection costs but lose a similar amount of money in rewards due to the extra fork battles.  Either way, a disadvantage persists if I house my pool in a geographically decentralised area such as Australia.  The way to rectify this competitive disadvantage is to warehouse my BP in a data centre in USA/EU.
+
+6. If my pool is located close to the majority then I am benefitting from this unfairness so why should I vote for this to be fixed?
   - See section: [Goals](#Goals).  Hopefully most people in Cardano want to build a fair system for everyone no matter where they live.
 
 ## Copyright
