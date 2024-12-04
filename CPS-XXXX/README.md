@@ -4,7 +4,7 @@ Title: Block Delay Centralisation
 Status: Open
 Category: Consensus
 Authors:
-  - Terminada
+  - Terminada <github-drep@terminada.io>
 Proposed Solutions: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/943
