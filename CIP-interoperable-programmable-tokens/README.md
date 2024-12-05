@@ -61,7 +61,7 @@ The impact that the required script executions have on the cost of transactions 
 ## Specification
 
 # Smart Token Directory & Minting policy
-This smart contracts is responsible for the minting / creation of new programmable tokens and for maintaining an merkle patricia forestry of all smart tokens and their respective transfer policies, we call this the `directoryRootHash`.
+This smart contracts is responsible for the minting / creation of new programmable tokens and for maintaining an merkle patricia forestry of all smart tokens and their respective transfer policies, we call this the `directoryRootHash`. 
 
 ```Haskell
 -- directoryUTxO: a UTxO containing a state token NFT
@@ -75,8 +75,21 @@ This smart contracts is responsible for the minting / creation of new programmab
 --    Enforces that the transaction only mints tokens with `ownScriptHash` as their currency symbol in this transaction (no other tokens are minted).
 ```
 
+Note that in this design there is only a single smart token directory UTxO. If we expect issuance of such token to be infrequent, then this is not an issue. However, if we expect issuance of programmable tokens to be a common occurrance than an [onchain linked list](https://github.com/Anastasia-Labs/plutarch-linked-list) data-structure should be used instead to prevent concurrency issues due to UTxO contention. In this case, each node on the linked list would contain the only Ada and a `nodeNFT` (which certifies that it is a valid linked list node, and as such the correctness of it's datum is enforced by the smart contract) and the datum of each node would contain:
+```
+data ProgrammableTokenDirectoryNode = ProgrammableTokenDirectoryNode
+  { key :: CurrencySymbol 
+  -- ^ Currency Symbol of the programmable token associated with this directory entry
+  , next :: CurrencySymbol 
+  -- ^ Currency Symbol of the programmable token associated with the next node in this directory.
+  , transferLogicScript :: ScriptHash 
+  -- ^ The transfer logic script that must be executed in every transaction that spends the programmable token associated with this directory entry. 
+  }
+```
+In either case, there is only a single directory (a single directory UTxO / single directory linked list) for all programmable tokens.
+
 # Transfer Logic Scripts
-The system guarantees that each programmable token must have a transfer logic script. The transfer logic script for a programmable token is the smart contract that must be executed in every transaction that spends the programmable token. For example to have a stable coin that supports freezing / arrestability this script might require a non-membership merkle proof in a blacklist. This must be a staking script (or an observer script once CIP-112 is implemented), see 
+The system guarantees that each programmable token must have a transfer logic script (located in either the directory UTxO or the directory linked list depending on the implementation). The transfer logic script for a programmable token is the smart contract that must be executed in every transaction that spends the programmable token. For example to have a stable coin that supports freezing / arrestability this script might require a non-membership merkle proof in a blacklist. This must be a staking script (or an observer script once CIP-112 is implemented), see 
 [the withdraw-zero trick](https://github.com/Anastasia-Labs/design-patterns/blob/main/stake-validator/STAKE-VALIDATOR-TRICK.md) for an explanation.
 
 # Programmable Logic Base Script
@@ -87,9 +100,19 @@ This is a spending script that accepts 1 parameter, a credential which identifie
 --   Enforces that the witness associated with the credential `cred` is present in the transaction.
 --     If the Credential is a PubKeyCredential then the public key hash must be present in txInfoSignatories
 --     If the Credential is a ScriptCredential then the script must be present in txInfoWithdrawals (ie the script must be invoked in the tx)
---   For all non-ada tokens in the Spending script either:
+--   For all non-ada tokens in the Spending script (directory UTxO implementation) either:
 --     a. A non-membership proof of the token in the `directoryRootHash` must be provided in the transaction (this proves that the token is not a programmable token)
 --     b. A membership proof of the token in the `directoryRootHash` must be provided, and the associated `transferLogicScript` is present in `txInfoWithdrawals`.
+--   For all non-ada tokens in the Spending script (onchain linked list directory implementation) either:
+--     a. Two adjacent node UTxOs in the onchain directory linked list such that the key of one is lexographically less than the currency symbol of the token, and the other is
+--        lexographically greater than the currency symbol of the token must be provided as reference inputs (this proves that the token is not a programmable token)        
+--     b. The node UTxO in the onchain directory linked list associated with the currency symbol must be provided as a reference input, and the associated `transferLogicScript` is present --        in `txInfoWithdrawals`.
+--    
+--   Enforces that outputs containing programmable tokens must be instances of `ProgrammableLogicBaseScript` (this ensures that the system is closed and programmable tokens cannot be 
+--   smuggled). If the destination of a programmable token is a `ProgrammableLogicBaseScript` parameterized by a non-script credential (public key hash / public key staking credential)
+--   then the output UTxO must only contain ada and the programmable token. This ensures that if a user's programmable token is frozen or otherwise ineligible for transfer due to its
+--   transfer logic script, it will not cause other unaffiliated tokens to be locked. Note that such situations are unavoidable for dApp protocols (freezing a token in a liquidity pool
+--   will cause the pool to be inoperable), as such we do not impose this restriction on transfers to script based instances of `ProgrammableLogicBaseScript`.
 
 mkProgrammableBaseScript :: Credential -> ScriptContext -> ()
 mkProgrammableBaseScript cred ctx = ...
@@ -104,7 +127,7 @@ The existing proposed frameworks for programmable tokens are:
 2. Smart Tokens - CIP 113
 3. Arrestable assets - CIP 125
 
-The issue with all of the above is that they are not interoperable with existing dApps. Thus entirely new dApps protocols would need to be developed specifically for transacting with the proposed smart tokens. They are not composable with existing DeFi, and so they will only work on smart-token enabled DeFi protocols. Furthermore, in some of the above CIPs, each smart-token enabled dApp must be thoroughly audited to ensure that it is a closed system (ie. there is no way for tokens to be smuggled to non-compliant addresses) and thus there needs to be a permissioned whitelist of which addresses are compliant.
+The issue with all of the above is that they are not interoperable with existing dApps. Thus entirely new dApps protocols would need to be developed specifically for transacting with the proposed smart tokens. Furthermore, in some of the above CIPs, each smart-token enabled dApp must be thoroughly audited to ensure that it is a closed system (ie. there is no way for tokens to be smuggled to non-compliant addresses) and thus there needs to be a permissioned whitelist of which addresses are compliant.
 
 Additionally, these proposed solutions attempt to maintain interoperability:
 1. CIP 68 Smart Tokens
@@ -122,7 +145,7 @@ The above factors motivated the design of this framework. Some of the core uniqu
 4. Doesn't require changes to the ledger
 5. Smart tokens cannot be revoked by dApps that fail to follow the standard (unlike the CIP 68 case in which they can)
 6. Very low effort (relative to the existing proposals) to implement and get it to production / mainnet adoption
-7. Completely permissionless and natively interoperable with other smart tokens. IE anyone can mint their own smart tokens with their own custom logic and the correctness of their behavior will be enforced. 
+7. Completely permissionless and natively interoperable with other smart tokens. IE anyone can mint their own smart tokens with their own custom logic and the correctness of their behavior will be enforced
 
 
 ## Path to Active
@@ -130,9 +153,8 @@ The above factors motivated the design of this framework. Some of the core uniqu
 ### Acceptance Criteria
 <!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 Issuance of at-least one smart token via the proposed framework on the following networks:
-1) preview testnet
-2) preprod testnet
-3) mainnet
+1) Preview testnet
+2) Mainnet
 
 End-to-end tests of programmable token logic including arrestability, transfer fees, and blacklisting. 
 
