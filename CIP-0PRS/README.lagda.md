@@ -1215,7 +1215,7 @@ Peras requires a single addition, `peras_cert`, the [block](#blocks) data on the
 [Votes](#votes) are serialized in the following CDDL.
 
 ```cddl
-vote =
+votes_certificate =
   [ voter_id         : hash32
   , voting_round     : round_no
   , block_hash       : hash32
