@@ -19,7 +19,7 @@ License: Apache-2.0
 
 The Cardano mainnet occasionally experiences congestion where there are too many transactions in the memory pool to be included in the next block or in the next few blocks. Sometimes the block utilization peaks above 90% for an extended period of time. This not only impacts general user experience but it can also severely impact use cases such as airdrops, oracles, partner chains, DEXes, and Dapps. Emerging use cases and application deployments promise to accelerate the need for high throughput on Cardano. Applied research on several fronts is needed to propose and provide evidence for techniques that increase throughput measured in terms of transactions, transaction size, and script execution units. Such work should be based on a clear understanding of stakeholder requirements.
 
-## Motivation
+## Problem
 
 The Cardano mainnet occasionally encounters periods of congestion, where the number of pending transactions in the memory pool exceeds the network's capacity to include them in the upcoming block or even the next several blocks. During these times, block utilization can consistently peak above 90%, sometimes for an extended duration. This high level of congestion not only degrades the general user experience by causing delays in transaction processing but also poses significant challenges for specific use cases. For instance, activities such as airdrops, which require efficient processing of large numbers of transactions, can be significantly hampered. Similarly, oracles that depend on timely data updates might face disruptions, while partner chains could experience slower cross-chain interactions. The impact is also felt by decentralized exchanges (DEXes) that need fast transaction confirmations to maintain liquidity and decentralized applications (DApps) whose performance and user interactions are affected.
 
@@ -39,7 +39,7 @@ Quality-of-service guarantees can also be crucial for smart contracts that rely 
 
 Thus, while the need for raw throughput is one aspect of blockchain performance, the ability to ensure a predictable and stable processing time for transactions is equally important for many applications. Addressing this challenge involves optimizing the underlying network protocol, enhancing transaction prioritization mechanisms, or implementing features that can deliver the necessary guarantees for latency-sensitive use cases. As more sophisticated applications continue to emerge on blockchain platforms, meeting these requirements will be essential to ensuring that the technology can support a diverse range of real-world use cases effectively.
 
-### Urgency 
+#### Urgency 
 
 While recent improvements like reference scripts have provided some relief, throughput limitations persist and will become increasingly critical as on-chain activity grows. This is evidenced by events like the launches of SundaeSwap and Snek.fun, where application-level queue times reached days and order processing was severely limited due to block capacity constraints. This hinders Cardano's ability to compete and attract wider adoption.
 
@@ -62,7 +62,7 @@ Source for table data: https://chainspect.app/dashboard
 
 To achieve a sustainable and thriving ecosystem, Cardano needs to handle significantly higher transaction volumes at current or lower fee levels. This necessitates a proactive approach to scaling that goes beyond addressing sporadic spikes in activity and focuses on supporting the growth required for long-term network profitability without relying on inflation. This aligns with the vision of scaling Cardano to support nation-state level usage by 2030.
 
-## Problem
+### Evidence
 
 Historical data indicates that an appreciable fraction of the blocks on the Cardano mainnet have been nearly full and that periods of high utilization can last for minutes. In such situations it is likely that additional transactions queue up in the nodes' memory pool, awaiting inclusion in a future block. Needless to say, block congestion correlates directly with transaction throughput. With the current average block-production rate of one per twenty seconds, that queuing can translate into unacceptably long waits for a transaction to be included in a block and receive its first confirmation. Even without the additional demand anticipated when new projects come online in the future, there sometimes are periods where user experience is degraded by limited throughput.
 
