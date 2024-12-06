@@ -1,7 +1,6 @@
 ---
 CIP: 0PRS
 Title: Ouroboros Peras - Faster Settlement
-CIP: 0PRS
 Category: Consensus
 Status: Proposed
 Authors:
