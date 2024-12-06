@@ -13,7 +13,6 @@ Created: 2024-10-11
 License: Apache-2.0
 ---
 
-# CIP-???? Greater Transaction Throughput
 
 
 ## Abstract
