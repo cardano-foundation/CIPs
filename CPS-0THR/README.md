@@ -1,5 +1,5 @@
 ---
-CPS: 0THR
+CPS: 18
 Title: Greater Transaction Throughput
 Category: Consensus
 Status: Open
