@@ -12,19 +12,6 @@ Created: 2024-12-3
 License: Apache-2.0
 ---
 
-<!-- Existing categories:
-
-- Meta     | For meta-CIPs which typically serves another category or group of categories.
-- Wallets  | For standardisation across wallets (hardware, full-node or light).
-- Tokens   | About tokens (fungible or non-fungible) and minting policies in general.
-- Metadata | For proposals around metadata (on-chain or off-chain).
-- Tools    | A broad category for ecosystem tools not falling into any other category.
-- Plutus   | Changes or additions to Plutus
-- Ledger   | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
-- Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
-
--->
-
 ## Abstract
 
 This CIP proposes a robust framework for the issuance of interoperable programmable tokens on Cardano. Unlike all its predecessors, this framework allows these tokens to be used in existing dApps, and does not require dApps to be developed specifically for these tokens. 
@@ -60,7 +47,7 @@ The impact that the required script executions have on the cost of transactions 
 
 ## Specification
 
-# Smart Token Directory & Minting policy
+### Smart Token Directory & Minting policy
 This smart contracts is responsible for the minting / creation of new programmable tokens and for maintaining an merkle patricia forestry of all smart tokens and their respective transfer policies, we call this the `directoryRootHash`. 
 
 ```Haskell
@@ -88,11 +75,11 @@ data ProgrammableTokenDirectoryNode = ProgrammableTokenDirectoryNode
 ```
 In either case, there is only a single directory (a single directory UTxO / single directory linked list) for all programmable tokens.
 
-# Transfer Logic Scripts
+### Transfer Logic Scripts
 The system guarantees that each programmable token must have a transfer logic script (located in either the directory UTxO or the directory linked list depending on the implementation). The transfer logic script for a programmable token is the smart contract that must be executed in every transaction that spends the programmable token. For example to have a stable coin that supports freezing / arrestability this script might require a non-membership merkle proof in a blacklist. This must be a staking script (or an observer script once CIP-112 is implemented), see 
 [the withdraw-zero trick](https://github.com/Anastasia-Labs/design-patterns/blob/main/stake-validator/STAKE-VALIDATOR-TRICK.md) for an explanation.
 
-# Programmable Logic Base Script
+### Programmable Logic Base Script
 This is a spending script that accepts 1 parameter, a credential which identifies the owner of the value that it locks.
 
 ```Haskell
@@ -151,7 +138,6 @@ The above factors motivated the design of this framework. Some of the core uniqu
 ## Path to Active
 
 ### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 Issuance of at-least one smart token via the proposed framework on the following networks:
 1) Preview testnet
 2) Mainnet
@@ -161,12 +147,8 @@ End-to-end tests of programmable token logic including arrestability, transfer f
 Finally, a widely adopted wallet that can read and display programmable token balances to users and allow the user to conduct transfers of such tokens. 
 
 ### Implementation Plan
-<!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
 Implement the contracts detailed in the specification, and implement the offchain code required to query programmable token balances and construct transactions to transfer such tokens. 
 
-<!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
 
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms. Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header: -->
-
 This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
