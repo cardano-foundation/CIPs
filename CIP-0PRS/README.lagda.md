@@ -1,5 +1,5 @@
 ---
-CIP: 0PRS
+CIP: 140
 Title: Ouroboros Peras - Faster Settlement
 Category: Consensus
 Status: Proposed
