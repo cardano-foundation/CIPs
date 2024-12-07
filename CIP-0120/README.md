@@ -6,7 +6,8 @@ Status: Proposed
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
     - Danielle Stanko <danielle.stanko@iohk.io>
-Implementors: []
+Implementors: 
+    - Danielle Stanko <danielle.stanko@iohk.io>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/796
 Created: 2024-03-19
@@ -180,7 +181,7 @@ We propose using the
 
 The constitution text MAY include a strict subset of rich text styling as
 defined in this specification.
-Tooling rendering the constitution SHOULD recognize these and render them 
+Tooling rendering the constitution SHOULD recognize these and render them
 faithfully.
 
 #### Line Breaks / Paragraphs
@@ -353,12 +354,12 @@ lines long in normal text.
 
 By limiting documents to one sentence per line we hope to improve the
 experience when comparing documents and commenting on specific sentences.
-Conventional document comparison tools such as git diff views, compare 
+Conventional document comparison tools such as git diff views, compare
 documents on a by line basis.
 By spreading text across lines,
 it greatly improves tooling's ability to differentiate between documents.
 
-Furthermore, isolating one sentence per line, allows users to more easily 
+Furthermore, isolating one sentence per line, allows users to more easily
 isolate specific lines to comment upon.
 This gives each sentence an unambiguous reference point,
 which can be very useful for sharing and commenting.
@@ -398,9 +399,9 @@ hashing algorithms between constitutions.
 
 ### Storage
 
-Ensuring the Cardano Constitution and its iterations can be accessed in a 
+Ensuring the Cardano Constitution and its iterations can be accessed in a
 permissionless manor is paramount.
-Permissionless networks such as IPFS reduce the ability for parties to 
+Permissionless networks such as IPFS reduce the ability for parties to
 censor the content.
 With each interested party able to make copies of constitutions,
 this improves the resilience of the documents from deletion.
@@ -452,8 +453,9 @@ Embedded HTML or videos are likely things to be avoided.
 
 ### Acceptance Criteria
 
-- [ ] This standard is followed for the interim Cardano Constitution
+- [x] This standard is followed for the interim Cardano Constitution
 - [ ] This standard is utilized by two tools reading constitution data from chain
+  - constitution.gov.tools
 
 ### Implementation Plan
 
