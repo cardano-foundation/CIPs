@@ -115,7 +115,7 @@ The constitution text MUST only contain a maximum of one sentence per line,
 with each sentence followed by a newline.
 Each new sentence SHOULD start on its own line with a capitalized letter.
 
-Long sentences can be split multiple lines, 
+Long sentences can be split multiple lines,
 when writing the author should try to split long sentences along natural breaks.
 
 Example:
@@ -188,6 +188,7 @@ faithfully.
 To create paragraphs, use a blank line to separate one or more lines of text.
 
 Examples:
+
 ```md
 Here's a line for us to start with.
 
@@ -210,6 +211,7 @@ Headers SHOULD not be preceded by whitespace.
 The lower the number of `#` the larger order the text SHOULD be rendered.
 
 Example:
+
 ```md
 # H1
 
@@ -241,6 +243,7 @@ Bold emphasis is shown via double asterisks (`**`).
 Emphasis cannot span multiple lines.
 
 Examples:
+
 ```md
 Emphasis, aka italics, with single *asterisks*.
 
@@ -255,6 +258,7 @@ Texted can be highlighted as code, when encased without spaces by backticks.
 This MUST not contain line breaks.
 
 Example:
+
 ```md
 Inline `code` has `back-ticks around` it.
 ```
@@ -412,7 +416,7 @@ support.
 
 ### Rich Text Formatting
 
-Rich text styling will greatly improve the readability of the 
+Rich text styling will greatly improve the readability of the
 constitution documents, when rendered.
 
 #### Markdown
@@ -432,6 +436,7 @@ constitution document.
 Embedded HTML or videos are likely things to be avoided.
 
 ## Open Questions
+
 - [x] How can we support multi-languages?
   - The Cardano constitution will be in English, but we will add best practice guidelines via [Best Practices](#best-practices).
 - [x] Should we specify any standardization for the proposal policy?
@@ -469,7 +474,7 @@ Embedded HTML or videos are likely things to be avoided.
   We would like to thank those who reviewed the first draft of this proposal;
   - Danielle Stanko
   - Kevin Hammond
-  - Steven Johnson 
+  - Steven Johnson
 
 </details>
 
@@ -483,5 +488,5 @@ Embedded HTML or videos are likely things to be avoided.
 
 ## Copyright
 
-This CIP is licensed under 
+This CIP is licensed under
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
