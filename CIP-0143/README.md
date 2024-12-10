@@ -1,7 +1,7 @@
 ---
-CIP: ???
+CIP: CIP-143
 Title: Interoperable Programmable Tokens
-Category: Plutus
+Category: Tokens
 Status: Proposed
 Authors:
     - Philip DiSarro <philipdisarro@gmail.com>
