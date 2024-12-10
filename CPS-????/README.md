@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Light Client Protocols for Cardano
+Title: Light Client Protocols
 Status: Open
 Category: Tools
 Authors:
