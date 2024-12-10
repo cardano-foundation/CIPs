@@ -2,7 +2,7 @@
 CPS: ?
 Title: Block Delay Centralisation
 Status: Open
-Category: Consensus
+Category: Network
 Authors:
   - Terminada <github-drep@terminada.io>
 Proposed Solutions: []
