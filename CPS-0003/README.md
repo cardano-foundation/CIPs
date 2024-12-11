@@ -134,6 +134,7 @@ Both 2. and 3. are relatively error-prone, as many projects and tools assume 28b
 1. Is there a possibility to have a transition period, so users won't have their funds blocked until the wallets start supporting smart tokens?
 1. Can this be achieved without a hard fork?
 1. How to make validator scripts generic enough without impacting costs significantly?
+1. Can we introduce smart tokens without significantly increasing Cardano's attack surface?
 
 ## Copyright
 
