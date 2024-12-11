@@ -1,5 +1,5 @@
 ---
-CIP: CIP-143
+CIP: 143
 Title: Interoperable Programmable Tokens
 Category: Tokens
 Status: Proposed
