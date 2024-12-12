@@ -17,8 +17,9 @@ must be supplied in one transaction, whether the script is supplied in
 the same transaction in which it is used, or pre-loaded onto the chain
 for use as a reference script. This limits script code size, which in
 turn limits the use of libraries in scripts, and ultimately limits the
-sophistication of Cardano apps, compared to competing blockchains. It
-is the aspect of Cardano that script developers complain about most.
+sophistication of Cardano apps, compared to competing blockchains. The
+script size limit is an aspect of Cardano that script developers
+commonly complain about.
 
 This CIP addresses this problem directly, by allowing reference inputs
 to supply 'modules', which can be used from other scripts (including
@@ -47,7 +48,7 @@ contracts to be implemented; conversely, on Cardano, it is rather
 impractical to implement higher-level abstractions as libraries,
 because doing so will likely exceed the script size limit. This is not
 just a theoretical problem: complaints about the script size limit are
-the most common complaint made by Cardano contract developers.
+commonly made by Cardano contract developers.
 
 Thus the primary goal of this CIP is to lift the limit on the total
 amount of code run during a script execution, by allowing part of the
@@ -65,21 +66,21 @@ in any of these languages, and then use it from all of them. A
 secondary goal is thus to define a module system which permits this,
 by supporting cross-language calls.
 
-Note that Plinth already enjoys a module system, namely the Haskell
-module system. This already enables Plinth code to be distributed
-across several modules, or put into libraries and shared. Indeed
-this is already heavily used: the DJED code base distributes Plinth
-code across 24 files, of which only 4 contain top-level contracts, and
-the others provide supporting code of one sort or another. Thus the
+Note that many languages targetting UPLC already support modules. In
+particular, Plinth already enjoys a module system, namely the Haskell
+module system. This already enables code to be distributed across
+several modules, or put into libraries and shared. Indeed this is
+already heavily used: the DJED code base distributes Plinth code
+across 24 files, of which only 4 contain top-level contracts, and the
+others provide supporting code of one sort or another. Thus the
 software engineering benefits of a module system are already
-available; other languages compiled to UPLC could provide a module
-system in a similar way. The *disadvantage* of this approach is that
-all the Plinth code is put together into one script, which can easily
-exceed the size limit. Indeed, the DJED code base also contains an
-implementation of insertion sort in Plinth, with a comment that a
-quadratic algorithm is used because its code is smaller than, for
-example, QuickSort. There is no clearer way to indicate why the
-overall size limit must be lifted.
+available. The *disadvantage* of this approach is that all the code is
+combined into one script, which can easily exceed the size limit as a
+result. Indeed, the DJED code base also contains an implementation of
+insertion sort in Plinth, with a comment that a quadratic algorithm is
+used because its code is smaller than, for example, QuickSort. There
+is no clearer way to indicate why the overall limit on code size must be
+lifted.
 
 ### The Situation on Ethereum
 
@@ -172,7 +173,10 @@ data Script =
 type ScriptHash = ByteString
 ```
 
-We need to resolve the arguments of a script before running it:
+Scripts in transactions, and on the chain, are represented in this
+way, with dependencies that must be supplied in a transaction using
+the script. During phase 2 verification we need to resolve the
+arguments of each script before running it:
 ```
 resolveScriptDependencies
   :: Map ScriptHash Script
@@ -309,9 +313,10 @@ scriptValues = Map.map (scriptCekValue scriptValues) preimages
 ```
 to compute the CekValue of each script.
 
-
 Scripts are then applied to their arguments by building an initial CEK
 machine configuration applying the script value to its argument value.
+
+
 
 Note that this recursive definition of `scriptValues` could potentially allow an
 attacker to cause a black-hole exception in the transaction validator,
@@ -324,10 +329,11 @@ and `args` such that
 h = hash (Script head (h:args))
 ```
 We assume that finding such an `h` is impossible in practice; should
-this not be the case, then we must build a script dependency graph for
-each transaction and check that it is acyclic before evaluating the
-scripts in this way.
-
+this not be the case, or if we should wish to defend against an
+attacker with the resources to find such an attack on the hash
+function, then we must build a script dependency graph for each
+transaction and check that it is acyclic before evaluating the scripts
+in this way.
 
 ##### Cost
 
@@ -1434,11 +1440,18 @@ function. The stake validator inspects the argument-result pair,
 computes the function for the given argument, and checks that the
 result equals the result in the pair. This design pattern enables the
 logic of a script to be split between the client script and the stake
-validator, thus circumventing the limits on script size. It also
-permits the result of a function to be computed *once*, and shared by
-many scripts, thus achieving a kind of memoisation. However, it is a
-little intricate to set up, and not really an alternative to a module
-system.
+validator, thus circumventing the limits on script size. But the main
+point is that the function call, whose result may be needed by several
+validators, can be computed just *once* per transaction. More details
+can be found
+[here](https://github.com/Anastasia-Labs/design-patterns/blob/main/stake-validator/STAKE-VALIDATOR-TRICK.md).
+
+Factoring out a shared part of the validation in this way is a
+generally useful technique which is largely independent of the
+existence of modules--this CIP does not remove the need for sharing
+work between validators, and indeed this trick will work equally well
+once modules are added. But as a way of *implementing* modules, it is
+rather intricate and unsatisfactory.
 
 #### The WebAssembly Component Model
 
@@ -1455,8 +1468,8 @@ now.
 
 ### Preferred Options
 
-Allowing script code to be spread across many transactions lifts the
-most commonly complained-about restriction faced by Cardano script
+Allowing script code to be spread across many transactions lifts a
+commonly complained-about restriction faced by Cardano script
 developers. It permits more complex applications, and a much heavier
 use of libraries to raise the level of abstraction for script
 developers. Modules are already available on the Ethereum blockchain,
