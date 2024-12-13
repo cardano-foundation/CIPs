@@ -128,8 +128,8 @@ We have attempted to define a minimal API to cover many use cases, but we expect
 
 ### Acceptance Criteria
 
-- [ ] There is at least one protocol adapter for any of the existing query layers that implements this spec, that can be run.
-- [ ] There is at least one offchain library that implements a provider interface for this CIP, effectively making it usable with the protocol adapter in production.
+- [ ] There are at least two protocol adapter for any of the existing query layers that implements this spec, that can be run.
+- [ ] There are at least two offchain library that implements a provider interface for this CIP, effectively making it usable with the protocol adapter in production.
 
 ### Implementation Plan
 
