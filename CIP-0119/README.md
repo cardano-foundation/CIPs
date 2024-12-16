@@ -122,7 +122,7 @@ If the `imageObject` DOES NOT contain a base64 encoded image, the `contentUrl` M
 #### `references`
 - Optional
 - This CIP extends the `references` property from [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100#high-level-description)
-- `references` contain the following sub-properties `type`, `label`, and `uri`
+- `references` contain the following sub-properties `@type`, `label`, and `uri`
 - This CIP adds two `@type` identifiers "Identity" and "Link"
 
 ##### `type`: Link
@@ -134,7 +134,7 @@ If the `imageObject` DOES NOT contain a base64 encoded image, the `contentUrl` M
 
 ##### `type`: Identity
 - Optional
-- The `uri` of a reference with the `type` "Identity" is a way for DReps to prove that they are who they say they are
+- The `uri` of a reference with the `@type` "Identity" is a way for DReps to prove that they are who they say they are
 - It is expected that the "Identity" of a DRep will be the addresses of their most active social media account twitter, linkedin etc. or personal website.
 - The DRep must reference their DRep ID in a prominent place at the location that is specified in the `uri` property of that reference. This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
 
