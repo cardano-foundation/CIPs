@@ -7,7 +7,7 @@ Authors:
     - Sebastian Bode <sebastian.bode@cardanofoundation.org>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/942
 Created: 2024-11-18
 License: CC-BY-4.0
 ---
