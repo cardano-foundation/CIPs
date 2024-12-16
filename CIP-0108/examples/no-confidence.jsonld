@@ -67,7 +67,7 @@
     "authors": [
       {
         "witness": {
-          "witnessAlgorithm": "cip-0008",
+          "witnessAlgorithm": "CIP-0008",
           "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
           "signature": "84582aa201276761646472657373581d610fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42a166686173686564f458204a7ecc544559df67ece3f7f90f76c4e3e7e329a274c79a06dcfbf28351db600e5840a5dc881ddabdec69e0e4dabdd43a922ef474f7be1029facdbb9106429e17ec61deda22f2778eda21005127f0c6d10f8a4b0210b8177d03d2ae4618d2423d0807"
         }
