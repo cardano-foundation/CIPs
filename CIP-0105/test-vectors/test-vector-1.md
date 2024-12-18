@@ -14,7 +14,7 @@ Scripts were constructed according to the following native script templates:
 
 **Script 2:** `any [$vKeyhash, all [active_from 5001, active_until 6001]]`
 
-Where `$vKeyhash` is the Verification key hash aka `{drep_vkh | cc_cold_vkh | cc_hot_vkh}`.
+Where `$vKeyhash` is the Verification key hash aka `{drep_vkh1... | cc_cold_vkh1... | cc_hot_vkh1...}`.
 
 ### DRep Keys
 
@@ -81,6 +81,7 @@ Bech32: `drep_script14edv7pg3y4wkglyykvvy5t2j906ld3dhdwvf7jda8qaa63d5kf4`
 Hex: `23ae5acf0511255d647c84b3184a2d522bf5f6c5b76b989f49bd383bdd`
 Bech32: `drep1ywh94nc9zyj46erusje3sj3d2g4ltak9ka4e386fh5urhhga37qxs`
 
+
 ### Constitutional Committee Cold
 
 #### Constitutional Committee Signing Key
@@ -94,7 +95,6 @@ Bech32: `cc_cold_sk1dp84kjq9qa647wr70e2yedzt8e27kwugh8mfw675re0hgm8p530z3d9230cj
 Hex: `a9781abfc1604a18ebff6fc35062c000a7a66fdca1323710ed38c1dfc3315bea`
 
 Bech32: `cc_cold_vk149up407pvp9p36lldlp4qckqqzn6vm7u5yerwy8d8rqalse3t04q7qsvwl`
-
 
 #### Constitutional Committee Extended Cold Signing Key
 
@@ -146,6 +146,7 @@ Bech32: `cc_cold_script1zxwzpnk0ah7m5ptjjtmkhvgs4736k3e0ns66shd0fy33vdauq3j`
 
 Hex: `13119c20cecfedfdba057292f76bb110afa3ab472f9c35a85daf492316`
 Bech32: `cc_cold1zvgecgxwelklmws9w2f0w6a3zzh6826897wrt2za4ayjx9swtgkr6`
+
 
 ### Constitutional Committee Hot
 
