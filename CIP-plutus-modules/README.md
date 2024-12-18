@@ -772,78 +772,21 @@ cannot choose to supply alternative implementations of them.
 ### In-service upgrade
 
 Long-lived contracts may need upgrades and bug fixes during their
-lifetimes. This need is met on the Ethereum blockchain using the
-'proxy pattern'--a 'proxy' contract which delegates calls to the
-current implementation contract, whose identity is stored in the proxy
-contract's mutable state. Proxy contracts can provide a 'code upgrade'
-method which modifies the mutable state to store a new implementation
-contract.
-
-
-The Cardano chain does not offer mutable state. Instead, a changing
-state is represented by a succession of UTxOs, each holding the
-current state, usually with the currently-valid UTxO identified by
-holding a particular NFT. In the absence of mutable state a dependency
-cannot be updated just by changing a pointer, but scripts can still be
-upgraded by creating new values on the chain. The exact mechanism
-depends on the kind of script--and, often, on the original script
-developer preparing the ground for a later code change.
-
-Note that, on Ethereum, a proxy contract can be updated without
-changing its contract address---thanks to mutable state. On Cardano, a
-script address *is* the hash of its code; of course, changing the code
-will change the script address. It is very hard to see how that could
-possibly be changed without a fundamental redesign of Cardano. So the
-methods discussed below are different in nature from the Ethereum one:
-they upgrade dependencies in something by replacing it with a new one,
-with different dependencies. This is really just functional
-programming at work: data is always 'updated' by creating a new
-version with possibly different content. This does mean that script
-addresses are going to change when their dependencies do; there's no
-way around it.
-
-First consider shared modules, stored as reference scripts in
-UTxOs. The hash of a module depends on the hash of all its
-dependencies, so when a dependency changes, then a new version of the
-UTxO needs to be created with the new dependency, and its hash needs
-to be distributed (by off-chain means). To prevent accidental use of
-the old UTxO, it could be spent.
-
-UTxOs whose *spending verifier* needs upgrading can be spent and
-recreated with a new verifier, if the need has been anticipated by the
-script author. The verifier would need to accept a 'code change'
-redeemer, and then check that the transaction created a new UTxO
-protected by the new spending verifier. For example, the code change
-redeemer might provide the script hash of the new verifier, and the
-old verifier would then check that the new UTxO, with the same
-contents, was protected by that hash. This mechanism permits an
-arbitrary code change; of course this opens for attacks, so in
-practice such a verifier would need to check that the proposed code
-change was correctly authorised. How this is done is up to the
-contract concerned.
-
-Note that *currency symbols* in Cardano are just the hash of the
-minting policy--a script. Thus, updating a dependency of a minting
-policy means changing the currency symbol. We need to be able to
-convert tokens with the old currency to the new one. To allow this,
-the minting script must allow *burning* the old currency when the new
-one is being minted, and the new minting script must allow minting
-when the old currency is being burned, provided the code upgrade is
-correctly authorized. This is enough to allow wallets holding the old
-currency to replace it by the new one--a wallet can just submit a
-transaction that burns the old tokens and mints the new. If the
-currency is also to be stored in UTxOs protected by spending
-verifiers, then those verifiers must also accept 'currency upgrade'
-redeemers, and check that the UTxO is just being recreated with old
-tokens replaced by new ones--or alternatively, continue to use the
-old coins and exchange them when they reach a wallet. To facilitate
-this, transactions that require an input with these tokens should also
-accept old versions, along with authentication of the code upgrade.
-
-Staking validators are a much simpler case: they can be upgraded just by
-deregistering the state key registration certificate that refers to
-them, and then reregistering the same state key with a new staking
-validator.
+lifetimes. This is especially true of contracts made up of many
+modules--every time a dependency is upgraded or receives a bug fix,
+the question of whether or not to upgrade the client contract
+arises. However, the problem of upgrading contracts *securely* is a
+tricky one, and exists whether or not modules are used. Therefore this
+CIP does not address this problem specifically: developers should use
+the same mechanisms to handle upgrades of scripts with dependencies,
+as they use to upgrade scripts without dependencies. The only thing we
+note here is that the need for upgrades is more likely to arise when a
+script depends on many others, so it is more important to be prepared
+for it. Note that, because a script contains the hashes of its
+dependencies, no 'silent' upgrade can occur: the hash of a script
+depends on *all* of its code, including the code of its dependencies,
+so any change in a dependency will lead to a change in the script
+hash.
 
 ### Lazy loading
 
