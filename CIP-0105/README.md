@@ -11,7 +11,7 @@ Implementors:
   - Mesh <https://meshjs.dev/>
   - NuFi <https://nu.fi/>
   - Ryan Williams <ryan.williams@intersectmbo.org>
-  - Pawel Jackobs <pawel.jakubas-ext@cardanofoundation.org>
+  - Pawel Jakubas <pawel.jakubas-ext@cardanofoundation.org>
   - Typhon <https://typhonwallet.io/>
   - Vespr <https://vespr.xyz/>
   - Yoroi <https://yoroi-wallet.com/>
