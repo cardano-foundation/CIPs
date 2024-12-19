@@ -546,12 +546,7 @@ exports instead. Every module export is assigned an index in the
 resulting tuple, and the scripts must be preprocessed before execution
 to replace the indexes in every export reference by the corresponding
 index in the tuple--so `proj i (proj j Mods)` becomes `proj k Mods`
-for `k` the index of the `i`th export of the `j`th module. Since the
-placement of modules in a global tuple depends on *all* the modules
-used in a transaction, and since some of the scripts used by a
-transaction are taken from pre-existing reference UTxOs, then this
-preprocessing cannot be done in advance; it must be done during script
-verification of the transaction.
+for `k` the index of the `i`th export of the `j`th module.
 
 In the case of modules which are omitted from the transaction (see
 'lazy loading'), the export references `proj i (proj j Mods)` should
@@ -559,13 +554,41 @@ be replaced by `builtin unit`. This is either the correct value, or
 will cause a run-time type error (and thus verification failure) if
 the value is used.
 
-This subvariation can be combined with 'module environment built into
-the CEK machine', in which case the export references are replaced by
-suitable `ModuleRef k` expressions as before.
+In the case of a global module environment, then since the placement
+of modules in a global tuple depends on *all* the modules used in a
+transaction, and since some of the scripts used by a transaction are
+taken from pre-existing reference UTxOs, then this preprocessing
+cannot be done in advance; it must be done during script verification
+of the transaction.  This subvariation can be combined with 'module
+environment built into the CEK machine', in which case the export
+references are replaced by suitable `ModuleRef k` expressions as
+before.  It does not change the `CompiledCode` stored in scripts; it
+only affects the way that code is prepared for execution.
 
-This subvariation does not change the `CompiledCode` stored in
-scripts; it only affects the way that code is prepared for execution.
-
+If the module environment is *local* for each script, then the
+preprocessing can be done at *compile-time*--and scripts on the chain
+can be stored as functions of one big tuple, containing all the
+exports from modules imported into the script. There is a subtlety in
+the case of lazy loading: `resolveScriptDependencies` becomes
+responsible for creating a tuple with one entry per export, *even for
+modules which are not provided in the transaction*. For this to be
+possible, `resolveScriptDependencies` needs to know *how many* exports
+the imported module has, even without access to its body. To make this
+possible we can extend the `ScriptArg` type:
+```
+data ScriptArg = ScriptArg ScriptHash Int
+```
+In the case of a module which *is* supplied, there should be a dynamic
+check that the number of components agrees with the `ScriptArg`; in
+the case of a module which is not supplied in the transaction,
+`resolveScriptDependencies` should just add this number of `builtin
+unit`s to the tuple passed to the script. Note that an attacker could
+force the transaction verifier to allocate a very large amount of
+memory by supplying a very large integer here, in a transaction that
+does not include the module itself--and so might be cheap. To prevent
+this, transaction fees must take the *values* of these integers into
+account; it may also be sensible to place an absolute upper limit on
+the number of exports from a module.
 
 ##### Script traversal costs
 
