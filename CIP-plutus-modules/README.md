@@ -35,8 +35,9 @@ account, and (in some cases) may require extensive benchmarking.
 
 ## Motivation: why is this CIP necessary?
 
-Cardano scripts are currently subject to a fairly tight size limit;
-even when they are supplied as a reference input, that UTxO must be
+Cardano scripts are currently subject to a fairly tight size limit,
+deriving from the overall limit on transaction size; even when a
+script is supplied in a reference UTxO, that UTxO must itself be
 created by a single transaction, which is subject to the overall
 transaction size limit. Competing blockchains suffer from no such
 limit: on the Ethereum chain, for example, contracts can call one
@@ -206,7 +207,7 @@ The only scripts that can be run are complete scripts, so the type of
 
 #### Variation: Lazy Loading
 
-With this design, if any script hash is missing from the `preimages`,
+With the design above, if any script hash is missing from the `preimages`,
 then the entire resolution fails. As an alternative, we might replace
 missing subterms by a dummy value, such as `builtin unit`, thus:
 ```
@@ -237,15 +238,16 @@ dependencies) to be omitted from the spending transaction.
 #### Variation: Value Scripts
 
 The goal of this variation is to eliminate the cost of evaluating
-scripts, by converting them directly to values. Since UPLC runs on the
-CEK machine, this means converting them directly into the `CekValue` type,
-*without* any CEK machine execution. To make this possible, the syntax
-of scripts is restricted so that those parts that would be evaluated
-during an application to the script arguments are already (UPLC)
-values. That is, script code is syntactically restricted to explicit
-λ-expressions with one λ per `ScriptArg`, followed by a syntactic
-value. (Values are constants, variables, built-ins, λ-abstractions,
-delayed terms, and SoP constructors whose fields are also values).
+scripts, by converting them directly to values (in linear time). Since
+UPLC runs on the CEK machine, this means converting them directly into
+the `CekValue` type, *without* any CEK machine execution. To make this
+possible, the syntax of scripts is restricted so that those parts that
+would be evaluated during an application to the script arguments are
+already (UPLC) values. That is, script code is syntactically
+restricted to explicit λ-expressions with one λ per `ScriptArg`,
+followed by a syntactic value. (Values are constants, variables,
+built-ins, λ-abstractions, delayed terms, and SoP constructors whose
+fields are also values).
 
 This means that every script must take the form
 `λA1.λA2....λAn.<value>`, where `n` is the number of `ScriptArg`s
@@ -1110,7 +1112,9 @@ environment to look up script hashes, as opposed to many per-module
 ones). However, this approach is less flexible because it does not
 support dynamic linking (see Static vs Dynamic Linking above). Once a
 `ScriptHash` is embedded in a term, then a different version of the
-script cannot readily be used instead.
+script cannot readily be used instead. Moreover, script hashes are
+quite large (32 bytes), and including more than a few in a script
+would quickly run into size limits.
 
 #### Module-level recursion
 
@@ -1159,7 +1163,7 @@ constructor applications; and
 ```
 fix (λx. fix (λy.e)) ---> fix (λx. e[x/y])
 ```
-Both these rules require adjusting deBruin numbers in the UPLC
+Both these rules require adjusting deBruijn numbers in the UPLC
 implementation.
 
 The intention here is to implement module-level recursion using a
@@ -1615,7 +1619,7 @@ benefitted greatly from discussion with Ziyang Liu, Roman Kireev, and
 Phil Wadler.
 
 ## Copyright
-This CIP is licensed under [CC-BY-4.0]](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 ---
 
