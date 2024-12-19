@@ -478,7 +478,9 @@ data Script =
 ```
 Here the `CompleteScript` alternative is used for scripts without
 script arguments; such scripts are not applied to a tuple of modules
-before use, and so need not be of the form `λMods.e`.
+before use, and so need not be of the form `λMods.e`. (This is only
+needed because a 'function of zero arguments' has no overhead, while a
+function of a zero-tuple does).
 
 ##### Subvariation: Global module environment
 
@@ -713,18 +715,20 @@ UPLC programs with different Plutus Core versions are incompatible and cannot be
 This CIP provides a minimal mechanism to split scripts across several
 transactions. 'Imported' modules are provided in the calling
 transaction and passed as arguments to the top-level script, and their
-identity is checked using their hash. The representation of modules is
-left entirely up to compiler-writers to choose--a module may be any
-value at all. For example, one compiler might choose to represent
-modules as a tuple of functions, while another might map function
-names to tags, as Solidity does, and represent a module as a function
-from tags to functions. Each language will need to define its own
-conventions for module representations, and implement them on top of
-this low-level mechanism. For example, a typed language might
-represent a module as a tuple of exported values, and store the names
-and types of the values in an (off-chain) interface file. Clients
-could use the interface file to refer to exported values by name, and
-to perform type-checking across module boundaries.
+identity is checked using their hash. In the main specification, the
+representation of modules is left entirely up to compiler-writers to
+choose--a module may be any value at all (although some of the
+variations do restrict the form). For example, one compiler might
+choose to represent modules as a tuple of functions, while another
+might map function names to tags, as Solidity does, and represent a
+module as a function from tags to functions. Each language will need
+to define its own conventions for module representations, and
+implement them on top of this low-level mechanism. For example, a
+typed language might represent a module as a tuple of exported values,
+and store the names and types of the values in an (off-chain)
+interface file. Clients could use the interface file to refer to
+exported values by name, and to perform type-checking across module
+boundaries.
 
 ### Recursive modules
 
@@ -766,7 +770,7 @@ module is replaced by a new version, perhaps fixing a bug, can
 The design in this CIP supports both alternatives. Suppose a module
 `A` imports modules `B` and `C`. Then module `A` will be represented
 as the lambda-expression `λB.λC.A`. This can be compiled into a
-`CompleteScript` and placed on the chain, with en empty list of
+`CompleteScript` and placed on the chain, with an empty list of
 `ScriptArg`s, as a reference script in a UTxO, allowing it to be used
 with any implementations of `B` and `C`--the calling script must pass
 implementations of `B` and `C` to the lambda expression, and can
@@ -1177,6 +1181,10 @@ must be a syntactic λ-expression). This is a *more efficient* way to
 implement recursion than the fixpoint combinators currently used in
 UPLC, and so will probably become the preferred way to implement
 recursion.
+
+Note that if we adopt value scripts, but *not* module-level recursion,
+then modules will be unable to export recursive functions without
+'hiding' them in a value, such as a `Delay`.
 
 #### Variation: Explicit lambdas
 
