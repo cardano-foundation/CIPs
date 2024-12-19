@@ -1048,7 +1048,8 @@ attractive.
 Finally, one might finesse these problems by modifying the CEK machine
 to force delayed closures automatically where the value is required,
 thus enabling explicit `Force` operations to be omitted. This would
-effectively turn UPLC into a lazy programming language. That would
+effectively turn UPLC into a call-by-name programming language. That would
+
 enable this problem to be solved more easily, but  at the cost of
 reversing a rather fundamental design decision in UPLC--and probably
 making the CEK machine a little bit slower, for all programs.
