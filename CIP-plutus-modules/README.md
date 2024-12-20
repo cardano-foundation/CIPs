@@ -1507,10 +1507,7 @@ script code before execution. Extensive benchmarking would be needed
 to decide whether or not they improve performance overall.
 
 Performance can probably be improved further by building the module
-environment in to the CEK machine. However, as this involves a pervasive
-change to the monad underlying the CEK machine itself, it would
-require recalibration of all the execution unit costs for CEK machine
-steps.
+environment in to the CEK machine.
 
 The simplest alternative to implement would be the main alternative
 without variations. A more efficient implementation would combine
@@ -1525,6 +1522,93 @@ to make an informed choice.
 These latter variations all require modifications to the CEK machine
 and to the balancer, as well as resolving dependencies in scripts;
 that is, they are considerable more expensive to implement.
+
+There are many variations proposed in thie CIP; I do have an opinion
+as to which choices might be best. These are opinions, so might be
+proven wrong later by benchmarks.
+
+Firstly, I believe lazy loading will be very valuable, especially for
+small, cheap transactions.
+
+I don't think lazy loading will make *any* transaction worse, it's
+simply a win. In general, though, many choices have effects that will
+differ for different transactions, speeding some up while slowing
+others down.  Many variations do some work before running scripts, in
+order to speed them up when they are actually run. These variations
+will tend to make small, cheap transactions *more* expensive, because
+there will be too little execution time to recoup the initial
+investment, while they make long-running transactions cheaper. It's
+necessary to make a choice here, and decide what kind of transactions
+to prioritize. Personally, I favour keeping small, cheap transactions
+cheap, even at the cost of making longer running transactions a bit
+slower. So I favour choosing a variation that does work in advance
+only if the break-even point is reached very quickly. This is a
+personal opinion, and could be questionned: the important thing is
+think about this issue and make the choices deliberately.
+
+With this in mind, I am against variations that require a traversal of
+all the script code *during phase 2 verification*. This would be, in
+particular, the 'global module environment' and the 'module
+environment built into the CEK machine' variations. Note that
+syntactic restrictions which can be implemented during deserialization
+do not require an extra traversal of the code in this sense. Also, the
+'unboxed modules' variation--*in its local form*--requires a traversal
+of the script code *which treats each script independently*, and so
+can be done at compile-time. This is not either a run-time cost that
+concerns me.
+
+I like the 'value scripts' variation. I believe it may reduce costs
+significantly for small, cheap transactions. It does require 'module
+level recursion' as well, if recursion is to be compiled simply and
+efficiently. It does constrain compilers a little bit; any compiler
+that takes advantage of modules must generate code meeting the
+restriction. But since modules are a new feature, no existing code
+will be broken by this. It's also straightforward to meet the
+restriction trivially, for example by wrapping the entire module body
+in `Delay`. So I do not expect any major problems here.
+
+The 'tuples of modules' variation, given efficient projections, should
+simply be a performance improvement, so I am in favour of it. It does
+require `resolveScriptDependencies` to *construct* the tuple before
+script execution, but this replaces adding the modules one-by-one to
+the environment, and should be cheaper. Moreover, accessing modules
+should in most cases be slightly cheaper. Checking the restriction
+that the variable bound to the tuple only appears as an argument to a
+projection might be costly, requiring an additional traversal of the
+code, but on the other hand that restriction exists to make adjustment
+of the index possible, and this is nly required by the 'global module
+environment' variation. So, provided this is not adopted, one might
+relax that restriction and *allow* scripts to refer to the tuple of
+modules as a whole. That is an odd thing to do, but not actively
+harmful.
+
+The 'unboxed modules' variation is quite attractive, in its local
+variant (where each script is passed a tuple of the exports from
+modules that *that script* imports). In this variant a traversal of
+the code to adjust references to module exports *is* needed, but can
+be done at compile-time, so does not impose a cost during phase 2
+verification. However, (in combination with 'lazy loading') this does
+require `ScriptArg`s to be larger, making all scripts slightly larger
+on the chain. Also, there is a start-up cost for the unboxing itself:
+`resolveScriptDependencies` must copy all the exports from each
+imported module into the same tuple. Modules may have quite a lot of
+exports--`Data.Map` for example has 97--and many may not be used in
+any particular script. The benefit of unboxing modules is slightly
+faster access to module exports when the script runs, but for small,
+cheap runs we may never recover the cost of building the unboxed tuple
+in the first place. On balance, I would probably prefer *not* to do
+this, but this is not a strong preference.
+
+Finally, all the variations using tuples rely on efficient, constant
+time projections of tuple components. These are not presently
+available in UPLC--but they would benefit *all* UPLC users, not least
+by providing an efficient implementation for Haskell record field
+selectors in Haskell. Adding efficient projects for SoP data deserves
+a CIP of its own; it is a prerequisite for many variations here, but
+logically is not a part of implementing modules. A separate CIP should
+be written for this in the near future--it should be straightforward
+and uncontroversial compared to adding modules.
+
 
 ## Path to Active
 
