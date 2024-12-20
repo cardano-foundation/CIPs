@@ -1521,9 +1521,9 @@ to make an informed choice.
 
 These latter variations all require modifications to the CEK machine
 and to the balancer, as well as resolving dependencies in scripts;
-that is, they are considerable more expensive to implement.
+that is, they are considerably more expensive to implement.
 
-There are many variations proposed in thie CIP; I do have an opinion
+There are many variations proposed in this CIP; I do have an opinion
 as to which choices might be best. These are opinions, so might be
 proven wrong later by benchmarks.
 
@@ -1543,7 +1543,7 @@ to prioritize. Personally, I favour keeping small, cheap transactions
 cheap, even at the cost of making longer running transactions a bit
 slower. So I favour choosing a variation that does work in advance
 only if the break-even point is reached very quickly. This is a
-personal opinion, and could be questionned: the important thing is
+personal opinion, and could be questioned: the important thing is
 think about this issue and make the choices deliberately.
 
 With this in mind, I am against variations that require a traversal of
@@ -1576,7 +1576,7 @@ should in most cases be slightly cheaper. Checking the restriction
 that the variable bound to the tuple only appears as an argument to a
 projection might be costly, requiring an additional traversal of the
 code, but on the other hand that restriction exists to make adjustment
-of the index possible, and this is nly required by the 'global module
+of the index possible, and this is only required by the 'global module
 environment' variation. So, provided this is not adopted, one might
 relax that restriction and *allow* scripts to refer to the tuple of
 modules as a whole. That is an odd thing to do, but not actively
@@ -1590,20 +1590,21 @@ be done at compile-time, so does not impose a cost during phase 2
 verification. However, (in combination with 'lazy loading') this does
 require `ScriptArg`s to be larger, making all scripts slightly larger
 on the chain. Also, there is a start-up cost for the unboxing itself:
-`resolveScriptDependencies` must copy all the exports from each
-imported module into the same tuple. Modules may have quite a lot of
-exports--`Data.Map` for example has 97--and many may not be used in
-any particular script. The benefit of unboxing modules is slightly
-faster access to module exports when the script runs, but for small,
-cheap runs we may never recover the cost of building the unboxed tuple
-in the first place. On balance, I would probably prefer *not* to do
-this, but this is not a strong preference.
+`resolveScriptDependencies` must copy *all* the exports from each
+imported module into the same tuple (whether or not they will be
+used). Modules may have quite a lot of exports--`Data.Map` for example
+has 97--and many may not be used in any particular script. The benefit
+of unboxing modules is slightly faster access to module exports when
+the script runs, but for small, cheap runs we may never recover the
+cost of building the unboxed tuple in the first place. On balance, I
+would probably prefer *not* to do this, but this is not a strong
+preference.
 
 Finally, all the variations using tuples rely on efficient, constant
 time projections of tuple components. These are not presently
 available in UPLC--but they would benefit *all* UPLC users, not least
 by providing an efficient implementation for Haskell record field
-selectors in Haskell. Adding efficient projects for SoP data deserves
+selectors in Haskell. Adding efficient projections for SoP data deserves
 a CIP of its own; it is a prerequisite for many variations here, but
 logically is not a part of implementing modules. A separate CIP should
 be written for this in the near future--it should be straightforward
