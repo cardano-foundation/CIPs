@@ -1,5 +1,5 @@
 ---
-CPS: 17
+CPS: 1856
 Title: eBTC – A Trustless BTC Bridge on Cardano
 Category: Standards / Token
 Authors: An <anrodz42@gmail.com>
@@ -14,36 +14,36 @@ This proposal defines **eBTC**: a trustless, one-way bridge allowing BTC to ente
 
 ## Motivation
 
-1. **Expand BTC Use Cases**: Enable advanced DeFi, NFTs, and smart contracts for BTC-derived value without centralized wrappers.
-2. **Trustless Design**: Existing “wrapped BTC” models rely on custodians. This CIP removes single points of failure.
-3. **One-Way Simplification**: Irreversibility ensures finality. No need for complex two-way bridging with Bitcoin’s limited scripting.
+1. Expand BTC Use Cases: Enable advanced DeFi, NFTs, and smart contracts for BTC-derived value without centralized wrappers.
+2. Trustless Design: Existing “wrapped BTC” models rely on custodians. This CIP removes single points of failure.
+3. One-Way Simplification: Irreversibility ensures finality. No need for complex two-way bridging with Bitcoin’s limited scripting.
 
 ## Specification
 
 ### Key Components
 
-1. **Burn Operation**
-    
+1. Burn Operation
+
     - User sends BTC to an unspendable “burn” address.
     - This permanently removes BTC from circulation.
-2. **Proof Construction**
-    
+2. Proof Construction
+
     - User gathers minimal block headers to prove transaction inclusion.
     - Uses NIPoPoW or SPV-like approach.
     - Merkle proof shows burned transaction is part of the main chain.
-3. **Proof Submission**
-    
+3. Proof Submission
+
     - Plutus contract on Cardano verifies the block headers, ensures chain validity.
     - If valid, mints eBTC 1:1 with the burned BTC.
     - Updates the user’s “cumulative burn” state.
-4. **State Management**
-    
+4. State Management
+
     - Contract stores:
-        - **Last Processed Block Height** for each burn address.
-        - **Total BTC Burned** at that height.
+        - Last Processed Block Height for each burn address.
+        - Total BTC Burned at that height.
     - Each proof must demonstrate a block height above the last processed height to avoid double-claims.
-5. **User Ownership**
-    
+5. User Ownership
+
     - Users register a unique burn address.
     - Must prove ownership/control of that Bitcoin address.
     - Only that user can mint eBTC from that address’s burns.
@@ -52,38 +52,38 @@ This proposal defines **eBTC**: a trustless, one-way bridge allowing BTC to ente
 
 Follow the [standard CIP file structure](https://github.com/cardano-foundation/CIPs). Provide:
 
-- **CIP header** with metadata.
-- **Detailed specification** (this section).
-- **Rationale** and **path to implementation**.
+- CIP header with metadata.
+- Detailed specification (this section).
+- Rationale and path to implementation.
 
 ## Rationale
 
-- **Full Decentralization**: Eliminates need for centralized custody or oracles.
-- **Security**: Proof-of-Work chain verification via NIPoPoW/SPV.
-- **Simplicity**: One-way bridging avoids complex BTC redeems.
-- **Scalability**: Cumulative burn tracking reduces on-chain storage overhead.
+- Full Decentralization: Eliminates need for centralized custody or oracles.
+- Security: Proof-of-Work chain verification via NIPoPoW/SPV.
+- Simplicity: One-way bridging avoids complex BTC redeems.
+- Scalability: Cumulative burn tracking reduces on-chain storage overhead.
 
 ## Security Considerations
 
-1. **Forks & Reorgs**
+1. Forks & Reorgs
     - Proof must prove finality with enough confirmations.
     - Contract only updates state when the chain is deemed stable.
-2. **Invalid Header Submissions**
+2. Invalid Header Submissions
     - Plutus logic checks block headers and PoW proofs.
     - Rejects fake or incomplete data.
-3. **Spam or DOS**
+3. Spam or DOS
     - Each proof requires transaction fees.
     - Off-chain proof generation can be expensive, discouraging spam.
 
 ## Implementation Details
 
-- **On-Chain Verification**
+- On-Chain Verification
     - Plutus script needs to parse Bitcoin headers.
     - Validate chain difficulty and Merkle inclusion.
-- **Data Structures**
+- Data Structures
     - Store minimal header data (e.g., block height, prev block hash, Merkle root).
     - Maintain a map of user addresses to (last height, total burned).
-- **Transaction Workflow**
+- Transaction Workflow
     1. User calls `burnBTC` on Bitcoin.
     2. Collects block headers and Merkle paths.
     3. Submits them in a Cardano transaction to `eBTCMintingScript`.
@@ -92,3 +92,30 @@ Follow the [standard CIP file structure](https://github.com/cardano-foundation/C
 ## Reference Implementation
 
 A minimal Plutus code snippet (pseudo-code):
+
+```haskell
+{-# LANGUAGE ... #-}
+
+module EBTCMintingScript where
+
+import Plutus.V2.Ledger.Api
+import PlutusTx
+import ...
+
+{-# INLINABLE mkMintingPolicy #-}
+mkMintingPolicy :: Data -> ScriptContext -> Bool
+mkMintingPolicy redeemer ctx =
+    -- 1. Parse redeemer for block headers + burn address + proof
+    -- 2. Verify NIPoPoW/SPV:
+    --    - check Merkle paths
+    --    - confirm chain is legit (cumulative PoW)
+    -- 3. Compare burned amount with on-chain stored state
+    -- 4. If valid, allow mint of eBTC (burnedAmount)
+
+policy :: Scripts.MintingPolicy
+policy = mkMintingPolicyScript $
+    $$(PlutusTx.compile [|| mkMintingPolicy ||])
+
+ebtcCurrencySymbol :: CurrencySymbol
+ebtcCurrencySymbol = scriptCurrencySymbol policy
+```
