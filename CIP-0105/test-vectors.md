@@ -1,4 +1,4 @@
-# Test Vector for CIP-0105
+# Test Vector for CIP-0105 compliant with CIP-0129
 
 Here we provide a set of test vectors.
 
@@ -10,7 +10,7 @@ Scripts were constructed according to the following native script templates:
 
 **Script 2:** `any [$vKeyhash, all [active_from 5001, active_until 6001]]`
 
-Where `$vKeyhash` is the Verification key hash aka `{drep1... | cc_cold1... | cc_hot1...}`.
+Where `$vKeyhash` is the Verification key hash aka `{drep_vkh1... | cc_cold_vkh1... | cc_hot_vkh1...}`.
 
 ## Test vector 1
 
