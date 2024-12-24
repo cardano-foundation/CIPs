@@ -91,7 +91,7 @@ For [Treasury Withdrawal](#treasury-withdrawal), this will result in: `68d6fe270
 
 ### 4. Authors witness over the hash of canonicalized `body`
 
-Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures), for `cip-0008` refer to [CIP-108 New Witness Type](./README.md#new-witness-type).
+Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures), for `CIP-0008` refer to [CIP-108 New Witness Type](./README.md#new-witness-type).
 
 One tool for Ed25519 signatures is [Ed25519 Online Tool](https://cyphr.me/ed25519_tool/ed.html).
 
