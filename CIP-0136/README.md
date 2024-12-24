@@ -219,7 +219,7 @@ By providing a new type to CIP-100 `References` we encourage tooling to differen
 ### Implementation Plan
 
 - [x] Seek feedback from individuals who are members of current Interim Constitutional Committee.
-- [ ] Author to provide test vectors, examples, and schema files.
+- [x] Author to provide test vectors, examples, and schema files.
 
 ## Copyright
 
