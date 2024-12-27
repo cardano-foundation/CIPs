@@ -10,13 +10,14 @@ Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
 Created: 2024-12-13
 License: CC-BY-4.0
-Version: 0.0.0
+Version-Connection-API: 0.0.0
+Version-CIP-30-Extension: 0.0.0
 ---
 
 ## Abstract
 
 
-CIP-30 is the standard interface of communication between wallets and DApps. While this CIP has been instrumental in the development of dApps for Cardano, it also has some shortcomings that have been observed across several implementations.
+CIP-30 is the standard interface of communication between wallets and dApps. While this CIP has been instrumental in the development of dApps for Cardano, it also has some shortcomings that have been observed across several implementations.
 
 We have identified and carried out two steps in the path to provide a better alternative to CIP-30:
 
@@ -33,7 +34,7 @@ In this CIP we want to put these together, defining a wallet connector standard 
 
 CIP-30 is a universally accepted web-based wallet standard for Cardano. It provides a minimalistic interface that, in principle, can be used to build almost any kind of Cardano dApp. However, the way dApp<->wallet interaction is defined leads to suboptimal dApp architecture due to CIP-30 limits.
 
-[CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) discusses many limitations of CIP-30. In addition to the ones specified in the CPS, consider the following problems:
+Consider the following problems:
 
 ### Use of CBOR representations
 
@@ -61,12 +62,16 @@ A dApp tries to balance a transaction with UTxOs from the wallet that is not yet
 A transaction is passed for signing, but the wallet does not yet know about the UTxOs it spends, and thus refuses to sign it
 A transaction is sent to the network via the dApp backend (bypassing CIP-30 submit method) and is confirmed there, but the wallet still does not know about its consumed inputs, and thus returns outdated data.
 
+### CPS-10
+
+[CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) discusses several other limitations of CIP-30. In this CIP we try to solve some of the issues pointed out in the CPS. There are still some areas to improve on: things like the event listener API, and other potential improvements [should we list all the points we don't tackle here?] are intentionally left out of this CIP to prevent bloat of scope. We welcome future CIPs, or updates to this CIP to refine any limitation that is not tackled in this document.
+
 
 ## Specification
 
 The goal of this CIP is to provide a better alternative to CIP-30 which supports full data wallet. Specifically we make the following contributions:
 
-- A clear separation between the connection mechanism and the actual API offered by the wallet connector
+- A clear separation between the connection mechanism and the different APIs offered by the wallet.
 - Using JSON for Cardano domain types instead of CBOR
 - Add a query layer API to enable a full data wallet
 - Define this in a transport agnostic way
@@ -74,7 +79,7 @@ The goal of this CIP is to provide a better alternative to CIP-30 which supports
 In it's current state, CIP-30 defines it API through a specific transport layer, namely an injected Javascript object.
 In this CIP we want to be able to define an API without committing to a specific transport layer. Implementors of this API can choose to support this API through several transports such as: HTTP, an injected Javascript object, JSON-RPC etc.
 Furthermore, we want to use JSON-schema to clearly define the types that each method, or operation, expects to receive or returns.
-To keep the specification abstract we will use the word "operation" to describe the actions supported by the API, these would map to "endpoints" for an HTTP implementation of the API, or to "methods" for an implementation based on an injected Javascript object.
+To keep the specification abstract we will use the word "operation" to describe the actions supported by the API: these would map to "endpoints" for an HTTP implementation of the API, or to "methods" for an implementation based on an injected Javascript object.
 
 
 We will use the following schema to define operations:
@@ -95,15 +100,15 @@ where `operation` will be the identifier for the operation, `request` and `respo
 
 We will reference several JSON-schemas throughout the document, these are:
 
-- [cip-0116](link) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. [Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]
-- [cip-0139](link) which provides definitions for types used in the query layer
+- [cip-116](link) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. [Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]
+- [cip-139](link) which provides definitions for types used in the query layer
 - [appendix](#appendix) in which we define schemas for types required by the connection API and the error types
 
-We will use an identifier in the anchor to refer to the schema where each type is defined. For example, if we want to reference the `Transaction` type, as defined in CIP-0116 we will use the following schema reference `{ "$ref": "#/cip-0116/Transaction" }`.
+We will use an identifier in the anchor to refer to the schema where each type is defined. For example, if we want to reference the `Transaction` type, as defined in CIP-116 we will use the following schema reference `{ "$ref": "#/cip-116/Transaction" }`.
 
 If an operation does not require any arguments as part of it's request, or does not return a meaningful response, we will represent this as an `{}` on the respective operation field. The arguments to an operation will always be represented as an object. If a field is not marked as `required`, then that argument is to be considered optional.
 
-For each operation we will provide some details on how the implementation should behave. Note tht some of these are taken verbatim from CIP-30.
+For each operation we will provide some details on how the implementation should behave. Note that some of these are taken verbatim from CIP-30.
 
 ### Connection API
 
@@ -122,12 +127,20 @@ We start by defining the connection API. The role of this API is to provide gene
 }
 ```
 
-This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the APIs will be made available for the DApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time.
+This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the APIs will be made available for the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time.
 
-DApps can request a list of they expect as a list of CIP numbers capturing those extensions. This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface. We will see later in this document examples of what such extensions might be and which functionalities they will enable. New functionalities can be introduced via additional CIPs and may be all or partially supported by wallets.
+Through the `extension` field, dApps can request a list of what functionality they expect as a list of CIP numbers (and optional versions) capturing those extensions. This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface. We will see later in this document examples of what such extensions might be and which functionalities they will enable. New functionalities can be introduced via additional CIPs and may be all or partially supported by wallets.
 
-DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsibility of wallet providers to assess whether they can support a given combination of extensions, or not. Wallets should throw an error if either they do not support the required extension, or they deem the combination of extensions requested by the DApp to be incompatible.
+When requesting the functionalities of a cip extension, dApps can optionally specify a version number for it. Every cip extension defined in the future, must also define a versioning scheme following SemVer. When the version argument is not specified, wallets should take that as the greater version they implement. In this context - and for the rest of this discussion - we will assume versions are ordered with the canonical ordering of SemVer. If the dApp requests a specific version of an extension, wallets can only accept the request if a version of the extension they implement has:
 
+- the same major value as the one requested by the dApp AND
+  - a greater minor value as the one requested by the dApp, OR
+  - an equal minor value AND
+    - a greater or equal patch value as the one requested by the dApp
+
+If multiple versions satisfy these requirements, then wallets must return the greatest version amongst all candidate versions.
+
+DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsibility of wallet providers to assess whether they can support a given combination of extensions, or not. Wallets should throw an error with code `NotSatisfiable` if either they do not support the required extension, or they deem the combination of extensions requested by the dApp to be incompatible. In this case, it is up to the dApp to decide to retry with different requirements, or to give up on establishing a connection with the wallet.
 
 ##### IsEnabled
 
@@ -156,7 +169,7 @@ Returns true if the dApp is already connected to the user's wallet, or if reques
 }
 ```
 
-A list of extensions supported by the wallet. Extensions may be requested by dApps on initialization. Some extensions may be mutually conflicting and this list does not thereby reflect what extensions will be enabled by the wallet. Yet it informs on what extensions are known and can be requested by dApps if needed.
+A list of extensions and versions supported by the wallet. Extensions may be requested by dApps on initialization. Some extensions may be mutually conflicting and this list does not thereby reflect what extensions will be enabled by the wallet. Yet it informs on what extensions are known and can be requested by dApps if needed. Note that if a wallet supports multiple versions of the same CIP, then it must return each one of them as an element in the response.
 
 
 ##### Name
@@ -184,6 +197,20 @@ A name for the wallet which can be used inside of the dApp for the purpose of as
 ```
 
 A URI image (e.g. data URI base64 or other) for img src for the wallet which can be used inside of the dApp for the purpose of asking the user which wallet they would like to connect with.
+
+##### ApiVersion
+
+```
+{
+  "operation": "apiVersion",
+  "request": {},
+  "response": { "$ref": "#/appendix/SemVer" },
+  "errors": []
+}
+```
+
+Returns the API version for the wallet connection API. This must correspond to the value of `Version-Connection-API` specified in this document, appropriately transformed into a `SemVer` object.
+
 
 ### Extension APIs
 
@@ -259,15 +286,15 @@ If amount is not supplied, this shall return a list of all UTXOs controlled by t
 
 The operation takes an amount parameter. (NOTE: some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the amount parameter is required:
 
-- Dapps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
+- DApps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
 
 - Depending on the specific wallet implementation, requesting more collateral than necessarily might worsen the user experience with that dapp, requiring the wallet to make explicit wallet reorganisation when it is not necessary and can be avoided.
 
-- If dapps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
+- If dApps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
 
-So requiring the amount parameter would be a by-spec behavior for a wallet. Not requiring it is possible, but not specified, so dapps should not rely on that and the behavior is not recommended.
+So requiring the amount parameter would be a by-spec behavior for a wallet. Not requiring it is possible, but not specified, so dApps should not rely on that and the behavior is not recommended.
 
-This shall return a list of one or more UTXOs controlled by the wallet that are required to reach AT LEAST the combined ADA value target specified in amount AND the best suitable to be used as collateral inputs for transactions with plutus script inputs (pure ADA-only utxos). If this cannot be attained, an APIError with code `NotSatisfiable` and an explanation of the blocking problem shall be returned. NOTE: wallets are free to return utxos that add up to a greater total ADA value than requested in the amount parameter, but wallets must never return any result where utxos would sum up to a smaller total ADA value, instead in a case like that an error must be returned.
+This shall return a list of one or more UTXOs controlled by the wallet that are required to reach AT LEAST the combined ADA value target specified in amount AND the best suitable to be used as collateral inputs for transactions with plutus script inputs (pure ADA-only utxos). If this cannot be attained, an `APIError` with code `NotSatisfiable` and an explanation of the blocking problem shall be returned. NOTE: wallets are free to return utxos that add up to a greater total ADA value than requested in the amount parameter, but wallets must never return any result where utxos would sum up to a smaller total ADA value, instead in a case like that an error must be returned.
 
 The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see #104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
 
@@ -453,6 +480,11 @@ As wallets should already have this ability, we allow dApps to request that a tr
 
 
 
+### Versioning
+
+In this CIP we are defining two different APIs: the connection API for wallets, and the CIP-30 [maybe this should have another name to prevent confusion?] extension which enables an own-data wallet. These two are separate components, at the top of this document there is a table with separate entries for the versions of the connection API and CIP-30 Extension respectively. 
+
+While the CIP is in preparation, these versions shall be set to `0.0.0`. The moment this CIP is merged the versions should be set to `1.0.0`, and all implementations should consider that the current version. Any changes to the API should come in form of PRs to this CIP. Every PR must update at least one of the two versions in accordance to SemVer.
 
 ### Appendix
 
@@ -476,6 +508,9 @@ This appendix contains additional schemas for types that are used in the APIs.
             "properties": {
               "cip": {
                 "type": "number"
+              },
+              "version: {
+                "$ref": "#/appendix/SemVer"
               }
             },
             "required": ["cip"],
@@ -487,7 +522,7 @@ This appendix contains additional schemas for types that are used in the APIs.
 }
 ```
 
-An extension is an object with a single field "cip" that describes a CIP number extending the API. For example:
+An extension is an object with a "cip" field that describes a CIP number extending the API, and an optional version specified according to SemVer. For example:
 
 ```
 { "cip": 30 }
@@ -519,6 +554,30 @@ An extension is an object with a single field "cip" that describes a CIP number 
 ```
 
 An object representing some data that has been signed. It contains 2 fields: `signature` which contains the signed data, and `key` which contains the derived Ed25519 PubKey used to sign the data.
+
+##### SemVer
+
+```
+{
+  "type": "object",
+  "title": "SemVer",
+  "properties": {
+    "major": {
+      "title": "Major",
+      "type": "number",
+    },
+    "minor": {
+      "title": "Minor",
+      "type": "number",
+    },
+    "patch": {
+      "title": "Patch",
+      "type": "number",
+    }
+  },
+  "required": ["major", "minor", "patch"],
+}
+```
 
 #### Errors
 
