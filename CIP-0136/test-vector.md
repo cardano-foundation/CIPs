@@ -62,7 +62,7 @@ If recreating the [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitut
 
 Using a tool which complies with the [RDF Dataset Canonicalization](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/), create a canonicalized representation of `example.body.jsonld`.
 One such tool is the [JSON-LD Playground](https://json-ld.org/playground/).
-Ensure the results ends in a newline.
+Ensure the result ends in a newline.
 
 This creates `example.body.nq`.
 
