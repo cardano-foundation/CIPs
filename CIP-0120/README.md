@@ -108,7 +108,7 @@ Each line in the constitution text MUST contain at maximum 80 characters,
 including spaces and punctuation.
 
 While 80 characters is a limit, authors don't have to try and always hit 80.
-Legibility of the raw document SHOULD be kept in mind.
+Legibility of the raw (unrendered) document SHOULD be kept in mind.
 
 #### Sentences
 
@@ -117,7 +117,7 @@ with each sentence followed by a newline.
 Each new sentence SHOULD start on its own line with a capitalized letter.
 
 Long sentences can be split multiple lines,
-when writing the author should try to split long sentences along natural breaks.
+when writing the author SHOULD try to split long sentences along natural breaks.
 
 Example:
 
@@ -126,7 +126,7 @@ This is a short sentence on one line.
 
 This is a long sentence and I have valid reasons for it being so long,
 such as being an example of a long sentence.
-When this sentence is rendered it should be shown to directly follow the 
+When this sentence is rendered it SHOULD be shown to directly follow the 
 sentence above.
 
 This sentence is the start of a new paragraph.
@@ -168,8 +168,6 @@ The each ratified constitution MUST be stored,
 immutably on a distributed storage mechanism where backups can be easily made
 in a permissionless manner by interested parties.
 This storage platform SHOULD be easily accessible, with strong tooling support.
-Authors SHOULD NOT specify the use of centralized gateways to access
-the constitution plain text.
 
 When generating a URI for the document, authors SHOULD NOT include centralized
 gateways.
@@ -270,16 +268,18 @@ The text contained within headings or emphasis cannot be highlighted as code.
 
 To create an ordered list,
 add line items with numbers followed by one period and then one space.
-Each line item is separated by a new line.
+Each line item is separated by an empty line.
 The numbers MUST be in numerical order,
-but the list should start with the number one.
+but the list SHOULD start with the number one.
 
 Ordered lists MUST NOT have indented items.
 Ordered lists MUST NOT include headings.
 
 ```md
 1. This is the first item in my ordered list
+
 2. this is the second item in my list
+
 3. the third item
 ```
 
@@ -287,12 +287,14 @@ Ordered lists MUST NOT include headings.
 
 To create an unordered list, add dashes (`-`) and one space,
 in front of line items.
+Each line item is separated by an empty line.
 
 Unordered lists MUST NOT have indented items.
 Unordered lists MUST NOT start with a number followed by a period.
 
 ```md
 - this is my list
+
 - I like unordered lists
 ```
 
@@ -308,8 +310,8 @@ tools.
 #### Hashing
 
 When submitting an update constitution governance action,
-tooling SHOULD make the effort to verify the document hash and
-the document match.
+tooling SHOULD verify the document hash digest and matches the document.
+
 Tooling reading constitution anchors from chain SHOULD always perform a
 correctness check using the hash digest on-chain.
 If the hash provided on-chain does not match the hash produced from
@@ -318,20 +320,21 @@ very obvious way to users.
 
 #### Conformance
 
-Tools writing constitutions should strive to follow this specification.
+Tools writing constitutions SHOULD strive to follow this specification.
 If tooling discovering and rendering constitution documents discovers that
-the document does not follow the "MUST"s in this specification then a small 
-warning should be given to users.
+the document does not follow the "MUST"s in this specification then a small
+warning SHOULD be given to users.
 
 #### Form
 
 Authors SHOULD aim to keep the document as clean and consistent as possible.
 
-Text should try to be left aligned, without using unneeded whitespace.
+Text SHOULD try to be left aligned, without using unneeded whitespace leading
+or trailing lines.
 
 Spaces SHOULD be used over tab characters.
 
-The last line in the document should be empty.
+The last line in the document SHOULD be empty.
 
 ### Test vectors
 
@@ -344,10 +347,10 @@ See [Test vector file](./test-vector.md).
 We choose to restrict the maximum number of characters per line in aims of
 improving readability of the document in plain text and within diff views.
 
-It should also be considered that the 80-character limit also helps one find
+It SHOULD also be considered that the 80-character limit also helps one find
 run-on sentences.
 If your sentence is much longer than 80, it might need breaking down.
-And you should never want to see a sentence that's over two
+And you SHOULD never want to see a sentence that's over two
 lines long in normal text.
 
 ### Sentences
@@ -362,7 +365,7 @@ it greatly improves tooling's ability to differentiate between documents.
 Furthermore, isolating one sentence per line, allows users to more easily
 isolate specific lines to comment upon.
 This gives each sentence an unambiguous reference point,
-which can be very useful for sharing and commenting.
+which can be very useful for sharing and discussing.
 
 ### Versioning
 
@@ -372,8 +375,8 @@ This was done for simplicity to minimize the amount of effort required to
 create tooling which reads and writes constitutions.
 
 The alternative was to add some details of version to the constitution document.
-This would make changing hashing algorithm, rich text formatting,
-etc much easier.
+This would make changing hashing algorithm, rich text formatting, etc.
+much easier.
 But this makes the standard and subsequent, more complex than necessary.
 We do not believe the added complexity is justified,
 for the expected number of future replacement CIPs to this one.
@@ -382,7 +385,7 @@ for the expected number of future replacement CIPs to this one.
 
 The text file was chosen, due to its ubiquity across platforms.
 By choosing a common format,
-we drastically improve the accessibility of the raw document.
+we improve the accessibility of the raw document.
 
 We choose to add sequential numbering to constitution document iterations to
 improve differentiation between documents.
@@ -446,7 +449,7 @@ Embedded HTML or videos are likely things to be avoided.
   - We wont, instead we will prioritize a minimum set of rich text formatting. We can provide some guidance via [Best Practices](#best-practices).
 - [x] Do we want a mechanism for specifying authors? (similar to CIP-100)
   - No, as CIP-100 compliant metadata can be supplied at time of constitution update.
-- [x] What should we name the constitution file? we could embed some nice naming or metadata.
+- [x] What SHOULD we name the constitution file? we could embed some nice naming or metadata.
   - Naming the file `cardano-constitution` seems specific enough, adding iteration numbers is a nice addition too.
 
 ## Path to Active

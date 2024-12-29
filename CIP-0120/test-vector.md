@@ -1,6 +1,6 @@
 # Test Vector for CIP-0120
 
-Here we provide some useful examples. 
+Here we provide some useful examples.
 
 Example hash digests produced using [Toolkit Bay BLAKE2b-256 tool](https://toolkitbay.com/tkb/tool/BLAKE2b_256).
 
