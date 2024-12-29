@@ -1,0 +1,40 @@
+# Ryan's Constitution
+
+## Preamble
+
+This is **Ryan's constitution!**
+This document aims to improve the likelihood of Ryan being able to buy an 
+island.
+
+## Principles
+
+### 1. Governance Actions
+
+All governance actions should seek to improve the state of the system for the 
+benefit of Ryan.
+
+### 2. Treasury Withdrawals
+
+All treasury withdrawal actions must go into a wallet that Ryan controls.
+
+## 3. Protocol Parameter Changes
+
+Protocol parameter changes should seek to raise transaction fees and to 
+increase the amount of money that is paid into the treasury.
+
+## Appendix
+
+### Islands Ryan would like to buy
+
+This is an ordered list of islands that Ryan would like to buy.
+
+1. Australia
+
+### Ryan's favorite plants
+
+This is a list of Ryan's favorite plants:
+
+- Monstera deliciosa
+- Anthurium veitchii
+- Monstera esqueleto
+- Strawberry
