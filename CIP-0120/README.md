@@ -92,7 +92,7 @@ rules unless a translation language indicates otherwise:
 - "Cardano Constitution" is a very specific proper noun phrase (also a title) and so each word is capitalised.
 - The phrase "the Constitution", unless used non-specifically (e.g. "the constitution that voters prefer"), would generally be assumed to be _the_ Constitution and capitalised as a proper noun.
 
-`Ada` vs. `ada` vs. `ADA`
+##### `Ada` vs. `ada` vs. `ADA`
 
 - `Ada` is the currency, while `ada` indicates units of that currency (e.g. "Ada holders can accumulate more ada to increase their influence.")
 - `ADA` is the trading symbol (e.g. "Fluctuations in ADA might influence decisions about the Treasury.")
