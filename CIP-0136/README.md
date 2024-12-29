@@ -59,8 +59,8 @@ for its decision with reference to specific Articles of this Constitution
 that are in conflict with a given proposal.
 ```
 
-This mandates that the CC must provide rationale for at least `no` votes.
-Specifying a structure and common vocabulary for this improves the efforts to be transparent.
+This section suggests that the CC shall provide rationale documents.
+Specifying a standard structure and common vocabulary for these documents aids the creation of supporting tooling. 
 
 ### Tooling
 
