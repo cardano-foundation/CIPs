@@ -85,7 +85,7 @@ To avoid unnecessary edits, and therefore checksum changes,
 constitution authors MUST follow the following standard English capitalisation
 rules unless a translation language indicates otherwise:
 
-`Constitution` vs. `constitution`
+##### `Constitution` vs. `constitution`
 
 - The Constitution in effect — either the "initial" one or any new constitution — is unique and therefore capitalised ("Constitution") as a proper noun.
 - Draft or proposed constitutions are not unique & therefore are not capitalised ("constitution") as a common noun.
