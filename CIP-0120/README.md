@@ -455,7 +455,7 @@ Embedded HTML or videos are likely things to be avoided.
 
 - [x] This standard is followed for the interim Cardano Constitution
 - [ ] This standard is utilized by two tools reading constitution data from chain
-  - constitution.gov.tools
+  - [constitution.gov.tools](https://constitution.gov.tools/)
 
 ### Implementation Plan
 
