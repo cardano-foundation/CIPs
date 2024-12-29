@@ -1,0 +1,18 @@
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "Article III section 8."@en-us .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://github.com/IntersectMBO/interim-constitution/blob/main/cardano-constitution-0.txt#L231"@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#body> _:c14n4 .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#abstain> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#constitutional> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#didNotVote> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#unconstitutional> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference> .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "A cool island for Ryan"@en-us .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"@en-us .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#references> _:c14n0 .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#references> _:c14n3 .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#conclusion> "In conclusion spending the treasury to benefit a single dude, bad."@en-us .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#counterargumentDiscussion> "It would be pretty cool."@en-us .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#internalVote> _:c14n2 .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#precedentDiscussion> "No precedent"@en-us .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#rationaleStatement> "The Cardano treasury is not meant to be used for personal gain, it should be for the benefit of the community."@en-us .
+_:c14n4 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#summary> "Ryan using treasury funds to buy an island is unconstitutional!"@en-us .
