@@ -74,6 +74,7 @@ The goal of this CIP is to provide a better alternative to CIP-30 which supports
 - A clear separation between the connection mechanism and the different APIs offered by the wallet.
 - Using JSON for Cardano domain types instead of CBOR
 - Add a query layer API to enable a full data wallet
+- Add versioning support to the extension API
 - Define this in a transport agnostic way
 
 In it's current state, CIP-30 defines it API through a specific transport layer, namely an injected Javascript object.
@@ -97,8 +98,9 @@ We will use the following schema to define operations:
 ```
 
 where `operation` will be the identifier for the operation, `request` and `response` will be the JSON-schemas for the request and response types respectively, and `errors` will be a list of schemas for the errors that the operation may raise.
+We do not add an explicit scope to operation names, we do however encourage transport-specific implementations of this API to pick the scoping structure that makes more sense to them.
 
-We will reference several JSON-schemas throughout the document, these are:
+We will reference several JSON schemas throughout the document, these are:
 
 - [cip-116](link) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. [Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]
 - [cip-139](link) which provides definitions for types used in the query layer
@@ -218,6 +220,12 @@ The following section will define the APIs offered by extensions that can be req
 We will also define the `cip-139` extension which enables wallet to use the Universal Query Layer API.
 
 A wallet which enables both the `cip-30` and `cip-139` extension would then be considered a full-data wallet.
+
+`Note`: Several of the endpoints offered by the extension APIs, are there to query some on-chain resource. Unless explicitly specified, wallets are always free to omit or add some of the resources returned.
+While it may sound confusing to allow this behavior, the intention is for wallets to be able to track and reconcile some local information, even if it is not necessarily available on-chain.
+An example where this caveat becomes quite useful, is with *transaction chaining*. When a wallet supports that they may allow the user to submit several transactions which depend on each other,
+without having to wait for each one to be approved by other nodes. When a wallet does that, it will mark some UTxOs internally as *spent*, and will avoid returning them in a `getUtxos` query, for example.
+Wallets are in charge of keeping their internal state in sync with the results of the various queries that different extensions support.
 
 Future CIPs can add more extensions to the supported list.
 
@@ -479,12 +487,11 @@ As wallets should already have this ability, we allow dApps to request that a tr
 #### CIP-139
 
 
-
 ### Versioning
 
 In this CIP we are defining two different APIs: the connection API for wallets, and the CIP-30 [maybe this should have another name to prevent confusion?] extension which enables an own-data wallet. These two are separate components, at the top of this document there is a table with separate entries for the versions of the connection API and CIP-30 Extension respectively. 
 
-While the CIP is in preparation, these versions shall be set to `0.0.0`. The moment this CIP is merged the versions should be set to `1.0.0`, and all implementations should consider that the current version. Any changes to the API should come in form of PRs to this CIP. Every PR must update at least one of the two versions in accordance to SemVer.
+While the CIP is in preparation, these versions shall be set to `0.0.0`. The moment this CIP is merged the versions shall be set to `1.0.0`, and all implementations should consider that the current version. Any changes to either API should come in form of PRs to this CIP.
 
 ### Appendix
 
@@ -681,14 +688,74 @@ This section lists the possible errors the wallet connector may return. Each err
 - `ProofGeneration`: (1) User has accepted the transaction sign, but the wallet was unable to sign the transaction (e.g. not having some of the private keys).
 - `UserDeclined`: (2) User declined to sign the transaction.
 
+
+#### Transport specific connectors
+
+While this CIP attempts to define an API in a transport agnostic way, implementations will be forced to pick a specific transport. In the spec we have not given specifics on how to
+namespace and generally structure the api in an implementation. This is both because details depend on the underlying transport that is chosen to implement the API, but also because
+we wanted to make backwards compatibility with the original CIP-30 proposal as easy as possible.
+
+Each transport specific implementation will make a choice on how to namespace access to the operations. In the following we give a description of how this should work for an implementation
+using an injected javascript object. Support for different transports can be added to this CIP in form of PRs.
+
+##### Injected Javascript Object
+
+In this spec we define how to provide access to the operations defined in this CIP on an injected javascript object.
+We aim to define this in a way that is backwards compatible with existing CIP-30 implementations. 
+
+In order to initiate communication from webpages to a user's Cardano wallet, the wallet must provide the following javascript API to the webpage.
+A shared, namespaced `cardano` object must be injected into the page if it did not exist already. Each wallet implementing this standard must then create a field in this object with a name unique to each wallet containing a wallet object implementing the connection API.
+
+Upon successful connection via `cardano.{walletName}.enable()`, a javascript object we will refer to as `api` is returned to the dApp.
+If the user requested any extensions they will be available under `api.cipXXXX`, without any leading zeros.
+
+For example; CIP-0123's endpoints should be accessed by:
+
+```
+api.cip123.endpoint1()
+api.cip123.endpoint2()
+```
+
+###### CIP-30 Backwards compatibility
+
+Given this definition, we can take an existing CIP-30 compliant wallet, and make it compatible with this CIP with a wrapper.
+
+This wrapper will be relatively small, but must still take care in unifying the differences between this CIP and CIP-30. There is a list of some notable differences to keep in mind:
+
+- JSON is used instead of CBOR. The wrapper must take care of translating arguments and results.
+- This API has no pagination, while CIP-30 generally does. The wrapper can either implement pagination locally, or error and inform the user if they request it.
+- In the original CIP-30, the `api` object returned has, on the top-level, the methods that we expect on `api.cip30`. The wrapper must take care to translate calls appropriately.
+- CIP-30 allows for a situation where the user requests some extensions in the enable call, but despite the wallet not supporting those extensions, the `enable` call succeeds. This makes it so the dApps always have to check what extensions were actually enabled. In this CIP we don't allow that, so the wrapper must take care of calling `api.getExtension` after `cardano.{walletName}.enable` to check all required extensions are enabled, if that's not the case then throw an error.
+- CIP-30 endpoints will return `null` in some situations where the request is correct, but not satisfiable. In this CIP we introduce an error code specifically for that. The wrapper will need to check some results for `null` and throw an appropriate error.
+- Add an `api.apiVersion` method that returns the version for the connector
+
+Implementing this wrapper is out of scope of this CIP,
+but we welcome any effort in this direction, as it would make transitioning to this CIP easier for most wallets.
+
+
 ## Rationale: how does this CIP achieve its goals?
 
-???
+The goal of this CIP is to define the standard for a new wallet connector. This connector improves on CIP-30, both by fixing some of the shortcomings that
+have been identified over time, and by extending its capabilities to be able to perform more queries.
+
+We split the contributions of this CIP in two categories:
+
+- Improve CIP-30
+  - Introducing a transport agnostic way to define the behavior of these APIs
+  - Separating the connection API from the different extension APIs the wallet can offer
+  - Using JSON for Cardano domain types instead of CBOR
+  - Making versioning explicit and adding support for specifying versions when enabling an extension
+
+- Universal Query Layer extension
+  - Adding a query layer extension API to enable a full data wallet
+
 
 ## Path to Active
 
-- ???
+- Implementing a wrapper that takes a CIP-30 compatible API and transforms it to be compatible with CIP-XXXX.
+- This CIP depends on CIP-139 to be active, in particular wallets need to support the queries required by the `cip-139` extension.
+- Two or more wallets implement support for this CIP.
 
 ## Copyright
 
-
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
