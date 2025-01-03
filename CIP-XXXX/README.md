@@ -64,7 +64,7 @@ A transaction is sent to the network via the dApp backend (bypassing CIP-30 subm
 
 ### CPS-10
 
-[CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) discusses several other limitations of CIP-30. In this CIP we try to solve some of the issues pointed out in the CPS. There are still some areas to improve on: things like the event listener API, and other potential improvements [should we list all the points we don't tackle here?] are intentionally left out of this CIP to prevent bloat of scope. We welcome future CIPs, or updates to this CIP to refine any limitation that is not tackled in this document.
+[CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) discusses several other limitations of CIP-30. In this CIP we try to solve some of the issues pointed out in the CPS. There are still some areas to improve on: things like the event listener API, and other potential improvements *[should we list all the points we don't tackle here?]* are intentionally left out of this CIP to prevent bloat of scope. We welcome future CIPs, or updates to this CIP to refine any limitation that is not tackled in this document.
 
 
 ## Specification
@@ -102,7 +102,7 @@ We do not add an explicit scope to operation names, we do however encourage tran
 
 We will reference several JSON schemas throughout the document, these are:
 
-- [cip-116](link) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. [Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]
+- [cip-116](link) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. *[Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]*
 - [cip-139](link) which provides definitions for types used in the query layer
 - [appendix](#appendix) in which we define schemas for types required by the connection API and the error types
 
@@ -306,7 +306,7 @@ This shall return a list of one or more UTXOs controlled by the wallet that are 
 
 The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see #104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
 
-[The spec says that amount should agreed to be max 5 ada, is this enforced? The formulation in the CIP does not seem to be too precise]
+*[The spec says that amount should agreed to be max 5 ada, is this enforced? The formulation in the CIP does not seem to be too precise]*
 
 
 ##### GetBalance
@@ -428,7 +428,7 @@ Only the portions of the witness set that were signed as a result of this call a
   "request": {
     "type": "object",
     "properties": {
-      "addr": { "$ref": #/cip-116/Address },
+      "addr": { "$ref": "#/cip-116/Address" },
       "payload": { "$ref": "#/cip-116/ByteString" }
     },
     "required": ["addr", "payload"]
@@ -441,7 +441,7 @@ Only the portions of the witness set that were signed as a result of this call a
 }
 ```
 
-[Is bytestring the correct type here?]
+*[Is bytestring the correct type here?]*
 
 This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent MUST be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
@@ -459,7 +459,7 @@ If the payment key for `addr` is not a P2Pk address then `DataSignError` will be
 - `crv` (-1) - must be set to `Ed25519` (6)
 - `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
-[What are these numbers appearing next to params? Copied them from cip-30 but not sure]
+*[What are these numbers appearing next to params? Copied them from cip-30 but not sure]*
 
 ##### SubmitTx
 
@@ -486,10 +486,846 @@ As wallets should already have this ability, we allow dApps to request that a tr
 
 #### CIP-139
 
+This section defines the API for the `Query Layer API` as defined in CIP-139. Enabling this extension, alongside the `cip-30` extension, would give you a full-data wallet.
+
+##### Utxos
+
+###### Asset
+
+```
+{
+  "operation": "getUtxosByAsset",
+  "request": {
+    "type": "object",
+    "properties": {
+      "asset_name": {
+        "$ref": "#/cip-116/AssetName"
+      },
+      "minting_policy_hash": {
+        "$ref": "#/cip-116/ScriptHash"
+      }
+    },
+    "required": [
+      "asset_name",
+      "minting_policy_hash"
+    ]
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "utxos": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-116/TransactionUnspentOutput"
+        }
+      }
+    },
+    "required": [
+      "utxos"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all UTxOs that contain some of the specified asset.
+
+###### Transaction Hash
+
+```
+{
+  "operation": "getUtxosByTransactionHash",
+  "request": {
+    "$ref": "#/cip-139/TransactionHash"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "utxos": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-116/TransactionUnspentOutput"
+        }
+      }
+    },
+    "required": [
+      "utxos"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all UTxOs produced by the transaction.
+
+###### Address
+
+```
+{
+  "operation": "getUtxosByAddress",
+  "request": {
+    "$ref": "#/cip-116/Address"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "utxos": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-116/TransactionUnspentOutput"
+        }
+      }
+    },
+    "required": [
+      "utxos"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all UTxOs present at the address.
+
+###### Payment Credential
+
+```
+{
+  "operation": "getUtxosByPaymentCredential",
+  "request": {
+    "$ref": "#/cip-116/Credential"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "utxos": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-116/TransactionUnspentOutput"
+        }
+      }
+    },
+    "required": [
+      "utxos"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all UTxOs present at the addresses which use the payment credential.
+
+###### Stake Credential
+
+```
+{
+  "operation": "getUtxosByStakeCredential",
+  "request": {
+    "$ref": "#/cip-116/RewardAddress"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "utxos": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-116/TransactionUnspentOutput"
+        }
+      }
+    },
+    "required": [
+      "utxos"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all UTxOs present at the addresses which use the stake credential.
+
+##### Block
+
+###### Number
+
+```
+{
+  "operation": "getBlockByNumber",
+  "request": {
+    "$ref": "#/cip-139/UInt64"
+  },
+  "response": {
+    "$ref": "#/cip-116/Block"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the block with the supplied block number.
+
+###### Hash
+
+```
+{
+  "operation": "getBlockByHash",
+  "request": {
+    "$ref": "#/cip-116/BlockHash"
+  },
+  "response": {
+    "$ref": "#/cip-116/Block"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the block with the supplied block hash.
+
+##### Transaction
+
+###### Hash
+
+```
+{
+  "operation": "getTransactionByHash",
+  "request": {
+    "$ref": "#/cip-139/TransactionHash"
+  },
+  "response": {
+    "$ref": "#/cip-116/Transaction"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the transaction with the supplied transaction hash.
+
+###### Block Number
+
+```
+{
+  "operation": "getTransactionByBlockNumber",
+  "request": {
+    "$ref": "#/cip-139/UInt64"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "transactions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-116/Transaction"
+        }
+      }
+    },
+    "required": [
+      "transactions"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all transactions contained in the block with the supplied block number [].
+
+###### Block Hash
+
+```
+{
+  "operation": "getTransactionByBlockHash",
+  "request": {
+    "$ref": "#/cip-116/BlockHash"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "transactions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-116/Transaction"
+        }
+      }
+    },
+    "required": [
+      "transactions"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all transactions contained in the block with the supplied block hash.
+
+##### Datum
+
+###### Hash
+
+```
+{
+  "operation": "getDatumByHash",
+  "request": {
+    "$ref": "#/cip-116/DataHash"
+  },
+  "response": {
+    "$ref": "#/cip-116/PlutusData"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the datum that hashes to the supplied data hash.
+
+##### Plutus Script
+
+###### Hash
+
+```
+{
+  "operation": "getPlutusScriptByHash",
+  "request": {
+    "$ref": "#/cip-116/ScriptHash"
+  },
+  "response": {
+    "$ref": "#/cip-116/PlutusScript"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the plutus script that hashes to the supplied script hash.
+
+##### Native Script
+
+###### Hash
+
+```
+{
+  "operation": "getNativeScriptByHash",
+  "request": {
+    "$ref": "#/cip-116/ScriptHash"
+  },
+  "response": {
+    "$ref": "#/cip-116/NativeScript"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the native script that hashes to the supplied script hash.
+
+##### Metadata
+
+###### Transaction Hash
+
+```
+{
+  "operation": "getMetadataByTransactionHash",
+  "request": {
+    "$ref": "#/cip-139/TransactionHash"
+  },
+  "response": {
+    "$ref": "#/cip-116/TransactionMetadatum"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the metadata present on the transaction with the supplied transaction hash.
+
+##### Protocol Parameters
+
+###### Latest
+
+```
+{
+  "operation": "getProtocolParametersByLatest",
+  "request": {},
+  "response": {
+    "$ref": "#/cip-139/ProtocolParams"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the latest protocol parameters.
+
+###### Epoch
+
+```
+{
+  "operation": "getProtocolParametersByEpoch",
+  "request": {
+    "$ref": "#/cip-139/UInt32"
+  },
+  "response": {
+    "$ref": "#/cip-139/ProtocolParams"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the protocol parameters at the supplied epoch number.
+
+##### Votes
+
+###### Cc Id
+
+```
+{
+  "operation": "getVotesByCcId",
+  "request": {
+    "$ref": "#/cip-139/CCHotId"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "votes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/VoteInfo"
+        }
+      }
+    },
+    "required": [
+      "votes"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Votes cast by the supplied cc credential.
+
+###### Spo Id
+
+```
+{
+  "operation": "getVotesBySpoId",
+  "request": {
+    "$ref": "#/cip-139/PoolPubKeyHash"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "votes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/VoteInfo"
+        }
+      }
+    },
+    "required": [
+      "votes"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Votes cast by the supplied stake pool operator.
+
+###### Drep Id
+
+```
+{
+  "operation": "getVotesByDrepId",
+  "request": {
+    "$ref": "#/cip-139/DRepId"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "votes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/VoteInfo"
+        }
+      }
+    },
+    "required": [
+      "votes"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Votes cast by the supplied DRep.
+
+###### Proposal Id
+
+```
+{
+  "operation": "getVotesByProposalId",
+  "request": {
+    "$ref": "#/cip-139/ProposalId"
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "votes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/VoteInfo"
+        }
+      }
+    },
+    "required": [
+      "votes"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Votes cast on the supplied proposal.
+
+##### Drep
+
+###### All
+
+```
+{
+  "operation": "getAllDreps",
+  "request": {},
+  "response": {
+    "type": "object",
+    "properties": {
+      "dreps": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/DRepInfo"
+        }
+      }
+    },
+    "required": [
+      "dreps"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all the known DReps.
+
+###### Id
+
+```
+{
+  "operation": "getDrepById",
+  "request": {
+    "$ref": "#/cip-139/DRepId"
+  },
+  "response": {
+    "$ref": "#/cip-139/DRepInfo"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get a specific DRep by id.
+
+###### Stake Credential
+
+```
+{
+  "operation": "getDrepByStakeCredential",
+  "request": {
+    "$ref": "#/cip-116/RewardAddress"
+  },
+  "response": {
+    "$ref": "#/cip-139/DRepInfo"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the DRep that the stake credential has delegated to.
+
+##### Committee Member
+
+###### All
+
+```
+{
+  "operation": "getAllCommitteeMembers",
+  "request": {},
+  "response": {
+    "type": "object",
+    "properties": {
+      "cc_members": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/CCMember"
+        }
+      }
+    },
+    "required": [
+      "cc_members"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all known committee members.
+
+###### Id
+
+```
+{
+  "operation": "getCommitteeMemberById",
+  "request": {
+    "$ref": "#/cip-139/CCHotId"
+  },
+  "response": {
+    "$ref": "#/cip-139/CCMember"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get a specific Committee member by id.
+
+##### Pool
+
+###### All
+
+```
+{
+  "operation": "getAllPools",
+  "request": {},
+  "response": {
+    "type": "object",
+    "properties": {
+      "pools": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/Pool"
+        }
+      }
+    },
+    "required": [
+      "pools"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all known stake pools.
+
+###### Id
+
+```
+{
+  "operation": "getPoolById",
+  "request": {
+    "$ref": "#/cip-139/PoolPubKeyHash"
+  },
+  "response": {
+    "$ref": "#/cip-139/Pool"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get a specific stake pool by id.
+
+##### Proposal
+
+###### All
+
+```
+{
+  "operation": "getAllProposals",
+  "request": {},
+  "response": {
+    "type": "object",
+    "properties": {
+      "proposals": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/Proposal"
+        }
+      }
+    },
+    "required": [
+      "proposals"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get all known proposals.
+
+###### Id
+
+```
+{
+  "operation": "getProposalById",
+  "request": {
+    "$ref": "#/cip-139/ProposalId"
+  },
+  "response": {
+    "$ref": "#/cip-139/Proposal"
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get a specific proposal by id.
+
+##### Era
+
+###### Summary
+
+```
+{
+  "operation": "getEraBySummary",
+  "request": {},
+  "response": {
+    "type": "object",
+    "properties": {
+      "summary": {
+        "type": "array",
+        "items": {
+          "$ref": "#/cip-139/EraSummary"
+        }
+      }
+    },
+    "required": [
+      "summary"
+    ]
+  },
+  "errors": [
+    {
+      "$ref": "#/appendix/APIError"
+    }
+  ]
+}
+```
+
+Get the start and end of each era along with parameters that can vary between hard forks.
+
 
 ### Versioning
 
-In this CIP we are defining two different APIs: the connection API for wallets, and the CIP-30 [maybe this should have another name to prevent confusion?] extension which enables an own-data wallet. These two are separate components, at the top of this document there is a table with separate entries for the versions of the connection API and CIP-30 Extension respectively. 
+In this CIP we are defining two different APIs: the connection API for wallets, and the CIP-30 *[maybe this should have another name to prevent confusion?]* extension which enables an own-data wallet. These two are separate components, at the top of this document there is a table with separate entries for the versions of the connection API and CIP-30 Extension respectively. 
 
 While the CIP is in preparation, these versions shall be set to `0.0.0`. The moment this CIP is merged the versions shall be set to `1.0.0`, and all implementations should consider that the current version. Any changes to either API should come in form of PRs to this CIP.
 
@@ -610,7 +1446,7 @@ This section lists the possible errors the wallet connector may return. Each err
 }
 ```
 
-[Why are these negative? Seems arbitrary, is it too breaking to change them?]
+*[Why are these negative? Seems arbitrary, is it too breaking to change them?]*
 
 - `InvalidRequest`: (-1) Inputs do not conform to this spec or are otherwise invalid.
 - `InternalError`: (-2) An error occurred during execution of this API call.
