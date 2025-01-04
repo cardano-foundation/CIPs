@@ -34,7 +34,7 @@ Blake2b-256 hash digest of canonicalized body: `68d6fe27087457acf0164e65414238c4
 ### Motion of No-Confidence
 
 Example metadata document file: [no-confidence.jsonld](./examples/no-confidence.jsonld).
-Blake2b-256 of the file content (to go onchain): `6c27e5bd0d7cdec7ddb30956be0b5eac892a8330e00689692d18f3815a71bf9f`
+Blake2b-256 of the file content (to go onchain): `87ba5c10c89484c52265b50d669b4acf116aaeb8a6fa35fbf06e5ec67cda9270`
 
 #### Intermediate files
 
