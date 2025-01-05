@@ -122,19 +122,19 @@ If the `imageObject` DOES NOT contain a base64 encoded image, the `contentUrl` M
 #### `references`
 - Optional
 - This CIP extends the `references` property from [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100#high-level-description)
-- `references` contain the following sub-properties `type`, `label`, and `uri`
+- `references` contain the following sub-properties `@type`, `label`, and `uri`
 - This CIP adds two `@type` identifiers "Identity" and "Link"
 
-##### `type`: Link
+##### `@type`: Link
 - Optional
 - It is expected that these links will be the addresses of the social media/ websites associated with the DRep in order to give a person reviewing this information a fulsome overview of the DRep's online presence.
 - The creator of the metadata SHOULD add a `label`, this `label` SHOULD describe the source of the url, e.g. if it is a link to the DRep's X account then the `label` SHOULD say "X". If it is the only personal website provided by the DRep the `label` should say "Personal Website" rather than domain_name.com.
 - The `label` of each `Link` SHOULD NOT be left blank
 - Each `Link` MUST have exactly one `uri` (as specified in CIP-100) which SHOULD not be blank.
 
-##### `type`: Identity
+##### `@type`: Identity
 - Optional
-- The `uri` of a reference with the `type` "Identity" is a way for DReps to prove that they are who they say they are
+- The `uri` of a reference with the `@type` "Identity" is a way for DReps to prove that they are who they say they are
 - It is expected that the "Identity" of a DRep will be the addresses of their most active social media account twitter, linkedin etc. or personal website.
 - The DRep must reference their DRep ID in a prominent place at the location that is specified in the `uri` property of that reference. This will be used by people reviewing this DRep to prove and verify that the person described in the metadata is the same as the person who set up the social media profile.
 
