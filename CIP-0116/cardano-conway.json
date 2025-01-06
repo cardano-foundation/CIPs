@@ -1083,7 +1083,7 @@
     },
     "DRepVotingThresholds": {
       "title": "DRepVotingThresholds",
-"type": "array",
+      "type": "array",
       "items": {
         "$ref": "cardano-conway.json#/definitions/UnitInterval"
       },
