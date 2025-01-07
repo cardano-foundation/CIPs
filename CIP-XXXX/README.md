@@ -1,7 +1,8 @@
 ---
 CIP: ?
 Title: Full-data wallet connector
-Status: Open
+Category: Tools
+Status: Proposed
 Authors:
   - Giovanni Garufi <giovanni@mlabs.city>
 Implementors: []
