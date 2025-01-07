@@ -119,15 +119,14 @@ extending the API (as a plain integer, without padding). For example:
 
 #### CIP-95 Data Types
 
-#### DRepID
+##### DRepID
 
 ```ts
 type DRepID = string;
 ```
 
-A hex-encoded string representing a registered DRep's ID which is a Blake2b-224
-hash digest of a 32 byte Ed25519 public key, as described in
-[CIP-1694 Registered DReps](https://github.com/cardano-foundation/CIPs/blob/430f64d3e86dd67903a6bf1e611c06e5343072f3/CIP-1694/README.md#registered-dreps).
+A hex-encoded string representing a Blake2b-224 hash digest of a 32 byte
+Ed25519 public DRep key.
 
 ##### PubDRepKey
 
