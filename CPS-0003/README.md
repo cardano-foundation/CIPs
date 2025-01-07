@@ -119,7 +119,7 @@ policy_id = scripthash
 
 In this situation, similar to how value can be just a coin or an array, the `policy_id` could be redefiend to be:
 
-```
+```cddl
 policy_id = scripthash / bytes ; as above [ 8 bit header | scripthash ]
 ```
 
