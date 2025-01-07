@@ -105,7 +105,7 @@ This explicit segregation would have the benefit that it could be easier backwar
 **2. add policy headers**
 This would be a breaking change to the structures and policies. Basically it would be redefining the multiasset structure to:
 
-```
+```cddl
 multiasset<a> = { * policy_id_with_header => { * asset_name => a } }
 ; token identifier format:
 ; [ 8 bit header | policy_id ];
