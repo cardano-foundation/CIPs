@@ -165,7 +165,7 @@ When signing a transaction, Ledger and Trezor use a _transaction signing mode_ t
 There are, in principle, four options:
 * _Stake pool registration transaction_. Stake pool registration certificates are signed on their own, the transaction should contain nothing that is not necessary.
 * _Ordinary transaction_. Credentials must be given as key paths.
-* _Multisig transaction_. Credentials must be script hashes; only [multisig keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1854/README.md) are allowed.
+* _Multisig transaction_. Credentials must be script hashes; only [payment and stake multisig keys](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1854/README.md) are allowed.
 * _Plutus transaction_. The only mode that allows elements related to running Plutus scripts (script data hash etc.). No extra restrictions on transaction elements or their combinations. The drawback is that more is shown to the user (e.g. witnesses are not hidden as in ordinary transactions). Please only use this mode if no other mode is sufficient.
 
 This brief description does not aim to capture the full complexity of signing modes; always verify that transactions you aim to construct are supported by other tools you will rely on (hardware wallets, software wallets, command-line tools like [`cardano-hw-cli`](https://github.com/vacuumlabs/cardano-hw-cli) etc.).
