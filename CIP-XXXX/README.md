@@ -21,9 +21,9 @@ CIP-30 is the standard interface of communication between wallets and dApps. Whi
 
 We have identified and carried out two steps in the path to provide a better alternative to CIP-30:
 
-- Defining a universal JSON encoding for Cardano domain types. CIP-30 requires CBOR encoding and decoding for data passed to and from the wallet, which is often an extra burden for the client. This problem is stated in [CPS-0011](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0011) and a potential solution is given in [CIP-0116](link).
+- Defining a universal JSON encoding for Cardano domain types. CIP-30 requires CBOR encoding and decoding for data passed to and from the wallet, which is often an extra burden for the client. This problem is stated in [CPS-0011](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0011) and a potential solution is given in [CIP-0116](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116).
 
-- Defining a universal query layer. CIP-30 is only concerned with obtaining data regarding the wallet, this forces dApps to integrate with other tools to query general blockchain data. This problem is stated in [CPS-0012](link) and a potential solution is given in [CIP-0139](link).
+- Defining a universal query layer. CIP-30 is only concerned with obtaining data regarding the wallet, this forces dApps to integrate with other tools to query general blockchain data. This problem is stated in [CPS-0012](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0012) and a potential solution is given in [CIP-0139](https://github.com/cardano-foundation/CIPs/pull/869).
 
 
 Finally, [CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) defines the responsibilities for wallet connectors, and also introduces the vocabulary to distinguish between different kinds of wallets, based on the functionality they offer.
@@ -64,8 +64,7 @@ A transaction is sent to the network via the dApp backend (bypassing CIP-30 subm
 
 ### CPS-10
 
-[CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) discusses several other limitations of CIP-30. In this CIP we try to solve some of the issues pointed out in the CPS. There are still some areas to improve on: things like the event listener API, and other potential improvements *[should we list all the points we don't tackle here?]* are intentionally left out of this CIP to prevent bloat of scope. We welcome future CIPs, or updates to this CIP to refine any limitation that is not tackled in this document.
-
+[CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) discusses several other limitations of CIP-30. In this CIP we try to solve the issues pointed out in that CPS. There are still some areas to improve on: things like the event listener API are intentionally left out of this CIP to prevent bloat of scope. We welcome future CIPs, or updates to this CIP to refine any limitation that is not tackled in this document.
 
 ## Specification
 
@@ -77,7 +76,7 @@ The goal of this CIP is to provide a better alternative to CIP-30 which supports
 - Add versioning support to the extension API
 - Define this in a transport agnostic way
 
-In it's current state, CIP-30 defines it API through a specific transport layer, namely an injected Javascript object.
+In its current state, CIP-30 defines it API through a specific transport layer, namely an injected Javascript object.
 In this CIP we want to be able to define an API without committing to a specific transport layer. Implementors of this API can choose to support this API through several transports such as: HTTP, an injected Javascript object, JSON-RPC etc.
 Furthermore, we want to use JSON-schema to clearly define the types that each method, or operation, expects to receive or returns.
 To keep the specification abstract we will use the word "operation" to describe the actions supported by the API: these would map to "endpoints" for an HTTP implementation of the API, or to "methods" for an implementation based on an injected Javascript object.
@@ -102,8 +101,8 @@ We do not add an explicit scope to operation names, we do however encourage tran
 
 We will reference several JSON schemas throughout the document, these are:
 
-- [cip-116](link) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. *[Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]*
-- [cip-139](link) which provides definitions for types used in the query layer
+- [cip-116](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. *[Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]*
+- [cip-139](https://github.com/cardano-foundation/CIPs/pull/869) which provides definitions for types used in the query layer
 - [appendix](#appendix) in which we define schemas for types required by the connection API and the error types
 
 We will use an identifier in the anchor to refer to the schema where each type is defined. For example, if we want to reference the `Transaction` type, as defined in CIP-116 we will use the following schema reference `{ "$ref": "#/cip-116/Transaction" }`.
@@ -264,7 +263,12 @@ Returns the network id of the currently connected account. 0 is testnet and 1 is
       "amount": { "$ref": "#/cip-116/Value" }
     }
   },
-  "response": { "$ref": "#/cip-116/TransactionUnspentOutput" },
+  "response": {
+    "type": "array",
+    "items": {
+      "$ref": "#/cip-116/TransactionUnspentOutput"
+    }
+  },
   "errors": [
     { "$ref": "#/appendix/APIError" }
   ]
@@ -285,7 +289,12 @@ If amount is not supplied, this shall return a list of all UTXOs controlled by t
     },
     "required": ["amount"]
   },
-  "response": { "$ref": "#/cip-116/TransactionUnspentOutput" },
+  "response": {
+    "type": "array",
+    "items": {
+      "$ref": "#/cip-116/TransactionUnspentOutput"
+    }
+  },
   "errors": [
     { "$ref": "#/appendix/APIError" }
   ]
@@ -305,8 +314,6 @@ So requiring the amount parameter would be a by-spec behavior for a wallet. Not 
 This shall return a list of one or more UTXOs controlled by the wallet that are required to reach AT LEAST the combined ADA value target specified in amount AND the best suitable to be used as collateral inputs for transactions with plutus script inputs (pure ADA-only utxos). If this cannot be attained, an `APIError` with code `NotSatisfiable` and an explanation of the blocking problem shall be returned. NOTE: wallets are free to return utxos that add up to a greater total ADA value than requested in the amount parameter, but wallets must never return any result where utxos would sum up to a smaller total ADA value, instead in a case like that an error must be returned.
 
 The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see #104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
-
-*[The spec says that amount should agreed to be max 5 ada, is this enforced? The formulation in the CIP does not seem to be too precise]*
 
 
 ##### GetBalance
@@ -333,7 +340,7 @@ Returns the total balance available of the wallet. This is the same as summing t
   "request": {},
   "response": {
     "type": "array",
-    "items: { "$ref": "#/cip-116/Address" }
+    "items": { "$ref": "#/cip-116/Address" }
   },
   "errors": [
     { "$ref": "#/appendix/APIError" }
@@ -351,7 +358,7 @@ Returns a list of all used (included in some on-chain transaction) addresses con
   "request": {},
   "response": {
     "type": "array",
-    "items: { "$ref": "#/cip-116/Address" }
+    "items": { "$ref": "#/cip-116/Address" }
   },
   "errors": [
     { "$ref": "#/appendix/APIError" }
@@ -384,7 +391,7 @@ Returns an address owned by the wallet that should be used as a change address t
   "request": {},
   "response": {
     "type": "array",
-    "items: { "$ref": "#/cip-116/RewardAddress" }
+    "items": { "$ref": "#/cip-116/RewardAddress" }
   },
   "errors": [
     { "$ref": "#/appendix/APIError" }
@@ -459,7 +466,6 @@ If the payment key for `addr` is not a P2Pk address then `DataSignError` will be
 - `crv` (-1) - must be set to `Ed25519` (6)
 - `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
-*[What are these numbers appearing next to params? Copied them from cip-30 but not sure]*
 
 ##### SubmitTx
 
@@ -1343,7 +1349,7 @@ This appendix contains additional schemas for types that are used in the APIs.
   "title": "Extensions",
   "properties": {
     "extensions": {
-      "type": "array"
+      "type": "array",
       "items": {
           {
             "type": "object",
@@ -1445,8 +1451,6 @@ This section lists the possible errors the wallet connector may return. Each err
   "required": ["code"],
 }
 ```
-
-*[Why are these negative? Seems arbitrary, is it too breaking to change them?]*
 
 - `InvalidRequest`: (-1) Inputs do not conform to this spec or are otherwise invalid.
 - `InternalError`: (-2) An error occurred during execution of this API call.
