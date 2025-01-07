@@ -1,11 +1,20 @@
 ---
 CIP: 105
 Title: Conway era Key Chains for HD Wallets
-Status: Proposed
+Status: Active
 Category: Wallets
 Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
-Implementors: []
+Implementors:
+  - Eternl <https://eternl.io/>
+  - Lace <https://www.lace.io/>
+  - Mesh <https://meshjs.dev/>
+  - NuFi <https://nu.fi/>
+  - Ryan Williams <ryan.williams@intersectmbo.org>
+  - Pawel Jakubas <pawel.jakubas-ext@cardanofoundation.org>
+  - Typhon <https://typhonwallet.io/>
+  - Vespr <https://vespr.xyz/>
+  - Yoroi <https://yoroi-wallet.com/>
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/597
 Created: 2023-09-22
@@ -63,7 +72,7 @@ We strongly recommend that a maximum of one set of DRep keys should be associate
 #### DRep ID
 
 Tools and wallets can generate a DRep ID (`drep_credential`) from the Ed25519 public DRep key (without chaincode) by creating a blake2b-224 hash digest of the key.
-As this is key-based credential it should be marked as entry `0` in a credential array.
+As this is key-based credential it should be marked as entry `0` in a credential array. DRep Identifier is further specified in [CIP-0129](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md).
 
 #### Constitutional Committee Cold Keys
 
@@ -105,14 +114,15 @@ These are also described in [CIP-0005 | Common Bech32 Prefixes](https://github.c
 
 DRep keys and DRep IDs should be encoded in Bech32 with the following prefixes:
 
-| Prefix        | Meaning                                                 | Contents                                                          |
-| ------------- | --------------------------------------------------------| ----------------------------------------------------------------- |
-| `drep_sk`     | CIP-1852’s DRep signing key                             | Ed25519 private key                                               |
-| `drep_vk`     | CIP-1852’s DRep verification key                        | Ed25519 public key                                                |
-| `drep_xsk`    | CIP-1852’s DRep extended signing key                    | Ed25519-bip32 extended private key                                |
-| `drep_xvk`    | CIP-1852’s DRep extended verification key               | Ed25519 public key with chain code                                |
-| `drep`        | Delegate representative verification key hash (DRep ID) | blake2b\_224 digest of a delegate representative verification key |
-| `drep_script` | Delegate representative script hash (DRep ID)        | blake2b\_224 digest of a serialized delegate representative script |
+| Prefix        | Meaning                                                 | Contents                                                           |
+| ------------- | --------------------------------------------------------| ------------------------------------------------------------------ |
+| `drep_sk`     | CIP-1852’s DRep signing key                             | Ed25519 private key                                                |
+| `drep_vk`     | CIP-1852’s DRep verification key                        | Ed25519 public key                                                 |
+| `drep_xsk`    | CIP-1852’s DRep extended signing key                    | Ed25519-bip32 extended private key                                 |
+| `drep_xvk`    | CIP-1852’s DRep extended verification key               | Ed25519 public key with chain code                                 |
+| `drep`        | [DEPRECATED] DRep verification key hash (DRep ID)       | blake2b\_224 digest of a delegate representative verification key  |
+| `drep_vkh`    | Delegate representative verification key hash           | blake2b\_224 digest of a delegate representative verification key  |
+| `drep_script` | Delegate representative script hash                     | blake2b\_224 digest of a serialized delegate representative script |
 
 #### Constitutional Committee Cold Keys
 
@@ -124,7 +134,8 @@ Constitutional cold keys and credential should be encoded in Bech32 with the fol
 | `cc_cold_vk`     | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                                                    |
 | `cc_cold_xsk`    | CIP-1852’s constitutional committee cold extended signing key         | Ed25519-bip32 extended private key                                     |
 | `cc_cold_xvk`    | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code                                     |
-| `cc_cold`        | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key |
+| `cc_cold`        | [DEPRECATED] Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key |
+| `cc_cold_vkh`    | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key |
 | `cc_cold_script` | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
 
 #### Constitutional Committee Hot Keys
@@ -137,12 +148,13 @@ Constitutional hot keys and credential should be encoded in Bech32 with the foll
 | `cc_hot_vk`     | CIP-1852’s constitutional committee verification signing key          | Ed25519 private key                                                   |
 | `cc_hot_xsk`    | CIP-1852’s constitutional committee hot extended signing key          | Ed25519-bip32 extended private key                                    |
 | `cc_hot_xvk`    | CIP-1852’s constitutional committee extended verification signing key | Ed25519 public key with chain code                                    |
-| `cc_hot`        | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key |
+| `cc_hot`        | [DEPRECATED] Constitutional committee hot verification key hash (hot credential) | blake2b\_224 digest of a consitutional committee hot verification key |
+| `cc_hot_vkh`    | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key |
 | `cc_hot_script` | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script |
 
 ### Tooling Definitions
 
-### DRep Keys
+#### DRep Keys
 
 Supporting tooling should clearly label these key pairs as "DRep Keys".
 
@@ -200,6 +212,32 @@ For hardware implementations:
 | `ConstitutionalCommitteeHotHWSigningFile_ed25519`   | Hardware Constitutional Committee Hot Signing File     |
 | `ConstitutionalCommitteeHotVerificationKey_ed25519` | Hardware Constitutional Committee Hot Verification Key |
 
+### Deprecated Governance ID Definition
+The previous governance key IDs defined by this standard have been superseded by the definitions provided in [CIP-0129]. Tools implementing this standard are encouraged to consider adopting [CIP-0129]. Tools that already support [CIP-0129] maintain backward compatibility with the legacy formats specified below but should consider fully transitioning to [CIP-0129] to standardize key formats across the ecosystem. This will help avoid multiple formats and ensure consistency.
+
+This CIP previously also lacked `_vkh` key definitions, which are now added above possible due to the upgrades defined in [CIP-0129]. For detailed information on the new specification and the rationale behind the upgrade, please refer to [CIP-0129].
+
+#### DRep Keys
+
+| Prefix          | Meaning                                                               | Contents                                                              |
+| --------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `drep`        | Delegate representative verification key hash (DRep ID) | blake2b\_224 digest of a delegate representative verification key  |
+| `drep_script` | Delegate representative script hash (DRep ID)           | blake2b\_224 digest of a serialized delegate representative script |
+
+#### Constitutional Committee Cold Keys
+
+| Prefix          | Meaning                                                               | Contents                                                              |
+| --------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `cc_cold`        | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key   |
+| `cc_cold_script` | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
+
+#### Constitutional Committee Hot Keys
+
+| Prefix          | Meaning                                                               | Contents                                                              |
+| --------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `cc_hot`        | Constitutional committee hot verification key hash (hot credential) | blake2b\_224 digest of a consitutional committee hot verification key   |
+| `cc_hot_script` | Constitutional committee hot script hash (hot credential)           | blake2b\_224 digest of a serialized constitutional committee hot script |
+
 ### Versioning
 
 This CIP is not to be versioned using a traditional scheme, rather if any large technical changes are required then a new proposal must replace this one.
@@ -250,12 +288,18 @@ See [Test Vectors File](./test-vectors.md).
   - [Lace](https://chromewebstore.google.com/detail/lace-sanchonet/djcdfchkaijggdjokfomholkalbffgil?hl=en)
   - [Yoroi](https://chrome.google.com/webstore/detail/yoroi-nightly/poonlenmfdfbjfeeballhiibknlknepo/related)
   - [demos wallet](https://github.com/Ryun1/cip95-demos-wallet)
-- [ ] The consitutional committee derivation paths are used by two implementations.
+- [x] The constitutional committee derivation paths are used by two implementations.
+  - [csl-examples](https://github.com/Ryun1/csl-examples/)
+  - [cardano-addresses](https://github.com/IntersectMBO/cardano-addresses/)
 
 ### Implementation Plan
 
-- [ ] Author to provide an example implementation inside a HD wallet.
+- [x] Author to provide an example implementation inside a HD wallet.
+  - [csl-examples/cip-1852-keys.js](https://github.com/Ryun1/csl-examples/blob/main/examples/CIP-1852/cip-1852-keys.js)
 
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+[CIP-0129]: (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md)
+[DEPRECATED]: #deprecated-governance-id-definition

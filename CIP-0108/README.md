@@ -175,7 +175,11 @@ The inclusion of a hash allows for the supporting documentation to be cryptograp
 ## Path to Active
 
 ### Acceptance Criteria
-- [ ] This standard is supported by two different tooling providers used to submit governance actions to chain.
+- [X] This standard is supported by two different tooling providers used to submit governance actions to chain.
+  - [cardano-signer](https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-100--cip-108--cip-119-mode) : A tool to sign with author secret keys, verify signatures, canonize the body content (Linux/Arm/Win/Mac)
+  - [spo-scripts](https://github.com/gitmachtl/scripts) : A collection of scripts to interact with governance. Create actions, vote on actions incl. signature verification
+  - [cardano-governance-metadata-lib](https://github.com/SundaeSwap-finance/cardano-governance-metadata) : A rust library for interacting with Cardano Governance Metadata conforming to CIP-100 (rust)
+
 - [ ] This standard is supported by two different chain indexing tools, used to read and render metadata.
   - DB-Sync via [db-sync-sancho-4.1.0](https://github.com/IntersectMBO/cardano-db-sync/releases/tag/sancho-4.1.0)
 
@@ -185,6 +189,7 @@ Solicitation of feedback
 - [x] Seek community answers on all [Open Questions](#open-questions).
 Implementation
 - [x] Author to provide example metadata and schema files.
+
 
 ## Acknowledgments
 
