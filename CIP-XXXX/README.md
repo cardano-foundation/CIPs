@@ -6,7 +6,7 @@ Authors:
   - Giovanni Garufi <giovanni@mlabs.city>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/957
 Created: 2024-12-13
 License: CC-BY-4.0
 Version-Connection-API: 0.0.0
