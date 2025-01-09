@@ -1,13 +1,13 @@
 ---
 CIP: 144
 Title: Full-data wallet connector
-Status: Open
 Category: Tools
+Status: Proposed
 Authors:
   - Giovanni Garufi <giovanni@mlabs.city>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/?
+    - https://github.com/cardano-foundation/cips/pulls/957
 Created: 2024-12-13
 License: CC-BY-4.0
 ---
@@ -24,7 +24,7 @@ We have identified and carried out two steps in the path to provide a better alt
 - Defining a universal query layer. CIP-30 is only concerned with obtaining data regarding the wallet, this forces dApps to integrate with other tools to query general blockchain data. This problem is stated in [CPS-0012](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0012) and a potential solution is given in [CIP-0139](https://github.com/cardano-foundation/CIPs/pull/869).
 
 
-Finally, [CPS-0010](https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md) defines the responsibilities for wallet connectors, and also introduces the vocabulary to distinguish between different kinds of wallets, based on the functionality they offer.
+Finally, [CPS-0010](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md) defines the responsibilities for wallet connectors, and also introduces the vocabulary to distinguish between different kinds of wallets, based on the functionality they offer.
 
 In this CIP we want to put these together, defining a wallet connector standard for a full-data wallet.
 
