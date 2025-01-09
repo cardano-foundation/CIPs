@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 144
 Title: Full-data wallet connector
 Status: Open
 Category: Tools
@@ -10,8 +10,6 @@ Discussions:
     - https://github.com/cardano-foundation/cips/pulls/?
 Created: 2024-12-13
 License: CC-BY-4.0
-Version-Connection-API: 0.0.0
-Version-CIP-30-Extension: 0.0.0
 ---
 
 ## Abstract
@@ -447,8 +445,6 @@ Only the portions of the witness set that were signed as a result of this call a
   ]
 }
 ```
-
-*[Is bytestring the correct type here?]*
 
 This endpoint utilizes the [CIP-0008 signing spec](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) for standardization/safety reasons. It allows the dApp to request the user to sign a payload conforming to said spec. The user's consent MUST be requested and the message to sign shown to the user. The payment key from `addr` will be used for base, enterprise and pointer addresses to determine the EdDSA25519 key used. The staking key will be used for reward addresses. This key will be used to sign the `COSE_Sign1`'s `Sig_structure` with the following headers set:
 
@@ -1331,9 +1327,14 @@ Get the start and end of each era along with parameters that can vary between ha
 
 ### Versioning
 
-In this CIP we are defining two different APIs: the connection API for wallets, and the CIP-30 *[maybe this should have another name to prevent confusion?]* extension which enables an own-data wallet. These two are separate components, at the top of this document there is a table with separate entries for the versions of the connection API and CIP-30 Extension respectively. 
+In this CIP we are defining two different APIs: the connection API for wallets, and the CIP-30 *[maybe this should have another name to prevent confusion?]* extension which enables an own-data wallet. These two are separate components, below there is a table with separate entries for the versions of the connection API and CIP-30 Extension respectively. 
 
 While the CIP is in preparation, these versions shall be set to `0.0.0`. The moment this CIP is merged the versions shall be set to `1.0.0`, and all implementations should consider that the current version. Any changes to either API should come in form of PRs to this CIP.
+
+---
+Version-Connection-API: 0.0.0
+Version-CIP-30-Extension: 0.0.0
+---
 
 ### Appendix
 
