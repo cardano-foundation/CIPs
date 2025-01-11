@@ -1,5 +1,5 @@
 ---
-CPS: 142
+CPS: 19
 Title: Light Client Protocols
 Status: Open
 Category: Tools
