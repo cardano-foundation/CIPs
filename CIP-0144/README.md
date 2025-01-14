@@ -1595,9 +1595,15 @@ We split the contributions of this CIP in two categories:
 
 ## Path to Active
 
-- Implementing a wrapper that takes a CIP-30 compatible API and transforms it to be compatible with CIP-XXXX.
-- This CIP depends on CIP-139 to be active, in particular wallets need to support the queries required by the `cip-139` extension.
-- Two or more wallets implement support for this CIP.
+### Acceptance Criteria
+
+- [ ] There is at least one implementation for a CIP-30 compatibility wrapper as explained in the `CIP-30 Backwards compatibility` section
+- [ ] Two or more wallets implement support for this CIP.
+
+### Implementation Plan
+
+- [ ] This CIP depends on CIP-139 to be active, in particular wallets need to support the queries required by the `cip-139` extension.
+- [ ] Implement a wrapper that takes a CIP-30 compatible API and transforms it to be compatible with CIP-XXXX.
 
 ## Copyright
 
