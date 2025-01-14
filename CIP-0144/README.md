@@ -1332,7 +1332,7 @@ In this CIP we are defining two different APIs: the connection API for wallets, 
 
 While the CIP is in preparation, these versions shall be set to `0.0.0`. The moment this CIP is merged the versions shall be set to `1.0.0`, and all implementations should consider that the current version. Any changes to either API should come in form of PRs to this CIP.
 
-|     |    |
+| API | Version |
 | --- | --- |
 | Version-Connection-API | 0.0.0 |
 | Version-CIP-30-Extension | 0.0.0 |
