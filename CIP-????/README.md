@@ -371,7 +371,7 @@ exchange contract would be nice to have.
 ### On-Chain Component of Hydra
 
 [Hydra](https://docs.cardano.org/developer-resources/scalability-solutions/hydra) is an isomorphic 
-state/payment channel family of protocols designed as Layer-2 solutions on Cardano. The include an on-chain 
+state/payment channel family of protocols designed as Layer-2 solutions on Cardano. This includes an on-chain 
 component. Many instances and versions of the Hydra protocol may be run at the same time. This amounts 
 to a potentially very large sum of assets controlled by the same code. This would be a very 
 good candidate for formalizing as a structured contract, as the effort is likely to be worth the 
