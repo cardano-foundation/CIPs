@@ -15,9 +15,9 @@ License: Apache-2.0
 
 At this time, there exists an [Agda model](https://github.com/IntersectMBO/formal-ledger-specifications) 
 of the Cardano ledger, which is used, among other things, as the source of truth 
-for the design of the Cardano ledger implementation, as well as for conformance testing. In this model, smart contracts 
-(which correspond a certain class of predicates in Plutus in the Cardano ledger implementation) are modeled using Agda
-functions. This CIP describes a proposal for adding a framework for defining stateful computation called [structured contracts](https://omelkonian.github.io/data/publications/eutxo-struc.pdf) to this Agda specification model. A user may instantiate 
+for the design of the Cardano ledger implementation, as well as for conformance testing. 
+This CIP describes a proposal for adding a framework for defining stateful computation called [structured contracts](https://omelkonian.github.io/data/publications/eutxo-struc.pdf) to this Agda specification model, 
+using a certain class of boolean Agda predicates to model ledger scripts. A user may instantiate 
 this framework by specifying the semantics of their desired stateful program, then defining Agda functions 
 corresponding to smart contracts required to implement these semantics. 
 Finally, to show the implementation is correct, fulfilling some proof obligations 
@@ -429,6 +429,10 @@ any stateful program on the ledger, and
 is an instance of the right structured contract. That is, one that satisfies some properties desired by 
 the author, and describes the evolution of the the relevant data on the ledger.
 
+We provide the specification and set of examples that must be implemented as part of this CIP
+to demonstrate the above statements, and give users the tools to implement their own formally 
+verified stateful programs on the Cardano ledger.
+
 ### Automation Potential
 
 The ideal eventual outcome of this script verification effort is automation of implementing 
@@ -462,7 +466,8 @@ Two to four of the examples/usecases are implemented.
 ### Implementation Plan
 
 1. Instantiate `Value`
-2. Implement the examples discussed
+2. Establish the scope of examples required for completion
+3. Implement the examples in (2)
 
 ## Copyright
 
