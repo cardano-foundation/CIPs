@@ -124,11 +124,11 @@ key-local-ref = [ (x509-certs, offset)
 offset = uint
 
 ; Reference to a transaction output, used as the payment key for a role.
-; The reference integer represents the transaction index of the transaction output.
+; The reference unsigned integer represents the transaction index of the transaction output.
 ; The payment-key is considered valid if
 ; - The referenced payment key exist in the transaction.
 ; - The reference payment address must be witnessed within the witness set.
-payment-key = int
+payment-key = uint
 
 ; purpose specific data - Undefined here except for the key space
 ; Individual purposes can define these keys however they require.
