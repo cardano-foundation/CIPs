@@ -327,7 +327,15 @@ A Payment key reference in this CIP solves this problem by only allowing a refer
 
 The reference is a simple unsigned integer.
 The integer represent the index of the transaction outputs.
-For example, integer 0 refers to index 0 of the transaction outputs
+For example, integer 0 refers to index 0 of the transaction outputs.
+
+For the payment key to be validated, it must be witnessed in the transaction, this can be achieved by either:
+* Using the same payment key from an input to the transaction as an output.
+* If the payment key is not an input to the transaction, including it in the Required Signers field of the transaction.
+Payment keys which are not witnessed are invalid, as they can not be proven to both be:
+* Owned and controlled by the wallet signing the transaction and posting the registration.
+* Spendable.
+Ensuring this validity reduces the risk of invalid payments, or paying the wrong individuals, and eliminates the need to make "trial" payments to validate an address is payable.
 
 If the transaction output address **IS** also an input to the transaction,
 then the same proof has already been attached to the transaction.
