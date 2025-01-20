@@ -1,7 +1,7 @@
 ---
 CIP: ????
 Title: Structured Contracts
-Category: Ledger/Tools
+Category: Tools
 Status: Active
 Authors:
   - Polina Vinogradova <polina.vinogradova@iohk.io>
