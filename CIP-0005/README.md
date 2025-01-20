@@ -121,15 +121,15 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_test`         | Testnet address                                       | Network tag, payment credential and optional stake credential |
 | `stake`             | Mainnet stake address                                 | Network tag and stake credential                              |
 | `stake_test`        | Testnet stake address                                 | Network tag and stake credential                              |
-| `drep`              | drep identifier                                       | drep credential, see [CIP-0129]                               |
-| `cc_cold`           | cc cold identifier                                    | cc cold credential, see [CIP-0129]                            |
-| `cc_hot`            | cc hot identifier                                     | cc hot credential, see [CIP-0129]                             |
-| `gov_action`        | gov action identifier                                 | gov action ID, see [CIP-0129],                                |
+| `drep`              | DRep identifier                                       | DRep credential, see [CIP-0129]                               |
+| `cc_cold`           | Constitutional committee cold identifier              | Constitutional committee cold credential, see [CIP-0129]      |
+| `cc_hot`            | Constitutional committee hot identifier               | Constitutional committee hot credential, see [CIP-0129]       |
+| `gov_action`        | Governance action identifier                          | Governance action ID, see [CIP-0129]                          |
 
 
 ### Deprecated Governance Prefixes
 
-The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by[CIP-0105], and are deprecated. Please see [CIP-0105] for the detailed deprecation information, and details to upgrade to [CIP-0129].
+The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by [CIP-0105], and are deprecated. Please see [CIP-0105] for the detailed deprecation information, and details to upgrade to [CIP-0129].
 
 For detailed information on the new specification and the rationale behind the upgrade, please refer to [CIP-0129].
 
