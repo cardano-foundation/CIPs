@@ -108,9 +108,9 @@ We define the following set of common prefixes with their corresponding semantic
 | `script_data`          | Script data hash                                                      | blake2b\_256 digest of script data                                       |
 | `drep_vkh`             | Delegate representative verification key hash                         | blake2b\_224 digest of a delegate representative verification key        |
 | `drep_script`          | Delegate representative script hash                                   | blake2b\_224 digest of a serialized delegate representative script       |
-| `cc_cold_vkh`          | Constitutional committee cold verification key hash                   | blake2b\_224 digest of a consitutional committee cold verification key   |
+| `cc_cold_vkh`          | Constitutional committee cold verification key hash                   | blake2b\_224 digest of a constitutional committee cold verification key  |
 | `cc_cold_script`       | Constitutional committee cold script hash                             | blake2b\_224 digest of a serialized constitutional committee cold script |
-| `cc_hot_vkh`           | Constitutional committee hot verification key hash                    | blake2b\_224 digest of a consitutional committee hot verification key    |
+| `cc_hot_vkh`           | Constitutional committee hot verification key hash                    | blake2b\_224 digest of a constitutional committee hot verification key   |
 | `cc_hot_script`        | Constitutional committee hot script hash                              | blake2b\_224 digest of a serialized constitutional committee hot script  |
 
 ### Miscellaneous
