@@ -128,15 +128,18 @@ We define the following set of common prefixes with their corresponding semantic
 
 
 ### Deprecated Governance Prefixes
+
 The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by CIP-0105, and are deprecated. Please see CIP-0105 for the detailed deprecation information, and details to upgrade to [CIP-0129].
 
 For detailed information on the new specification and the rationale behind the upgrade, please refer to [CIP-0129].
 
+| Prefix             | Meaning                                                               | Contents                                                                 |
+| ---                | ---                                                                   | ---                                                                      |
 | `drep`             | Delegate representative verification key hash (DRep ID)               | blake2b\_224 digest of a delegate representative verification key        |
 | `drep_script`      | Delegate representative script hash (DRep ID)                         | blake2b\_224 digest of a serialized delegate representative script       |
-| `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key   |
+| `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a constitutional committee cold verification key  |
 | `cc_cold_script`   | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
-| `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key    |
+| `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a constitutional committee hot verification key   |
 | `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
 
 ## Rationale: how does this CIP achieve its goals?
