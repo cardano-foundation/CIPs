@@ -5,8 +5,9 @@ Category: Ledger/Tools
 Status: Active
 Authors:
   - Polina Vinogradova <polina.vinogradova@iohk.io>
-Implementors: N/A
+Implementors: []
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/963
 Created: 2024-04-15
 License: Apache-2.0
 ---
@@ -72,21 +73,53 @@ the purposes of demonstrating the versatility of the kinds of programs that it c
 
 ## Specification
 
-### Ledger Spec Preparation
+### Value Instantiation and Ledger Specification Preparation
 
-Token bundles on an EUTxO (with multi-assets) ledger are data structures consisting of 
-records of pairs of an asset ID (a policy script hash together with a token name), and the corresponding 
-quantity of the token with that asset ID. The Cardano ledger Agda specification is currently
-agnostic about the details of this data structure, called `Value`. It only specifies that 
-what types must be specified to instantiate `Value`, (including the type of policies, and token 
-names), as well as some relevant operations, such as addition, equality and `≤` comparisons 
-on this datatype.
+In the Agda Cardano ledger specification, heterogeneous combinations of assets are represented using 
+a [token algebra](https://github.com/IntersectMBO/formal-ledger-specifications/blob/master/src/Ledger/TokenAlgebra/ValueSet.lagda),
+given by :
 
-Instantiating the Cardano ledger Agda spec with a specific `Value` data structure 
-(which gives specific types to policies, token names, defines the comparison functions, etc.)
-is required in order to implement most of the examples we propose here. This `Value` structure 
-instance must represent the one actually implemented on Cardano in order for the policy scripts 
-to be used in defining structured contracts.
+```
+  Value-TokenAlgebra :
+    (specialPolicy : PolicyId)
+    (specialAsset : AssetName)
+    (size : AssetId ⇒ Quantity → ℕ)
+    --------------------------------------
+    → TokenAlgebra
+  Value-TokenAlgebra specialPolicy specialAsset size = record
+    { coin                      = totalMap↠coin
+    ; inject                    = coin↪totalMap
+    ; policies                  = policies
+    ; size                      = size
+    ; _≤ᵗ_                      = leq
+    ; AssetName                 = AssetName
+    ; specialAsset              = specialAsset
+    ; property                  = compose-to-id
+    ; coinIsMonoidHomomorphism  = CoinMonHom
+    ; Dec-≤ᵗ = λ {x}{y} → Dec-lookup≤ {x}{y}
+    }
+    where
+
+    specId : AssetId
+    specId = (specialPolicy , specialAsset)
+```
+
+Here, `leq` is defined in the following way :
+
+```
+    leq : AssetId ⇒ Quantity → AssetId ⇒ Quantity → Type
+    leq u v = ∀ {a}{p}{q} → lookup u (a , p) ≤ lookup v (a , q)
+```
+
+This definition makes it difficult to prove that `leq` is decidable because of the universal 
+quantification. The first step is to address this, and instantiate `Value` (the data structure 
+used to represent asset bundles in the ledger) to this version of a token algebra, `Value-TokenAlgebra`.
+Work is [ongoing](https://github.com/IntersectMBO/formal-ledger-specifications/blob/alasdair/value-nft/src/ScriptVerification/LedgerImplementation.agda) to address this and related problems.
+
+The next step in ledger preparation is to test using special boolean Agda functions as scripts in all the 
+contexts that scripts are used in practice. If there is no obstacles at this stage, examples of 
+the structured contract formalism can begin to be defined.
+
 
 ### Structured Contract Formalism
 
@@ -196,14 +229,14 @@ necessarily pick out outputs with specific references, tokens, and locking scrip
 tokens with certain policies, etc. This creates the robust connection between the contract specification 
 and the ledger state evolution.
 
-## Applications, Usecases, and Examples
+### Applications, Usecases, and Examples
 
 The completion of this CIP should include implementations of specific applications, usecases, and 
 examples of instances of `StrucSimulation` to showcase 
 the usefulness of the framework and make it easier to build new contracts. The following should 
 be included :
 
-### Single-execution Script (SES) and Single UTxO Contracts (SEC)
+#### Single-execution Script (SES) and Single UTxO Contracts (SEC)
 
 We begin by describing how the use of individual scripts, which are boolean predicates, can be viewed as 
 instances of structured contracts. We call this kind of contract an `SES`, which 
@@ -233,7 +266,7 @@ it requires that the script locking the output `q` validates.
 We call such a contract 
 *consolidated*, since it concerns only a single UTxO. 
 
-### NFT
+#### NFT
 
 As discussed in the [Specification](#specification) section, the state of a contract 
 can be a natural number, intended to represent the quantity of a token with asset ID `a`. 
@@ -284,7 +317,7 @@ the minting policy script of `myNFT`.
   that there is the constraint that `TxInfo` cannot have a `TxId` that is the same as 
   the `TxId` part of the reference `r`.
 
-### Account Simulation 
+#### Account Simulation 
 
 Accounts are a familiar feature of tracking the transfer of value, 
 especially on the more intuitive account-based ledger model. They can be represented on the 
@@ -315,7 +348,7 @@ Then, properties of account simulation can be proved separately from
 analyzing the implementation code. Moreover, the implementations themselves can be compared 
 across certain parameters, such as concurrency and transaction memory use per operation.
 
-### Distributed Linked List
+#### Distributed Linked List
 
 An **ordered linked list** can be implemented by storing the data 
 of each item in the list in the datum of a separate UTxO, such that it is possible for a 
@@ -338,7 +371,7 @@ The reason for including this example is to provide further evidence that distri
 components interacting in a rather sophisticated way, can be instances of the structured 
 contract framework. 
 
-### Message-passing
+#### Message-passing
 
 There is currently no standardized or principled way to formalize communication between 
 contracts. Existing work on [message-passing](https://fc24.ifca.ai/wtsc/WTSC24_2.pdf) partially 
@@ -357,18 +390,18 @@ that can be decoded as the message being sent (i.e. the token name of the messag
 This scheme can be used to deal with double satisfaction in a uniform way, as discussed in the 
 paper, as well as to perform cached computation. 
 
-### Stateful Computation Template
+#### Stateful Computation Template
 
 Consider a consolidated stateful contract whose state is encoded as a datum of a UTxO entry containing 
 a specific NFT. This is a very common design pattern, and should should be provided as 
 an instantiable template. Perhaps even including the use of the message-passing contract.
 
-### A DEX
+#### A DEX
 
 A transition system specification and Agda implementation of an on-chain component of distributed 
 exchange contract would be nice to have.
 
-### On-Chain Component of Hydra
+#### On-Chain Component of Hydra
 
 [Hydra](https://docs.cardano.org/developer-resources/scalability-solutions/hydra) is an isomorphic 
 state/payment channel family of protocols designed as Layer-2 solutions on Cardano. This includes an on-chain 
@@ -377,11 +410,13 @@ to a potentially very large sum of assets controlled by the same code. This woul
 good candidate for formalizing as a structured contract, as the effort is likely to be worth the 
 resulting security guarantees.
 
-## Properties
+### Properties
 
 Some (proved) properties of the transition systems and their implementations should be included.
+In this section, we outline which kinds of properties may be included, which follow 
+directly from the structured contract definition, and which can be ignored in this CIP.
 
-### Correctness of Implementation (Safety)
+#### Correctness of Implementation (Safety)
 
 The proof obligation `simulates` corresponds to a safety property of the ledger. A safety property 
 is one that is of the form "a specific bad thing never happens". In the case of `simulates`, proving 
@@ -393,8 +428,10 @@ plus the existing amount, exceeds 1.
 
 Additional safety properties can be proven for the program's transition specification, and will be guaranteed 
 to hold for its ledger encoding/implementation, since it can never evolve contrary to the specification.
+An example of a safety property should be defined and proved for at least one use case, e.g. 
+the NFT cannot be burned once it is minted.
 
-### Liveness
+#### Liveness
 
 The `simulates` proof tells us nothing about liveness. In fact, it is easy to write scripts that 
 prevent anything from ever happening to a program's state, which thus ensure that the specification is 
@@ -403,7 +440,7 @@ be that for any valid step in a program, there exists a corresponding valid ledg
 This is more challenging than proving safety properties, and will likely look different 
 for each structured contract program. We leave this out of the CIP, and for future work.
 
-### Composition
+#### Composition
 
 Structured contracts compose. Give structured contracts with specifications `STRUC` and `STRUC'`, 
 state projection functions `πˢ, πˢ'`, and `πⁱ = id` for both, we get a new structured contract `STRUC''`.
@@ -414,7 +451,7 @@ It has the projection function `<πˢ, πˢ'>` which pairs the two states, `π�
 This allows reasoning about contract interaction. For example, each account in the account simulation 
 can be viewed as an individual stateful program, and composing all accounts together in this way 
 also defines a stateful program. Such a composition allows us to reason about account transfers, which 
-requires the interaction of at least two accounts. 
+requires the interaction of at least two accounts. This should be proved formally.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -441,7 +478,7 @@ how to achieve this goal in the general case. However, building specific structu
 contract templates for common design patters will make this framework much more 
 user-friend and accessible.
 
-## Comparison with Other Designs
+### Comparison with Other Designs
 
 The most advanced smart contract verification effort is the 
 [SmartCodeVerifier: Automated Formal Verification Tool for Smart Contract Code](https://cardano.ideascale.com/c/cardano/idea/132861).
@@ -465,9 +502,9 @@ Two to four of the examples/usecases are implemented.
 
 ### Implementation Plan
 
-1. Instantiate `Value`
+1. Prepare the ledger as [described](#value-instantiation-and-ledger-specification-preparation)
 2. Establish the scope of examples required for completion
-3. Implement the examples in (2)
+3. Implement the presented examples 
 
 ## Copyright
 
