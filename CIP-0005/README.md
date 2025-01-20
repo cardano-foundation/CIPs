@@ -129,7 +129,7 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Deprecated Governance Prefixes
 
-The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by CIP-0105, and are deprecated. Please see CIP-0105 for the detailed deprecation information, and details to upgrade to [CIP-0129].
+The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by[CIP-0105], and are deprecated. Please see [CIP-0105] for the detailed deprecation information, and details to upgrade to [CIP-0129].
 
 For detailed information on the new specification and the rationale behind the upgrade, please refer to [CIP-0129].
 
@@ -204,4 +204,5 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 [CIP-0014]: https://github.com/cardano-foundation/CIPs/blob/645243e30b5aae109a70ec2b47af70dcc808bc56/CIP-0014
+[CIP-0105]: (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md)
 [CIP-0129]: (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md)
