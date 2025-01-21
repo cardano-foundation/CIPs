@@ -123,17 +123,12 @@ key-local-ref = [ (x509-certs, offset)
 ; Offset of the item in the specified set.  0 = first entry.
 offset = uint
 
-; Reference to a transaction input/output as the payment key to use for a role
-; Payment key (n) >= 0 = Use Transaction Input Key offset (n) as the payment key
-; Payment key (n) < 0 = Use Transaction Output Key offset -(n+1) as the payment key
-; IFF a transaction output payment key is defined the payment address must also be in
-; the required_signers of the transaction to ensure the payment address is owned and controlled
-; by the entity posting the registration.
-; If the referenced payment key does not exist in the transaction, or is not witnessed the entire
-; registration is to be considered invalid.
-; Note that reference to transaction input is currently unsupported due to the limitation
-; of past transaction references.
-payment-key = int
+; Reference to a transaction output, used as the payment key for a role.
+; The reference unsigned integer represents the transaction index of the transaction output.
+; The payment-key is considered valid if
+; - The referenced payment key exist in the transaction.
+; - The reference payment address must be witnessed within the witness set.
+payment-key = uint
 
 ; purpose specific data - Undefined here except for the key space
 ; Individual purposes can define these keys however they require.

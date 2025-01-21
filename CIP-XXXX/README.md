@@ -323,19 +323,19 @@ However, a fundamental problem with these metadata standards is there is no way 
 
 It is important that payment keys be verifiable and provably owned to the registrar.
 
-A Payment key reference in this CIP solves this problem by only allowing a reference to either a transaction input or output.
+A Payment key reference in this CIP solves this problem by only allowing a reference to transaction output.
 
-The reference is a simple signed integer.
-If the integer is positive, say N, it references the spent UTXO in the transaction input at index N - 1.
-For example, positive integer 1 refers to transaction input index 0.
-Because its required to prove one can spend a UTXO to post the transaction,
-the transaction itself proves that the Payment address being registered is both valid and owned by the registrar.
+The reference is a simple unsigned integer.
+The integer represent the index of the transaction outputs.
+For example, integer 0 refers to index 0 of the transaction outputs.
 
-If the reference is negative, say -N, it references a transaction output at index abs(N) - 1.
-The value is negated to determine the offset into the transaction output array.
-For example, negative integer -1 refers to transaction output index 0.
-
-Please note that `0` is an invalid reference.
+For the payment key to be validated, it must be witnessed in the transaction, this can be achieved by either:
+* Using the same payment key from an input to the transaction as an output.
+* If the payment key is not an input to the transaction, including it in the Required Signers field of the transaction.
+Payment keys which are not witnessed are invalid, as they can not be proven to both be:
+* Owned and controlled by the wallet signing the transaction and posting the registration.
+* Spendable.
+Ensuring this validity reduces the risk of invalid payments, or paying the wrong individuals, and eliminates the need to make "trial" payments to validate an address is payable.
 
 If the transaction output address **IS** also an input to the transaction,
 then the same proof has already been attached to the transaction.
