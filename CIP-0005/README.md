@@ -126,9 +126,13 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Deprecated Governance Prefixes
 
-The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by [CIP-0105], and are deprecated. Please see [CIP-0105] for the detailed deprecation information, and details to upgrade to [CIP-0129].
+The some governance prefixes contained within the tables above were originally defined via [CIP-0105].
+With the authoring of and acceptance of [CIP-0129], the community decide to replace some governance prefix definitions whilst depreciating others.
 
-For detailed information on the new specification and the rationale behind the upgrade, please refer to [CIP-0129].
+Further details on the depreciation and replacement of definitions can be seen via [CIP-105 Deprecated Governance ID Definition](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0105#deprecated-governance-id-definition).
+
+Below is a table of entries of prefix definitions which were defined via [CIP-0105], but have now been marked as depreciated as [CIP-0129] defined replacements.\
+The [CIP-0129] definitions are included within the tables above.
 
 | Prefix             | Meaning                                                               | Contents                                                                 |
 | ---                | ---                                                                   | ---                                                                      |
