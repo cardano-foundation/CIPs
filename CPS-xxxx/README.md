@@ -1,4 +1,3 @@
-```yaml
 ---
 CPS: ????
 Title: Missing Merkle Root of Transactions in Cardano Block Header
@@ -11,7 +10,6 @@ Discussions:
 Created: 2025-01-17
 License: CC-BY-4.0
 ---
-```
 
 ## Abstract
 
