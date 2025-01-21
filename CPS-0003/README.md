@@ -5,9 +5,15 @@ Status: Open
 Category: Tokens
 Authors:
     - Istvan Szentandrasi <szist@zoeldev.com>
-Proposed Solutions: []
+    - Robert Phair <rphair@cosd.com>
+Proposed Solutions:
+    - CIP-0113: https://github.com/cardano-foundation/CIPs/pull/444
+    - CIP-0125: https://github.com/cardano-foundation/CIPs/pull/832
+    - CIP-0143: https://github.com/cardano-foundation/CIPs/pull/944
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/382
+    - https://github.com/cardano-foundation/CIPs/pull/947
+    - https://github.com/cardano-foundation/CIPs/issues/969
 Created: 2022-11-20
 ---
 
@@ -45,7 +51,6 @@ When it comes to regulations, also **native stable coins** are another case, whe
 The first main goal is to **achieve a consensus** if having more control over the tokens is actually something that would be in-line with the values and direction of Cardano. There are multiple tradeoffs from the usability perspective. Having validated lifecycle for tokens would have an impact on all dapps and all wallets.
 
 The second main goal is **create a CIP** with the technical direction how smart tokens could function. Below is a potential direction and possible issues and roadblocks that would need to be addressed in the CIP.
-
 
 ## Open Questions
 
