@@ -219,6 +219,21 @@ Certificates in metadatum that are not linked in this way are ignored for the pu
 Transaction outputs at key 1 of the transaction can contain any number of arrays of certificates.
 This is only limited by the transaction itself.
 
+#### Role 0 Specific Requirements for Certificate
+The following rules apply specifically to Role 0:
+
+1. Certificate Index 0 Reserved for Role 0:
+- Index 0 in both the X.509 certificate list and the C509 certificate list is reserved for Role 0.
+- When registration made, either of the X.509 certificate list or C509 certificate list **MUST** contains certificate in index 0 (but not both).
+- This means for all other roles, index 0 in these lists **MUST** be set to `undefined`.
+
+2. Updating Role 0 Certificate:
+- Any updates to the certificate associated with Role 0 require a new Role 0 registration to be posted.
+- The updated registration **MUST** reference the correct certificate.
+- No other role is permitted to modify the certificate or certificate index for Role 0.
+
+3. **MUST NOT** Reference C509 Certificate in Metadatum.
+   
 ### Simple Public Keys
 
 Rather than require full certificates, dApps can use simple public keys.
@@ -288,7 +303,7 @@ or one of the defined simple public keys.
 A dApp can define is roles allow the use of certificates, or simple public keys, or both.
 
 Role 0 Key Requirements:
-- Role 0 **MUST** have a signing key, and it **MUST** be a certificate.
+- Role 0 **MUST** have a signing key set to 0 (as 0 refers to reserved index 0 of the certificate), and it **MUST** be a certificate.
 - Simple keys can not be used for signing against Role 0.
 
 The reason for this is the Role 0 certificate **MUST** include a reference to the on-chain identity/s to be bound to the registration.
