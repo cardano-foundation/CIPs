@@ -12,6 +12,7 @@ Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/209
   - https://github.com/cardano-foundation/CIPs/pull/323
   - https://github.com/cardano-foundation/CIPs/pull/960
+  - https://github.com/cardano-foundation/CIPs/pull/972
 Created: 2024-01-17
 License: CC-BY-4.0
 ---
