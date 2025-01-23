@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This CIP extends CIP-0030 to provide functionality for dApps to determine the specific network magic number of the connected Cardano network. While CIP-0030's `getNetworkId()` allows distinguishing between mainnet and testnet, this extension enables dApps to identify specific test networks through their magic numbers.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Currently, CIP-0030 only provides a way to distinguish between mainnet (1) and testnet (0) through the `getNetworkId()` function. However, there are multiple test networks in the Cardano ecosystem (preview, preprod, etc.), each with its own magic number. dApps often need to know the specific test network they're connected to for proper configuration and interaction. This extension addresses this limitation by providing access to the network magic number.
 
