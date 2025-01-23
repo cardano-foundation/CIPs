@@ -64,7 +64,7 @@ The function uses the existing `APIError` type from CIP-0030 with the following 
 - `Refused` (-3): If access to the magic number is refused
 - `AccountChange` (-4): If the account has changed
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 ### Why a New Extension?
 
