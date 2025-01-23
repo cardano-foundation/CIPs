@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 142
 Title: Cardano dApp-Wallet Network Magic Extension
 Status: Draft
 Category: Wallets
