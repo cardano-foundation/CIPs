@@ -1,7 +1,7 @@
 ---
-CIP: 142
-Title: Cardano dApp-Wallet Network Magic Extension
-Status: Draft
+CIP: 0142
+Title: Web-Wallet Bridge - Network Determination
+Status: Proposed
 Category: Wallets
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
@@ -9,6 +9,9 @@ Authors:
 Implementors:
   - Lace <https://www.lace.io/>
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/209
+  - https://github.com/cardano-foundation/CIPs/pull/323
+  - https://github.com/cardano-foundation/CIPs/pull/960
 Created: 2024-01-17
 License: CC-BY-4.0
 ---
@@ -27,14 +30,14 @@ Currently, CIP-0030 only provides a way to distinguish between mainnet (1) and t
 
 This extension uses the following TEMPORARY identifier:
 ```ts
-{ "cip": XXXX }
+{ "cip": 0142 }
 ```
 
 ### API Extension
 
-When this extension is enabled, the following function is added to the API under the `cipXXXX` namespace:
+When this extension is enabled, the following function is added to the API under the `cip-0142` namespace:
 
-#### `api.cipXXXX.getNetworkMagic(): Promise<number>`
+#### `api.cip0142.getNetworkMagic(): Promise<number>`
 
 Errors: `APIError`
 
@@ -49,10 +52,10 @@ This function will return the same value unless the connected account changes ne
 Example usage:
 ```typescript
 const api = await window.cardano.lace.enable({
-  extensions: [{ cip: XXXX }]
+  extensions: [{ cip: 0142 }]
 });
 
-const magic = await api.cipXXXX.getNetworkMagic();
+const magic = await api.cip0142.getNetworkMagic();
 console.log(`Connected to network with magic number: ${magic}`);
 ```
 
@@ -76,7 +79,7 @@ While CIP-0030's `getNetworkId()` provides basic network identification, the gro
 
 ### Design Decisions
 
-1. **Explicit Namespacing**: The extension uses the `cipXXXX` namespace to clearly separate its functionality from the base CIP-0030 API.
+1. **Explicit Namespacing**: The extension uses the `cip-0142` namespace to clearly separate its functionality from the base CIP-0030 API.
 2. **Promise-based API**: Follows CIP-0030's pattern of returning Promises for consistency.
 3. **Reuse of Error Types**: Leverages existing error types from CIP-0030 to maintain consistency.
 
@@ -87,14 +90,25 @@ While CIP-0030's `getNetworkId()` provides basic network identification, the gro
 - [ ] Implementation by at least one wallet provider
 - [ ] No reported conflicts with other CIP-0030 extensions
 
+### Implementation Plan
 
-## Backwards Compatibility
+1. **Reach out to the Lace wallet team/architects**
+   - Validate technical feasibility of proposed changes
+   - Identify priorities for this implementation
+   - Identify potential integration challenges
+2. **Involve ops and products team to drive the plan further**
+   - First implementation on the Catalyst playground
+   - Create a plan, validate and collect feedback and suggestions
+3. **Implement the CIP-0142 extension in the Lace wallet**
+   - Implement and use the CIP-0142 extension in the Catalyst pla
+   - Validate against all specified acceptance criteria
+4. **Reach out to other Cardano wallet providers**
+   - Introduce the CIP-0142 extension to other wallet providers (Nami)
+   - Collect feedback and suggestions
+   - Validate against acceptance criteria
 
-This extension is fully backward compatible with CIP-0030. It:
-- Does not modify any existing functionality
-- Is opt-in through the extensions mechanism
-- Uses its own namespace
-
+**Note:** This implementation plan is subject to iterative refinement based on ongoing technical assessments and stakeholder feedback.
+  
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). 
