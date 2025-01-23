@@ -5,10 +5,11 @@ Category: Wallets
 Status: Proposed
 Authors:
   - Ola Ahlman <ola.ahlman@tastenkunst.io>
+  - Marcel Baumberg <marcel.baumberg@tastenkunst.io>
 Implementors:
   - Eternl <https://eternl.io/>
 Discussions:
-Created: 2022-02-24
+Created: 2025-01-22
 License: CC-BY-4.0
 ---
 
@@ -223,7 +224,7 @@ performance by only having to scan for a restricted amount of keys.
 #### Why not encourage and scan any account index, and not just index 0?
 Account indexes is a very useful feature for normal wallets to separate funds, multi-delegation and much more. 
 However, for multisig wallets, they add little value. The idea behind a multisig is that each participant is its own 
-identify, either person or wallet. Having multiple keys in the multisig from the same root key adds false security.
+identity, either person or wallet. Having multiple keys in the multisig from the same root key adds false security.
 
 #### But what if I want to utilise the benefits of account separation for fund splitting between the same set of participants?
 This can easily be solved without additional accounts by adding an `after` timelock with the current slot height of 
