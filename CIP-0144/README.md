@@ -83,7 +83,7 @@ To keep the specification abstract we will use the word "operation" to describe 
 
 We will use the following schema to define operations:
 
-```
+```json
 {
   "operation": { "type": "string" },
   "request": { "type": "object" },
