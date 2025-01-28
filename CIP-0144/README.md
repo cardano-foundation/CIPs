@@ -100,7 +100,7 @@ We do not add an explicit scope to operation names, we do however encourage tran
 
 We will reference several JSON schemas throughout the document, these are:
 
-- [cip-116](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. *[Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]*
+- [CIP-116 | Standard JSON encoding for Domain Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. *[Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]*
 - [cip-139](https://github.com/cardano-foundation/CIPs/pull/869) which provides definitions for types used in the query layer
 - [appendix](#appendix) in which we define schemas for types required by the connection API and the error types
 
