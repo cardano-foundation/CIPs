@@ -1,0 +1,124 @@
+---
+CIP: ????
+Title: Removal of Epoch Boundary Blocks
+Status: Draft
+Category: Consensus
+Authors:
+  - Nicolas Frisby <nicolas.frisby@iohk.io> <nicolas.frisby@moduscreate.com>
+Implementors:
+  - IOE Consensus Team, as tech debt/maintenance, Nicolas Frisby <nicolas.frisby@iohk.io> <nicolas.frisby@moduscreate.com>
+  - TODO various tooling authors throughout the community?
+Discussions:
+  - Original tech debt Issue, https://github.com/IntersectMBO/ouroboros-consensus/issues/386
+  - This PR, https://github.com/cardano-foundation/CIPs/pull/974
+Created: 2025-01-29
+License: CC-BY-4.0
+---
+
+## Abstract
+
+Epoch Boundary Blocks (EBBs) are a historical mistake that spoils some natural invariants of the Ouroboros family of protocols while providing no benefit whatsoever.
+The Cardano network stopped producing EBBs as of epoch 176 (several months before the end of the Byron era), but one EBB exists at the start of each prior epoch on the historical chain.
+This proposal is to remove those EBBs from the historical chain, in order to ultimately simplify the node itself and probably some Cardano tooling as well.
+
+## Motivation: why is this CIP necessary?
+
+In the modern Cardano protocol for the Byron era (ie permissive BFT), an EBB influences no state, neither the protocol nor the ledger.
+Relatedly, EBBs contain no transactions and are not signed — they contain even less information than an empty modern block.
+
+An EBB's only consequence is an additional step on the chain's sequence of block hashes and the various exceptions, side-conditions, and corner cases necessary to accommodate EBBs in the node's specification and implementation.
+The most egregious of which is that an EBB occupies the same slot as its successor and has the same difficulty (ie BlockNo) as its predecessor.
+As an old, exotic, and useless class of block, EBBs have been initially overlooked in our subsequent design work many times and have ultimately wasted many hours of work as developers troubleshoot and ultimately determine how to accommodate EBBs via corner-cases etc.
+(TODO it would be possible to track down Issues, PRs, etc to partially evidence this.
+But a great deal of the trouble with EBBs has been time lost coping with them in discussions that were not recorded in a manner that demonstrates the EBBs' obstruction.
+Several former and current Consensus developers can attest to the trouble with EBBs, if that is deemed necessary.)
+
+It is therefore desirable to remove EBBs from the historical chain, so that the  complications they necessitate can be eliminated from existing _and new_ nodes' specifications and implementations, except for the small set of prev-hash overrides proposed by this CIP.
+
+However, doing so will disrupt some tooling that would otherwise expect the node to continue serving EBBs as part of the historical chain.
+Moreover, new nodes alternative to the venerable Haskell reference Cardano implementation are in development.
+Hence this CIP to open up the discussion of this adjustment of the historical chain to the community.
+
+## Specification
+
+The removal will proceed in stages.
+
+- In Stage One, nodes would be relaxed to allow upstream chains to omit EBBs, using a minor patch to the validation logic to allow these known finite exceptions to the prev-hash condition.
+  Regardless of whether it received EBBs when syncing the historical chain, this node would always store EBBs (even _ex nihilo_) and serve them to downstream nodes.
+
+- Once Stage One is sufficiently widespread, Stage Two would delete EBBs from immutable and volatile storage upon startup — aka _database migration_ — and therefore it would no longer serve EBBs to downstream peers.
+  This is when tooling such as db-sync, Mithril, etc would notice the change in behavior, which could be disruptive.
+
+- Finally, once Stage Two is sufficiently widespread, Stage Three would forbid upstream peers from sending EBBs.
+
+## Rationale: how does this CIP achieve its goals?
+
+The staging ensures interop between each successive stage, such that each Stage's node and its predecessor node will always be able to sync to/from one another.
+
+As of Stage Three, all nodes would relay a chain that contains no EBBs and would never store them.
+EBBs could now be entirely removed from the node specification and implementation, except for the prev-hash overrides described in this CIP.
+
+It would be possible to accelerate this plan to merely two stages, at the cost of the additional complexity necessary for the Stage One node to conditionally send EBBs depending on the mini protocol version negotiated with each downstream peer.
+The simpler slower plan seems generally preferable in the absence of any unanticipated urgency — we've already suffered EBBs for several years.
+
+If a Stage One node is itself syncing, it might omit an EBB when serving its (volatile) chain to an un-upgraded downstream peer that requires all EBBs be sent.
+This is an acceptable failure case, because nodes/tools should not be syncing from syncing nodes.
+
+### Alternative Mitigations
+
+- An alternative to removing EBBs would be to confine their difficulties to the Byron era.
+  For example, if the Storage Layer were to differentiate between each era of the chain, then the main pain points of EBBs could at least be confined to the Byron era's Storage Layer logic.
+  However, today's Storage Layer is era-agnostic, so this approach is not immediately available.
+  There are some other reasons to make the Storage Layer differentiate between eras (eg Byron chains are 20x denser than subsequent eras), but those have not yet become a justification for the additional design complexity that would necessitate.
+  And even if the Storage Layer could already differentiate eras, the changes would still pose similar issues to some of the community tooling (eg Mithril) as does this CIP, since the Storage Layer for historical eras after Byron would ideally be changed as well --- otherwise EBBs have not really been confined to Byron.
+  Even so, this alternative would be disruptive to less tooling, since EBBs would (unfortunately) remain on the historical chain.
+
+### Open Questions
+
+TODO This section needs to be resolved as part of this PR before the status of this CIP can transition from Draft to Proposed.
+
+- Deleting EBBs from the Storage Layer would spoil extant Mithril snapshots.
+  In general, how would Mithril handle any kind of change to the on-disk representation of the historical chain — are migration paths permanently required, effectively?
+
+- Which community tools will be disrupted by the node suddenly omitting EBBs when serving the chain?
+  Will separately publishing the set of 176 EBBs (or perhaps only their slots, hashes, and prev-hash fields) suffice for those tools' authors to mitigate the disruption?
+
+## Path to Active
+
+### Acceptance Criteria
+
+- (TODO, Path to Proposed: review from tooling authors such as db-sync, Mithril, etc has resolved the Open Questions.)
+
+- A release of the Haskell reference Cardano node implementation and documentation satisfies Stage Three above: EBBs are never stored and never exchanged with peers.
+
+- Optionally, the ledger specification and reference implementation removes all mention of EBBs, except for the prev-hash overrides.
+
+### Implementation Plan
+
+TODO Is this too detailed for a CIP?
+How certain do I need to be of these steps for inclusion here?
+
+- In Stage One, the node's initialization logic will delete any EBBs from volatile storage.
+  (EBBs are typically only in the immutable storage, but upgrading in the middle of a fresh sync could result in an EBB in the volatile storage.)
+
+- In Stage One, just before persisting an immutable block whose prev-hash is a known EBB, persist that EBB (sourced from a static lookup table --- LZ4 compression reduces each of the 176 EBBs down to about 30 kilobytes, so this table is affordable).
+
+- In Stage One and Stage Two, discard a received EBB immediately after the BlockFetch client yields it — do not store it, do not consider selecting it, etc.
+
+- In Stage One and Stage Two, the prev-hash field of a header received from upstream may either identify the previously sent header or the hash of an known EBB whose prev-hash field identifies the previously sent header.
+
+- In Stage One and Stage Two, when finding paths in the volatile blocks, substitute any prev-hash field that refers to a known EBB by that EBB's prev-hash field.
+
+- In Stage Two and Stage Three, the node's initialization logic should delete any EBBs from persistent storage — aka _database migration_.
+  (EBBs are typically only in the immutable storage, but upgrading in the middle of a fresh sync could result in an EBB in the volatile storage.)
+
+- In Stage Three, all changes for Stage One and Stage Two can be reverted except the database migration.
+  Instead, the codec for Byron blocks will swap out the prev-hash field that identifies a known EBB with that EBB's prev-hash field, and moreover the codec will refuse to parse EBBs.
+
+## References
+
+- The hashes and prev-hashes of all known EBBs, <https://github.com/IntersectMBO/ouroboros-consensus/blob/534c2c2107dcdb2b962c1483bb02a14beae2e608/ouroboros-consensus-cardano/src/byron/Ouroboros/Consensus/Byron/EBBs.hs>.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
