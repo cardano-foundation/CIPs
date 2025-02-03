@@ -100,7 +100,7 @@ Votes cast by the supplied DRep
 
 Votes cast on the supplied proposal
 
-### Drep
+### DRep
 
 #### `api.query.drep.all() : Promise<DRepInfo[]>`
 
