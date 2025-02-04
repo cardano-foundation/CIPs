@@ -1,5 +1,5 @@
 ---
-CIP: \?
+CIP: 146
 Title: Multi-signatures wallet registration and discovery
 Category: Wallets
 Status: Proposed
