@@ -2,7 +2,7 @@
 CIP: 122
 Title: Logical operations over BuiltinByteString
 Category: Plutus
-Status: Proposed
+Status: Active
 Authors: 
     - Koz Ross <koz@mlabs.city>
 Implementors: 
@@ -1489,6 +1489,11 @@ We consider the following criteria to be essential for acceptance:
 
 Ideally, the implementation should also demonstrate its performance 
 characteristics by well-designed benchmarks.
+
+- [x] Included within a major haskell cardano-node release
+  - https://github.com/IntersectMBO/cardano-node/releases/tag/10.1.1  
+- [x] Enabled on Cardano mainnet via a hardfork
+  - Enabled by Plomin hardfork
 
 ### Implementation Plan
 
