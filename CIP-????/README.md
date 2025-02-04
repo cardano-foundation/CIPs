@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 145
 Title: Structured Contracts
 Category: Tools
 Status: Active
