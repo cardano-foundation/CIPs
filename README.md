@@ -116,7 +116,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Active |
 | 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Active |
 | 0124 | [Extend token metadata for translations](./CIP-0124) | Proposed |
-| 0127 | [Integration of ripemd_160 into Plutus](./CIP-0127) | Proposed |
+| 0127 | [Integration of ripemd_160 into Plutus](./CIP-0127) | Active |
 | 0128 | [Preserving Order of Transaction Inputs](./CIP-0128) | Proposed |
 | 0129 | [Governance Identifiers](./CIP-0129) | Proposed |
 | 0133 | [Plutus support for Multi-Scalar Multiplication over BLS12-381](./CIP-0133) | Proposed |
