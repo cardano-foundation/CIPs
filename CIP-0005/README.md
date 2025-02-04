@@ -107,11 +107,8 @@ We define the following set of common prefixes with their corresponding semantic
 | `datum`                | Output datum hash                                                     | blake2b\_256 digest of output datum                                      |
 | `script_data`          | Script data hash                                                      | blake2b\_256 digest of script data                                       |
 | `drep_vkh`             | Delegate representative verification key hash                         | blake2b\_224 digest of a delegate representative verification key        |
-| `drep_script`          | Delegate representative script hash                                   | blake2b\_224 digest of a serialized delegate representative script       |
-| `cc_cold_vkh`          | Constitutional committee cold verification key hash                   | blake2b\_224 digest of a consitutional committee cold verification key   |
-| `cc_cold_script`       | Constitutional committee cold script hash                             | blake2b\_224 digest of a serialized constitutional committee cold script |
-| `cc_hot_vkh`           | Constitutional committee hot verification key hash                    | blake2b\_224 digest of a consitutional committee hot verification key    |
-| `cc_hot_script`        | Constitutional committee hot script hash                              | blake2b\_224 digest of a serialized constitutional committee hot script  |
+| `cc_cold_vkh`          | Constitutional committee cold verification key hash                   | blake2b\_224 digest of a constitutional committee cold verification key  |
+| `cc_hot_vkh`           | Constitutional committee hot verification key hash                    | blake2b\_224 digest of a constitutional committee hot verification key   |
 
 ### Miscellaneous
 
@@ -121,22 +118,29 @@ We define the following set of common prefixes with their corresponding semantic
 | `addr_test`         | Testnet address                                       | Network tag, payment credential and optional stake credential |
 | `stake`             | Mainnet stake address                                 | Network tag and stake credential                              |
 | `stake_test`        | Testnet stake address                                 | Network tag and stake credential                              |
-| `drep`              | drep identifier                                       | drep credential, see [CIP-0129]                               |
-| `cc_cold`           | cc cold identifier                                    | cc cold credential, see [CIP-0129]                            |
-| `cc_hot`            | cc hot identifier                                     | cc hot credential, see [CIP-0129]                             |
-| `gov_action`        | gov action identifier                                 | gov action ID, see [CIP-0129],                                |
+| `drep`              | DRep identifier                                       | DRep credential, see [CIP-0129]                               |
+| `cc_cold`           | Constitutional committee cold identifier              | Constitutional committee cold credential, see [CIP-0129]      |
+| `cc_hot`            | Constitutional committee hot identifier               | Constitutional committee hot credential, see [CIP-0129]       |
+| `gov_action`        | Governance action identifier                          | Governance action ID, see [CIP-0129]                          |
 
 
 ### Deprecated Governance Prefixes
-The prefixes above are the version defined by [CIP-0129] and should be used at this time. The prefixes below were previously defined by CIP-0105, and are deprecated. Please see CIP-0105 for the detailed deprecation information, and details to upgrade to [CIP-0129].
 
-For detailed information on the new specification and the rationale behind the upgrade, please refer to [CIP-0129].
+The some governance prefixes contained within the tables above were originally defined via [CIP-0105].
+With the authoring of and acceptance of [CIP-0129], the community decide to replace some governance prefix definitions whilst depreciating others.
 
+Further details on the depreciation and replacement of definitions can be seen via [CIP-105 Deprecated Governance ID Definition](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0105#deprecated-governance-id-definition).
+
+Below is a table of entries of prefix definitions which were defined via [CIP-0105], but have now been marked as depreciated as [CIP-0129] defined replacements.\
+The [CIP-0129] definitions are included within the tables above.
+
+| Prefix             | Meaning                                                               | Contents                                                                 |
+| ---                | ---                                                                   | ---                                                                      |
 | `drep`             | Delegate representative verification key hash (DRep ID)               | blake2b\_224 digest of a delegate representative verification key        |
 | `drep_script`      | Delegate representative script hash (DRep ID)                         | blake2b\_224 digest of a serialized delegate representative script       |
-| `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key   |
+| `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a constitutional committee cold verification key  |
 | `cc_cold_script`   | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
-| `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key    |
+| `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a constitutional committee hot verification key   |
 | `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
 
 ## Rationale: how does this CIP achieve its goals?
@@ -201,4 +205,5 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 [CIP-0014]: https://github.com/cardano-foundation/CIPs/blob/645243e30b5aae109a70ec2b47af70dcc808bc56/CIP-0014
-[CIP-0129]: (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md)
+[CIP-0105]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md
+[CIP-0129]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md
