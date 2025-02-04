@@ -114,7 +114,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0120 | [Constitution specification](./CIP-0120) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
 | 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Active |
-| 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Proposed |
+| 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Active |
 | 0124 | [Extend token metadata for translations](./CIP-0124) | Proposed |
 | 0127 | [Integration of ripemd_160 into Plutus](./CIP-0127) | Proposed |
 | 0128 | [Preserving Order of Transaction Inputs](./CIP-0128) | Proposed |
