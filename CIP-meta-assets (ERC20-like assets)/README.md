@@ -226,6 +226,9 @@ and the programmable token policy as NFT name.
 
 ### Transfer
 
+In order to spend an utxo holding programmable tokens,
+a standard redeemer must be passed to the smart wallet:
+
 ```ts
 type TransferRedeemer {
     Transfer {
@@ -237,7 +240,29 @@ type TransferRedeemer {
 }
 ```
 
+Depending on the constructor used, for each programmable token, either the `transferManager` or the `thirdPartyActionRules` contract will be used respectively.
+
+Independently of the constructor, the first field of the redeemer MUST include a list of indexes to be used on the reference inputs field.
+
+The list MUST include one index for each non-lovelace token policy, programmable and not, present on the utxo's value.
+
+The list order must match the lexicographic ordering of the value.
+
+For example, the index at position 0 indicates the index of the reference input coming from the registry
+that indicates the presence (ore the absence) of the first policy of the input value.
+
+(for reference, a typescript implementation of the lexicographic ordering can be found
+[here](https://github.com/HarmonicLabs/uint8array-utils/blob/c1788bf351de24b961b84bfc849ee59bd3e9e720/src/utils/index.ts#L8-L27))
+
 ### Sub standards
+
+In order to validate a transfer, transfer managers MAY need to read informations about the state of the users involved in the transaction.
+
+However, depending on the implementation, said state MAY be managed in different ways.
+
+Some managers may not need a state at all,
+some may require one reference input per user involved,
+some implementation may use merkle trees to access the state.
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It SHOULD describe alternate designs considered and related work. The rationale SHOULD provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
