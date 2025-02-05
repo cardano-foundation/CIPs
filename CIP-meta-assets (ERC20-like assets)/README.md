@@ -27,7 +27,7 @@ This CIP proposes a solution at the Cardano Problem Statement 3
 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/947)).
 
 If adopted it would allow to introduce the programmability over the transfer of tokens
-(meta-tokens) and their lifecycle .
+(programmable tokens) and their lifecycle .
 
 The solution proposed includes (answering to the open questions of CPS-0003):
 
@@ -125,12 +125,12 @@ using the payment credentials is RECOMMENDED.
 
 ```ts
 type RegistryNode {
-    tokenPolicy: ByteArray, // minting policy of this programmable token
-    nextTokenPolicy: ByteArray, // linked list 
-    transferManagerHash: ByteArray, // spending logic
-    userStateManagerHash: ByteArray, // user state contract
-    globalStateUnit: ByteArray, // nft of a global state for 
-    thirdPartyActionRules: ByteArray, // hash
+    tokenPolicy: ByteArray,
+    nextTokenPolicy: ByteArray, 
+    transferManagerHash: ByteArray,
+    userStateManagerHash: ByteArray,
+    globalStateUnit: ByteArray, 
+    thirdPartyActionRules: ByteArray
 }
 ```
 
@@ -145,7 +145,7 @@ The ordering of the fields MUST be respected.
 MUST be a bytestring of length 28. This field is also the key of the entry,
 and the token name of the minted NFT to be attached to the UTxO generated at registration.
 
-#### `nestTokenPolicy`
+#### `nextTokenPolicy`
 
 MUST be a bytestring of length 28.
 
@@ -203,8 +203,8 @@ Requirements to register a programmable token:
 
 2) The output of the transaction MUST include: 
 - the node spent, with all the fields except `nextTokenPolicy` unchanged,
-and `nextTokenPolicy` setted to the new entry `tokenPolicy`
-- the new entry, having `nextTokenPolicy` setted to the value of the node spent previous `nextTokenPolicy`
+and `nextTokenPolicy` set to the new entry `tokenPolicy`
+- the new entry, having `nextTokenPolicy` set to the value of the node spent previous `nextTokenPolicy`
 
 3) The transaction MUST include the registration certificate of `transferManagerHash`.
 
@@ -249,7 +249,7 @@ The list MUST include one index for each non-lovelace token policy, programmable
 The list order must match the lexicographic ordering of the value.
 
 For example, the index at position 0 indicates the index of the reference input coming from the registry
-that indicates the presence (ore the absence) of the first policy of the input value.
+that indicates the presence (or the absence) of the first policy of the input value.
 
 (for reference, a typescript implementation of the lexicographic ordering can be found
 [here](https://github.com/HarmonicLabs/uint8array-utils/blob/c1788bf351de24b961b84bfc849ee59bd3e9e720/src/utils/index.ts#L8-L27))
@@ -321,8 +321,8 @@ exsisting native tokens are not conflicting for the standard, instead, native to
     - mainnet
     - preview testnet
     - preprod testnet
-- having at least 2 different wallets integrating meta asset functionalities, mainly:
-    - displayning balance of a specified meta asset if the user provides the address of the respecive account manager contract
+- having at least 2 different wallets integrating programmable asset functionalities, mainly:
+    - displayning balance of a specified programmable assets
     - independent transaction creation with `Transfer` redeemers
 
 ### Implementation Plan
