@@ -328,8 +328,8 @@ exsisting native tokens are not conflicting for the standard, instead, native to
 ### Implementation Plan
 <!-- A plan to meet those criteria. Or `N/A` if NOT applicable. -->
 
-- [ ] [PoC implementation](https://github.com/HarmonicLabs/erc20-like)
-- [ ] [showcase transactions](https://github.com/HarmonicLabs/erc20-like)
+- [ ] [PoC implementation](https://github.com/HarmonicLabs/programmable-tokens)
+- [ ] [showcase transactions](https://github.com/HarmonicLabs/programmable-tokens)
 - [ ] wallet implementation 
 
 ## Copyright
