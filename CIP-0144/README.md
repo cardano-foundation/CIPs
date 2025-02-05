@@ -18,7 +18,7 @@ Solution-To: CPS-0010
 
 CIP-30 is the standard interface of communication between wallets and dApps. While this CIP has been instrumental in the development of dApps for Cardano, it also has some shortcomings that have been observed across several implementations.
 
-[CPS-0010](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md) outlines some shortcomings in CIP-30. In this CIP we aid to address some of the issues pointed out by CPS-10: splitting up the connection API, from the functionality provided by the [full API](https://cips.cardano.org/cip/CIP-30#full-api), defining the API in a transport agnostic way and defining a versioning mechanism for the connection API and it's extensions.
+[CPS-0010](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md) outlines the shortcomings of CIP-30. In this CIP we aim to address some of the issues pointed out by CPS-10: splitting up the connection API from the functionality provided by the [full API](https://cips.cardano.org/cip/CIP-30#full-api), defining the API in a transport agnostic way and defining a versioning mechanism for the connection API and its extensions.
 
 ## Motivation: why is this CIP necessary?
 
@@ -30,7 +30,7 @@ CIP-30 is a universally accepted web-based wallet standard for Cardano. It provi
 
 ### Use of CBOR representations
 
-CIP-30 standard uses CBOR encoding for all data passed from the wallet, e.g. addresses and UTxOs. Interpreting this data within the app requires CBOR decoding functionality that is tedious to implement manually, and so users resort to using cardano-serialization-lib or its close alternative, cardano-multiplatform-lib, which both require loading a WebAssembly blob of >1M in size.
+In addition to the points described in CPS-10, the CIP-30 standard uses CBOR encoding for all data passed from the wallet, e.g. addresses and UTxOs. Interpreting this data within the app requires CBOR decoding functionality that is tedious to implement manually, and so users resort to using cardano-serialization-lib or its close alternative, cardano-multiplatform-lib, which both require loading a WebAssembly blob of >1M in size.
 
 For comparison, to start a new Web3 app on Ethereum there is no need to use a library for data serialization. It’s possible to interact with a provider object that is given by the wallet directly, although there are libraries to further simplify this. Using CBOR looks unnecessary for most dApps, given that JSON is a de-facto standard for web data serialization.
 
@@ -44,6 +44,8 @@ The goal of this CIP is to provide a better alternative to CIP-30, providing a b
 - Using JSON for Cardano domain types instead of CBOR
 - Add versioning support to the extension API
 - Define the API in a transport agnostic way
+
+### Transport agnostic operations
 
 In its current state, CIP-30 defines it API through a specific transport layer, namely an injected Javascript object.
 In this CIP we want to be able to define an API without committing to a specific transport layer. Implementors of this API can choose to support this API through several transports such as: HTTP, an injected Javascript object, JSON-RPC etc.
@@ -70,7 +72,7 @@ We do not add an explicit scope to operation names, we do however encourage tran
 
 We will reference several JSON schemas throughout the document, these are:
 
-- [CIP-116 | Standard JSON encoding for Domain Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined. *[Maybe we should only reference the latest era and update the CIP in the future? our current definition requires to be perpetually backward compatible with old ledger types]*
+- [CIP-116 | Standard JSON encoding for Domain Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined.
 - [appendix](#appendix) in which we define schemas for types required by the connection API and the error types
 
 We will use an identifier in the anchor to refer to the schema where each type is defined. For example, if we want to reference the `Transaction` type, as defined in CIP-116 we will use the following schema reference `{ "$ref": "#/cip-116/Transaction" }`.
@@ -81,7 +83,7 @@ For each operation we will provide some details on how the implementation should
 
 ### Connection API
 
-The role of the connection API is to provide generic information about the wallet and to allow the user to opt into the functionalities that they want the wallet to provide.
+The role of the connection API is to provide generic information about the wallet and to allow the user to opt into the functionalities (or extensions) that they want the wallet to provide.
 
 ##### Enable
 
@@ -178,7 +180,7 @@ A URI image (e.g. data URI base64 or other) for img src for the wallet which can
 }
 ```
 
-Returns the API version for the wallet connection API. This must correspond to the value of `Version-Connection-API` specified in this document, appropriately transformed into a `SemVer` object.
+Returns the API version for the wallet connection API. This must correspond to the value of `Connection-API` specified in this document, appropriately transformed into a `SemVer` object.
 
 ### Versioning
 
@@ -188,7 +190,7 @@ While the CIP is in preparation, the version shall be set to `0.0.0`. The moment
 
 | API | Version |
 | --- | --- |
-| Version-Connection-API | 0.0.0 |
+| Connection-API | 0.0.0 |
 
 
 ### Appendix
@@ -347,7 +349,7 @@ There are two CIPs that are connected with this one:
 
 ### Implementation Plan
 
-- [ ] Implement a wrapper that takes a CIP-30 compatible API and transforms it to be compatible with CIP-XXXX.
+- [ ] Implement a wrapper that takes a CIP-30 compatible API and transforms it to be compatible with CIP-0144.
 
 ## Copyright
 
