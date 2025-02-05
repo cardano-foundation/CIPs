@@ -260,9 +260,16 @@ In order to validate a transfer, transfer managers MAY need to read informations
 
 However, depending on the implementation, said state MAY be managed in different ways.
 
-Some managers may not need a state at all,
-some may require one reference input per user involved,
-some implementation may use merkle trees to access the state.
+Some examples of state management may be:
+
+- no state
+- one state per user involved in the spending, to be queried by NFT.
+- one state per user involved in the transfer (both inputs and outputs), to be queried by NFT.
+- a single reference input representing the root of a merkleized state.
+
+And many more state managements are possible, depending on the specific implementation.
+
+for this reason, we make explicit the need for sub standards
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It SHOULD describe alternate designs considered and related work. The rationale SHOULD provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
