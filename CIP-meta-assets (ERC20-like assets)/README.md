@@ -288,10 +288,23 @@ this path was abandoned due to the logaritmic cost of creation of accounts, on t
 Other crucial difference with the first proposed implementation was in the `accountManager` redeemers;
 which included definitions for `TransferFrom`, `Approve` and `RevokeApproval` redeemers, aiming to emulate ERC20's methods of `transferFrom` and `approve`;
 
-after [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
+after [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), 
+it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
 
-After a first round of community feedback, a [reviewed standard was proposed](https://github.com/cardano-foundation/CIPs/pull/444/commits/f45867d6651f94ba53503833098d550326913a0f) (which we could informally refer to as v1).
-[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8), but after further feedback from the community it was noted that the need to spend an UTxO on the receiving side could cause UTxO contention in the moment two or more parties would have wanted to send a programmable token to the same receiver at the same time.
+After a first round of community feedback, a 
+[reviewed standard was proposed](https://github.com/cardano-foundation/CIPs/pull/444/commits/f45867d6651f94ba53503833098d550326913a0f) 
+(which we could informally refer to as v1).
+[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8), 
+but after further feedback from the community it was noted that the need to spend an UTxO on the receiving side could cause UTxO contention 
+in the moment two or more parties would have wanted to send a programmable token to the same receiver at the same time.
+
+After "v1", another improved standard was proposed, informally referred to as "v2".
+v2 proposed a standard interface for programmable tokens, based on the exsistence of 2 contracts: the `stateManager` and the `transferManager`.
+
+By the v2 standard, each user must "register" to the policy by creating an utxo on the `stateManager` so that they could
+spend programmable tokens using the `transferManager`
+
+This soft requirement for registration was not well received from the community, and for this reason we are now at the "v3" version of the standard.
 
 The specification proposed in this file addresses all the previous concerns.
 
