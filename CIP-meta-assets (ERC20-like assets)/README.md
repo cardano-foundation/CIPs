@@ -78,7 +78,7 @@ The term "user" is used to indicate, interchangeably:
 The term "registry" indicates the standard on-chain contract that implements the linked list
 pattern. The contract ensures the list is always sorted by the entry's policy.
 
-The term "entry" indicates an utxo present at the registry address.
+The term "entry" indicates an UTxO present at the registry address.
 
 The term "policy" or indicates the cardano native token (CNT) policy;
 that is the hash of the script that can mint such token.
@@ -92,7 +92,7 @@ that is a token natively reconized by the ledger.
 
 An on-chain registry is deployed.
 
-Each utxo on the registry, represents a registered programmable token.
+Each UTxO on the registry, represents a registered programmable token.
 
 On registration, the registry ensures the list stays sorted.
 
@@ -136,9 +136,60 @@ type RegistryNode {
 
 Every entry in the registry MUST have attached an inline datum following this standard type.
 
+This is enforced by the execution of the registry at registration.
+
 The ordering of the fields MUST be respected.
 
-This is enforced by the execution of the registry at registration.
+#### `tokenPolicy`
+
+MUST be a bytestring of length 28. This field is also the key of the entry,
+and the token name of the minted NFT to be attached to the UTxO generated at registration.
+
+#### `nestTokenPolicy`
+
+MUST be a bytestring of length 28.
+
+#### `transferManagerHash`
+
+MUST be a bytestring of length 28.
+
+Represents the hash of the "withdraw 0" validator to be included in a transfer transaction for validation.
+
+#### `userStateManagerHash`
+
+MUST be a bytestring of either length 0 or length 28.
+
+This field is meant to indicate the hash of the contract that manages the state for each user.
+
+If present, meaning the bytestirng is of length 28,
+one or more reference inputs MUST be included,
+depending on the sub-standard (see below).
+
+If not present, meaning the bytestirng has length 0,
+no reference inputs representing the user state are expected.
+
+#### `globalStateUnit`
+
+MUST be a bytestring of either length 0 or length between 28 inclusive and 60 exclusive.
+
+If the value has length 0, no additonal reference inputs are expected representing the policy global state.
+
+If the bytestring has length greater than or equal to 28,
+the value represents the concatenation of a token policy (of length 28)
+and a token name (of length between 0 and 32).
+
+When present a reference input having an NFT matching token policy and token name MUST be included. 
+
+#### `thirdPartyActionRules`
+
+MUST be a bytestring of either length 0 or length 28.
+
+This field is meant to indicate the hash of the contract that will validate
+transfers requested by third parties.
+
+If the value has length 0, the programmable token does NOT allow third parties to transfer programmable tokens on the users' behalf.
+
+If the value has length 28, a "withdraw 0" validator with the same hash MUST be included in the transaction.
 
 ### Programmable token registration
 
@@ -162,11 +213,16 @@ the programmable token does not require a global state;
 otherwhise it MUST be a bytestring of length between
 28 inclusive and 60 (28 + 32) exclusive.
 
-5) Both the outputs MUST NOT have any value, other than the minUtxo lovelaces.
+5) The entry for the programmable token that was already registered before the transaction
+MUST keep the same value that was present in the corresponding input.
 
-6) Both the outputs MUST NOT have any reference script.
+6) The new entry SHOULD have the minimum amount of lovelaces that the protocol allows,
+and MUST include a newly minted NFT, under the registry policy,
+and the programmable token policy as NFT name. 
 
-7) Both the outputs address MUST **only** have payment credentials.
+7) Both the outputs MUST NOT have any reference script.
+
+8) Both the outputs address MUST **only** have payment credentials.
 
 ### Transfer
 
@@ -180,6 +236,8 @@ type TransferRedeemer {
     }
 }
 ```
+
+### Sub standards
 
 ## Rationale: how does this CIP achieve its goals?
 <!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It SHOULD describe alternate designs considered and related work. The rationale SHOULD provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
@@ -201,7 +259,7 @@ which included definitions for `TransferFrom`, `Approve` and `RevokeApproval` re
 after [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
 
 After a first round of community feedback, a [reviewed standard was proposed](https://github.com/cardano-foundation/CIPs/pull/444/commits/f45867d6651f94ba53503833098d550326913a0f) (which we could informally refer to as v1).
-[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8), but after further feedback from the community it was noted that the need to spend an utxo on the receiving side could cause UTxO contention in the moment two or more parties would have wanted to send a programmable token to the same receiver at the same time.
+[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8), but after further feedback from the community it was noted that the need to spend an UTxO on the receiving side could cause UTxO contention in the moment two or more parties would have wanted to send a programmable token to the same receiver at the same time.
 
 The specification proposed in this file addresses all the previous concerns.
 
