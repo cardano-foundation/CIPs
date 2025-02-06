@@ -111,6 +111,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
 | 0117 | [Explicit script return values](./CIP-0117) | Active |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
+| 0120 | [Constitution specification](./CIP-0120) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
 | 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
 | 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Proposed |
@@ -121,6 +122,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0133 | [Plutus support for Multi-Scalar Multiplication over BLS12-381](./CIP-0133) | Proposed |
 | 0134 | [Cardano URIs - Address Representation](./CIP-0134) | Proposed |
 | 0135 | [Disaster Recovery Plan for Cardano networks](./CIP-0135) | Active |
+| 0136 | [Governance metadata - Constitutional Committee votes](./CIP-0136) | Proposed |
 | 0137 | [Decentralized Message Queue](./CIP-0137) | Proposed |
 | 0138 | [Plutus Core Builtin Type - Array](./CIP-0138) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
@@ -155,6 +157,7 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0013 | [Better builtin data structures in Plutus](./CPS-0013) | Open |
 | 0014 | [Register of CBOR Tags](./CPS-0014) | Open |
 | 0016 | [Cardano URIs](./CPS-0016) | Open |
+| 0017 | [Settlement Speed](./CPS-0017) | Open |
 
 <p align="right"><i>Last updated on 2024-09-03</i></p>
 
