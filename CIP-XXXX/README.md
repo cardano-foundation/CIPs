@@ -16,7 +16,7 @@ Solution-To: CPS-0010
 ## Abstract
 
 
-In this CIP we build upon the work laid out in [CIP-0144 | Wallet Connector API](link), which introduces a CIP-30 compatible wallet connection API. Our contribution is to define an extension which, when enabled, would result in what [CPS-0010](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md) defines as an "own-data wallet".
+In this CIP we build upon the work laid out in [CIP-0144 | Wallet Connector API](https://github.com/cardano-foundation/CIPs/pull/957), which introduces a CIP-30 compatible wallet connection API. Our contribution is to define an extension which, when enabled, would result in what [CPS-0010](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md) defines as an "own-data wallet".
 
 
 ## Motivation: why is this CIP necessary?
