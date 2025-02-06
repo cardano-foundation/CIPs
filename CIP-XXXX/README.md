@@ -479,7 +479,7 @@ This section lists the possible errors the wallet connector may return. Each err
 
 ## Rationale: how does this CIP achieve its goals?
 
-The goal of this CIP is to define an extension to enable an "own-data wallet". We build upon the work done in [CIP-0144 | Wallet Connector API](link) and define an extension compatible with that CIP.
+The goal of this CIP is to define an extension to enable an "own-data wallet". We build upon the work done in [CIP-0144 | Wallet Connector API](https://github.com/cardano-foundation/CIPs/pull/957) and define an extension compatible with that CIP.
 
 ## Path to Active
 
