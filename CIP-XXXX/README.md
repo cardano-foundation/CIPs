@@ -483,7 +483,7 @@ The goal of this CIP is to define an extension to enable an "own-data wallet". W
 
 ## Path to Active
 
-CIP-0144 includes a [section](link/#CIP-30-Backwards-compatibility) which introduces the idea of a wrapper, that takes a CIP-30 compatible API, and makes it CIP-0144 compatible. Since in this CIP we are simply replicating the functionality offered by CIP-30, something very similar would be possible here. Implementors of this wrapper must take care of the following differences between this CIP and CIP-30.
+CIP-0144 includes a [section](https://github.com/nazrhom/CIPs/blob/nazrhom/full-data-wallet-connector/CIP-0144/README.md#cip-30-backwards-compatibility) which introduces the idea of a wrapper, that takes a CIP-30 compatible API, and makes it CIP-0144 compatible. Since in this CIP we are simply replicating the functionality offered by CIP-30, something very similar would be possible here. Implementors of this wrapper must take care of the following differences between this CIP and CIP-30.
 
 - JSON is used instead of CBOR. The wrapper must take care of translating arguments and results.
 - This API has no pagination, while CIP-30 generally does. The wrapper can either implement pagination locally, or error and inform the user if they request it.
