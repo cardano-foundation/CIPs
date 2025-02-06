@@ -26,7 +26,7 @@ In this CIP we build upon the work laid out in [CIP-0144 | Wallet Connector API]
 
 ## Specification
 
-Following what is outlined in CIP-0144 we will use the same transport-agnostic format to define the API. See [here](link/#Transport-agnostic-operations) for more details.
+Following what is outlined in CIP-0144 we will use the same transport-agnostic format to define the API. See [here](https://github.com/nazrhom/CIPs/blob/nazrhom/full-data-wallet-connector/CIP-0144/README.md#transport-agnostic-operations) for more details.
 
 We will reference several JSON schemas throughout the document, these are:
 
