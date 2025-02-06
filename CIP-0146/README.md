@@ -45,11 +45,13 @@ The following rules apply for a multisig registration to be valid:
 - Auxiliary data with a non-empty native scripts array.
 - Auxiliary data with label 1854 metadata that at a minimum includes a mapping for script types.
 - `ScriptType` mapping array in metadata must match the length of, and directly corresponds to the elements in the 
-  `native_scripts` array of `AuxiliaryData`.
-- Public key hashes included in the native scripts must be derived in accordance with CIP-1854, ie using 
+  `native_script` array of transaction auxiliary data.
+- Public key hashes (credentials) included in the native scripts must be derived in accordance with CIP-1854, ie using 
   `purpose=1854'`. 
-- Key derivation limited to path `1854'/1815'/0'/x/0` for best cross-project interoperability and performance.
-- Additional **optional** metadata can be added to the 1854 metadatum label to describe the multisig.
+- Key derivation limited to path `1854'/1815'/0'/x/y`, ie account `0` for best cross-project interoperability and performance.
+- Key index (`y`) must be incremented by `1` for each publicly registered multisig wallet.
+- Key for role (`x`) must use the same index (`y`) for all native scripts in the registration transaction.
+- Additional optional metadata can be added to the 1854 metadatum label to describe the multisig.
 - Optional icon fields is a URL to a non-animated image file, maximum 40kb in size.
 
 ### Data Types
@@ -67,9 +69,9 @@ interface MultiSigRegistration {
 ```
 
 #### ScriptType
-Native script type (to be extended as needed)
+A number representing a specific type (role). This corresponds to the key derivation path role (`x`).
 ```ts
-type ScriptType = 'payment' | 'stake' | 'drep';
+type ScriptType = number;
 ```
 
 #### MultiSigParticipants
@@ -90,83 +92,12 @@ interface MultiSigParticipant {
 }
 ```
 
-#### AuxiliaryDataJSON
-The transaction auxiliary data as defined by CSL. Only the metadata, native_scripts, and prefer_alonzo_format fields 
-should be used but the entire interface is provided for completeness. 
+#### OfflineMultiSigRegistration
+The hex-encoded bytes for a transaction auxiliary data `metadata` and `native_script` array.
 ```ts
-interface AuxiliaryDataJSON {
-  metadata?: {
-    [k: string]: string;
-  } | null;
-  native_scripts?: NativeScriptJSON[] | null;
-  plutus_scripts?: string[] | null;
-  prefer_alonzo_format: boolean;
-}
-```
-
-#### NativeScriptJSON
-```ts
-type NativeScriptJSON =
-  | {
-      ScriptPubkey: ScriptPubkeyJSON;
-    }
-  | {
-      ScriptAll: ScriptAllJSON;
-    }
-  | {
-      ScriptAny: ScriptAnyJSON;
-    }
-  | {
-      ScriptNOfK: ScriptNOfKJSON;
-    }
-  | {
-      TimelockStart: TimelockStartJSON;
-    }
-  | {
-      TimelockExpiry: TimelockExpiryJSON;
-    };
-```
-
-#### ScriptPubkeyJSON
-```ts
-interface ScriptPubkeyJSON {
-  addr_keyhash: string;
-}
-```
-
-#### ScriptAllJSON
-```ts
-interface ScriptAllJSON {
-  native_scripts: NativeScriptJSON[];
-}
-```
-
-#### ScriptAnyJSON
-```ts
-interface ScriptAnyJSON {
-  native_scripts: NativeScriptJSON[];
-}
-```
-
-#### ScriptNOfKJSON
-```ts
-interface ScriptNOfKJSON {
-  n: number;
-  native_scripts: NativeScriptJSON[];
-}
-```
-
-#### TimelockStartJSON
-```ts
-interface TimelockStartJSON {
-  slot: string;
-}
-```
-
-#### TimelockExpiryJSON
-```ts
-interface TimelockExpiryJSON {
-  slot: string;
+interface OfflineMultiSigRegistration {
+  metadata: string;
+  native_scripts: string;
 }
 ```
 
@@ -174,7 +105,9 @@ interface TimelockExpiryJSON {
 
 After the multisig wallet has been defined according to the Cardano native script standard, and adhering to the
 [rules](#specification), either a registration transaction can be put on the blockchain or a JSON download provided for 
-offline sharing.
+offline sharing. 
+
+>Note that the registration **must** use previously unused keys in the scripts **if** registered in a transaction. 
 
 The transaction auxiliary data metadata should be formatted using NoConversions JSON schema.
 
@@ -192,18 +125,19 @@ by its participants.
 
 #### Offline download
 
-The offline JSON file should have the format of `AuxiliaryDataJSON`.
+The offline JSON file should have the format of `OfflineMultiSigRegistration`.
 
 ### Discovery
 
 Discovering registered multisig wallets on the blockchain that has public keys included for a participant wallet 
 can be done in the following way.
 
-- Derive Ed25519 verification keys from path `1854'/1815'/0'/x/0`.
+- Derive Ed25519 verification keys from path `1854'/1815'/0'/x/y`.
 - Create key credentials, `blake2b-224` hash digests of derived keys in previous step.
 - Search for multisig registration transactions on the blockchain that contain metadata with metadatum label **1854** 
-  and key credentials matching participant wallet.
+  and key credentials matching participant wallet. Only the first (oldest) encountered match should be returned.
 - Use `types` field in metadata to map native scripts and figure out its purpose
+- Repeat until no more matches are found, either sequentially or in bulk.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -236,16 +170,20 @@ This specification doesn't restrict discovery to any specific role, depending on
 additional roles defined in the future through new CIPs. CIP-1854 define role 0 (payment) and role 2 (stake) for 
 script wallets. CIP-105 was created to extend key definition with additional governance roles 3-5.
 
-#### What about key index?
-This is another restriction in comparison to CIP-1854 specification that allow for multiple indexes. In theory, it 
-can add some limited privacy features. What we gain is simplicity and performance. The rationale here was that the 
-pros outweigh cons.
+#### What about key role and index restrictions?
+The main reason for the incrementing key index is to mitigate a possible attack vector where a malicious actor could 
+replay a publicly registered multisig wallet, modifying the script in a nefarious way. When the wallets connected to the
+users multisig key are discovered, both the valid and the invalid multisig registrations would be discovered and the 
+user might interact with the malicious wallet. By only allowing a key to be registered once, this threat can be 
+eliminated. 
+
+Keeping key index in sync for all roles for the same registration makes key handling more manageable.
 
 #### Is types mapping in metadata really necessary?
 It's true that on the wallet side when deriving purpose 1854 keys and scanning for registered wallets, it's known 
-from what path the keys where derived and thus one could figure out the type of native script based on key. However, 
-enforcing the transaction to include metadata with metadatum label 1854 and the types mapping make it clear that 
-this is a multisig registration and easier to scan for. 
+from what path the keys where derived and thus one could figure out the type of native script based on key credential. 
+However, enforcing the transaction to include metadata with metadatum label 1854 and the types mapping make it clear 
+that this is a multisig registration and easier to scan for. 
 
 ## Path to Active
 
@@ -258,7 +196,8 @@ this is a multisig registration and easier to scan for.
 ### Implementation Plan
 
 - [x] Author to engage with wallet providers and web applications for feedback.
-  - Discussion channel opened on [MeshJS Discord server](https://discord.gg/WvnCNqmAxy)
+  - Discussion channel opened on [Cardano Improvement Proposals Discord server](https://discordapp.com/channels/971785110770831360/1336823914671767663)
+  - [GitHub PR](https://github.com/cardano-foundation/CIPs/pull/971) for proposal.
 - [x] Author to implement said standard in Eternl wallet.
 - [ ] Collaborate with web applications and wallet providers to drive adoption of standard.
 
