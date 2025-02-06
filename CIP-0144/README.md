@@ -182,7 +182,7 @@ Returns the API version for the wallet connection API. This must correspond to t
 
 ### Versioning
 
-In this CIP we define a semantic versioning (SemVer) scheme that will be used by the connection API. Extensions defined in other CIPs (e.g. [CIP-XXX | Own data wallet](link)) must follow the same versioning schema.
+In this CIP we define a semantic versioning (SemVer) scheme that will be used by the connection API. Extensions defined in other CIPs (e.g. [CIP-XXX | Own data wallet](https://github.com/cardano-foundation/CIPs/pull/986)) must follow the same versioning schema.
 
 While the CIP is in preparation, the version shall be set to `0.0.0`. The moment this CIP is merged the version shall be set to `1.0.0`, and all implementations should consider that the current version. Any changes to the connection API should come in form of PRs to this CIP.
 
