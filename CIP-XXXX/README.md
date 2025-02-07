@@ -21,7 +21,7 @@ In this CIP we build upon the work laid out in [CIP-0144 | Wallet Connector API]
 
 ## Motivation: why is this CIP necessary?
 
-[CIP-0144 | Wallet Connector API](https://github.com/cardano-foundation/CIPs/pull/957) introduces a new wallet connection API. However, a wallet can not do much without enabling some extensions. Here we present an extension that is equivalent to the familiar CIP-30 (In particular it implements the [full-api](https://cips.cardano.org/cip/CIP-30#full-api) section of CIP-30). Enabling this extension would give users a wallet that has the same capabilities as a CIP-30 wallet, this is defined as an "own-data wallet" in CPS-10.
+[CIP-0144? | Wallet Connector API](https://github.com/cardano-foundation/CIPs/pull/957) introduces a new wallet connection API. However, a wallet can not do much without enabling some extensions. Here we present an extension that is equivalent to the familiar CIP-30 (In particular it implements the [full-api](https://cips.cardano.org/cip/CIP-30#full-api) section of CIP-30). Enabling this extension would give users a wallet that has the same capabilities as a CIP-30 wallet, this is defined as an "own-data wallet" in CPS-10.
 
 
 ## Specification
