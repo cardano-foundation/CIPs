@@ -481,7 +481,7 @@ This section lists the possible errors the wallet connector may return. Each err
 
 The goal of this CIP is to define an extension to enable an "own-data wallet". We build upon the work done in [CIP-0144 | Wallet Connector API](https://github.com/cardano-foundation/CIPs/pull/957) and define an extension compatible with that CIP.
 
-## Path to Active
+### Backward Compatibility
 
 CIP-0144 includes a [section](https://github.com/nazrhom/CIPs/blob/nazrhom/full-data-wallet-connector/CIP-0144/README.md#cip-30-backwards-compatibility) which introduces the idea of a wrapper, that takes a CIP-30 compatible API, and makes it CIP-0144 compatible. Since in this CIP we are simply replicating the functionality offered by CIP-30, something very similar would be possible here. Implementors of this wrapper must take care of the following differences between this CIP and CIP-30.
 
@@ -489,6 +489,8 @@ CIP-0144 includes a [section](https://github.com/nazrhom/CIPs/blob/nazrhom/full-
 - This API has no pagination, while CIP-30 generally does. The wrapper can either implement pagination locally, or error and inform the user if they request it.
 - In the original CIP-30, the `api` object returned has, on the top-level, the methods that we expect on `api.cip30`. The wrapper must take care to translate calls appropriately.
 - CIP-30 endpoints will return `null` in some situations where the request is correct, but not satisfiable. In this CIP we introduce an error code specifically for that. The wrapper will need to check some results for `null` and throw an appropriate error.
+
+## Path to Active
 
 ### Acceptance Criteria
 
