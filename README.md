@@ -147,6 +147,7 @@ The following link lists "candidate" CIPs still under discussion with the commun
 
 | #    | Title | Status |
 | ---- | --- | --- |
+| 0003 | [Smart tokens](./CPS-0003) | Open |
 | 0005 | [Plutus Script Usability](./CPS-0005) | Open |
 | 0007 | [Voltaire era Governance](./CPS-0007) | Open |
 | 0008 | [Domain Name Resolution](./CPS-0008) | Open |) |
