@@ -55,7 +55,7 @@ In order to spend from such script, one would have to provide a witness showing 
 
 ### Creation of a Multisig Script/Address
 
-The creation of a multisig address will not be covered in this document. Such addresses are described in [Shelley design specification - section 3.2 - Addresses and Credentials][delegation_design.pdf] and are obtained by serializing and hashing a multisig script. This functionality is assumed to be available through existing tooling or piece of software in a variety of ways.
+The creation of a multisig address will not be covered in this document. Such addresses are described in [Shelley design specification - section 3.2 - Addresses and Credentials][ledger-spec.pdf] and are obtained by serializing and hashing a multisig script. This functionality is assumed to be available through existing tooling or piece of software in a variety of ways.
 
 ### Spending From a Multisig Address
 
@@ -73,7 +73,21 @@ We consider the following HD derivation paths similarly to [CIP-1852]:
 m / purpose' / coin_type' / account_ix' / role / index
 ```
 
-To associate multi-signature keys to a wallet, we reserve however `purpose=1854'` to distinguish multisig wallets from standard wallets. The coin type remains `coin_type=1815'` to identify Ada as registered in [SLIP-0044]. The account index (`account_ix`) may vary across the whole hardened domain. `role=0` is used to identify payment keys, whereas `role=2` identifies stake keys. `role=1` is left unused for multisig wallets. Finally, the last `index` may vary across the whole soft domain, but according to the following rules:
+To associate multi-signature keys to a wallet, we reserve however `purpose=1854'` to distinguish multisig wallets from standard wallets. The coin type remains `coin_type=1815'` to identify Ada as registered in [SLIP-0044]. The account index (`account_ix`) may vary across the whole hardened domain. 
+
+Here, `role` can be the following:
+
+| Name                              | Value | Description
+| ---                               | ----- | ------------
+| Payment Key                       | `0`   | Used as Payment credent
+| Staking Key                       | `2`   | See [CIP-0011](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0011/README.md)
+| DRep Key                          | `3`   | See [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md)
+| Constitutional Committee Cold Key | `4`   | See [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md)
+| Constitutional Committee Hot Key  | `5`   | See [CIP-0105](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md)
+
+`role=1` is left unused for multisig wallets.
+
+Finally, the last `index` may vary across the whole soft domain, but according to the following rules:
 
 - Wallet must derive multisig key indexes sequentially, starting from 0 and up to 2^31-1
 - Wallet must prevent the creation of new multisig keys before past keys are seen in an on-chain script.
@@ -81,9 +95,9 @@ To associate multi-signature keys to a wallet, we reserve however `purpose=1854'
 
 We can summarize the various paths and their respective domain in the following table:
 
-| `purpose` | `coin_type` | `account_ix`       | `role`     | `index`         |
-| ---       | ---         | ---                | ---        | ---             |
-| `1854'`   | `1815'`     | `[2^31 .. 2^32-1]` | `0` or `2` | `[0 .. 2^31-1]` |
+| `purpose` | `coin_type` | `account_ix`       | `role`            | `index`         |
+| ---       | ---         | ---                | ---               | ---             |
+| `1854'`   | `1815'`     | `[2^31 .. 2^32-1]` | `0` or `[2 .. 5]` | `[0 .. 2^31-1]` |
 
 #### Examples
 
@@ -91,12 +105,16 @@ We can summarize the various paths and their respective domain in the following 
 - `m/1854’/1815’/0’/2/14`
 - `m/1854’/1815’/0’/2/42`
 - `m/1854’/1815’/0’/0/1337`
+- `m/1854’/1815’/0’/5/1111`
+- `m/1854’/1815’/0’/3/1694`
 
 ### User-facing encoding
 
 Multi-signatures payment verification and signing keys (`role=0`) with chain code should be presented bech32-encoded using `addr_shared_xvk` and `addr_shared_xsk` prefixes respectively, as specified in [CIP-5]. When represented without chain-code, `addr_shared_vk` and `addr_shared_sk` should be used instead.
 
 Similarly we use `stake_shared_xvk`, `stake_shared_xsk`, `stake_shared_vk` and `stake_shared_sk` for multi-signatures stake verification and signing keys (`role=2`).
+
+Similarly we use  // todo drep and cc
 
 #### Examples
 
@@ -217,6 +235,7 @@ BIP-0032 - HD Wallets                        | https://github.com/bitcoin/bips/b
 CIP-5 - Common Bech32 Prefixes               | https://github.com/cardano-foundation/CIPs/tree/master/CIP-0005
 CIP-1852 - Cardano HD Wallets                | https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852
 A Formal Specification of the Cardano Ledger | https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-ledger.pdf
+CIP-105 | Conway era HD key chain            | https://github.com/cardano-foundation/CIPs/tree/master/CIP-0105
 
 ## Path to Active
 
