@@ -1037,7 +1037,8 @@ We solve the long-term participation problem by not allowing reward withdrawals
 ### Acceptance Criteria
 
 - [x] A new ledger era is enabled on the Cardano mainnet, which implements the above specification.
- - Enabled via Chang #1 hardfork 
+ - Bootstrapping phase governance via Chang #1 hardfork
+ - Full governance via Plomin hardfork
 
 ### Implementation Plan
 

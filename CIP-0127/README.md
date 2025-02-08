@@ -1,7 +1,7 @@
 ---
 CIP: 127
 Title: ripemd-160 hashing in Plutus Core
-Status: Proposed
+Status: Active
 Category: Plutus
 Authors:
   - Tomasz Rybarczy <tomasz.rybarczyk@iohk.io>
@@ -54,8 +54,10 @@ The library, cryptonite, is not implemented by and under control of the Plutus t
 - [X] A Plutus binding is created for the `ripemd_160` function and included in a new version of Plutus.
 - [X] Integration tests, similar to those of the existing Plutus hash functions, are added to the testing infrastructure.
 - [X] The function is benchmarked to assess its cost. As for other hash functions available in Plutus (blake2b, sha256 and keccak_256), we expect the cost of `ripemd_160` to be linear with respect to the size of the message. The Plutus team determines the exact costing functions empirically.
-- [ ] The ledger is updated to include new protocol parameters to control costing of the new builtins.
-- [ ] This CIP may transition to active status once the Plutus version containing the `ripemd_160` function is introduced in a node release and becomes available on Mainnet.
+- [x] The ledger is updated to include new protocol parameters to control costing of the new builtins.
+  - Included within the haskell cardano-node implementation from [10.1.1](https://github.com/IntersectMBO/cardano-node/releases/tag/10.1.1).
+- [x] This CIP may transition to active status once the Plutus version containing the `ripemd_160` function is introduced in a node release and becomes available on Mainnet.
+  - Enabled by Plomin hardfork
 
 ### Implementation Plan
 The Plutus team will develop the binding, integration tests, and benchmarks. The E2E tests will be designed and implemented collaboratively by the testing team, the Plutus team, and community members planning to use this primitive.
