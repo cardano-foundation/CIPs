@@ -208,6 +208,8 @@ api.cip123.endpoint1()
 api.cip123.endpoint2()
 ```
 
+For list of accepted CIP-30 extensions please see [CIP-30 Accepted Extensions Register](./extensions-register.md).
+
 Authors should be careful when omitting namespacing. Omission should only be considered when creating endpoints to override those defined in this specification or other extensions. Even so when overriding; the new functionality should not prevent dApps from accessing past functionality thus overriding must ensure backwards compatibility.
 
 Any namespace omission needs to be fully justified via the proposal's Rationale section, with explanation to why it is necessary. Any potential backwards compatibility considerations should be noted to give wallets and dApps a clear unambiguous direction.
