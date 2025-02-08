@@ -72,6 +72,10 @@
     "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
   },
   {
+    "transaction_metadatum_label": 1854,
+    "description": "Multi-signatures wallet registration"
+  },
+  {
     "transaction_metadatum_label": 1870,
     "description": "Open Badges v2.0 compliant metadata"
   },
