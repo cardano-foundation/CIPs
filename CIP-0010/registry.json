@@ -112,6 +112,10 @@
     "description": "fida.finance transaction metadata"
   },
   {
+    "transaction_metadatum_label": 21325,
+    "description": "PRISM's Verifiable Data Registry for the PRISM DID method"
+  },
+  {
     "transaction_metadatum_label": 61284,
     "description": "CIP-0015 - Catalyst registration"
   },
