@@ -54,7 +54,6 @@ Key Type (`t t t t . . . .`)      | Key
 `0001....`                        | CC Cold
 `0010....`                        | DRep
 
-
 #### Credential Type
 
 The second half of the header (bits [3;0]) refers to the credential type which can have the values and types as summarized in the table below,
@@ -66,25 +65,39 @@ Credential Type (`. . . . c c c c`)   | Semantic
 `....0010`                            | Key Hash 
 `....0011`                            | Script Hash
 
-### Gov Action
+### Governance Action Identifiers
 
-Cardano Conway era introduces proposal procedures to submit gov actions. Gov actions are vote on chain by different kinds of keys, and as such it is necessary to be able to share gov actions across communication channels. The gov action is currently defined as combination of a transaction ID it was submitted in and an index within the transaction.
+Cardano's Conway era introduces proposal procedures to submit governance actions. Governance actions are voted on by different kinds of credentials, and as such it is necessary to be able to share governance action identifiers across communication channels.
 
-We define a byte format to combine the tx ID and the index to form a single valid byte string, as such it can be converted into a hex format and have its own bech32 prefix.
+Governance action identifiers are defined via CIP-1694 as combination of a transaction ID it was submitted in and an index within the transaction.
 
-Transaction ID is always a 32 byte length, hence we can append the index bytes to the tx id, please see below
+We define a byte format to combine the transaction ID and the index to form a single valid byte string, as such it can be converted into a hex format and have its own Bech32 prefix.
 
-**Example 1**
-TX ID in Hex - `0000000000000000000000000000000000000000000000000000000000000000`
-Gov Action index in HEX - `11` (number 17)
-gov action ID - `000000000000000000000000000000000000000000000000000000000000000011`
-bech32 - `gov_action1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpzklpgpf`
+Transaction ID is always a 32 byte length, hence we can append the index bytes to the transaction id, please see examples below:
 
-**Example 2**
-TX ID in Hex - `1111111111111111111111111111111111111111111111111111111111111111`
-Gov Action index in HEX - `00` (number 0) 
-gov action ID - `111111111111111111111111111111111111111111111111111111111111111100`
-bech32 - `gov_action1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygsq6dmejn`
+#### Example 1
+
+Original standard definition - `0000000000000000000000000000000000000000000000000000000000000000#17`
+
+Transaction ID in Hex - `0000000000000000000000000000000000000000000000000000000000000000`
+
+Governance Action index in Hex - `11` (number 17)
+
+(CIP-129) Governance action ID in Hex - `000000000000000000000000000000000000000000000000000000000000000011`
+
+(CIP-129) Governance action ID in Bech32 - `gov_action1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpzklpgpf`
+
+#### Example 2
+
+Original standard definition - `1111111111111111111111111111111111111111111111111111111111111111#0`
+
+Transaction ID in Hex - `1111111111111111111111111111111111111111111111111111111111111111`
+
+Governance Action index in Hex - `00` (number 0) 
+
+(CIP-129) Governance action ID in Hex - `111111111111111111111111111111111111111111111111111111111111111100`
+
+(CIP-129) Governance action ID in Bech32 - `gov_action1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygsq6dmejn`
 
 ### Bech32 Encoding
 
