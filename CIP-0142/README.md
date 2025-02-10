@@ -29,7 +29,7 @@ Currently, CIP-0030 only provides a way to distinguish between mainnet (1) and t
 
 ### Extension Identifier
 
-This extension uses the following TEMPORARY identifier:
+This extension uses the following identifier:
 ```ts
 { "cip": 0142 }
 ```
