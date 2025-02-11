@@ -19,7 +19,7 @@ This CPS motivates that question, lists some relevant concerns, and hopefully at
 
 The [Praos security argument](https://eprint.iacr.org/2017/573) assigns overwhelming probability to a lower bound on growth under the assumption that all honest parties are participating and together control more stake than the adversary.
 For Cardano specifically, that Chain Growth property has been instantiated as at least 2160 blocks of growth during each 36 hr interval, whereas the expected Cardano growth is 2160 blocks per 12 hr (assuming full participation).
-On the other hand, the [Disaster Recovery Plan](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0135), intervenes when the chain does not grow at all for 36 hours.
+On the other hand, the [Disaster Recovery Plan](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0135) intervenes when the chain does not grow at all for 36 hours.
 These two specifications do not address an observed growth rate less than 2160 per 36 hr but greater than zero, nor does any other specification.
 
 Such low growth rates become plausible when the assumptions of the Praos argument are violated for an extended period of time.
@@ -27,19 +27,58 @@ Global-scale disasters, infrastructure attacks, local outages, eclipse attacks, 
 
 ## Problem
 
+### Introduction
+
+Some events within the ledger and protocol rules are scheduled based on the assumption that 36 hr ensures settlement.
+No established document names this property, since it's typically justified via the Cardano Common Prefix property, the Cardano Chain Growth property, and _modus ponens_: the 2161th youngest block is settled and the honest chain grows by at least 2160 blocks in 36 hr.
+The off-by-one in that logic is inconsequential, since the Chain Growth failure probability is negligibly greater for 2161 blocks in 36 hr.
+
+The property will be referred to as _Immutable Age_ within this CPS.
+The following lists a couple notable examples.
+
+- The security argument of the Praos protocol makes the simplifying assumption that all of the chains that honest nodes would ever consider necessarily agree on the leader schedule [^excessive-proof].
+  The ledger rules therefore snapshot certain values (eg the stake distribution, the nonce, etc) no later than 36 hr before the snapshotted value begins to affect the leader schedule.
+
+- Beyond just the leader schedule, the ledger rules similarly ensure all values relevant to header validation (eg the max block size protocol parameter) are determined at least 36 hr before they take effect[^HFC-double].
+  This enables a key network optimization: nodes first exchange comparatively small headers instead of blocks, and then only fetch the underlying blocks for the longest header chain.
+  The 36 hr delay is required because a node must now be able to validate up to 2161 headers before having fetched the preceding 2160 ancestor blocks.
+  The node would never need to validate the 2162th header before fetching the preceding 2161 blocks, since Common Prefix ensures it would never need to see the 2162th alternative header before deciding to switch chains.
+
+Suprisingly, however, no part of the node directly enforces Chain Growth.
+This is at least partly due to Praos intentionally tolerating _dynamic availability_, where the participation level is allowed to fluctuate, as long as the honest parties always have more stake than the adversary [^self-healing].
+In other words, Immutable Age doesn't necessarily require Chain Growth.
+If 75% of total stake was honest but offline[^honest-offline], and 15% was online and honest, and the remaining 9% was adversarial, then a Praos network might still be secure, since 15 > 9.
+The key dynamics are that the online honest nodes will be elected much more often than the adversarial nodes during the 36 hr.
+Despite not growing 2160 blocks per 36 hr, those honest nodes will still settle each successful block before it becomes 36 hr old, since the adversary is too weak to cause a deep/old enough rollback to disrupt that.
+
+On the other hand, it's possible that the design of some Cardano node or the design of some tooling that the Cardano community has come to rely on does assume Chain Growth, either directly or indirectly and either intentionally or accidentally --- despite the node not explicitly enforcing Chain Growth.
+The Cardano chain has not yet ever violated Chain Growth.
+Many users and contributors tend to only consider/expect the growth that has been typically observed to be near 2160 blocks per 12 hr.
+It is not commonly considered that a strong adversary could slow that down to the Chain Growth limit, or even more so if some honest stake is not well-connected, well-configured, etc.
+
+There are many reasons participation might be low (see next section).
+And there are many questions that arise about the possible behaviors of the node in such scenarios.
+If growth is very low, do we expect the Cardano node to keep minting blocks?
+Dynamic availability assumes we do, but maybe the community doesn't want to retain a weak portion of the chain and would prefer the Disaster Recovery Plan repairs it.
+If the node should keep minting, do we expect it to continue to effectively mitigate DoS attack vectors?
+Do we expect the node/CLI tools/etc to obediently respond to queries even if the current answer might change if a denser chain arrives?
+
+### Anticipated Options and Scenarios
+
 The following mutually exclusive options seem to cover the design space, but each has unique advantages and disadvantages.
+A relevant CIP, for example, might identify alternative options, introduce an insight that clarifies which of these is preferable, or maybe identify a way to combine them (eg conditions for switching between them).
 
 - *AssumeImmutableAge* (AssumeIA).
-  The node will not switch to a chain if doing so would rollback more than 2160 blocks regardless of their age.
+  The node will always switch to a longer chain with exactly one exception: unless doing so would rollback more than 2160 blocks.
   This limit is justified by the Common Prefix property of the Praos security argument as instantiated for Cardano.
-  (Note the absence of the Chain Growth property.)
+  Note the absence of the Chain Growth property: the node would rollback up to 2160 blocks regardless of their age.
 
 - *EnforceImmutableAge* (EnforceIA).
-  As a refinement of AssumeIA, the node will not switch to a chain if doing so would rollback more than 2160 blocks and/or a block that is more than 36 hr old (TODO: should age be with respect to the wall clock or the selection's tip?).
+  As a refinement of AssumeIA, the node will switch to a longer chain unless doing so would rollback more than 2160 blocks and/or a block that is more than 36 hr older than the current selection's tip [^wall-clock-age].
   This limit is a disjunction of Common Prefix and Chain Growth.
 
 - *EnforceChainGrowth* (EnforceCG).
-  In addition to AssumeIA, the node rejects any chain that has less than 2160 blocks per 36 hr (even if selecting it wouldn't require rolling back any blocks).
+  In addition to AssumeIA, the node rejects any chain that has less than 2160 blocks per 36 hr (even if selecting it wouldn't require rolling back more than 2160 blocks).
 
 These options can be compared by considering the following scenarios.
 
@@ -132,3 +171,21 @@ Or perhaps there is an as-of-yet unidentified option that supercedes all of thes
 ## Copyright
 
 This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+[^excessive-proof]: Caveat.
+  It's unclear whether Praos actually requires this, but the existing proof relies on it.
+
+[^HFC-double]: Aside.
+  The Hard Fork Combinator currently requires 72 hr forewarning for transitions between eras, but that's beyond the scope of this document.
+  Also, as of Conway, the Cardano ledger happens to give 5 days of forewarning, since it needs to conservatively incrementalize the expensive vote tabulation.
+
+[^self-healing]: Aside.
+  Praos also features self-healing, where it can tolerate the adversary temporarily having a stake majority, but that's beyond the scope of this document.
+
+[^honest-offline]: Caveat.
+  The assumption that the offline stake is honest is an over-simplification, but something along those lines is necessary for Ouroboros Genesis, for example.
+
+[^wall-clock-age]: Clarification.
+  It's simpler to calculate the age of a block on the selected chain with respect to its tip.
+  It is seems possible to instead calculate the age with respect to the wall clock, but that will certainly have more corner cases and likely more restrictions, due to the Hard Fork Combinator concerns.
+  Moreover, in the interesting scenarios, the tip of the selection will be "close enough" to the wall clock "often enough" that this distinction is irrelevant.
