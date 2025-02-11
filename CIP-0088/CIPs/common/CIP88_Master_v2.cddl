@@ -91,8 +91,10 @@ v1_witness = {
     bytes .size (64)  ; Signature
 }
 
+; In v2 witnesses are changed to a map with an optional type identifier. We assume a regular Cardano Ed25519 key if
+; not present and should be parsed
 v2_witness = {
-    0 : uint    ; Witness Version
+    ? 0 : uint    ; Witness Type Identifier
     1 : bytes   ; Witness Public Key
     2 : bytes   ; Witness Signature
 }
