@@ -61,26 +61,44 @@ And there are many questions that arise about the possible behaviors of the node
 If growth is very low, do we expect the Cardano node to keep minting blocks?
 Dynamic availability assumes we do, but maybe the community doesn't want to retain a weak portion of the chain and would prefer the Disaster Recovery Plan repairs it.
 If the node should keep minting, do we expect it to continue to effectively mitigate DoS attack vectors?
+When do we expect the node to switch away from a sparse chain if a denser one eventually arrives?
 Do we expect the node/CLI tools/etc to obediently respond to queries even if the current answer might change if a denser chain arrives?
 
-### Anticipated Options and Scenarios
+### Anticipated Options and Scenarios for the Chain Selection Rules
 
-The following mutually exclusive options seem to cover the design space, but each has unique advantages and disadvantages.
+The following mutually exclusive options seem to cover the design space of the more fundamental questions of which chains the node would select/switch to, but each has unique advantages and disadvantages.
 A relevant CIP, for example, might identify alternative options, introduce an insight that clarifies which of these is preferable, or maybe identify a way to combine them (eg conditions for switching between them).
+CIPs might also address the other aspects of the node's behavior within these options and/or scenarios (eg withholding replies to queries).
 
 - *AssumeImmutableAge* (AssumeIA).
   The node will always switch to a longer chain with exactly one exception: unless doing so would rollback more than 2160 blocks.
   This limit is justified by the Common Prefix property of the Praos security argument as instantiated for Cardano.
   Note the absence of the Chain Growth property: the node would rollback up to 2160 blocks regardless of their age.
 
+  With this option, the node would select a sparse chain and would also be able to switch away from all but the youngest 2160 blocks on it, regardless of how many slots they span.
+
 - *EnforceImmutableAge* (EnforceIA).
   As a refinement of AssumeIA, the node will switch to a longer chain unless doing so would rollback more than 2160 blocks and/or a block that is more than 36 hr older than the current selection's tip [^wall-clock-age].
   This limit is a disjunction of Common Prefix and Chain Growth.
 
+  With this option, the node would select a sparse chain and would also be able to switch away from any of the youngest 2160 blocks, but only those that are younger than 36 hrs.
+
 - *EnforceChainGrowth* (EnforceCG).
   In addition to AssumeIA, the node rejects any chain that has less than 2160 blocks per 36 hr (even if selecting it wouldn't require rolling back more than 2160 blocks).
 
-These options can be compared by considering the following scenarios.
+  With this option, the node would never select a sparse chain; it'd select a prefix of it with degrading density but reject the first block that is more than 36 hr younger than its 2161st ancestor.
+
+Outside of any scenario, EnforceIA and EnforceCG introduce some simplifying invariants compared to AssumeIA, simply because they are explicit.
+They also have costs, discussed in the specific scenarios below.
+
+  - The EnforceIA node can ignore chains that branch off more than 36 hr ago, even if they would only requiring rolling back at most 2160 blocks.
+
+  - The EnforceCG node can (temporarily) ignore all blocks that are more than 36 hr younger than its 2161st youngest block.
+
+It's possible that an AssumeIA node can be sufficiently resilient despite not having those additional invariants, but its security argument becomes more complicated.
+That means mistakes are more likely, and it's more difficult to correctly add features, new protocols, etc.
+
+These options should also be contrasted by considering the following scenarios.
 
 - *TwoThirdsInaccessible*.
   Suppose more than 2/3rds of stake was knocked offline (eg by a solar flare) such that less than 1/3rd of all stake was active for more than 36 hr, but it all remained connected.
@@ -162,6 +180,7 @@ Or perhaps there is an as-of-yet unidentified option that supercedes all of thes
 ## Goals
 
 - Any CIP that solves this CPS must specify how the node should behave when the best chain it has access to grows by less than 2160 blocks per 36 hr.
+  TODO see the questions at the end of the introduction, for example.
 
 - The specification within such a CIP ought to make it simpler for authors of Cardano nodes and tools to analyze their resource usage bounds.
   For example, EnforceCG guarantees that the Cardano node will never select nor relay a chain that has less than 2160 blocks per 36 hr interval, which limits how many slots per block some tool might need to allocate on average.
