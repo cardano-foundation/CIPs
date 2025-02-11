@@ -9,7 +9,6 @@ Authors:
 Proposed Solutions:
     - CIP-0113: https://github.com/cardano-foundation/CIPs/pull/444
     - CIP-0125: https://github.com/cardano-foundation/CIPs/pull/832
-    - CIP-0143: https://github.com/cardano-foundation/CIPs/pull/944
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/382
     - https://github.com/cardano-foundation/CIPs/pull/947
