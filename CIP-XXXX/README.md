@@ -55,14 +55,37 @@ The removal will proceed in stages.
 
 The staging ensures interop between each successive stage, such that each Stage's node and its predecessor node will always be able to sync to/from one another.
 
+| Node Version | Proto Upstream | Proto Downstream | Storage |
+| - | - | - | - |
+| Stage Zero (ie today's node) | :red_circle: require EBBs | :red_circle: serve EBBs | :red_circle: store EBBs |
+| Stage One | :yellow_circle: treat EBBs as optional | :red_circle: serve EBBs | :red_circle: store EBBs |
+| Stage Two | :yellow_circle: treat EBBs as optional | :green_circle: skip EBBs | :green_circle: do not store EBBs |
+| Stage Three | :green_circle: reject EBBs | :green_circle: skip EBBs | :green_circle: do not store EBBs |
+
 As of Stage Three, all nodes would relay a chain that contains no EBBs and would never store them.
 EBBs could now be entirely removed from the node specification and implementation, except for the prev-hash overrides described in this CIP.
 
-It would be possible to accelerate this plan to merely two stages, at the cost of the additional complexity necessary for the Stage One node to conditionally send EBBs depending on the mini protocol version negotiated with each downstream peer.
-The simpler slower plan seems generally preferable in the absence of any unanticipated urgency — we've already suffered EBBs for several years.
-
 If a Stage One node is itself syncing, it might omit an EBB when serving its (volatile) chain to an un-upgraded downstream peer that requires all EBBs be sent.
 This is an acceptable failure case, because nodes/tools should not be syncing from syncing nodes.
+
+### Alternative Stages
+
+Instead of gating the next Stage on whether enough of the network has adopted the current Stage, the Stages could be gated by handshake versions.
+This allows Stage One and Stage Two to be combined, at the cost of the additional complexity necessary for the Stage OneAndTwo node to conditionally require/send EBBs depending on the mini protocol version negotiated with each upstream/downstream peer.
+
+| Handshake Version | Proto Upstream | Proto Downstream |
+| - | - | - |
+| X (ie today's latest handshake version) | :red_circle: require EBBs | :red_circle: serve EBBs |
+| Y (>X) | :green_circle: reject EBBs | :green_circle: skip EBBs |
+
+| Node Version | Allowed Handshake Versions | Storage |
+| - | - | - |
+| Stage Zero (ie today's node) |  ?≤v≤X | :red_circle: store EBBs |
+| Stage OneAndTwo | ?≤v≤Y | :red_circle: store EBBs |
+| Stage Three | Y≤v≤? | :green_circle: do not store EBBs |
+
+The simpler plan seems generally preferable in the absence of any unanticipated urgency — we've already suffered EBBs for several years.
+On the other hand, the handshake versions might make it easier for different implementations of the node coordinate progress on this CIP.
 
 ### Alternative Mitigations
 
