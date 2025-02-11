@@ -115,8 +115,8 @@ These options should also be contrasted by considering the following scenarios.
     - If the whole network implemented EnforceIA, then the nodes would not face increased risks.
       The 2160 disjunct in the EnforceIA definition is an optimization for when the chain is growing faster than 2160 blocks per 36 hr.
 
-    - If the whole network implemented EnforceCG, then the Recovery Plan would be unavoidable (once the affected stake was back online).
-      The silver lining is that all nodes would be able to switch to the repaired chain automatically, without needing manual intervention.
+    - If the whole network implemented EnforceCG, then the Recovery Plan would be unavoidable (once the affected stake was back online), since the honest nodes would eventually refuse to the newly minted blocks, since they are more than 36 hr younger than their 2161st predecessor.
+      The silver lining is that all nodes would (TODO might?) be able to switch to the repaired chain automatically, without needing manual intervention.
 
 - *GranularPartitions*.
   Suppose the block-producing nodes of the Cardano network are partitioned and/or knocked offline (eg by a global infrastructure attack) such that no partition has more than 1/3rd of all stake for more than 36 hr.
