@@ -57,6 +57,7 @@ The payload formats used below are either references to [CIP-0116 - Standard JSO
 
 The API can be implemented across several transports. The goal is to allow several different clients, possibly written in different languages, to interact with wallets.
 For this reason we provide an [Openapi schema](./open-api.json), a [JSON-RPC](./json-rpc.json) schema, and an interface for an [injected Javascript](./ts-api.md) object in Typescript.
+We also generate a [specification](./cip-0144.md) of this API that is compatible with [CIP-0144 | Wallet Connector API]. This defines the API as a wallet extension that can be enabled by the user, enabling a full-data wallet
 We generate these interfaces from a high level specification of the endpoints [source](https://github.com/mlabs-haskell/query-layer-impl), ensuring that the information is consistent and easily updatable for different choices of transport layer.
 
 ### Pagination
