@@ -1485,10 +1485,11 @@ Thus, Peras should not have any significant impact on the memory requirements of
 
 - [ ] Detailed node-level (as opposed to this protocol-level) specification.
 - [ ] Develop node-level conformance test suite.
-- [ ] Consider developing a "quick and dirty" implementation for large scale experiments.
-- [ ] Coordinate with related activities on other protocol enhancements (Genesis, Mithril, Leios, voting, etc.).
-- [ ] Triage by intersect Core Infrastructure and Consensus functions.
-- [ ] The upcoming CIP that establishes a *Consensus* category for CIPs may define additional requirements for the implementation plan.
+- Consider developing a "quick and dirty" implementation for large scale experiments.
+- Coordinate with related activities on other protocol enhancements.
+    - Compatibility between Peras, Leios, and Genesis.
+    - Common design and implementation for certificates, voting, and related key registration: Mithril, Peras, Leios, and partner chains.
+- Triage by intersect Core Infrastructure and Consensus functions.
 
 The following diagram summarizes a possible architecture for Peras highlighting its interactions with other components of the node.
 
