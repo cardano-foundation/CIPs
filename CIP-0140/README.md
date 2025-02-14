@@ -1195,7 +1195,7 @@ Additionally one would like the following property to be provided by the voting 
 - Voting should require minimal additional configuration (e.g., key management) for SPOs.
 - Voting and certificate construction should be fast in order to ensure it does not interfere with other operations happening in the node.
 
-The precise scheme and format for votes and certificates is immaterial to the protocol itself and is deferred to another proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870).
+The precise scheme and format for votes and certificates is immaterial to the protocol itself and is deferred to another proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870) or to [the scheme documented in the Peras repository](https://github.com/input-output-hk/peras-design/blob/main/analytics/certificates-jan2025.md). Presumably, voting and certificates will be handled uniformly across Mithril, Peras, Leios, and partner chains.
 
 ### CDDL schema for the ledger
 
@@ -1212,7 +1212,7 @@ Peras requires a single addition, `peras_cert`, the [block](#blocks) data on the
    ]
 ```
 
-[Votes](#votes) are serialized in the following CDDL.
+[Votes](https://github.com/input-output-hk/peras-design/blob/main/analytics/certificates-jan2025.md) are serialized in the following CDDL.
 
 ```cddl
 votes_certificate =
