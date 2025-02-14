@@ -9,7 +9,10 @@ Authors:
   - Sandro Coretti-Drayton <sandro.coretti@iohk.io>
   - Yves Hauser <yves.hauser@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
-Implementors: Intersect
+Implementors:
+  - Intersect
+Solution-To:
+  - CPS-0017
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/872
 Created: 2024-08-15
