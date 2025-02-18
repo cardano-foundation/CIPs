@@ -7,7 +7,7 @@ Authors:
   - Arnaud Bailly <arnaud.bailly@iohk.io>
   - Brian W. Bush <brian.bush@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
-Implementors: Intersect
+Proposed Solutions: []
 Discussions: 
 Created: 2024-10-11
 License: Apache-2.0
