@@ -1,6 +1,6 @@
 ---
 CPS: ????
-Title: Missing Merkle Root of Transactions in Cardano Block Header
+Title: Lack of Concise Transaction Inclusion Proofs
 Status: Open
 Category: Ledger
 Authors:
