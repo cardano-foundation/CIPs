@@ -288,7 +288,7 @@ or unlocked.
 |-------------------|------------------|----------|----------------------------------------------------------------------------------------------------------------------------|
 | timestamp         | String           | Yes      | ISO-8601 Extended timestamp signalling when funds will become "unlocked" or "vested". Example: `2024-01-01T00:00:00+00:00` |
 | unlock_quantity   | Unsigned Integer | No       | The amount of tokens that will become unlocked at the specified timestamp                                                  |
-| unlock_percentage | Unsigned Float   | No       | The percentage of locked tokens that will becoe unloacked at the specified timestamp                                       |
+| unlock_percentage | Unsigned Float   | No       | The percentage of locked tokens that will become unlocked at the specified timestamp                                       |
 
 #### Funding Detail
 
