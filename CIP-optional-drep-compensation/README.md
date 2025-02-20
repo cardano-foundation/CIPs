@@ -7,7 +7,7 @@ Authors:
     - Philip DiSarro <info@anastasialabs.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/991
 Created: 2025-02-19
 License: CC-BY-4.0
 ---
