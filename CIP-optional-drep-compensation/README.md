@@ -22,7 +22,8 @@ Introducing DRep compensation into the ledger will be a an absolutely massive un
 The best way to approach feature development is to release an MVP, evaluate its reception in the market, and use that data to determine the best way to proceed. This also allows us to introduce the feature without imposing it on anyone, it is opt-in, if you do not wish to compensate your DRep you can simply not opt-in. If, at any time, you wish to adjust the percentage of rewards that you are donating to your DRep you can just issue a new delegation certificate and adjust the amount or opt-out entirely.
 
 ## Specification
-This feature is extremely simple to implement. When a user delegates to a DRep, the user should receive a prompt asking if they want to donate a percentage of their staking rewards to that DRep (ie. if they want to opt-in to compensate their DRep).
+
+When tool or wallet builds a DRep vote delegation transaction (any transaction containing a `vote_deleg_cert`, `stake_vote_deleg_cert`, `vote_reg_deleg_cert` or `stake_vote_reg_deleg_cert ` certificate), the user should receive a prompt asking if they want to donate a percentage of their staking rewards to that DRep (i.e. if they want to opt-in to compensate their DRep).
 
 If they choose to opt-in, they enter the percentage of their staking rewards that they would like their DRep to receive. The DRep delegation transaction will include that percentage in the transaction metadata in the following format:
 
