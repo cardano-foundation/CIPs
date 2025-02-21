@@ -30,7 +30,7 @@ If they choose to opt-in, they enter the percentage of their staking rewards tha
 ```
 {
     "3692": {
-        "int": PERCENTAGE_INTEGER_HERE 
+        "donationPercentage": PERCENTAGE_INTEGER_HERE 
     }
 }
 ```
