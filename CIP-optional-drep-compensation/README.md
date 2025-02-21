@@ -27,7 +27,7 @@ When tool or wallet builds a DRep vote delegation transaction (any transaction c
 
 If they choose to opt-in, they enter the percentage of their staking rewards that they would like their DRep to receive. The DRep delegation transaction will include that percentage in the transaction metadata, with metadatum label `3692`, in   the following format:
 
-```
+```json
 {
     "3692": {
         "donationPercentage": PERCENTAGE_INTEGER_HERE 
