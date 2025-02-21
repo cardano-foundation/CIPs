@@ -25,7 +25,7 @@ The best way to approach feature development is to release an MVP, evaluate its 
 
 When tool or wallet builds a DRep vote delegation transaction (any transaction containing a `vote_deleg_cert`, `stake_vote_deleg_cert`, `vote_reg_deleg_cert` or `stake_vote_reg_deleg_cert ` certificate), the user should receive a prompt asking if they want to donate a percentage of their staking rewards to that DRep (i.e. if they want to opt-in to compensate their DRep).
 
-If they choose to opt-in, they enter the percentage of their staking rewards that they would like their DRep to receive. The DRep delegation transaction will include that percentage in the transaction metadata in the following format:
+If they choose to opt-in, they enter the percentage of their staking rewards that they would like their DRep to receive. The DRep delegation transaction will include that percentage in the transaction metadata, with metadatum label `3692`, in   the following format:
 
 ```
 {
