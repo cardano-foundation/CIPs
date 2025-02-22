@@ -30,7 +30,7 @@ If they choose to opt-in, they enter the percentage of their staking rewards tha
 ```json
 {
     "3692": {
-        "donationPercentage": PERCENTAGE_INTEGER_HERE 
+        "donationBasisPoints": PERCENTAGE_INTEGER_HERE 
     }
 }
 ```
