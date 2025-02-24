@@ -7,7 +7,7 @@ Authors:
   - Alex Sierkov <alex.sierkov@gmail.com>
 Implementors: []
 Discussions:
-  - https://github.com/sierkov/data-compression-CIP/README.md
+  - https://github.com/sierkov/data-compression-CIP/tree/master/CIP-data-compression
 Created: 2025-02-24
 License: CC-BY-4.0
 ---
