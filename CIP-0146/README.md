@@ -92,10 +92,10 @@ interface MultiSigParticipant {
 }
 ```
 
-#### OfflineMultiSigRegistration
+#### OffChainMultiSigRegistration
 The hex-encoded bytes for a transaction auxiliary data `metadata` and `native_script` array.
 ```ts
-interface OfflineMultiSigRegistration {
+interface OffChainMultiSigRegistration {
   metadata: string;
   native_scripts: string;
 }
@@ -105,7 +105,7 @@ interface OfflineMultiSigRegistration {
 
 After the multisig wallet has been defined according to the Cardano native script standard, and adhering to the
 [rules](#specification), either a registration transaction can be put on the blockchain or a JSON download provided for 
-offline sharing. 
+off-chain sharing. 
 
 >Note that the registration **must** use previously unused keys in the scripts **if** registered in a transaction. 
 
@@ -123,9 +123,9 @@ JSON mapping in more detail.
 A registration transaction is the most user-friendly alternative as it allows for automatic multisig wallet discovery 
 by its participants. 
 
-#### Offline download
+#### Off-chain download
 
-The offline JSON file should have the format of `OfflineMultiSigRegistration`.
+The off-chain JSON file should have the format of `OffChainMultiSigRegistration`.
 
 ### Discovery
 
