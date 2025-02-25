@@ -287,13 +287,6 @@ or one of the defined simple public keys.
 
 A dApp can define is roles allow the use of certificates, or simple public keys, or both.
 
-Role 0 Key Requirements:
-- Role 0 **MUST** have a signing key, and it **MUST** be a certificate.
-- Simple keys can not be used for signing against Role 0.
-
-The reason for this is the Role 0 certificate **MUST** include a reference to the on-chain identity/s to be bound to the registration.
-Simple public keys can not contain this reference, which is why they are not permissible for Role 0 keys.
-
 A reference to a key/certificate can be a cert in the same registration, or any previous registration.
 If the certificate is revoked, the role is unusable for signing unless and until a new signing certificate
 is registered for the role.
@@ -415,6 +408,33 @@ For example, given three roles were registered, Role 0, 1, and 2.
 Role 0 is perfectly fine, as is Role 1.
 However Role 2 has an error with the payment key.
 None of the role registrations will take effect.
+
+#### Role 0 Specific requirements
+
+1. Certificate Index 0 Reserved for Role 0:
+- Index 0 in both the X.509 certificate list and the C509 certificate list is reserved for Role 0.
+- When registration made, either of the X.509 certificate list or C509 certificate list **MUST** contains certificate in index 0 (but not both).
+- This means for other roles, if certificate is needed, index 0 in these lists **MUST** be set to `undefined`.
+
+2. Updating Role 0 Certificate:
+- Any updates to the certificate associated with Role 0 require a new Role 0 registration to be posted.
+- The updated registration **MUST** reference the correct certificate.
+- No other role is permitted to modify the certificate or certificate index for Role 0.
+
+3. C509 Certificate Reference:
+- Role 0 **MUST NOT** reference a C509 certificate in Metadatum.   
+  
+4. Signing Key for Role 0:
+- Role 0 **MUST** have a signing key set to 0 (since 0 refers to the reserved index 0 of the certificate).
+- The certificate **MUST** include a reference to the on-chain identity(ies) that are bound to the registration.
+- The signing key **MUST** be a certificate, not a simple public key.
+
+5. Simple Public Keys for Role 0:
+- Simple Public Keys **MUST NOT** be set.
+- In case for other roles, if simple public key is needed, index 0 in this list **MUST** be set to `undefined`
+  
+6. Encryption Key Reference for Role 0:
+- Role 0 **MUST NOT** contain any reference to an encryption key.
 
 ### Optional fields
 
