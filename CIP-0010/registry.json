@@ -41,7 +41,7 @@
   },
   {
     "transaction_metadatum_label": 839,
-    "description": "Agora - Proposal creation metadata"    
+    "description": "Agora - Proposal creation metadata"
   },
   {
     "transaction_metadatum_label": 867,
@@ -110,6 +110,14 @@
   {
     "transaction_metadatum_label": 10297,
     "description": "fida.finance transaction metadata"
+  },
+  {
+    "transaction_metadatum_label": 18300,
+    "description": "selfdriven Achievement"
+  },
+  {
+    "transaction_metadatum_label": 18319,
+    "description": "selfdriven Identity"
   },
   {
     "transaction_metadatum_label": 21325,
