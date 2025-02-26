@@ -199,3 +199,7 @@ This allows clients to quickly determine whether a stake pool operator supports 
 - Develop the implementation. The individuals responsible for development will be designated after approval from subject matter experts has been received.
 - Deploy and test on the testnet.
 - Deploy on the mainnet following successful testnet evaluation.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
