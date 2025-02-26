@@ -31,8 +31,13 @@ Newer blockchains, such as Solana and Aptos, have shown that shorter block gener
 
 ### Broad Availability of Affordable High-Performance Hardware
 
-Over the last decade, there has been a significant improvement in both CPU performance and network connectivity for rentable cloud servers. For example, servers with 24 CPU cores and 1 Gbps Internet connections are now available for lease for under $500 per month. By
-efficiently leveraging this hardware, it is possible to scale Cardano with minimal changes to the protocol. Following sections present one approach to achieving this.
+Over the last decade, there has been a significant improvement in both CPU performance and network connectivity for rentable cloud servers. For example, servers with 24 CPU cores and 1 Gbps Internet connections are now available for lease for under $500 per month. By efficiently leveraging this hardware, it is possible to scale Cardano with minimal changes to the protocol.
+Following sections present one approach to achieving this.
+
+This document does not propose a specific minimum hardware configuration for block-producing nodes.
+Instead, it demonstrates the scalability achievable with certain configurations and argues that Cardano's protocols and software should be capable of leveraging them.
+
+Analyzing more powerful hardware configurations is also important because implementing this CIP may take a year or two. During that time, hardware performance is likely to improve while costs decline. Therefore, it is valuable to discuss hardware configurations that may become standard in the near future.
 
 ### WORM Access Pattern
 
@@ -145,7 +150,7 @@ The following sections provide a detailed breakdown of these changes.
 
 ### New Protocol Version Number
 
-The Ouroboros Network Specification includes an effective mechanism for feature extension via the Handshake mini-protocol. The next unallocated version number (e.g., 15) should be used by clients and servers to signal support for the extensionded FetchBlock mini-protocol.
+The Ouroboros Network Specification includes an effective mechanism for feature extension via the Handshake mini-protocol. The next unallocated version number (e.g., 15) should be used by clients and servers to signal support for the extended FetchBlock mini-protocol.
 
 ### MsgCompressedBlocks Message for StStreaming State
 
@@ -188,6 +193,21 @@ This allows clients to quickly determine whether a stake pool operator supports 
 - Proposes specific changes to the networking protocol to enable data compression.
 
 ## Path to Active
+
+### Possible Support Levels
+
+The technical specification is intentionally designed to facilitate partial and incremental implementation. The following levels of support are possible:
+- **Minimal level** – A minimal implementation only needs to recognize protocol version 15 during the handshake and be able to parse MsgCompressedBlocks messages.
+  This implementation is straightforward and can be completed within days in most programming languages.
+- **Intermediate level** – In addition to parsing compressed blocks, an intermediate implementation can compress block data on-the-fly for each transmitted block.
+  Although on-the-fly compression is not CPU-efficient, ZStandard’s level 9 compression speed exceeds 100 MB/sec, allowing a single CPU core to fully saturate a 1 Gbps connection.
+  Implementing this is also straightforward and should take about a week in most programming languages.
+- **Advanced level** – To use CPU resources more efficiently, an advanced implementation may either cache previously compressed blocks in memory or store all block data in a compressed format.
+This may require additional work, as certain software components may need to be modified to support compressed block data.
+- **Full level** – A full implementation must leverage data compression for block storage, including storing compressed block data on disk
+and enabling direct transmission of compressed block sequences from disk when a client requests a block range.
+
+To be ready for testnet testing, all implementations should provide at least minimal support, and at least one implementation should support the intermediate level.
 
 ### Acceptance criteria
 - The proposed changes have been discussed and approved by subject matter experts.
