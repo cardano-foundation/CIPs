@@ -10,7 +10,7 @@ Authors:
 
 Proposed Solutions: CIP-*** "DRep Incentivization Framework"  
 Discussions:  
--  
+- https://github.com/cardano-foundation/CIPs/pull/997
 Created: 2025-02-13  
 License: CC-BY-4.0  
 ---  
