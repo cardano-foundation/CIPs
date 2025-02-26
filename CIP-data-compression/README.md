@@ -184,6 +184,7 @@ protocolVersions = [12, 13, 15]
 ```
 
 This allows clients to quickly determine whether a stake pool operator supports the latest protocol version, including features such as compressed block transfers.
+This is particularly important during node bootstrapping, when a new node does not yet have an up-to-date list of block-producing nodes but needs to synchronize as quickly as possible.
 
 ## Rationale: how does this CIP achieve its goals?
 
