@@ -15,8 +15,6 @@ Created: 2025-02-13
 License: CC-BY-4.0  
 ---  
 
-# **Cardano Problem Statement 019: DRep Incentivization**
-
 ## **Abstract**
 The current challenge lies in motivating Delegated Representatives (DReps) to engage actively and cast informed, representative votes within the Cardano ecosystem. Presently, the system's heavy reliance on the altruistic behavior of DReps poses a significant risk, potentially leading to a concentration of voting power among a small, select group. This situation undermines broader community participation and threatens democratic principles. The primary goal is to establish a robust incentivization framework that encourages consistent and informed participation from a diverse range of DReps. However, achieving this objective faces several technical obstacles, including designing fair reward mechanisms, ensuring the sustainability of incentives, and preventing the misuse of incentivization structures. Addressing these challenges is crucial to fostering a more balanced and representative governance model for the Cardano community.
 
