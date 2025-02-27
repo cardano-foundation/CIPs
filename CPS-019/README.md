@@ -82,3 +82,6 @@ Traditional governance mechanisms often suffer from inefficiencies, slow decisio
 - What’s the proper reward amount?
 - Should the rewards be based on ADA delegation or the DRep’s participation?
 - What’s the impact of DRep rewards on Cardano’s treasury?
+
+## Copyright
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
