@@ -46,6 +46,7 @@ The following rules apply for a multisig registration to be valid:
 - Auxiliary data with label 1854 metadata that at a minimum includes a mapping for script types.
 - `ScriptType` mapping array in metadata must match the length of, and directly corresponds to the elements in the 
   `native_script` array of transaction auxiliary data.
+- Native scripts array must at least include a payment script. Other script types are optional.
 - Public key hashes (credentials) included in the native scripts must be derived in accordance with CIP-1854, ie using 
   `purpose=1854'`. 
 - Key derivation limited to path `1854'/1815'/0'/x/y`, ie account `0` for best cross-project interoperability and performance.
@@ -109,7 +110,8 @@ off-chain sharing.
 
 >Note that the registration **must** use previously unused keys in the scripts **if** registered in a transaction. 
 
-The transaction auxiliary data metadata should be formatted using NoConversions JSON schema.
+The transaction auxiliary data metadata ([MultiSigRegistration](#multisigregistration)) should be formatted using 
+NoConversions JSON schema.
 
 If using the CSL library, this can be accomplished with helper functions `encode_json_str_to_metadatum` and 
 `decode_metadatum_to_json_str` specifying `MetadataJsonSchema.NoConversions` as the JSON schema.
@@ -138,6 +140,17 @@ can be done in the following way.
   and key credentials matching participant wallet. Only the first (oldest) encountered match should be returned.
 - Use `types` field in metadata to map native scripts and figure out its purpose
 - Repeat until no more matches are found, either sequentially or in bulk.
+
+>Note that there might be updated metadata for the registration. In addition to locating the initial registration, a
+> scan for updated metadata conforming to specification and at least one input UTxO matching the multisig payment script 
+> should be performed. If available, the last valid metadata update is to be used.
+
+### Metadata update
+
+Metadata included in the original registration transaction might need to be updated after the initial registration. To 
+support this, a metadata update transaction can be created that spends at least one input UTxO from the multisig wallet 
+to verify ownership. If this transaction includes label `1854` metadata according to specification mentioned in
+[registration](#registration), this will replace and update previously registered metadata.
 
 ## Rationale: how does this CIP achieve its goals?
 
