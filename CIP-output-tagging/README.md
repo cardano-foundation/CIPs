@@ -53,8 +53,8 @@ If this CIP is adopted, the above validator could be simplified to:
 ```haskell
 spendValidator :: BuiltinData -> Integer -> ScriptContext -> () 
 spendValidator _ outIdx ctx = 
- let ownOutputTag = (txOutTag ownOutput)
-  in traceIfFalse "Output does not correspond to own input" (ownOutputTag == (txOutRef ownInput)) 
+ let ownOutputTag = txOutTag ownOutput
+  in traceIfFalse "Output does not correspond to own input" (ownOutputTag == txOutRef ownInput)
  where
     ownInput :: TxInInfo
     ownInput = case findOwnInput ctx of
