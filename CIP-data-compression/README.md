@@ -49,7 +49,7 @@ One example of such a technique is the [ZStandard](https://github.com/facebook/z
 
 ### ZStandard Performance on Mainnet Data
 
-To understand the behavior of ZStandard compression on the Cardano mainnet data, a quick simulation using two parameters has been conducted on epoch 525. The table below summarizes the simulation parameters, and the three charts display the results. The raw simulation results are provide in the [stats.json](stats.json) file.
+To understand the behavior of ZStandard compression on the Cardano mainnet data, a quick simulation using two parameters has been conducted on epoch 525. The table below summarizes the simulation parameters, and the three charts display the results. The raw simulation results are provided in the [stats.json](stats.json) file.
 
 | Simulated&nbsp;Parameter | Value&nbsp;Range | Description |
 |---------------------    |-------------      |-------------|
@@ -139,6 +139,23 @@ A final remark regarding compression is that the compression ratio increases wit
 - Grouping blocks into larger chunks to achieve better compression ratios.
 - Utilizing the maximum compression level to further enhance the compression ratio.
 
+### Secure Integration of ZStandard Compression
+
+ZStandard is implemented in C, a language that does not provide built-in memory safety. Therefore, a security model must be developed to mitigate the risks associated with its use.
+
+The decompression process in ZStandard is particularly concerning, as it handles untrusted data received over the network. A malicious block producer could craft a compressed block to exploit vulnerabilities in decompression, potentially affecting all nodes, since every node must validate new blocks.
+
+In contrast, the compression process presents a lower risk, as it operates only on specific data known to the block producer in advance.
+
+Since the vast majority of Cardano nodes run on Linux, it is possible to Leverage one of many available Linux security best practices:
+- **Isolation via IPC**: Running ZStandard in a separate process with reduced privileges, communicating via an IPC mechanism (e.g., a Unix socket). Even if an attacker exploits a vulnerability, they would only access already published blocks or blocks pending publication, preventing exposure of sensitive data or compromising node security.
+- **Virtualization**: Running ZStandard in a virtualized environment for additional security.The ZStandard compression library can be run as a separate process in a virtualized environment for further security.
+- **Dedicated Relay Node**: Executing ZStandard on a separate relay node, which does not store sensitive data such as security keys.
+
+Additionally, further investment in security audits and code hardening could enhance ZStandard’s resilience against exploitation.
+
+In summary, while integrating a C-based library introduces security challenges, well-established best practices can effectively mitigate these risks.
+
 ## Specification
 
 The technical foundation for the above improvements can be achieved with minimal changes to [the existing network protocol](https://github.com/sierkov/daedalus-turbo/blob/main/doc/2024-sierkov-parallelized-ouroboros-praos.pdf):
@@ -158,7 +175,7 @@ The Ouroboros Network Specification includes an effective mechanism for feature 
 MsgCompressedBlocks = [6, encoding, encoded_data]
 
 ; value 0 - no compression
-; value 1 - ZSzandard compression
+; value 1 - ZStandard compression
 ; values 2+ - reserved for future use
 encoding = uint
 
@@ -214,6 +231,7 @@ To be ready for testnet testing, all implementations should provide at least min
 - The proposed changes have been discussed and approved by subject matter experts.
 - An implementation has been prepared and addresses all major concerns identified during discussions.
 - The implementation has been tested on a testnet.
+- A security model for using the ZStandard compression library on the mainnet has been presented and approved by subject matter experts.
 - Any new concerns arising during testnet evaluation are addressed in an updated implementation, which is subsequently confirmed through a follow-up testnet evaluation.
 
 ### Implementation plan
