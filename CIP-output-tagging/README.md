@@ -4,7 +4,7 @@ Title: Tag / Redeemer field in TxOut
 Category: Plutus
 Status: Proposed
 Authors:
-    - Philip <info@anastasialabs.com>
+    - Philip DiSarro <info@anastasialabs.com>
 Implementors: N/A
 Discussions:
     - https://plutus.readthedocs.io/en/latest/reference/writing-scripts/common-weaknesses/double-satisfaction.html
