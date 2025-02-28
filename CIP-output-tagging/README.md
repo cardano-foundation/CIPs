@@ -13,20 +13,6 @@ Created: 2024-01-04
 License: CC-BY-4.0
 ---
 
-<!-- Existing categories:
-
-- Meta     | For meta-CIPs which typically serves another category or group of categories.
-- Wallets  | For standardisation across wallets (hardware, full-node or light).
-- Tokens   | About tokens (fungible or non-fungible) and minting policies in general.
-- Metadata | For proposals around metadata (on-chain or off-chain).
-- Tools    | A broad category for ecosystem tools not falling into any other category.
-- Plutus   | Changes or additions to Plutus
-- Ledger   | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
-- Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
-
--->
-
-
 ## Abstract
 We propose to allow the attachment of arbitrary, temporary data to transaction outputs within the script context. This data, akin to redeemers in their operational context, is intended to be used exclusively during the execution of Plutus scripts and thus are not recorded by the ledger. This will facilitate a wide variety of smart contract design patterns, one of which can be used as a general solution for double satisfaction without sacrificing script composability.
 
