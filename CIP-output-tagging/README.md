@@ -28,7 +28,7 @@ The addition of `blake2b_224` in Plutus V3 enabled another design pattern to ass
 spendValidator :: BuiltinData -> Integer -> ScriptContext -> () 
 spendValidator _ outIdx ctx = 
  let ownInputRefHash = blake2b_224 (appendByteString (appendByteString "0100004881" (blake2b_224 (serialiseData (txOutRef ownInput)))) "0001")
-     (Just ownOutputRefScriptHash) = (txOutReferenceScript ownOutput)
+     Just ownOutputRefScriptHash = txOutReferenceScript ownOutput
   in traceIfFalse "Output does not correspond to own input" (ownInputRefHash == ownOutputRefScriptHash) 
  where
     ownInput :: TxInInfo
