@@ -69,7 +69,6 @@ The intention of the above contract is much clearer, the contract itself is more
 We already have redeemers associated with each script to provide the smart contract with information that is only relevant during execution for similar reasons (ie redeemers allow us to associate arbitrary data with a script). This would be to TxOuts what Redeemers are for scripts, allowing us to associate arbitrary data (relevant only during Phase 2 validation) to outputs.
 
 ## Specification
-<!-- The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely on the basis of the design in the CIP. This is necessary to facilitate multiple, interoperable implementations. This must include how the CIP should be versioned. If a proposal defines structure of on-chain data it must include a CDDL schema in it's specification.-->
 We extend transaction witness set with a new list of arbitrary data associated with transaction outputs (`output_tags`).
 
 ### Script context
