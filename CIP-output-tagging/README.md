@@ -153,10 +153,10 @@ The `Integer` represents the index of the output in the transaction outputs for 
 ## Path to Active
 
 ### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
+- [ ] These rules included within a official Plutus version, and released via a major hard fork.
 
 ### Implementation Plan
-<!-- A plan to meet those criteria. Or `N/A` if not applicable. -->
+- [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
 
 ## Copyright
 
