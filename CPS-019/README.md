@@ -2,7 +2,7 @@
 CPS: ?
 Title: DRep Incentivization  
 Status: Open  
-Category: Governance  
+Category: Tools  
 Authors:  
 - Seomon (Cardano After Dark) <Seomonregister@gmail.com>  
 - Martin Marinov <martin.marinov@cardano.marketing>  
