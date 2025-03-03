@@ -1,5 +1,5 @@
 ---
-CIP: 0142
+CIP: 142
 Title: Web-Wallet Bridge - Network Determination
 Status: Proposed
 Category: Wallets
@@ -100,11 +100,11 @@ While CIP-0030's `getNetworkId()` provides basic network identification, the gro
 2. **Involve ops and products team to drive the plan further**
    - First implementation on the Catalyst playground
    - Create a plan, validate and collect feedback and suggestions
-3. **Implement the CIP-142 extension in the Lace wallet**
-   - Implement and use the CIP-142 extension in the Catalyst pla
+3. **Implement the CIP-0142 extension in the Lace wallet**
+   - Implement and use the CIP-0142 extension in the Catalyst pla
    - Validate against all specified acceptance criteria
 4. **Reach out to other Cardano wallet providers**
-   - Introduce the CIP-142 extension to other wallet providers (Nami)
+   - Introduce the CIP-0142 extension to other wallet providers (Nami)
    - Collect feedback and suggestions
    - Validate against acceptance criteria
 
