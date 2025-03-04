@@ -296,24 +296,57 @@ the case of the COSE signing this will be an array of elements used in the
 validation process. In the case of a simple Ed25519 key signature, this will be
 a simple hex-encoded CBOR witness signature.
 
+> **Note:** COSE Singing as described in CIP-0008 uses a boolean value as the
+> second entry of the COSE Payload to indicate whether the payload was hashed
+> by the signing function before singing. Because Cardano on-chain metadata
+> does not support boolean values, this must be converted to/from a binary (0 or 
+> 1\) value when encoding or decoding the payload.
+
 ## Rationale: how does this CIP achieve its goals?
 
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
+This CIP was born out of a desire to allow SPOs to routinely identify themselves
+to third-party services such as: voting platforms, social media, governance 
+without risking or compromising the keys used in the actual operation and setup
+of the stake pool.
 
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
+Thus, the concept of an authorized "hot key" (the Calidus Key) was born as a
+solution to this authentication issue. Given that [CIP-0088] had already been
+written and was extensible to support this registration with minimal additional
+support effort, extending it was chosen in favor of other solutions.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
+This CIP should be considered for `Active` status once a substantial amount of
+ecosystem tooling supports it and SPOs as well as third-party applications have
+shown an interest in using it as a method of authentication and validation.
+
+* Ecosystem Tooling
+  * [x] Cardano Signer
+  * [x] pg_cardano
+  * [x] cardano-hw-cli support
+  * [ ] Cardano Koios 
+    * currently testing in Preview on Branch 1.3.2
+  * [ ] Blockfrost
+  * [ ] CN Tools
+  * [ ] SPO Scripts
+* Wallets
+  * [ ] Eternl
+* Applications
+  * [ ] CExplorer
+  * [ ] CardanoScan
+  * [ ] AdaStat
+  * [ ] PoolTool.io
+  * [ ] DripDropz
+* Registered Pools
+  * [ ] _x_ of _y_ SPOs have registered
 
 ### Implementation Plan
 
-<!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
-
-<!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
+The authors of this CIP will continue to work on their own tooling and reference
+implementations as well as reaching out to community and ecosystem partners to
+drive adoption and usage of this standard.
 
 ## Copyright
 
