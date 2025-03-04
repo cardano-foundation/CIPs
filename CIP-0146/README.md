@@ -1,6 +1,6 @@
 ---
 CIP: 146
-Title: Multi-signatures wallet registration and discovery
+Title: Multi-signature wallet registration and discovery
 Category: Wallets
 Status: Proposed
 Authors:
@@ -15,12 +15,12 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This document describes how to format and register a multi-signatures wallet registration on the blockchain. The 
-individual parties that are part of the multi-signatures wallet can through this registration transaction easily be 
+This document describes how to format and register a multi-signature wallet registration on the blockchain. The 
+individual parties that are part of the multi-signature wallet can through this registration transaction easily be 
 discovered and added to the Cardano wallet software that implement the standard.
 
 This standard both extend on and add restrictions to
-[CIP-1854 | Multi-signatures HD Wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1854/README.md)
+[CIP-1854 | Multi-signature HD Wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1854/README.md)
 to provide the structure of transaction auxiliary data.
 
 ## Motivation: why is this CIP necessary?
@@ -163,7 +163,7 @@ rules and restrictions for format of metadata and keys used in scripts.
 A couple of questions was raised during discussions with team members and other projects when formalizing this 
 standard. The answers lay the ground in large for the specification and restrictions defined.  
 
-#### Why limit it to purpose 1854 and not allow both HD (1852) and Multi-Signatures (1854) keys?
+#### Why limit it to purpose 1854 and not allow both HD (1852) and Multi-Signature (1854) keys?
 Mostly due to compatibility across projects and hardware devices as this is how the well established CIP-1854 
 specification describe that it should be done. Also for discovery, it reduces complexity and increases
 performance by only having to scan for a restricted amount of keys.
