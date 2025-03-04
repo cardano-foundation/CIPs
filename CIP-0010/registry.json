@@ -112,6 +112,14 @@
     "description": "fida.finance transaction metadata"
   },
   {
+    "transaction_metadatum_label": 18300,
+    "description": "selfdriven Achievement"
+  },
+  {
+    "transaction_metadatum_label": 18308,
+    "description": "selfdriven Identity"
+  },
+  {
     "transaction_metadatum_label": 21325,
     "description": "PRISM's Verifiable Data Registry for the PRISM DID method"
   },
