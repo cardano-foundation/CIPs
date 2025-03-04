@@ -301,6 +301,17 @@ a simple hex-encoded CBOR witness signature.
 > by the signing function before signing. Because Cardano on-chain metadata
 > does not support boolean values, this must be converted to/from a binary (0 or 
 > 1\) value when encoding or decoding the payload.
+> 
+> By default, the COSE Sign1 Payload contains an entry which is an object (map)
+> containing a `hashed` key and a boolean `true/false` value. This entire object
+> should be replaced with a simple `1` or `0` value representing the `true/false`
+> value of the `hashed` key.
+> 
+> Example:
+> `{"hashed": true}` becomes `1` and `{"hashed": false}` becomes `0`. In most
+> cases it will also be required to convert from the `1` or `0` value stored in
+> entry 2 of the COSE Sign1 Payload array back to object notation before
+> validating.
 
 ## Rationale: how does this CIP achieve its goals?
 
