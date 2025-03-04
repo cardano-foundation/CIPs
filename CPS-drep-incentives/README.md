@@ -50,7 +50,7 @@ By introducing performance-based rewards that factor in voting participation, ra
 ### **Primary Objective**
 
 
-Establish a structured and sustainable incentivization framework that motivates and rewards Delegated Representatives (DReps) to participate actively and make well-informed governance decisions, therfor upholding sustainable, ethical as well as decentralized principles of the Cardano ecosystem.
+Establish a structured and sustainable incentivization framework that motivates and rewards Delegated Representatives (DReps) to participate actively and make well-informed governance decisions, therefore upholding sustainable, ethical as well as decentralized principles of the Cardano ecosystem.
 
 ### **Key Goals**
 #### Compensate DReps for their efforts
