@@ -77,6 +77,7 @@ Traditional governance mechanisms often suffer from inefficiencies, slow decisio
 
 
 ## **Open Questions**
+- Is change needed at the Ledger/protocol level or tooling/wallet level?
 - What are the current incentives for DReps?
 - Is the current architecture avoiding or aiding centralization?
 - What’s the proper reward amount?
