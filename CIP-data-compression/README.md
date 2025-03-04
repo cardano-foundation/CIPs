@@ -213,7 +213,7 @@ Given the high quality of the ZStandard library, such a crash is likely indicati
 - **Block the malicious peer** to prevent further communication and mitigate potential Denial-of-Service attacks.
 - **Restart the worker process** to continue handling requests from a safe state.
 
-The provided implementation is compact—approximately **200 lines of code** for [the worker process](./secure-zstd/lib/seczstd/worker.c) and **100 lines of code** for [the caller](./secure-zstd/lib/seczstd/worker.c). This allows for **easy security audits** compared to auditing the full ZStandard decompression library, which consists of about **15,000** lines of code.
+The provided implementation is compact—approximately **200 lines of code** for [the worker process](./secure-zstd/lib/seczstd/worker.c) and **100 lines of code** for [the caller](./secure-zstd/lib/seczstd/caller.c). This allows for **easy security audits** compared to auditing the full ZStandard decompression library, which consists of about **15,000** lines of code.
 
 Furthermore, the **Isolation via IPC** approach, extended with ```seccomp```, can be similarly applied to other untrusted data-processing tasks, such as newer but less-tested cryptographic libraries (e.g., potential Plutus builtins) and other use cases.
 
