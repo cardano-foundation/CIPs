@@ -43,7 +43,7 @@ information about the wallet and its participants.
 The following rules apply for a multisig registration to be valid:
 
 - Auxiliary data with a non-empty native scripts array.
-- Auxiliary data with label 1854 metadata that at a minimum includes a mapping for script types.
+- Auxiliary data with label `1854` metadata that at a minimum includes a mapping for script types.
 - `ScriptType` mapping array in metadata must match the length of, and directly corresponds to the elements in the 
   `native_script` array of transaction auxiliary data.
 - Native scripts array must at least include a payment script. Other script types are optional.
@@ -52,13 +52,13 @@ The following rules apply for a multisig registration to be valid:
 - Key derivation limited to path `1854'/1815'/0'/x/y`, ie account `0` for best cross-project interoperability and performance.
 - Key index (`y`) must be incremented by `1` for each publicly registered multisig wallet.
 - Key for role (`x`) must use the same index (`y`) for all native scripts in the registration transaction.
-- Additional optional metadata can be added to the 1854 metadatum label to describe the multisig.
+- Additional optional metadata can be added to the `1854` metadatum label to describe the multisig.
 - Optional icon fields is a URL to a non-animated image file, maximum 40kb in size.
 
 ### Data Types
 
 #### MultiSigRegistration
-Label 1854 metadata.
+Label `1854` metadata.
 ```ts
 interface MultiSigRegistration {
   types: ScriptType[];
@@ -136,7 +136,7 @@ can be done in the following way.
 
 - Derive Ed25519 verification keys from path `1854'/1815'/0'/x/y`.
 - Create key credentials, `blake2b-224` hash digests of derived keys in previous step.
-- Search for multisig registration transactions on the blockchain that contain metadata with metadatum label **1854** 
+- Search for multisig registration transactions on the blockchain that contain metadata with metadatum label `1854` 
   and key credentials matching participant wallet. Only the first (oldest) encountered match should be returned.
 - Use `types` field in metadata to map native scripts and figure out its purpose
 - Repeat until no more matches are found, either sequentially or in bulk.
@@ -193,9 +193,9 @@ eliminated.
 Keeping key index in sync for all roles for the same registration makes key handling more manageable.
 
 #### Is types mapping in metadata really necessary?
-It's true that on the wallet side when deriving purpose 1854 keys and scanning for registered wallets, it's known 
+It's true that on the wallet side when deriving purpose `1854` keys and scanning for registered wallets, it's known 
 from what path the keys where derived and thus one could figure out the type of native script based on key credential. 
-However, enforcing the transaction to include metadata with metadatum label 1854 and the types mapping make it clear 
+However, enforcing the transaction to include metadata with metadatum label `1854` and the types mapping make it clear 
 that this is a multisig registration and easier to scan for. 
 
 ## Path to Active
