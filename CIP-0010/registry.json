@@ -73,7 +73,7 @@
   },
   {
     "transaction_metadatum_label": 1854,
-    "description": "Multi-signatures wallet registration"
+    "description": "CIP-146 Multi-signatures wallet registration"
   },
   {
     "transaction_metadatum_label": 1870,
