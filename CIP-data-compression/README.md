@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Data compression for higher throughput and lower latency
+Title: Block Data Compression
 Status: Proposed
 Category: Network
 Authors:
@@ -141,20 +141,27 @@ A final remark regarding compression is that the compression ratio increases wit
 
 ### Secure Integration of ZStandard Compression
 
-ZStandard is implemented in C, a language that does not provide built-in memory safety. Therefore, a security model must be developed to mitigate the risks associated with its use.
+The ZStandard C library is a highly optimized and widely adopted compression algorithm. It is used by major organizations such as Google and Mozilla and is supported as a content encoding in browsers like Chrome and Firefox. Additionally, ZStandard participates in Google's [OSS-Fuzz](https://introspector.oss-fuzz.com/projects-overview) initiative, which highlights its code quality and robustness.
 
-The decompression process in ZStandard is particularly concerning, as it handles untrusted data received over the network. A malicious block producer could craft a compressed block to exploit vulnerabilities in decompression, potentially affecting all nodes, since every node must validate new blocks.
+However, since ZStandard is implemented in C—a language without built-in memory safety—careful security measures must be in place to mitigate potential risks.
 
-In contrast, the compression process presents a lower risk, as it operates only on specific data known to the block producer in advance.
+The primary security concern is a vulnerability in the decompression algorithm. The decompression code directly processes untrusted data received over the Internet. A malicious actor could craft a compressed block to exploit such vulnerabilities, potentially affecting all nodes, as every node must validate new blocks.
 
-Since the vast majority of Cardano nodes run on Linux, it is possible to Leverage one of many available Linux security best practices:
-- **Isolation via IPC**: Running ZStandard in a separate process with reduced privileges, communicating via an IPC mechanism (e.g., a Unix socket). Even if an attacker exploits a vulnerability, they would only access already published blocks or blocks pending publication, preventing exposure of sensitive data or compromising node security.
-- **Virtualization**: Running ZStandard in a virtualized environment for additional security.The ZStandard compression library can be run as a separate process in a virtualized environment for further security.
-- **Dedicated Relay Node**: Executing ZStandard on a separate relay node, which does not store sensitive data such as security keys.
+In contrast, the compression process presents a lower risk, as it operates only on known data controlled by the block producer.
 
-Additionally, further investment in security audits and code hardening could enhance ZStandard’s resilience against exploitation.
+Most Cardano nodes run on Linux, which provides several security mechanisms to mitigate these risks. By ensuring that the decompression process is secure on Linux, we can achieve significant risk reduction. The following strategies can be applied:
+- **Isolation via IPC**: Running ZStandard in a separate process with minimal privileges and communicating through an IPC mechanism (e.g., a Unix socket). Even if an attacker exploits a vulnerability, they would only gain access to already published blocks or blocks pending validation, minimizing the impact.
+- **Virtualization**: Running ZStandard within a lightweight virtualized environment for added isolation.
+- **Dedicated Relay Node**: Executing ZStandard on a separate relay node, which does not store sensitive data such as private keys.
 
-In summary, while integrating a C-based library introduces security challenges, well-established best practices can effectively mitigate these risks.
+Among these, isolation via IPC is particularly attractive due to its minimal impact on performance and decompression latency. To demonstrate this approach, this proposal includes an example implementation that leverages Linux’s ```seccomp``` library to restrict available syscalls to only ```read```, ```write```, and ```exit```, significantly limiting the attack surface. Further details are provided in the section **Example Approach to Secure Integration of ZStandard Library on Linux**.
+
+For enhanced security, these strategies can be combined to provide multiple layers of defense. Moreover, modern Linux distributions also include **Data Execution Prevention (DEP)** and **Address Space Layout Randomization (ASLR)** by default, which harden the system against memory-based exploits by preventing code execution in non-executable memory regions and randomizing memory addresses.
+
+Another option for securely executing ZStandard compression code is **WebAssembly (WASM)**.
+C code with minimal modifications can be compiled directly into WASM bytecode, enabling secure execution within a WebAssembly runtime. This approach has already been explored in projects such as [zstandard-wasm](https://github.com/fabiospampinato/zstandard-wasm).  Moreover, early benchmarks indicate that decompression performance is reduced by only a factor of two compared to native execution. Given this level of efficiency, WebAssembly presents a viable solution for reducing block propagation time while enhancing security.
+
+Finally, ```ZStandard``` data format is well documented in [RFC8478](https://datatracker.ietf.org/doc/html/rfc8478), which allows for the development of decompression implementations in memory-safe languages. For example, a Rust-based implementation, [zstd-rs](https://github.com/KillingSpark/zstd-rs), already exists. However, its current decompression performance is reported to be approximately **3.5 times slower** than the C version.
 
 ## Specification
 
@@ -187,6 +194,28 @@ encoded_data = bytes
 - The option to compress a sequence of blocks.
 
 The server can choose to send either compressed or uncompressed blocks based on its configuration. This capability enables the server to send blocks as they are stored on disk, which improves performance and reduces CPU processing times during batch synchronization.
+
+### Example Approach to Secure Integration of ZStandard Library on Linux
+
+Since Cardano block-producers are run dominantly on Linux, the use of the **Isolation via IPC** tactic can be further strengthened using Linux's ```seccomp``` feature to minimize the potential attack surface. An example implementation of this approach is provided in the [secure-zstd](./secure-zstd/) directory of this proposal.
+
+#### How It Works:
+1. The managing (caller) process creates a Unix socket.
+2. A new worker process is started, which communicates exclusively with the parent process through this socket.
+3. The worker process pre-initializes the ZStandard library by running a compressor and decompressor on a statically defined dataset. This eliminates the need for further dynamic memory allocations.
+4. The worker process closes all open file descriptors except for the Unix socket.
+5. The worker process applies a ```seccomp``` profile to restrict system calls to only ```read```, ```write```, and ```exit```.
+6. The worker process is then ready to handle compression and decompression requests from the caller process.
+
+An attacker can still send malicious data to the Cardano Node. However, in such cases, the worker process will immediately crash, and the caller process will receive a corresponding notification.
+
+Given the high quality of the ZStandard library, such a crash is likely indicative of an attack attempt, warranting an appropriate response:
+- **Block the malicious peer** to prevent further communication and mitigate potential Denial-of-Service attacks.
+- **Restart the worker process** to continue handling requests from a safe state.
+
+The provided implementation is compact—approximately **200 lines of code** for [the worker process](./secure-zstd/lib/seczstd/worker.c) and **100 lines of code** for [the caller](./secure-zstd/lib/seczstd/worker.c). This allows for **easy security audits** compared to auditing the full ZStandard decompression library, which consists of about **15,000** lines of code.
+
+Furthermore, the **Isolation via IPC** approach, extended with ```seccomp```, can be similarly applied to other untrusted data-processing tasks, such as newer but less-tested cryptographic libraries (e.g., potential Plutus builtins) and other use cases.
 
 ### Indicating Protocol Version Support in Stake Pool Operator On-Chain Data
 
