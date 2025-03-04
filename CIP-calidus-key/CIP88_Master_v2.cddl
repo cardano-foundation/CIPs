@@ -101,7 +101,7 @@ COSE_Headers = {
     -2 : bytes .size (32),  ; Public Key
 }
 
-COSE_Payload = [
+COSE_Sign1_Payload = [
     bytes .size (41),
     uint,
     bytes .size (32),
@@ -109,9 +109,9 @@ COSE_Payload = [
 ]
 
 COSE_Witness = {
-  ? 0 : uint,           ; Witness Type Identifier (optional or 0)
-    1 : COSE_Headers,   ; COSE Header Object
-    2 : COSE_Payload,   ; COSE Signature Payload
+  ? 0 : uint,                ; Witness Type Identifier (optional or 0)
+    1 : COSE_Headers,        ; COSE Header Object
+    2 : COSE_Sign1_Payload,  ; COSE Signature Payload
 }
 
 v2_witness = {

@@ -252,7 +252,7 @@ COSE_Headers = {
     -2 : bytes .size (32),  ; Public Key
 }
 
-COSE_Payload = [
+COSE_Sign1_Payload = [
     bytes .size (41),
     uint,
     bytes .size (32),
@@ -260,9 +260,9 @@ COSE_Payload = [
 ]
 
 COSE_Witness = {
-  ? 0 : uint,           ; Witness Type Identifier (optional or 0)
-    1 : COSE_Headers,   ; COSE Header Object
-    2 : COSE_Payload,   ; COSE Signature Payload
+  ? 0 : uint,                ; Witness Type Identifier (optional or 0)
+    1 : COSE_Headers,        ; COSE Header Object
+    2 : COSE_Sign1_Payload,  ; COSE Signature Payload
 }
 
 v2_witness = {
@@ -296,9 +296,9 @@ the case of the COSE signing this will be an array of elements used in the
 validation process. In the case of a simple Ed25519 key signature, this will be
 a simple hex-encoded CBOR witness signature.
 
-> **Note:** COSE Singing as described in CIP-0008 uses a boolean value as the
+> **Note:** COSE Signing as described in CIP-0008 uses a boolean value as the
 > second entry of the COSE Payload to indicate whether the payload was hashed
-> by the signing function before singing. Because Cardano on-chain metadata
+> by the signing function before signing. Because Cardano on-chain metadata
 > does not support boolean values, this must be converted to/from a binary (0 or 
 > 1\) value when encoding or decoding the payload.
 
