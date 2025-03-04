@@ -11,7 +11,8 @@ Implementors:
     -   pg_cardano: https://github.com/cardano-community/pg_cardano/releases/tag/v1.0.5-p1
     -   Cardano Koios: https://github.com/cardano-community/koios-artifacts/tree/v1.3.2
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/999
+    - https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
 Created: 2025-02-17
 License: CC-BY-4.0
 ---
