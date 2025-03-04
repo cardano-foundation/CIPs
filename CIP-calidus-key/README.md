@@ -184,6 +184,8 @@ a new on-chain registration with a higher nonce value.
 
 `h'57758911253f6b31df2a87c10eb08a2c9b8450768cb8dd0d378d93f7c2e220f0'`
 
+![Calidus Key Flow Chart](CalidusKey.jpg)
+
 ### Registration Witness Array
 
 **IMPORTANT**: This v2 CIP introduces two major changes to the signing method(s)
