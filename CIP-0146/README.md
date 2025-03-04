@@ -35,7 +35,7 @@ transaction utilizing the transaction auxiliary data. This is a convenient way f
 discover the multisig wallet before it's first usage.
 
 A common structure of the auxiliary data is needed for interoperability between wallets and web applications. The 
-metadatum label **1854** is used to define the native script types added in the auxiliary data and optionally provide 
+metadatum label `1854` is used to define the native script types added in the auxiliary data and optionally provide 
 information about the wallet and its participants. 
 
 ## Specification
