@@ -1,12 +1,16 @@
 ---
 CIP: 55
 Title: Protocol Parameters (Babbage Era)
-Authors: Jared Corduan <jared.corduan@iohk.io>
 Status: Active
-Type: Informational
+Category: Ledger
+Authors:
+  - Jared Corduan <jared.corduan@iohk.io>
+Implementors:
+  - IOG
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/265
 Created: 2022-05-19
-License: CC-BY-4.0
-Requires: CIP-0028
+License: Apache-2.0
 ---
 
 ## Abstract
@@ -15,7 +19,7 @@ This CIP extends CIP-0028 to introduce a change to one of the Alonzo protocol pa
 We propose to have this updateable parameter be based on bytes instead of words (eight bytes).
 Additionally, two Alonzo era protocol parameters were removed, namely the decentralization parameter and the extra entropy parameter.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 ### Lovelace Per UTxO Byte
 
@@ -47,12 +51,10 @@ by one of the original authors of the Praos paper.
 The Babbage era removes both of the "transitional" features of TPraos, rendering the decentralization parameter
 and the extra entropy parameter useless.
 
-
 ## Specification
 
 The removal of the decentralization parameter and the extra entropy parameter is self explanatory.
 We now describe the specification of the `coinsPerUTxOByte` parameter.
-
 
 ### Rename
 
@@ -79,7 +81,7 @@ In the Babbage era, unspent transaction outputs will be required to contain _at 
 many lovelace. The constant overhead of 160 bytes accounts for the transaction input
 and the entry in the UTxO map data structure (20 words * 8 bytes).
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 We would like the formula for the minimum lovelace in a unspent transaction output
 be simpler and easier to reason about by all users of the Cardano network, while at
@@ -97,8 +99,15 @@ in protocol parameter updates.
 
 ## Path to Active
 
-- [x] The Cardano Babbage era is activated.
+### Acceptance Criteria
+
+- [x] The Babbage ledger era is activated.
+- [x] Documented parameters have been in operational use by Cardano Node and Ledger as of the Babbage ledger era.
+
+### Implementation Plan
+
+- [x] Babbage ledger era parameters are deemed correct by working groups at IOG.
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).

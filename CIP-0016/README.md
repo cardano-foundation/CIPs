@@ -1,9 +1,16 @@
 ---
 CIP: 16
 Title: Cryptographic Key Serialisation Formats
-Authors: Luke Nadur <luke.nadur@iohk.io>
-Comments-URI: https://github.com/cardano-foundation/CIPs/pull/57
 Status: Active
+Category: Tools
+Authors:
+  - Luke Nadur <luke.nadur@iohk.io>
+Implementors:
+  - jcli <https://github.com/input-output-hk/catalyst-core/tree/main/src/jormungandr/jcli>
+  - cardano-signer <https://github.com/gitmachtl/cardano-signer>
+  - cardano-serialization-lib <https://github.com/Emurgo/cardano-serialization-lib>
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/57
 Type: Standards
 Created: 2020-12-21
 License: Apache-2.0
@@ -127,6 +134,19 @@ and
 already utilize the more compact 96-byte format, we opt to define that as the
 standard.
 
+## Path to Active
+
+### Acceptance Criteria
+
+- [x] Confirm support by applications and tools from different developers:
+  - [x] [jcli](https://github.com/input-output-hk/catalyst-core/tree/main/src/jormungandr/jcli)
+  - [x] [cardano-signer](https://github.com/gitmachtl/cardano-signer)
+  - [x] [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib)
+
+### Implementation Plan
+
+N/A
+
 ## Copyright
 
-This CIP is licensed under Apache-2.0.
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).

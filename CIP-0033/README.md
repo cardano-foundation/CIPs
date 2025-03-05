@@ -1,26 +1,26 @@
 ---
 CIP: 33
 Title: Reference scripts
+Status: Active
+Category: Plutus
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Jared Corduan <jared.corduan@iohk.io>
-Status: Active
-Category: Plutus
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/161
+    - https://github.com/cardano-foundation/CIPs/pull/213
 Created: 2021-11-29
 License: CC-BY-4.0
-Requires: CIP-31
 ---
-
-# Reference scripts
 
 ## Abstract
 
 We propose to allow scripts ("reference scripts") to be attached to outputs, and to allow reference scripts to be used to satisfy script requirements during validation, rather than requiring the spending transaction to do so.
 This will allow transactions using common scripts to be much smaller.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Script sizes pose a significant problem. This manifests itself in two ways:
 1. Every time a script is used, the transaction which caused the usage must supply the whole script as part of the transaction. This bloats the chain, and passes on the cost of that bloat to users in the form of transaction size fees.
@@ -64,7 +64,7 @@ transaction_output =
 ```
 TODO: can we use a more generic type that allows _any_ script in a forwards-compatible way?
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 The key idea of this proposal is stop sending frequently-used scripts to the chain every time they are used, but rather make them available in a persistent way on-chain.
 
@@ -123,3 +123,17 @@ We can't really present the information about reference scripts to them in a fai
 We could omit the information entirely, but this is dangerous in a different way.
 Omitting information may lead scripts to make assumptions about the transaction that are untrue; for this reason we prefer not to silently omit information as a general principle.
 That leaves us only one option: reject transactions where we would have to present information about reference scripts to old scripts.
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [x] Fully implemented in Cardano as of the Vasil protocol upgrade.
+
+### Implementation Plan
+
+- [x] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

@@ -1,11 +1,16 @@
 ---
 CIP: 9
 Title: Protocol Parameters (Shelley Era)
-Authors: Kevin Hammond <kevin.hammond@iohk.io>
 Status: Active
-Type: Informational
+Category: Ledger
+Authors:
+  - Kevin Hammond <kevin.hammond@iohk.io>
+Implementors:
+  - IOG <https://iog.io/>
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/45
 Created: 2021-01-29
-License: CC-BY-4.0
+License: Apache-2.0
 ---
 
 ## Abstract
@@ -13,12 +18,15 @@ License: CC-BY-4.0
 This CIP is an informational CIP that describes the initial protocol parameter settings for the Shelley era of the Cardano blockchain, plus the changes that have been made.
 It is intended to serve as a historic record, allowing protocol parameter changes to be tracked back to the original settings.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 We need to provide a concise description of the initial protocol parameter choices, that can be used by the community as the base for future proposed protocol changes,
 and that document the chain of changes to the parameters.
 
-## Proposing Protocol Parameter Changes
+
+## Specification
+
+### Proposing Protocol Parameter Changes
 
 This CIP records only the changes to the protocol parameters that have actually been made.  Suggested changes to protocol parameters should be proposed by preparing and submitting a new CIP, rather than editing this CIP.  The following information should be included.
 
@@ -26,8 +34,6 @@ This CIP records only the changes to the protocol parameters that have actually 
 |-----------------------  |--------------------  |------------------------ |---------------   | ---------------------------- |
 
 Where necessary, the summary rationale should be supported by a few paragraphs of text giving the full rationale, plus references to any external documents that are needed to understand the proposal.
-
-## Specification
 
 Protocol parameters are used to affect the operation of the Cardano Protocol.  They may be either **updatable** or **non-updatable**.
 Updatable parameters can be tuned to vary the operation of the block producing protocol, impacting the proportion of pools that are federated/non-federated,
@@ -177,58 +183,9 @@ of the chain can be verified, but they can no longer be altered.
     }
 ```
 
+### Process for Making Changes to Protocol Parameters
 
-## Rationale
-
-The initial parameter settings were chosen based on information from the Incentivised Testnet, the Haskell Testnet, Stake Pool Operators plus benchmarking and security concerns.  This parameter choice was deliberately conservative,
-in order to avoid throttling rewards in the initial stages of the Cardano mainnet, and to support a wide range of possible stake pool operator (professional, amateur, self, etc.).
-Some parameter choices (``systemStart``, ``securityParam``) were required to be backwards compatible with the Byron chain.
-
-
-### Key Behavioural Parameters
-
-
-The key  parameters that govern the behaviour of the system are ``nOpt``, ``a0``, ``decentralisationParam`` and ``minPoolCost``.
-Changes to these parameters need to be considered as a package -- there can be unintended consequences when changing a single parameter in isolation.
-
-It is expected that the following changes to these parameters are likely in the near to medium term:
-
-* increasing ``nOpt`` to align more closely with the number of active pools
-* increasing ``a0`` to increase the pledge effect
-* decreasing ``minPoolCost`` (e.g. in line with growth with the Ada value)
-* decreasing ``decentralisationParam`` to 0 (to enable full decentralisation of block production)
-
-Further adjustments are likely to be required to tune the system as it evolves.
-
-
-### Economic Parameters
-
-Four parameters govern the economics of the system:  ``tau``, ``rho``, ``minFeeA`` and ``minFeeB``.
-The first two concern the rate of rewards that are provided to stake pools, delegators and the treasury.
-The others concern transaction costs.
-
-
-### Transaction and Block Sizes
-
-Three parameters govern block and transaction sizes: ``maxBlockBodySize``, ``maxBlockHeaderSize``, ``maxTxSize``.
-Their settings have been chosen to ensure the required levels of functionality, within
-constrained resource restrictions (including long-term blockchain size and real-time worldwide exchange of blocks).
-Changes to these parameters may impact functionality, network reliability and performance.
-
-
-## Backward Compatibility
-
-This CIP describes the initial set of protocol parameters and the changes to date, so backwards compatibility is not an issue.
-Future proposals may change any or all of these parameters.
-A change to the major protocol version indicates a major change in the node software.
-Such a change may involve adding/removing parameters or changing their semantics/formats.
-In contrast, minor protocol changes are used to ensure key software updates without changing
-the meaning of any protocol parameters.
-
-
-## Process for Making Changes to Protocol Parameters
-
-### Governance
+#### Governance
 
 Changes will affect many stakeholders and must therefore be subject to open community debate and discussion.
 
@@ -236,27 +193,23 @@ Ultimately, the Voltaire protocol voting mechanism will be used to achieve fully
 In the interim, the CIP process will be used.
 
 
-### Signalling Protocol Parameter Changes
+#### Signalling Protocol Parameter Changes
 
 Changes to the parameters need to be signalled to the community well in advance, so that they can take appropriate action.  For the most significant parameters, a minimum of 4-6 weeks
 elapsed time between announcement and enactment is appropriate.  This period must be included in the CIP.  Announcements will be made as soon
 as practical after the conclusion of the vote.
 
 
-### Applying Protocol Parameter Changes
+#### Applying Protocol Parameter Changes
 
 Protocol parameter changes must be submitted and endorsed within the first 24 hours of the epoch before they are required to come into effect.
 For example, a change that is intended for epoch 300 must be submitted and endorsed in the first 24 hours of epoch 299.
 Once a change has been submitted and endorsed by a sufficient quorum of keyholders (currently 5 of the 7 genesis keys), it cannot be revoked.
 
-### Voiding Proposed Protocol Parameter Changes
+#### Voiding Proposed Protocol Parameter Changes
 
 Once a protocol parameter change has been announced, it can only be overridden through the voting process (CIP, Voltaire etc.).  Any vote must be
 completed before the start of the epoch in which the change is to be submitted.
-
-## Path to Active
-
-- [x] The Cardano Shelley era is activated.
 
 ### Change Log
 
@@ -355,6 +308,65 @@ The Mary Hard Fork Event will introduce multi-asset token capability.  It is not
 
 See [CIP-0028: Protocol Parameters (Alonzo Era)](../CIP-0028).
 
+
+## Rationale: how does this CIP achieve its goals?
+
+The initial parameter settings were chosen based on information from the Incentivised Testnet, the Haskell Testnet, Stake Pool Operators plus benchmarking and security concerns.  This parameter choice was deliberately conservative,
+in order to avoid throttling rewards in the initial stages of the Cardano mainnet, and to support a wide range of possible stake pool operator (professional, amateur, self, etc.).
+Some parameter choices (``systemStart``, ``securityParam``) were required to be backwards compatible with the Byron chain.
+
+
+### Key Behavioural Parameters
+
+
+The key  parameters that govern the behaviour of the system are ``nOpt``, ``a0``, ``decentralisationParam`` and ``minPoolCost``.
+Changes to these parameters need to be considered as a package -- there can be unintended consequences when changing a single parameter in isolation.
+
+It is expected that the following changes to these parameters are likely in the near to medium term:
+
+* increasing ``nOpt`` to align more closely with the number of active pools
+* increasing ``a0`` to increase the pledge effect
+* decreasing ``minPoolCost`` (e.g. in line with growth with the Ada value)
+* decreasing ``decentralisationParam`` to 0 (to enable full decentralisation of block production)
+
+Further adjustments are likely to be required to tune the system as it evolves.
+
+
+### Economic Parameters
+
+Four parameters govern the economics of the system:  ``tau``, ``rho``, ``minFeeA`` and ``minFeeB``.
+The first two concern the rate of rewards that are provided to stake pools, delegators and the treasury.
+The others concern transaction costs.
+
+
+### Transaction and Block Sizes
+
+Three parameters govern block and transaction sizes: ``maxBlockBodySize``, ``maxBlockHeaderSize``, ``maxTxSize``.
+Their settings have been chosen to ensure the required levels of functionality, within
+constrained resource restrictions (including long-term blockchain size and real-time worldwide exchange of blocks).
+Changes to these parameters may impact functionality, network reliability and performance.
+
+
+### Backward Compatibility
+
+This CIP describes the initial set of protocol parameters and the changes to date, so backwards compatibility is not an issue.
+Future proposals may change any or all of these parameters.
+A change to the major protocol version indicates a major change in the node software.
+Such a change may involve adding/removing parameters or changing their semantics/formats.
+In contrast, minor protocol changes are used to ensure key software updates without changing
+the meaning of any protocol parameters.
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [x] The Shelley ledger era is activated.
+- [x] Documented parameters are in operational use by Cardano Node and Ledger.
+
+### Implementation Plan
+
+- [x] Original (Shelley) and subsequent ledger era parameters are deemed correct by working groups at IOG.
+
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0). 

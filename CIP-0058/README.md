@@ -1,10 +1,17 @@
 ---
 CIP: 58
 Title: Plutus Bitwise Primitives
-Author:	Koz Ross <koz@mlabs.city>, Maximilian König <maximilian@mlabs.city>
-Comments-URI:	https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-\?
-Status: Proposed
-Type:	Standards Track
+Category: Plutus
+Authors:
+    - Koz Ross <koz@mlabs.city>
+    - Maximilian König <maximilian@mlabs.city>
+Implementors:
+    - Las Safin <me@las.rs>
+Status: Inactive (superseded by CIP-0121 and CIP-0122)
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/283
+    - https://github.com/input-output-hk/plutus/issues/4252
+    - https://github.com/input-output-hk/plutus/pull/4733
 Created: 2022-05-27
 License: Apache-2.0
 ---

@@ -1,0 +1,2719 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cardano-conway.json",
+  "title": "Cardano Conway Era Domain Types",
+  "definitions": {
+    "BigInt": {
+      "title": "BigInt",
+      "type": "string",
+      "description": "A long integer domain type",
+      "pattern": "^(0|-?[1-9][0-9]*)$",
+      "examples": [
+        "0",
+        "-123",
+        "123"
+      ]
+    },
+    "ByteString": {
+      "title": "ByteString",
+      "description": "Arbitrary-length byte array",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^([0-9a-f][0-9a-f])*$"
+    },
+    "UInt64": {
+      "title": "UInt64",
+      "description": "64-bit unsigned integer",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "format": "uint64"
+    },
+    "UInt16": {
+      "title": "UInt16",
+      "description": "16-bit unsigned integer",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "format": "uint16"
+    },
+    "PosInt64": {
+      "title": "PosInt64",
+      "description": "64-bit unsigned integer, zero-excluded. 1-18446744073709551615",
+      "type": "string",
+      "pattern": "^([1-9][0-9]*)$",
+      "format": "posint64"
+    },
+    "Int128": {
+      "title": "Int128",
+      "description": "128-bit signed integer",
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]*)$",
+      "format": "int128"
+    },
+    "NonZeroInt64": {
+      "title": "NonZeroInt64",
+      "description": "64-bit signed integer, zero excluded. Ranges: -9223372036854775808..-1 and 1..9223372036854775807",
+      "type": "string",
+      "pattern": "^-?([1-9][0-9]*)$"
+    },
+    "UInt32": {
+      "title": "UInt32",
+      "description": "32-bit unsigned integer",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "RewardAddress": {
+      "title": "RewardAddress",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(stake1|stake_test1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "stake1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5egfu2p0u"
+      ]
+    },
+    "ByronAddress": {
+      "title": "ByronAddress",
+      "type": "string",
+      "format": "base58",
+      "pattern": "^[1-9A-HJ-NP-Za-km-z]+$",
+      "examples": [
+        "37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na"
+      ]
+    },
+    "EnterpriseAddress": {
+      "title": "EnterpriseAddress",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "addr1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5eg0yu80w"
+      ]
+    },
+    "BaseAddress": {
+      "title": "BaseAddress",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(addr1|addr_test1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "addr1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5eg0yu80w"
+      ]
+    },
+    "Address": {
+      "title": "Address",
+      "anyOf": [
+        {
+          "$ref": "cardano-conway.json#/definitions/RewardAddress"
+        },
+        {
+          "$ref": "cardano-conway.json#/definitions/BaseAddress"
+        },
+        {
+          "$ref": "cardano-conway.json#/definitions/EnterpriseAddress"
+        },
+        {
+          "$ref": "cardano-conway.json#/definitions/ByronAddress"
+        }
+      ]
+    },
+    "Ed25519KeyHash": {
+      "title": "Ed25519KeyHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "ScriptHash": {
+      "title": "ScriptHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "AssetName": {
+      "title": "AssetName",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^([0-9a-f][0-9a-f]){0,32}$",
+      "examples": [
+        "",
+        "504154415445",
+        "1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209",
+        "7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373"
+      ]
+    },
+    "ScriptDataHash": {
+      "title": "ScriptDataHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "TransactionMetadata": {
+      "title": "TransactionMetadata",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "cardano-conway.json#/definitions/UInt64"
+          },
+          "value": {
+            "$ref": "cardano-conway.json#/definitions/TransactionMetadatum"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "unevaluatedProperties": false
+      }
+    },
+    "AuxiliaryDataHash": {
+      "title": "AuxiliaryDataHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "AuxiliaryData": {
+      "unevaluatedProperties": false,
+      "properties": {
+        "metadata": {
+          "$ref": "cardano-conway.json#/definitions/TransactionMetadata"
+        },
+        "native_scripts": {
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/NativeScript"
+          },
+          "type": "array"
+        },
+        "plutus_scripts": {
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/PlutusScript"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+      ],
+      "title": "AuxiliaryData",
+      "type": "object"
+    },
+    "Vote": {
+      "title": "Vote",
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "abstain"
+      ]
+    },
+    "Voter": {
+      "type": "object",
+      "title": "Voter",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["cc_credential"]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            }
+          },
+          "required": ["tag", "credential"],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["drep_credential"]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            }
+          },
+          "required": ["tag", "credential"],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["spo_keyhash"]
+            },
+            "pubkey_hash": {
+              "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+            }
+          },
+          "required": ["tag", "credential"],
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "VotingProcedure": {
+      "title": "VotingProcedure",
+      "type": "object",
+      "properties": {
+        "vote": {
+          "$ref": "cardano-conway.json#/definitions/Vote"
+        },
+        "anchor": {
+          "$ref": "cardano-conway.json#/definitions/Anchor"
+        }
+      },
+      "required": ["vote"],
+      "unevaluatedProperties": false
+    },
+    "VotingProcedures": {
+      "title": "VotingProcedures",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "cardano-conway.json#/definitions/Voter"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-conway.json#/definitions/GovActionId"
+                  },
+                  "value": {
+                    "$ref": "cardano-conway.json#/definitions/VotingProcedure"
+                  }
+                },
+              "required": [
+                "key",
+                "value"
+              ],
+              "unevaluatedProperties": false
+            }
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "unevaluatedProperties": false
+      }
+    },
+    "ProposalProcedure": {
+      "title": "ProposalProcedure",
+      "type": "object",
+      "properties": {
+        "deposit": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "reward_account": {
+          "$ref": "cardano-conway.json#/definitions/RewardAddress"
+        },
+        "gov_action": {
+          "$ref": "cardano-conway.json#/definitions/GovAction"
+        },
+        "anchor": {
+          "$ref": "cardano-conway.json#/definitions/Anchor"
+        }
+      },
+      "required": [ "deposit", "reward_account", "gov_action", "anchor" ],
+      "unevaluatedProperties": false
+    },
+    "ProposalProcedures": {
+      "title": "ProposalProcedures",
+      "type": "array",
+      "minLength": 1,
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/ProposalProcedure"
+      }
+    },
+    "TransactionBody": {
+      "title": "TransactionBody",
+      "type": "object",
+      "properties": {
+        "auxiliary_data_hash": {
+          "$ref": "cardano-conway.json#/definitions/AuxiliaryDataHash"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionInput"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionOutput"
+          }
+        },
+        "fee": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "certs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Certificate"
+          }
+        },
+        "collateral": {
+          "title": "Collateral Inputs",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionInput"
+          }
+        },
+        "collateral_return": {
+          "allOf": [
+            {
+              "$ref": "cardano-conway.json#/definitions/TransactionOutput"
+            },
+            {
+              "title": "Collateral Return",
+              "description": "Collateral return, introduced in CIP-40"
+            }
+          ]
+        },
+        "mint": {
+          "$ref": "cardano-conway.json#/definitions/Mint"
+        },
+        "network_id": {
+          "$ref": "cardano-conway.json#/definitions/NetworkId"
+        },
+        "reference_inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionInput"
+          }
+        },
+        "required_signers": {
+          "title": "Required signers",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+          }
+        },
+        "script_data_hash": {
+          "$ref": "cardano-conway.json#/definitions/ScriptDataHash"
+        },
+        "total_collateral": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "ttl": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "update": {
+          "$ref": "cardano-conway.json#/definitions/Update"
+        },
+        "validity_start_interval": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "withdrawals": {
+          "type": "array",
+          "minLength": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "$ref": "cardano-conway.json#/definitions/RewardAddress"
+              },
+              "value": {
+                "$ref": "cardano-conway.json#/definitions/UInt64"
+              }
+            },
+            "unevaluatedProperties": false
+          }
+        },
+        "voting_procedures": {
+          "$ref": "cardano-conway.json#/definitions/VotingProcedures"
+        },
+        "proposal_procedures": {
+          "$ref": "cardano-conway.json#/definitions/ProposalProcedures"
+        },
+        "donation": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "current_treasury_value": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        }
+      },
+      "required": [
+        "inputs",
+        "outputs",
+        "fee"
+      ],
+      "unevaluatedProperties": false
+    },
+    "Credential": {
+      "title": "Credential",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "pubkey_hash"
+              ]
+            },
+            "value": {
+              "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+            }
+          },
+          "required": [
+            "tag",
+            "value"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "script_hash"
+              ]
+            },
+            "value": {
+              "$ref": "cardano-conway.json#/definitions/ScriptHash"
+            }
+          },
+          "required": [
+            "tag",
+            "value"
+          ],
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "MultiAsset": {
+      "title": "MultiAsset",
+      "description": "A mapping from policy IDs (script hashes) to mappings from asset names to amounts",
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-f]{56}$": {
+          "type": "object",
+          "patternProperties": {
+            "^([0-9a-f][0-9a-f]){0,32}$": {
+              "$ref": "cardano-conway.json#/definitions/PosInt64"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "Value": {
+      "title": "Value",
+      "type": "object",
+      "properties": {
+        "coin": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "assets": {
+          "$ref": "cardano-conway.json#/definitions/MultiAsset"
+        }
+      },
+      "required": [
+        "coin"
+      ],
+      "unevaluatedProperties": false
+    },
+    "TransactionHash": {
+      "title": "TransactionHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64,
+      "examples": [
+        "eca40340fa6e65d964915ba4bc8bd811a0493d263ffe95875291114cbb2d0686",
+        "7420a723bf4ee4417ec1aa2262ff60921270681e7a9d537132cbcc82917e8006",
+        "fbc1da46d62a431e69855ad48a6b49b0e2aaafc6fd3dc4a066c6851b7bd31a91",
+        "c6726192662abeab149098095eabe004ecbec47f5e564748ab0d394affca47d9"
+      ]
+    },
+    "TransactionInput": {
+      "title": "TransactionInput",
+      "type": "object",
+      "properties": {
+        "transaction_id": {
+          "$ref": "cardano-conway.json#/definitions/TransactionHash"
+        },
+        "index": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        }
+      },
+      "required": [
+        "transaction_id",
+        "index"
+      ],
+      "unevaluatedProperties": false
+    },
+    "PlutusScript": {
+      "title": "PlutusScript",
+      "type": "object",
+      "properties": {
+        "language": {
+          "$ref": "cardano-conway.json#/definitions/Language"
+        },
+        "bytes": {
+          "type": "string",
+          "format": "hex",
+          "pattern": "^([0-9a-f][0-9a-f])+$"
+        }
+      },
+      "required": [
+        "language",
+        "bytes"
+      ],
+      "unevaluatedProperties": false
+    },
+    "NativeScript": {
+      "title": "NativeScript",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "title": "ScriptPubkey",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "pubkey"
+              ]
+            },
+            "pubkey": {
+              "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "pubkey"
+          ]
+        },
+        {
+          "title": "ScriptAll",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "all"
+              ]
+            },
+            "scripts": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/NativeScript"
+              }
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "scripts"
+          ]
+        },
+        {
+          "title": "ScriptAny",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "any"
+              ]
+            },
+            "scripts": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/NativeScript"
+              }
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "scripts"
+          ]
+        },
+        {
+          "title": "ScriptNOfK",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "n_of_k"
+              ]
+            },
+            "scripts": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/NativeScript"
+              }
+            },
+            "n": {
+              "$ref": "cardano-conway.json#/definitions/UInt32"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "scripts",
+            "n"
+          ]
+        },
+        {
+          "title": "TimelockStart",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "timelock_start"
+              ]
+            },
+            "slot": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "slot"
+          ]
+        },
+        {
+          "title": "TimelockExpiry",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "timelock_expiry"
+              ]
+            },
+            "slot": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "slot"
+          ]
+        }
+      ]
+    },
+    "ScriptRef": {
+      "title": "ScriptRef",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "title": "PlutusScript",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "plutus_script"
+              ]
+            },
+            "value": {
+              "$ref": "cardano-conway.json#/definitions/PlutusScript"
+            }
+          },
+          "required": [
+            "tag",
+            "value"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "title": "NativeScript",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "native_script"
+              ]
+            },
+            "value": {
+              "$ref": "cardano-conway.json#/definitions/NativeScript"
+            }
+          },
+          "required": [
+            "tag",
+            "value"
+          ],
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "DataHash": {
+      "title": "DataHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^([0-9a-f][0-9a-f]){32}$"
+    },
+    "TransactionOutput": {
+      "title": "TransactionOutput",
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "cardano-conway.json#/definitions/Address"
+        },
+        "amount": {
+          "$ref": "cardano-conway.json#/definitions/Value"
+        },
+        "plutus_data": {
+          "type": "object",
+          "discriminator": {
+            "propertyName": "tag"
+          },
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "tag": {
+                  "enum": [
+                    "datum"
+                  ]
+                },
+                "value": {
+                  "$ref": "cardano-conway.json#/definitions/PlutusData"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "tag": {
+                  "enum": [
+                    "datum_hash"
+                  ]
+                },
+                "value": {
+                  "$ref": "cardano-conway.json#/definitions/DataHash"
+                }
+              }
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "script_ref": {
+          "$ref": "cardano-conway.json#/definitions/ScriptRef"
+        }
+      },
+      "required": [
+        "address",
+        "amount"
+      ]
+    },
+    "TransactionUnspentOutput": {
+      "title": "TransactionUnspentOutput",
+      "type": "object",
+      "properties": {
+        "input": {
+          "$ref": "cardano-conway.json#/definitions/TransactionInput"
+        },
+        "output": {
+          "$ref": "cardano-conway.json#/definitions/TransactionOutput"
+        }
+      },
+      "required": [
+        "input",
+        "output"
+      ],
+      "unevaluatedProperties": false
+    },
+    "TransactionMetadatum": {
+      "title": "TransactionMetadatum",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "map"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-conway.json#/definitions/TransactionMetadatum"
+                  },
+                  "value": {
+                    "$ref": "cardano-conway.json#/definitions/TransactionMetadatum"
+                  }
+                },
+                "required": [
+                  "key",
+                  "value"
+                ],
+                "unevaluatedProperties": false
+              }
+            }
+          },
+          "required": [
+            "tag",
+            "contents"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "list"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/TransactionMetadatum"
+              }
+            }
+          },
+          "required": [
+            "tag",
+            "contents"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "int"
+              ]
+            },
+            "value": {
+              "$ref": "cardano-conway.json#/definitions/Int128"
+            }
+          },
+          "required": [
+            "tag",
+            "value"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "bytes"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "format": "hex",
+              "pattern": "^([0-9a-f][0-9a-f]){0,64}$"
+            }
+          },
+          "required": [
+            "tag",
+            "value"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "title": "Metadata String",
+          "description": "UTF-8 string. Maximum size is 64 bytes, but there is no way to express byte length limit in a json-schema (maxLength limits the number of characters)",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "string"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "maxLength": 64,
+              "format": "string64"
+            }
+          },
+          "required": [
+            "tag",
+            "value"
+          ],
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "PlutusV1CostModel": {
+      "title": "PlutusV1CostModel",
+      "type": "array",
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/Int128"
+      },
+      "maxItems": 166,
+      "minItems": 166
+    },
+    "PlutusV2CostModel": {
+      "title": "PlutusV2CostModel",
+      "type": "array",
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/Int128"
+      },
+      "maxItems": 175,
+      "minItems": 175
+    },
+    "PlutusV3CostModel": {
+      "title": "PlutusV3CostModel",
+      "type": "array",
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/Int128"
+      },
+      "maxItems": 251,
+      "minItems": 251
+    },
+    "CostModels": {
+      "title": "CostModels",
+      "type": "object",
+      "properties": {
+        "plutus_v1": {
+          "$ref": "cardano-conway.json#/definitions/PlutusV1CostModel"
+        },
+        "plutus_v2": {
+          "$ref": "cardano-conway.json#/definitions/PlutusV2CostModel"
+        },
+        "plutus_v3": {
+          "$ref": "cardano-conway.json#/definitions/PlutusV3CostModel"
+        }
+      },
+      "required": [],
+      "unevaluatedProperties": false
+    },
+    "ExUnitPrices": {
+      "title": "ExUnitPrices",
+      "type": "object",
+      "properties": {
+        "mem_price": {
+          "$ref": "cardano-conway.json#/definitions/UnitInterval"
+        },
+        "step_price": {
+          "$ref": "cardano-conway.json#/definitions/UnitInterval"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": [
+        "mem_price",
+        "step_price"
+      ]
+    },
+    "ExUnits": {
+      "title": "ExUnits",
+      "type": "object",
+      "properties": {
+        "mem": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "steps": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        }
+      },
+      "required": [
+        "mem",
+        "steps"
+      ],
+      "unevaluatedProperties": false
+    },
+    "ProtocolVersion": {
+      "title": "ProtocolVersion",
+      "type": "object",
+      "properties": {
+        "major": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "minor": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        }
+      },
+      "required": [
+        "major",
+        "minor"
+      ],
+      "unevaluatedProperties": false
+    },
+    "NonnegativeInterval": {
+      "title": "NonnegativeInterval",
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "denominator": {
+          "$ref": "cardano-conway.json#/definitions/PosInt64"
+        }
+      },
+      "required": ["numerator", "denominator"],
+      "unevaluatedProperties": false
+    },
+    "PoolVotingThresholds": {
+      "title": "PoolVotingThresholds",
+      "type": "array",
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/UnitInterval"
+      },
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "DRepVotingThresholds": {
+      "title": "DRepVotingThresholds",
+      "type": "array",
+      "items": {
+        "$ref": "cardano-conway.json#/definitions/UnitInterval"
+      },
+      "minItems": 10,
+      "maxItems": 10
+    },
+    "ProtocolParamUpdate": {
+      "title": "ProtocolParamUpdate",
+      "type": "object",
+      "properties": {
+        "ada_per_utxo_byte": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "collateral_percentage": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "cost_models": {
+          "$ref": "cardano-conway.json#/definitions/CostModels"
+        },
+        "d": {
+          "$ref": "cardano-conway.json#/definitions/UnitInterval"
+        },
+        "execution_costs": {
+          "$ref": "cardano-conway.json#/definitions/ExUnitPrices"
+        },
+        "expansion_rate": {
+          "$ref": "cardano-conway.json#/definitions/UnitInterval"
+        },
+        "key_deposit": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "max_block_body_size": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "max_block_ex_units": {
+          "$ref": "cardano-conway.json#/definitions/ExUnits"
+        },
+        "max_block_header_size": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "max_collateral_inputs": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "max_epoch": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "max_tx_ex_units": {
+          "$ref": "cardano-conway.json#/definitions/ExUnits"
+        },
+        "max_tx_size": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "max_value_size": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "min_pool_cost": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "minfee_a": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "minfee_b": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "n_opt": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "pool_deposit": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "pool_pledge_influence": {
+          "$ref": "cardano-conway.json#/definitions/UnitInterval"
+        },
+        "protocol_version": {
+          "$ref": "cardano-conway.json#/definitions/ProtocolVersion"
+        },
+        "treasury_growth_rate": {
+          "$ref": "cardano-conway.json#/definitions/UnitInterval"
+        },
+        "pool_voting_thresholds": {
+          "$ref": "cardano-conway.json#/definitions/PoolVotingThresholds"
+        },
+        "drep_voting_thresholds": {
+          "$ref": "cardano-conway.json#/definitions/DRepVotingThresholds"
+        },
+        "committee_min_size": {
+          "$ref": "cardano-conway.json#/definitions/UInt16"
+        },
+        "committee_max_term_length": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "gov_action_lifetime": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "gov_action_deposit": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "drep_deposit": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "drep_activity": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "min_fee_ref_script_cost_per_byte": {
+          "$ref": "cardano-conway.json#/definitions/NonnegativeInterval"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": []
+    },
+    "Update": {
+      "title": "Update",
+      "type": "object",
+      "properties": {
+        "epoch": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "proposed_protocol_parameter_updates": {
+          "type": "object",
+          "title": "ProposedProtocolParameterUpdates",
+          "description": "A mapping from GenesisHash to ProtocolParamUpdate",
+          "patternProperties": {
+            "^[0-9a-f]{56}$": {
+              "title": "ProtocolParamUpdate for a given GenesisHash",
+              "$ref": "cardano-conway.json#/definitions/ProtocolParamUpdate"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "required": [
+        "epoch",
+        "proposed_protocol_parameter_updates"
+      ],
+      "unevaluatedProperties": false
+    },
+    "NetworkId": {
+      "title": "NetworkId",
+      "type": "string",
+      "enum": [
+        "testnet",
+        "mainnet"
+      ]
+    },
+    "PlutusData": {
+      "title": "PlutusData",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "title": "PlutusDataList",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "list"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/PlutusData"
+              }
+            }
+          },
+          "required": ["tag", "contents"],
+          "unevaluatedProperties": false
+        },
+        {
+          "title": "PlutusDataConstr",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "constr"
+              ]
+            },
+            "alternative": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/PlutusData"
+              }
+            }
+          },
+          "required": ["tag", "alternative", "data"],
+          "unevaluatedProperties": false
+        },
+        {
+          "title": "PlutusDataMap",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "map"
+              ]
+            },
+            "contents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-conway.json#/definitions/PlutusData"
+                  },
+                  "value": {
+                    "$ref": "cardano-conway.json#/definitions/PlutusData"
+                  }
+                },
+                "unevaluatedProperties": false
+              }
+            }
+          },
+          "required": ["tag", "contents"],
+          "unevaluatedProperties": false
+        },
+        {
+          "title": "PlutusDataInteger",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "integer"
+              ]
+            },
+            "value": {
+              "$ref": "cardano-conway.json#/definitions/BigInt"
+            }
+          },
+          "required": ["tag", "value"],
+          "unevaluatedProperties": false
+        },
+        {
+          "title": "PlutusDataBytes",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": [
+                "bytes"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "format": "hex",
+              "pattern": "^([0-9a-f][0-9a-f])*$"
+            }
+          },
+          "required": ["tag", "value"],
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "UnitInterval": {
+      "title": "UnitInterval",
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "denominator": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        }
+      },
+      "required": ["numerator", "denominator"],
+      "unevaluatedProperties": false
+    },
+    "Ipv4": {
+      "title": "Ipv4",
+      "description": "IPv4 Address",
+      "type": "string",
+      "pattern": "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.){3}(25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)$"
+    },
+    "Ipv6": {
+      "title": "Ipv6",
+      "description": "IPv6 address",
+      "type": "string",
+      "format": "ipv6"
+    },
+    "DNSName": {
+      "title": "DNSName",
+      "type": "string",
+      "maxLength": 64,
+      "format": "string64"
+    },
+    "Relay": {
+      "title": "Relay",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "SingleHostAddr",
+          "properties": {
+            "tag": {
+              "enum": [
+                "single_host_addr"
+              ]
+            },
+            "port": {
+              "type": "integer",
+              "maximum": 65535
+            },
+            "ipv4": {
+              "$ref": "cardano-conway.json#/definitions/Ipv4"
+            },
+            "ipv6": {
+              "$ref": "cardano-conway.json#/definitions/Ipv6"
+            }
+          },
+          "required": [
+            "tag"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "SingleHostName",
+          "properties": {
+            "tag": {
+              "enum": [
+                "single_host_name"
+              ]
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "dns_name": {
+              "$ref": "cardano-conway.json#/definitions/DNSName"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "dns_name"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "MultiHostName",
+          "properties": {
+            "tag": {
+              "enum": [
+                "multi_host_name"
+              ]
+            },
+            "dns_name": {
+              "$ref": "cardano-conway.json#/definitions/DNSName"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "tag",
+            "dns_name"
+          ]
+        }
+      ]
+    },
+    "VRFKeyHash": {
+      "title": "VRFKeyHash",
+      "type": "string",
+      "description": "blake2b_256 digest of a VRF verification key, encoded as bech32",
+      "pattern": "^vrf_vkh[02-9ac-hj-np-z]*",
+      "format": "bech32",
+      "examples": [
+        "vrf_vkh3ak4chlh2xj9tw3jjwxdgs7v2uq6ev86l03vw"
+      ]
+    },
+    "URL": {
+      "title": "URL",
+      "description": "UTF-8 URL string. Maximum size is 128 bytes, but there is no way to express byte length limit in a json-schema (maxLength limits the number of characters)",
+      "type": "string",
+      "maxLength": 128,
+      "format": "string128"
+    },
+    "PoolMetadataHash": {
+      "title": "PoolMetadataHash",
+      "description": "Pool Metadata Hash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "PoolMetadata": {
+      "title": "PoolMetadata",
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref": "cardano-conway.json#/definitions/URL"
+        },
+        "hash": {
+          "$ref": "cardano-conway.json#/definitions/PoolMetadataHash"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": [
+        "url",
+        "hash"
+      ]
+    },
+    "PoolPubKeyHash": {
+      "title": "PoolPubKeyHash",
+      "type": "string",
+      "format": "bech32",
+      "pattern": "^(pool1)[02-9ac-hj-np-z]*$",
+      "examples": [
+        "pool12a39rkzfylvn9wfe8j6y8ucq6g2l4mw4azj70y0gd8ejczznyj2"
+      ]
+    },
+    "PoolParams": {
+      "title": "PoolParams",
+      "type": "object",
+      "properties": {
+        "operator": {
+          "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+        },
+        "vrf_keyhash": {
+          "$ref": "cardano-conway.json#/definitions/VRFKeyHash"
+        },
+        "pledge": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "cost": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "margin": {
+          "$ref": "cardano-conway.json#/definitions/UnitInterval"
+        },
+        "reward_account": {
+          "$ref": "cardano-conway.json#/definitions/RewardAddress"
+        },
+        "pool_owners": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+          }
+        },
+        "relays": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Relay"
+          }
+        },
+        "pool_metadata": {
+          "$ref": "cardano-conway.json#/definitions/PoolMetadata"
+        }
+      },
+      "required": [
+        "cost",
+        "margin",
+        "operator",
+        "pledge",
+        "pool_owners",
+        "relays",
+        "reward_account",
+        "vrf_keyhash"
+      ],
+      "unevaluatedProperties": false
+    },
+    "GenesisHash": {
+      "title": "GenesisHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "GenesisDelegateHash": {
+      "title": "GenesisDelegateHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "Anchor": {
+      "title": "Anchor",
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref": "cardano-conway.json#/definitions/URL"
+        },
+        "data_hash": {
+          "$ref": "cardano-conway.json#/definitions/DataHash"
+        }
+      },
+      "required": [
+        "url",
+        "data_hash"
+      ],
+      "unevaluatedProperties": false
+    },
+    "DRep": {
+      "title": "DRep",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["key_hash"]
+            },
+            "key_hash": {
+              "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
+            }
+          },
+          "required": ["tag", "key_hash"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["script_hash"]
+            },
+            "script_hash": {
+              "$ref": "cardano-conway.json#/definitions/ScriptHash"
+            }
+          },
+          "required": ["tag", "script_hash"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["always_abstain"]
+            }
+          },
+          "required": ["tag"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "enum": ["always_no_confidence"]
+            }
+          },
+          "required": ["tag"]
+        }
+      ]
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "Stake Registration Certificate",
+          "properties": {
+            "tag": {
+              "enum": [
+                "stake_registration"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            }
+          },
+          "required": [
+            "tag",
+            "credential"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Stake Deregistration Certificate",
+          "properties": {
+            "tag": {
+              "enum": [
+                "stake_deregistration"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            }
+          },
+          "required": [
+            "tag",
+            "credential"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Stake Delegation Certificate",
+          "properties": {
+            "tag": {
+              "enum": [
+                "stake_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Pool Registration Certificate",
+          "properties": {
+            "tag": {
+              "enum": [
+                "pool_registration"
+              ]
+            },
+            "pool_params": {
+              "$ref": "cardano-conway.json#/definitions/PoolParams"
+            }
+          },
+          "required": [
+            "tag",
+            "pool_params"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Pool Retirement Certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "pool_retirement"
+              ]
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "epoch": {
+              "$ref": "cardano-conway.json#/definitions/UInt32"
+            }
+          },
+          "required": [
+            "tag",
+            "pool_keyhash",
+            "epoch"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Registration certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "registration"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Unregistration certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "unregistration"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Vote delegation certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "vote_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "drep": {
+              "$ref": "cardano-conway.json#/definitions/DRep"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "drep"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Stake vote delegation certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_vote_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "drep": {
+              "$ref": "cardano-conway.json#/definitions/DRep"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash",
+            "drep"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_registration_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "vote_registration_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "drep": {
+              "$ref": "cardano-conway.json#/definitions/DRep"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash",
+            "drep",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Stake registration delegation certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_vote_registration_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "drep": {
+              "$ref": "cardano-conway.json#/definitions/DRep"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash",
+            "drep"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Vote registration delegation certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "vote_registration_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "drep": {
+              "$ref": "cardano-conway.json#/definitions/DRep"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "drep",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Stake vote registration delegation certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "stake_vote_registration_delegation"
+              ]
+            },
+            "credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "pool_keyhash": {
+              "$ref": "cardano-conway.json#/definitions/PoolPubKeyHash"
+            },
+            "drep": {
+              "$ref": "cardano-conway.json#/definitions/DRep"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "credential",
+            "pool_keyhash",
+            "drep",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Constitutional committee hot certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "auth_committee_hot"
+              ]
+            },
+            "committee_cold_credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "committee_hot_credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            }
+          },
+          "required": [
+            "tag",
+            "committee_cold_credential",
+            "committee_hot_credential"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Resign committee cold certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "resign_committee_cold"
+              ]
+            },
+            "committee_cold_credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "anchor": {
+              "$ref": "cardano-conway.json#/definitions/Anchor"
+            }
+          },
+          "required": [
+            "committee_cold_credential",
+            "tag"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Register DRep certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "register_drep"
+              ]
+            },
+            "drep_credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            },
+            "anchor": {
+              "$ref": "cardano-conway.json#/definitions/Anchor"
+            }
+          },
+          "required": [
+            "tag",
+            "drep_credential",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Unregister DRep certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "unregister_drep"
+              ]
+            },
+            "drep_credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "coin": {
+              "$ref": "cardano-conway.json#/definitions/UInt64"
+            }
+          },
+          "required": [
+            "tag",
+            "drep_credential",
+            "coin"
+          ],
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "title": "Update DRep certificate",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "update_drep"
+              ]
+            },
+            "drep_credential": {
+              "$ref": "cardano-conway.json#/definitions/Credential"
+            },
+            "anchor": {
+              "$ref": "cardano-conway.json#/definitions/Anchor"
+            }
+          },
+          "required": [
+            "tag",
+            "drep_credential"
+          ],
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "Constitution": {
+      "title": "Constitution",
+      "type": "object",
+      "properties": {
+        "anchor": {
+          "$ref": "cardano-conway.json#/definitions/Anchor"
+        },
+        "script_hash": {
+          "$ref": "cardano-conway.json#/definitions/ScriptHash"
+        }
+      },
+      "required": [ "anchor" ]
+    },
+    "GovActionId": {
+      "title": "GovActionId",
+      "type": "object",
+      "properties": {
+        "transaction_id": {
+          "$ref": "cardano-conway.json#/definitions/TransactionHash"
+        },
+        "gov_action_index": {
+          "$ref": "cardano-conway.json#/definitions/UInt16"
+        }
+      },
+      "required": ["transaction_id", "gov_action_index"],
+      "unevaluatedProperties": false
+    },
+    "GovAction": {
+      "title": "GovAction",
+      "type": "object",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "Parameter Change Action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "parameter_change_action"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "protocol_param_update": {
+              "$ref": "cardano-conway.json#/definitions/ProtocolParamUpdate"
+            },
+            "policy_hash": {
+              "$ref": "cardano-conway.json#/definitions/ScriptHash"
+            }
+          },
+          "required": [ "tag", "protocol_param_update" ]
+        },
+        {
+          "type": "object",
+          "title": "Hard fork initiation action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "hard_fork_initiation_action"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "protocol_version": {
+              "$ref": "cardano-conway.json#/definitions/ProtocolVersion"
+            }
+          },
+          "required": [ "tag", "protocol_version" ]
+        },
+        {
+          "type": "object",
+          "title": "Trasury withdrawals action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "treasury_withdrawals_action"
+              ]
+            },
+            "rewards": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-conway.json#/definitions/RewardAddress"
+                  },
+                  "value": {
+                    "$ref": "cardano-conway.json#/definitions/UInt64"
+                  }
+                },
+                "unevaluatedProperties": false
+              }
+            },
+            "policy_hash": {
+              "$ref": "cardano-conway.json#/definitions/ScriptHash"
+            }
+          },
+          "required": ["tag"]
+        },
+        {
+          "type": "object",
+          "title": "No confidence governance action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "no_confidence"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            }
+          },
+          "required": [ "tag" ]
+        },
+        {
+          "type": "object",
+          "title": "Update committee",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "update_committee"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "members_to_remove": {
+              "type": "array",
+              "items": {
+                "$ref": "cardano-conway.json#/definitions/Credential"
+              }
+            },
+            "committee": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "cardano-conway.json#/definitions/Credential"
+                  },
+                  "value": {
+                    "$ref": "cardano-conway.json#/definitions/UInt64"
+                  }
+                },
+                "unevaluatedProperties": false
+              }
+            },
+            "signature_threshold": {
+              "$ref": "cardano-conway.json#/definitions/UnitInterval"
+            }
+          },
+          "required": [ "tag", "signature_threshold", "committee" ]
+        },
+        {
+          "type": "object",
+          "title": "New constitution",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "new_constitution"
+              ]
+            },
+            "gov_action_id": {
+              "$ref": "cardano-conway.json#/definitions/GovActionId"
+            },
+            "constitution": {
+              "$ref": "cardano-conway.json#/definitions/Constitution"
+            }
+          },
+          "required": [ "tag", "constitution" ]
+        },
+        {
+          "type": "object",
+          "title": "Info action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": [
+                "info_action"
+              ]
+            }
+          },
+          "required": [ "tag" ]
+        }
+      ]
+    },
+    "Language": {
+      "title": "Language",
+      "type": "string",
+      "enum": [
+        "plutus_v1",
+        "plutus_v2",
+        "plutus_v3"
+      ]
+    },
+    "Mint": {
+      "title": "Mint",
+      "description": "Minting or burning of assets. A mapping from policy IDs (script hashes) to mappings from asset names to amounts (that can be negative). Allows for duplicate script hash keys.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "script_hash": {
+            "$ref": "cardano-conway.json#/definitions/ScriptHash"
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "title": "Assets",
+              "type": "object",
+              "properties": {
+                "asset_name": {
+                  "$ref": "cardano-conway.json#/definitions/AssetName"
+                },
+                "amount": {
+                  "$ref": "cardano-conway.json#/definitions/NonZeroInt64"
+                }
+              },
+              "required": [
+                "asset_name",
+                "amount"
+              ],
+              "unevaluatedProperties": false
+            }
+          }
+        },
+        "required": [
+          "script_hash",
+          "assets"
+        ],
+        "unevaluatedProperties": false
+      }
+    },
+    "Ed25519Signature": {
+      "title": "Ed25519Signature",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^([0-9a-f][0-9a-f]){64}$"
+    },
+    "Ed25519PublicKey": {
+      "title": "Ed25519PublicKey",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^([0-9a-f][0-9a-f]){32}$"
+    },
+    "BootstrapWitness": {
+      "title": "BootstrapWitness",
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "string",
+          "format": "hex",
+          "pattern": "^([0-9a-f][0-9a-f])*$"
+        },
+        "chain_code": {
+          "type": "string",
+          "format": "hex",
+          "pattern": "^([0-9a-f][0-9a-f]){32}$"
+        },
+        "signature": {
+          "$ref": "cardano-conway.json#/definitions/Ed25519Signature"
+        },
+        "vkey": {
+          "$ref": "cardano-conway.json#/definitions/Ed25519PublicKey"
+        }
+      },
+      "required": [
+        "attributes",
+        "chain_code",
+        "signature",
+        "vkey"
+      ],
+      "unevaluatedProperties": false
+    },
+    "RedeemerTag": {
+      "title": "RedeemerTag",
+      "type": "string",
+      "enum": [
+        "spend",
+        "mint",
+        "cert",
+        "reward",
+        "vote",
+        "propose"
+      ]
+    },
+    "Redeemer": {
+      "title": "Redeemer",
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "cardano-conway.json#/definitions/PlutusData"
+        },
+        "tag": {
+          "$ref": "cardano-conway.json#/definitions/RedeemerTag"
+        },
+        "index": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "ex_units": {
+          "$ref": "cardano-conway.json#/definitions/ExUnits"
+        }
+      },
+      "required": [
+        "data",
+        "tag",
+        "index",
+        "ex_units"
+      ],
+      "unevaluatedProperties": false
+    },
+    "Vkeywitness": {
+      "title": "Vkeywitness",
+      "type": "object",
+      "properties": {
+        "vkey": {
+          "$ref": "cardano-conway.json#/definitions/Ed25519PublicKey"
+        },
+        "signature": {
+          "$ref": "cardano-conway.json#/definitions/Ed25519Signature"
+        }
+      },
+      "required": [
+        "vkey",
+        "signature"
+      ],
+      "unevaluatedProperties": false
+    },
+    "TransactionWitnessSet": {
+      "title": "TransactionWitnessSet",
+      "type": "object",
+      "properties": {
+        "bootstraps": {
+          "title": "BootstrapWitnesses",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/BootstrapWitness"
+          }
+        },
+        "native_scripts": {
+          "title": "NativeScripts",
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/NativeScript"
+          }
+        },
+        "plutus_data": {
+          "type": "array",
+          "title": "PlutusList",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/PlutusData"
+          }
+        },
+        "plutus_scripts": {
+          "type": "array",
+          "title": "PlutusScripts",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/PlutusScript"
+          }
+        },
+        "redeemers": {
+          "type": "array",
+          "title": "Redeemers",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Redeemer"
+          }
+        },
+        "vkeywitnesses": {
+          "type": "array",
+          "title": "VkeyWitnesses",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/Vkeywitness"
+          }
+        }
+      },
+      "required": []
+    },
+    "Transaction": {
+      "type": "object",
+      "title": "Transaction",
+      "properties": {
+        "auxiliary_data": {
+          "$ref": "cardano-conway.json#/definitions/AuxiliaryData"
+        },
+        "body": {
+          "$ref": "cardano-conway.json#/definitions/TransactionBody"
+        },
+        "is_valid": {
+          "type": "boolean"
+        },
+        "witness_set": {
+          "$ref": "cardano-conway.json#/definitions/TransactionWitnessSet"
+        }
+      },
+      "required": [
+        "body",
+        "is_valid",
+        "witness_set"
+      ],
+      "unevaluatedProperties": false
+    },
+    "VRFCert": {
+      "title": "VRFCert",
+      "type": "object",
+      "properties": {
+        "output": {
+          "$ref": "cardano-conway.json#/definitions/ByteString"
+        },
+        "proof": {
+          "$ref": "cardano-conway.json#/definitions/ByteString",
+          "type": "string",
+          "pattern": "^[0-9a-f]{160}$"
+        }
+      },
+      "required": [
+        "output",
+        "proof"
+      ],
+      "unevaluatedProperties": false
+    },
+    "KESVKey": {
+      "title": "KESVKey",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64
+    },
+    "BlockHash": {
+      "title": "BlockHash",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64
+    },
+    "VRFVKey": {
+      "title": "VRFVKey",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{64}$",
+      "maxLength": 64,
+      "minLength": 64
+    },
+    "KESSignature": {
+      "title": "KESSignature",
+      "type": "string",
+      "format": "hex",
+      "pattern": "^[0-9a-f]{896}$",
+      "maxLength": 896,
+      "minLength": 896
+    },
+    "OperationalCert": {
+      "title": "OperationalCert",
+      "type": "object",
+      "properties": {
+        "hot_vkey": {
+          "$ref": "cardano-conway.json#/definitions/KESVKey"
+        },
+        "kes_period": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "sequence_number": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "sigma": {
+          "$ref": "cardano-conway.json#/definitions/Ed25519Signature"
+        }
+      },
+      "required": [
+        "hot_vkey",
+        "kes_period",
+        "sequence_number",
+        "sigma"
+      ],
+      "unevaluatedProperties": false
+    },
+    "HeaderBody": {
+      "title": "HeaderBody",
+      "type": "object",
+      "properties": {
+        "block_number": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "slot": {
+          "$ref": "cardano-conway.json#/definitions/UInt64"
+        },
+        "prev_hash": {
+          "$ref": "cardano-conway.json#/definitions/BlockHash"
+        },
+        "issuer_vkey": {
+          "$ref": "cardano-conway.json#/definitions/Ed25519PublicKey"
+        },
+        "vrf_vkey": {
+          "$ref": "cardano-conway.json#/definitions/VRFVKey"
+        },
+        "vrf_result": {
+          "$ref": "cardano-conway.json#/definitions/VRFCert"
+        },
+        "block_body_size": {
+          "$ref": "cardano-conway.json#/definitions/UInt32"
+        },
+        "block_body_hash": {
+          "$ref": "cardano-conway.json#/definitions/BlockHash"
+        },
+        "operational_cert": {
+          "$ref": "cardano-conway.json#/definitions/OperationalCert"
+        },
+        "protocol_version": {
+          "$ref": "cardano-conway.json#/definitions/ProtocolVersion"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": [
+        "block_number",
+        "slot",
+        "issuer_vkey",
+        "vrf_vkey",
+        "vrf_result",
+        "block_body_size",
+        "block_body_hash",
+        "operational_cert",
+        "protocol_version"
+      ]
+    },
+    "Header": {
+      "title": "Header",
+      "type": "object",
+      "properties": {
+        "body_signature": {
+          "$ref": "cardano-conway.json#/definitions/KESSignature"
+        },
+        "header_body": {
+          "$ref": "cardano-conway.json#/definitions/HeaderBody"
+        }
+      },
+      "required": [
+        "body_signature",
+        "header_body"
+      ],
+      "unevaluatedProperties": false
+    },
+    "Block": {
+      "title": "Block",
+      "type": "object",
+      "properties": {
+        "auxiliary_data_set": {
+          "type": "object",
+          "title": "AuxiliaryDataSet",
+          "description": "A mapping from transaction indices to AuxiliaryData values",
+          "patternProperties": {
+            "^(0|[1-9][0-9]*)$": {
+              "$ref": "cardano-conway.json#/definitions/AuxiliaryData"
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "header": {
+          "$ref": "cardano-conway.json#/definitions/Header"
+        },
+        "invalid_transactions": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "title": "TransactionIndex"
+              },
+              {
+                "$ref": "cardano-conway.json#/definitions/UInt32"
+              }
+            ]
+          }
+        },
+        "transaction_bodies": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionBody"
+          }
+        },
+        "transaction_witness_sets": {
+          "type": "array",
+          "items": {
+            "$ref": "cardano-conway.json#/definitions/TransactionWitnessSet"
+          }
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": [
+        "auxiliary_data_set",
+        "header",
+        "invalid_transactions",
+        "transaction_bodies",
+        "transaction_witness_sets"
+      ]
+    }
+  }
+}

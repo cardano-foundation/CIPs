@@ -1,0 +1,24 @@
+string = bstr .size (1..64) ; tstr / string from 1 up to 64 chars only
+
+sig_256 = bstr .size (64..64) ; 256 bytes signature (256 / 64 = 4 bytes)
+
+transaction_metadata = {
+  1667: on-chain_metadata
+}
+
+on-chain_metadata = {
+  subject: string,
+  rootHash: sig_256,
+  metadata: [+ string] / [+ string / [+ string]],
+  type: registration / de-registration,
+}
+
+registration = {
+  action: "REGISTER",
+  ? comment: string,
+}
+
+de-registration = {
+  action: "DE_REGISTER",
+  ? comment: string,
+}

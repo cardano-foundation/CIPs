@@ -1,9 +1,16 @@
 ---
 CIP: 35
 Title: Changes to Plutus Core
-Authors: Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Status: Active
 Category: Meta
+Authors:
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors: N/A
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/215
+  - https://github.com/cardano-foundation/CIPs/pull/428
+  - https://github.com/cardano-foundation/CIPs/pull/437
+  - https://github.com/cardano-foundation/CIPs/pull/484
 Created: 2022-02-09
 License: CC-BY-4.0
 ---
@@ -174,7 +181,7 @@ The following table gives the current set of reviewers for Plutus CIPs.
 
 | Name                 | Email                        | GitHub username |
 |----------------------|------------------------------|-----------------|
-| Michael Peyton Jones | michael.peyton-jones@iohk.io | michaelpj       |
+| Ziyang Liu           | ziyang.liu@iohk.io           | zliu41          |
 
 ### Changes that require a CIP
 
@@ -215,7 +222,9 @@ In order to move to Proposed status:
 - The Specification MUST include:
     - Names and types/kinds for the new functions or types.
     - A source for the implementation (e.g. a library which can be linked against); or a generic description of the functionality which is implementable in any programming language.
-    - For new types: a precise description of the measure used for the size of a value of that type.
+    - For new types
+        - A description of how constants of this type will be serialized and deserialized.
+        - A precise description of the measure used for the size of a value of that type.
     - For new builtin functions: a costing function for the builtin function.
 - The Rationale MUST include:
     - If an external implementation is provided: an argument that it satisfies the following non-exhaustive list of criteria:

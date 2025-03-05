@@ -1,0 +1,115 @@
+metadata = { "86" => action }
+
+; =========================================================================
+; CIP-86 actions
+
+action =
+  {
+    ? assign_metadata_oracle : action_oracle,
+    ? simple_metadata_update : action_simple,
+    ? regex_metadata_update : action_regex,
+    ? tabular_metadata_update : action_tabular
+  }
+
+action_oracle = { * policy_id => oracle_assignment }
+
+oracle_assignment =
+  {
+    ? main_address : address,
+    ? update_address : address
+  }
+
+action_simple = { * policy_id => { * asset_name => metadata_details } }
+
+action_regex = { * policy_id => { * asset_regex => metadata_details } }
+
+action_tabular = { * policy_id => tabular_metadata }
+
+; Technically, both policy IDs and asset names should be 32 bytes long.
+; However, this isn't enforced for asset names, and CIP-25v1 already treats
+; these as `text_64`, so we don't enforce the more narrow `bytes_32` type
+; here.
+policy_id = text_64
+asset_name = text_64
+
+asset_regex = text_regex_extendable
+
+; =========================================================================
+; Backwards compatibility with CIP-25 (simple and regex metadata updates)
+; Definitions for the following fields in `metadata_details` should follow
+; the same schema as in CIP-25, except that `name` and `image` are optional.
+; Other fields can have arbitrary `transaction_metadatum` values.
+metadata_details =
+  {
+    ? name : text_64,
+    ? image : text_extendable,
+    ? mediaType : text_64,
+    ? description : text_extendable,
+    ? files : [ * files_details],
+    * ( label_64 => transaction_metadatum )
+  }
+
+files_details =
+  {
+    name : text_64,
+    mediaType : text_64,
+    src : text_extendable
+  }
+
+; =========================================================================
+; Tabular format
+
+; The length of `token_names` must be equal to the length of the outer
+; array of `values`, and the length of `field_paths` must be equal to
+; the length of each inner array of `values`.
+tabular_metadata =
+  {
+    field_paths: [ * field_path],
+    token_names: [ * asset_name],
+    values: [ * [ * transaction_metadatum ] ]
+  }
+
+; Each field path is a dot-separated list of field names (text_64 values).
+; E.g. "images.background.sunset.url"
+field_path = text_64
+
+; =========================================================================
+; Imported from cardano-ledger/.../babbage.cddl
+transaction_metadatum =
+    { * transaction_metadatum => transaction_metadatum }
+  / [ * transaction_metadatum ]
+  / int
+  / bytes_64
+  / text_64
+
+address = bytes
+
+; =========================================================================
+; Convenient type aliases
+
+; Fixed-size text and bytes
+label_32 = bytes_32 / text_32
+bytes_32 = bytes .size (0..32)
+text_32 = text .size (0..32)
+
+label_64 = bytes_64 / text_64
+bytes_64 = bytes .size (0..64)
+text_64 = text .size (0..64)
+
+; Extendable text and bytes
+text_extendable = text_64 / [ * text_64 ]
+bytes_extendable = bytes_64 / [ * bytes 64 ]
+
+; Regex (fixed-size)
+; Tag 35 is for regular expressions in Perl Compatible Regular
+; Expressions (PCRE) / JavaScript syntax [ECMA262].
+; https://www.rfc-editor.org/rfc/rfc7049#section-2.4.4.3
+; https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
+text_regex = #6.35(text_64)
+
+; Regex (extendable size)
+; Technically, CBOR maps can have arrays as keys. This prevents them from being
+; directly convertable to JSON, but we can recover JSON-convertability by
+; concatenating the array-valued key into a single UTF-8 text.
+; The resulting concatenated text should be interpreted as `#6.35(text)`.
+text_regex_extendable = text_extendable

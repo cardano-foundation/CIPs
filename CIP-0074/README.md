@@ -1,11 +1,15 @@
 ---
 CIP: 74
 Title: Set minPoolCost to 0
-Authors: Robin of Loxley <adarobinhood@tutanota.com>
-Comments-URI: https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309
+Authors:
+ - Robin of Loxley <adarobinhood@tutanota.com>
+Category: Ledger
 Status: Proposed
-Type: Standards
 Created: 2022-10-17
+Discussions:
+ - https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309
+ - https://github.com/cardano-foundation/CIPs/pull/358
+Implementors: []
 License: CC-BY-4.0
 ---
 
@@ -13,8 +17,7 @@ License: CC-BY-4.0
 
 A minPoolCost of 340 ADA/epoch makes popularity the basis for pool desirability, causing preferred traits like pledge and performance to be overshadowed. This has promoted stake to centralize with operators who are effective at campaigning, but do not necessarily have any stake in the system of their own. We want to create a fair marketplace for stake pools that allows the network to decentralize with time; minPoolCost is averse to that goal.
 
-
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Popularity is currently the basis for desirability and defines which pools will receive high rewards and which won't. A pool with high popularity, low pledge, and low performance will offer significantly higher rewards than a pool with low popularity, high pledge, and high performance. With equal fee structures, a pool with 19.5MM pledge that is just starting out will be less desirable than a saturated pool with no pledge; a pool with 6MM pledge and perfect performance will be less desirable than a pool with 0 pledge and 90% performance. This makes it apparent we are not incentivizing a secure stable network and the network cannot self-correct if stake ends up in the wrong place.
 
@@ -26,13 +29,17 @@ The network is incentivizing the wrong behavior from SPOs which has made the net
 
 High security should always be the priority.
 
+### Desired effects
 
-## Specification:
+Stake pool desirability will become a function of pledge, performance, cost, and margin instead of only popularity. Operators will need to consolidate and grow pledge while moderating fees to remain competitive with other pools on the market.
+
+SPOs define their cost as an absolute value when submitting their registration.cert. They do not reference minPoolCost. Changing minPoolCost will not change any predefined costs. Pools that wish to leave their cost as-is can do so without any input. Pools that wish to lower their cost below 340 ADA/epoch will have to submit an updated registration.cert.
+
+## Specification
 
 "minPoolCost": 0
 
-
-## Rationale:
+## Rationale: how does this CIP achieve its goals?
 
 98% of all pools have their cost at 340 ADA/epoch or within + 10. As the price of ADA went from $0.3 to $3, almost no operators modified their cost. As the price of ADA dropped from $3 to $0.3, almost no operators modified their cost. This shows that the minPoolCost is not related to the real cost of operating a pool and the cost of a pool is no longer related to its utility.
 
@@ -40,23 +47,10 @@ We have a large body of research accompanied by simulations showing that removin
 
 A minPoolCost is not in Cardano's design specification. ALL published research is in favor of setting minPoolCost to 0.
 
-
-### Effects:
-
-Stake pool desirability will become a function of pledge, performance, cost, and margin instead of only popularity. Operators will need to consolidate and grow pledge while moderating fees to remain competitive with other pools on the market.
-
-SPOs define their cost as an absolute value when submitting their registration.cert. They do not reference minPoolCost. Changing minPoolCost will not change any predefined costs. Pools that wish to leave their cost as-is can do so without any input. Pools that wish to lower their cost below 340 ADA/epoch will have to submit an updated registration.cert.
-
-
-### Backwards Compatibility:
-
-This proposed change is fully backwards compatible and will not require a hard-fork. Adjusting parameters is 'easy' and will require no code rewrites. This change can be implemented immediately.
-
-
 ### Research and References
 
-Engineering Design Specification for Delegation and Incentives in Cardano–Shelley
-https://hydra.iohk.io/build/790053/download/1/delegation_design_spec.pdf
+Design Specification for Delegation and Incentives in Cardano
+https://github.com/input-output-hk/cardano-ledger/releases/latest/download/shelley-delegation.pdf
 
 Reward Sharing Schemes for Stake Pools
 https://arxiv.org/pdf/1807.11218.pdf
@@ -74,10 +68,14 @@ The general perspective on staking in Cardano
 
 ## Path to Active
 
-- [ ] Reach out to IOG's core engineering and research teams for feedback regarding the feasibility and soundness of this proposal. 
+### Acceptance Criteria
 
-- [ ] Create a protocol parameter update
-    - [ ] Build the raw transaction
-    - [ ] Have genesis delegates (IOG, CF & Emurgo) sign the update 
-    - [ ] Submit it to the network
-    - [ ] Confirm the update is eventually live and adopted by the network 
+- [ ] A protocol parameter update assigning `minPoolCost` to `0`.
+
+### Implementation Plan
+
+- [ ] Agreement by the Ledger team as defined in [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) under _Expectations for ledger CIPs_ including "expert opinion" on changes to rewards & incentives.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

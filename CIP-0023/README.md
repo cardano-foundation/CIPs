@@ -1,28 +1,30 @@
 ---
 CIP: 23
 Title: Fair Min Fees
-Authors: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
-Comments-URI: https://forum.cardano.org/t/fair-min-fees-cip/47534
+Authors:
+  - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
+Category: Ledger
 Status: Proposed
-Type: Standards
 Created: 2021-02-04
+Discussions:
+ - https://forum.cardano.org/t/fair-min-fees-cip/47534
+ - https://github.com/cardano-foundation/CIPs/pull/66
+Implementors: []
 License: CC-BY-4.0
-Requires: CIP-0009 Initial Protocol Parameters
 ---
-
-## Simple Summary
-
-Create a more fair marketplace for stakepools by reducing the minimum fixed pool fee and adding a minimum variable pool fee.
 
 ## Abstract
 
+This proposes to create a more fair marketplace for stakepools by reducing the minimum fixed pool fee and adding a minimum variable pool fee.
+
+## Motivation: why is this CIP necessary?
+
 The current minimum fixed pool fee places a large and unfair burden on delegators to pools with smaller amounts of stake.
 This incentivizes people to delegate to pools with higher stake causing centralization and creating an unequal playing field for stakepool operators.
+
 Reducing the minimum fixed pool fee and adding a minimum variable pool fee reduces the imbalance between stakepools with less or more stake to a more reasonable range that allows for more fair competition between stakepools and more fair rewards for delegators to stakepools with less stake.
 
-## Motivation
-
-Reducing the minimum fixed pool fee and adding a minimum variable pool fee creates a more fair marketplace for all stakepool operators, gives delegators to pools with less stake more fair rewards, and increases decentralization, which is a goal of Cardano.
+This creates a more fair marketplace for all stakepool operators and increases decentralization, which is a goal of Cardano.
 
 ## Specification
 
@@ -35,7 +37,14 @@ Reducing the minimum fixed pool fee and adding a minimum variable pool fee creat
 |-----------------------  |--------------------  |------------------------ |---------------   | ---------------------------- |
 ```
 
-## Rationale
+### Backward Compatibility
+
+There are 2 ways to handle the existing pool certificates with minimum variable pool fee less than the proposed value:
+1. These pool certificates would be treated as if they had the new mimimum variable pool fee.
+2. These pool certificates would be invaalid and pool operators would be required to create new certificates with valid values.
+If option 1 is possible, it would provide a better user experience for both stakepool operators and delegators and would cause less disruption to the network.
+
+## Rationale: how does this CIP achieve its goals?
 
 The PHP code in minfees.php in the pull request allows exploration of the effects of choosing different values for the minimum fixed and variable fees.
 Running minfees without any arguments gives the usage message as below.
@@ -127,24 +136,23 @@ $692.64 USD/epoch * 73 epochs/year = $50,562.72 USD/year
 
 In summary, the proposed parameter changes would create a more fair marketplace for stakepools, provide more fair rewards for delegators to smaller pools and would lower incentives for centralization providing a more resilient network.
 
-## Backward Compatibility
-
-There are 2 ways to handle the existing pool certificates with minimum variable pool fee less than the proposed value:
-1. These pool certificates would be treated as if they had the new mimimum variable pool fee.
-2. These pool certificates would be invaalid and pool operators would be required to create new certificates with valid values.
-If option 1 is possible, it would provide a better user experience for both stakepool operators and delegators and would cause less disruption to the network.
-
-## Test Cases
+### Test Cases
 
 See the minfees.php code to test different potential values of the parameters.
 
-## Implementations
+## Path to Active
 
-This would require new code to be written in the cardano-node to check the provided variable rate when creating pool certificates to make sure it meets the new requirements.
+### Acceptance Criteria
 
-If backward compatibility option 1 is chosen it would require some new code in the cardano-node to treat the below minimum rate as the minimum rate.
+- [ ] The new parameter `minPoolRate` is implemented in the protocol and enacted through a hard fork.
+- [ ] The minimum value of the existing parameter `minPoolCost` is adjusted in the protocol parameters (not requiring a hard fork).
+- [ ] Code must be written in the cardano-node to check the provided variable rate when creating pool certificates to make sure it meets the new requirements.
+  - [ ] If backward compatibility option 1 is chosen it would require some new code in the cardano-node to treat the below minimum rate as the minimum rate.
+
+### Implementation Plan
+
+- [ ] Agreement by the Ledger team as defined in [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) under _Expectations for ledger CIPs_ including "expert opinion" on changes to rewards & incentives.
 
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
-

@@ -1,0 +1,35 @@
+{
+  "26": {
+    "0": 1,
+    "1": [
+      {
+        "0": [
+          "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
+          "7370616365636f696e73"
+        ],
+        "1": "spacecoins",
+        "2": "SPACE",
+        "3": [
+          "the OG Cardano community token",
+          "-",
+          "whatever you do, your did it!",
+          "",
+          "Learn more at https://spacecoins.io!"
+        ],
+        "4": 0,
+        "5": [
+          "https://",
+          "spacecoins.io"
+        ],
+        "6": [
+          "ipfs://",
+          "bafkreib3e5u4am2btduu5s76rdznmqgmmrd4l6xf2vpi4vzldxe25fqapy"
+        ],
+        "7": [
+          "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
+          ""
+        ]
+      }
+    ]
+  }
+}

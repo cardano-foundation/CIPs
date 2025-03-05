@@ -1,11 +1,19 @@
 [
   {
+    "transaction_metadatum_label": 22,
+    "description": "Clarity - DAO creation metadata"
+  },
+  {
     "transaction_metadatum_label": 87,
     "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
   },
   {
     "transaction_metadatum_label": 88,
     "description": "milkomeda.com - the destination address in the sidechain"
+  },
+  {
+    "transaction_metadatum_label": 94,
+    "description": "CIP-0094 - On-chain governance polls"
   },
   {
     "transaction_metadatum_label": 123,
@@ -16,24 +24,52 @@
     "description": "Proof of Existence record"
   },
   {
+    "transaction_metadatum_label": 620,
+    "description": "seedtrace.org - supply chain & fair payment tracing"
+  },
+  {
     "transaction_metadatum_label": 674,
     "description": "CIP-0020 - Transaction message/comment metadata"
   },
   {
     "transaction_metadatum_label": 721,
-    "description": "CIP-0025 - NFT Metadata Standard"
+    "description": "CIP-0025 - NFT Token Standard"
   },
   {
     "transaction_metadatum_label": 777,
     "description": "CIP-0027 - Royalties Standard"
   },
   {
+    "transaction_metadatum_label": 839,
+    "description": "Agora - Proposal creation metadata"    
+  },
+  {
+    "transaction_metadatum_label": 867,
+    "description": "CIP-0088 - Token Policy Registration Standard"
+  },
+  {
     "transaction_metadatum_label": 888,
     "description": "finitum.io token bridge transactions metadata"
   },
   {
+    "transaction_metadatum_label": 1226,
+    "description": "Oracle related transaction metadata"
+  },
+  {
+    "transaction_metadatum_label": 1304,
+    "description": "on-chain certification metadata"
+  },
+  {
     "transaction_metadatum_label": 1564,
     "description": "Marlowe - a DSL for writing and executing financial contracts"
+  },
+  {
+    "transaction_metadatum_label": 1667,
+    "description": "CIP-72: dApp registration & Discovery"
+  },
+  {
+    "transaction_metadatum_label": 1694,
+    "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
   },
   {
     "transaction_metadatum_label": 1870,
@@ -42,6 +78,10 @@
   {
     "transaction_metadatum_label": 1888,
     "description": "amphitheatre by the ape society"
+  },
+  {
+    "transaction_metadatum_label": 1904,
+    "description": "Proof of origin and quality related verification data in supply chain"
   },
   {
     "transaction_metadatum_label": 1967,
@@ -66,6 +106,22 @@
   {
     "transaction_metadatum_label": 6770,
     "description": "fortunes.coconutpool.com fortune teller"
+  },
+  {
+    "transaction_metadatum_label": 10297,
+    "description": "fida.finance transaction metadata"
+  },
+  {
+    "transaction_metadatum_label": 18300,
+    "description": "selfdriven Achievement"
+  },
+  {
+    "transaction_metadatum_label": 18308,
+    "description": "selfdriven Identity"
+  },
+  {
+    "transaction_metadatum_label": 21325,
+    "description": "PRISM's Verifiable Data Registry for the PRISM DID method"
   },
   {
     "transaction_metadatum_label": 61284,

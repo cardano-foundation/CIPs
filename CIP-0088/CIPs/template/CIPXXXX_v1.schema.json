@@ -1,0 +1,51 @@
+{
+  "$id": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/CIPs/XXXX/CIPXXXX_v1.schema.json",
+  "title": "CIP-XXXX: CIP-Descriptor",
+  "description": "Describe what we're declaring in this JSON object here...",
+  "type": "object",
+  "properties": {
+    "XXXX": {
+      "type": "object",
+      "properties": {
+        "0": {
+          "title": "Version",
+          "description": "The version of this standard being used",
+          "type": "integer",
+          "minimum": 1
+        },
+        "1": {
+          "type": "object",
+          "title": "CIP-XXXX Details",
+          "description": "What's going on here?",
+          "properties": {
+            "0": {
+              "type": "string",
+              "maxLength": 64,
+              "title": "Something",
+              "description": "Probably nothing"
+            },
+            "1": {
+              "type": "integer",
+              "title": "Foo",
+              "description": "Number of Bars"
+            },
+            "2": {
+              "type": "array",
+              "title": "Stuff",
+              "description": "Array of things",
+              "items": {
+                "type": "string",
+                "maxLength": 64,
+                "title": "Stuff Item",
+                "description": "Stuff can be things but are all things stuff?"
+              }
+            }
+          },
+          "required": ["0"]
+        }
+      },
+      "required": ["1"]
+    }
+  },
+  "required": ["XXXX"]
+}

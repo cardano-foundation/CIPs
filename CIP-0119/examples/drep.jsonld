@@ -1,0 +1,58 @@
+{
+    "@context": {
+        "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+        "CIP119": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0119/README.md#",
+        "hashAlgorithm": "CIP100:hashAlgorithm",
+        "body": {
+            "@id": "CIP119:body",
+            "@context": {
+                "references": {
+                    "@id": "CIP119:references",
+                    "@container": "@set",
+                    "@context": {
+                        "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+                        "Other": "CIP100:OtherReference",
+                        "label": "CIP100:reference-label",
+                        "uri": "CIP100:reference-uri"
+                    }
+                },
+                "paymentAddress": "CIP119:paymentAddress",
+                "givenName": "CIP119:givenName",
+                "image": {
+                    "@id": "CIP119:image",
+                    "@context": {
+                        "ImageObject": "https://schema.org/ImageObject"
+                    }
+                },
+                "objectives": "CIP119:objectives",
+                "motivations": "CIP119:motivations",
+                "qualifications": "CIP119:qualifications"
+            }
+        }
+    },
+    "hashAlgorithm": "blake2b-256",
+    "body": {
+        "paymentAddress": "addr1q86dnpkva4mm859c8ur7tjxn57zgsu6vg8pdetkdve3fsacnq7twy06u2ev5759vutpjgzfryx0ud8hzedhzerava35qwh3x34",
+        "givenName": "Ryan Williams",
+        "image": {
+            "@type": "ImageObject",
+            "contentUrl": "https://avatars.githubusercontent.com/u/44342099?v=4",
+            "sha256": "2a21e4f7b20c8c72f573707b068fb8fc6d8c64d5035c4e18ecae287947fe2b2e"
+        },
+        "objectives": "Buy myself an island.",
+        "motivations": "I really would like to own an island.",
+        "qualifications": "I have my 100m swimming badge, so I would be qualified to be able to swim around island.",
+        "references": [
+          {
+            "@type": "Other",
+            "label": "A cool island for Ryan",
+            "uri": "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"
+          },
+          {
+            "@type": "Link",
+            "label": "Ryan's Twitter",
+            "uri": "https://twitter.com/Ryun1_"
+          }
+        ]
+    }
+}

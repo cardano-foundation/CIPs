@@ -13,8 +13,6 @@ Created: 2022-10-14
 License: CC-BY-4.0
 ---
 
-# CIP-9999: Cardano Problem Statements
-
 ## Abstract
 
 A Cardano Problem Statement (CPS) is a formalized document for the Cardano ecosystem and the name of the process by which such documents are produced and listed. CPSs are meant to complement CIPs and live side-by-side in the CIP repository as first-class citizens.
@@ -47,6 +45,8 @@ Problem            | A more detailed description of the problem and its context.
 Use cases          | A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are unsuitable.
 Goals              | A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve. <br/><br/>Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns. <br/><br/>Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is.
 Open Questions     | A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their _'Rationale'_ section and provide an argued answer to each.
+_optional sections_| If necessary, these sections may also be included in any order:<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**<br>Do not add material in an optional section if it pertains to one of the standard sections.
+Copyright                                       | The CPS must be explicitly licensed under acceptable copyright terms (see [Licensing](#licensing)).
 
 ##### Header preamble
 
@@ -62,6 +62,7 @@ Field                | Description
 `Proposed Solutions` | A list of CIPs addressing the problem, if any
 `Discussions`        | A list of links where major technical discussions regarding this CPS happened. Links should include any discussion before submission, a link to the pull request that created the CPS, and any pull request that modifies it.
 `Created`            | Date created on, in ISO 8601 (YYYY-MM-DD) format
+`License`            | Abbreviation of an approved license(s)
 
 For example:
 
@@ -113,6 +114,19 @@ Inactive    | The statement is deemed obsolete or withdrawn for another reason. 
 #### Categories
 
 As defined in [CIP-0001][].
+
+#### Licensing
+
+CPSs are licensed in the public domain. More so, they must be licensed under one of the following licenses. Each new CPS must identify at least one acceptable license in its preamble. In addition, each license must be referenced by its respective abbreviation below in the _"Copyright"_ section.
+
+| Purpose             | Recommended License                                                                    |
+| ---                 | ---                                                                                    |
+| For software / code | Apache-2.0 - [Apache License, version 2.0][Apache-2.0]                                 |
+| For documentation   | CC-BY-4.0 - [Creative Commons Attribution 4.0 International Public License][CC-BY-4.0] |
+
+> **Warning**
+>
+> All licenses not explicitly included in the above lists are not acceptable terms for a Cardano Problem Statement unless a later CIP extends this one to add them.
 
 ### The CPS Process
 
@@ -171,7 +185,7 @@ This section is meant to _save time_, especially for problem statement authors w
 
 ### Implementation Plan
 
-- [ ] Schedule a retrospective in 2-3 months to assess the effectiveness of the process
+- [x] Confirm after repeated cycles of CPS submissions, reviews, and merges that the CPS process is both effective and accessible to the community.
 
 ## Copyright
 

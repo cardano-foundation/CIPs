@@ -1,0 +1,67 @@
+{
+    "@context": {
+      "@language": "en-us",
+      "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+      "CIP108": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#",
+      "hashAlgorithm": "CIP100:hashAlgorithm",
+      "body": {
+        "@id": "CIP108:body",
+        "@context": {
+          "references": {
+            "@id": "CIP108:references",
+            "@container": "@set",
+            "@context": {
+              "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+              "Other": "CIP100:OtherReference",
+              "label": "CIP100:reference-label",
+              "uri": "CIP100:reference-uri",
+              "referenceHash": {
+                "@id": "CIP108:referenceHash",
+                "@context": {
+                  "hashDigest": "CIP108:hashDigest",
+                  "hashAlgorithm": "CIP100:hashAlgorithm"
+                }
+              }
+            }
+          },
+          "title": "CIP108:title",
+          "abstract": "CIP108:abstract",
+          "motivation": "CIP108:motivation",
+          "rationale": "CIP108:rationale"
+        }
+      },
+      "authors": {
+        "@id": "CIP100:authors",
+        "@container": "@set",
+        "@context": {
+          "name": "http://xmlns.com/foaf/0.1/name",
+          "witness": {
+            "@id": "CIP100:witness",
+            "@context": {
+              "witnessAlgorithm": "CIP100:witnessAlgorithm",
+              "publicKey": "CIP100:publicKey",
+              "signature": "CIP100:signature"
+            }
+          }
+        }
+      }
+    },
+    "body": {
+      "title": "We must remove the ineffective Constitutional Committee",
+      "abstract": "The current constitutional committee have not voted for the last 100 epochs, causing an inability to pass any proposals. This is a waste of resources and must be removed.",
+      "motivation": "In order for governance to work an __active__ constitutional committee is required, without them the system grinds to a halt and important governance actions cannot be passed.",
+      "rationale": "By moving into a state of no confidence, **we** the DReps are able to vote in a new constitutional committee.",
+      "references": [
+        {
+          "@type": "Other",
+          "label": "A governance action that has been unable to pass",
+          "uri": "https://raw.githubusercontent.com/cardano-foundation/CIPs/blob/master/CIP-0108/examples/treasury-withdrawal.jsonld",
+          "referenceHash": {
+            "hashDigest": "70e79c1f12ff3c8c955bc2178a542b5994a21be163dd7655af2c5308d2643323",
+            "hashAlgorithm": "blake2b-256"
+          }
+        }
+      ]
+    }
+}
+  

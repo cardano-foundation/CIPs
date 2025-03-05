@@ -1,0 +1,63 @@
+{
+  "@context": {
+    "@language": "en-us",
+    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+    "CIP136": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#",
+    "body": {
+        "@id": "CIP136:body",
+        "@context": {
+            "references": {
+                "@id": "CIP100:references",
+                "@container": "@set",
+                "@context": {
+                    "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+                    "Other": "CIP100:OtherReference",
+                    "label": "CIP100:reference-label",
+                    "uri": "CIP100:reference-uri",
+                    "RelevantArticles": "CIP136:RelevantArticles"
+                }
+            },
+            "summary": "CIP136:summary",
+            "rationaleStatement": "CIP136:rationaleStatement",
+            "precedentDiscussion": "CIP136:precedentDiscussion",
+            "counterargumentDiscussion": "CIP136:counterargumentDiscussion",
+            "conclusion": "CIP136:conclusion",
+            "internalVote": {
+                "@id": "CIP136:internalVote",
+                "@container": "@set",
+                "@context": {
+                    "constitutional": "CIP136:constitutional",
+                    "unconstitutional": "CIP136:unconstitutional",
+                    "abstain": "CIP136:abstain",
+                    "didNotVote": "CIP136:didNotVote"
+                }
+            }
+        }
+    }
+  },
+  "body": {
+    "summary": "Ryan using treasury funds to buy an island is unconstitutional!",
+    "rationaleStatement": "The Cardano treasury is not meant to be used for personal gain, it should be for the benefit of the community.",
+    "precedentDiscussion": "No precedent",
+    "counterargumentDiscussion": "It would be pretty cool.",
+    "conclusion": "In conclusion spending the treasury to benefit a single dude, bad.",
+    "internalVote": {
+      "constitutional": 0,
+      "unconstitutional": 1,
+      "abstain": 0,
+      "didNotVote": 0
+    },
+    "references": [
+      {
+        "@type": "relevantArticles",
+        "label": "Article III section 8.",
+        "uri": "https://github.com/IntersectMBO/interim-constitution/blob/main/cardano-constitution-0.txt#L231"
+      },
+      {
+        "@type": "Other",
+        "label": "A cool island for Ryan",
+        "uri": "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"
+      }
+    ]
+  }
+}

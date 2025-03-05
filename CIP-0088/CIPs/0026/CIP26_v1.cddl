@@ -1,0 +1,39 @@
+; CIP-0026: Fungible Token Registration Standard
+; Version: 1
+
+string = text .size (0..64)
+
+; A uri should consist of a scheme and one or more path strings describing the path to the resource
+; The first entry should contain the URI "Scheme" (e.g. "https://", "ftp://", "ar://", "ipfs://")
+; One or more subsequent entries should describe the path of the URI
+
+uri.scheme = text .size (5..64)
+uri.path = text .size (1..64)
+uri = {
+    uri.scheme,
+    + uri.path
+}
+
+policy_id = bytes .size(28)
+asset_name = bytes .size (0..32)
+
+token-asset = {
+    policy_id,
+    asset_name
+}
+
+fungible-details = {
+      0 : token-asset,           ; asset identifier
+      1 : string,                ; token name
+      2 : [* string],            ; description
+    ? 3 : string,                ; token ticker
+    ? 4 : uint,                  ; token decimals
+    ? 5 : uri,                   ; uri of token website
+    ? 6 : uri,                   ; uri of token image
+    ? 7 : token-asset            ; beacon token identifier
+}
+
+cip26-details = {
+    ? 0 : uint,                  ; version
+      1 : [+ fungible-details]   ; CIP-0026 Fungible Token Registration(s)
+}

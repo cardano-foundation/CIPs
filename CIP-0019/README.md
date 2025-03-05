@@ -1,32 +1,34 @@
 ---
 CIP: 19
 Title: Cardano Addresses
-Authors: Matthias Benkort <matthias.benkort@iohk.io>
-Comments-Summary: A description of the structure of addresses in Cardano.
-Comments-URI: https://github.com/cardano-foundation/CIPs/wiki/Comments:CIP-0019
 Status: Active
-Type: Standards
+Category: Ledger
+Authors:
+  - Matthias Benkort <matthias.benkort@cardanofoundation.org>
+Implementors: N/A
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/78
 Created: 2020-03-25
 License: CC-BY-4.0
 ---
 
-# Abstract
+## Abstract
 
 This specification describes the structure of addresses in Cardano, covering both addresses introduced in the Shelley era and the legacy format from the Byron era.
 
-# Motivation
+## Motivation: why is this CIP necessary?
 
 Document design choices for posterity. Most applications interacting with the Cardano blockchain will likely not have any need for this level of details, however, some might. This CIP is meant to capture this knowledge. 
 
-# Specification
+## Specification
 
-## Introduction
+### Introduction
 
 In Cardano, an address is a **sequence of bytes** that conforms to a particular format, which we describe below.
 
 However, users will typically come into contact with addresses only after these addresses have been **encoded** into sequences of human-readable characters. In Cardano, the [Bech32][] and [Base58][] encodings are used to encode addresses, as opposed to standard hexadecimal notation (Base16, example `0x8A7B`). These encoded sequence of characters have to be distinguished from the byte sequences that they encode, but lay users will (and should) perceive the encoded form as "the" address.
 
-## User-facing Encoding
+### User-facing Encoding
 
 By convention, **Shelley** and stake addresses are encoded using **[Bech32][]**, with the exception that Cardano does not impose a length limit on the sequence of characters. The human-readable prefixes are defined in [CIP-0005][]; the most common prefix is `addr`, representing an address on mainnet. Bech32 is the preferred encoding, as its built-in error detection may protect users against accidental misspellings or truncations.
 
@@ -44,7 +46,7 @@ Examples of different addresses encoded in different eras:
 | Shelley      | bech32   | `addr1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5eg0yu80w`                                                         |
 | stake        | bech32   | `stake1vpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5egfu2p0u`                                                        |
 
-## Binary format
+### Binary format
 
 In Cardano, the sequence of bytes (after decoding with Bech32 or Base58) that represents an address  comprises two parts, a one-byte **header** and a **payload** of several bytes. Depending on the header, the interpretation and length of the payload varies. 
 
@@ -65,7 +67,7 @@ In the header-byte, bits [7;4] indicate the type of addresses being used; we'll 
 
 See also the more detailed [ABNF grammar in annex].
 
-### Network Tag
+#### Network Tag
 
 Except for [Byron addresses] (type 8 = `1000`), the second half of the header (bits [3;0]) refers to the network tag which can have the following values and semantics. Other values of the network tag are currently reserved for future network types. In the case of [Byron addresses], bits [3;0] have a completely separate definition detailed in the section below.
 
@@ -75,7 +77,7 @@ Network Tag (`. . . . n n n n`)   | Semantic
 `....0001`                        | Mainnet
 
 
-### Shelley Addresses 
+#### Shelley Addresses 
 
 There are currently 8 types of Shelley addresses summarized in the table below:
 
@@ -90,23 +92,26 @@ Header type (`t t t t . . . .`) | Payment Part     | Delegation Part
 (6) `0110....`                  | `PaymentKeyHash` | ø
 (7) `0111....`                  | `ScriptHash`     | ø
 
-- `PubKeyHash` and `StakeKeyHash` refers to `blake2b-224` hash digests of Ed25519 verification keys. How keys are obtained is out of the scope of this specification. Interested readers may look at [CIP-1852] for more details.
+- `PaymentKeyHash` and `StakeKeyHash` refer to `blake2b-224` hash digests of Ed25519 verification keys. How keys are obtained is out of the scope of this specification. Interested readers may look at [CIP-1852] for more details.
 
 - `ScriptHash` refer to `blake2b-224` hash digests of serialized monetary scripts. How scripts are constructed and serialized is out of the scope of this specification.
 
 - `Pointer` is detailed in the section below.
 
-#### Payment part
+##### Payment part
 
-Fundamentally, the first part of a Shelley address indicates the ownership of the funds associated with the address. We call it the **payment part**. Whoever owns the payment parts owns any funds at the address. As a matter of fact, in order to spend from an address, one must provide a witness attesting that the address can be spent. In the case of a `PubKeyHash`, it means providing a signature of the transaction body made with the signing key corresponding to the hashed public key (as well as the public key itself for verification). For monetary scripts, it means being able to provide the source script and meet the necessary conditions to validate the script. 
+Fundamentally, the first part of a Shelley address indicates the ownership of the funds associated with the address. We call it the **payment part**. Whoever owns the payment parts owns any funds at the address. As a matter of fact, in order to spend from an address, one must provide a witness attesting that the address can be spent. In the case of a `PaymentKeyHash`, it means providing a signature of the transaction body made with the signing key corresponding to the hashed public key (as well as the public key itself for verification). For monetary scripts, it means being able to provide the source script and meet the necessary conditions to validate the script. 
 
-#### Delegation part
+##### Delegation part
 
 The second part of a Shelley address indicates the owner of the stake rights associated with the address. We call it the **delegation part**. Whoever owns the delegation parts owns the stake rights of any funds associated with the address. In most scenarios, the payment part and the delegation part are owned by the same party. Yet it is possible to construct addresses where both parts are owned and managed by separate entities. We call such addresses **mangled addresses** or **hybrid addresses**. 
 
 Some addresses (types 6 and 7) carry no delegation part whatsoever. Their associated stake can't be delegated. They can be used by parties who want to prove that they are not delegating funds which is typically the case for custodial businesses managing funds on the behalf of other stakeholders. Delegation parts can also be defined in terms of on-chain [pointers]. 
 
-#### Pointers
+##### Pointers
+
+> **Note**
+> From the Conway ledger era, new pointer addresses cannot be added to Mainnet.
 
 In an address, a **chain pointer** refers to a point of the chain containing a stake key registration certificate. A point is identified by 3 coordinates:
 
@@ -127,7 +132,7 @@ VARIABLE-LENGTH-UINT = (%b1 | UINT7 | VARIABLE-LENGTH-UINT)
 UINT7 = 7BIT 
 ```
 
-### Stake Addresses
+#### Stake Addresses
 
 Like [Shelley addresses], stake addresses (also known as **reward addresses**) start with a single header byte identifying their type and the network, followed by 28 bytes of payload identifying either a stake key hash or a script hash. 
 
@@ -140,7 +145,7 @@ Header type (`t t t t . . . .`) | Stake Reference
 
 - `ScriptHash` refers to `blake2b-224` hash digests of serialized monetary scripts. How scripts are constructed and serialized is out of the scope of this specification.
 
-### Byron Addresses
+#### Byron Addresses
 
 Before diving in, please acknowledge that a lot of the supported capabilities of Byron addresses have remained largely unused. The initial design showed important trade-offs and rendered it unpractical to sustain the long-term goals of the network. A new format was created when introducing Shelley and Byron addresses were kept only for backward compatibility. Byron addresses are also sometimes called **bootstrap addresses**.
 
@@ -174,27 +179,11 @@ Finally, the address type allows for distinguishing different sub-types of Byron
 
 A full and more detailed [CDDL specification of Byron addresses] is given in the annex to the CIP. 
 
-#### Derivation path 
+##### Derivation path 
 
 Historically, Cardano wallets have been storing information about the wallet structure directly within the address. This information comes in the form of two derivation indexes (in the sense of child key derivation as defined in [BIP-0032]) which we call **derivation path**. To protect the wallet's anonymity, the derivation path is stored encrypted using a ChaCha20/Poly1305 authenticated cipher. 
 
-# Rationale
-
-N/A
-
-# Backwards Compatibility
-
-N/A
-
-# Reference Implementation(s)
-
-- [input-output-hk/cardano-addresses (Byron & Shelley)](https://github.com/input-output-hk/cardano-addresses)
-
-- [input-output-hk/cardano-ledger-specs (Byron)](https://github.com/input-output-hk/cardano-ledger-specs/blob/d5eaac6c4b21a8e69dc3a5503a72e3c3bfde648e/byron/ledger/impl/src/Cardano/Chain/Common/Address.hs)
-
-- [input-output-hk/cardano-ledger-specs (Shelley)](https://github.com/input-output-hk/cardano-ledger-specs/blob/1e7e6e03a46e8118b318ed105214767aec0f3976/shelley/chain-and-ledger/executable-spec/src/Shelley/Spec/Ledger/Address.hs)
-
-# Test Vectors
+### Test Vectors
 
 All test vectors below use the following payment key, stake key, script and pointer:
 
@@ -228,10 +217,31 @@ testnet:
     type-14: stake_test1uqehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gssrtvn
     type-15: stake_test17rphkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcljw6kf
 ```
+## Rationale: how does this CIP achieve its goals?
 
-# Copyright
+As stated in [Motivation](#motivation-why-is-this-cip-necessary) this CIP is provided for informational purposes regarding a single deliberate design. Further rationale and motivation for this design are available in the [Design Specification for Delegation and Incentives in Cardano - Section 3.2 :: Addresses & Credentials ](https://github.com/intersectmbo/cardano-ledger/releases/latest/download/shelley-delegation.pdf).
 
-CC-BY-4.0
+### Reference Implementation(s)
+
+- [IntersectMBO/cardano-addresses (Byron & Shelley)](https://github.com/IntersectMBO/cardano-addresses)
+
+- [IntersectMBO/cardano-ledger-specs (Byron)](https://github.com/IntersectMBO/cardano-ledger-specs/blob/d5eaac6c4b21a8e69dc3a5503a72e3c3bfde648e/byron/ledger/impl/src/Cardano/Chain/Common/Address.hs)
+
+- [IntersectMBO/cardano-ledger-specs (Shelley)](https://github.com/IntersectMBO/cardano-ledger-specs/blob/1e7e6e03a46e8118b318ed105214767aec0f3976/shelley/chain-and-ledger/executable-spec/src/Shelley/Spec/Ledger/Address.hs)
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [x] Confirmation by consensus, with no reported dispute since publication, that this document fully descibes how Cardano addresses are universally implemented.
+
+### Implementation Plan
+
+- [x] Publish this documentation for confirmation that it accurately describes conventionals of universal use.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 [ABNF grammar in annex]: https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0019/CIP-0019-cardano-addresses.abnf
 [base58]: https://tools.ietf.org/id/draft-msporny-base58-01.html

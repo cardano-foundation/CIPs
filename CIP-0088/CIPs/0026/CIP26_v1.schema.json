@@ -1,0 +1,118 @@
+{
+  "$id": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/CIPs/0026/CIP26_v1.schema.json",
+  "title": "CIP-26: Fungible Token",
+  "description": "Additional context for a policy declaring support for fungible token standards",
+  "type": "object",
+  "properties": {
+    "26": {
+      "type": "object",
+      "properties": {
+        "0": {
+          "type": "integer",
+          "title": "Version",
+          "description": "The version of the standard in use",
+          "minimum": 1
+        },
+        "1": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "title": "Fungible Token Details",
+            "description": "Describes details about a particular fungible token under this policy",
+            "type": "object",
+            "properties": {
+              "0": {
+                "title": "Subject",
+                "description": "The hex-encoded Policy ID and Asset ID of the token",
+                "$ref": "#/$defs/tokenAsset"
+              },
+              "1": {
+                "title": "Name",
+                "description": "The full display name of the token",
+                "type": "string",
+                "example": "spacecoins"
+              },
+              "2": {
+                "title": "Symbol/Ticker",
+                "description": "The ticker or listing symbol for the token",
+                "type": "string",
+                "example": "SPACE"
+              },
+              "3": {
+                "title": "Description",
+                "description": "A short description for the token",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "example": [
+                  "The OG Cardano Community Token","- whatever you do, your did it!"
+                ]
+              },
+              "4": {
+                "title": "Decimals",
+                "description": "How many decimal places this token should be rendered with",
+                "type": "integer",
+                "example": 0,
+                "default": 0
+              },
+              "5": {
+                "title": "URL",
+                "description": "A URL to the project's web page",
+                "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/common/uri-array.schema.json"
+              },
+              "6": {
+                "title": "Logo",
+                "description": "A URI to the token's logo",
+                "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/common/uri-array.schema.json"
+              },
+              "7": {
+                "title": "Reference Token",
+                "description": "A reference to a 'Beacon Token' that can provide additional context via inline datum to smart contracts",
+                "$ref": "#/$defs/tokenAsset"
+              }
+            },
+            "required": [
+              "0",
+              "1",
+              "2"
+            ]
+          }
+        }
+      },
+      "required": [
+        "1"
+      ]
+    }
+  },
+  "required": [
+    "26"
+  ],
+  "$defs": {
+    "tokenAsset": {
+      "title": "Token Asset",
+      "description": "The hex-encoded Policy ID and hex-encoded Asset ID of the token",
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": [
+        {
+          "title": "Policy ID",
+          "description": "The hex-encoded Policy ID of the token",
+          "type": "string",
+          "maxLength": 56,
+          "minLength": 56
+        },
+        {
+          "title": "Asset ID",
+          "description": "The hex-encoded Asset ID of the token",
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 64
+        }
+      ],
+      "additionalItems": false
+    }
+  }
+}

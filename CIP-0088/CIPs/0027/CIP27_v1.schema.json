@@ -1,0 +1,50 @@
+{
+  "$id": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/CIPs/0027/CIP27_v1.schema.json",
+  "title": "CIP-27: Token Royalty Details",
+  "description": "Additional context for token policy declaring support for CIP-27 royalty standards",
+  "type": "object",
+  "properties": {
+    "27": {
+      "type": "object",
+      "properties": {
+        "0": {
+          "type": "integer",
+          "title": "Version",
+          "description": "The version of the standard in use",
+          "minimum": 1
+        },
+        "1": {
+          "title": "Royalty Details",
+          "description": "Describe top-level details about the Token Project",
+          "type": "object",
+          "properties": {
+            "0": {
+              "type": "string",
+              "title": "Royalty Rate",
+              "description": "Rate of royalties to charge as represented by a floating point number between 1.000000 and 0.000000"
+            },
+            "1": {
+              "type": "array",
+              "title": "Recipient Address",
+              "description": "The recipient address to receive royalties in BECH32 format.",
+              "items": {
+                "type": "string",
+                "maxLength": 64
+              }
+            }
+          },
+          "required": [
+            "0",
+            "1"
+          ]
+        }
+      },
+      "required": [
+        "1"
+      ]
+    }
+  },
+  "required": [
+    "27"
+  ]
+}

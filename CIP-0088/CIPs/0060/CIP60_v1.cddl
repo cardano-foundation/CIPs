@@ -1,0 +1,13 @@
+; CIP-0060: Music Token Metadata Standard
+; Version: 1
+
+string = text .size (0..64)
+
+music-token-details = {
+    ; TBD
+}
+
+cip60-details = {
+    ? 0 : uint                    ; version
+      1 : music-token-details     ; CIP-0060 Music NFT Details
+}

@@ -10,7 +10,8 @@
       {
         "asset_name_label": 222,
         "class": "NFT",
-        "description": "CIP-0068 - NFT Metadata Standard (222 sub standard)"
+        "description": "CIP-0068 - NFT Metadata Standard (222 sub standard)",
+        "documentation": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0068"
       }
     ]
   ],
@@ -53,6 +54,14 @@
             "title": "The asset name label description",
             "default": "",
             "examples": ["CIP-0068 - NFT Metadata Standard (222 sub standard)"]
+          },
+          "documentation": {
+            "$id": "#/items/anyOf/0/properties/documentation",
+            "type": "string",
+            "format": "url",
+            "title": "Documentation Link",
+            "default": "",
+            "examples": ["https://github.com/cardano-foundation/CIPs/blob/master/CIP-0068"]
           }
         },
         "additionalProperties": false

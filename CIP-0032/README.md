@@ -1,13 +1,15 @@
 ---
 CIP: 32
 Title: Inline datums
+Status: Active
+Category: Plutus
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Jared Corduan <jared.corduan@iohk.io>
-Status: Active
-Category: Plutus
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/160
 Created: 2021-11-29
 License: CC-BY-4.0
 ---
@@ -17,7 +19,7 @@ License: CC-BY-4.0
 We propose to allow datums themselves to be attached to outputs instead of datum hashes.
 This will allow much simpler communication of datum values between users.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Conceptually, datums are pieces of data that are attached to outputs.
 However, in practice datums are implemented by attaching _hashes_ of datums to outputs, and requiring that the spending transaction provides the actual datum.
@@ -67,10 +69,10 @@ transaction_output =
 ```
 TODO: should there be a dedicated production for datum-hash-or-datum? Does it need to be tagged?
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 The key idea of this proposal is simply to restore the conceptually straightforward situation where datums are attached to outputs.
-Historically, this was the way that the EUTXO model was designed, and switching to datum hashes on outputs was done to avoid bloating UTXO entries, which at that time (pre-multiasset) were constant-size (see [1] page 7).
+Historically, this was the way that the EUTXO model was designed, and switching to datum hashes on outputs was done to avoid bloating UTXO entries, which at that time (pre-multiasset) were constant-size (see [^1] page 7).
 
 Now that we have variable-sized UTXO entries and the accounting to support them, we can restore inline datums.
 
@@ -163,6 +165,18 @@ The mitigating factor is that we expect this to be uncommon in practice, particu
 
 Hence we choose both option 1s and do _not_ provide backwards compatibility for old language versions.
 
-## References
+## Path to Active
 
-[1]: Chakravarty, Manuel MT, et al. "The extended UTXO model."
+### Acceptance Criteria
+
+- [x] Fully implemented in Cardano as of the Vasil protocol upgrade.
+
+### Implementation Plan
+
+- [x] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+[^1]: Chakravarty, Manuel M. T. et al., "The extended UTXO model"

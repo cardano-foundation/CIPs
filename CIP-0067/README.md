@@ -1,9 +1,15 @@
 ---
 CIP: 67
 Title: Asset Name Label Registry
-Authors: Alessandro Konrad <alessandro.konrad@live.de>, Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Status: Proposed
-Type: Informational
+Category: Tokens
+Authors: 
+  - Alessandro Konrad <alessandro.konrad@live.de>
+  - Thomas Vellekoop <thomas.vellekoop@iohk.io>
+Implementors: N/A
+Discussions:
+ - https://github.com/cardano-foundation/CIPs/pull/298
+ - https://github.com/cardano-foundation/CIPs/pull/586
 Created: 2022-07-13
 License: CC-BY-4.0
 ---
@@ -12,19 +18,19 @@ License: CC-BY-4.0
 
 This proposal defines a standard to identify Cardano native assets by the asset name to put them in an asset class, as intended by their issuer.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 As more assets are minted and different standards emerge to query data for these assets, it's getting harder for 3rd parties to determine the asset class and associated extra assumptions that may arise from this identification. For example, if an asset is identified as a non-fungible token, a third party is interested in its onchain associated metadata. This standard is similar to [CIP-0010](../CIP-0010), but focuses on the asset name of a native asset.
 
 ## Specification
 
-To give issuers, the option to classify assets the `asset_name` needs to be prefixed the following `4 bytes` binary encoding:
+To give issuers the option to classify assets, the `asset_name` MUST be prefixed with 4 bytes encoding the following binary value:
 ```
 [ 0000 | 16 bits label_num | 8 bits checksum | 0000 ]
 ```
 - The leading and ending four 0s are brackets
 - `label_num` has a fixed size of 2 bytes (`Label range in decimal: [0, 65535]`). 
-If `label_num` < 2 bytes, the remaining bits need to be left-padded with 0s.
+If `label_num` < 2 bytes, the remaining bits MUST be left-padded with 0s.
 - `checksum` has a fixed size of 1 byte. The checksum is calculated by applying the [CRC-8](#CRC-8) algorithm on the `label_num (including the padded 0s)`. 
 
 ### CRC-8
@@ -55,7 +61,6 @@ If `label_num` < 2 bytes, the remaining bits need to be left-padded with 0s.
   0xcb, 0xe6, 0xe1, 0xe8, 0xef, 0xfa, 0xfd, 0xf4, 0xf3,
 ]
 ```
-
  
 ### Example:
 
@@ -74,38 +79,26 @@ We have the following asset name: `0x000de140`
 3. Slice off the 2 `label_num` bytes and apply them to the CRC-8 algorithm. If the result matches with the `checksum` byte, a `valid` label was found and it can be returned. => `0x00de`
 4. Convert to decimal => `222`
 
-
 ### Reserved labels
 
 These are the reserved `asset_name_label` values
 
-`asset_name_label`            | class | description              |
-----------------------------  | ----- |  ----------------------- |
-0 - 15                        | -     |  private use             |
+| `asset_name_label` | class | description |
+|--------------------|-------|-------------|
+| 0 - 15             | -     | private use |
 
 ### Adding an entry to the registry
 
-To propose an addition to the registry, edit the [registry.json](./registry.json) with your details, open a pull request against the CIPs repository and give a brief description of your project and how you intend to use the label for assets.
+> The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+> NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+> "OPTIONAL" in this section are to be interpreted as described in
+> [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
-## Rationale
-
-Asset name labels make it easy to identify native assets and classify them in their asset class intended by the issuer. Since the identification of these native assets is done by third parties, the design is focused on the usability for them.
-
-First, The label should be quickly parsable with a first check. That is, an initial check on an asset name that is easy and will exclude a big subset of the available token names that do not follow standard. This is why the label starts and ends with `0000` in bits. Additionally, in its hex notation, this is differentiable by a human in its readable form, a more common representation.
-
-Secondly, the remaining verification on whether a certain `asset_name_label` standard is followed should be a one shot calculation. Here we mean that the calculation of the check should be straightforward, the label should not be fitted via brute force by a third party. That's why the label contains the bit representation of the integer label it tries to follow.
-
-Another thing that is important to understand is that an oblivious token issuer might not be aware of this standard. This could lead to the unintentional misinterpretation by third parties and injection attacks. We can minimize this attack vector by making the label format obscure. That is why the label also contains a checksum derived from the `asset_name_label` to add characters that are deterministically derived but look like nonsense. Together with the above zero "brackets", and the fixed size binary encoding, it make it unlikely someone follows this standard accidentally. The CRC-8 checksum is chosen for it low-impact on resources and its readily available implementations in multiple languages.
-
-## Path to Active
-
-- Get support for this CIP by wallets, explorers, minting platforms and other 3rd parties.
-- Get support by tools/libraries like Lucid, PlutusTx, cardano-cli, etc. to generate/verify labels.
-
-### Reference Implementation(s)
-
-- [Lucid TypeScript implementation of toLabel/fromLabel](https://github.com/spacebudz/lucid/blob/39cd2129101bd11b03b624f80bb5fe3da2537fec/src/utils/utils.ts#L500-L522)
-- [Lucid TypeScript implementation of CRC-8](https://github.com/spacebudz/lucid/blob/main/src/misc/crc8.ts)
+Those wishing to propose an addition to this registry **MUST** draft a new CIP describing the standard for implementing
+the token. Once the CIP has achieved the `Under Review` status the proposer **SHALL** make the necessary edits to 
+[registry.json](./registry.json). These changes **SHOULD** be submitted under a separate pull request against the CIP
+repository and include a brief description of the standard and a link to the CIP Pull Request describing implementation
+details.
 
 ### Test Vectors
 
@@ -124,9 +117,28 @@ Keys represent labels in `decimal` numbers. Values represent the entire label, i
 65535 : 0ffff240
 ```
 
-## References
+## Rationale: how does this CIP achieve its goals?
 
-- CIP-0010: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010
+Asset name labels make it easy to identify native assets and classify them in their asset class intended by the issuer. Since the identification of these native assets is done by third parties, the design is focused on the usability for them.
+
+First, the label should be quickly parsable with a first check. That is, an initial check on an asset name that is easy and will exclude a big subset of the available token names that do not follow standard. This is why the label starts and ends with `0000` in bits. Additionally, in its hex notation, this is differentiable by a human in its readable form, a more common representation.
+
+Secondly, the remaining verification on whether a certain `asset_name_label` standard is followed should be a one shot calculation. Here we mean that the calculation of the check should be straightforward, the label should not be fitted via brute force by a third party. That's why the label contains the bit representation of the integer label it tries to follow.
+
+Another thing that is important to understand is that an oblivious token issuer might not be aware of this standard. This could lead to the unintentional misinterpretation by third parties and injection attacks. We can minimize this attack vector by making the label format obscure. That is why the label also contains a checksum derived from the `asset_name_label` to add characters that are deterministically derived but look like nonsense. Together with the above zero "brackets", and the fixed size binary encoding, it make it unlikely someone follows this standard accidentally. The CRC-8 checksum is chosen for it low-impact on resources and its readily available implementations in multiple languages.
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [X] Get support for this CIP by wallets, explorers, minting platforms and other 3rd parties.
+- [X] Get support by tools/libraries like Lucid, PlutusTx, cardano-cli, etc. to generate/verify labels.
+
+### Implementation Plan
+
+- [X] Provide reference implementations:
+  - [X] [Lucid TypeScript implementation of toLabel/fromLabel](https://github.com/spacebudz/lucid/blob/39cd2129101bd11b03b624f80bb5fe3da2537fec/src/utils/utils.ts#L500-L522)
+  - [X] [Lucid TypeScript implementation of CRC-8](https://github.com/spacebudz/lucid/blob/main/src/misc/crc8.ts)
 
 ## Copyright
 

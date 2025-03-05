@@ -2,16 +2,31 @@
   {
     "asset_name_label": 100,
     "class": "NFT",
-    "description": "CIP-0068 - Datum Metadata Standard (Reference NFT)"
+    "description": "CIP-0068 - Datum Metadata Standard (Reference NFT)",
+    "documentation": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0068"
   },
   {
     "asset_name_label": 222,
     "class": "NFT",
-    "description": "CIP-0068 - Datum Metadata Standard (222 sub standard)"
+    "description": "CIP-0068 - Datum Metadata Standard (222 sub standard)",
+    "documentation": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0068"
   },
   {
     "asset_name_label": 333,
     "class": "FT",
-    "description": "CIP-0068 - Datum Metadata Standard (333 sub standard)"
+    "description": "CIP-0068 - Datum Metadata Standard (333 sub standard)",
+    "documentation": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0068"
+  },
+  {
+    "asset_name_label": 444,
+    "class": "RFT",
+    "description": "CIP-0068 - Datum Metadata Standard (444 sub standard)",
+    "documentation": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0068"
+  },
+  {
+    "asset_name_label": 500,
+    "class": "NFT",
+    "description": "CIP-0102 - Datum Metadata Standard (500 sub standard)",
+    "documentation": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0102"
   }
 ]

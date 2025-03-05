@@ -1,0 +1,7 @@
+; CIP-0025: Token Metadata Standard
+; Version: 1
+
+cip25-details = {
+    ? 0 : uint,               ; version
+    1 : token-project-details   ; [CIP-0025 Token Project Details](../common/token-project-details.cddl)
+}

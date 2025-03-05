@@ -1,18 +1,24 @@
 ---
 CIP: 54
 Title: Cardano Smart NFTs
-Authors: Kieran Simkin
-Comments-URI: https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
-Status: Draft
-Type: Standards
+Status: Proposed
+Category: Tokens
+Authors:
+  - Kieran Simkin <hi@clg.wtf>
+Implementors:
+  - Kieran Simkin
+Discussions:
+  - https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
+  - https://github.com/cardano-foundation/CIPs/pull/263
 Created: 2022-05-18
 License: CC-BY-4.0
 ---
-# Cardano “Smart NFTs”
 
 ## Abstract
 
 This CIP specifies a standard for an API which should be provided to Javascript NFTs, it also defines some additions to the 721 metadata standard defined in [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025) which allow an NFT to specify it would like to receive certain current information from the blockchain. 
+
+## Motivation: why is this CIP necessary?
 
 Currently if an NFT creator wishes to change or otherwise “evolve” their NFT after minting, they must burn the token and re-mint. It would be very nice if the user were able to modify their NFT simply by sending it to themselves with some extra data contained in the new transaction metadata. This would allow implementation of something like a ROM+RAM concept, where you have the original immutable part of the NFT (in Cardano’s case represented by the original 721 key from the mint transaction), and you also have a mutable part – represented by any subsequent transaction metadata.
 
@@ -22,15 +28,9 @@ Further to this - for on-chain programatically generated NFTs, it makes sense to
 
 This combination of functionality enables many exciting new possibilities with on-chain NFTs.
 
-## Description:
+## Specification
 
-Currently the NFT sites which support on-chain Javascript NFTs do so by creating a sandboxed `<iframe>` into which they inject the HTML from the NFT’s metadata. From within this sandbox it is not possible to bring-in arbitrary data from external sources – everything must be contained within the NFT, or explicitly bought into the sandbox via an API.
-
-This proposal suggests an addition to the 721 metadata key from [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025), to enable an NFT to specify that it would like to receive a particular transaction history accessible to it from within the sandbox – thus defining it as a “Smart NFT”.
-
-In tandem with the additional metadata, we also define a standard for the Javascript API which is provided to the NFT within the sandbox.
-
-## The Metadata
+### The Metadata
 
 Minting metadata for Smart NFTs – based on the existing [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025) standard:
 
@@ -69,7 +69,7 @@ Minting metadata for Smart NFTs – based on the existing [CIP-0025](https://git
 Here we have added the “uses” key – any future additions to the Smart NFT API can be implemented by adding additional keys here. 
 We've also added an additional field to the files array - this is to specify a unique identifier to enable the files to be referenced by the Javascript API below. 
 
-### The transactions key
+#### The transactions key
 
 To enable evolving NFTs where the NFT monitors a transaction history and changes in response to new transaction metadata, we define a sub-key called “transactions”, which can contain either a string or an array, specifying the tokens or addresses the NFT wishes to receive the transaction history for. These transaction histories will be provided to the NFT via the Javascript API detailed below.
 
@@ -104,7 +104,7 @@ When specifying an external token to monitor, you should do so via the token’s
 	}
 ```
 
-### The tokens key
+#### The tokens key
 
 To enable modifier tokens - (that is, a token which you can hold alongside a Smart NFT which changes the Smart NFT's appearance or behaviour in some way); we provide a way for the Smart NFT to monitor the tokens held by a specific address. Similarly to the “transactions” key, the “tokens” key will also accept either a string or array.
 
@@ -130,7 +130,7 @@ We could also monitor a particular smart contract address, for example if we wan
 	}
 ```
 
-### The renderer key
+#### The renderer key
 
 The idea behind the renderer key is to reduce code duplication in on-chain Javascript by moving the generative code part of the project into a single asset which is minted once in the policy. Each individual NFT within a project is then just a set of input parameters to the generative script - this totally removes the need to fill the metadata of every mint transaction with encoded HTML and Javascript, as is the case with many on-chain Javascript NFTs now. 
 
@@ -147,7 +147,7 @@ For example, to create a Smart NFT which is rendered by another token, and is al
 	}
 ```
 
-## The Javascript API
+### The Javascript API
 
 When an on-chain Javascript NFT is rendered which specifies any of the metadata options above, the website / dApp / wallet which creates the `<iframe>` sandbox, should inject the API defined here into that `<iframe>` sandbox. It is worth saying that the wallet dApp integration API from [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030) should probably not be exposed inside the sandbox, to prevent cross-site-scripting attacks. 
 
@@ -160,15 +160,15 @@ It is recommended that the Smart NFT API not be injected for every NFT – only 
 Although an asynchronous API is specified – so the data could be retrieved at the time when the NFT actually requests it – it is expected that in most instances the site which renders the NFT would gather the relevant transaction logs in advance, and inject them into the `<iframe>` sandbox at the point where the sandbox is created, so that the data is immediately available to the NFT without having to
 perform an HTTP request. 
 
-### cardano.nft.fingerprint: String
+### `cardano.nft.fingerprint: String`
 
 The fingerprint of the current token - in the case where we're rendering a child token, this will be the fingerprint of the child token. 
 
-### cardano.nft.metadata : Array
+### `cardano.nft.metadata : Array`
  
 The content of the 721 key from the metadata json from the mint transaction of the current NFT - if we are rendering on behalf of a child NFT, this will be the metadata from the child NFT.
 
-### cardano.nft.getTransactions( string which,  paginate: Paginate = undefined ) : Promise\<Object>
+### `cardano.nft.getTransactions( string which,  paginate: Paginate = undefined ) : Promise<Object>`
 
 Errors: `APIError`, `PaginateError`
 
@@ -191,7 +191,7 @@ This function will return a list of transaction hashes and metadata relating to 
 ```
 For simplicity, we do not include anything other than the txHash and the metadata – since any other relevant details about the transaction can always be encoded into the metadata, there is no need to over-complicate by including other transaction data like inputs, outputs or the date of the transaction etc. That is left for a potential future extension of the API to include more full GraphQL support.
 
-### cardano.nft.getTokens( string address, paginate: Paginate = undefined ) : Promise\<Object>
+### `cardano.nft.getTokens( string address, paginate: Paginate = undefined ) : Promise<Object>`
 
 Errors: `APIError`, `PaginateError`
 
@@ -215,7 +215,7 @@ This function will return a list of the tokens held by the address specified in 
 }
 ```
 
-### cardano.nft.getFileURL( string id = null, string fingerprint = null ) : Promise\<String>
+### `cardano.nft.getFileURL( string id = null, string fingerprint = null ) : Promise<String>`
 
 Errors: `APIError`
 
@@ -225,3 +225,42 @@ The first argument specifies which entry from the files array should be retreive
 The second argument allows you to specify which token's files to search - it should either be the token itself (either the child token or the rendering token, in the case of tokens with a separate renderer). In the case where an NFT also uses the `tokens` part of this API, then the getFileURL() function will also allow you to specify any one of the fingerprints returned by the getTokens() query.
 
 The URL returned by this function should be in a format that is accessible from within the `<iframe>` sandbox - perhaps using `window.URL.createObjectURL()` to generate a static URL from raw data if necessary. 
+
+## Rationale: how does this CIP achieve its goals?
+
+Currently the NFT sites which support on-chain Javascript NFTs do so by creating a sandboxed `<iframe>` into which they inject the HTML from the NFT’s metadata. From within this sandbox it is not possible to bring-in arbitrary data from external sources – everything must be contained within the NFT, or explicitly bought into the sandbox via an API.
+
+This proposal suggests an addition to the 721 metadata key from [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025), to enable an NFT to specify that it would like to receive a particular transaction history accessible to it from within the sandbox – thus defining it as a “Smart NFT”.
+
+In tandem with the additional metadata, we also define a standard for the Javascript API which is provided to the NFT within the sandbox.
+
+## The Smart NFT toolchain
+
+This CIP now has a [reference implementation](https://clg.wtf/policy/smart-life) which consists of a [front-end React control](https://github.com/kieransimkin/SmartNFTPortal) which takes care of rendering an NFT - it creates the sandbox and exposes the CIP54 Javascript API to it. This works in tandem with a [backend library](https://github.com/kieransimkin/libcip54) which takes care of reading the necessary data from a dbsync instance and making it available for the front end control to render. 
+
+There is also an [integrated development environment](https://nft-playground.dev/) made available to enable realtime experimentation and debugging of Smart NFTs without having to repeatedly mint new tokens. 
+
+Furthermore, [a complete visual blockchain explorer](https://clg.wtf/) has been made available which utilises libcip54 and SmartNFTPortal and fully supports the reference implementation of this standard. 
+
+The first CIP54 collection has been minted on mainnet under the policy ID `1eaf3b3ffb75ff27c43c512c23c6450b307f138281efb1d690b84652` and is [available to see here](https://clg.wtf/policy/smart-life). [A number of other instructive example NFTs](https://nft-playground.dev/examples) have also been provided as part of the NFT Playground website.
+
+[Libcip54](https://github.com/kieransimkin/libcip54), [SmartNFTPortal](https://github.com/kieransimkin/SmartNFTPortal), [Cardano Looking Glass](https://github.com/kieransimkin/looking-glass) and the [NFT Playground](https://github.com/kieransimkin/cip54-playground) are all opensource - pull requests are welcome!
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [ ] Identify at least 1 pair of wallets, minting services, CLIs, or software utilities from separate providers which do at least 1 each of:
+  - [ ] creating NFTs according to this specification
+  - [ ] rendering NFTs according to this specification
+
+### Implementation Plan
+
+- [X] Provide a [reference](https://github.com/kieransimkin/libcip54) [implementation](https://github.com/kieransimkin/smartnftportal) of this scheme, which illustrates both:
+  - [X] [a means of creating a "Smart NFT"](https://nft-playground.dev/)
+  - [X] [a means of rendering it](https://clg.wtf/)
+  - [ ] Update this specification to match the new features added in the reference implementation.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

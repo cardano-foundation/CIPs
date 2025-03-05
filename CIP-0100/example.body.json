@@ -1,0 +1,54 @@
+{
+    "@context": {
+        "@language": "en-us",
+        "hashAlgorithm": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashAlgorithm",
+        "body": {
+            "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#body",
+            "@context": {
+                "references": {
+                    "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#references",
+                    "@container": "@set",
+                    "@context": {
+                        "governanceMetadata": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#GovernanceMetadataReference",
+                        "other": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference",
+                        "label": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label",
+                        "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri"
+                    }
+                },
+                "comment": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#comment",
+                "externalUpdates": {
+                    "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#externalUpdates",
+                    "@context": {
+                        "title": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#update-title",
+                        "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#update-uri"
+                    }
+                }
+            }
+        },
+        "authors": {
+            "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#authors",
+            "@container": "@set",
+            "@context": {
+                "did": "@id",
+                "name": "http://xmlns.com/foaf/0.1/name",
+                "witness": {
+                    "@id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#witness",
+                    "@context": {
+                        "witnessAlgorithm": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#witnessAlgorithm",
+                        "publicKey": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#publicKey",
+                        "signature": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#signature"
+                    }
+                }
+            }
+        }
+    },
+    "body": {
+      "references": [
+        { "@type": "Other", "label": "CIP-100", "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md" }
+      ],
+      "comment": "This is a test vector for CIP-100",
+      "externalUpdates": [
+        { "title": "Blog", "uri": "https://314pool.com" }
+      ]
+    }
+  }

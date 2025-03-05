@@ -1,29 +1,29 @@
 ---
 CIP: 24
 Title: Non-Centralizing Rankings
-Authors: Shawn McMurdo <shawn_mcmurdo@yahoo.com>
-Comments-URI: https://forum.cardano.org/t/how-to-improve-daedalus-rankings/40478
-Status: Draft
-Type: Standards
+Authors:
+  - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
+Category: Wallets
+Status: Proposed
+Discussions:
+  - https://forum.cardano.org/t/how-to-improve-daedalus-rankings/40478
+  - https://github.com/cardano-foundation/CIPs/pull/21
+Implementors: []
 Created: 2020-09-15
 License: CC-BY-4.0
 ---
 
-## Summary
-
-Make Daedalus rankings more fair and non-centralizing by modifying the ranking methodology.
-
 ## Abstract
 
-Modify the current ranking system by removing the centralizing Nash Equilibrium goal of the ranking methodology in order to give more fair rankings and improve the viability of the stake pool operator community and the network overall.  To do this we need to remove the stated goal of having k fully saturated pools and all other pools having no stake other than owner pledge, which goes against the Cardano goal of decentralization.
+Modify the current Daedalus ranking system by removing the centralizing Nash Equilibrium goal of the ranking methodology in order to give more fair rankings and improve the viability of the stake pool operator community and the network overall.  To do this we need to remove the stated goal of having k fully saturated pools and all other pools having no stake other than owner pledge, which goes against the Cardano goal of decentralization.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 There are two main reasons for changing the current ranking methodology:
 
-1. Allow for more than k successful stakepools.
+1. Allow for more than k successful stake pools.
 
-2. Provide better decentralization away from a very few stakepool operators creating many pools.
+2. Provide better decentralization away from a very few stake pool operators creating many pools.
 
 ## Specification
 
@@ -81,20 +81,22 @@ As an example, setting h to 0.1 would mean that the initial number of epochs for
 
 This gives a more reasonable ranking for newer pools that do not have enough historical data to provide fair rankings.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
-Using this non-centralizing ranking methodology gives a more fair ranking of stakepools based on performance, pledge and saturation which will encourage delegators to choose better pools.
+Using this non-centralizing ranking methodology gives a more fair ranking of stake pools based on performance, pledge and saturation which will encourage delegators to choose better pools.
 It will also bring the rankings more in line with the general Cardano principle of increasing decentralization.
 
-## Backward Compatibility
+## Path to Active
 
-This proposal does not break backwards compatability because it is an offchain change.
+### Acceptance Criteria
 
-## Implementations
+- [ ] One or more wallet software implements this new ranking approach.
 
-If someone will show me where the current desirability equation is implemented in the code, I could produce an implementation of this change as a pull request.
+### Implementation Plan
+
+- [ ] Author has offered to produce an implementation of this change as a cardano-wallet / Daedalus pull request if shown where the current desirability equation is implemented in the code.
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 

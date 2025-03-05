@@ -1,0 +1,30 @@
+{
+  "$id": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/CIPs/0068/CIP68_v1.schema.json",
+  "title": "CIP-68: Token Project Details",
+  "description": "Additional context for token policy declaring support for CIP-68 token metadata standards",
+  "type": "object",
+  "properties": {
+    "68": {
+      "type": "object",
+      "properties": {
+        "0": {
+          "type": "integer",
+          "title": "Version",
+          "description": "The version of the standard in use",
+          "minimum": 1
+        },
+        "1": {
+          "title": "Project Details",
+          "description": "Describe top-level details about the Token Project",
+          "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/main/CIP-0088/common/token-project-details_v1.schema.json"
+        }
+      },
+      "required": [
+        "1"
+      ]
+    }
+  },
+  "required": [
+    "68"
+  ]
+}

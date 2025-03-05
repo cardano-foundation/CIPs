@@ -1,0 +1,146 @@
+{
+    "title": "CIP-100 Common",
+    "description": "A base-line CIP-100 governance metadata document",
+    "type": "object",
+    "required": [
+        "hashAlgorithm",
+        "authors",
+        "body"
+    ],
+    "properties": {
+        "hashAlgorithm": {
+            "$ref": "#/definitions/hashAlgorithm"
+        },
+        "authors": {
+            "title": "Authors",
+            "description": "The authors of this governance metadata",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Author"
+            }
+        },
+        "body": {
+            "$ref": "#/definitions/Body"
+        }
+    },
+    "definitions": {
+        "hashAlgorithm": {
+            "title": "Hash Algorithm",
+            "description": "The hash algorithm used to authenticate this document externally",
+            "type": "string",
+            "enum": [
+                "blake2b-256"
+            ]
+        },
+        "Author": {
+            "title": "Author",
+            "description": "An author endorsing the content of a metadata document",
+            "type": "object",
+            "required": [
+                "witness"
+            ],
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "witness": {
+                    "$ref": "#/definitions/Witness"
+                }
+            }
+        },
+        "Witness": {
+            "title": "Witness",
+            "description": "A witness proving that the author endorses the content of the metadata",
+            "type": "object",
+            "properties": {
+                "witnessAlgorithm": {
+                    "title": "WitnessAlgorithm",
+                    "type": "string",
+                    "enum": [
+                        "ed25519"
+                    ]
+                },
+                "publicKey": {
+                    "title": "PublicKey",
+                    "type": "string"
+                },
+                "signature": {
+                    "title": "Signature",
+                    "type": "string"
+                }
+            }
+        },
+        "Body": {
+            "title": "Body",
+            "description": "The body of the metadata document that is hashed to produce a signature",
+            "properties": {
+                "references": {
+                    "title": "References",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Reference"
+                    }
+                },
+                "comment": {
+                    "title": "Comment",
+                    "type": "string"
+                },
+                "externalUpdatess": {
+                    "title": "ExternalUpdates",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ExternalUpdate"
+                    }
+                }
+            }
+        },
+        "Reference": {
+            "title": "Reference",
+            "description": "A reference to a document",
+            "type": "object",
+            "required": [
+                "@type",
+                "label",
+                "uri"
+            ],
+            "properties": {
+                "@type": {
+                    "title": "Type",
+                    "type": "string",
+                    "enum": [
+                        "GovernanceMetadata",
+                        "Other"
+                    ]
+                },
+                "label": {
+                    "title": "Label",
+                    "type": "string"
+                },
+                "uri": {
+                    "title": "URI",
+                    "type": "string"
+                }
+            }
+        },
+        "ExternalUpdate": {
+            "title": "ExternalUpdate",
+            "type": "object",
+            "description": "An source for updates *after* the metadata is published",
+            "required": [
+                "title",
+                "uri"
+            ],
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string"
+                },
+                "uri": {
+                    "title": "URI",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

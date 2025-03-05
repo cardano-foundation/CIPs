@@ -1,0 +1,33 @@
+{
+    "@context": {
+        "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+        "CIP119": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0119/README.md#",
+        "hashAlgorithm": "CIP100:hashAlgorithm",
+        "body": {
+            "@id": "CIP119:body",
+            "@context": {
+                "references": {
+                    "@id": "CIP119:references",
+                    "@container": "@set",
+                    "@context": {
+                        "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+                        "Other": "CIP100:OtherReference",
+                        "label": "CIP100:reference-label",
+                        "uri": "CIP100:reference-uri"
+                    }
+                },
+                "paymentAddress": "CIP119:paymentAddress",
+                "givenName": "CIP119:givenName",
+                "image": {
+                    "@id": "CIP119:image",
+                    "@context": {
+                        "ImageObject": "https://schema.org/ImageObject"
+                    }
+                },
+                "objectives": "CIP119:objectives",
+                "motivations": "CIP119:motivations",
+                "qualifications": "CIP119:qualifications"
+            }
+        }
+    }
+}

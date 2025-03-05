@@ -108,6 +108,7 @@ The value given in the `enc` field references the type of encryption is used. St
   | type | openssl |
   | cipher | aes-256-cbc (salted) |
   | digest | pdkdf2 |
+  | padding | PKCS#7 |
   | iterations | 10000 (default) |
   | key + iv | 32 bytes key + 16 bytes iv |
   | salt | 8 bytes |
@@ -117,6 +118,8 @@ The value given in the `enc` field references the type of encryption is used. St
 OpenSSL was choosen, because its fast and widely available also for all kind of different platforms, web frontends, etc. Encryption algo is **AES-256-CBC** (salted) using `pdkdf2` to derive the key from the given passphrase. 10000 Iterations is the default value for this encryption method. The format of the encoded output is base64 format.
 
 The encryption is based on a given passphrase, which can be choosen by the user. However, a default-passphrase "cardano" should be used to encrypt/decrypt if no other passphrase is provided or known.
+  
+OpenSSL uses [PKCS#7](https://datatracker.ietf.org/doc/html/rfc5652#section-6.3) as padding. The adopted cipher accepts only multiple of 16-byte blocks. Not fitting messages to be encrypted are filled with the number of padding bytes that are needed to form multiple of 16-bytes. So if 1 byte of padding is required, the padding "01" is added. If 2 bytes of padding are needed, "02 02" is added. If no padding is required, an extra block of 0x10 bytes is added, meaning sixteen "10" bytes. In order to be interoperable with OpenSSL this kind of padding is a requirement.  
   
 ##### Why a default passphrase?
   
@@ -155,7 +158,7 @@ in our example.
   
 **Encrypt** this content via openssl, the default passprase **cardano**, iteration set to 10000 and key-derivation via pbkdf2:
 ``` console
-openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
+echo -n '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]' | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano"
 ```
 
 The encrypted result are the **base64 encoded strings**:
@@ -185,7 +188,7 @@ Also add the value `basic` for the `enc:` key, to mark this transaction message 
 
 Console one-liner:
 ``` console
-jq ".\"674\".msg = [ $(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
+jq ".\"674\".msg = [ $(jq -cjrM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
 ``` 
 
 ---

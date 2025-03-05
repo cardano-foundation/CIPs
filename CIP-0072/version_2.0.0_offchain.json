@@ -1,0 +1,266 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type":"object",
+    "properties": {
+      "version": {
+        "type": "string",
+        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+        "description": "Off-chain schema version following Semantic Versioning"
+      },
+      "subject": {
+        "type":"string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern":"^[0-9a-fA-F]{1,64}$",
+        "description": "A subject, it must match with subject stored on chain data. A UTF-8 encoded string, 1 - 64 chars."
+      },
+      "projectName": {
+        "type":"string",
+        "description": "A project name, e.g. My dApp.",
+        "maxLength": 40
+      },
+      "link": {
+        "type":"string",
+        "description": "A link a dApp or a website presenting a DApp",
+        "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+        "maxLength": 200
+      },
+      "companyName": {
+        "type":"string",
+        "description": "Company name",
+        "maxLength": 100
+      },
+      "companyEmail": {
+        "type":"string",
+        "description": "Contact email of the company behind the dApp",
+        "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "maxLength": 200
+      },
+      "companyWebsite": {
+        "type":"string",
+        "description": "Website of the company behind the dApp.",
+        "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+        "maxLength": 200
+      },
+      "logo": {
+        "description": "Logo encoded in base64. Minimum resolution: 512x512px, supported formats: PNG/JPG/SVG, maximum file size: 1 MB",
+        "type": "string",
+        "contentEncoding": "base64",
+        "oneOf": [
+          {
+            "contentMediaType": "image/png"
+          },
+          {
+            "contentMediaType": "image/jpeg"
+          },
+          {
+            "contentMediaType": "image/svg+xml"
+          }
+        ],
+        "maxLength": 1361000
+      },
+      "categories": {
+        "type":"array",
+        "items": {
+          "type": "string",
+          "enum": ["DeFi", "Development", "Education", "Games", "Identity", "Marketplace", "NFT", "Other", "Security"]
+        },
+        "description": "One or more categories. Category MUST be one of the following schema definition."
+      },
+      "screenshots": {
+        "type": "array",
+        "maxItems": 10,
+        "items": {
+          "description": "Screenshots encoded in base64. Minimum resolution for base64 images: 1920x1080px, supported formats: PNG/JPG/SVG, maximum file size: 2 MB for base64.",
+          "type": "string",
+          "contentEncoding": "base64",
+          "oneOf": [
+            {
+              "contentMediaType": "image/png"
+            },
+            {
+              "contentMediaType": "image/jpeg"
+            },
+            {
+              "contentMediaType": "image/svg+xml"
+            }
+          ],
+          "maxLength": 2722000
+        },
+        "description": "Screenshots of the DApp encoded in base64. We recommend to share screenshots from the dApp usage itself."
+      },
+      "social": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The platform or resource identifier (GitHub, Website, X.com, etc)"
+            },
+            "link": {
+              "type": "string",
+              "pattern": "((https?|ipfs|ipns):\/\/[\\u00C0-\\u017F-a-zA-Z0-9])",
+              "maxLength": 200
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "object",
+        "properties": {
+          "short": {
+            "type": "string",
+            "description": "Short dApp description.",
+            "minLength": 40,
+            "maxLength": 168
+          },
+          "long": {
+            "type": "string",
+            "description": "An optional long dApp description.",
+            "minLength": 40,
+            "maxLength": 1008
+          }
+        },
+        "required": [
+          "short",
+          "long"
+        ]
+      },
+      "releases": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "releaseNumber": {
+                "type": "string",
+                "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+                "description": "Semver compatible release number (major.minor.patch)"
+              },
+              "releaseName": {
+                "type": "string",
+                "description": "An optional human readable release name, e.g. V1"
+              },
+              "securityVulnerability": {
+                "type": "boolean",
+                "description": "Indicates that a given version has a security vulnerability."
+              },
+              "comment": {
+                "type": "string",
+                "description": "A free text field to provide comment about this particular release, e.g. new features it brings, etc."
+              },
+              "scripts": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "version"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "releaseNumber"
+            ]
+          }
+        ]
+      },
+      "scripts": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties":{
+              "id": {
+                "type":"string",
+                "description": "Unique Script ID (across all scripts from this dApp)."
+              },
+              "name":{
+                "type":"string",
+                "description": "An optional script name usually related to it's function."
+              },
+              "purposes":{
+                "type":"array",
+                "items": {
+                  "type": "string",
+                  "enum":["SPEND", "MINT"]
+                },
+                "description": "Purpouses of the script, SPEND or MINT (notice it can be both for some modern Cardano languages)."
+              },
+              "type":{
+                "enum":["PLUTUS", "NATIVE"],
+                "description": "Script Type. PLUTUS refers to the typical PlutusV1 or PlutusV2 scripts, where as NATIVE means there has been no Plutus directly used by this is a native script."
+              },
+              "versions":{
+                "type":"array",
+                "items":[
+                  {
+                    "type":"object",
+                    "properties":{
+                      "version": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+                        "description": "Script version following Semantic Versioning"
+                      },
+                      "plutusVersion":{
+                        "type":"integer",
+                        "enum":[1, 2]
+                      },
+                      "scriptHash":{
+                        "type":"string",
+                        "description":"Full on-chain script hash (hex).",
+                        "pattern":"[0-9a-fA-F]+"
+                      },
+                      "contractAddress": {
+                        "type":"string",
+                        "description":"An optional Bech32 contract address matching script's hash."
+                      }
+                    },
+                    "required": [
+                      "version",
+                      "plutusVersion",
+                      "scriptHash"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "purposes",
+              "type",
+              "versions"
+            ]
+          }
+        ]
+      }
+    },
+    "required": [
+      "subject",
+      "projectName",
+      "link",
+      "companyName",
+      "companyEmail",
+      "companyWebsite",
+      "social",
+      "logo",
+      "categories",
+      "screenshots",
+      "description",
+      "version"
+    ],
+    "additionalProperties": false
+}

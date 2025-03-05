@@ -1,0 +1,26 @@
+[
+  {
+    "cbor_tag": 32771,
+    "iana_registered": false,
+    "description": "ED25519-BIP32 Private Key",
+    "cip": "CIP-0115"
+  },
+  {
+    "cbor_tag": 32772,
+    "iana_registered": false,
+    "description": "ED25519-BIP32 Extended Private Key",
+    "cip": "CIP-0115"
+  },
+  {
+    "cbor_tag": 32773,
+    "iana_registered": false,
+    "description": "ED25519-BIP32 public-key",
+    "cip": "CIP-0115"
+  },
+  {
+    "cbor_tag": 32774,
+    "iana_registered": false,
+    "description": "ED25519-BIP32 Signature",
+    "cip": "CIP-0115"
+  }
+]
