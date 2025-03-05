@@ -197,7 +197,7 @@ The server can choose to send either compressed or uncompressed blocks based on 
 
 ### Example Approach to Secure Integration of ZStandard Library on Linux
 
-Since Cardano block-producers are run dominantly on Linux, the use of the **Isolation via IPC** tactic can be further strengthened using Linux's ```seccomp``` feature to minimize the potential attack surface. An example implementation of this approach is provided in the [secure-zstd](./secure-zstd/) directory of this proposal.
+Since Cardano block-producers are run dominantly on Linux, the use of the **Isolation via IPC** tactic can be further strengthened using Linux's ```seccomp``` feature to minimize the potential attack surface. An example implementation of this approach is provided in the [secure-zstd](https://github.com/sierkov/secure-zstd) repository.
 
 #### How It Works:
 1. The managing (caller) process creates a Unix socket.
@@ -213,7 +213,7 @@ Given the high quality of the ZStandard library, such a crash is likely indicati
 - **Block the malicious peer** to prevent further communication and mitigate potential Denial-of-Service attacks.
 - **Restart the worker process** to continue handling requests from a safe state.
 
-The provided implementation is compact—approximately **200 lines of code** for [the worker process](./secure-zstd/lib/seczstd/worker.c) and **100 lines of code** for [the caller](./secure-zstd/lib/seczstd/caller.c). This allows for **easy security audits** compared to auditing the full ZStandard decompression library, which consists of about **15,000** lines of code.
+The provided implementation is compact—approximately **200 lines of code** for [the worker process](https://github.com/sierkov/secure-zstd/blob/main/lib/seczstd/worker.c) and **100 lines of code** for [the caller](https://github.com/sierkov/secure-zstd/blob/main/lib/seczstd/caller.c). This allows for **easy security audits** compared to auditing the full ZStandard decompression library, which consists of about **15,000** lines of code.
 
 Furthermore, the **Isolation via IPC** approach, extended with ```seccomp```, can be similarly applied to other untrusted data-processing tasks, such as newer but less-tested cryptographic libraries (e.g., potential Plutus builtins) and other use cases.
 
