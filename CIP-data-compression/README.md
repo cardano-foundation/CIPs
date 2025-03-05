@@ -232,18 +232,9 @@ protocolVersions = [12, 13, 15]
 This allows clients to quickly determine whether a stake pool operator supports the latest protocol version, including features such as compressed block transfers.
 This is particularly important during node bootstrapping, when a new node does not yet have an up-to-date list of block-producing nodes but needs to synchronize as quickly as possible.
 
-## Rationale: how does this CIP achieve its goals?
-
-- Analyzes how support for data compression can serve as a technical foundation for drastically improving Cardano's scalability.
-- Evaluates the performance of the ZStandard compression algorithm on Cardano mainnet data.
-- Demonstrates how data compression, combined with more efficient use of affordable, high-performance server hardware, can scale Cardano’s transaction throughput by multiple orders of magnitude.
-- Proposes specific changes to the networking protocol to enable data compression.
-
-## Path to Active
-
 ### Possible Support Levels
 
-The technical specification is intentionally designed to facilitate partial and incremental implementation. The following levels of support are possible:
+The specification is intentionally designed to facilitate partial and incremental implementation. The following levels of support are possible:
 - **Minimal level** – A minimal implementation only needs to recognize protocol version 15 during the handshake and be able to parse MsgCompressedBlocks messages.
   This implementation is straightforward and can be completed within days in most programming languages.
 - **Intermediate level** – In addition to parsing compressed blocks, an intermediate implementation can compress block data on-the-fly for each transmitted block.
@@ -255,6 +246,15 @@ This may require additional work, as certain software components may need to be 
 and enabling direct transmission of compressed block sequences from disk when a client requests a block range.
 
 To be ready for testnet testing, all implementations should provide at least minimal support, and at least one implementation should support the intermediate level.
+
+## Rationale: how does this CIP achieve its goals?
+
+- Analyzes how support for data compression can serve as a technical foundation for drastically improving Cardano's scalability.
+- Evaluates the performance of the ZStandard compression algorithm on Cardano mainnet data.
+- Demonstrates how data compression, combined with more efficient use of affordable, high-performance server hardware, can scale Cardano’s transaction throughput by multiple orders of magnitude.
+- Proposes specific changes to the networking protocol to enable data compression.
+
+## Path to Active
 
 ### Acceptance criteria
 - The proposed changes have been discussed and approved by subject matter experts.
