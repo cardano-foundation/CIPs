@@ -19,7 +19,7 @@ This proposal presents a lightweight extension to the Cardano Network protocol t
 - Accelerates blockchain synchronization by optimizing the download process for new and lagging nodes.
 - Lowers network traffic costs for Cardano stake pool operators through improved data transmission efficiency.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 ### The Status Quo
 
