@@ -13,7 +13,6 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
-<!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
 We propose an opt-in standard for DRep compensation that does not require any changes to the ledger. When delegating to a DRep a user can opt-in to donate a percentage of their staking rewards to their DRep. 
 
 ## Motivation: why is this CIP necessary?
