@@ -1,5 +1,5 @@
 ---
-CIP: CIP-DRep-Comp
+CIP: 149
 Title: Optional DRep Compensation
 Category: Metadata
 Status: Proposed
