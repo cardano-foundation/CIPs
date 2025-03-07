@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 148
 Title: Tag / Redeemer field in TxOut
 Category: Plutus
 Status: Proposed
