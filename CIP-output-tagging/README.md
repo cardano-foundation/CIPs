@@ -117,10 +117,6 @@ Note that although we propose to add `tag` as a field to `TxOut`s in the script 
 This means that when constructing the script context the ledger must add each the data in each `output_tag` to the `TxOut` at the matching index in the transaction outputs. If there is a compelling case to be made to introduce this tagging for `TxOut`s in the transaction inputs in the script context (ie to associate arbitrary data to transaction inputs during Plutus validator execution) then this can be extended to introduce a 9th field to the witness set `[* output_tag]` to contain the arbitrary data that the ledger can then associate with `TxOut`s in transaction inputs in the script context. 
 
 ## Rationale: how does this CIP achieve its goals?
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
-
-It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
 The core idea of this proposal is to introduce a mechanism by which we can associate arbitrary data (that is only relevant during Phase 2 validation) with transaction outputs without sacrificing script composability or wastefully storing this data into the chain.  
 
 There are a few possible alternatives for where to store the arbitrary data associated with outputs. 
