@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 150
 Title: Block Data Compression
 Status: Proposed
 Category: Network
