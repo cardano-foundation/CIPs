@@ -165,7 +165,7 @@ Finally, ```ZStandard``` data format is well documented in [RFC8478](https://dat
 
 ## Specification
 
-The technical foundation for the above improvements can be achieved with minimal changes to [the existing network protocol](https://github.com/sierkov/daedalus-turbo/blob/main/doc/2024-sierkov-parallelized-ouroboros-praos.pdf):
+The technical foundation for the above improvements can be achieved with minimal changes to [the existing network protocol](https://ouroboros-network.cardano.intersectmbo.org/pdfs/network-spec/network-spec.pdf):
 - Clients will use a new version number to signal support for compressed transfers during the handshake.
 - The FetchBlock mini-protocol is extended to include a new Server Message, ```MsgCompressedBlocks``` in the StStreaming state.
 - Stake pool operators can optionally indicate protocol version support in onchain data.
