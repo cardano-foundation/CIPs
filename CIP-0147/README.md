@@ -1,5 +1,5 @@
 ---
-CIP: XXX
+CIP: 147
 Title: Own-data Wallet Extension
 Category: Tools
 Status: Proposed
@@ -39,7 +39,7 @@ If an operation does not require any arguments as part of it's request, or does 
 
 For each operation we will provide some details on how the implementation should behave. Note that some of these are taken verbatim from CIP-30.
 
-#### CIP-XXXX
+#### CIP-0147
 
 This section defines the API for the `Full API` part of CIP-30. Enabling only this extension would give you an own-data wallet, which is essentially equivalent to what CIP-30 gives us today.
 
@@ -309,7 +309,7 @@ As wallets should already have this ability, we allow dApps to request that a tr
 }
 ```
 
-Returns the API version for the CIP-XXXX extension. This must correspond to the value of `CIP-XXXX` specified in this document, appropriately transformed into a `SemVer` object.
+Returns the API version for the CIP-0147 extension. This must correspond to the value of `CIP-0147` specified in this document, appropriately transformed into a `SemVer` object.
 
 ### Versioning
 
@@ -319,14 +319,14 @@ While the CIP is in preparation, the version shall be set to `0.0.0`. The moment
 
 | API | Version |
 | --- | --- |
-| CIP-XXXX | 0.0.0 |
+| CIP-0147 | 0.0.0 |
 
 
 ### Appendix
 
 This appendix contains additional schemas for types that are used in the APIs.
 
-#### CIP-XXXX API Data Types
+#### CIP-0147 API Data Types
 
 
 ##### DataSignature
@@ -499,7 +499,7 @@ CIP-0144 includes a [section](https://github.com/nazrhom/CIPs/blob/nazrhom/full-
 
 ### Implementation Plan
 
-- [ ] Implement a wrapper that takes a CIP-30 compatible API and transforms it to be compatible with CIP-XXXX.
+- [ ] Implement a wrapper that takes a CIP-30 compatible API and transforms it to be compatible with CIP-0147.
 
 ## Copyright
 
