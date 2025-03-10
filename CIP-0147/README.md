@@ -1,16 +1,15 @@
 ---
 CIP: 147
-Title: Own-data Wallet Extension
-Category: Tools
+Title: Wallet Connector - Own-data wallet
+Category: Wallets
 Status: Proposed
 Authors:
   - Giovanni Garufi <giovanni@mlabs.city>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/957
+    - https://github.com/cardano-foundation/cips/pulls/986
 Created: 2024-02-05
 License: CC-BY-4.0
-Solution-To: CPS-0010
 ---
 
 ## Abstract
@@ -39,7 +38,7 @@ If an operation does not require any arguments as part of it's request, or does 
 
 For each operation we will provide some details on how the implementation should behave. Note that some of these are taken verbatim from CIP-30.
 
-#### CIP-0147
+### CIP-0147
 
 This section defines the API for the `Full API` part of CIP-30. Enabling only this extension would give you an own-data wallet, which is essentially equivalent to what CIP-30 gives us today.
 
@@ -48,7 +47,7 @@ Note that this API differs slightly from CIP-30 Full API in that it drops an end
 
 The removal of pagination follows the same [reasons](https://github.com/klntsky/CIPs/blob/klntsky/query-layer-cip/CIP-XXXX/README.md#pagination) pointed out in CIP-0139. In summary: pagination, while desirable, introduces some complications with the consistency of the returned results. We decide to drop it to keep the implementation as simple as possible, but welcome future CIPs to address this.
 
-##### GetNetworkId
+#### GetNetworkId
 
 ```
 {
@@ -63,7 +62,7 @@ The removal of pagination follows the same [reasons](https://github.com/klntsky/
 
 Returns the network id of the currently connected account. 0 is testnet and 1 is mainnet but other networks can possibly be returned by wallets. Those other network ID values are not governed by this document. This result will stay the same unless the connected account has changed.
 
-##### GetUtxos
+#### GetUtxos
 
 ```
 {
@@ -88,7 +87,7 @@ Returns the network id of the currently connected account. 0 is testnet and 1 is
 
 If amount is not supplied, this shall return a list of all UTXOs controlled by the wallet. If amount is present, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in amount, and if this cannot be attained, an `APIError` with error code `NotSatisfiable` (and optionally an info string) must be returned. 
 
-##### GetCollateral
+#### GetCollateral
 
 ```
 {
@@ -127,7 +126,7 @@ This shall return a list of one or more UTXOs controlled by the wallet that are 
 The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see #104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
 
 
-##### GetBalance
+#### GetBalance
 
 ```
 {
@@ -143,7 +142,7 @@ The main point is to allow the wallet to encapsulate all the logic required to h
 Returns the total balance available of the wallet. This is the same as summing the results of api.getUtxos(), but it is both useful to dApps and likely already maintained by the implementing wallet in a more efficient manner so it has been included in the API as well.
 
 
-##### GetUsedAddresses
+#### GetUsedAddresses
 
 ```
 {
@@ -161,7 +160,7 @@ Returns the total balance available of the wallet. This is the same as summing t
 
 Returns a list of all used (included in some on-chain transaction) addresses controlled by the wallet.
 
-##### GetUnusedAddresses
+#### GetUnusedAddresses
 
 ```
 {
@@ -179,7 +178,7 @@ Returns a list of all used (included in some on-chain transaction) addresses con
 
 Returns a list of unused addresses controlled by the wallet.
 
-##### GetChangeAddress
+#### GetChangeAddress
 
 ```
 {
@@ -194,7 +193,7 @@ Returns a list of unused addresses controlled by the wallet.
 
 Returns an address owned by the wallet that should be used as a change address to return leftover assets during transaction creation back to the connected wallet. This can be used as a generic receive address as well.
 
-##### GetRewardAddresses
+#### GetRewardAddresses
 
 ```
 {
@@ -212,7 +211,7 @@ Returns an address owned by the wallet that should be used as a change address t
 
 Returns the reward addresses owned by the wallet. This can return multiple addresses e.g. CIP-0018.
 
-##### SignTx
+#### SignTx
 
 ```
 {
@@ -238,7 +237,7 @@ Requests that a user sign the unsigned portions of the supplied transaction. The
 Only the portions of the witness set that were signed as a result of this call are returned to encourage dApps to verify the contents returned by this endpoint while building the final transaction.
 
 
-##### SignData
+#### SignData
 
 ```
 {
@@ -276,7 +275,7 @@ If the payment key for `addr` is not a P2Pk address then `DataSignError` will be
 - `x` (-2) - must be set to the public key bytes of the key used to sign the `Sig_structure`
 
 
-##### SubmitTx
+#### SubmitTx
 
 ```
 {
@@ -298,7 +297,7 @@ If the payment key for `addr` is not a P2Pk address then `DataSignError` will be
 
 As wallets should already have this ability, we allow dApps to request that a transaction be sent through it. If the wallet accepts the transaction and tries to send it, it shall return the transaction id for the dApp to track. The wallet is free to return the `TxSendError` with error code `Refused` if they do not wish to send it, or `Failure` if there was an error in sending it (e.g. preliminary checks failed on signatures).
 
-##### ApiVersion
+#### ApiVersion
 
 ```
 {
@@ -322,7 +321,7 @@ While the CIP is in preparation, the version shall be set to `0.0.0`. The moment
 | CIP-0147 | 0.0.0 |
 
 
-### Appendix
+### Additional Schemas
 
 This appendix contains additional schemas for types that are used in the APIs.
 
