@@ -2,7 +2,7 @@
 CIP: 143
 Title: Interoperable Programmable Tokens
 Category: Tokens
-Status: Proposed
+Status: Inactive (incorporated into candidate CIP-0113)
 Authors:
     - Philip DiSarro <philipdisarro@gmail.com>
 Implementors: []
