@@ -8,6 +8,7 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/444
+    - https://github.com/cardano-foundation/CIPs/pull/944
 Created: 2024-12-3
 License: Apache-2.0
 ---
