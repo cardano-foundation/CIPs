@@ -178,15 +178,15 @@ The above factors motivated the design of this framework. Some of the core uniqu
 ## Path to Active
 
 ### Acceptance Criteria
-- [ ] Issuance of at-least one smart token via the proposed framework on the following networks:
-  - [ ] 1. Preview testnet
-  - [ ] 2. Mainnet
-- [ ] End-to-end tests of programmable token logic including arrestability, transfer fees, and blacklisting. 
-- [ ] Finally, a widely adopted wallet that can read and display programmable token balances to users and allow the user to conduct transfers of such tokens. 
+- [ x ] Issuance of at-least one smart token via the proposed framework on the following networks:
+  - [ x ] 1. Preview testnet
+  - [ x ] 2. Mainnet
+- [ x ] End-to-end tests of programmable token logic including arrestability, transfer fees, and blacklisting. 
+- [ x ] Finally, a widely adopted wallet that can read and display programmable token balances to users and allow the user to conduct transfers of such tokens. 
 
 ### Implementation Plan
-- [ ] Implement the contracts detailed in the specification.
-- [ ] Implement the offchain code required to query programmable token balances and construct transactions to transfer such tokens. 
+- [ x ] Implement the contracts detailed in the specification.
+- [ x ] Implement the offchain code required to query programmable token balances and construct transactions to transfer such tokens. 
 
 ## Copyright
 This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
