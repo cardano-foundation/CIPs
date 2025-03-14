@@ -28,16 +28,15 @@ This CIP proposes a solution at the Cardano Problem Statement 3
 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/947)).
 
 If adopted it would allow to introduce the programmability over the transfer of tokens
-(programmable tokens) and their lifecycle .
+(programmable tokens) and their lifecycle.
 
 The solution proposed includes (answering to the open questions of CPS-0003):
 
 > 1) How to support wallets to start supporting validators?
 
-The use of standard smart wallets, that the user can derive deterministically,
-and an on-chain registry of programmable tokens,
-any new programmable token that is registered in the on-chain registry is
-immediately supported by the smart wallet.
+With the use of standard smart wallets, that the user can derive deterministically,
+and an on-chain registry of programmable tokens. Any new programmable token that is 
+registered in the on-chain registry is immediately supported by the smart wallet.
 
 > 2) How would wallets know how to interact with these tokens? - smart contract registry?
 
@@ -45,7 +44,7 @@ The requirements for a valid transaction are described in this standard.
 
 From an indipendent party implementing the standard perspective,
 it will be clear how and where to find the necessary reference inputs
-to satisfy the smart wallet handling the programmable tokens.
+to satisfy the smart wallet that handles the programmable tokens.
 
 > 3) Is there a possibility to have a transition period, so users won't have their funds blocked until the wallets start supporting smart tokens?
 
@@ -69,58 +68,72 @@ NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
 "OPTIONAL" in this document are to be interpreted as described in
 [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
-We will use [`mermaid`](https://mermaid.js.org/) to help with the visualization of transactions and flow of informations.
-
 The term "user" is used to indicate, interchangeably:
 - "public key hash" credentials
 - "script" credentials (smart contracts)
-- the smart wallets derived from their credentials.
 
-The term "registry" indicates the standard on-chain contract that implements the linked list
-pattern. The contract ensures the list is always sorted by the entry's policy.
+The term "creator" is used to indicate a user that creates a new programmable token.
+The term "admin" is used to indicate a user that can execute priviledged actions on a certain programmable token without explicit permission of the users.
+The term "issuer" is used to indicate a user that can mint and/or burn a certain programmable token.
 
-The term "entry" indicates an UTxO present at the registry address.
+The term "policy" indicates a Cardano native token (CNT) policy, which is the hash of the script that can mint such token.
 
-The term "policy" or indicates the cardano native token (CNT) policy;
-that is the hash of the script that can mint such token.
+The following terminology represents all the on-chain components of the standard:
+- tokenRegistry: on-chain registry where anyone can register new programmable tokens. It's a smart contract that implements the linked list pattern. The contract ensures the list is always sorted by the entry's policy. It is made of: 
+    - registryNode: a node is a UTxO representing a specific programmable token
+    - registrySpendScript: Spend script where all the registryNodes exist
+    - registryMintingPolicy: Minting script of NFTs that represent valid registryNodes
+- programmableLogicBase: the unique Spend script that always holds all existing programmable tokens 
+- transferLogicScript: a token-specific Withdraw script that implements the custom transfer logic for such programmable token
+- thirdPartyTransferLogicScript: a token-specific Withdraw script that defines admin actions on such programmable token
+- issuancePolicy: a Minting script that mints programmable token. While this script code is one for all possible programmable tokens, it's deployment is token-specific because issuancePolicy is parametrized by the hash of an issuanceLogicScript
+- issuanceLogicScript: a token-specific Withdraw script that impelments the custom minting/burning logic for such programmable token
 
-The policy is specified in the datum of the entry present at the registry.
+The term "substandard" indicates a specific implementation of all the on-chain components that guarantees a certain behaviour and a consistent way to build the transactions. Any programmable token must belong to a certain substandard, otherwise wallets and dApps don't know how to manage them.
 
-The term "CNT" is short for "cardano native token",
-that is a token natively reconized by the ledger.
+The term "smart wallet" indicates all the UTxOs living inside the programmableLogicBase script and belonging to a certain user.
+To know a user's smart wallet check one of the following sections.
 
-### High level idea
+### High level flow
 
-An on-chain registry is deployed.
+The creator wants to release a new programmable token.
 
-Each UTxO on the registry, represents a registered programmable token.
+The tokenRegistry and the programmableLogicBase are already deployed on-chain.
 
-On registration, the registry ensures the list stays sorted.
+The creator writes a new transferLogicScript where he defines the rules to transfer the new token.
 
-Off-chain, the user can deterministically derive the smart wallet.
+Then he writes a new thirdPartyTransferLogicScript where he defines who are the admins and what the actions they can do without permission of any other user.
 
-The smart wallet will require a proof of registration (or non registration)
-for each CNT that is spent.
+Then he writes a new issuanceLogicScript where he defines who can mint and burn the new token.
 
-If the CNT policy was registered as programmable,
-the associated script in the registry MUST be running in the same transaction.
+Then he deploys a new issuancePolicy instance parametrized by the new issuanceLogicScript.
 
-If the CNT policy was not present in the sorted list,
-the token is trated as a normal, non programmable, CNT.
+Finally, the creator adds a registryNode to the tokenRegistry with the hashes of all the above scripts and with additional required
+information. The registration cannot happen if the policy has been already registered or if the issuancePolicy is wrong.
 
-### User address derivation
+During or after the registration process, the creator can mint the new programmable token.
+This new token is enforced to be sent in the programmableLogicBase script.
 
-The smart wallet logic is the same for every user.
+Off-chain, any user can deterministically derive their smart wallet (as explained in the next section).
 
-So the payment credentials of the resulting address will aways be the one of
-a fixed standard contract.
+When an user wants to transfer some of his programmable tokens, for each token a proof of registration (or non registration) is required: if the policy is present in the tokenRegistry then the associated transferLogicScript MUST be running in the same transaction; if the policy is not present in the tokenRegistry, the token is treated as a normal, non programmable, CNT and can always leave the programmableLogicBase script.
 
-The stake credentials are instead what identifies the user wallet.
+In any moment for each token, admins can execute priviledged actions as defined in thirdPartyTransferLogicScript.
 
-The user MAY choose to user either their payment credentials or their stake credentials,
-however, to allow anyone to derive indipendently the address of the user,
-using the payment credentials is RECOMMENDED.
+In any moment for each token, issuers can mint more token or burn existing ones that are held by them.
 
+### User's smart wallet address derivation
+
+The smart wallet address has the following form:
+(fixedPaymentCredentials, userDefinedStakeCredentials)
+
+where:
+- fixedPaymentCredentials never change and they are the credentials obtained from the hash of programmableLogicBase
+- userDefinedStakeCredentials are different for each user.
+The smart wallet logic is the same for every user. If the user is a wallet, he MAY choose to user either their payment credentials or their stake credentials. We suggest to use his payment credentials to allow anyone to derive indipendently the address of the user.
+If the user is a smart contract, then it's the payment credentials of that contract.
+
+In other words, a smart wallet is the set of UTxOs that live in the programmableLogicBase script and that have a specific stake credential that identify the owner.
 
 ### Registry entry datum
 
@@ -254,6 +267,12 @@ that indicates the presence (or the absence) of the first policy of the input va
 
 (for reference, a typescript implementation of the lexicographic ordering can be found
 [here](https://github.com/HarmonicLabs/uint8array-utils/blob/c1788bf351de24b961b84bfc849ee59bd3e9e720/src/utils/index.ts#L8-L27))
+
+### Implementing programmable tokens in DeFi protocols
+TODO
+
+### Implementing programmable tokens in wallets and dApps
+TODO
 
 ### Sub standards
 
