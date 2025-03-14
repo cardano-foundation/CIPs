@@ -28,16 +28,15 @@ This CIP proposes a solution at the Cardano Problem Statement 3
 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/947)).
 
 If adopted it would allow to introduce the programmability over the transfer of tokens
-(programmable tokens) and their lifecycle .
+(programmable tokens) and their lifecycle.
 
 The solution proposed includes (answering to the open questions of CPS-0003):
 
 > 1) How to support wallets to start supporting validators?
 
-The use of standard smart wallets, that the user can derive deterministically,
-and an on-chain registry of programmable tokens,
-any new programmable token that is registered in the on-chain registry is
-immediately supported by the smart wallet.
+With the use of standard smart wallets, that the user can derive deterministically,
+and an on-chain registry of programmable tokens. Any new programmable token that is 
+registered in the on-chain registry is immediately supported by the smart wallet.
 
 > 2) How would wallets know how to interact with these tokens? - smart contract registry?
 
@@ -45,7 +44,7 @@ The requirements for a valid transaction are described in this standard.
 
 From an indipendent party implementing the standard perspective,
 it will be clear how and where to find the necessary reference inputs
-to satisfy the smart wallet handling the programmable tokens.
+to satisfy the smart wallet that handles the programmable tokens.
 
 > 3) Is there a possibility to have a transition period, so users won't have their funds blocked until the wallets start supporting smart tokens?
 
@@ -69,163 +68,173 @@ NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
 "OPTIONAL" in this document are to be interpreted as described in
 [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
-We will use [`mermaid`](https://mermaid.js.org/) to help with the visualization of transactions and flow of informations.
-
 The term "user" is used to indicate, interchangeably:
 - "public key hash" credentials
 - "script" credentials (smart contracts)
-- the smart wallets derived from their credentials.
 
-The term "registry" indicates the standard on-chain contract that implements the linked list
-pattern. The contract ensures the list is always sorted by the entry's policy.
+The term "creator" is used to indicate a user that creates a new programmable token.
+The term "admin" is used to indicate a user that can execute priviledged actions on a certain programmable token without explicit permission of the users.
+The term "issuer" is used to indicate a user that can mint and/or burn a certain programmable token.
 
-The term "entry" indicates an UTxO present at the registry address.
+The term "policy" indicates a Cardano native token (CNT) policy, which is the hash of the script that can mint such token.
+The term "unit" indicates the concatenation of a token policy and a token name to uniquely represent a certain CNT.
 
-The term "policy" or indicates the cardano native token (CNT) policy;
-that is the hash of the script that can mint such token.
+The following terminology represents all the on-chain components of the standard:
+- `tokenRegistry`: on-chain registry where anyone can register new programmable tokens. It's a smart contract that implements the linked list pattern. The contract ensures the list is always sorted by the entry's policy. It is made of: 
+    - `registryNode`: a node (or entry) of the tokenRegistry is a UTxO representing a specific programmable token
+    - `registrySpendScript`: Spend script where all the registryNodes exist
+    - `registryMintingPolicy`: Minting script of NFTs that represent valid registryNodes
+- `programmableLogicBase`: the unique Spend script that always holds all existing programmable tokens 
+- `transferLogicScript`: a token-specific Withdraw script that implements the custom transfer logic for such programmable token
+- `thirdPartyTransferLogicScript`: a token-specific Withdraw script that defines admin actions on such programmable token
+- `issuancePolicy`: a Minting script that mints programmable token. While this script code is one for all possible programmable tokens, its deployment is token-specific because issuancePolicy is parametrized by the hash of an issuanceLogicScript
+- `issuanceLogicScript`: a token-specific Withdraw script that impelments the custom minting/burning logic for such programmable token
+- `globalState`: an optional token-specific unique UTxO whose datum contains global information regarding the token (if it's frozen, if transfers are paused, etc.)
 
-The policy is specified in the datum of the entry present at the registry.
+The term "substandard" indicates a specific implementation of all the on-chain components that guarantees a certain behaviour and a consistent way to build the transactions. Any programmable token must belong to a certain substandard, otherwise wallets and dApps don't know how to manage them.
 
-The term "CNT" is short for "cardano native token",
-that is a token natively reconized by the ledger.
+The term "smart wallet" indicates all the UTxOs living inside the programmableLogicBase script and belonging to a certain user.
+To know a user's smart wallet address check the dedicated following section.
 
-### High level idea
+### High level flow
 
-An on-chain registry is deployed.
+The creator wants to release a new programmable token.
 
-Each UTxO on the registry, represents a registered programmable token.
+The tokenRegistry and the programmableLogicBase are already deployed on-chain.
 
-On registration, the registry ensures the list stays sorted.
+The creator writes a new transferLogicScript where he defines the rules to transfer the new token.
 
-Off-chain, the user can deterministically derive the smart wallet.
+Then he writes a new thirdPartyTransferLogicScript where he defines who are the admins and what the actions they can do without permission of any other user.
 
-The smart wallet will require a proof of registration (or non registration)
-for each CNT that is spent.
+Then he writes a new issuanceLogicScript where he defines who can mint and burn the new token.
 
-If the CNT policy was registered as programmable,
-the associated script in the registry MUST be running in the same transaction.
+Then he deploys a new issuancePolicy instance parametrized by the new issuanceLogicScript.
 
-If the CNT policy was not present in the sorted list,
-the token is trated as a normal, non programmable, CNT.
+Finally, the creator adds a registryNode to the tokenRegistry with the hashes of all the above scripts and with additional required
+information. The registration cannot happen if the policy has been already registered or if the issuancePolicy is wrong.
 
-### User address derivation
+During or after the registration process, the creator can mint the new programmable token.
+This new token is enforced to be sent in the programmableLogicBase script.
 
-The smart wallet logic is the same for every user.
+Off-chain, any user can deterministically derive their smart wallet (as explained in the next section).
 
-So the payment credentials of the resulting address will aways be the one of
-a fixed standard contract.
+When an user wants to transfer some of his programmable tokens, for each token a proof of registration (or non registration) is required: if the policy is present in the tokenRegistry then the associated transferLogicScript MUST be running in the same transaction; if the policy is not present in the tokenRegistry, the token is treated as a normal, non programmable, CNT and can always leave the programmableLogicBase script.
 
-The stake credentials are instead what identifies the user wallet.
+In any moment for each token, admins can execute privileged actions as defined in thirdPartyTransferLogicScript.
 
-The user MAY choose to user either their payment credentials or their stake credentials,
-however, to allow anyone to derive indipendently the address of the user,
-using the payment credentials is RECOMMENDED.
+In any moment for each token, issuers can mint more token or burn existing ones that are held by them.
 
+### User's smart wallet address derivation
 
-### Registry entry datum
+The smart wallet address has the following form:
+(fixedPaymentCredentials, userDefinedStakeCredentials)
+
+where:
+- fixedPaymentCredentials never change and they are the credentials obtained from the hash of programmableLogicBase
+- userDefinedStakeCredentials are different for each user.
+The smart wallet logic is the same for every user. If the user is a wallet, he MAY choose to user either their payment credentials or their stake credentials. We suggest to use his payment credentials to allow anyone to derive indipendently the address of the user.
+If the user is a smart contract, then it's the payment credentials of that contract.
+
+In other words, a smart wallet is the set of UTxOs that live in the programmableLogicBase script and that have a specific stake credential that identifies the owner.
+
+### TokenRegistry entry datum
+
+Every entry in the tokenRegistry MUST have attached an inline datum following this standard type:
 
 ```ts
 type RegistryNode {
     tokenPolicy: ByteArray,
     nextTokenPolicy: ByteArray, 
-    transferManagerHash: ByteArray,
+    transferLogicScript: ByteArray,
     userStateManagerHash: ByteArray,
     globalStateUnit: ByteArray, 
-    thirdPartyActionRules: ByteArray
+    thirdPartyTransferLogicScript: ByteArray
 }
 ```
 
-Every entry in the registry MUST have attached an inline datum following this standard type.
-
-This is enforced by the execution of the registry at registration.
+This datum is enforced by the execution of the tokenRegistry at registration.
 
 The ordering of the fields MUST be respected.
 
 #### `tokenPolicy`
 
-MUST be a bytestring of length 28. This field is also the key of the entry,
-and the token name of the minted NFT to be attached to the UTxO generated at registration.
+MUST be a bytestring of length 28. This field is also the key of the entry (registryNode) 
+and the token name of the NFT minted via registryMintingPolicy and that is included in the entry UTxO.
 
 #### `nextTokenPolicy`
 
 MUST be a bytestring of length 28.
 
-#### `transferManagerHash`
+As the tokenRegistry is a ordered linked list, it's the next key (a tokenPolicy) in the tokenRegistry in lexicographic order.
+
+#### `transferLogicScript`
 
 MUST be a bytestring of length 28.
 
-Represents the hash of the "withdraw 0" validator to be included in a transfer transaction for validation.
+Represents the hash of the "Withdraw 0" script to be included in a transfer transaction for validation.
 
 #### `userStateManagerHash`
 
 MUST be a bytestring of either length 0 or length 28.
 
-This field is meant to indicate the hash of the contract that manages the state for each user.
+It represents the optional hash of the "Withdraw 0" script that manages the state for each user.
 
-If present, meaning the bytestirng is of length 28,
-one or more reference inputs MUST be included,
-depending on the sub-standard (see below).
+If the value has length 28, when creating a transfer transaction one or more reference inputs MUST be 
+included depending on the sub-standard (see below).
 
-If not present, meaning the bytestirng has length 0,
-no reference inputs representing the user state are expected.
+If the value has length 0, when creating a transfer transaction no reference input representing the user state is expected.
 
 #### `globalStateUnit`
 
 MUST be a bytestring of either length 0 or length between 28 inclusive and 60 exclusive.
 
-If the value has length 0, no additonal reference inputs are expected representing the policy global state.
+It represents the optional unit of an NFT that is contained in a UTxO with the global state as inline datum.
+
+If the value has length 0, it means there is no global state for this programmable token.
+For this reason, when creating a transfer transaction no reference input is expected to represent the global state.
 
 If the bytestring has length greater than or equal to 28,
 the value represents the concatenation of a token policy (of length 28)
 and a token name (of length between 0 and 32).
+In this case, when creating a transfer transaction a reference input having an NFT matching the unit MUST be included. 
 
-When present a reference input having an NFT matching token policy and token name MUST be included. 
-
-#### `thirdPartyActionRules`
+#### `thirdPartyTransferLogicScript`
 
 MUST be a bytestring of either length 0 or length 28.
 
-This field is meant to indicate the hash of the contract that will validate
-transfers requested by third parties.
+It represents the optional hash of the "Withdraw 0" script that defines who is admin (third party) 
+and the admin actions on the programmable token.
 
-If the value has length 0, the programmable token does NOT allow third parties to transfer programmable tokens on the users' behalf.
+If the value has length 0, the programmable token does NOT allow admins to transfer programmable tokens on the users' behalf.
 
-If the value has length 28, a "withdraw 0" validator with the same hash MUST be included in the transaction.
+If the value has length 28, an admin can transfer users' tokens creating a transaction that executes this script.
 
 ### Programmable token registration
 
-Every entry in the registry is sorted by the `tokenPolicy` field (first field of the datum).
+To create a new programmable token, it must be properly registered in the tokenRegistry.
+The on-chain validation won't allow the creator to cheat or deviate from the enforced rules.
 
-Every entry remembers the following entry `tokenPolicy` in the `nextTokenPolicy` field (5th field).
-
-Requirements to register a programmable token:
-
-1) The node preceding the policy to be registered MUST be spent.
-
+Recalling that the tokenRegistry is an ordered linked list sorted by the `tokenPolicy` field, the transaction to 
+register the token has the following requirements:
+1) The registryNode preceding the policy of the new token, called here prev_node, MUST be spent
 2) The output of the transaction MUST include: 
-- the node spent, with all the fields except `nextTokenPolicy` unchanged,
-and `nextTokenPolicy` set to the new entry `tokenPolicy`
-- the new entry, having `nextTokenPolicy` set to the value of the node spent previous `nextTokenPolicy`
-
-3) The transaction MUST include the registration certificate of `transferManagerHash`.
-
-4) The new entry `globalStateUnit` MAY be an empty string if the logic of
+    - prev_node with the value and the datum unchanged except for the field `nextTokenPolicy` that is now set to the new token `tokenPolicy`
+    - a new registryNode representing the new token with the proper registryDatum fields, in particular `nextTokenPolicy` 
+    is set to the input value of prev_node `nextTokenPolicy`
+3) The transaction MUST include the registration certificate of `transferLogicScript`
+4) The new registryNode `globalStateUnit` MAY be an empty string if the logic of
 the programmable token does not require a global state;
 otherwhise it MUST be a bytestring of length between
 28 inclusive and 60 (28 + 32) exclusive.
-
-5) The entry for the programmable token that was already registered before the transaction
-MUST keep the same value that was present in the corresponding input.
-
-6) The new entry SHOULD have the minimum amount of lovelaces that the protocol allows,
-and MUST include a newly minted NFT, under the registry policy,
+5) The new registryNode SHOULD have the minimum amount of lovelaces that the protocol allows,
+and MUST include a newly minted NFT, under the `registryMintingPolicy`,
 and the programmable token policy as NFT name. 
-
-7) Both the outputs MUST NOT have any reference script.
-
-8) Both the outputs address MUST **only** have payment credentials.
+6) Both the outputs MUST NOT have any reference script.
+7) Both the outputs address MUST **only** have payment credentials.
+8) The new token `issuancePolicy` MUST be an instance of the official script parametrized by a custom `issuanceLogicScript`
 
 ### Transfer
+**TODO This section must be updated**
 
 In order to spend an utxo holding programmable tokens,
 a standard redeemer must be passed to the smart wallet:
@@ -255,7 +264,15 @@ that indicates the presence (or the absence) of the first policy of the input va
 (for reference, a typescript implementation of the lexicographic ordering can be found
 [here](https://github.com/HarmonicLabs/uint8array-utils/blob/c1788bf351de24b961b84bfc849ee59bd3e9e720/src/utils/index.ts#L8-L27))
 
-### Sub standards
+### Implementing programmable tokens in DeFi protocols
+**TODO This section must be updated**
+
+### Implementing programmable tokens in wallets and dApps
+**TODO This section must be updated**
+
+#### Existing substandards
+
+**TODO This section must be updated**
 
 In order to validate a transfer, transfer managers MAY need to read informations about the state of the users involved in the transaction.
 
@@ -270,26 +287,30 @@ Some examples of state management may be:
 
 And many more state managements are possible, depending on the specific implementation.
 
-for this reason, we make explicit the need for sub standards
+For this reason, we make explicit the need for sub standards
 
 ## Rationale: how does this CIP achieve its goals?
-<!-- The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It SHOULD describe alternate designs considered and related work. The rationale SHOULD provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
+The current CIP version, informally called V3, is the result of several iterations to create the best standard for programmable tokens.
+This standard safely extends the functionality of tokens on Cardano, in a scalable way and without disruptions, leveraging CNTs that live
+forever in a single smart contract.
 
-It MUST also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section SHOULD explain how it addresses the CPS, and answer any questions that the CPS poses for potential solutions.
--->
+The proposal does not affect backward compatibilty being the first proposing a standard for programmability over transfers.
 
+Existing native tokens are not conflicting with the standard, instead, native tokes are used in this specification for various purposes.
+
+### History of the proposed standard
 The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) (which we could informally refer as v0) was quite different by the one shown in this document
 
-Main differences were in the proposed:
+Main differences were:
 - [use of sorted merkle trees to prove uniqueness](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58#diff-370b6563a47be474523d4f4dbfdf120c567c3c0135752afb61dc16c9a2de8d74R72) of an account during creation;
 - account credentials as asset name
 
-this path was abandoned due to the logaritmic cost of creation of accounts, on top of the complexity.
+This path was abandoned due to the logaritmic cost of creation of accounts, on top of the complexity.
 
 Other crucial difference with the first proposed implementation was in the `accountManager` redeemers;
 which included definitions for `TransferFrom`, `Approve` and `RevokeApproval` redeemers, aiming to emulate ERC20's methods of `transferFrom` and `approve`;
 
-after [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), 
+After [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), 
 it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
 
 After a first round of community feedback, a 
@@ -309,10 +330,6 @@ This soft requirement for registration was not well received from the community,
 
 The specification proposed in this file addresses all the previous concerns.
 
-The proposal does not affect backward compatibilty being the first proposing a standard for programmability over transfers;
-
-exsisting native tokens are not conflicting for the standard, instead, native tokes are used in this specification for various purposes.
-
 ## Path to Active
 
 ### Acceptance Criteria
@@ -327,11 +344,15 @@ exsisting native tokens are not conflicting for the standard, instead, native to
     - independent transaction creation with `Transfer` redeemers
 
 ### Implementation Plan
-<!-- A plan to meet those criteria. Or `N/A` if NOT applicable. -->
+- [ ] Issuance of at-least one smart token via the proposed standard on the following networks:
+  - [ ] 1. Preview testnet
+  - [ ] 2. Mainnet 
+- [ ] End-to-end tests of programmable token logic. 
+- [ ] Finally, a widely adopted wallet that can read and display programmable token balances to users and allow the user to conduct transfers of such tokens.
 
-- [ ] [PoC implementation](https://github.com/HarmonicLabs/programmable-tokens)
-- [ ] [showcase transactions](https://github.com/HarmonicLabs/programmable-tokens)
-- [ ] wallet implementation 
+### Implementation Plan
+- [ ] Implement the contracts detailed in the specification. 
+- [ ] Implement the offchain code required to query programmable token balances and construct transactions to transfer such tokens. 
 
 ## Copyright
 
