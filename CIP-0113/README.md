@@ -274,7 +274,7 @@ TODO
 ### Implementing programmable tokens in wallets and dApps
 TODO
 
-### Sub standards
+#### Existing substandards
 
 In order to validate a transfer, transfer managers MAY need to read informations about the state of the users involved in the transaction.
 
