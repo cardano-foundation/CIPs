@@ -333,17 +333,6 @@ The specification proposed in this file addresses all the previous concerns.
 ## Path to Active
 
 ### Acceptance Criteria
-<!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
-
-- having at least one instance of the smart contracts described on:
-    - mainnet
-    - preview testnet
-    - preprod testnet
-- having at least 2 different wallets integrating programmable asset functionalities, mainly:
-    - displayning balance of a specified programmable assets
-    - independent transaction creation with `Transfer` redeemers
-
-### Implementation Plan
 - [ ] Issuance of at-least one smart token via the proposed standard on the following networks:
   - [ ] 1. Preview testnet
   - [ ] 2. Mainnet 
