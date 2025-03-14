@@ -92,7 +92,7 @@ The following terminology represents all the on-chain components of the standard
 The term "substandard" indicates a specific implementation of all the on-chain components that guarantees a certain behaviour and a consistent way to build the transactions. Any programmable token must belong to a certain substandard, otherwise wallets and dApps don't know how to manage them.
 
 The term "smart wallet" indicates all the UTxOs living inside the programmableLogicBase script and belonging to a certain user.
-To know a user's smart wallet check one of the following sections.
+To know a user's smart wallet address check the dedicated following section.
 
 ### High level flow
 
