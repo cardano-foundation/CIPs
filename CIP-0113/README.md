@@ -133,7 +133,7 @@ where:
 The smart wallet logic is the same for every user. If the user is a wallet, he MAY choose to user either their payment credentials or their stake credentials. We suggest to use his payment credentials to allow anyone to derive indipendently the address of the user.
 If the user is a smart contract, then it's the payment credentials of that contract.
 
-In other words, a smart wallet is the set of UTxOs that live in the programmableLogicBase script and that have a specific stake credential that identify the owner.
+In other words, a smart wallet is the set of UTxOs that live in the programmableLogicBase script and that have a specific stake credential that identifies the owner.
 
 ### Registry entry datum
 
