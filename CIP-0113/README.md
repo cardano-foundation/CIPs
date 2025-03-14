@@ -118,7 +118,7 @@ Off-chain, any user can deterministically derive their smart wallet (as explaine
 
 When an user wants to transfer some of his programmable tokens, for each token a proof of registration (or non registration) is required: if the policy is present in the tokenRegistry then the associated transferLogicScript MUST be running in the same transaction; if the policy is not present in the tokenRegistry, the token is treated as a normal, non programmable, CNT and can always leave the programmableLogicBase script.
 
-In any moment for each token, admins can execute priviledged actions as defined in thirdPartyTransferLogicScript.
+In any moment for each token, admins can execute privileged actions as defined in thirdPartyTransferLogicScript.
 
 In any moment for each token, issuers can mint more token or burn existing ones that are held by them.
 
