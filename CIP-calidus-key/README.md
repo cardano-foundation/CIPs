@@ -10,6 +10,8 @@ Implementors:
     -   Cardano Signer: https://github.com/gitmachtl/cardano-signer/releases/tag/v1.23.0
     -   pg_cardano: https://github.com/cardano-community/pg_cardano/releases/tag/v1.0.5-p1
     -   Cardano Koios: https://github.com/cardano-community/koios-artifacts/tree/v1.3.2
+    -   CNTools: https://github.com/cardano-community/guild-operators/tree/alpha
+    -   SPO Scripts: https://github.com/gitmachtl/scripts
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/999
     - https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
@@ -182,10 +184,69 @@ key is thought to be compromised previous keys may be invalidated by submitting
 a new on-chain registration with a higher nonce value.
 
 **Example:**
-
 `h'57758911253f6b31df2a87c10eb08a2c9b8450768cb8dd0d378d93f7c2e220f0'`
 
-![Calidus Key Flow Chart](CalidusKey.jpg)
+> **IMPORTANT NOTE:** This standard does not provide a mechanism to revoke the
+> authorization of a Calidus key except for replacing it with a new key. Those
+> wishing to revoke their key without replacemen should submit an update 
+> registration with a blank key (all zeroes) in place of the Calidus key.
+> 
+> Tooling providers should recognize this as explicitly revoking all previous
+> registrations without adding a new key.
+>
+> Example: `h'0000000000000000000000000000000000000000000000000000000000000000'`
+
+##### Bech32 Encoding
+
+We define a prefix when Bech32 encoding the Calidus key to leave room for future
+expansion and use similar to [CIP-129] and other Bech32 encodings used within
+the Cardano ecosystem.
+
+###### Binary format
+
+In the header-byte, bits [7;4] indicate the type of key being used. The
+remaining four bits [3;0] are used to define the credential type. There are
+currently 1 types of credentials defined in the Cardano Conway era, this
+specification will allow us to define a maximum of 16 different types of keys in
+the future.
+
+```
+  1 byte     variable length   
+ <------> <-------------------> 
+┌────────┬─────────────────────┐
+│ header │        key      │
+└────────┴─────────────────────┘
+    🔎                          
+    ╎          7 6 5 4 3 2 1 0  
+    ╎         ┌─┬─┬─┬─┬─┬─┬─┬─┐ 
+    ╰╌╌╌╌╌╌╌╌ |t│t│t│t│c│c│c│c│ 
+              └─┴─┴─┴─┴─┴─┴─┴─┘ 
+```
+
+###### Key Type Prefix
+
+| Key Type (`t t t t . . . .`) | Key        |
+|------------------------------|------------|
+| `1010....`                   | Stake Pool |
+
+###### Credential Type Prefix
+
+| Credential Type (`. . . . c c c c`) | Semantic    |
+|-------------------------------------|-------------|
+| `....0001`                          | Key Hash    |
+| `....0010`                          | Script Hash |
+
+**Stake Pool Calidus Key Example**
+
+| Label                          | Value                                                              |
+|--------------------------------|--------------------------------------------------------------------|
+| Stake Pool Key Hash Prefix     | `a1`                                                               |
+| Calidus Public Key             | `57758911253f6b31df2a87c10eb08a2c9b8450768cb8dd0d378d93f7c2e220f0` |
+| Blake2b-224 Hash of Public Key | `171983a1178a55b02afacfd6ad6b516da375469fd7dbcf54a2f95823`         |
+| Prefixed PubKey Hash           | `a1171983a1178a55b02afacfd6ad6b516da375469fd7dbcf54a2f95823`       |
+| Bech32-encoded Calidus Key ID  | `calidus15yt3nqapz799tvp2lt8adttt29k6xa2xnltahn655tu4sgcph42p7`    |
+
+![Calidus Key Flow Chart](CalidusKeyv2.jpg)
 
 ### Registration Witness Array
 
@@ -246,7 +307,7 @@ to suite a variety of purposes.
 ; In v2 witnesses are changed to a map with an optional type identifier.
 ; A default of 0 for "Witness Type Identifier" should be considered a COSE Signature from CIP-0008
 
-COSE_Headers = {
+COSE_Key = {
      1 : uint,              ; COSE Key Type
      3 : int,               ; COSE Key Algorithm
     -1 : uint,              ; EC Identifier
@@ -262,7 +323,7 @@ COSE_Sign1_Payload = [
 
 COSE_Witness = {
   ? 0 : uint,                ; Witness Type Identifier (optional or 0)
-    1 : COSE_Headers,        ; COSE Header Object
+    1 : COSE_Key,            ; COSE Key Header Object
     2 : COSE_Sign1_Payload,  ; COSE Signature Payload
 }
 
@@ -300,14 +361,15 @@ a simple hex-encoded CBOR witness signature.
 > **Note:** COSE Signing as described in CIP-0008 uses a boolean value as the
 > second entry of the COSE Payload to indicate whether the payload was hashed
 > by the signing function before signing. Because Cardano on-chain metadata
-> does not support boolean values, this must be converted to/from a binary (0 or 
+> does not support boolean values, this must be converted to/from a binary (0 or
 > 1\) value when encoding or decoding the payload.
-> 
+>
 > By default, the COSE Sign1 Payload contains an entry which is an object (map)
 > containing a `hashed` key and a boolean `true/false` value. This entire object
-> should be replaced with a simple `1` or `0` value representing the `true/false`
+> should be replaced with a simple `1` or `0` value representing the
+`true/false`
 > value of the `hashed` key.
-> 
+>
 > Example:
 > `{"hashed": true}` becomes `1` and `{"hashed": false}` becomes `0`. In most
 > cases it will also be required to convert from the `1` or `0` value stored in
@@ -317,7 +379,7 @@ a simple hex-encoded CBOR witness signature.
 ## Rationale: how does this CIP achieve its goals?
 
 This CIP was born out of a desire to allow SPOs to routinely identify themselves
-to third-party services such as: voting platforms, social media, governance 
+to third-party services such as: voting platforms, social media, governance
 without risking or compromising the keys used in the actual operation and setup
 of the stake pool.
 
@@ -335,24 +397,21 @@ ecosystem tooling supports it and SPOs as well as third-party applications have
 shown an interest in using it as a method of authentication and validation.
 
 * Ecosystem Tooling
-  * [x] Cardano Signer
-  * [x] pg_cardano
-  * [x] cardano-hw-cli support
-  * [ ] Cardano Koios 
-    * currently testing in Preview on Branch 1.3.2
-  * [ ] Blockfrost
-  * [ ] CN Tools
-  * [ ] SPO Scripts
+    * [x] Cardano Signer
+    * [x] pg_cardano
+    * [x] cardano-hw-cli support
+    * [X] Cardano Koios
+    * [ ] Blockfrost
+    * [X] CN Tools
+    * [X] SPO Scripts
 * Wallets
-  * [ ] Eternl
+    * [ ] Eternl
 * Applications
-  * [ ] CExplorer
-  * [ ] CardanoScan
-  * [ ] AdaStat
-  * [ ] PoolTool.io
-  * [ ] DripDropz
-* Registered Pools
-  * [ ] _x_ of _y_ SPOs have registered
+    * [ ] CExplorer
+    * [ ] CardanoScan
+    * [ ] AdaStat
+    * [ ] PoolTool.io
+    * [ ] DripDropz
 
 ### Implementation Plan
 
@@ -371,3 +430,5 @@ This CIP is licensed under [CC-BY-4.0].
 [CIP-0008]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
+
+[CIP-129]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129
