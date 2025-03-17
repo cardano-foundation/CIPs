@@ -582,7 +582,7 @@ are lists of transactions. They are processed as individual transactions, alongs
 at the time of construction 
 
 - the `TxId` of the transaction for each entry in the UTxO set is necessarily 
-signed bt all the keys required by that transaction
+signed by all the keys required by that transaction
 
 - the input to (and therefore output of) each script is predictable at the time of (underspecified) tx construction, 
 so that it is possible to compute required `ExUnits` for each of the scripts run by every sub-transaction 
