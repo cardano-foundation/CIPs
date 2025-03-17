@@ -354,7 +354,7 @@ The difference is that for a tx-observer script in the linked CIP is run on the 
 that requires it. With batch observers, the scripts are required by a sub-tx, but run with top-level input. 
 For the same top-level transaction, a regular observer and a batch observer in a transaction will get different `TxInfo`. 
 
-Batch observers are a way to specify any intents that to not require changes to the ledger rules. For example, 
+Batch observers are a way to specify any intents that do not require changes to the ledger rules. For example, 
 I may include a payment in my sub-transaction to specific address, and require via a batch observer that 
 any transaction that completes this 
 batch must execute some particular script. In this case, my intent is to get a party to interact with that contract. 
