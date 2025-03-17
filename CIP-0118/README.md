@@ -189,7 +189,7 @@ checks are :
 the sum total of `txfee` values of all the transactions in the batch.
 The per-transaction fee is collected only once for the batch. 
 
-2. No regular inputs in any transaction are in also included as `corInputs` of the top-level tx
+2. No regular inputs in any transaction are also included as `corInputs` of the top-level tx
 
 3. All `txins` and `corInputs` are contained in the UTxO set to which the top-level tx is being applied 
 
