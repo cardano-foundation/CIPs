@@ -575,7 +575,7 @@ underspecified transactions.
 Transaction swaps achieve almost exactly the same goals as this CIP. The main differences 
 are :
 
-1. The top-level transaction contains subTxs`, which 
+1. The top-level transaction contains `subTxs`, which 
 are lists of transactions. They are processed as individual transactions, alongside the top-level tx. As a result, 
 
 - the `TxIn` of each output can be computed for each output underspecified transaction  
