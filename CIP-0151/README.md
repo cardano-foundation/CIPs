@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 0151
 Title: On-Chain Registration - Stake Pools
 Category: Metadata
 Status: Proposed
