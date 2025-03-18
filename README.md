@@ -125,6 +125,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0136 | [Governance metadata - Constitutional Committee votes](./CIP-0136) | Proposed |
 | 0137 | [Decentralized Message Queue](./CIP-0137) | Proposed |
 | 0138 | [Plutus Core Builtin Type - Array](./CIP-0138) | Proposed |
+| 0140 | [Ouroboros Peras - Faster Settlement](./CIP-0140) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -133,7 +134,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-10-29</i></p>
+<p align="right"><i>Last updated on 2025-02-25</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
@@ -159,8 +160,9 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0014 | [Register of CBOR Tags](./CPS-0014) | Open |
 | 0016 | [Cardano URIs](./CPS-0016) | Open |
 | 0017 | [Settlement Speed](./CPS-0017) | Open |
+| 0018 | [Greater Transaction Throughput](./CPS-0018) | Open |
 
-<p align="right"><i>Last updated on 2024-09-03</i></p>
+<p align="right"><i>Last updated on 2025-02-25</i></p>
 
 > 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
 
