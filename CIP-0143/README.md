@@ -20,7 +20,7 @@ This CIP proposes a robust framework for the issuance of interoperable programma
 
 ## Motivation: why is this CIP necessary?
 
-This CIP proposes a solution to [CPS-0003 (Smart Tokens)](CPS-0003).
+This CIP proposes a solution to [CPS-0003 (Smart Tokens)](../CPS-0003).
 
 With this framework we achieve programmability over the transfer of tokens (meta-tokens) and their lifecycle without sacrificing composability with existing dApps. 
 
