@@ -60,6 +60,10 @@
     "description": "on-chain certification metadata"
   },
   {
+    "transaction_metadatum_label": 1517,
+    "description": "Reeve - transparent and verifiable financial records on-chain"
+  },
+  {
     "transaction_metadatum_label": 1564,
     "description": "Marlowe - a DSL for writing and executing financial contracts"
   },
