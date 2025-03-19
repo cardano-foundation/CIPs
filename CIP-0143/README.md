@@ -9,6 +9,7 @@ Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/444
     - https://github.com/cardano-foundation/CIPs/pull/944
+Solution-To: CPS-0003
 Created: 2024-12-3
 License: Apache-2.0
 ---
@@ -19,7 +20,7 @@ This CIP proposes a robust framework for the issuance of interoperable programma
 
 ## Motivation: why is this CIP necessary?
 
-This CIP proposes a solution to Cardano Problem Statement 3 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/382/files?short_path=5a0dba0#diff-5a0dba075d998658d72169818d839f4c63cf105e4d6c3fe81e46b20d5fd3dc8f)).
+This CIP proposes a solution to [CPS-0003 (Smart Tokens)](../CPS-0003).
 
 With this framework we achieve programmability over the transfer of tokens (meta-tokens) and their lifecycle without sacrificing composability with existing dApps. 
 
