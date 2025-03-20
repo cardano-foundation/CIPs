@@ -8,7 +8,7 @@ Authors:
 Implementors:
   - DRep Collective
 Discussions:
-  - "https://github.com/cardano-foundation/CIPs/pull/XXXX"
+  - "https://github.com/cardano-foundation/CIPs/pull/1007"
 Created: "2025-03-01"
 License: CC-BY-4.0
 ---
@@ -42,7 +42,7 @@ License: CC-BY-4.0
 
 ---
 
-## 1. Abstract
+## Abstract
 
 > "**Poets are the unacknowledged legislators of the world.**"  
 > — Percy Bysshe Shelley, _A Defence of Poetry_ (1821)
@@ -55,9 +55,7 @@ This CIP introduces a structured on-chain metadata standard designed to enhance 
 
 By storing large metadata off-chain and anchoring it through CIP-119, **CIP-???** reduces ledger bloat and allows for scalable governance metadata management. These NFTs collectively create a verifiable information ecosystem, empowering delegators with comprehensive insights and enabling analytics tools to systematically map Cardano’s governance landscape. Crucially, **CIP-???** complements but does not alter CIP-1694’s core governance mechanisms, thereby offering enhanced transparency without imposing additional complexity on existing governance operations.
 
----
-
-## 2. Motivation
+## Motivation: why is this CIP necessary?
 
 > "**Every man is guilty of all the good he did not do.**"  
 > — François-Marie Arouet (Voltaire), 18th century
@@ -72,9 +70,7 @@ This CIP directly addresses these limitations by creating a standardized metadat
 
 In establishing this robust metadata standard, this CIP provides the necessary foundation for advanced governance analytics, clearer ecosystem mapping, and deeper community engagement, thereby promoting informed, active, and effective governance participation across the Cardano ecosystem.
 
----
-
-## 3. Specification
+## Specification
 
 > "**We see categories as the best available formal conceptual tool for bridging those multiple worlds that exist in the large scale engineering of practical, robust, evolving systems.**"  
 > — Joseph A. Goguen (1997)
@@ -92,9 +88,7 @@ These NFTs rely on existing Cardano Improvement Proposals (CIPs) to keep things 
 - **CIP-119 & CIP-108:** Allow large metadata (documents, profiles, rationales) to be stored off-chain securely.
 - **CIP-67:** Ensures NFTs are clearly labeled and discoverable.
 
----
-
-### 3.1 Relationship to Existing Standards (CIPs)
+### Relationship to Existing Standards (CIPs)
 
 - **CIP-1694 (Governance IDs)**  
   Defines unique IDs for DReps and proposals. This CIP uses these exactly as defined.
@@ -108,9 +102,7 @@ These NFTs rely on existing Cardano Improvement Proposals (CIPs) to keep things 
 - **CIP-67 (Asset Labeling)**  
   Clearly identifies this CIP NFTs, making them easy for wallets and explorers to recognize and categorize.
 
----
-
-### 3.2 Identifiers (DRep & Proposal)
+### Identifiers (DRep & Proposal)
 
 These identifiers link NFTs directly to Cardano’s governance system (CIP-1694):
 
@@ -126,9 +118,7 @@ Example:
 proposalId: "txHash: 1234abcd...ff, index: 1"
 ```
 
----
-
-### 3.3 Off-Chain Metadata (Anchors)
+### Off-Chain Metadata (Anchors)
 
 To avoid overwhelming the blockchain, large data like profiles, rationales, and detailed documents are stored off-chain, linked securely through:
 
@@ -137,9 +127,7 @@ To avoid overwhelming the blockchain, large data like profiles, rationales, and 
 
 These anchors include a URL and a secure hash (`blake2b-256`) for verification.
 
----
-
-### 3.4 NFT Metadata Format (CIP-68)
+### NFT Metadata Format (CIP-68)
 
 All NFTs in this CIP follow a simple, standardized format provided by CIP-68:
 
@@ -151,9 +139,7 @@ All NFTs in this CIP follow a simple, standardized format provided by CIP-68:
 - **version**: indicates the NFT’s schema version (always ≥ 1).
 - **extra**: reserved for future or special use (usually empty).
 
----
-
-### 3.5 NFT Naming (CIP-67 Labels)
+### NFT Naming (CIP-67 Labels)
 
 NFT names follow an easy-to-understand structure:
 
@@ -165,11 +151,9 @@ NFT names follow an easy-to-understand structure:
 
 This makes NFTs easily identifiable across wallets, explorers, and analytics tools.
 
----
+### NFT Types Explained
 
-### 3.6 NFT Types Explained
-
-#### 3.6.1 DRep Credential
+#### DRep Credential
 
 - **Minted by:** The Delegated Representative (DRep)
 - **Purpose:** Shares the DRep’s profile, credentials, and motivation.
@@ -179,7 +163,7 @@ This makes NFTs easily identifiable across wallets, explorers, and analytics too
   - Links (`cip119AnchorUrl`, `cip119AnchorHash`) to off-chain detailed data.
   - Additional personal or qualification details.
 
-#### 3.6.2 Ballot Note
+#### Ballot Note
 
 - **Minted by:** The DRep who voted.
 - **Purpose:** Publicly records the vote and optionally explains the reason behind it.
@@ -192,7 +176,7 @@ This makes NFTs easily identifiable across wallets, explorers, and analytics too
   - `rationale`: Short text or link explaining the vote.
   - `timestamp`: When the vote was cast.
 
-#### 3.6.3 Endorsement
+#### Endorsement
 
 - **Minted by:** A third-party supporter (SPOs, DAOs, community members).
 - **Purpose:** Provides public, verifiable support for a DRep.
@@ -204,9 +188,7 @@ This makes NFTs easily identifiable across wallets, explorers, and analytics too
   - `identityProof`: Proof of identity or credibility of endorser.
   - `comment`: Brief supportive statement or link.
 
----
-
-### 3.7 Conceptual Data Schema (Simplified)
+### Conceptual Data Schema (Simplified)
 
 This illustrates the minimal required metadata clearly:
 
@@ -251,9 +233,7 @@ endorsement = {
 }
 ```
 
----
-
-### 3.8 Practical Implementation Notes
+### Practical Implementation Notes
 
 - **Data Storage:** Keep large files and data off-chain (IPFS, decentralized storage). Store only short references (URLs and hashes) on-chain.
 - **Minting Rules:**
@@ -262,9 +242,7 @@ endorsement = {
 - **Verification:** Tools must validate that stored IDs exactly match CIP-1694’s definitions.
 - **Asset Naming:** Clearly label NFTs using CIP-67 format `(???)` for easy recognition.
 
----
-
-### 3.9 Summary of Key Requirements (Quick Reference)
+### Summary of Key Requirements (Quick Reference)
 
 - **Use existing CIP standards** (1694, 68, 67, 119, 108).
 - Clearly link NFTs to CIP-1694 IDs for accuracy.
@@ -273,8 +251,6 @@ endorsement = {
 - Clearly label NFT assets for easy discovery (CIP-67).
 
 **This simplified specification ensures NFTs defined by this standard are straightforward to implement, widely compatible, and effectively improve transparency and community participation in Cardano governance.**
-
----
 
 ### Extending this CIP (Proposing New NFT Types)
 
@@ -292,7 +268,7 @@ This standard is designed for extensibility. If additional NFT types become nece
 
 This ensures this standard evolves transparently, driven by community needs.
 
-## 4. Rationale: How Does This CIP Achieve Its Goals?
+## Rationale: How Does This CIP Achieve Its Goals?
 
 > "**If I do not write to empty my mind, I go mad.**"  
 > — Attributed to Lord Byron (circa 1818–1822)
@@ -310,15 +286,7 @@ Addressing community concerns regarding potential spam or misleading endorsement
 
 Crucially, this standard is designed as an **optional enhancement**, complementing but not replacing CIP-1694’s core governance logic. This ensures flexibility for participants—those seeking simple participation need not adopt this standard, while delegators and DReps seeking deeper insights, accountability, and community engagement gain powerful new tools for informed governance decisions.
 
-Here's the refined, clear, and professional revision for the **Path to Active**, **Versioning**, and **Copyright** sections:
-
----
-
-Here's the refined, clear, and professional revision for the **Path to Active**, **Versioning**, and **Copyright** sections:
-
----
-
-## 5. Path to Active
+## Path to Active
 
 ### Acceptance Criteria
 
@@ -328,36 +296,31 @@ Here's the refined, clear, and professional revision for the **Path to Active**,
 To achieve **Active** status, this CIP must fulfill the following clear criteria:
 
 1. **Reference Implementations**  
-   At least **two independent teams** publish open-source reference implementations demonstrating:
-
-   - Minting of all three NFT types (DRep Credential, Ballot Note, Endorsement).
-   - Correct usage of CIP-68 datum structure.
-   - Proper referencing of CIP-1694 identifiers (`dRepId`, `proposalId`).
-   - Parsing and verification of metadata fields.
+    - [ ] At least **two independent teams** publish open-source reference implementations demonstrating:
+        - [ ] Minting of all three NFT types (DRep Credential, Ballot Note, Endorsement).
+        - [ ] Correct usage of CIP-68 datum structure.
+        - [ ] Proper referencing of CIP-1694 identifiers (`dRepId`, `proposalId`).
+        - [ ] Parsing and verification of metadata fields.
 
 2. **Wallet & Explorer Support**  
-   At least **one wallet** and **one block explorer** publicly demonstrate:
-
-   - Recognition and display of CIP-152 NFT labels (CIP-67).
-   - User-friendly presentation of NFT metadata fields.
-   - Proper handling and verification of off-chain metadata anchors (CIP-119/CIP-108).
+    - [ ] At least **one wallet** and **one block explorer** publicly demonstrate:
+        - [ ] Recognition and display of this CIP's NFT labels (CIP-67).
+        - [ ] User-friendly presentation of NFT metadata fields.
+        - [ ] Proper handling and verification of off-chain metadata anchors (CIP-119/CIP-108).
 
 3. **Governance Tool Integration**  
-   At least **one governance dashboard or analytics tool** publicly incorporates CIP-152 NFTs, providing:
-
-   - Visualization of DRep Credentials alongside off-chain profiles.
-   - Display of Ballot Notes with voting rationale.
-   - Tracking and visual representation of Endorsements.
-   - Verification of identifiers consistent with CIP-1694.
+    - [ ] At least **one governance dashboard or analytics tool** publicly incorporates these NFTs, providing:
+        - [ ] Visualization of DRep Credentials alongside off-chain profiles.
+        - [ ] Display of Ballot Notes with voting rationale.
+        - [ ] Tracking and visual representation of Endorsements.
+        - [ ] Verification of identifiers consistent with CIP-1694.
 
 4. **Community Approval**
-   - Conduct a public review lasting a minimum of **four weeks**, collecting input from DReps, SPOs, wallet developers, governance experts, and CIP editors.
-   - Resolve or address all major concerns, ensuring compatibility with CIP-1694, CIP-68, CIP-119, and CIP-108.
-   - Obtain broad community consensus confirming tangible benefits without introducing contradictory governance assumptions.
+    - [ ] Conduct a public review lasting a minimum of **four weeks**, collecting input from DReps, SPOs, wallet developers, governance experts, and CIP editors.
+        - [ ] Resolve or address all major concerns, ensuring compatibility with CIP-1694, CIP-68, CIP-119, and CIP-108.
+        - [ ] Obtain broad community consensus confirming tangible benefits without introducing contradictory governance assumptions.
 
 Once these criteria are satisfied, authors will formally request the CIP editors to transition this CIP from **Proposed** to **Active** according to the guidelines outlined in CIP-0001.
-
----
 
 ### Implementation Plan (Step-by-Step Roadmap)
 
@@ -387,9 +350,7 @@ Once these criteria are satisfied, authors will formally request the CIP editors
    - Resolve any identified issues and ensure consensus around this standard’s compatibility and utility.
    - After successful resolution and broad approval, formally request activation.
 
----
-
-## 6. Versioning
+## Versioning
 
 The NFTs defined by this standard include a `version` field in their datum (starting at `1`). Any future updates or improvements to this CIP that modify the datum structure MUST increment this `version`. Applications and tools reading these NFTs:
 
@@ -400,11 +361,8 @@ Significant breaking changes require proposing a new CIP or explicitly updating 
 
 Special thanks to the numerous DReps, SPOs, wallet developers, and CIP editors whose contributions and feedback greatly shaped this proposal.
 
----
-
-## 7. Copyright
+## Copyright
 
 This work is licensed under the **Creative Commons Attribution 4.0 International License (CC-BY-4.0)**. You are free to share and adapt this CIP for any purpose, provided you give appropriate credit and indicate clearly if any modifications have been made. A full copy of this license is available at:  
 [https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)
 
----
