@@ -13,35 +13,6 @@ Created: "2025-03-01"
 License: CC-BY-4.0
 ---
 
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [1. Abstract](#1-abstract)
-- [2. Motivation](#2-motivation)
-- [3. Specification](#3-specification)
-  - [3.1 Relationship to Existing Standards (CIPs)](#31-relationship-to-existing-standards-cips)
-  - [3.2 Identifiers (DRep \& Proposal)](#32-identifiers-drep--proposal)
-  - [3.3 Off-Chain Metadata (Anchors)](#33-off-chain-metadata-anchors)
-  - [3.4 NFT Metadata Format (CIP-68)](#34-nft-metadata-format-cip-68)
-  - [3.5 NFT Naming (CIP-67 Labels)](#35-nft-naming-cip-67-labels)
-  - [3.6 NFT Types Explained](#36-nft-types-explained)
-    - [3.6.1 DRep Credential](#361-drep-credential)
-    - [3.6.2 Ballot Note](#362-ballot-note)
-    - [3.6.3 Endorsement](#363-endorsement)
-  - [3.7 Conceptual Data Schema (Simplified)](#37-conceptual-data-schema-simplified)
-  - [3.8 Practical Implementation Notes](#38-practical-implementation-notes)
-  - [3.9 Summary of Key Requirements (Quick Reference)](#39-summary-of-key-requirements-quick-reference)
-- [This simplified specification ensures **CIP-152** NFTs are straightforward to implement, widely compatible, and effectively improve transparency and community participation in Cardano governance.](#this-simplified-specification-ensures-cip-152-nfts-are-straightforward-to-implement-widely-compatible-and-effectively-improve-transparency-and-community-participation-in-cardano-governance)
-  - [3.10 Extending CIP-152 (Proposing New NFT Types)](#310-extending-cip-152-proposing-new-nft-types)
-- [4. Rationale: How Does This CIP Achieve Its Goals?](#4-rationale-how-does-this-cip-achieve-its-goals)
-- [5. Path to Active](#5-path-to-active)
-  - [Acceptance Criteria](#acceptance-criteria)
-  - [Implementation Plan (Step-by-Step Roadmap)](#implementation-plan-step-by-step-roadmap)
-- [6. Versioning](#6-versioning)
-- [7. Copyright](#7-copyright)
-
----
-
 ## Abstract
 
 > "**Poets are the unacknowledged legislators of the world.**"  
