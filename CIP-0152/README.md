@@ -50,8 +50,8 @@ License: CC-BY-4.0
 This CIP introduces a structured on-chain metadata standard designed to enhance the transparency, accountability, and effectiveness of Cardano’s governance system as outlined by **CIP-1694**. Utilizing the existing **CIP-68** datum-based NFT standard, this proposal defines three distinct token types:
 
 1. **DRep Credential** – An on-chain credential NFT referencing extended metadata such as qualifications, experience, or motivations (anchored via **CIP-119**).
-2. **Ballot Note** – A transparent, verifiable record of a Delegated Representative’s (dRep’s) voting choice and rationale.
-3. **Endorsement** – An independently minted NFT serving as decentralized social proof from community stakeholders supporting a particular dRep.
+2. **Ballot Note** – A transparent, verifiable record of a Delegated Representative’s (DRep’s) voting choice and rationale.
+3. **Endorsement** – An independently minted NFT serving as decentralized social proof from community stakeholders supporting a particular DRep.
 
 By storing large metadata off-chain and anchoring it through CIP-119, **CIP-???** reduces ledger bloat and allows for scalable governance metadata management. These NFTs collectively create a verifiable information ecosystem, empowering delegators with comprehensive insights and enabling analytics tools to systematically map Cardano’s governance landscape. Crucially, **CIP-???** complements but does not alter CIP-1694’s core governance mechanisms, thereby offering enhanced transparency without imposing additional complexity on existing governance operations.
 
@@ -67,8 +67,8 @@ Cardano’s transition into the Voltaire era, through the introduction of **CIP-
 This CIP directly addresses these limitations by creating a standardized metadata framework for verifiable, structured governance data. By leveraging on-chain NFTs linked to off-chain metadata anchors (**CIP-119** and related proposals), this CIP enables:
 
 - **DReps** to transparently communicate their credentials, track records, and motivations in a standardized, verifiable format.
-- **Delegators** to easily evaluate dReps’ historical performance, voting rationales, and endorsements, facilitating informed delegation choices.
-- **Community stakeholders** (including SPOs, DAOs, and active participants) to independently endorse dReps, strengthening trust through decentralized social proof.
+- **Delegators** to easily evaluate DReps’ historical performance, voting rationales, and endorsements, facilitating informed delegation choices.
+- **Community stakeholders** (including SPOs, DAOs, and active participants) to independently endorse DReps, strengthening trust through decentralized social proof.
 
 In establishing this robust metadata standard, this CIP provides the necessary foundation for advanced governance analytics, clearer ecosystem mapping, and deeper community engagement, thereby promoting informed, active, and effective governance participation across the Cardano ecosystem.
 
@@ -81,13 +81,13 @@ In establishing this robust metadata standard, this CIP provides the necessary f
 
 This CIP introduces three specialized NFT types to enhance transparency and accountability in Cardano's governance. These NFTs use existing Cardano standards to ensure compatibility and simplicity:
 
-1. **DRep Credential** – An NFT representing a Delegated Representative’s (dRep’s) profile.
-2. **Ballot Note** – An NFT recording a dRep’s vote and optional reasoning.
-3. **Endorsement** – An NFT created by third parties to publicly support a dRep.
+1. **DRep Credential** – An NFT representing a Delegated Representative’s (DRep’s) profile.
+2. **Ballot Note** – An NFT recording a DRep’s vote and optional reasoning.
+3. **Endorsement** – An NFT created by third parties to publicly support a DRep.
 
 These NFTs rely on existing Cardano Improvement Proposals (CIPs) to keep things simple and consistent:
 
-- **CIP-1694:** Defines how governance IDs (dReps and proposals) work.
+- **CIP-1694:** Defines how governance IDs (DReps and proposals) work.
 - **CIP-68:** Provides a standardized format (datum-based NFTs) for on-chain metadata.
 - **CIP-119 & CIP-108:** Allow large metadata (documents, profiles, rationales) to be stored off-chain securely.
 - **CIP-67:** Ensures NFTs are clearly labeled and discoverable.
@@ -100,7 +100,7 @@ These NFTs rely on existing Cardano Improvement Proposals (CIPs) to keep things 
   Defines unique IDs for DReps and proposals. This CIP uses these exactly as defined.
 
 - **CIP-100 Family (Off-Chain Metadata Anchors)**  
-  Stores large documents off-chain, using secure links (anchors) defined by CIP-100 and its extensions, CIP-119 (for dReps) and CIP-108 (for proposals).
+  Stores large documents off-chain, using secure links (anchors) defined by CIP-100 and its extensions, CIP-119 (for DReps) and CIP-108 (for proposals).
 
 - **CIP-68 (Datum-based NFTs)**  
   Ensures all NFTs defined by this CIP share a common metadata structure, simplifying their usage across different tools and wallets.
@@ -115,7 +115,7 @@ These NFTs rely on existing Cardano Improvement Proposals (CIPs) to keep things 
 These identifiers link NFTs directly to Cardano’s governance system (CIP-1694):
 
 - **DRep ID**:  
-  A unique identifier derived from a dRep’s on-chain identity, exactly matching CIP-1694’s definition.
+  A unique identifier derived from a DRep’s on-chain identity, exactly matching CIP-1694’s definition.
 
 - **Proposal ID**:  
   A unique identifier combining a transaction hash and index, directly matching CIP-1694.
@@ -171,8 +171,8 @@ This makes NFTs easily identifiable across wallets, explorers, and analytics too
 
 #### 3.6.1 DRep Credential
 
-- **Minted by:** The Delegated Representative (dRep)
-- **Purpose:** Shares the dRep’s profile, credentials, and motivation.
+- **Minted by:** The Delegated Representative (DRep)
+- **Purpose:** Shares the DRep’s profile, credentials, and motivation.
 - **Required Fields:**
   - `dRepId`: Unique ID from CIP-1694.
 - **Optional Fields:**
@@ -181,7 +181,7 @@ This makes NFTs easily identifiable across wallets, explorers, and analytics too
 
 #### 3.6.2 Ballot Note
 
-- **Minted by:** The dRep who voted.
+- **Minted by:** The DRep who voted.
 - **Purpose:** Publicly records the vote and optionally explains the reason behind it.
 - **Required Fields:**
   - `type`: Always `"ballotNote"`
@@ -195,10 +195,10 @@ This makes NFTs easily identifiable across wallets, explorers, and analytics too
 #### 3.6.3 Endorsement
 
 - **Minted by:** A third-party supporter (SPOs, DAOs, community members).
-- **Purpose:** Provides public, verifiable support for a dRep.
+- **Purpose:** Provides public, verifiable support for a DRep.
 - **Required Fields:**
   - `type`: Always `"endorsement"`
-  - `endorses`: The dRep’s ID being supported.
+  - `endorses`: The DRep’s ID being supported.
   - `endorser`: The supporter’s stake address.
 - **Optional Fields:**
   - `identityProof`: Proof of identity or credibility of endorser.
@@ -224,7 +224,7 @@ metadata-map = {
 
 ; DRep Credential example:
 drep-credential = {
-  "dRepId": "unique dRep ID",
+  "dRepId": "unique DRep ID",
   ? "cip119AnchorUrl": "URL to off-chain profile",
   ? "cip119AnchorHash": "secure hash of profile"
 }
@@ -232,7 +232,7 @@ drep-credential = {
 ; Ballot Note example:
 ballot-note = {
   "type": "ballotNote",
-  "dRepId": "unique dRep ID",
+  "dRepId": "unique DRep ID",
   "proposalId": "proposal identifier",
   "voteChoice": "Yes",
   ? "rationale": "reason or URL",
@@ -242,7 +242,7 @@ ballot-note = {
 ; Endorsement example:
 endorsement = {
   "type": "endorsement",
-  "endorses": "dRep ID",
+  "endorses": "DRep ID",
   "endorser": {
     "stakeKey": "endorser stake key",
     ? "identityProof": "optional proof"
@@ -301,8 +301,8 @@ This standard enhances Cardano's governance system by providing richer on-chain 
 
 Using the **CIP-68 datum-based NFT standard** offers two major advantages:
 
-- **Updatability**: Delegated Representatives (dReps) can refine or extend their on-chain credentials over time, adapting to changing circumstances or adding further endorsements and credentials.
-- **Verifiability**: CIP-68 metadata is accessible to Cardano’s smart-contract layer (Plutus), enabling advanced decentralized applications (dApps) and tools to validate dRep credentials, voting rationales, and endorsements directly on-chain.
+- **Updatability**: Delegated Representatives (DReps) can refine or extend their on-chain credentials over time, adapting to changing circumstances or adding further endorsements and credentials.
+- **Verifiability**: CIP-68 metadata is accessible to Cardano’s smart-contract layer (Plutus), enabling advanced decentralized applications (dApps) and tools to validate DRep credentials, voting rationales, and endorsements directly on-chain.
 
 By leveraging secure **off-chain metadata anchors** (via CIP-119 for DRep profiles and CIP-108 for proposals), this CIP ensures Cardano’s ledger remains lean and efficient. This avoids the costly and inefficient practice of storing large amounts of data on-chain, thus significantly reducing transaction costs and complexity.
 
@@ -398,7 +398,7 @@ The NFTs defined by this standard include a `version` field in their datum (star
 
 Significant breaking changes require proposing a new CIP or explicitly updating this CIP with clear documentation, preserving compatibility with NFTs minted under earlier versions.
 
-Special thanks to the numerous dReps, SPOs, wallet developers, and CIP editors whose contributions and feedback greatly shaped this proposal.
+Special thanks to the numerous DReps, SPOs, wallet developers, and CIP editors whose contributions and feedback greatly shaped this proposal.
 
 ---
 
