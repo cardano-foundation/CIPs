@@ -450,7 +450,8 @@ The local message notification mini-protocol is used by local clients to be noti
 The protocol follows a simple request-response pattern:
 
 1. The client sends a request with a single message.
-2. The server either accepts the message (and returns a confirmation) or rejects it (and returns the reason)
+2. If the requests is non blocking, the server either accepts it (and returns a message and a flag stating if further messages are available) or rejects it (there is no message in that case).
+3. If the requests is blocking, the server either accepts the request (and, when availabe, returns a message and a flag stating if further messages are available) or stops the protocol.
 
 #### State machine
 
@@ -468,28 +469,35 @@ stateDiagram-v2
   classDef Green fill:white,stroke:green
 
   start:::White --> StIdle:::Blue;
-  StIdle:::Blue --> StBusy:::Green : MsgNextMessage
-  StBusy:::Green --> StIdle:::Blue : MsgHasMessage
-  StBusy:::Green --> StIdle:::Blue : MsgTimeoutMessage
+  StIdle:::Blue --> StBusyNonBlocking:::Green : MsgNextMessageNonBlocking
+  StBusyNonBlocking:::Green --> StIdle:::Blue : MsgHasMessage
+  StBusyNonBlocking:::Green --> StIdle:::Blue : MsgNoMessage
+  StIdle:::Blue --> StBusyBlocking:::Green : MsgNextMessageBlocking
+  StBusyBlocking:::Green --> StIdle:::Blue : MsgHasMessage
+  StBusyBlocking:::Green --> StDone:::Black : MsgDone
   StIdle:::Blue --> StDone:::Black : MsgDone
 
 ```
 
 ##### Protocol messages
 
-- **MsgNextMessage**: The client asks for the next message.
-- **MsgHasMessage(message)**: The server has received a message.
-- **MsgTimeoutMessage**: The server has not received a message and times out.
+- **MsgNextMessageBlocking**: The client asks for the next available message. The server side immediately replies (possible without available message).
+- **MsgNextMessageNonBlocking**: The client asks for the next available message.
+- **MsgHasMessage(message,has_next)**: The server has received a new message and indicates it further message are available.
+- **MsgNoMessage**: The server has not received new message.
 - **MsgDone**: The client terminates the mini-protocol.
 
 #### Transition table
 
-| From state | Message           | Parameters | To State |
-| ---------- | ----------------- | ---------- | -------- |
-| StIdle     | MsgNextMessage    |            | StBusy   |
-| StBusy     | MsgHasMessage     | message    | StIdle   |
-| StBusy     | MsgTimeoutMessage | reason     | StIdle   |
-| StIdle     | MsgDone           |            | StDone   |
+| From state        | Message                   | Parameters         | To State          |
+| ----------------- | ------------------------- | ------------------ | ----------------- |
+| StIdle            | MsgNextMessageNonBlocking |                    | StBusyNonBlocking |
+| StBusyNonBlocking | MsgHasMessage             | (message,has_next) | StIdle            |
+| StBusyNonBlocking | MsgNoMessage              |                    | StIdle            |
+| StIdle            | MsgNextMessageBlocking    |                    | StBusyBlocking    |
+| StBusyBlocking    | MsgHasMessage             | (message,has_next) | StIdle            |
+| StBusyBlocking    | MsgDone                   |                    | StDone            |
+| StIdle            | MsgDone                   |                    | StDone            |
 
 ## Rationale: how does this CIP achieve its goals?
 
