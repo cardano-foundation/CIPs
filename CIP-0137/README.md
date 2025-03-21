@@ -105,7 +105,7 @@ stateDiagram-v2
 - **MsgReplyMessageIds([(id,size)])**: The outbound side replies with a list of available messages. The list contains pairs of message ids and the corresponding size of the message in bytes. In the blocking case the reply is guaranteed to contain at least one message. In the non-blocking case, the reply may contain an empty list.
 - **MsgRequestMessages([id])**: The inbound side requests messages by sending a list of message-ids.
 - **MsgReplyMessages([messages])**: The outbound side replies with a list messages.
-- **MsgClientDone**: The outbound side terminates the mini-protocol.
+- **MsgDone**: The outbound side terminates the mini-protocol.
 
 ##### Transition table
 
