@@ -29,7 +29,7 @@ The absence of an incentivization framework discourages widespread participation
 
 The writing of this CPS document is motivated by the urgent need to address these issues and create a comprehensive incentivization system. Such a system aims to ensure that DReps, CC members, and ADA holders are fairly compensated for their efforts, thereby promoting active, informed participation and maintaining a decentralized governance structure that truly reflects the diverse interests of the Cardano community.
 
-Any incentives program for the above mentioned stakeholders should take into account the current SPO rewards. Rewards and incentives have to be considred along the yearly inflows of ADA to the treasury. All governance stakeholders must be considered as part of a whole which is the Cardano governance model. 
+Any incentives program for the above mentioned stakeholders should take into account the current SPO rewards. Rewards and incentives have to be considered along the yearly inflows of ada to the treasury. All governance stakeholders must be considered as part of a whole which is the Cardano governance model. 
 
 
 
