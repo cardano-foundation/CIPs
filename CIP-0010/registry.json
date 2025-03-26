@@ -72,6 +72,10 @@
     "description": "CIP-72: dApp registration & Discovery"
   },
   {
+    "transaction_metadatum_label": 1668,
+    "description": "Begin Wallet: dApp rating record from dApp Store"
+  },
+  {
     "transaction_metadatum_label": 1694,
     "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
   },
