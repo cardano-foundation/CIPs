@@ -1,0 +1,133 @@
+; CIP-0088 Cardano Registration Certificates
+; Version: 2
+
+; Definitions
+string = text .size (0..64)
+
+; A token-asset is a reference to a specific token
+
+policy-id = bytes .size (28) ; Policy ID bytes
+asset-id = bytes .size (0..32) ; Asset ID bytes
+pool-id = bytes .size (28) ; Pool ID bytes
+
+token-asset = [
+    policy-id,
+    asset-id,
+]
+
+; A uri should consist of a scheme and one or more path strings describing the path to the resource
+; The first entry should contain the URI "Scheme" (e.g. "https://", "ftp://", "ar://", "ipfs://")
+; One or more subsequent entries should describe the path of the URI
+
+uri.scheme = text .size (5..64)
+uri.path = text .size (1..64)
+uri = [
+    uri.scheme,
+    + uri.path,
+]
+
+; CIP Details
+;
+; CIP-Specific details should each be documented in their own versioned file for historic compatibility and future-proofing
+; against changes to the specification. Wherever possible, future specs should honor previous fields and be only additive
+; where possible. Previously used numeric indexes should never be repurposed.
+
+cip-details = {
+    ? 25 : cip25-details,  ; ./cip/CIP-25_v1.cddl
+    ? 26 : cip26-details,  ; ./cip/CIP-26_v1.cddl
+    ? 27 : cip27-details,  ; ./cip/CIP-27_v1.cddl
+    ? 48 : cip48-details,  ; ./cip/CIP-48_v1.cddl
+    ? 60 : cip60-details,  ; ./cip/CIP-60_v1.cddl
+    ? 68 : cip68-details,  ; ./cip/CIP-68_v1.cddl
+    ? 86 : cip86-details,  ; ./cip/CIP-86_v1.cddl
+}
+
+; Registration Scopes
+;
+; Each registration should begin with a scope declaring the type of object being registered
+
+token-scope = [
+    0,                       ; scope identifier
+    bytes .size (28),        ; Token Policy ID
+    [+ bytes .size (1..64)], ; Token Policy Hex
+]
+
+pool-scope = [
+    1,                       ; scope identifier
+    pool-id,                 ; Stake Pool ID
+]
+
+; Validation Methods
+; 0 = Ed25519 Key Signature
+; 1 = "Beacon" or Reference Token Mint (CIP-27 "Nameless" Token)
+; 2 = "CIP-0008" COSE Signature
+
+validation.method = uint;
+validation.context = string;
+
+validation-details = [
+    validation.method,
+    * validation.context,
+]
+
+calidus-key = bytes .size (32) ; An Ed25519 public key that can be used to provide future updates/authentication
+
+registration-scope = token-scope / pool-scope
+
+scope-details = {
+      1 : registration-scope,   ; Registration scope
+      2 : [* uint],             ; Feature Set
+      3 : validation-details,   ; Signature Method
+      4 : uint,                 ; Nonce
+    ? 5 : uri,                  ; Oracle URI
+    ? 6 : cip-details,          ; CIP-specific details
+    ? 7 : calidus-key,           ; An Ed25519 public key that is authorized for future updates/authentication
+}
+
+; Witness is changed to a map in v2 to support more dynamic types and identification in the future w/o guessing at
+; array length. It is recommended to only use v2 witnesses with v2+ registrations
+v1_witness = [
+    bytes .size (32),  ; Public Key
+    bytes .size (64),  ; Signature
+]
+
+; In v2 witnesses are changed to a map with an optional type identifier.
+; A default of 0 for "Witness Type Identifier" should be considered a COSE Signature from CIP-0008
+
+COSE_Headers = {
+     1 : uint,              ; COSE Key Type
+     3 : int,               ; COSE Key Algorithm
+    -1 : uint,              ; EC Identifier
+    -2 : bytes .size (32),  ; Public Key
+}
+
+COSE_Payload = [
+    bytes .size (41),
+    uint,
+    bytes .size (32),
+    bytes .size (64),
+]
+
+COSE_Witness = {
+  ? 0 : uint,           ; Witness Type Identifier (optional or 0)
+    1 : COSE_Headers,   ; COSE Header Object
+    2 : COSE_Payload,   ; COSE Signature Payload
+}
+
+v2_witness = {
+    0 : uint,   ; Witness Type Identifier (Must be set)
+    1 : bytes,  ; Witness Public Key
+    2 : bytes,  ; Witness Signature
+}
+
+witness = v1_witness / COSE_Witness / v2_witness;
+
+witnesses = [+ witness]
+
+cip88-registration = {
+    ? 0 : uint, ; version
+      1 : scope-details,
+    ? 2 : witnesses
+}
+
+metadata = { 867 : uint => cip88-registration }
