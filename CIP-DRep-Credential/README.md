@@ -46,7 +46,7 @@ By integrating these elements, this CIP fosters a more transparent, data-driven 
 > "**We see categories as the best available formal conceptual tool for bridging those multiple worlds that exist in the large scale engineering of practical, robust, evolving systems.**"  
 > — Joseph A. Goguen (1997)
 
-This CIP introduces three specialized NFT types to enhance transparency and accountability in Cardano's governance. These NFTs use existing Cardano standards to ensure compatibility and simplicity:
+This CIP proposes three **governance-oriented NFTs**—the **DRep Credential**, **Ballot Note**, and **Endorsement**—each referencing **CIP-1694** governance IDs (DReps, proposals) and optionally linking to extended off-chain data (via **CIP-119** or **CIP-108**). On-chain fields are stored within a **CIP-68** datum to keep records succinct yet verifiable, while token names follow **CIP-67** labeling.
 
 1. **DRep Credential** – An NFT representing a Delegated Representative’s (DRep’s) profile.
 2. **Ballot Note** – An NFT recording a DRep’s vote and optional reasoning.
