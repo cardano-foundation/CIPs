@@ -48,32 +48,26 @@ By integrating these elements, this CIP fosters a more transparent, data-driven 
 
 This CIP proposes three **governance-oriented NFTs**—the **DRep Credential**, **Ballot Note**, and **Endorsement**—each referencing **CIP-1694** governance IDs (DReps, proposals) and optionally linking to extended off-chain data (via **CIP-119** or **CIP-108**). On-chain fields are stored within a **CIP-68** datum to keep records succinct yet verifiable, while token names follow **CIP-67** labeling.
 
-1. **DRep Credential** – An NFT representing a Delegated Representative’s (DRep’s) profile.
-2. **Ballot Note** – An NFT recording a DRep’s vote and optional reasoning.
-3. **Endorsement** – An NFT created by third parties to publicly support a DRep.
+### 1. Relationship to Existing Standards
 
-These NFTs rely on existing Cardano Improvement Proposals (CIPs) to keep things simple and consistent:
+- **CIP-1694 (On-Chain Governance)**
 
-- **CIP-1694:** Defines how governance IDs (DReps and proposals) work.
-- **CIP-68:** Provides a standardized format (datum-based NFTs) for on-chain metadata.
-- **CIP-119 & CIP-108:** Allow large metadata (documents, profiles, rationales) to be stored off-chain securely.
-- **CIP-67:** Ensures NFTs are clearly labeled and discoverable.
+  - Defines DRep IDs (blake2b-224 hash) and proposal IDs (transaction hash + index).
 
-### Relationship to Existing Standards (CIPs)
+- **CIP-68 (Datum-Based NFTs)**
 
-- **CIP-1694 (Governance IDs)**  
-  Defines unique IDs for DReps and proposals. This CIP uses these exactly as defined.
+  - Enables storing metadata in a Plutus datum.
+  - This proposal uses CIP-68 for on-chain governance data (versioning, optional updatability).
 
-- **CIP-100 Family (Off-Chain Metadata Anchors)**  
-  Stores large documents off-chain, using secure links (anchors) defined by CIP-100 and its extensions, CIP-119 (for DReps) and CIP-108 (for proposals).
+- **CIP-67 (Asset Name Labeling)**
 
-- **CIP-68 (Datum-based NFTs)**  
-  Ensures all NFTs defined by this CIP share a common metadata structure, simplifying their usage across different tools and wallets.
+  - Enforces a 4-byte label scheme so wallets/explorers can recognize governance tokens.
 
-- **CIP-67 (Asset Labeling)**  
-  Clearly identifies this CIP NFTs, making them easy for wallets and explorers to recognize and categorize.
+- **CIP-119 / CIP-108 (Off-Chain Anchors)**
+  - CIP-119: Off-chain JSON for extended DRep profiles.
+  - CIP-108: Off-chain metadata for proposals or related governance documents.
 
-### Identifiers (DRep & Proposal)
+**Note:** The technical details of each CIP (hashing, labeling, datum layouts) are **not** restated here. Implementers must consult each CIP’s original documentation.
 
 These identifiers link NFTs directly to Cardano’s governance system (CIP-1694):
 
