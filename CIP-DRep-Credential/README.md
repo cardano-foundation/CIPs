@@ -141,85 +141,41 @@ All governance NFTs proposed here share a **new CIP-67 label** (placeholder `(16
 }
 ```
 
-NFT names follow an easy-to-understand structure:
+#### 4.2 Ballot Note
 
-```
-(???)drepCredential-<uniqueId>
-(???)ballotNote-<proposalId>
-(???)endorsement-<endorserId>-<drepId>
-```
+**Minted by:** A DRep publishing a stance on a proposal.  
+**Purpose:**
 
-This makes NFTs easily identifiable across wallets, explorers, and analytics tools.
+- Declares the DRep’s intended vote (`Yes`, `No`, or `Abstain`) for a CIP-1694 proposal.
+- Can include a short rationale or reference CIP-108 anchor for deeper explanation.
 
-### NFT Types Explained
+**Core Fields:**
 
-#### DRep Credential
+- `type = "ballotNote"`
+- `dRepId` (CIP-1694)
+- `proposalId` (CIP-1694)
+- `voteChoice`: `"Yes" | "No" | "Abstain"`
 
-- **Minted by:** The Delegated Representative (DRep)
-- **Purpose:** Shares the DRep’s profile, credentials, and motivation.
-- **Required Fields:**
-  - `dRepId`: Unique ID from CIP-1694.
-- **Optional Fields:**
-  - Links (`cip119AnchorUrl`, `cip119AnchorHash`) to off-chain detailed data.
-  - Additional personal or qualification details.
+**Optional Fields:**
 
-#### Ballot Note
+- `rationale`, `timestamp`
+- CIP-108 anchor (`anchorUrl`, `anchorHash`)
 
-- **Minted by:** The DRep who voted.
-- **Purpose:** Publicly records the vote and optionally explains the reason behind it.
-- **Required Fields:**
-  - `type`: Always `"ballotNote"`
-  - `dRepId`: Voter’s ID.
-  - `proposalId`: The proposal being voted on.
-  - `voteChoice`: "Yes", "No", or "Abstain".
-- **Optional Fields:**
-  - `rationale`: Short text or link explaining the vote.
-  - `timestamp`: When the vote was cast.
+**Minimal JSON Example:**
 
-#### Endorsement
-
-- **Minted by:** A third-party supporter (SPOs, DAOs, community members).
-- **Purpose:** Provides public, verifiable support for a DRep.
-- **Required Fields:**
-  - `type`: Always `"endorsement"`
-  - `endorses`: The DRep’s ID being supported.
-  - `endorser`: The supporter’s stake address.
-- **Optional Fields:**
-  - `identityProof`: Proof of identity or credibility of endorser.
-  - `comment`: Brief supportive statement or link.
-
-### Conceptual Data Schema (Simplified)
-
-This illustrates the minimal required metadata clearly:
-
-```cddl
-cip???-datum = #6.121([
-  metadata-map,
-  version,
-  extra
-])
-
-; General structure for metadata-map:
-metadata-map = {
-  * key => value
-}
-
-; DRep Credential example:
-drep-credential = {
-  "dRepId": "unique DRep ID",
-  ? "cip119AnchorUrl": "URL to off-chain profile",
-  ? "cip119AnchorHash": "secure hash of profile"
-}
-
-; Ballot Note example:
-ballot-note = {
+```jsonc
+{
+  "version": 1,
   "type": "ballotNote",
-  "dRepId": "unique DRep ID",
-  "proposalId": "proposal identifier",
+  "dRepId": "b2f0...20fb",
+  "proposalId": "abcd1234+0",
   "voteChoice": "Yes",
-  ? "rationale": "reason or URL",
-  ? "timestamp": "ISO date/time"
+  "rationale": "Supports Cardano's long-term growth",
+  "timestamp": "2025-03-10T12:00:00Z",
+  "anchorUrl": "ipfs://proposalDoc",
+  "anchorHash": "blake2b256:def456..."
 }
+```
 
 ; Endorsement example:
 endorsement = {
