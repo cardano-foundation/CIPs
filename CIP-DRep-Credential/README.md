@@ -92,15 +92,13 @@ All references to DReps or proposals in these NFTs **must** use these official I
 - Large or frequently updated content (e.g., multi-paragraph mission statements, proposal PDFs, rich media) is stored off-ledger.
 - References take the form of a **URL + blake2b-256 hash** (per CIP-119 or CIP-108), allowing client apps to verify integrity while avoiding ledger bloat.
 
-All NFTs in this CIP follow a simple, standardized format provided by CIP-68:
+### 4. Governance NFT Types
 
-```
-#6.121([ metadataMap, version:int, extra:{} ])
-```
+All governance NFTs proposed here share a **new CIP-67 label** (placeholder `(1694)`). Example asset names:
 
-- **metadataMap**: clearly structured information (e.g., IDs, URLs).
-- **version**: indicates the NFT’s schema version (always ≥ 1).
-- **extra**: reserved for future or special use (usually empty).
+- `"(1694)drepCredential-<dRepAlias>"`
+- `"(1694)ballotNote-<proposalId>"`
+- `"(1694)endorsement-<endorserKey>-<dRepId>"`
 
 ### NFT Naming (CIP-67 Labels)
 
