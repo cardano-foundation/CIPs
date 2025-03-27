@@ -259,18 +259,55 @@ By adopting these definitions and guidelines, builders and governance participan
 > "**If I do not write to empty my mind, I go mad.**"  
 > — Attributed to Lord Byron (circa 1818–1822)
 
-This standard enhances Cardano's governance system by providing richer on-chain metadata while remaining fully compatible with existing proposals like **CIP-1694** and **CIP-119**. Rather than introducing new, complex structures or drastically altering established processes, this CIP builds directly upon proven standards. This ensures existing governance participants remain fully valid and unaffected, while those adopting this standard gain enhanced transparency, richer context, and improved accountability.
+The principal goal of this CIP is to **improve transparency and accountability** in Cardano governance by adding optional on-chain artifacts—**DRep Credentials**, **Ballot Notes**, and **Endorsements**—without disrupting CIP-1694’s foundational mechanics. Below is a breakdown of the **key rationale** and **design decisions** that guided this proposal.
 
-Using the **CIP-68 datum-based NFT standard** offers two major advantages:
+### Key Motivations
 
-- **Updatability**: Delegated Representatives (DReps) can refine or extend their on-chain credentials over time, adapting to changing circumstances or adding further endorsements and credentials.
-- **Verifiability**: CIP-68 metadata is accessible to Cardano’s smart-contract layer (Plutus), enabling advanced decentralized applications (dApps) and tools to validate DRep credentials, voting rationales, and endorsements directly on-chain.
+1. **Bridging On-Chain & Off-Chain Data**
 
-By leveraging secure **off-chain metadata anchors** (via CIP-119 for DRep profiles and CIP-108 for proposals), this CIP ensures Cardano’s ledger remains lean and efficient. This avoids the costly and inefficient practice of storing large amounts of data on-chain, thus significantly reducing transaction costs and complexity.
+   - CIP-1694 does not itself specify how DReps might share their profiles, qualifications, or endorsements on-chain.
+   - By using **CIP-68** and **CIP-67**, this CIP standardizes how minimal DRep info (or vote details) can appear directly on-chain, while larger data (e.g., mission statements, proposals) is kept off-chain via **CIP-119** or **CIP-108** anchors.
 
-Addressing community concerns regarding potential spam or misleading endorsements, this standard clearly separates third-party endorsements from self-issued credentials. Endorsements must come independently from external participants, enabling the community and analytical tools to gauge their credibility and detect patterns indicative of manipulation or spam.
+2. **Reducing Trust Friction**
 
-Crucially, this standard is designed as an **optional enhancement**, complementing but not replacing CIP-1694’s core governance logic. This ensures flexibility for participants—those seeking simple participation need not adopt this standard, while delegators and DReps seeking deeper insights, accountability, and community engagement gain powerful new tools for informed governance decisions.
+   - Delegators frequently rely on fragmented off-chain sources (social media, personal websites).
+   - Minting an **official** CIP-68 NFT from a DRep’s stake key reduces confusion about who is _really_ behind a given profile or voting stance.
+
+3. **Minimizing Ledger Overhead**
+
+   - Storing massive profile data or extended governance proposals on-chain is costly.
+   - By anchoring big files off-chain, transaction costs stay low, while integrity is assured via a **URL + hash**.
+
+4. **Encouraging Verifiable Support**
+   - The **Endorsement** NFT type allows stakeholders to provide on-chain “votes of confidence,” potentially with attached ADA (helping new DReps meet deposit needs).
+   - Requiring a **minimum ADA** to mint endorsements can mitigate spam and surface only the more substantial supports.
+
+### Key Design Decisions
+
+1. **Optional, Not Mandatory**
+
+   - This CIP neither replaces CIP-1694 nor forces off-chain data onto the ledger.
+   - DReps and delegators can opt in if they want more discoverable or **script-readable** metadata; otherwise, CIP-1694’s existing structure remains fully valid.
+
+2. **Modular Anchoring**
+
+   - Leveraging **CIP-119** (DRep Profiles) and **CIP-108** (Proposal Metadata) keeps large data off-chain but verifiable.
+   - CIP-68 provides the minimal on-chain “pointer” (datum fields), making it trivial for wallets and governance dashboards to link to or display the anchored data.
+
+3. **Alignment with Existing Governance IDs**
+
+   - DRep IDs remain the **blake2b-224** hash from CIP-1694.
+   - Proposals are identified by the existing **txHash + index** format.
+   - This ensures no duplication or confusion with alternate IDs.
+
+4. **CIP-67 Labeling for Easier Discovery**
+
+   - All NFTs here use a single new CIP-67 label, making them easily recognized across the ecosystem.
+   - Tools can filter these tokens by label for specialized governance dashboards or analytics.
+
+5. **Extensibility & Backward Compatibility**
+   - Additional fields or new token types can be introduced by updating the CIP, thanks to **CIP-68**’s flexible key-value approach.
+   - Existing off-chain data standards (CIP-119, CIP-108) remain valid even if participants do not adopt these governance NFTs.
 
 ## Path to Active
 
