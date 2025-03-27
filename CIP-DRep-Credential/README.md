@@ -177,15 +177,50 @@ All governance NFTs proposed here share a **new CIP-67 label** (placeholder `(16
 }
 ```
 
-; Endorsement example:
-endorsement = {
+#### 4.3 Endorsement
+
+**Minted by:** Any stakeholder (SPO, DAO, community member) wishing to show support for a DRep.  
+**Purpose:**
+
+- On-chain “vote of confidence,” optionally with a comment or identity proof.
+- May include a **minimum ADA** amount to discourage spam.
+- Optionally allows endorsers to attach **additional** ADA to assist new DReps (e.g., raising the 500 ADA deposit) or provide financial backing.
+
+**Core Fields:**
+
+- `type = "endorsement"`
+- `endorses` = CIP-1694 DRep ID
+- `endorserStakeKey` (the minter’s stake key)
+
+**Optional Fields:**
+
+- `identityProof` (e.g., a social media link)
+- `comment` (why the endorser supports this DRep)
+- `timestamp` (ISO-8601)
+- **Financial Contribution**: Some platforms **may** store or display the ADA attached to this NFT (e.g., `"attachedAda": "<lovelaceAmount>"`) if relevant.
+- CIP-119 / CIP-108 anchor for more detailed statements.
+
+**Minimum or Additional ADA Considerations**
+
+- **Minimum ADA**: A platform can require a base amount (e.g., 2 ADA) to mint the endorsement NFT, helping deter zero-cost spam.
+- **Extra ADA**: Endorsers can optionally contribute a higher amount (e.g., 10 ADA, 500 ADA) to support the DRep’s deposit or other governance activities.
+- **Implementation**: Each wallet or dApp **decides** how to handle this attached ADA. For instance, they might introduce tiers of endorsements, each with a distinct cost/benefit.
+- **On-Chain Recording**: While the attached ADA is part of the transaction, the NFT’s datum could include a field (`"attachedAda"`) indicating the actual lovelace contributed.
+
+**Minimal JSON Example:**
+
+```jsonc
+{
+  "version": 1,
   "type": "endorsement",
-  "endorses": "DRep ID",
-  "endorser": {
-    "stakeKey": "endorser stake key",
-    ? "identityProof": "optional proof"
-  },
-  ? "comment": "optional supportive statement"
+  "endorses": "b2f0...20fb",
+  "endorserStakeKey": "stake1u9xyz...",
+  "identityProof": "https://twitter.com/endorserProfile",
+  "comment": "I trust this DRep’s track record",
+  "timestamp": "2025-03-15T09:00:00Z"
+
+  // If relevant, a field could note how much ADA was attached:
+  // "attachedAda": "10000000" // (10 ADA in lovelace)
 }
 ```
 
