@@ -31,15 +31,15 @@ Where large content is required—like detailed profiles, mission statements, or
 > "**Every man is guilty of all the good he did not do.**"  
 > — François-Marie Arouet (Voltaire), 18th century
 
-Cardano’s transition into the Voltaire era, through the introduction of **CIP-1694**, provides the infrastructure for decentralized governance via on-chain voting and delegation. However, delegators face significant challenges in identifying trustworthy and competent Delegated Representatives (DReps) due to fragmented, off-chain sources and limited verifiable information. This opacity risks suboptimal delegation choices, diminished trust, and reduced governance participation.
+The **Voltaire** phase of Cardano governance, defined by **CIP-1694**, establishes on-chain voting and delegation. Despite this significant advancement, delegators still struggle to find trustworthy, verifiable data on potential DReps. Relevant information—such as track records, qualifications, or community endorsements—remains scattered off-chain, with no standardized anchor to link it back to the DRep’s on-chain identity.
 
-This CIP directly addresses these limitations by creating a standardized metadata framework for verifiable, structured governance data. By leveraging on-chain NFTs linked to off-chain metadata anchors (**CIP-119** and related proposals), this CIP enables:
+This CIP addresses these gaps by proposing an **on-chain** credentialing framework that leverages **off-chain** metadata anchors (per **CIP-119** for extended DRep profiles and **CIP-108** where proposal data is relevant). As a result:
 
-- **DReps** to transparently communicate their credentials, track records, and motivations in a standardized, verifiable format.
-- **Delegators** to easily evaluate DReps’ historical performance, voting rationales, and endorsements, facilitating informed delegation choices.
-- **Community stakeholders** (including SPOs, DAOs, and active participants) to independently endorse DReps, strengthening trust through decentralized social proof.
+- **DReps** can mint concise on-chain credentials referencing richer off-chain information, making their profiles discoverable and verifiable within the ledger.
+- **Delegators** gain clearer insights into DReps’ qualifications, roles, endorsements, and historical voting behavior directly at the wallet or analytics-tool level—enabling more informed delegation choices.
+- **Community stakeholders** can independently endorse DReps on-chain, establishing verifiable social proof that strengthens the network’s trust fabric.
 
-In establishing this robust metadata standard, this CIP provides the necessary foundation for advanced governance analytics, clearer ecosystem mapping, and deeper community engagement, thereby promoting informed, active, and effective governance participation across the Cardano ecosystem.
+By integrating these elements, this CIP fosters a more transparent, data-driven governance environment—ultimately encouraging broader participation and deeper accountability across Cardano’s evolving governance ecosystem.
 
 ## Specification
 
