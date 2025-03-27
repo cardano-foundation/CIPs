@@ -69,19 +69,16 @@ This CIP proposes three **governance-oriented NFTs**—the **DRep Credential**, 
 
 **Note:** The technical details of each CIP (hashing, labeling, datum layouts) are **not** restated here. Implementers must consult each CIP’s original documentation.
 
-These identifiers link NFTs directly to Cardano’s governance system (CIP-1694):
+### 2. Identifiers (DRep & Proposal)
 
-- **DRep ID**:  
-  A unique identifier derived from a DRep’s on-chain identity, exactly matching CIP-1694’s definition.
+1. **DRep ID**
 
-- **Proposal ID**:  
-  A unique identifier combining a transaction hash and index, directly matching CIP-1694.
+   - A **28-byte (56-hex)** blake2b-224 hash of the stake key or script credential per CIP-1694.
 
-Example:
+2. **Proposal ID**
+   - A string usually of the form `"txHash + index"`, as outlined by CIP-1694.
 
-```yaml
-proposalId: "txHash: 1234abcd...ff, index: 1"
-```
+All references to DReps or proposals in these NFTs **must** use these official IDs, ensuring consistency with CIP-1694 governance tooling.
 
 ### Off-Chain Metadata (Anchors)
 
