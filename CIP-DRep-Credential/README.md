@@ -224,40 +224,35 @@ All governance NFTs proposed here share a **new CIP-67 label** (placeholder `(16
 }
 ```
 
-### Practical Implementation Notes
+### 5. Implementation Guidelines
 
-- **Data Storage:** Keep large files and data off-chain (IPFS, decentralized storage). Store only short references (URLs and hashes) on-chain.
-- **Minting Rules:**
-  - DReps mint their Credential and Ballot Notes.
-  - Third parties independently mint Endorsements.
-- **Verification:** Tools must validate that stored IDs exactly match CIP-1694’s definitions.
-- **Asset Naming:** Clearly label NFTs using CIP-67 format `(???)` for easy recognition.
+1. **Datum Format (CIP-68)**
 
-### Summary of Key Requirements (Quick Reference)
+   - Each NFT **must** include a Plutus datum referencing the CIP-1694 IDs and any optional fields above.
+   - CIP-68’s reference token mechanism can allow updates if desired (not mandated by this CIP).
 
-- **Use existing CIP standards** (1694, 68, 67, 119, 108).
-- Clearly link NFTs to CIP-1694 IDs for accuracy.
-- Store large content securely **off-chain**.
-- Follow a consistent NFT metadata format (CIP-68).
-- Clearly label NFT assets for easy discovery (CIP-67).
+2. **Asset Naming & Labels (CIP-67)**
 
-**This simplified specification ensures NFTs defined by this standard are straightforward to implement, widely compatible, and effectively improve transparency and community participation in Cardano governance.**
+   - Use the same CIP-67 label for these governance NFTs.
+   - Actual label allocation requires a **CIP-67 registry entry**.
+   - Tools can rely on this label for discovery and classification.
 
-### Extending this CIP (Proposing New NFT Types)
+3. **Reference Integrity**
 
-This standard is designed for extensibility. If additional NFT types become necessary, they can be proposed through the following process:
+   - Check that `dRepId` and `proposalId` are valid CIP-1694 hashes/IDs.
+   - If linking off-chain data, confirm the `url` + `hash` match the CIP-119 or CIP-108 format.
 
-1. Start a public discussion in the Cardano CIP repository clearly outlining:
+4. **Spam & Authorization**
 
-   - Purpose and necessity of the new NFT type.
-   - Detailed metadata structure proposal.
-   - Minting responsibilities and policy guidelines.
+   - Anyone can mint these tokens; spam or fake endorsements may occur.
+   - Governance UIs might validate minter signatures (e.g., does a Ballot Note come from the real DRep stake key?).
+   - Endorsements from unknown or low-stake addresses could be flagged by analytics tools.
 
-2. Obtain community feedback and consensus.
+5. **Extensibility**
+   - Additional keys can be introduced over time (CIP-68 is flexible).
+   - Future CIP revisions may define new governance NFT types (e.g., “Attestations,” “Milestone Achievements”).
 
-3. Upon approval, the new NFT type can be officially documented as part of an updated version of this standard.
-
-This ensures this standard evolves transparently, driven by community needs.
+By adopting these definitions and guidelines, builders and governance participants can publish data-rich yet concise NFTs that are **compatible** with CIP-1694 governance flows, **verifiable** on-chain, and **extendable** through CIP-119/CIP-108 anchors.
 
 ## Rationale: How Does This CIP Achieve Its Goals?
 
