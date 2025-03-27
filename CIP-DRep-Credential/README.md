@@ -2,7 +2,7 @@
 CIP: ???
 Title: On-Chain DRep Credential & Extended Governance NFTs
 Status: Draft
-Category: Governance
+Category: Tokens
 Authors:
   - "Derrick Oatway <alpine@malamaproject.org>"
 Implementors:
