@@ -10,7 +10,7 @@ Authors:
     - Armando Santos <armando.santos@iohk.io>
     - Neil Davies <neil.davies@iohk.io>
     - Sebastian Nagel <sebastian.nagel@ncoding.at>
-Implementors: 
+Implementors:
     - Cardano Scaling team <https://github.com/cardano-scaling>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/876
@@ -75,7 +75,7 @@ The node to node message submission protocol is used to transfer messages betwee
 | Agency                   |                                                                   |
 | ------------------------ | ----------------------------------------------------------------- |
 | Outbound side has Agency | StInit, StMessageIdsNonBlocking, StMessageIdsBlocking, StMessages |
-| Inbound side has Agency  | StIdle                                                            |
+| Inbound side has Agency  | StIdle, StDone                                                    |
 
 ```mermaid
 stateDiagram-v2
@@ -153,15 +153,17 @@ stateDiagram-v2
 25  kesSignature = bstr
 26  operationalCertificate = bstr
 27  blockNumber = word32
-28
-29  message = [
-30    messageId,
-31    messageBody,
-32    blockNumber,
-33    kesSignature,
-34    operationalCertificate
-35  ]
-30
+28  ttl = word16
+29
+30  message = [
+31    messageId,
+32    messageBody,
+33    blockNumber,
+34    ttl,
+35    kesSignature,
+36    operationalCertificate
+37  ]
+38
 ```
 
 #### Inbound side and outbound side implementation
@@ -248,7 +250,7 @@ Before being diffused to other peers, an incoming message must be verified by th
 
 If any of these step fails, the message is considered as invalid, which is a protocol violation.
 
-> [!WARNING]  
+> [!WARNING]
 > We also probably need to make sure that the KES key used to sign is from the latest rotation:
 >
 > - either the last seen opcert number in the block headers of the chain.
@@ -299,12 +301,13 @@ The following tables gather figures about expected network load in the case of *
 | messageId              | 32 B        | 32 B        |
 | messageBody            | 360 B       | 2,000 B     |
 | blockNumber            | 4 B         | 4 B         |
+| ttl                    | 2 B         | 2 B         |
 | kesSignature           | 448 B       | 448 B       |
 | operationalCertificate | 304 B       | 304 B       |
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,148 B     | 2,788 B     |
+| total   | 1,150 B     | 2,790 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
@@ -404,10 +407,10 @@ The protocol follows a simple request-response pattern:
 
 #### State machine
 
-| Agency            |        |
-| ----------------- | ------ |
-| Client has Agency | StIdle |
-| Server has Agency | StBusy |
+| Agency            |                |
+| ----------------- | -------------- |
+| Client has Agency | StIdle         |
+| Server has Agency | StBusy, StDone |
 
 ```mermaid
 stateDiagram-v2
@@ -441,6 +444,47 @@ stateDiagram-v2
 | StBusy     | MsgRejectMessage | reason     | StIdle   |
 | StIdle     | MsgDone          |            | StDone   |
 
+##### CDDL Encoding Specification
+
+```cddl
+localMessageSubmissionMessage
+  = msgSubmitMessage
+  / msgAcceptMessage
+  / msgRejectMessage
+  / msgDone
+
+msgSubmitMessage = [0, message]
+msgAcceptMessage = [1]
+msgRejectMessage = [2, reason]
+msgDone          = [3]
+
+reason = invalid
+       / alreadyReceived
+       / ttlTooLarge
+       / other
+
+invalid         = [0, tstr]
+alreadyReceived = [1]
+ttlTooLarge     = [2]
+other           = [3, tstr]
+
+messageId    = bstr
+messageBody  = bstr
+blockNumber  = word32
+ttl          = word16
+kesSignature = bstr
+operationalCertificate = bstr
+
+message = [
+  messageId,
+  messageBody,
+  blockNumber,
+  ttl
+  kesSignature,
+  operationalCertificate
+]
+```
+
 ### Local Message Notification mini-protocol
 
 #### Description
@@ -450,15 +494,14 @@ The local message notification mini-protocol is used by local clients to be noti
 The protocol follows a simple request-response pattern:
 
 1. The client sends a request with a single message.
-2. If the requests is non blocking, the server either accepts it (and returns a message and a flag stating if further messages are available) or rejects it (there is no message in that case).
-3. If the requests is blocking, the server either accepts the request (and, when availabe, returns a message and a flag stating if further messages are available) or stops the protocol.
+2. The server either has messages that it can provide, returning the list of all available messages; or doesn't have any, in which case it returns a suitable response saying exactly that.
 
 #### State machine
 
-| Agency            |        |
-| ----------------- | ------ |
-| Client has Agency | StIdle |
-| Server has Agency | StBusy |
+| Agency            |                |
+| ----------------- | -------------- |
+| Client has Agency | StIdle         |
+| Server has Agency | StBusy, StDone |
 
 ```mermaid
 stateDiagram-v2
@@ -469,35 +512,60 @@ stateDiagram-v2
   classDef Green fill:white,stroke:green
 
   start:::White --> StIdle:::Blue;
-  StIdle:::Blue --> StBusyNonBlocking:::Green : MsgNextMessageNonBlocking
-  StBusyNonBlocking:::Green --> StIdle:::Blue : MsgHasMessage
-  StBusyNonBlocking:::Green --> StIdle:::Blue : MsgNoMessage
-  StIdle:::Blue --> StBusyBlocking:::Green : MsgNextMessageBlocking
-  StBusyBlocking:::Green --> StIdle:::Blue : MsgHasMessage
-  StBusyBlocking:::Green --> StDone:::Black : MsgDone
+  StIdle:::Blue --> StBusy:::Green : MsgNextMessages
+  StBusy:::Green --> StIdle:::Blue : MsgHasMessages
+  StBusy:::Green --> StIdle:::Blue : MsgNoMessages
   StIdle:::Blue --> StDone:::Black : MsgDone
 
 ```
 
 ##### Protocol messages
 
-- **MsgNextMessageBlocking**: The client asks for the next available message. The server side immediately replies (possible without available message).
-- **MsgNextMessageNonBlocking**: The client asks for the next available message.
-- **MsgHasMessage(message,has_next)**: The server has received a new message and indicates it further message are available.
-- **MsgNoMessage**: The server has not received new message.
-- **MsgDone**: The client terminates the mini-protocol.
+* **MsgNextMessages**: The client asks for all available messages.
+* **MsgHasMessages(messages)**: The server has messages available.
+* **MsgTimeoutMessage**: The server does not have messages available.
+* **MsgDone**: The client terminates the mini-protocol.
 
 #### Transition table
 
 | From state        | Message                   | Parameters         | To State          |
 | ----------------- | ------------------------- | ------------------ | ----------------- |
-| StIdle            | MsgNextMessageNonBlocking |                    | StBusyNonBlocking |
-| StBusyNonBlocking | MsgHasMessage             | (message,has_next) | StIdle            |
-| StBusyNonBlocking | MsgNoMessage              |                    | StIdle            |
-| StIdle            | MsgNextMessageBlocking    |                    | StBusyBlocking    |
-| StBusyBlocking    | MsgHasMessage             | (message,has_next) | StIdle            |
-| StBusyBlocking    | MsgDone                   |                    | StDone            |
+| StIdle            | MsgNextMessages           |                    | StBusy            |
+| StBusy            | MsgHasMessages            | message            | StIdle            |
+| StBusy            | MsgNoMessages             |                    | StIdle            |
 | StIdle            | MsgDone                   |                    | StDone            |
+
+##### CDDL Encoding Specification
+
+```cddl
+localMessageNotificationMessage
+  = msgNextMessages
+  / msgHasMessages
+  / msgNoMessages
+  / msgDone
+
+msgNextMessages = [0]
+msgHasMessages  = [1, messages]
+msgNoMessages   = [2]
+msgDone         = [3]
+
+messageId    = bstr
+messageBody  = bstr
+blockNumber  = word32
+ttl          = word16
+kesSignature = bstr
+operationalCertificate = bstr
+
+message = [
+  messageId,
+  messageBody,
+  blockNumber,
+  kesSignature,
+  operationalCertificate
+]
+
+messages = [* message]
+```
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -593,20 +661,22 @@ the KES key.
 ### Acceptance Criteria
 
 1. A Cardano node implementing the previously described mini-protocols is released for production.
-1. A message producer node (e.g. a Mithril signer) publishing messages to the local Cardano node through mini-protocols is released.
-1. A message subscriber node (e.g. a Mithril aggregator) receiving messages from the local Cardano node is released.
+1. A message producer node (e.g. a Mithril signer) publishing messages to the local Mithril DMQ node through mini-protocols is released.
+1. A message subscriber node (e.g. a Mithril aggregator) receiving messages from the local Mithril DMQ node is released.
 
 ### Implementation Plan
 
-> [!WARNING]  
+> [!WARNING]
 > A hard-fork of the Cardano chain may be required if some information, like peer ports for an overlay network, are to be registered by the SPOs on-chain.
 
-- Write a "formal" specification of the protocols along with vectors/conformance checker for protocol's structure and state machine logic.
-- Write an architecture document extending this CIP with more technical details about the implementation.
-- Validate protocol behaviour with all relevant parties (Network and Node teams).
-- Validate performance profile and impact on Cardano network.
-- Implement the Cardano n2n and n2c mini-protocols in the Cardano node.
-- Implement the Cardano n2c mini-protocols in Mithril signer and aggregator nodes.
+- [x] Write a "formal" specification of the protocols along with vectors/conformance checker for protocol's structure and state machine logic.
+- [x] Write an architecture document extending this CIP with more technical details about the implementation.
+    - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Decentralized-Message-Queue-(DMQ)-Implementation-Overview)
+- [x] Validate protocol behaviour with all relevant parties (Network and Node teams).
+- [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
+    - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
+- [ ] Implement the n2n and n2c mini-protocols.
+- [ ] Implement the n2c mini-protocols in Mithril signer and aggregator nodes.
 
 ## References
 
