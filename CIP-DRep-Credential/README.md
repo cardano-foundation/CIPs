@@ -388,6 +388,6 @@ A `version` field in the NFT datum (starting at `1`) tracks changes to this spec
 
 ## Copyright
 
-This work is licensed under the **Creative Commons Attribution 4.0 International License (CC-BY-4.0)**. You are free to share and adapt this CIP for any purpose, provided you give appropriate credit and indicate clearly if any modifications have been made. A full copy of this license is available at:  
-[https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)
+This work is licensed under the **Creative Commons Attribution 4.0 International License (CC-BY-4.0)**. You are free to share and adapt this CIP for any purpose, provided you give appropriate credit and indicate clearly if any modifications have been made. A full copy of this license is available at:
 
+[https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)
