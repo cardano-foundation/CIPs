@@ -316,66 +316,67 @@ The principal goal of this CIP is to **improve transparency and accountability**
 > "**Do not seek to follow in the footsteps of the wise; seek what they sought.**"  
 > — Matsuo Bashō (17th century)
 
-To achieve **Active** status, this CIP must fulfill the following clear criteria:
+To move from **Draft** to **Active**, the following milestones **must** be achieved:
 
-1. **Reference Implementations**  
-    - [ ] At least **two independent teams** publish open-source reference implementations demonstrating:
-        - [ ] Minting of all three NFT types (DRep Credential, Ballot Note, Endorsement).
-        - [ ] Correct usage of CIP-68 datum structure.
-        - [ ] Proper referencing of CIP-1694 identifiers (`dRepId`, `proposalId`).
-        - [ ] Parsing and verification of metadata fields.
+1. **Reference Implementations**
 
-2. **Wallet & Explorer Support**  
-    - [ ] At least **one wallet** and **one block explorer** publicly demonstrate:
-        - [ ] Recognition and display of this CIP's NFT labels (CIP-67).
-        - [ ] User-friendly presentation of NFT metadata fields.
-        - [ ] Proper handling and verification of off-chain metadata anchors (CIP-119/CIP-108).
+   - [ ] At least two open-source implementations (e.g., scripts, libraries, or dApps) demonstrating:
+     - [ ] Minting of all three NFT types (**DRep Credential**, **Ballot Note**, and **Endorsement**) with CIP-68 datums.
+     - [ ] Correct CIP-67 naming to identify these governance NFTs.
+     - [ ] Proper CIP-1694 ID references and optional CIP-119/CIP-108 off-chain anchors.
+   - **Note:** The DRep Collective’s prototype at [https://preview-drep.vercel.app/](https://preview-drep.vercel.app/) is currently being developed and will adapt to changes made in this document.
 
-3. **Governance Tool Integration**  
-    - [ ] At least **one governance dashboard or analytics tool** publicly incorporates these NFTs, providing:
-        - [ ] Visualization of DRep Credentials alongside off-chain profiles.
-        - [ ] Display of Ballot Notes with voting rationale.
-        - [ ] Tracking and visual representation of Endorsements.
-        - [ ] Verification of identifiers consistent with CIP-1694.
+2. **Wallet & Explorer Support**
 
-4. **Community Approval**
-    - [ ] Conduct a public review lasting a minimum of **four weeks**, collecting input from DReps, SPOs, wallet developers, governance experts, and CIP editors.
-        - [ ] Resolve or address all major concerns, ensuring compatibility with CIP-1694, CIP-68, CIP-119, and CIP-108.
-        - [ ] Obtain broad community consensus confirming tangible benefits without introducing contradictory governance assumptions.
+   - [ ] At least one Cardano wallet and one block explorer must publicly demonstrate:
+     - [ ] Recognition of the CIP-67 asset label for governance NFTs.
+     - [ ] Human-readable presentation of CIP-68 fields (DRep IDs, vote choices, etc.).
+     - [ ] Proper linkage to off-chain content anchored by CIP-119 or CIP-108.
 
-Once these criteria are satisfied, authors will formally request the CIP editors to transition this CIP from **Proposed** to **Active** according to the guidelines outlined in CIP-0001.
+3. **Governance Tool Integration**
 
-### Implementation Plan (Step-by-Step Roadmap)
+   - [ ] At least one governance analytics or dashboard platform (e.g., a specialized governance app, an updated version of the DRep Collective interface) integrates:
+     - [ ] Display of DRep Credentials with CIP-119-based profile data.
+     - [ ] Ballot Notes, including any rationale text or CIP-108-linked proposals.
+     - [ ] Endorsements, visually mapping relationships between DReps and their supporters, as well as ADA contribution details if relevant.
 
-1. **Initial Reference Implementation & Documentation**
+4. **Community Review**
 
-   - Publish minimal open-source scripts or libraries for NFT minting and metadata handling.
-   - Provide clear documentation and practical examples of asset naming (CIP-67), datum structure (CIP-68), and off-chain metadata anchors (CIP-119, CIP-108).
+   - [ ] A public review period of **at least four weeks** must be held, inviting feedback from:
+     - CIP editors, DReps, SPOs, wallet/explorer maintainers, and governance experts.
+   - [ ] Reviewers confirm:
+     - Compatibility with CIP-1694, CIP-119, CIP-108, CIP-68, and CIP-67 (i.e., no conflicts).
+     - Tangible value added to Cardano governance without burdensome on-chain overhead.
+   - [ ] Consensus is reached to proceed toward **Active** status.
 
-2. **Testnet Demonstrations**
+After successful completion of these steps, the authors will formally request the CIP editors to transition this proposal from **Draft** to **Active** in accordance with **CIP-0001**.
 
-   - Deploy example NFTs on a Cardano testnet (Preview or Preprod).
-   - Verify correctness of NFT minting, datum fields, and metadata linking to off-chain resources.
+### Implementation Plan (Step-by-Step)
 
-3. **Wallet & Explorer Integration**
+1. **Open-Source Reference Implementation**
 
-   - Collaborate directly with wallet and block explorer developers to demonstrate practical NFT support.
-   - Ensure easy discoverability, clear asset naming, and intuitive metadata display in user interfaces.
+   - DRep Collective and at least one additional team publish minimal code or tutorials demonstrating NFT minting flows for each governance NFT type.
+   - Document CIP-68 usage (datum schemas), CIP-67 labeling, and CIP-119/CIP-108 anchors.
 
-4. **Governance Analytics & Dashboard Integration**
+2. **Testnet Deployments**
 
-   - Integrate these NFTs into at least one governance-focused analytics platform.
-   - Showcase a practical, live example of governance insights derived from the metadata defined in this standard.
+   - Deploy example DRep Credentials, Ballot Notes, and Endorsements on a public testnet (e.g., Preprod).
+   - Validate correct retrieval and verification of off-chain data.
+
+3. **Wallet & Explorer Collaboration**
+
+   - Partner with at least one wallet and explorer team to enable CIP-67 filtering, display on-chain fields from CIP-68, and link to CIP-119/CIP-108 metadata.
+   - Provide user feedback, refine UI/UX around governance NFTs.
+
+4. **Governance Dashboard Integration**
+
+   - Incorporate minted governance NFTs into a governance analytics dashboard.
+   - Demonstrate improved DRep discovery, advanced analytics (endorsements, voting records), and user-friendly CIP-119/CIP-108 references.
 
 5. **Community Review & Finalization**
-   - Publish results, openly inviting community review and expert feedback.
-   - Conduct a structured community review for a minimum of four weeks.
-   - Resolve any identified issues and ensure consensus around this standard’s compatibility and utility.
-   - After successful resolution and broad approval, formally request activation.
-
-## Versioning
-
-The NFTs defined by this standard include a `version` field in their datum (starting at `1`). Any future updates or improvements to this CIP that modify the datum structure MUST increment this `version`. Applications and tools reading these NFTs:
+   - Document findings from testnet usage and gather open feedback (≥4 weeks).
+   - Address concerns or suggested improvements.
+   - Request CIP editors to mark this CIP as **Active** once broad support is established.
 
 - **MUST** gracefully handle unknown or additional fields to remain forward-compatible.
 - **SHOULD** support older datum versions to maintain backward compatibility.
