@@ -18,13 +18,13 @@ License: CC-BY-4.0
 > "**Poets are the unacknowledged legislators of the world.**"  
 > — Percy Bysshe Shelley, _A Defence of Poetry_ (1821)
 
-This CIP introduces a structured on-chain metadata standard designed to enhance the transparency, accountability, and effectiveness of Cardano’s governance system as outlined by **CIP-1694**. Utilizing the existing **CIP-68** datum-based NFT standard, this proposal defines three distinct token types:
+This CIP introduces structured **on-chain** metadata standards to enhance transparency, accountability, and effectiveness in Cardano’s governance. Building on **CIP-1694**, it provides new mechanisms for Delegated Representatives (DReps) and delegators to record, discover, and analyze governance data in a standardized way. Leveraging the **CIP-68** datum-based NFT model, it defines three specialized token types:
 
-1. **DRep Credential** – An on-chain credential NFT referencing extended metadata such as qualifications, experience, or motivations (anchored via **CIP-119**).
-2. **Ballot Note** – A transparent, verifiable record of a Delegated Representative’s (DRep’s) voting choice and rationale.
-3. **Endorsement** – An independently minted NFT serving as decentralized social proof from community stakeholders supporting a particular DRep.
+1. **DRep Credential** – An on-chain credential NFT referencing both on- and off-chain metadata (per **CIP-119**), with optional fields (e.g., roles, sectors) for DReps to self-report.
+2. **Ballot Note** – A verifiable record capturing a DRep’s vote and accompanying rationale.
+3. **Endorsement** – An independently minted NFT serving as decentralized social proof from a DRep’s supporters.
 
-By storing large metadata off-chain and anchoring it through CIP-119, **CIP-???** reduces ledger bloat and allows for scalable governance metadata management. These NFTs collectively create a verifiable information ecosystem, empowering delegators with comprehensive insights and enabling analytics tools to systematically map Cardano’s governance landscape. Crucially, **CIP-???** complements but does not alter CIP-1694’s core governance mechanisms, thereby offering enhanced transparency without imposing additional complexity on existing governance operations.
+Where large content is required—like detailed profiles, mission statements, or rationales—it can be stored off-chain and anchored via **CIP-119** or **CIP-108**, minimizing on-chain storage. These tokens do not replace the core mechanics of CIP-1694; rather, they offer an **optional**, more transparent framework for tracking DRep credentials, roles, votes, and social endorsements—ultimately enabling delegators and the community to make better-informed decisions.
 
 ## Motivation: why is this CIP necessary?
 
