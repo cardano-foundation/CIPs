@@ -378,12 +378,13 @@ After successful completion of these steps, the authors will formally request th
    - Address concerns or suggested improvements.
    - Request CIP editors to mark this CIP as **Active** once broad support is established.
 
-- **MUST** gracefully handle unknown or additional fields to remain forward-compatible.
-- **SHOULD** support older datum versions to maintain backward compatibility.
+## Versioning
 
-Significant breaking changes require proposing a new CIP or explicitly updating this CIP with clear documentation, preserving compatibility with NFTs minted under earlier versions.
+A `version` field in the NFT datum (starting at `1`) tracks changes to this specification:
 
-Special thanks to the numerous DReps, SPOs, wallet developers, and CIP editors whose contributions and feedback greatly shaped this proposal.
+- Future revisions **MUST** increment `version` if the on-chain datum format changes.
+- Implementations **SHOULD** handle unknown fields gracefully to maintain forward compatibility.
+- Major structural overhauls require a new CIP or explicit updates to this one, ensuring backward compatibility for earlier NFT versions.
 
 ## Copyright
 
