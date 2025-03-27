@@ -100,7 +100,46 @@ All governance NFTs proposed here share a **new CIP-67 label** (placeholder `(16
 - `"(1694)ballotNote-<proposalId>"`
 - `"(1694)endorsement-<endorserKey>-<dRepId>"`
 
-### NFT Naming (CIP-67 Labels)
+#### 4.1 DRep Credential
+
+**Minted by:** The DRep or an authorized delegate.  
+**Purpose:**
+
+- Captures key DRep info on-chain (e.g., `dRepId`, name, roles).
+- Optionally anchors extended data via CIP-119.
+- Reflects the “DRep Credential Form” mockup fields.
+
+**Core Field:**
+
+- `dRepId` (CIP-1694 hash)
+
+**Recommended Optional Fields (Self-Reported):**
+
+- **Title/Role**: Short descriptor (e.g., “DeFi Developer”).
+- **Name (or Alias)**, **Profile Image URL**, **Website**, **Mission/Goals**.
+- **Primary Focus Areas** (e.g., DeFi, Governance, Education).
+- **Roles** (SPO, Dev/Builder, Community Manager, etc.).
+- **Sectors** (NFTs, Identity, Gaming, DAO Tools).
+- **Social Links** (Twitter handle, Discord handle).
+- **Off-Chain Anchor** (`cip119AnchorUrl`, `cip119AnchorHash`) for extended profiles.
+
+**Minimal JSON Example:**
+
+```jsonc
+{
+  "version": 1,
+  "dRepId": "b2f0...20fb",
+  "titleOrRole": "DeFi Developer",
+  "nameOrAlias": "Alice The Builder",
+  "missionOrGoals": "Promoting transparent DeFi governance on Cardano",
+  "primaryFocusAreas": ["DeFi", "Governance"],
+  "roles": ["Dev/Builder", "Community Manager"],
+  "website": "https://mydrepwebsite.com",
+  "twitterHandle": "@aliceBuilder",
+  "cip119AnchorUrl": "ipfs://bafy123...",
+  "cip119AnchorHash": "blake2b256:abc123..."
+}
+```
 
 NFT names follow an easy-to-understand structure:
 
