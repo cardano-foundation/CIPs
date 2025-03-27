@@ -80,16 +80,17 @@ This CIP proposes three **governance-oriented NFTs**—the **DRep Credential**, 
 
 All references to DReps or proposals in these NFTs **must** use these official IDs, ensuring consistency with CIP-1694 governance tooling.
 
-### Off-Chain Metadata (Anchors)
+### 3. On-Chain vs. Off-Chain Metadata
 
-To avoid overwhelming the blockchain, large data like profiles, rationales, and detailed documents are stored off-chain, linked securely through:
+**On-Chain**
 
-- **DRep data (profiles, qualifications):** anchored using CIP-119.
-- **Proposal details (rationale, context):** anchored using CIP-108.
+- The CIP-68 datum holds minimal but essential governance fields—IDs, short texts, timestamps.
+- Self-reported data (e.g., a DRep’s focus areas or a quick rationale) is possible but should remain concise to avoid high on-chain storage costs.
 
-These anchors include a URL and a secure hash (`blake2b-256`) for verification.
+**Off-Chain**
 
-### NFT Metadata Format (CIP-68)
+- Large or frequently updated content (e.g., multi-paragraph mission statements, proposal PDFs, rich media) is stored off-ledger.
+- References take the form of a **URL + blake2b-256 hash** (per CIP-119 or CIP-108), allowing client apps to verify integrity while avoiding ledger bloat.
 
 All NFTs in this CIP follow a simple, standardized format provided by CIP-68:
 
