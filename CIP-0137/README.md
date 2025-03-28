@@ -522,7 +522,7 @@ stateDiagram-v2
 ##### Protocol messages
 
 * **MsgNextMessages**: The client asks for all available messages.
-* **MsgHasMessages(messages)**: The server has messages available.
+* **MsgHasMessages([message])**: The server has messages available.
 * **MsgTimeoutMessage**: The server does not have messages available.
 * **MsgDone**: The client terminates the mini-protocol.
 
@@ -531,7 +531,7 @@ stateDiagram-v2
 | From state        | Message                   | Parameters         | To State          |
 | ----------------- | ------------------------- | ------------------ | ----------------- |
 | StIdle            | MsgNextMessages           |                    | StBusy            |
-| StBusy            | MsgHasMessages            | message            | StIdle            |
+| StBusy            | MsgHasMessages            | [message]          | StIdle            |
 | StBusy            | MsgNoMessages             |                    | StIdle            |
 | StIdle            | MsgDone                   |                    | StDone            |
 
@@ -661,8 +661,8 @@ the KES key.
 ### Acceptance Criteria
 
 1. A Cardano node implementing the previously described mini-protocols is released for production.
-1. A message producer node (e.g. a Mithril signer) publishing messages to the local Mithril DMQ node through mini-protocols is released.
-1. A message subscriber node (e.g. a Mithril aggregator) receiving messages from the local Mithril DMQ node is released.
+1. A message producer node (e.g. a Mithril signer) publishing messages to the local DMQ node through mini-protocols is released.
+1. A message subscriber node (e.g. a Mithril aggregator) receiving messages from the local DMQ node is released.
 
 ### Implementation Plan
 
@@ -675,7 +675,9 @@ the KES key.
 - [x] Validate protocol behaviour with all relevant parties (Network and Node teams).
 - [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
     - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
-- [ ] Implement the n2n and n2c mini-protocols.
+- [ ] Implement the n2n and n2c mini-protocols:
+    - [ ] DMQ Node
+    - [ ] Pallas Library (TxPipe)
 - [ ] Implement the n2c mini-protocols in Mithril signer and aggregator nodes.
 
 ## References
