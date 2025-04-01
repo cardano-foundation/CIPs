@@ -1,5 +1,5 @@
 ---
-CIP: 0151
+CIP: 151
 Title: On-Chain Registration - Stake Pools
 Category: Metadata
 Status: Proposed
