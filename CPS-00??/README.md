@@ -1,5 +1,5 @@
 ---
-CPS: ??
+CPS: 21
 Title: Ouroboros Randomness Manipulation
 Category: Consensus
 Status: Proposed
