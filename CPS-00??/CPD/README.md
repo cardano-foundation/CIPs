@@ -2,7 +2,7 @@
 
 ### Cardano Problem Definition (CPD) 
 
-This document is a **Cardano Problem Definition (CPD)**, from which the [**Cardano Problem Statement (CPS): Ouroboros Randomness Generation Sub-Protocol – The Coin-Flipping Problem**](../Readme.md) is derived.  
+This document is a **Cardano Problem Definition (CPD)**, from which the [**Cardano Problem Statement (CPS): Ouroboros Randomness Manipulation**](../README.md) is derived.  
 
 While the **CPS** is being structured for formal submission with a focus on accessibility, and alignment with the **CIP process**, this **CPD** retains the full depth of technical material that shaped the problem understanding. It preserves detailed modeling, cost definitions, and adversarial analysis that could not be fully included in the **CPS** due to scope and formatting constraints. 
 

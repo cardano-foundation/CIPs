@@ -1,7 +1,7 @@
 ---
 CPS: ??
-Title: Ouroboros Randomness Generation Sub-Protocol - The coin-flipping Problem
-Category: Consensus/Security
+Title: Ouroboros Randomness Manipulation
+Category: Consensus
 Status: Proposed
 Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
@@ -26,25 +26,14 @@ However, this issue is not exclusive to Cardano; it is a pervasive concern acros
 
 This CPS examines Ouroboros’ approach, and poses critical questions about **vulnerability**, **detection**, and **deterrence**. Rather than prescribing solutions, it invites the Cardano community to assess and address this shared challenge, fostering research and innovation to enhance Ouroboros’ resilience within the broader PoS landscape 🌍.
 
-
-## Table of Contents
-
-- [**Problem**](#problem)
-- [**Use cases**](#goals)
-- [**Goals**](#goals)
-- [**Open Questions**](#open-questions)
-- [**References**](#references)
-- [**Copyright**](#copyright)
-
-
 ## Problem
 
-This **Cardano Problem Statement (CPS)** 📜 builds upon the foundational work of the [**Cardano Problem Definition (CPD): Ouroboros Randomness Generation Sub-Protocol – The Coin-Flipping Problem**](./CPD/Readme.md) 📑, which provides an in-depth technical analysis of the issue at hand. While the **CPD** retains the full depth of technical material—including detailed modeling, cost definitions, and adversarial analysis—the **CPS** is structured for formal submission within the **CIP process** ✍️, prioritizing accessibility and alignment with community-driven solution development. As such, the technical details are preserved in the **CPD** as an appendix, while this **CPS** offers a concise, high-level summary of the problem, connecting it to broader concerns within Cardano and the blockchain community.
+This **Cardano Problem Statement (CPS)** 📜 builds upon the foundational work of the [**Cardano Problem Definition (CPD): Ouroboros Randomness Generation Sub-Protocol – The Coin-Flipping Problem**](./CPD/README.md) 📑, which provides an in-depth technical analysis of the issue at hand. While the **CPD** retains the full depth of technical material—including detailed modeling, cost definitions, and adversarial analysis—the **CPS** is structured for formal submission within the **CIP process** ✍️, prioritizing accessibility and alignment with community-driven solution development. As such, the technical details are preserved in the **CPD** as an appendix, while this **CPS** offers a concise, high-level summary of the problem, connecting it to broader concerns within Cardano and the blockchain community.
 
 
 ### Summary of Findings
 
-This **[**CPD**](./CPD/Readme.md)** examines the *Randomness Generation Sub-Protocol* within the *Ouroboros framework* ⚙️, highlighting its vulnerabilities and their implications for *Cardano’s* **security** 🔒. Key insights include:
+This **[**CPD**](./CPD/README.md)** examines the *Randomness Generation Sub-Protocol* within the *Ouroboros framework* ⚙️, highlighting its vulnerabilities and their implications for *Cardano’s* **security** 🔒. Key insights include:
 
 - **Randomness Vulnerability**: *Ouroboros Praos* employs **VRFs** for randomness generation, but this approach is susceptible to *grinding attacks*, where adversaries manipulate outcomes to influence **leader election**, threatening Cardano’s **fairness** ⚖️ and **integrity**.
 - **Attack Likelihood**: Attacks become significantly more feasible when an adversary controls **over 20% of the total stake** (approximately **4.36 billion ADA**, as of March 2025), while smaller stakes (e.g., **5%**) make such attempts highly unlikely over extended periods.
@@ -55,7 +44,7 @@ This **[**CPD**](./CPD/Readme.md)** examines the *Randomness Generation Sub-Prot
   - The intensity of these attacks scales with stake: the more stake an adversary holds, the greater their influence over **leader election**, amplifying their ability to manipulate randomness. In a simplistic view, this can be likened to manipulating a $256$-bits nonce—a value $\rho$ ranging from $0$ to $256$— where higher stake progressively grants more control, potentially allowing full manipulation of the nonce at the upper limit.
   - The wide cost disparity reflects how the complexity of the attack—such as the scope of the targeted time window and the depth of evaluation—drastically increases resource needs, acting as a natural deterrent for more ambitious manipulations.
 
-To illustrate the **Computational Feasibility**, the table below (sourced from the **CPD**, Section [**3. The Cost of Grinding: Adversarial Effort and Feasibility**](#3-the-cost-of-grinding-adversarial-effort-and-feasibility)) maps attack feasibility across four scenarios—**Ant Glance**, **Ant Patrol**, **Owl Stare**, and **Owl Survey**—based on the nonce value $\rho$ (0 to 256 bits). Each scenario reflects different attack complexities, with feasibility shifting as computational and economic demands grow:
+To illustrate the **Computational Feasibility**, the table below (sourced from the **CPD**, Section [**3. The Cost of Grinding: Adversarial Effort and Feasibility**](./CPD/README.md#3-the-cost-of-grinding-adversarial-effort-and-feasibility)) maps attack feasibility across four scenarios—**Ant Glance**, **Ant Patrol**, **Owl Stare**, and **Owl Survey**—based on the nonce value $\rho$ (0 to 256 bits). Each scenario reflects different attack complexities, with feasibility shifting as computational and economic demands grow:
 
 | **Feasibility Category**                  | **🔵 Ant Glance** | **🟠 Ant Patrol** | **🟢 Owl Stare** | **🔴 Owl Survey** |
 |-------------------------------------------|-------------------|-------------------|------------------|-------------------|
@@ -82,7 +71,7 @@ This ability to cluster slot leadership **amplifies classical blockchain attacks
   - **Double-Spending Attacks** 💸: Reversing transactions for financial gain.
   - **Censorship Attacks** 🚫: Excluding specific transactions to suppress competition.
 
-As detailed in the [**CPD**](./CPD/Readme.md#213-potential-outcomes-of-grinding-attacks), adversaries could also exploit randomness to enable additional attack vectors, such as:
+As detailed in the [**CPD**](./CPD/README.md#213-potential-outcomes-of-grinding-attacks), adversaries could also exploit randomness to enable additional attack vectors, such as:
 
 - **Economic Exploitation** : Prioritizing transactions for higher fees.
 - **Minority Stake Exploitation** 📊: Amplifying a small stake’s influence.
@@ -112,7 +101,7 @@ We strongly encourage the community to actively engage in addressing this challe
 
 ## Open Questions
 
-The *Coin-Flipping Problem* 🎲 within the **Ouroboros protocol** ⚙️ poses critical uncertainties that challenge Cardano’s **security** 🔒, **fairness** ⚖️, and **decentralization** 🌐. These open questions, rooted in the [**CPD**](./CPD/Readme.md) 📑 analysis, call for exploration by the **Cardano community** 🌍 to strengthen the protocol’s resilience:
+The *Coin-Flipping Problem* 🎲 within the **Ouroboros protocol** ⚙️ poses critical uncertainties that challenge Cardano’s **security** 🔒, **fairness** ⚖️, and **decentralization** 🌐. These open questions, rooted in the [**CPD**](./CPD/README.md) 📑 analysis, call for exploration by the **Cardano community** 🌍 to strengthen the protocol’s resilience:
 
 - **Is randomness manipulation currently occurring, and how detectable is it?** 🕵️‍♂️  
   Are grinding attacks already subtly affecting Cardano undetected? What tools, metrics, or on-chain signals could reveal adversarial manipulation in real-time, given the protocol’s design?
