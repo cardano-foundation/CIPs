@@ -6,7 +6,7 @@ Category: Consensus
 Authors:
   - Nicolas Frisby <nicolas.frisby@iohk.io> <nicolas.frisby@moduscreate.com>
 Implementors:
-  - IOE Consensus Team, as tech debt/maintenance, Nicolas Frisby <nicolas.frisby@iohk.io> <nicolas.frisby@moduscreate.com>
+  - TODO IOE? Tweag? Nicolas Frisby either way, most likely <nicolas.frisby@iohk.io> <nicolas.frisby@moduscreate.com>
   - TODO various tooling authors throughout the community?
 Discussions:
   - Original tech debt Issue, https://github.com/IntersectMBO/ouroboros-consensus/issues/386
@@ -29,7 +29,6 @@ Relatedly, EBBs contain no transactions and are not signed — they contain even
 An EBB's only consequence is an additional step on the chain's sequence of block hashes and the various exceptions, side-conditions, and corner cases necessary to accommodate EBBs in the node's specification and implementation.
 The most egregious of which is that an EBB occupies the same slot as its successor and has the same difficulty (ie BlockNo) as its predecessor.
 As an old, exotic, and useless class of block, EBBs have been initially overlooked in our subsequent design work many times and have ultimately wasted many hours of work as developers troubleshoot and ultimately determine how to accommodate EBBs via corner-cases etc.
-(TODO it would be possible to track down Issues, PRs, etc to partially evidence this.
 But a great deal of the trouble with EBBs has been time lost coping with them in discussions that were not recorded in a manner that demonstrates the EBBs' obstruction.
 Several former and current Consensus developers can attest to the trouble with EBBs, if that is deemed necessary.)
 
@@ -101,25 +100,21 @@ On the other hand, the handshake versions might make it easier for different imp
 TODO This section needs to be resolved as part of this PR before the status of this CIP can transition from Draft to Proposed.
 
 - Deleting EBBs from the Storage Layer would spoil extant Mithril snapshots.
-  In general, how would Mithril handle any kind of change to the on-disk representation of the historical chain — are migration paths permanently required, effectively?
+  In general, how would Mithril handle any kind of change to the on-disk representation of the historical chain---are migration paths permanently required, effectively?
 
-- Which community tools will be disrupted by the node suddenly omitting EBBs when serving the chain?
-  Will separately publishing the set of 176 EBBs (or perhaps only their slots, hashes, and prev-hash fields) suffice for those tools' authors to mitigate the disruption?
+- Discussion on this CIP's [PR](https://github.com/cardano-foundation/CIPs/pull/974) revealed that community tooling authors do not anticipate much disruption.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- (TODO, Path to Proposed: review from tooling authors such as db-sync, Mithril, etc has resolved the Open Questions.)
-
 - A release of the Haskell reference Cardano node implementation and documentation satisfies Stage Three above: EBBs are never stored and never exchanged with peers.
 
 - Optionally, the ledger specification and reference implementation removes all mention of EBBs, except for the prev-hash overrides.
 
-### Implementation Plan
+- Once they're removed from the chain, it would be preferable for the EBBs to still be somehow available, even just for reference.
 
-TODO Is this too detailed for a CIP?
-How certain do I need to be of these steps for inclusion here?
+### Implementation Plan
 
 - In Stage One, the node's initialization logic will delete any EBBs from volatile storage.
   (EBBs are typically only in the immutable storage, but upgrading in the middle of a fresh sync could result in an EBB in the volatile storage.)
@@ -138,9 +133,21 @@ How certain do I need to be of these steps for inclusion here?
 - In Stage Three, all changes for Stage One and Stage Two can be reverted except the database migration.
   Instead, the codec for Byron blocks will swap out the prev-hash field that identifies a known EBB with that EBB's prev-hash field, and moreover the codec will refuse to parse EBBs.
 
+- At any point, the existing EBBs can be archived
+  Any of the following three strategies would suffice.
+    - Some tool that is small enough and easy enough to maintain alongside the reference node's source code would be able to regenerate the EBBs from the corresponding historical ledger states (the list of 176 EBB hashes is a lightweight and easy test suite)---recall that each EBB is merely a function of the incoming ledger state.
+      The main difficulty would be rederiving the necessary logic, which has been irrelevant for several years (probably from <https://github.com/input-output-hk/cardano-sl/blob/1499214d93767b703b9599369a431e67d83f10a2/db/src/Pos/DB/Block/Lrc.hs#L244-L254>).
+    - The 176 EBBs (several megabytes in total, when compressed) are somehow archived off-chain.
+      The community would need to establish a best practice for this sort of archival, in a separate CIP presumably.
+      Such a CIP would likely also be useful for any future work towards truncating the historical chain.
+    - Since the 176 EBBs are relatively small, they could be chunked up and stored as UTxO datums on-chain.
+      This last option may seem wasteful, but an extra several megabytes of ledger state will go unnoticed in the long run and it's the only way to trivially ensure that the EBBs are always accessible if the chain itself is.
+      The main difficulty would be the fees for the necessary transactions and ensuring all the datums are easy to locate in the future.
+
 ## References
 
 - The hashes and prev-hashes of all known EBBs, <https://github.com/IntersectMBO/ouroboros-consensus/blob/534c2c2107dcdb2b962c1483bb02a14beae2e608/ouroboros-consensus-cardano/src/byron/Ouroboros/Consensus/Byron/EBBs.hs>.
+- The logic originally responsible for creating the payload of all known EBBs, <https://github.com/input-output-hk/cardano-sl/blob/1499214d93767b703b9599369a431e67d83f10a2/db/src/Pos/DB/Block/Lrc.hs#L244-L254>.
 
 ## Copyright
 
