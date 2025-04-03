@@ -232,8 +232,7 @@ that this is a multisig registration and easier to scan for.
 ### Acceptance Criteria
 
 - [ ] The specification is implemented by three wallet providers or dApps (web applications).
-  - [Eternl Wallet](https://eternl.io)
-  - ...
+  - [x] [Eternl Wallet](https://eternl.io)
 
 ### Implementation Plan
 
