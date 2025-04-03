@@ -152,6 +152,35 @@ support this, a metadata update transaction can be created that spends at least 
 to verify ownership. If this transaction includes label `1854` metadata according to specification mentioned in
 [registration](#registration), this will replace and update previously registered metadata.
 
+### Encrypted metadata (optional)
+
+To increase anonymity, encrypting the metadata following the specification of [CIP-83 | Encrypted Transaction message/comment metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0083/README.md)
+is supported. For this to be valid, the `enc` key should be added to the root metadata object and each value 
+(**except** `types`) within the metadata should be base64 encrypted according to CIP-83 specification.
+
+>Note that `types` mapping array within metadata should always be unencrypted! 
+
+Example structure:
+```
+{ 
+  "1854": { 
+    "enc": "<encryption-method>",
+    "types": [0,2],
+    "name": "base64-string",
+    "description": "base64-string",
+    "icon": "base64-string",
+    "participants": {
+      "<pub-key-hash>": {
+        "name": "base64-string",
+        "description": "base64-string",
+        "icon": "base64-string"
+      }
+      ...
+    }
+  }
+}
+```
+
 ## Rationale: how does this CIP achieve its goals?
 
 The structure to handle registration of native scripts ahead of time has been available from the Allegra era and 
