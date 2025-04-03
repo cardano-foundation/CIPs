@@ -991,8 +991,8 @@ We display here the probabilities of an adversary with a stake of $\text{stake}_
 
 
 <div align="center">
-<!-- <img src="grinding_forking_probabilities.png" alt="" /> -->
-<img src="grinding_forking_years.png" alt="" />
+<!-- <img src="./image/grinding_forking_probabilities.png" alt="" /> -->
+<img src="./image/grinding_forking_years.png" alt="" />
 </div>
 
 
