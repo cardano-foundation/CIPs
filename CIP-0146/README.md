@@ -237,8 +237,8 @@ that this is a multisig registration and easier to scan for.
 ### Implementation Plan
 
 - [x] Author to engage with wallet providers and web applications for feedback.
-  - Discussion channel opened on [Cardano Improvement Proposals Discord server](https://discordapp.com/channels/971785110770831360/1336823914671767663)
-  - [GitHub PR](https://github.com/cardano-foundation/CIPs/pull/971) for proposal.
+  - [x] Discussion channel opened on [Cardano Improvement Proposals Discord server](https://discordapp.com/channels/971785110770831360/1336823914671767663)
+  - [x] [GitHub PR](https://github.com/cardano-foundation/CIPs/pull/971) for proposal.
 - [x] Author to implement said standard in Eternl wallet.
 - [ ] Collaborate with web applications and wallet providers to drive adoption of standard.
 
