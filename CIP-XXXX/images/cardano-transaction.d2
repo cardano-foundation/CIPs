@@ -1,0 +1,150 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+
+    # Terminal theme code
+    theme-id: 300
+  }
+}
+
+direction: right
+grid-columns: 1
+
+title: |md
+  # Cardano Transactions - Babbage ERA
+| {
+  shape: text
+  # near: top-left  
+  style: {
+    font-size: 30
+  }
+}
+
+processing: "Block to Individual Transaction Processing" {
+  direction: right
+
+  style: {
+    border-radius: 20
+  }
+
+  cardano block transactions: "Cardano Block (Babbage ERA)" {
+    shape: sql_table
+    link: "https://github.com/IntersectMBO/cardano-ledger/blob/6d860294304749a767d99db92fab42f7c18d9af4/eras/babbage/impl/cddl-files/babbage.cddl#L3-L6"
+    header: "[ header_body, body_signature ]"
+    transaction bodies: "[ * transaction_body ]"
+    transaction witness sets: "[ *transaction_witness_set ]"
+    invalid transactions: "[* transaction_index ]"
+    auxiliary data set: "{ *transaction_index => auxiliary_data }"
+  }
+
+  individual_transaction: "Cardano Transaction" {
+    shape: sql_table
+    link: "https://github.com/IntersectMBO/cardano-ledger/blob/6d860294304749a767d99db92fab42f7c18d9af4/eras/babbage/impl/cddl-files/babbage.cddl#L13-L18"
+    body: "transaction body"
+    witnesses: "transaction witness set"
+    valid: "bool"
+    auxiliary_data: "Option<auxiliary_data>"
+  }
+
+  collator: "collation logic: for i in 0..len(transaction_bodies)" {
+    shape: sql_table
+    style: {
+      stroke: PapayaWhip
+      font-color: cyan
+    }
+    1: "transaction_bodies[i]" {
+      shape: text
+      style: {
+        font: mono
+      }
+    }
+    2: "transaction_witness_sets[i]" {
+      shape: text
+      style: {
+        font: mono
+      }
+    }
+    3: "i not in invalid_transactions" {
+      shape: text
+      style: {
+        font: mono
+      }
+    }
+    4: "auxiliary_data_set[i] else None" {
+      shape: text
+      style: {
+        font: mono
+      }
+    }
+  }
+
+  cardano block transactions.transaction bodies -> collator.1
+  cardano block transactions.transaction witness sets -> collator.2
+  cardano block transactions.auxiliary data set -> collator.4
+  cardano block transactions.invalid transactions -> collator.3
+
+  collator.1 -> individual_transaction.body
+  collator.2 -> individual_transaction.witnesses
+  collator.3 -> individual_transaction.valid
+  collator.4 -> individual_transaction.auxiliary_data
+}
+
+transaction_data: "Transaction Data Details" {
+  shape: page
+
+  transaction_body: "transaction body" {
+    shape: sql_table
+    link: "https://github.com/IntersectMBO/cardano-ledger/blob/6d860294304749a767d99db92fab42f7c18d9af4/eras/babbage/impl/cddl-files/babbage.cddl#L53-L71"
+    "0 = transaction inputs": "[ * [transaction hash, index] ]"
+    "1 = transaction outputs": "[ * transaction_output ]"
+    "2 = transaction fee": "coin (lovelace uint64)"
+    "? 3 = Time to live \[TTL\]": "uint64"
+    "? 4 = certificates": "[* certificate]"
+    "? 5 = reward withdrawals": "{ * reward_account => coin (lovelace uint64) }"
+    "? 6 = protocol parameter update": "[ proposed_protocol_parameter_updates, epoch ]"
+    "? 7 = auxiliary_data_hash": "32 byte hash"
+    "? 8 = validity interval start": "uint64"
+    "? 9 = mint": "{ * policy_id => { * asset_name => a } }"
+    "? 11 = script_data_hash": "32 byte hash"
+    "? 13 = collateral inputs": "[ * [transaction hash, index] ]"
+    "? 14 = required_signers": "[ * address key hash (blake2b-224) of signing public key ]"
+    "? 15 = network_id": "0 or 1"
+    "? 16 = collateral return": transaction_output (collateral return)
+    "? 17 = total collateral": "coin (lovelace uint64)"
+    "? 18 = reference inputs": set<transaction_input>
+  }
+
+  transaction_witness_set: "transaction witness set" {
+    shape: sql_table
+    link: "https://github.com/IntersectMBO/cardano-ledger/blob/6d860294304749a767d99db92fab42f7c18d9af4/eras/babbage/impl/cddl-files/babbage.cddl#L295C1-L303"
+    "? 0": "[* vkeywitness ]"
+    "? 1": "[* native_script]"
+    "? 2": "[* bootstrap_witness]"
+    "? 3": "[* plutus_v1_script]"
+    "? 4": "[* plutus_data]"
+    "? 5": "[* redeemer]"
+    "? 6": "[* plutus_v2_script]"
+  }
+
+  vkeywitness: {
+    shape: sql_table
+    link: "https://github.com/IntersectMBO/cardano-ledger/blob/6d860294304749a767d99db92fab42f7c18d9af4/eras/babbage/impl/cddl-files/babbage.cddl#L370"
+    "vkey": "ED25519-Bip32 Public Key [32 Bytes]"
+    "signature": "ED25519-Bip32 Signature of Transaction [64 bytes]"
+  }
+
+  transaction_witness_set."? 0" -> vkeywitness
+
+  auxiliary_data: "auxiliary data" {
+    shape: sql_table
+    link: "https://github.com/IntersectMBO/cardano-ledger/blob/6d860294304749a767d99db92fab42f7c18d9af4/eras/babbage/impl/cddl-files/babbage.cddl#L359C1-L368"
+    "{ * uint => transaction_metadatum }": Optional
+    "[ * native_script ]": Optional
+    "[ * plutus_v1_script ]": Optional
+    "[ * plutus_v2_script ]": Optional
+  }
+}
+
+processing.individual_transaction.body -> transaction_data.transaction_body: "body"
+processing.individual_transaction.witnesses -> transaction_data.transaction_witness_set: "witnesses"
+processing.individual_transaction.auxiliary_data -> transaction_data.auxiliary_data: "auxiliary_data (optional)"
