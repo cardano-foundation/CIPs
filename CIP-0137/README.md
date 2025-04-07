@@ -494,14 +494,15 @@ The local message notification mini-protocol is used by local clients to be noti
 The protocol follows a simple request-response pattern:
 
 1. The client sends a request with a single message.
-2. The server either has messages that it can provide, returning the list of all available messages; or doesn't have any, in which case it returns a suitable response saying exactly that.
+2. If the requests is non blocking, the server either accepts it (and returns a message and a flag stating if further messages are available) or rejects it (there is no message in that case).
+3. If the requests is blocking, the server either accepts the request (and, when available, returns a message and a flag stating if further messages are available) or stops the protocol.
 
 #### State machine
 
-| Agency            |                |
-| ----------------- | -------------- |
-| Client has Agency | StIdle         |
-| Server has Agency | StBusy, StDone |
+| Agency            |                      |
+| ----------------- | -------------------- |
+| Client has Agency | StIdle, StServerDone |
+| Server has Agency | StBusy, StClientDone |
 
 ```mermaid
 stateDiagram-v2
@@ -512,42 +513,50 @@ stateDiagram-v2
   classDef Green fill:white,stroke:green
 
   start:::White --> StIdle:::Blue;
-  StIdle:::Blue --> StBusy:::Green : MsgNextMessages
-  StBusy:::Green --> StIdle:::Blue : MsgHasMessages
-  StBusy:::Green --> StIdle:::Blue : MsgNoMessages
-  StIdle:::Blue --> StDone:::Black : MsgDone
+  StIdle:::Blue --> StBusyNonBlocking:::Green : MsgRequestMessagesNonBlocking
+  StBusyNonBlocking:::Green --> StIdle:::Blue : MsgReplyMessage
+  StIdle:::Blue --> StBusyBlocking:::Green : MsgRequestMessagesBlocking
+  StBusyBlocking:::Green --> StIdle:::Blue : MsgReplyMessage
+  StBusyBlocking:::Green --> StDone:::Black : MsgServerDone
+  StIdle:::Blue --> StDone:::Black : MsgClientDone
 
 ```
 
 ##### Protocol messages
 
-* **MsgNextMessages**: The client asks for all available messages.
-* **MsgHasMessages([message])**: The server has messages available.
-* **MsgTimeoutMessage**: The server does not have messages available.
-* **MsgDone**: The client terminates the mini-protocol.
+- **MsgRequestMessagesNonBlocking**: The client asks for available messages and acknowledges old message ids. The server side immediately replies (possible without available message).
+- **MsgRequestMessagesBlocking**: The client asks for available messages and acknowledges old message ids. The server will only reply once there are available messages.
+- **MsgReplyMessages([message], has_next)**: The server has received new messages and indicates if further message are available. In the blocking case, the reply is guaranteed to contain at least one transaction. In the non-blocking case, the reply may contain an empty list.
+- **MsgClientDone**: The client terminates the mini-protocol.
+- **MsgServerDone**: The server terminates the mini-protocol.
 
 #### Transition table
 
-| From state        | Message                   | Parameters         | To State          |
-| ----------------- | ------------------------- | ------------------ | ----------------- |
-| StIdle            | MsgNextMessages           |                    | StBusy            |
-| StBusy            | MsgHasMessages            | [message]          | StIdle            |
-| StBusy            | MsgNoMessages             |                    | StIdle            |
-| StIdle            | MsgDone                   |                    | StDone            |
+| From state        | Message                       | Parameters           | To State          |
+| ----------------- | ----------------------------- | -------------------- | ----------------- |
+| StIdle            | MsgRequestMessagesNonBlocking |                      | StBusyNonBlocking |
+| StBusyNonBlocking | MsgReplyMessages              | ([message],hasMore)  | StIdle            |
+| StIdle            | MsgRequestMessagesBlocking    |                      | StBusyBlocking    |
+| StBusyBlocking    | MsgReplyMessages              | ([message],hasMore)  | StIdle            |
+| StBusyBlocking    | MsgServerDone                 |                      | StDone            |
+| StIdle            | MsgClientDone                 |                      | StDone            |
 
 ##### CDDL Encoding Specification
 
 ```cddl
 localMessageNotificationMessage
-  = msgNextMessages
-  / msgHasMessages
-  / msgNoMessages
-  / msgDone
+  =
+  ; corresponds to either MsgRequestMessagesBlocking or
+  ; MsgRequestMessagesNonBlocking in the spec
+    msgRequestMessages
+  / msgReplyMessages
+  / msgClientDone
+  / msgServerDone
 
-msgNextMessages = [0]
-msgHasMessages  = [1, messages]
-msgNoMessages   = [2]
-msgDone         = [3]
+msgRequestMessages = [0, isBlocking, ackedMessages]
+msgReplyMessages   = [1, messages, hasMore]
+msgClientDone      = [2]
+msgServerDone      = [3]
 
 messageId    = bstr
 messageBody  = bstr
@@ -564,6 +573,9 @@ message = [
   operationalCertificate
 ]
 
+hasMore = false / true
+isBlocking = false / true
+ackedMessages = * messageId
 messages = [* message]
 ```
 
