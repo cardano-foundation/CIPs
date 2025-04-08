@@ -82,7 +82,7 @@ We propose the following set of builtin functions to accompany the new builtin t
 5. `unionValue :: BuiltinMaryEraValue -> BuiltinMaryEraValue -> BuiltinMaryEraValue`
     - it merges two provided values
     - when there are collisions it adds the quantities, if the resulting sum is zero it removes the entry to maintain the Mary-era Value invariants (no zero-quantity entries, no empty inner maps) such that the result is a normalized value. 
-6. `valueContains :: BuiltinMaryEraValue -> BuiltinMaryEraValue -> BuiltinMaryEraValue`
+6. `valueContains :: BuiltinMaryEraValue -> BuiltinMaryEraValue -> Bool`
     - it strictly compares the two Mary-era Values and determines if the first value is a superset of the second.
     - returns true if Value `a` contains each and every `Coin` in Value `b` with greater or equal quantities.
     - returns false if Value `b` contains any `Coin` that is not contained in Value `a`, or if Value `b` contains a greater quantity of any `Coin` than Value `a`.
