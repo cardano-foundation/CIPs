@@ -60,12 +60,20 @@
     "description": "on-chain certification metadata"
   },
   {
+    "transaction_metadatum_label": 1517,
+    "description": "Reeve - transparent and verifiable financial records on-chain"
+  },
+  {
     "transaction_metadatum_label": 1564,
     "description": "Marlowe - a DSL for writing and executing financial contracts"
   },
   {
     "transaction_metadatum_label": 1667,
     "description": "CIP-72: dApp registration & Discovery"
+  },
+  {
+    "transaction_metadatum_label": 1668,
+    "description": "Begin Wallet: dApp rating record from dApp Store"
   },
   {
     "transaction_metadatum_label": 1694,
