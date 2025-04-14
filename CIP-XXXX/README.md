@@ -74,7 +74,7 @@ stake_vote_reg_deleg_cert = (13, stake_credential, pool_keyhash, drep, coin)
 While the current certificates may save a few bytes in the transaction when doing multiple actions in a single transaction, it greatly complicates certificates for both users and implementers.
 
 Instead, we propose a much simpler certificate design with orthogonal certificates.
-```
+```cddl
 certificate = pool_registration
                / pool_retirement
                / auth_committee_hot_cert
