@@ -40,7 +40,7 @@ By redesigning the certificate types with orthogonal certificates, we can:
 
 ### Current Certificates CDDL
 The Conway era has multiple certificate types for stake related operations:
-```
+```cddl
 certificate = [stake_registration
                // stake_deregistration
                // stake_delegation
