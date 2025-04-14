@@ -137,6 +137,10 @@ While composite actions would require multiple certificates, multiple small cert
 
 - [ ]Acceptance of the Ledger team, as well as alternative node implementation maintainers (Amaru, Dingo, and others)
 
+### Implementation Plan
+
+N/A
+
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
