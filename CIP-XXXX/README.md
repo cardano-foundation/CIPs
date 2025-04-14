@@ -2,7 +2,7 @@
 CIP: ?
 Title: Orthogonal Certificates
 Status: Proposed
-Category: Meta
+Category: Ledger
 Authors:
     - Joshua Marchand <josh@securitybot.info>
 Implementors: N/A
