@@ -495,14 +495,14 @@ The protocol follows a simple request-response pattern:
 
 1. The client sends a request with a single message.
 2. If the requests is non blocking, the server either accepts it (and returns a message and a flag stating if further messages are available) or rejects it (there is no message in that case).
-3. If the requests is blocking, the server either accepts the request (and, when available, returns a message and a flag stating if further messages are available) or stops the protocol.
+3. If the requests is blocking, the server either accepts the request (and, when available, returns the available messages) or stops the protocol.
 
 #### State machine
 
 | Agency            |                      |
 | ----------------- | -------------------- |
-| Client has Agency | StIdle, StServerDone |
-| Server has Agency | StBusy, StClientDone |
+| Client has Agency | StIdle, StDone       |
+| Server has Agency | StBusy, StDone       |
 
 ```mermaid
 stateDiagram-v2
@@ -514,9 +514,9 @@ stateDiagram-v2
 
   start:::White --> StIdle:::Blue;
   StIdle:::Blue --> StBusyNonBlocking:::Green : MsgRequestMessagesNonBlocking
-  StBusyNonBlocking:::Green --> StIdle:::Blue : MsgReplyMessage
+  StBusyNonBlocking:::Green --> StIdle:::Blue : MsgReplyMessagesNonBlocking
   StIdle:::Blue --> StBusyBlocking:::Green : MsgRequestMessagesBlocking
-  StBusyBlocking:::Green --> StIdle:::Blue : MsgReplyMessage
+  StBusyBlocking:::Green --> StIdle:::Blue : MsgReplyMessagesBlocking
   StBusyBlocking:::Green --> StDone:::Black : MsgServerDone
   StIdle:::Blue --> StDone:::Black : MsgClientDone
 
@@ -525,8 +525,9 @@ stateDiagram-v2
 ##### Protocol messages
 
 - **MsgRequestMessagesNonBlocking**: The client asks for available messages and acknowledges old message ids. The server side immediately replies (possible without available message).
+- **MsgReplyMessagesNonBlocking([message], hasMore)**: The server has received new messages and indicates if further message are available. In the non-blocking case, the reply may contain an empty list.
 - **MsgRequestMessagesBlocking**: The client asks for available messages and acknowledges old message ids. The server will only reply once there are available messages.
-- **MsgReplyMessages([message], has_next)**: The server has received new messages and indicates if further message are available. In the blocking case, the reply is guaranteed to contain at least one transaction. In the non-blocking case, the reply may contain an empty list.
+- **MsgReplyMessagesBlocking([message])**: The server has received new messages and indicates if further message are available. In the blocking case, the reply is guaranteed to contain at least one message.
 - **MsgClientDone**: The client terminates the mini-protocol.
 - **MsgServerDone**: The server terminates the mini-protocol.
 
@@ -535,9 +536,9 @@ stateDiagram-v2
 | From state        | Message                       | Parameters           | To State          |
 | ----------------- | ----------------------------- | -------------------- | ----------------- |
 | StIdle            | MsgRequestMessagesNonBlocking |                      | StBusyNonBlocking |
-| StBusyNonBlocking | MsgReplyMessages              | ([message],hasMore)  | StIdle            |
+| StBusyNonBlocking | MsgReplyMessagesNonBlocking   | ([message], hasMore) | StIdle            |
 | StIdle            | MsgRequestMessagesBlocking    |                      | StBusyBlocking    |
-| StBusyBlocking    | MsgReplyMessages              | ([message],hasMore)  | StIdle            |
+| StBusyBlocking    | MsgReplyMessagesBlocking      | [message]            | StIdle            |
 | StBusyBlocking    | MsgServerDone                 |                      | StDone            |
 | StIdle            | MsgClientDone                 |                      | StDone            |
 
@@ -549,14 +550,16 @@ localMessageNotificationMessage
   ; corresponds to either MsgRequestMessagesBlocking or
   ; MsgRequestMessagesNonBlocking in the spec
     msgRequestMessages
-  / msgReplyMessages
+  / MsgReplyMessagesNonBlocking
+  / msgReplyMessagesBlocking
   / msgClientDone
   / msgServerDone
 
-msgRequestMessages = [0, isBlocking, ackedMessages]
-msgReplyMessages   = [1, messages, hasMore]
-msgClientDone      = [2]
-msgServerDone      = [3]
+msgRequestMessages          = [0, isBlocking, ackedMessages]
+msgReplyMessagesNonBlocking = [1, messages, hasMore]
+msgReplyMessagesBlocking    = [2, messages]
+msgClientDone               = [3]
+msgServerDone               = [4]
 
 messageId    = bstr
 messageBody  = bstr
@@ -687,6 +690,7 @@ the KES key.
 - [x] Validate protocol behaviour with all relevant parties (Network and Node teams).
 - [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
     - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
+- [ ] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
 - [ ] Implement the n2n and n2c mini-protocols:
     - [ ] DMQ Node
     - [ ] Pallas Library (TxPipe)
