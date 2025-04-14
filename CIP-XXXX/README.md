@@ -15,7 +15,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP proposes a simplified design of stake managmenet certificate types focused on simplicity and usability.
+This CIP proposes a simplified design of stake management certificate types focused on simplicity and usability.
 
 The current Conway era ledger specification includes multiple certificate types each representing different combinations of stake registration, delegation, and vote delegation. This proposal simplifies this specification by defining a set of orthogonal certificate types that can be composed to achieve the same functionality, making the ledger more intuitive and easier to document, use, and maintain.
 
