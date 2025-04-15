@@ -241,9 +241,9 @@ This CIP is already active.
 
 - [Cardano-Swaps](https://github.com/fallen-icarus/cardano-swaps) is a distributed order book DEX.
 - [Cardano-Loans](https://github.com/fallen-icarus/cardano-loans) is a distributed credit market.
-- [Cardano-Options](https://github.com/fallen-icarus/cardano-loans) is a distributed options trading
+- [Cardano-Options](https://github.com/fallen-icarus/cardano-options) is a distributed options trading
 protocol.
-- [Cardano-Aftermarket](https://github.com/fallen-icarus/cardano-loans) is a distributed secondary
+- [Cardano-Aftermarket](https://github.com/fallen-icarus/cardano-aftermarket) is a distributed secondary
 market for financial assets.
 
 Finally, the above four protocols were built into a prototype desktop light wallet called
