@@ -2,7 +2,7 @@
 CPS: 21
 Title: Ouroboros Randomness Manipulation
 Category: Consensus
-Status: Proposed
+Status: Open
 Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
     - Raphael Toledo <raphael.toledo@iohk.io>
