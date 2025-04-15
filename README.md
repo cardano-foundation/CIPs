@@ -89,6 +89,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0088 | [Token Policy Registration](./CIP-0088) | Proposed |
+| 0089 | [Distributed DApps & Beacon Tokens](./CIP-0089) | Active |
 | 0091 | [Don't force Built-In functions](./CIP-0091) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
@@ -135,7 +136,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-02-25</i></p>
+<p align="right"><i>Last updated on 2025-04-03</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
