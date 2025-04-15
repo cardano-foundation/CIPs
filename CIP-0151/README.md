@@ -1,6 +1,6 @@
 ---
-CIP: 0151
-Title: On-Chain Registration - Calidus Keys & SPO Errata
+CIP: 151
+Title: On-Chain Registration - Stake Pools
 Category: Metadata
 Status: Proposed
 Authors:
