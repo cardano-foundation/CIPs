@@ -1,6 +1,6 @@
 ---
 CIP: 0151
-Title: On-Chain Registration - Stake Pools
+Title: On-Chain Registration - Calidus Keys & SPO Errata
 Category: Metadata
 Status: Proposed
 Authors:
@@ -12,6 +12,7 @@ Implementors:
     -   Cardano Koios: https://github.com/cardano-community/koios-artifacts/tree/v1.3.2
     -   CNTools: https://github.com/cardano-community/guild-operators/tree/alpha
     -   SPO Scripts: https://github.com/gitmachtl/scripts
+    -   Reference Implementation: https://github.com/crypto2099/calidus-demo
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/999
     - https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
@@ -65,6 +66,7 @@ metadata label of **867** has been chosen for the purposes of this standard.
 | 2     | Feature Set       | Array  | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
 | 3     | Validation Method | Array  | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
 | 4     | Nonce             | UInt   | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
+| 6     | CIP Details       | Object | No       | If one or more of the CIPs addressed in the Feature Set have additionally defined metadata, it may be added here                                                                                                                                  | 
 | 7     | Calidus Key       | String | No       | An Ed25519 public key that is authorized by the owner to authenticate and sign messages on behalf of the _Scope_                                                                                                                                  |
 
 > The following fields (1-4) are required in all token registration submissions.
@@ -188,9 +190,9 @@ a new on-chain registration with a higher nonce value.
 
 > **IMPORTANT NOTE:** This standard does not provide a mechanism to revoke the
 > authorization of a Calidus key except for replacing it with a new key. Those
-> wishing to revoke their key without replacemen should submit an update 
+> wishing to revoke their key without replacement should submit an update
 > registration with a blank key (all zeroes) in place of the Calidus key.
-> 
+>
 > Tooling providers should recognize this as explicitly revoking all previous
 > registrations without adding a new key.
 >
@@ -260,6 +262,9 @@ available and utilized.
        CBOR of the Token Registration Payload Object as the signing payload.
        This change was made to better support signing using hardware wallets (
        Ledger, Trezor, Keystone)
+    3. Objects in the signing payload **MUST BE** in numerical order by index in
+       order to ensure that hashes can be correctly parsed by downstream
+       tooling.
 2. Change #2: Witness Structure Changes to Maps
     1. Version 1 of the standard assumed basic Ed25519 CLI keys and signatures
        so the structure of witnesses in the Registration Witness Array were
@@ -276,7 +281,7 @@ available and utilized.
 The Witness Array **must** include a signature from the Pool Cold Key. The
 format of witnesses will depend on the validation method used although all v2+
 registrations should use the updated `blake2b-256` hash of the hex-encoded CBOR
-of th Token Registration Payload Object as the signature payload.
+of the Token Registration Payload Object as the signature payload.
 
 ##### Version 1 Witness
 
@@ -400,12 +405,13 @@ shown an interest in using it as a method of authentication and validation.
     * [x] Cardano Signer
     * [x] pg_cardano
     * [x] cardano-hw-cli support
-    * [X] Cardano Koios
+    * [x] Cardano Koios
     * [ ] Blockfrost
-    * [X] CN Tools
-    * [X] SPO Scripts
+    * [x] CN Tools
+    * [x] SPO Scripts
 * Wallets
-    * [ ] Eternl
+    * [x] Eternl
+    * [x] Typhon
 * Applications
     * [ ] CExplorer
     * [ ] CardanoScan
