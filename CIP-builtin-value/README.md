@@ -1,5 +1,5 @@
 ---
-CIP: ???
+CIP: 153
 Title: Plutus Core Builtin Type - `MaryEraValue`
 Category: Plutus
 Status: Proposed
