@@ -51,9 +51,9 @@ It must also explain how the proposal affects the backward compatibility of exis
 <!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
 
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms. Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header 
+<!-- The CIP must be explicitly licensed under acceptable copyright terms. Uncomment the license you wish to use (delete the other one) and ensure it matches the License field in the header.
 
-If AI/LLMs were used in the creation of the copyright text, the author may choose to include a disclaimer to describe their application within the proposal
+If AI/LLMs were used in the creation of the copyright text, the author may choose to include a disclaimer to describe their application within the proposal.
 -->
 
 <!-- This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). -->
