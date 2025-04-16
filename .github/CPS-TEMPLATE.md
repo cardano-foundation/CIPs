@@ -47,9 +47,9 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 <!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
 
 ## Copyright
-<!-- The CPS must be explicitly licensed under acceptable copyright terms. Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header
+<!-- The CPS must be explicitly licensed under acceptable copyright terms. Uncomment the license you wish to use (delete the other one) and ensure it matches the License field in the header.
 
-If AI/LLMs were used in the creation of the copyright text, the author may choose to include a disclaimer to describe their application within the proposal
+If AI/LLMs were used in the creation of the copyright text, the author may choose to include a disclaimer to describe their application within the proposal.
 -->
 
 <!-- This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). -->
