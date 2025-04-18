@@ -88,10 +88,10 @@ certificate = pool_registration
                / vote_delegation_cert
 
 ; New orthogonal certificates
-stake_registration_cert = (N, stake_credential, coin)
-stake_deregistration_cert = (N+1, stake_credential, coin)
-stake_delegation_cert = (N+2, stake_credential, pool_keyhash)
-vote_delegation_cert = (N+3, stake_credential, drep)
+stake_registration_cert = (7, stake_credential, coin)
+stake_deregistration_cert = (8, stake_credential, coin)
+stake_delegation_cert = (2, stake_credential, pool_keyhash)
+vote_delegation_cert = (9, stake_credential, drep)
 
 ; Others remain unchanged
 ```
@@ -129,13 +129,52 @@ The orthogonal certificate provides **Conceptual Clarity** which has several ben
 2. **Documentation:** Each certificate is self-describing and encapsulates a single action, making documentation much easier to write.
 3. **Implementation:** Implementing the ledger should be as simple as possible–without losing features or security–to reduce the risk of an incorrect implementation resulting in a fork.
 
-While composite actions would require multiple certificates, multiple small certificates would only add a couple of bytes when compared to the composite certificates.
+While composite actions would require multiple certificates, multiple small certificates are only marginally larger than the existing composite certificates.
+
+For example, this is the worse case scenario; a `stake_vote_reg_deleg_cert` certificate:
+```cbor
+[
+  [
+    13,
+    [0, h'00000000000000000000000000000000000000000000000000000000'],
+    h'00000000000000000000000000000000000000000000000000000000',
+    [0, h'00000000000000000000000000000000000000000000000000000000'],
+    5000000
+  ]
+]
+```
+
+And here is the equivalent set of certificates needed for the same behavior:
+```cbor
+[
+  [
+    7,
+    [0, h'00000000000000000000000000000000000000000000000000000000'],
+    5000000
+  ],
+  [
+    9,
+    [0, h'00000000000000000000000000000000000000000000000000000000'],
+    [0, h'00000000000000000000000000000000000000000000000000000000']
+  ],
+  [
+    2,
+    [0, h'00000000000000000000000000000000000000000000000000000000'],
+    h'00000000000000000000000000000000000000000000000000000000'
+  ]
+]
+```
+
+The `stake_vote_reg_deleg_cert` certificate is 102 bytes, while the equivalent set of orthogonal certificates is 170 bytes. While 68 bytes is a noticable increase, it is also the worst case scenario for a single certificate being reproduced with orthogonal certificates. In addition, it is also exceedingly rare. As of writing, there are only 20 cases of the `stake_vote_reg_deleg_cert` being used on mainnet, according to [Cardanoscan](https://cardanoscan.io/certificates/stakeVoteRegDelegations).
+
+With an upper limit of an additional 68 bytes, and low adoption, the benefit of simplfying the ledger greatly outweighs the cost of increased transaction size.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ]Acceptance of the Ledger team, as well as alternative node implementation maintainers (Amaru, Dingo, and others)
+- [ ] Discussion and acceptance of the Haskell Ledger team, as well as alternative node implementation maintainers (Amaru, Dingo, and others)
+- [ ] Implementation in the ledger and a hard fork including this change
 
 ### Implementation Plan
 
