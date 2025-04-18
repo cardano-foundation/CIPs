@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 154
 Title: Orthogonal Certificates
 Status: Proposed
 Category: Ledger
