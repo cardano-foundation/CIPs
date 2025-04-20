@@ -15,9 +15,6 @@ License: CC-BY-4.0
 
 ## Abstract
 
-> "**Poets are the unacknowledged legislators of the world.**"  
-> — Percy Bysshe Shelley, _A Defence of Poetry_ (1821)
-
 This CIP introduces structured **on-chain** metadata standards to enhance transparency, accountability, and effectiveness in Cardano’s governance. Building on **CIP-1694**, it provides new mechanisms for Delegated Representatives (DReps) and delegators to record, discover, and analyze governance data in a standardized way. Leveraging the **CIP-68** datum-based NFT model, it defines three specialized token types:
 
 1. **DRep Credential** – An on-chain credential NFT referencing both on- and off-chain metadata (per **CIP-119**), with optional fields (e.g., roles, sectors) for DReps to self-report.
@@ -27,9 +24,6 @@ This CIP introduces structured **on-chain** metadata standards to enhance transp
 Where large content is required—like detailed profiles, mission statements, or rationales—it can be stored off-chain and anchored via **CIP-119** or **CIP-108**, minimizing on-chain storage. These tokens do not replace the core mechanics of CIP-1694; rather, they offer an **optional**, more transparent framework for tracking DRep credentials, roles, votes, and social endorsements—ultimately enabling delegators and the community to make better-informed decisions.
 
 ## Motivation: why is this CIP necessary?
-
-> "**Every man is guilty of all the good he did not do.**"  
-> — François-Marie Arouet (Voltaire), 18th century
 
 The **Voltaire** phase of Cardano governance, defined by **CIP-1694**, establishes on-chain voting and delegation. Despite this significant advancement, delegators still struggle to find trustworthy, verifiable data on potential DReps. Relevant information—such as track records, qualifications, or community endorsements—remains scattered off-chain, with no standardized anchor to link it back to the DRep’s on-chain identity.
 
@@ -42,9 +36,6 @@ This CIP addresses these gaps by proposing an **on-chain** credentialing framewo
 By integrating these elements, this CIP fosters a more transparent, data-driven governance environment—ultimately encouraging broader participation and deeper accountability across Cardano’s evolving governance ecosystem.
 
 ## Specification
-
-> "**We see categories as the best available formal conceptual tool for bridging those multiple worlds that exist in the large scale engineering of practical, robust, evolving systems.**"  
-> — Joseph A. Goguen (1997)
 
 This CIP proposes three **governance-oriented NFTs**—the **DRep Credential**, **Ballot Note**, and **Endorsement**—each referencing **CIP-1694** governance IDs (DReps, proposals) and optionally linking to extended off-chain data (via **CIP-119** or **CIP-108**). On-chain fields are stored within a **CIP-68** datum to keep records succinct yet verifiable, while token names follow **CIP-67** labeling.
 
@@ -256,9 +247,6 @@ By adopting these definitions and guidelines, builders and governance participan
 
 ## Rationale: How Does This CIP Achieve Its Goals?
 
-> "**If I do not write to empty my mind, I go mad.**"  
-> — Attributed to Lord Byron (circa 1818–1822)
-
 The principal goal of this CIP is to **improve transparency and accountability** in Cardano governance by adding optional on-chain artifacts—**DRep Credentials**, **Ballot Notes**, and **Endorsements**—without disrupting CIP-1694’s foundational mechanics. Below is a breakdown of the **key rationale** and **design decisions** that guided this proposal.
 
 ### Key Motivations
@@ -312,9 +300,6 @@ The principal goal of this CIP is to **improve transparency and accountability**
 ## Path to Active
 
 ### Acceptance Criteria
-
-> "**Do not seek to follow in the footsteps of the wise; seek what they sought.**"  
-> — Matsuo Bashō (17th century)
 
 To move from **Draft** to **Active**, the following milestones **must** be achieved:
 
