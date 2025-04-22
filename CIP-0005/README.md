@@ -17,6 +17,14 @@ Created: 2020-05-28
 License: Apache-2.0
 ---
 
+## Changelog
+
+In order to make it easy to keep up with updates to this CIP, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
+
+| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
+| --- | ---         | ---                                                             | ---                                                           |
+| 1   | 2024-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
+
 ## Abstract
 
 This CIP defines a set of common prefixes (or so-called human-readable part in the [bech32](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki)) encoding format) for various bech32-encoded binary data across the Cardano eco-system.
@@ -65,6 +73,12 @@ We define the following set of common prefixes with their corresponding semantic
 | `drep_vk`          | CIP-1852’s DRep verification key                                      | Ed25519 public key                 |
 | `drep_xsk`         | CIP-1852’s DRep extended signing key                                  | Ed25519-bip32 extended private key |
 | `drep_xvk`         | CIP-1852’s DRep extended verification key                             | Ed25519 public key with chain code |
+| `gen_sk`           | Genesis signing key                                                   | Ed25519 private key                |
+| `gen_vk`           | Genesis verification key                                              | Ed25519 public key                 |
+| `gen_deleg_sk`     | Genesis delegate private key                                          | Ed25519 private key                |
+| `gen_deleg_vk`     | Genesis delegate public key                                           | Ed25519 public key                 |
+| `gen_utxo_sk`      | Genesis UTXO private key                                              | Ed25519 private key                |
+| `gen_utxo_vk`      | Genesis UTXO public key                                               | Ed25519 public key                 |
 | `kes_sk`           | KES signing key                                                       | KES signing key                    |
 | `kes_vk`           | KES verification key                                                  | KES verification key               |
 | `policy_sk`        | CIP-1855's policy private key                                         | Ed25519 private key                |
