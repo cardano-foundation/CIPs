@@ -1,6 +1,6 @@
 ---
 CIP: ???
-Title: On-Chain DRep Credential & Extended Governance NFTs
+Title: Extended DRep Credentials & Governance NFTs
 Status: Draft
 Category: Tokens
 Authors:
