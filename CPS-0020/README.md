@@ -75,7 +75,7 @@ This lack of diligence increases the likelihood of errors in leadership and poli
 
 By introducing performance-based rewards that factor in voting participation, rationalization, and retrospective scoring of governance actions, the system can encourage DReps to engage more thoughtfully in decision-making. This would improve the overall quality of governance and ensure that voting outcomes align with the long-term interests of the Cardano ecosystem.
 
-## **Goals**
+## Goals
 ### **Primary Objective**
 Establish a structured and sustainable incentivization framework that motivates and rewards governance stakeholders to participate actively and make well-informed governance decisions, therefore upholding democratic, sustainable, ethical as well as decentralized principles of the Cardano ecosystem.
 
