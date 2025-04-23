@@ -105,7 +105,7 @@ Cardano is a global ecosystem, and its governance should reflect the diverse per
 Traditional governance mechanisms often suffer from inefficiencies, slow decision-making, and resource-heavy processes that do not scale well. The incentivization framework for DReps must be designed to optimize governance effectiveness while minimizing unnecessary complexity and resource consumption.
 
 
-## **Open Questions**
+## Open Questions
 - Is change needed at the Ledger/protocol level or tooling/wallet level?
 - What are the current incentives for stakeholders?
 - Is the current architecture avoiding or aiding centralization?
