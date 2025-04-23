@@ -17,14 +17,6 @@ Created: 2020-05-28
 License: Apache-2.0
 ---
 
-## Changelog
-
-In order to make it easy to keep up with updates to this CIP, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
-
-| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
-| --- | ---         | ---                                                             | ---                                                           |
-| 1   | 2024-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
-
 ## Abstract
 
 This CIP defines a set of common prefixes (or so-called human-readable part in the [bech32](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki)) encoding format) for various bech32-encoded binary data across the Cardano eco-system.
@@ -213,6 +205,14 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 ### Implementation Plan
 
 - Available JavaScript library: [cip5-js](https://www.npmjs.com/package/@dcspark/cip5-js)
+
+## Changelog
+
+In order to make it easy to keep up with updates to this CIP, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
+
+| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
+| --- | ---         | ---                                                             | ---                                                           |
+| 1   | 2024-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
 
 ## Copyright
 
