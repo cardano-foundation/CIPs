@@ -33,7 +33,7 @@ Any incentives program for the above mentioned stakeholders should take into acc
 
 
 
-## **Use Cases**
+## Use Cases
 ### **1. Dedicated DReps Struggle to Stay Engaged**
 Bob is a long-time Cardano supporter who wants to actively participate in governance. He has been following governance actions and has taken the time to research and write about important proposals. His insights gain traction, and several small ADA holders delegate their stake to him, recognizing his contributions.
 
