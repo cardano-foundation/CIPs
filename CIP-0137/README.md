@@ -444,6 +444,7 @@ stateDiagram-v2
 | StBusy     | MsgRejectMessage | reason     | StIdle   |
 | StIdle     | MsgDone          |            | StDone   |
 
+
 ##### CDDL Encoding Specification
 
 ```cddl
@@ -494,15 +495,15 @@ The local message notification mini-protocol is used by local clients to be noti
 The protocol follows a simple request-response pattern:
 
 1. The client sends a request with a single message.
-2. If the requests is non blocking, the server either accepts it (and returns a message and a flag stating if further messages are available) or rejects it (there is no message in that case).
-3. If the requests is blocking, the server either accepts the request (and, when available, returns the available messages) or stops the protocol.
+
+2. The server either has messages that it can provide, returning the list of all available messages; or doesn't have any, in which case it returns a suitable response saying exactly that.
 
 #### State machine
 
-| Agency            |                      |
-| ----------------- | -------------------- |
-| Client has Agency | StIdle, StDone       |
-| Server has Agency | StBusy, StDone       |
+| Agency            |                |
+| ----------------- | -------------- |
+| Client has Agency | StIdle         |
+| Server has Agency | StBusy, StDone |
 
 ```mermaid
 stateDiagram-v2
@@ -691,6 +692,7 @@ the KES key.
 - [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
     - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
 - [ ] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
+    - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
 - [ ] Implement the n2n and n2c mini-protocols:
     - [ ] DMQ Node
     - [ ] Pallas Library (TxPipe)
