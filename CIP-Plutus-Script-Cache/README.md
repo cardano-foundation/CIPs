@@ -96,16 +96,16 @@ Future extensions may explore whether cache hits can be made partially fee-aware
 
 ### Acceptance Criteria
 
-- Implementation merged into `cardano-node`
-- Benchmarks show measurable reduction in script deserialization cost under load
-- No deviation in transaction validation outcomes due to caching
+- [ ] Implementation merged into `cardano-node`
+- [ ] Benchmarks show measurable reduction in script deserialization cost under load
+- [ ] No deviation in transaction validation outcomes due to caching
 
 ### Implementation Plan
 
-1. Modify Plutus script execution in `cardano-node` to check memory cache before deserialization
-2. Integrate cache via bounded LRU store
-3. Add config flags to control cache size and policy
-4. Test under synthetic load with high script reuse
+1. [ ] Modify Plutus script execution in `cardano-node` to check memory cache before deserialization
+2. [ ] Integrate cache via bounded LRU store
+3. [ ] Add config flags to control cache size and policy
+4. [ ] Test under synthetic load with high script reuse
 
 ## Copyright
 
