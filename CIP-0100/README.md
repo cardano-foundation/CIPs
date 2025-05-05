@@ -177,6 +177,7 @@ This section outlines a number of other best practices for tools and user experi
  - You SHOULD provide a way to access the raw underlying data for advanced or diligent users.
    - This MAY be in the form of a JSON viewer, or a simple link to the content.
  - You SHOULD gracefully degrade to a simple raw content view if the metadata is malformed in some way, or not understood.
+   - For example, a proposal has added an extra unexpected field, in addition to expected ones. The tool SHOULD gracefully render expected fields and show users a raw view of unexpected fields. 
  - You SHOULD provide links and cross references whenever the metadata refers to another object in some way
    - For example, a proposal may link to the sponsoring DReps, which may have their own view within the tool you're building
  - If you are hosting the content for the user, you SHOULD use a content-addressable hosting platform such as IPFS or Arweave
