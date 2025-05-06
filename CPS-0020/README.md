@@ -75,7 +75,7 @@ This lack of diligence increases the likelihood of errors in leadership and poli
 
 By introducing performance-based rewards that factor in voting participation, rationalization, and retrospective scoring of governance actions, the system can encourage DReps to engage more thoughtfully in decision-making. This would improve the overall quality of governance and ensure that voting outcomes align with the long-term interests of the Cardano ecosystem.
 
-### **7. Disincentives 
+### 7. Disincentives 
 The prior use cases have focused thus far on frameworks that use positive incentives to increase participation, support, and broaden the pool of stakeholders. There is a case to be made to also introduce disincentives to the governance process where mechanisms punish and discourage bad actors. For this to have an effect, the positive behavior of each stakeholder needs to be identified and made clear for all participants. Any punitive actions at the level of the protocol have to be designed with a clear set of positive ones. These must be identified via a community-led effort that ensures all participants can have input in the process. 
 
 Any introduction of protocol-level disincentives has to be taken with proper data and community consensus. If these mechanisms are not adequately discussed and tested, the network can introduce punitive actions for behaviours that may be within the democratic model of Cardano. For this reason, this document cannot recommend any such mechanism; the aim is only to leave the possibility open for those in the community who want to research this area of governance.  
