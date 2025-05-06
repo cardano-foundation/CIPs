@@ -61,10 +61,10 @@ SPOs who are also DReps face overlapping responsibilities, meaning they have the
 
 Since there is little additional incentive for them, to engage deeply in governance beyond their required votes this could lead to a passive voting behaviour, where SPOs vote without fully engaging in the governance discourse. Another concern is the Concentration of governance power, if large SPOs who act as DReps accumulate excessive influence over governance decisions as some already have.
 
-### **5. Centralization of Governance Due to a Lack of Incentives and guardrails**
+### **5. Centralization of Governance Due to a Lack of Incentives and Guardrails**
 In the absence of financial incentives, only a small group of highly motivated individuals participate in governance. Over time, governance power becomes concentrated among a few active representatives who have the time and resources to engage, while many potential DReps remain on the sidelines.
 
-This concentration of power increases the risk of governance capture, where a small number of stakeholders control the outcome of key decisions and their only financial incentive is voting to serve their own interests. Additionally, inactive DReps or SPOs who continue to hold delegation without participating, or voters who lost their keys but still stake to DReps contribute to governance stagnation, reducing the legitimacy of voting outcomes.
+This concentration of power increases the risk of governance capture, where a small number of stakeholders control the outcome of key decisions and their only financial incentive is voting to serve their own interests. Additionally, inactive DReps or SPOs who continue to hold delegation without participating, or voters who lost their keys but still stake to DReps, contribute to governance stagnation, reducing the legitimacy of voting outcomes.
 
 A structured incentive system would mitigate these risks by encouraging broader participation and preventing governance power from consolidating among a select few. Implementing periodic delegation resets for inactive DReps would further ensure that voting power remains in the hands of engaged representatives.
 
@@ -75,13 +75,18 @@ This lack of diligence increases the likelihood of errors in leadership and poli
 
 By introducing performance-based rewards that factor in voting participation, rationalization, and retrospective scoring of governance actions, the system can encourage DReps to engage more thoughtfully in decision-making. This would improve the overall quality of governance and ensure that voting outcomes align with the long-term interests of the Cardano ecosystem.
 
+### **7. Disincentives 
+The prior use cases have focused thus far on frameworks that use positive incentives to increase participation, support, and broaden the pool of stakeholders. There is a case to be made to also introduce disincentives to the governance process where mechanisms punish and discourage bad actors. For this to have an effect, the positive behavior of each stakeholder needs to be identified and made clear for all participants. Any punitive actions at the level of the protocol have to be designed with a clear set of positive ones. These must be identified via a community-led effort that ensures all participants can have input in the process. 
+
+Any introduction of protocol-level disincentives has to be taken with proper data and community consensus. If these mechanisms are not adequately discussed and tested, the network can introduce punitive actions for behaviours that may be within the democratic model of Cardano. For this reason, this document cannot recommend any such mechanism; the aim is only to leave the possibility open for those in the community who want to research this area of governance.  
+
 ## Goals
 ### **Primary Objective**
 Establish a structured and sustainable incentivization framework that motivates and rewards governance stakeholders to participate actively and make well-informed governance decisions, therefore upholding democratic, sustainable, ethical as well as decentralized principles of the Cardano ecosystem.
 
 ### **Key Goals**
 #### Compensate stakeholders for their meaningful work
-Governance stakeholders invest significant time and effort into understanding, evaluating, and voting on governance actions. Without financial incentives, this responsibility falls predominantly on individuals who either have the financial freedom to participate voluntarily, are driven purely by altruism or have self-serving motives. A fair and transparent reward mechanism will enable DReps to commit to governance activities without financial strain, ensuring the role remains accessible to all willing participants and serves the greater ecosystem.
+Governance stakeholders invest significant time and effort into understanding, evaluating, and voting on governance actions. Without financial incentives, this responsibility falls predominantly on individuals who either have the financial freedom to participate voluntarily, are driven purely by altruism, or have self-serving motives. A fair and transparent reward mechanism will enable DReps to commit to governance activities without financial strain, ensuring the role remains accessible to all willing participants and serves the greater ecosystem.
 
 #### Increase stakeholder participation
 The current system lacks sufficient incentives, leading to a low engagement rate among potential governance participants. This results in a concentration of power among a small number of highly active participants, which increases the risk of centralization and reduces diversity in governance decision-making. By implementing a rewards system, more individuals will be encouraged to participate, leading to a more decentralized and representative governance model. Inclusivity should be considered as a democratic core value to increase stakeholder buy-in and participation.
