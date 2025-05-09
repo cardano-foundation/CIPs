@@ -41,6 +41,8 @@ However, despite his dedication, Bob finds it increasingly difficult to justify 
 
 A well-designed incentivization framework would allow individuals like Bob to remain engaged by compensating them for their time and effort. This would lead to a more representative governance model and prevent valuable contributors from exiting the system due to financial constraints.
 
+![DRep registrations and deregistrations over time from epoch 510](https://github.com/Ryun1/metadata/blob/main/drep-reg-and-drep-over-time.png?raw=true)
+
 ### **2. Constitutional Committee members (CC members)**
 The CC is the body with the smallest pool of participants and we expect this to remain the case even after it opens up to more members. As such, CC members will have a bigger workload per individual when compared to other governance bodies. 
 
