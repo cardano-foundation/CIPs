@@ -215,8 +215,8 @@ In order to make it easy to keep up with updates to this CIP, we include the fol
 
 | ID  | Date        | Summary of changes                                              | Pull Request                                                  |
 | --- | ---         | ---                                                             | ---                                                           |
-| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
 | 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#1036](https://github.com/cardano-foundation/CIPs/pull/1036) |
+| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
 
 ## Copyright
 
