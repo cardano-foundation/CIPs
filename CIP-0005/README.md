@@ -77,6 +77,8 @@ We define the following set of common prefixes with their corresponding semantic
 | `policy_vk`        | CIP-1855's policy public key                                          | Ed25519 public key                 |
 | `pool_sk`          | Pool operator signing key                                             | Ed25519 private key                |
 | `pool_vk`          | Pool operator verification key                                        | Ed25519 public key                 |
+| `pool_xsk`         | Pool operator extended signing key                                    | Ed25519-bip32 extended private key |
+| `pool_xvk`         | Pool operator extended verification key                               | Ed25519 public key with chain code |
 | `root_sk`          | CIP-1852's root private key                                           | Ed25519 private key                |
 | `root_vk`          | CIP-1852's root public key                                            | Ed25519 public key                 |
 | `root_xsk`         | CIP-1852's extended root private key                                  | Ed25519-bip32 extended private key |
@@ -200,6 +202,7 @@ The only prior work done towards that direction has been [jcli](https://input-ou
   - [x] cardano-wallet
   - [x] Blockfrost
   - [x] cardanoscan, cexplorer
+  - [x] cardano-signer 
   - ... and more
 
 ### Implementation Plan
@@ -212,7 +215,8 @@ In order to make it easy to keep up with updates to this CIP, we include the fol
 
 | ID  | Date        | Summary of changes                                              | Pull Request                                                  |
 | --- | ---         | ---                                                             | ---                                                           |
-| 1   | 2024-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
+| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
+| 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#](https://github.com/cardano-foundation/CIPs/pull/) |
 
 ## Copyright
 
