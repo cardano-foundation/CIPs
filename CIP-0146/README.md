@@ -162,7 +162,7 @@ is supported. For this to be valid, the `enc` key should be added to the root me
 >Note that `types` mapping array within metadata should always be unencrypted! 
 
 Example structure:
-```
+```json
 { 
   "1854": { 
     "enc": "<encryption-method>",
