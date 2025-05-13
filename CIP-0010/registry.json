@@ -112,6 +112,10 @@
     "description": "cardahub.io services metadata"
   },
   {
+    "transaction_metadatum_label": 3692,
+    "description": "CIP-0149 - Optional DRep compensation"
+  },
+  {
     "transaction_metadatum_label": 6770,
     "description": "fortunes.coconutpool.com fortune teller"
   },
