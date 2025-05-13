@@ -9,6 +9,7 @@ Authors:
 Implementors:
   - Eternl <https://eternl.io/>
 Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/971
 Created: 2025-01-22
 License: CC-BY-4.0
 ---
