@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>  
     - Will Gould <will.gould@iohk.io>
-    - Alexey (if he wants!)
+    - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/780
@@ -19,26 +19,29 @@ License: CC-BY-4.0
 ## Abstract
 
 We propose a set of changes that revolve around nested transactions, a construct for composing
-certain kinds of _underspecified transactions_. Such transactions specify an intended action,
-but are missing certain data to perform this action. This data must be provided by a subsequent 
-transaction. In particular, for the Babel-fees usecase
-we discuss here, we allow transactions that are unbalanced, i.e. specify
-_a swap_. This intent can be fulfilled by another transaction providing the 
-funds requested in the swap (missing in the transaction), and accepting the offered funds
-(extra funds in the transaction). Transactions containing intents must be included in  
-a _top-level_ transaction. We call the 
-set of transactions containing the top-level transaction together with the _sub-transactions_
-it includes a _batch_. Applying a complete batch results in a valid ledger update, 
-however, applying each of the individual transactions may not. For example, insufficient 
-fees or collateral may be provided, missing witness info, etc.
+certain kinds of _partially valid transactions_, such as unbalanced transactions, or transactions 
+with insufficient fees. The missing value or data must be provided by a subsequent 
+transaction. Such partially valid transactions, which are called sub-transactions,
+must be placed into batches by aggregators. 
+The batch must also include a _top-level_ transaction. The completed batch must be fully balanced.
+Applying a complete batch results in a valid ledger update, 
+however, applying each of the individual transactions may not. This scheme allows users 
+to make and accept swap offers without the need for a centralized exchange or two-way communication.
+It gives non-ada holders a way to engage with the Cardano ecosystem. It also creates new business opportunities 
+for users willing to make and accept offers, run aggregator services, subsidize the use of their Dapps, etc.
 
 ## Motivation: why is this CIP necessary?
 
 This CIP provides a partial solution to the problems described in 
 [CPS-15](https://github.com/cardano-foundation/CIPs/pull/779).
 In particular, it describes some ledger changes that allow settlement
-of intents that require “counterparty irrelevance”, including many of the swap use cases
-and dApp fee sponsorship. The motivation behind designing this solution is _Babel fees_,
+of intents that require *counterparty irrelevance*, including many of the swap use cases
+and dApp fee sponsorship. *Counterparty irrelevance* is a property of a transaction batching protocol 
+wherein a transaction author is not required to approve the batch into which the 
+transaction will be included, and that decision can be made autonomously by the batcher.
+This property allows batches to be made with one-way communication (i.e. broadcast) only. 
+
+The motivation behind designing this solution is _Babel fees_,
 which is a requirement to support "paying transaction fees in a non-Ada currency".
 The Babel-fees usecase is a special case of a swap. Supporting swaps is very desirable functionality for cryptocurrency
 ledgers.
@@ -62,24 +65,24 @@ new usecases and functionality are supported by the changes :
 - transactions in a single batch may pay each others' fees and minUTxOValue ;
 - unbalanced transactions can be interpreted as swap offers, getting resolved within a complete batch ;
 
-3. script data is shared across all transactions in a single batch 
+3. scripts are shared across all transactions in a single batch 
 - enables script deduplication ;
 
 4. batch observer scripts enable sub-transactions to specify properties required of batches in which they may be included 
 - design inspired by script observers ;
+- allows all transaction authors the impose constraints
+on the batches into which their transactions are added, despite the fact that they do no get to approve 
+the final batches (i.e. counterparty irrelevance) ;
 
 5. the top-level transaction must provide collateral for all scripts in its sub-transactions 
 - sub-transactions are not required to cover their own collateral ;
 
-6. a new intent we call "spend-by-output", wherein a sub-transaction may specify outputs it 
-- intends to spend, and the top-level transaction specifies the inputs that point to those outputs in the UTxO set ;
-- example of possible additional supported intents (see CPS-15)
-potentially useful for LC functionality ;
-
-We note that the functionality added by (4) makes it possible to specify any and all intents that *do not require
-the relaxation of existing ledger rules*. That is, a user can specify any intent (action or property) the rest of the batch 
+We note that the functionality added by (4) makes it possible to view each transaction as on *intent* 
+to perform a specific action (whose fulfillment within the batch is ensured by the validation of the batch observer script). 
+The types of intents supported by this are ones that *do not require
+the relaxation of existing ledger rules*. That is, a user can specify any intent the rest of the batch 
 must satisfy without violating existing ledger rules. Adding support for intents that *do require ledger rule relaxations*, such 
-the ones in (2, 3, 5, 6) above, must be done 
+the ones in (2, 3, 5) above, must be done 
 more carefully to ensure secure operation of the ledger program.  
 
 
@@ -104,31 +107,8 @@ We add the following new fields to `TxBody` :
 1. `requireBatchObservers : ℙ ScriptHash`
 - set of scripts that must be run by the top-level transaction in the batch (where `TxInfo` includes info of all batch transactions)
 
-2. `spendOuts : Ix ⇀ TxOut`
-- (indexed) outputs being spent 
-
-3. `corInputs : ℙ TxIn`
-- inputs corresponding to `spentOuts`
-
-4. `subTxIds : ℙ TxId`
--  IDs of sub-transactions in the batch
-
-The following field is added to `Tx`:
-
-1.  `subTxs : List Tx` 
-- list of sub-transactions
-
-**Note** In the Agda spec, the transaction body contains `subTxIds : ℙ TxId`. The Haskell implementation aligns 
-with this to avoid confusion. A better design will be to include the full sub-transactions 
-directly in the body of the top-level transaction, making `Tx` a recursive type. 
-However, the recursive types design is more difficult to represent in Agda. 
-
-**Note** The era which will include this CIP may be combined with the following additional changes :
-
-- `RdmrPtr ⇀ Redeemer` structure inside the body
-- datums inside the body
-- `requiredObservers` scripts that are checked by a transaction but are not for the purpose of validating a specific action (see 
-[CIP-0112](https://github.com/cardano-foundation/CIPs/pull/749))
+2. `subTxs : ℙ TxId`
+-  sub-transactions in the batch
 
 ### Plutus
 
@@ -142,24 +122,18 @@ introduced here are not.
 
 #### New script purposes
 
-The following two new script purposes are introduced (together with script purpose tags with the same names) : 
+The following two new script purpose is introduced (together with script purpose tags with the same names) : 
 
-1. `SpendOut : Ix → ScriptPurpose`, where the index indicates that a script is being run to validate spending a specific 
-output in `spendOuts`.
-
-2. `BatchObs : ScriptHash → ScriptPurpose`, where the script has indicates the script that must be run by the top-level 
+1. `BatchObservers : ScriptHash → ScriptPurpose`, where the script hash indicates the script that must be run by the top-level 
 transaction to observe the validity of the batch.
-
-`ScriptsNeeded` and `getDatum` are modified accordingly to include scripts for these purposes. `collectPhaseTwoScriptInputs` 
-also requires an additional parameter for constructing `TxInfo` to either contain lists of `TxInfo` for sub-transactions or not.
 
 #### TxInfo
 
 The `TxInfo` shown to a PlutusV4 script has an added field :
 
-- `otherInfos : List TxInfo`, which is populated with the `TxInfo` data for all sub-transactions in the batch 
+- `subTxInfos : List TxInfo`, which is populated with the `TxInfo` data for all sub-transactions in the batch 
 whenever both hold : (1) the transaction for which info is being constructed is top-level, and (2) the script purpose for 
-which this info is constructed is `BatchObs`.
+which this info is constructed is `BatchObservers`.
 
 
 ### Ledger Transition Changes
@@ -186,71 +160,43 @@ calls `SWAPS` on the list of transactions in the (constructed) tx batch. The
 checks are :
 
 1. Fees are correct. `feesOK` is modified by (1) replacing `txfee` with 
-the sum total of `txfee` values of all the transactions in the batch.
-The per-transaction fee is collected only once for the batch. 
+the sum total of `txfee` values of all the transactions in the batch. Note that fees are still 
+collected from individual transactions, however, only the total fees from all transactions is checked 
+to make sure enough fees in total are paid. It is up to the users/batchers to decide who has to provide 
+how much fees.
 
-2. No regular inputs in any transaction are also included as `corInputs` of the top-level tx
+2. The batch must be balanced (POV holds). Both sides of the equation of POV now sum all of what used to be the 
+`produced` and `consumed` values for individual transactions. 
 
-3. All `txins` and `corInputs` are contained in the UTxO set to which the top-level tx is being applied 
+3. All inputs of all transactions are contained in the UTxO set. 
 
-4. `corInputs` in top-level tx point to the same (unordered) list of outputs in the UTxO set 
-as the list given by `spendOuts` 
+4. Transaction size (which includes top-level and all sub-transactions) is below max for a single transaction
 
-5. If the batch is not made up of a single transaction with failing scripts, the batch 
-must be balanced (POV holds). Both sides of the equation of POV now sum all of what used to be the 
-`produced` and `consumed` values for individual transactions. The value spend by `corInputs` 
-is added to the `consumed` side.*
+5. The sum of the execution units of all transactions in a batch is less than the max for a single transaction 
 
-6. Transaction size (which includes top-level and all sub-transactions) is below max for a single transaction
+6. There are no sub-transactions in any sub-transactions
 
-7. The sum of the execution units of all transactions in a batch is less than the max for a single transaction 
+7. There are no collateral inputs in sub-transactions
 
-8. The list of IDs of `subTxs` contains the same IDs as in `subTxIds` 
-
-9. There are no repeating transaction IDs in `subTxs`
-
-(*) By not requiring a single transaction with failing scripts to be balanced, we allow Babel services
-to post on-chain phase-1 valid transactions for which they have already used their resources 
-to check scripts (and found that one or more failed). Such transactions will be processed by 
-collecting collateral only, so none of their other actions, including moving assets, will be applied,
-and therefore will not affect the ledger.  
+Note that there is no need to check that all sub-transactions are distinct. This is guaranteed by the check that 
+the inputs of all transactions are in the UTxO set to which the transaction is being applied (this is done in the `UTXO` rule).
+Two transactions cannot add or remove the same entry from the UTxO set. Note also that (7) and possibly (6) 
+could be ensure at the CDDL (transaction encoding) level.
 
 To construct the transaction list representing the complete batch, the original transaction prepends the 
-top-level transaction to its `subTx` list.
+top-level transaction to its `subTx` list, applying the transformation `adjustTx` to each of the 
+transactions (note that the changes listed below both do not affect the validation outcome of the transaction
+being adjusted):
+
+- add all scripts from all transactions to the set of scripts attached to each transaction (this enables script 
+sharing, as well as ensure that all batch observer scripts are included in the top-level transaction)
+
+- set the `isValid` of each sub-transaction to that of the top-level transaction (this ensure the correct 
+rule is applied in the `UTXOS` transition).
 
 The `LEDGER` rule then calls the `SWAPS` rule on the batch list, and the same state as it itself 
 has. The result of the `LEDGER` state update is computed by `SWAPS`. 
 However, the environment for `SWAPS` is distinct from `LEnv` (see below). 
-
-**Batch Information**  We define a new type, `BatchData`, to allow `LEDGER` to indicate to `SWAPS` via its environment
-the batch info required for correctly processing it. The type has constructors :
-
-- `SingularTransaction`, which indicates that the batch contains only one transaction with no sub-txs, but this tx contains new features
-
-- `OldTransaction`, which indicates that the batch contains only one transaction with no new features (old version of Plutus can be run)
-
-- `BatchParent txid batchValid` which indicates that this batch contains a top-level tx with ID `txid`, and it has sub-txs. The conjunction of 
-all `isValid` tags of all transactions in the batch (sub- and top-) is `batchValid`.
-
-We compute also compute `validPath : BatchData → Tx → Bool`, which 
-is true whenever all transactions in the batch are marked as phase-2 valid, or the singular/old transaction 
-has a true `isValid`.
-
-**`SWAPS` Environment** `SWAPS` has the same state and signal as `LEDGER`, but it has a distinct environment, `SwapEnv`,
-which is set when `LEDGER` calls `SWAPS` :
-
-- `lenv : LEnv` is set to the `LEnv` of the `LEDGER` transition
-
-- `bdat : BatchData` is set to the appropriate computed value as described above 
-
-- `reqObs : ℙ ScriptHash` is set to the `requireObservers` of the top-level transaction
-
-- `bScripts : ℙ Script` is set to the union of all scripts attached to all transactions in the batch
-
-- `valP : Bool` is set to the result of the `validPath bdat tx` computation
-
-**NOTE** Should we also require scripts to be limited to only required ones?
-Or relax this restriction? With the restriction, changes to `UTXOW` are required.
 
 **NOTE :** A possible improvement to the design may entail sharing of in-line (reference) scripts and datums across transactions.
 This will require collecting all in-line scripts and datums at this stage, and potentially including them in 
@@ -259,15 +205,9 @@ the context.
 #### SWAP and SWAPS
 
 `SWAPS` iterates over the list of transaction in a batch, calling `SWAP` on each. The transition `SWAP`
-does exactly what `LEDGER` used to, except it is conditioned on the `validPath` value it gets in its environment. 
-To call the `UTXOW` rule, `SWAP` specifies the signal as the same `tx` that was its signal, and 
-sets the (new additional) `UTxOEnv` environment variables as follows
-
-- `bObs : ℙ ScriptHash` to `reqObs` in `SwapEnv`
-- `batchData : BatchData` to `bdat` in `SwapEnv`
-- `validPath : Bool` to `valP` in `SwapEnv`
-- `isTop : Bool` to `True` if batch data is `BatchParent txid batchValid`, and the ID of the signal transaction is equal to `txid`
-- `batchScripts : ℙ Script` to `bScripts` in `SwapEnv`
+does exactly what `LEDGER` used to, except it is conditioned on the `isValid` value it gets in its environment. 
+To call the `UTXOW` rule, `SWAP` specifies the signal as the same `tx` that was its signal. It performs 
+the checks that `LEDGER` used to do, including calling `CERTS` and `GOV` whenever `isValid` is true.
 
 #### UTXOW 
 
@@ -275,26 +215,11 @@ The `UTXOW` rule additionally checks :
 
 1. `requireBatchObservers` is contained in the batch observers (in the environment)
 
-2. no sub-transactions contain sub-transactions.
-
 Other changes include :
-
-- Existing function that checks that required witness data is provided now 
-also checks that such data is provided for the `corInputs`. 
 
 - the supported language check requires that `PlutusV3` or earlier is 
 only allowed in (singleton) transactions that do not use new features. That is, 
-
-    - are balanced 
-    - have empty `requireObservers`, `spendOuts`, `conInputs`, and `subTxIds` fields.
-
-- instead of checking that all required scripts are attached to the transaction itself, 
-their presence in the environment variable containing all transactions' scripts is checked 
-
-`UTxOEnv` contains, in addition to existing fields, 
-
-- `BatchData` (that is passed on to the `UTXO` and `UTXOS` rules), and
-- a set of batch observer script hashes (also passed on to the `UTXO` and `UTXOS` rules)
+transactions with non-empty `subTxs` field require all scripts to be version `PlutusV4`.
 
 
 #### UTXO
@@ -303,29 +228,15 @@ The `feesOK` check, the `txsize` check, the `produced = consumed` check,
 and the check that `txins` are contained in the UTxO set,
 are removed from this rule (and moved to the `LEDGER` rule). 
 
-The check that only top-level transactions may contain a non-empty 
-`corInputs` field is added. 
-
 #### UTXOS
 
-`UTXOS` transition now conditions on 
+`UTXOS` transition still conditions on `isValid` for the transaction being processed. 
+The `Scripts-Yes` rule works as before.
+However, `isValid` is the same for all batch transactions
+(as explained above), and, since no collateral is provided by sub-transactions, the `Scripts-No` 
+rule does nothing whenever a sub-transaction is being process. `Scripts-No` does collect top-level 
+transaction collateral, as in previous eras.
 
-- `validPath`
-
-- `isTop`, which 
-is true whenever the ID of the transaction matches the ID of the top-level transaction in the batch.
-
-The `UTXOS` rule is updated to have three constructors :
-
-1. `Scripts-Yes` : in the case that `validPath` is true, it removes both the 
-`txins` and the `corInputs` from the UTxO set (in addition to all the existing 
-changes done previously by `Scripts-Yes`).
-
-2. `Scripts-No` : in the case `validPath` is false, and `isTop` is false.
-No changes are made to the state here because collateral is only collected from the top-level transaction.
-
-3. `Scripts-No-TopLevel` : in the case `validPath` is false, and `isTop` is true.
-Collateral is collected, as in the previous version of the `Scripts-No` rule. 
 
 ### Collateral and Phase-2 Invalid Transactions
 
@@ -333,28 +244,28 @@ Enough collateral must be provided by the top-level transaction to cover the sum
 fees of all batch transactions. The collateral 
 can only ever be collected from the top-level transaction.
 The sub-txs are not obligated to provide sufficient 
-collateral for their own scripts, but they may choose to (this is never checked for sub-transactions). 
-A Babel fees service [Babel Service](#babel-service)
-may or may not require incoming underspecified transactions to provide their 
-own collateral, depending on whether they want to assume the risk of not being 
-compensated for running failing scripts. 
+collateral for their own scripts. Moreover, they are not allowed to have non-empty collateral.
 
-If a sub-transaction passes required phase-1 checks (excluding being balanced/POV, and checks related to `spendOuts` and `corInputs`),
-it can be posted on-chain as a `SingularTrasaction`, so that it will be processed as top-level, and its collateral will be collected.
+**NOTE** The Agda specification performs phase-1 checks followed by phase-2 checks for each 
+transaction (i.e. for sub- and top-level-). If a phase-1 check fails after some scripts for previous 
+transactions in a batch have already been run, the entire batch is invalid, but the executed scripts 
+are not paid for with collateral. That means that modifications need to be made in the Haskell implementation 
+to ensure that scripts are only run after phase-1 checks are successful for all transactions in a given batch.
 
 ### Batch Observers 
 
 Batch observers are scripts that must be run by a top-level transaction, but may be required by its sub-transactions 
-as a way to specify batch-level constraints. The have the script purpose with the tag `BatchObs` and the identifier `ScriptHash`.
-These are the only scripts that, in their `TxInfo` data, get a non-empty `otherInfos : List TxInfo` field, which is populated 
+as a way to specify batch-level constraints. The have the script purpose with the tag `BatchObservers` and the identifier `ScriptHash`.
+These are the only scripts that, in their `TxInfo` data, get a non-empty `subTxInfos : List TxInfo` field, which is populated 
 with the infos of the sub-transactions. This is inspired by, and may be implemented in conjunction with the 
-[Observe Script Type CIP](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112). 
+[Observe Script Type CIP](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0112). However, this CIP is not 
+necessary for Nested Transactions.
 
 The difference is that for a tx-observer script in the linked CIP is run on the `TxInfo` of the transaction 
 that requires it. With batch observers, the scripts are required by a sub-tx, but run with top-level input. 
 For the same top-level transaction, a regular observer and a batch observer in a transaction will get different `TxInfo`. 
 
-Batch observers are a way to specify any intents that do not require changes to the ledger rules. For example, 
+Batch observers are a way to specify any intents that to not require changes to the ledger rules. For example, 
 I may include a payment in my sub-transaction to specific address, and require via a batch observer that 
 any transaction that completes this 
 batch must execute some particular script. In this case, my intent is to get a party to interact with that contract. 
@@ -367,39 +278,25 @@ The ledger changes follow the specification changes outlined above.
 The ledger prototype introducing the new era containing 
 the changes as described in the specification can be found [here](https://github.com/willjgould/cardano-ledger/tree/wg/babel-rework).
 
-
 #### CDDL
 
 See [CDDL](https://github.com/willjgould/cardano-ledger/blob/wg/babel-rework/eras/babel/impl/cddl-files/babel.cddl).
 
 The transaction body is as follows ("`...`" stands for unchanged existing fields) :
 
+Sub-transactions are :
+
+```
+subTxs = [ + transaction ]
+```
+
 ```
 transaction_body =
   { 0 : set<transaction_input>             ; inputs
   , ...
-  , ? 23 : set<$hash32>                    ; New; Swaps
   , ? 24 : set<scripthash>                 ; New; Observer Scripts
-  , ? 25 : [* spend_out]                   ; New; Spend Outs
-  , ? 26 : set<cor_input>                  ; New; Cor Inputs
+  , ? 25 : subTxs                           ; New; sub transactions
   }
-```
-
-The transaction is :
-
-```
-transaction =
-  [ transaction_body
-  , ...
-  , swaps / null
-  ]
-```
-
-Swaps (i.e. sub-transactions) are :
-
-```
-swaps = [ * transaction ]
-transaction_index = uint .size 2
 ```
 
 New redeemer tags must be added :
@@ -412,8 +309,7 @@ redeemer_tag =
   / 3 ; Rewarding
   / 4 ; Voting
   / 5 ; Proposing
-  / 6 ; SpendOut
-  / 7 ; BatchObs
+  / 6 ; BatchObservers
 ```
 
 
@@ -425,7 +321,7 @@ The fork link is [here](https://github.com/willjgould/plutus/tree/wg/batch-obser
 
 ### Network and Consensus Changes
 
-With this design, it is likely minimal changes will be required.
+With this design, it is likely minimal changes will be required if any at all.
 
 ### Off-Chain Component Architecture
 
@@ -443,13 +339,8 @@ for this is that different usecases may require different off-chain architecture
 In particular, different usecases will have specific configurations of the 
 kinds of transactions or requests they are interested in engaging with. 
 For example, an individual user may care only about offers of a specific token. 
-A light client server cares about transactions that do not specify their own inputs,
-and instead specify `spendOuts`. An exchange may care about offers of any popular 
+An exchange may care about offers of any popular 
 asset at a good price. 
-
-Moreover, different usecases may have different constraints on how "valid"
-they expect the underspecified transactions to be. Some may require that 
-incoming transactions are valid "enough" to collect collateral from as singular transactions.
 Some services may be willing to look at the requirements imposed by `requiredBatchObservers`, while 
 others may not be.
 
@@ -473,33 +364,6 @@ in order to create valid batches.
 
 An additional high-level language may be beneficial to specify what the batch observer scripts 
 actually require of the batch, as Plutus script constraints may be difficult to work with directly.
-
-#### Light Client Service
-
-The design outlined here can facilitate a trustless LC service.
-Light clients may use the `corInputs` and `spendOuts` features to execute the following protocol.
-LC is the light client, and SP is the service provider. We assume there exists a 
-high-level language in which a light client can specify what they want a 
-transaction constructed for them by the SP to do, e.g. pay `x` amount from my 
-wallet to some other wallet, or mint some NFT. 
-
-1. LC -> SP : a high-level specification `s` 
-2. SP : construct a `tx` that 
-- meets `s`, 
-- includes one input `i` from SP's wallet
-- includes a payment to SP for light-client services
-3. SP : replace all inputs except `i` in `tx` with corresponding `spendOuts` from the UTxO set to make `tx'`
-4. SP -> LC : `tx'`
-5. LC : checks `tx'` meets `s`, signs it
-6. LC -> SP : signed `tx'`
-7. SP : constructs top-level `tx''` that provides the `corInputs` for `tx'`
-8. SP : submits to Cardano the top-level `tx''` with sub-tx `tx'`
-
-Note that `tx'` may also be unbalanced, simultaneously allowing the LC 
-to make a payment in a non-Ada token for the service. This design ensures that 
-an LC cannot construct a fully valid transaction from `tx'`, since they do not have access to 
-the current UTxO (presumably, if they did, they would construct their own valid transaction).
-It also ensures that the SP is paid (in step 2) for their services. 
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -526,12 +390,8 @@ We have done so by adding the following set of features :
 - represents all possible intents that do not require ledger rule relaxation ;
 
 5. the top-level transaction must provide collateral for all scripts in its sub-transactions 
-- sub-transactions are not required to cover their own collateral ;
+- sub-transactions are neither required nor allowed to cover their own collateral ;
 
-6. a new intent we call "spend-by-output", wherein a sub-transaction may specify outputs it 
-- intends to spend, and the top-level transaction specifies the inputs that point to those outputs in the UTxO set ;
-- example of possible additional supported intents (see CPS-15)
-potentially useful for LC functionality ;
 
 ## Use cases
 
@@ -567,22 +427,77 @@ certain DApp, discarding all other incoming transactions immediately. This servi
 may include calculating ExUnits, paying fees/minUTxO for, and providing collateral for such 
 underspecified transactions. 
 
+## Pseudo-code Example 
 
-### Comparison with Other Designs
+```
+tx =
+  Body
+  { inputs = [txIn0:FOO 5]
+  , outputs = [txOut:ADA 5]
+  , fee = 5 ADA
+  , subTx =
+     [ Tx
+       { body = Body
+         { inputs = [txIn00:FOO 95]
+         , outputs = [txOut00:ADA 200]
+         , requiredObservers = [scriptHash0]
+         }
+         Wits {
+          redeemers = [ (RedeemerPtr Spending 0, (exUnits000, data000))
+                      ]
+          scripts = [ spendingScript0 ]
+        }
+       }
+     , Tx
+       { body = Body
+         { inputs = [txIn10:ADA 210]
+         , outputs = [txOut10:FOO 100]
+         , requiredObservers = [scriptHash0 , scriptHash1]
+         }
+       }
+         Wits {
+          redeemers = [ (RedeemerPtr Spending 0, (exUnits101, data111))
+                      ]
+          scripts = [ spendingScript1 ]
+        }
+     ]
+  }
+  Wits {
+   redeemers = [ (RedeemerPtr BatchObserver 0, (exUnits100, data100))
+               , (RedeemerPtr BatchObserver 1), (exUnits10, data10)
+               , (RedeemerPtr Spending 0, (exUnits0, data0))
+               ]
+   scripts = [observerScript0 , observerScript1 , spendingScript2]
+  }
+```
+
+This example it captures couple of different uses cases:
+
+- performing a swap of 95 `FOO` for 200 `ADA` (this amount includes the counterparty paying for the transaction fee of the swap-offer transaction)
+
+- top level transaction builder is paying the fee with a multi asset (aka Babel fee)
+
+- execution of scripts at all levels, i.e. `spendingScript0` and `spendingScript1` for sub-txs, and `observerScript0 , observerScript1 , spendingScript2` for top-level transaction.
+
+The top-level transaction executes a spending script `spendingScript2`, which is not given `subTxInfos`, and two 
+batch observer scripts, `observerScript0 , observerScript1`, which do get to see `subTxInfos`. No sub-tx scripts 
+(`spendingScript0` and `spendingScript1`) get to see `subTxInfos`.
+
+## Comparison with Other Designs
 
 ### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
 
 Transaction swaps achieve almost exactly the same goals as this CIP. The main differences 
 are :
 
-1. The top-level transaction contains `subTxs`, which 
+1. The top-level transaction contains subTxs`, which 
 are lists of transactions. They are processed as individual transactions, alongside the top-level tx. As a result, 
 
 - the `TxIn` of each output can be computed for each output underspecified transaction  
 at the time of construction 
 
 - the `TxId` of the transaction for each entry in the UTxO set is necessarily 
-signed by all the keys required by that transaction
+signed bt all the keys required by that transaction
 
 - the input to (and therefore output of) each script is predictable at the time of (underspecified) tx construction, 
 so that it is possible to compute required `ExUnits` for each of the scripts run by every sub-transaction 
@@ -600,17 +515,11 @@ a valid top-level transactions more straightforward.
 ### CIP-0118 "Validation Zones-implicit"
 
 The key difference between the Validation Zones-implicit design and this design is that 
-this design does not require as many (any?) major changes to be made to the operation 
+this design does not require any changes to be made to the operation
 of the mempool. This is achieved by building a top-level transaction that includes 
 a list of sub-transactions, rather than modifying block structure to contain 
 such lists of transactions directly. Also, this design allows `ExUnits` to be specified by the top-level transaction for 
 sub-transactions.
-
-### Validation zones for settling other types of intents
-
-We provide the example of the *intent to spend an output* as proof that this nested 
-transaction design can support additional intents in the future, as discussed 
-in the CPS-15. 
 
 
 ## Path to Active
