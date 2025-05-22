@@ -444,7 +444,6 @@ stateDiagram-v2
 | StBusy     | MsgRejectMessage | reason     | StIdle   |
 | StIdle     | MsgDone          |            | StDone   |
 
-
 ##### CDDL Encoding Specification
 
 ```cddl
@@ -500,10 +499,10 @@ The protocol follows a simple request-response pattern:
 
 #### State machine
 
-| Agency            |                |
-| ----------------- | -------------- |
-| Client has Agency | StIdle         |
-| Server has Agency | StBusy, StDone |
+| Agency            |                                          |
+| ----------------- | ---------------------------------------- |
+| Client has Agency | StIdle                                   |
+| Server has Agency | StBusyNonBlocking,StBusyBlocking, StDone |
 
 ```mermaid
 stateDiagram-v2
@@ -556,7 +555,7 @@ localMessageNotificationMessage
   / msgClientDone
   / msgServerDone
 
-msgRequestMessages          = [0, isBlocking, ackedMessages]
+msgRequestMessages          = [0, isBlocking]
 msgReplyMessagesNonBlocking = [1, messages, hasMore]
 msgReplyMessagesBlocking    = [2, messages]
 msgClientDone               = [3]
@@ -579,7 +578,6 @@ message = [
 
 hasMore = false / true
 isBlocking = false / true
-ackedMessages = * messageId
 messages = [* message]
 ```
 
@@ -687,15 +685,15 @@ the KES key.
 
 - [x] Write a "formal" specification of the protocols along with vectors/conformance checker for protocol's structure and state machine logic.
 - [x] Write an architecture document extending this CIP with more technical details about the implementation.
-    - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Decentralized-Message-Queue-(DMQ)-Implementation-Overview)
+  - See [here](<https://github.com/IntersectMBO/ouroboros-network/wiki/Decentralized-Message-Queue-(DMQ)-Implementation-Overview>)
 - [x] Validate protocol behaviour with all relevant parties (Network and Node teams).
 - [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
-    - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
+  - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
 - [ ] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
-    - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
+  - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
 - [ ] Implement the n2n and n2c mini-protocols:
-    - [ ] DMQ Node
-    - [ ] Pallas Library (TxPipe)
+  - [ ] DMQ Node
+  - [ ] Pallas Library (TxPipe)
 - [ ] Implement the n2c mini-protocols in Mithril signer and aggregator nodes.
 
 ## References
