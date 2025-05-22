@@ -692,9 +692,15 @@ the KES key.
 - [ ] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
   - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
 - [ ] Implement the n2n and n2c mini-protocols:
-  - [ ] DMQ Node
-  - [ ] Pallas Library (TxPipe)
-- [ ] Implement the n2c mini-protocols in Mithril signer and aggregator nodes.
+  - [ ] Haskell DMQ Node:
+    - [ ] n2c mini-protocols
+    - [ ] n2n mini-protocols
+  - [ ] Pallas Library (TxPipe):
+    - [x] n2c mini-protocols
+    - [ ] n2n mini-protocols
+- [x] Implement the n2c mini-protocols in Mithril nodes:
+  - [x] Mithril signer
+  - [x] Mithril aggregator
 
 ## References
 
