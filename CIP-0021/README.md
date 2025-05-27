@@ -140,7 +140,7 @@ HW wallets do not serialize auxiliary data because of their complex structure. T
 
 In this exceptional case, auxiliary data must be encoded in their "tuple" format:
 
-```
+```cddl
 [ transaction_metadata: { * transaction_metadatum_label => transaction_metadatum }, auxiliary_scripts: [ * native_script ]]
 ```
 
@@ -211,12 +211,12 @@ We think that votes and DRep certificates are rare and substantially distinguish
 
 The following list of features with missing support on particular hardware devices is subject to occasional changes. Some features might be added, but some could also be removed (e.g. if they take too much space needed for other features).
 
-#### Keystone
+#### Keystone 3 Pro
 
 Keystone supports everything described here.
 
-Additionally KeyStone devices support:
-- `proposal procedures`
+Additionally, KeyStone devices support:
+- `proposal_procedures` (governance actions)
 - `stake_vote_deleg_cert`
 - `stake_reg_deleg_cert`
 - `vote_reg_deleg_cert`
