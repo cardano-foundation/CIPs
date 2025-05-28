@@ -118,7 +118,7 @@ For [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional), this w
 
 To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional) as is.
 
-This results is: `7065bd1dcdde9c512f973519085ea55872fdf1a78eddb6907149dde1541e8044`.
+This results in: `7065bd1dcdde9c512f973519085ea55872fdf1a78eddb6907149dde1541e8044`.
 
 ### 7. Submit to chain
 
