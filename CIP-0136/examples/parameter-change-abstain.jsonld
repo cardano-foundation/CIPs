@@ -3,6 +3,7 @@
     "@language": "en-us",
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP136": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#",
+    "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
         "@id": "CIP136:body",
         "@context": {
@@ -34,31 +35,51 @@
                 }
             }
         }
+    },
+    "authors": {
+        "@id": "CIP100:authors",
+        "@container": "@set",
+        "@context": {
+            "did": "@id",
+            "name": "http://xmlns.com/foaf/0.1/name",
+            "witness": {
+                "@id": "CIP100:witness",
+                "@context": {
+                    "witnessAlgorithm": "CIP100:witnessAlgorithm",
+                    "publicKey": "CIP100:publicKey",
+                    "signature": "CIP100:signature"
+                }
+            }
+        }
     }
   },
+  "hashAlgorithm": "blake2b-256",
   "body": {
-    "summary": "Ryan using treasury funds to buy an island is unconstitutional!",
-    "rationaleStatement": "The Cardano treasury is not meant to be used for personal gain, it should be for the benefit of the community.",
-    "precedentDiscussion": "No precedent",
-    "counterargumentDiscussion": "It would be pretty cool.",
-    "conclusion": "In conclusion spending the treasury to benefit a single dude, bad.",
+    "summary": "We believing that the CC should abstain from voting on `committeeMaxTermLength` changes.",
+    "rationaleStatement": "By changing the `committeeMaxTermLength` we are changing the maximum length of time that a committee member can serve. This is a change that should be made with caution, as it can affect the stability and continuity of the committee. Voting on `committeeMaxTermLength` would be a conflict of interest for us.",
     "internalVote": {
       "constitutional": 0,
-      "unconstitutional": 1,
-      "abstain": 0,
-      "didNotVote": 0
+      "unconstitutional": 0,
+      "abstain": 1,
+      "didNotVote": 0,
+      "againstVote": 0
     },
     "references": [
-      {
-        "@type": "relevantArticles",
-        "label": "Article III section 8.",
-        "uri": "https://github.com/IntersectMBO/interim-constitution/blob/main/cardano-constitution-0.txt#L231"
-      },
       {
         "@type": "Other",
         "label": "A cool island for Ryan",
         "uri": "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"
       }
     ]
-  }
+  },
+  "authors": [
+    {
+      "name": "Ryan Williams",
+      "witness": {
+        "witnessAlgorithm": "ed25519",
+        "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
+        "signature": "9c4181c3e3107690ec9006bd8b33c246542c5d436d0b3c1a37c52adab530fbb286b500a49cd89cdce929922e310c346d5b4305ac3c3ec143d18a599e6a51f80e"
+      }
+    }
+  ]
 }

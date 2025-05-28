@@ -20,7 +20,7 @@ See [cip-0136.common.schema.json](./cip-136.common.schema.json).
 
 Example metadata document file: [treasury-withdrawal-unconstitutional.jsonld](./examples/treasury-withdrawal-unconstitutional.jsonld).
 
-Blake2b-256 of the file content (to go on-chain): `cf289476f8481aabcd20b62dc9635883d8a0ff092a656a1c9b5914d7cce12285`
+Blake2b-256 of the file content (to go on-chain): `7065bd1dcdde9c512f973519085ea55872fdf1a78eddb6907149dde1541e8044`
 
 #### Intermediate files
 
@@ -33,6 +33,24 @@ Body files, used to correctly generate author's witness:
 - [treasury-withdrawal-unconstitutional.body.nq](./examples/treasury-withdrawal-unconstitutional.body.nq)
 
 Blake2b-256 hash digest of canonicalized body: `7b2c08cafbdf7b524035c1f7face3af9f0370d2df4d5c841ebb83b4e5a843e64`
+
+### Parameter Change Abstain
+
+Example metadata document file: [parameter-change-abstain.jsonld](./examples/parameter-change-abstain.jsonld).
+
+Blake2b-256 of the file content (to go on-chain): `002559a4cbfd0df5edbf59b9e8ef86d50c968b3b5d0329ebc3b063cab37c72bb`
+
+#### Intermediate files
+
+Files produced to articulate process, these are not necessary in implementations.
+
+Body files, used to correctly generate author's witness:
+
+- [parameter-change-abstain.body.jsonld](./examples/parameter-change-abstain.body.jsonld)
+
+- [parameter-change-abstain.body.nq](./examples/parameter-change-abstain.body.nq)
+
+Blake2b-256 hash digest of canonicalized body: `f1a20900160c3516d9cfb9b6db2d75d8f06bc167b751d285dc8532e45ce29eaf`
 
 ## How-to Recreate Examples
 
@@ -79,9 +97,10 @@ For [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional), this w
 
 Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures).
 
-One tool for Ed25519 signatures is [Ed25519 Online Tool](https://cyphr.me/ed25519_tool/ed.html).
+One tool for Ed25519 signatures is [Ed25519 Online Tool](https://cyphr.me/ed25519_tool/ed.html), although it does not support extended keys.
+Other tooling such as [Cardano Serialization Library](https://github.com/Emurgo/cardano-serialization-lib) is able to support this signing, [see example](https://github.com/Ryun1/csl-examples/blob/main/examples/CIP-0008/cip-8-signing.js).
 
-For [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional), we use the keys described in [Author](#author) resulting in: `ad071d5a032c6e0eb7ee0ad4422728d0991bc0865473b4e2b0694356448790b0c90a50827cd355fba89fe2c7095b46179a4d3990642cdced6af2cd1363e6af0d`.
+For [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional), we use the keys described in [Author](#author) resulting in: `af493e96363237bb9cd6d93ef40dd0ca00912fadefc8c8388ce3bdda1ae928a427f0801c9cc3f68cac4995ac7e137c2405b8c26acd001b55c1b7225d07e54405`.
 
 ### 5. Add other properties to example.jsonld
 
@@ -93,13 +112,13 @@ We can go back to our `example.body.jsonld` and now add in all missing propertie
 
 By adding this information we create our `example.jsonld`.
 
-For [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional), this will result in [treasury-withdrawal-is-unconstitutional.jsonld](./examples/treasury-withdrawal-unconstitutional.jsonld).
+For [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional), this will result in [treasury-withdrawal-unconstitutional.jsonld](./examples/treasury-withdrawal-unconstitutional.jsonld).
 
 ### 6. Hash example.jsonld
 
 To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [Treasury Withdrawal Vote](#treasury-withdrawal-is-unconstitutional) as is.
 
-This results is: `cf289476f8481aabcd20b62dc9635883d8a0ff092a656a1c9b5914d7cce12285`.
+This results is: `7065bd1dcdde9c512f973519085ea55872fdf1a78eddb6907149dde1541e8044`.
 
 ### 7. Submit to chain
 

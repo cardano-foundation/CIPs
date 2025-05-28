@@ -37,23 +37,16 @@
     }
   },
   "body": {
-    "summary": "Ryan using treasury funds to buy an island is unconstitutional!",
-    "rationaleStatement": "The Cardano treasury is not meant to be used for personal gain, it should be for the benefit of the community.",
-    "precedentDiscussion": "No precedent",
-    "counterargumentDiscussion": "It would be pretty cool.",
-    "conclusion": "In conclusion spending the treasury to benefit a single dude, bad.",
+    "summary": "We believing that the CC should abstain from voting on `committeeMaxTermLength` changes.",
+    "rationaleStatement": "By changing the `committeeMaxTermLength` we are changing the maximum length of time that a committee member can serve. This is a change that should be made with caution, as it can affect the stability and continuity of the committee. Voting on `committeeMaxTermLength` would be a conflict of interest for us.",
     "internalVote": {
       "constitutional": 0,
-      "unconstitutional": 1,
-      "abstain": 0,
-      "didNotVote": 0
+      "unconstitutional": 0,
+      "abstain": 1,
+      "didNotVote": 0,
+      "againstVote": 0
     },
     "references": [
-      {
-        "@type": "relevantArticles",
-        "label": "Article III section 8.",
-        "uri": "https://github.com/IntersectMBO/interim-constitution/blob/main/cardano-constitution-0.txt#L231"
-      },
       {
         "@type": "Other",
         "label": "A cool island for Ryan",
