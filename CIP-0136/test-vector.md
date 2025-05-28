@@ -42,7 +42,7 @@ Blake2b-256 of the file content (to go on-chain): `002559a4cbfd0df5edbf59b9e8ef8
 
 #### Intermediate files
 
-Files produced to articulate process, these are not necessary in implementations.
+Files produced to articulate process; these are not necessary in implementations.
 
 Body files, used to correctly generate author's witness:
 
