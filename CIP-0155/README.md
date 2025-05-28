@@ -28,7 +28,7 @@ Having access to the ledger (either directly or through tools like `cardano-cli`
 
 All involved parties (SPOs, DAP developers, etc) need to agree on SRV prefixes used by various DAPs and thus a public registry governed by a public CIP process is required to foster DAPs that co-exist with the **Cardano** network, like **Mithril** (see [CIP#137]).
 
-Note that the notion of a DAP is specific in this context: these are applications, which construct their own network and relay on ledger peers published on the block-chain.   This include node implemtations, or 2nd-layer solutions like Mithril or Hydra.
+Note that the notion of a DAP is specific in this context: these are applications, which construct their own network and relay on ledger peers published on the block-chain. This include node implementations, or 2nd-layer solutions like Mithril or Hydra.
 
 ### Problem
 
@@ -42,7 +42,7 @@ Thus they can be instrumental in `Cardano`, since relays are registered on the b
 
 By using SRV records in the registration certificate (which is supported by the `cardano-ledger`, but not by `cardano-node`), we wish to solve this problem not just for `Cardano` node implementation, but also for any DAP that requires constructing its own network.
 
-SRV provide a mechanism for exposing DAPs co-deployed with a node, like **mithril** or **hydra**.
+SRV provides a mechanism for exposing DAPs co-deployed with a node, like **mithril** or **hydra**.
 
 Making such services discoverable is one of the key features addressed by this CIP.
 
@@ -80,7 +80,7 @@ Each prefix SHOULD start with `_cardano._tcp` or `_cardano._udp`, to avoid clash
 ### Example
 
 When registering a cardano pool on `example.com` domain using an `SRV` record, one should use:
-```
+```shell
 cardano-cli latest stake-pool ... --multi-host-pool-relay example.com
 ```
 (see [register-stake-pool]); and configure SRV record at `_cardano._tcp.example.com` to point to **Cardano** relays, `_mithril._tcp.example.com` to point to **Mithril** relays (see [srv], currently under development).
@@ -109,7 +109,7 @@ And when there's no major objection from one of the currently involved parties:
 
 Each **Cardano** node implementation or other tools which rely on SRV records stored in the ledger should comply with this proposal.
 
-Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 
