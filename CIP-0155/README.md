@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 0155
 Title: SRV registry
 Status: Proposed
 Category: Network
