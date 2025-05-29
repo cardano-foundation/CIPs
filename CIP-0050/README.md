@@ -2,7 +2,14 @@
 CIP: 50 
 Title: Pledge Leverage-Based Staking Rewards 
 Category: Ledger / Protocol 
-Authors: Ryan Wiley, Rich Manderino [ECP], Stef M [RABIT], Wayne [OTG], Homer J (AAA), Chad [BBHMM] 
+Authors: 
+  - Michael Liesenfelt <michael.liesenfelt@gmail.com>
+  - Ryan Wiley
+  - Rich Manderino [ECP]
+  - Stef M [RABIT]
+  - Wayne [OTG]
+  - Homer J (AAA)
+  - Chad [BBHMM] 
 Status: Draft (Updated) 
 Created: 4 April 2022 (original), 20 May 2025 (updated) 
 Discussion: Cardano SPO Incentives Working Group
