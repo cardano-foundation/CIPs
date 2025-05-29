@@ -38,7 +38,7 @@ Blake2b-256 hash digest of canonicalized body: `7b2c08cafbdf7b524035c1f7face3af9
 
 Example metadata document file: [parameter-change-abstain.jsonld](./examples/parameter-change-abstain.jsonld).
 
-Blake2b-256 of the file content (to go on-chain): `002559a4cbfd0df5edbf59b9e8ef86d50c968b3b5d0329ebc3b063cab37c72bb`
+Blake2b-256 of the file content (to go on-chain): `e6eb01af450260deda3cbbdf042b5c33eeb479013680f2db3b24d48801dd05a9`
 
 #### Intermediate files
 
