@@ -89,6 +89,7 @@ A **Cardano** node implementation when retrieving information from a registratio
 
 It may as well append `.` to indicate it is a top-level query, resulting in querying the `_cardano._tcp.example.com.` domain.
 
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -108,6 +109,11 @@ And when there's no major objection from one of the currently involved parties:
 ### Implementation Plan
 
 Each **Cardano** node implementation or other tools which rely on SRV records stored in the ledger should comply with this proposal.
+
+## Rationale: how does this CIP achieve its goals?
+
+This CIP constructs a process to maintain SRV registry, and thus provides authritative information for SPOs and DP developers.
+
 
 ## Copyright
 
