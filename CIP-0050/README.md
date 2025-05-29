@@ -1,431 +1,232 @@
 ---
-CIP: 50
-Title: Pledge Leverage-Based Staking Rewards
-Status: Proposed
-Category: Ledger
-Authors:
-  - Michael Liesenfelt <michael.liesenfelt@gmail.com>
-Implementors: N/A
-Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/242
-  - https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
-  - https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
-Created: 2022-04-04
-License: CC-BY-4.0
+CIP: 50 
+Title: Pledge Leverage-Based Staking Rewards 
+Category: Ledger / Protocol 
+Authors: Ryan Wiley, Rich Manderino [ECP], Stef M [RABIT], Wayne [OTG], Homer J (AAA), Chad [BBHMM] 
+Status: Draft (Updated) 
+Created: 4 April 2022 (original), 20 May 2025 (updated) 
+Discussion: Cardano SPO Incentives Working Group
 ---
 
 ## Abstract
 
-Improving decentralization is absolutely necessary for the long term health and growth of the Cardano ecosystem. The current reward formula has resulted in a stable but stagnant level of decentralization. With the benefit of hindsight over the last year the intent of $(a0, k)$ has not resulted in the desired decentralization outcome. This CIP provides the justification, methods, metrics, and implementation for an improvement program to increase decentralization of the Cardano network.
+Improving decentralization is critical for Cardano’s long-term health and growth. The current reward-sharing scheme (RSS) has yielded a stable but suboptimal level of decentralization. In hindsight, the original parameters *k* (the desired number of pools) and *a₀* (pledge influence factor) have not achieved their intended goals. Many stake pools with zero or minimal pledge manage to attract large delegations, undermining the Sybil-resistance that pledge was meant to provide (Liesenfelt, 2022). This proposal introduces a new pledge leverage parameter, *L*, into the RSS to more directly and fairly constrain such under-pledged pools. By capping rewards for pools with excessive stake relative to pledge, *L* penalizes severely under-pledged pools while having minimal effect on well-pledged or small pools. The adjusted scheme aligns economic incentives with decentralization: it redistributes stake toward well-pledged pools (increasing their rewards) and makes it more difficult for single entities to dominate via multiple pools. We present the motivation, specification, and rationale for this change, including simulations illustrating its impact. The goal is to significantly improve effective decentralization (approaching the theoretical *k* target) without unfairly harming small pool operators.
 
-The proposed reward equation retains the function of $k$ for diminishing rewards based on stake and enforces diminishing rewards based on pledge leverage, $L$. The proposed equation enforces a set of principles to ensure stakeholders of dramatically different size can all achieve the same maximum yield. The yield ceiling feature prevents the formation of two classes of stakeholders and removes some of the benefits of centralization. The economic motivations of the largest stakeholders will be aligned with decentralization, reward diversification, fault tolerance, and ensuring the sybil protection of the entire community.
+## Motivation: Why is this CIP necessary?
 
-> **Warning** <u>Conflict of Interest Declaration</u>
->
-> The author is employed full time as a Research Assistant Professor in Nuclear Engineering at the University of Tennessee. The author earns no revenue from the Cardano ecosystem, does not operate a stake pool, is not seeking Cardano Foundation stakepool delegation support, is not seeking Catalyst funding support, and owns 25k ADA delegated to the BALNC stake pool ($drliesenfelt).
+### Stagnating Decentralization and Sybil Concerns
 
-## Motivation: why is this CIP necessary?
+Cardano’s block production is less decentralized in practice than the protocol parameter *k* = 500 implies. Although *k* intends to cap pool sizes and guide the network toward saturated equal-sized pools, in reality many of the top pools are operated by the same entities, which defeats the purpose (Fancee, 2022). For example, certain large exchanges run dozens of pools (e.g. 91 by Binance and 31 by Coinbase), collectively controlling roughly 12.59% of stake. This means the Nakamoto Coefficient – the minimum number of distinct entities required to control greater than 50% of block production is only about 25 as of epoch 559 (Balance Analytics, 2025). In other words, the *effective* decentralization is on the order of only a few dozen independent actors, far below the target of 500 pools (Liesenfelt, 2022).
 
-Improving decentralization is absolutely necessary for the long term health and growth of the Cardano ecosystem. The current reward formula has resulted in a stable but stagnant level of decentralization. The motivation is to provide the justification, methods, metrics, and implementation schedule for an improvement program to increase decentralization of the Cardano network.
+As of epoch 560, **473 pools have zero pledge**, yet they still command **2,740,223,943 ADA** in delegated stake (Koios, 2025).  This concentration is fueled by Sybil behavior: many pools are essentially split nodes run by one operator. Pool-splitting hurts the network as a whole: operators running multiple low-pledge pools collect multiple fixed fees and margins, reducing rewards for delegators and squeezing out smaller, independent operators (Kiayias, 2020).
 
-$K$ and $a0$ are input parameters to the reward formulation designed to promote decentralization. The original intention for parameter $k$ was for it to set a ‘soft-cap’ on a pool’s size and thereby encourage the system to converge toward $k$ pools of equal size delivering equal return per unit of stake for all delegates. In the ideal world this would mean $k$ pools that are roughly equally saturated producing a roughly equal proportion of the blocks [1]. An underlying assumption was that one entity would run only one pool and design discussions about these parameters have described running multiple pools as a form of Sybil attack [2].
+Under the current Reward Sharing Scheme (RSS) there is no explicit mechanism to limit leverage (stake-to-pledge ratio). An operator can split stake across many pools with zero or tiny amounts of pledge and still earn nearly full rewards on each pool. The saturation parameter *k* limits stake per pool but cannot limit how many pools a single entity operates. The pledge-influence factor a₀ was intended to discourage Sybil attacks, yet at its present value (0.3) it provides only a modest boost to heavily pledged pools. A private pool with high pledge might earn ~3.33 % annualized, while a zero-pledge public pool still earns ~2.6% which is only ~22% less. That small gap is *statistically unnoticed* by most delegators and is overwhelmed by normal epoch-to-epoch luck variance.
 
-However, the input parameters have not achieved these goals. Currently there are single entities that run 5,10,20 or even 50 separate pools. It is proposed that the “average resulting decentralization” should be measured based on the stake held by entire entities/groups, rather than a count of individual pools. “K-effective” is hereby used to measure the “average resulting decentralization” and is computed using Equation 1. The Nakamoto Coefficient is approximately half of k-effective rounded up to the nearest integer. K-effective provides a higher resolution quantification of network decentralization compared to the Nakamoto Coefficient.
+Crucially, it now takes a pledge of only about **53,870,468 ADA** spread across enough low-pledge pools to control more than 50% of total stake (Koios, 2025). This minimal capital requirement highlights how the current design enables highly leveraged Sybil attacks that erode decentralization and threaten network resilience.
 
-The Cardano network currently produces ~21,600 blocks per epoch with ~2400 groups producing between 0 and ~3600 blocks per group. If averaged, approximately 40 equal sized groups would each be creating ~527 blocks per epoch. The historical decentralization of the network shown in Figure 1 has improved from 30.0 in epoch 245 to between 35.0 and 43.0 after epoch 260. This “effective decentralization” or “k-effective” is not even close to the 500 figure targeted by the current k=500 parameter. A partial example of the table used to compute k-effective is shown in Figure 2.
+### Limits of the Current Parameters (*k* and *a₀*)
 
-(1) https://iohk.io/en/blog/posts/2020/11/05/parameters-and-decentralization-the-way-ahead/
+Cardano’s decentralization parameters face a dilemma. The parameter *k* governs the target number of pools (decentralization threshold), and *a₀* is the traditional lever for Sybil resistance via pledge. In theory, setting a higher *a₀* would strongly reward pledged stake and penalize pools with little pledge, thereby discouraging Sybil attacks (multiple zero-pledge pools). However, increasing *a₀* would also widen the reward gap between large pledged pools and smaller community pools, harming small pool operators. As of February 2022, with *a₀*=0.3, roughly **1.25 billion ADA** concentrated in **19 fully pledged pools** earns maximal rewards (Fancee, 2022), giving wealthy operators a significant yield advantage. Raising *a₀* further would make this disparity even worse – effectively creating *two classes of stakeholders*, where large custodial actors can offer materially higher yields than individual operators. This is antithetical to Cardano’s egalitarian ethos and has proven politically difficult: the community not made any significant efforts to adjust *a₀* upward, likely knowing it would push many small pools out of the ecosystem.
 
-(2) https://iohk.io/en/blog/posts/2018/10/29/preventing-sybil-attacks/
+Cardano's previous increase of k from 150 to 500 did result in a modest increase in the number of unique pools making blocks, but it also presented a tradeoff. Some multi-pool operators responded by creating additional low-pledge pools to capture more stake. A concern that has been shared about raising *k* is that it carries the risk of a proliferation of minimally-pledged pools run by the same entities, increasing total pool count with only a minor improvement in the actual diversity of operators. This dilution weakens Sybil resistance and keeps effective decentralization, as measured by k-effective, significantly below the target *k*.
 
-$Ref (1)$
+To investigate these relationships, the Rewards Sharing Simulation (RSS) engine (University of Edinburgh: Blockchain Technology Lab, 2025) was used with minor modifications to model CIP-50 behavior. When sweeping *k* from 250 to 2,000 while holding *a₀* at a very low value (0.1), the headline “target pool” count grows, but the Nakamoto coefficient actually falls from about 142 at *k*=1,000 to just 116 at *k*=2,000. The hypothesis here is that pledge is too insignificant which leads big operators to simply split their stake into even more zero-pledge pools.  The on-chain diversity looks larger, yet real control collapses into fewer hands.
 
-<p align="center">
- <img src="./images/equation1.png" width="500">
-</p>
+![Current Cardano Rewards Sharing Scheme](images/RSS1.png "Current Cardano Rewards Sharing Scheme")
 
-![Figure 1](./images/k-effective.png)
-Figure 1. Historical k-effective from epoch 245 to present.
+(University of Edinburgh: Blockchain Technology Lab, 2025)
 
-![Figure 2](./images/k-effective-table.png)
-Figure 2. K-effective table.
+Moving a₀ to the opposite extreme tells demonstrates a different issue. At *a₀*=10, the simulation does push the Nakamoto coefficient upward to around 173 at *k*=1,000.  But there is a small drop to 169 at *k*=2,000.  The hypothesis here is that in this case, pledge has actually been made *too* significant such that only whales with large amounts of pledge are able to compete. This would presumably reshape the ecosystem into an elite upper tier and a struggling lower tier. In effect, we swap Sybil risk for wealth concentration which indirectly harms decentralization.
 
-### The Intent of (a0,k)
+In summary, Cardano’s current RSS parameters are insufficient to prevent Sybil attacks and pool splitting: *k* sets an ideal pool count but doesn’t control for unique identities, and *a₀* is too weak (for political and economic reasons) to enforce meaningful pledge contributions. As a result, many pools with zero or tiny pledge and high delegated stake thrive – which deviates from the original decentralization goals of the Shelley design. An adjustment is needed to strengthen Sybil resistance without unfairly disadvantaging small pools.
 
-To cite Aggelos Kiayias, Chief Scientist of IOG:
+### Objectives for an Improved Scheme
 
-> “Central to the mechanism’s behavior are two parameters: $k$ and $a0$. The k-parameter caps the rewards of pools to 1/k of the total available. The $a0$ parameter creates a benefit for pledging more stake into a single pool; adding X amount of pledge to a pool increases its rewards additively by up to $a0$*X. This is not to the detriment of other pools; **any rewards left unclaimed due to insufficient pledging will be returned to the Cardano’s reserves and allocated in the future**.” [3]
+Any improvement to the reward scheme should adhere to the following high-level goals:
 
-> “Paired with the assessment of stake pools performed by the delegates, **this mechanism provides the right set of constraints for the system to converge to a configuration of k equal size pools with the maximum amount of pledge possible**.” [3]
+* **Fairness**: All stakeholders, from small delegators to whales and exchanges, should have the opportunity to earn *on average* the same *yield* (rewards per unit of stake). The system should avoid creating “VIP” pools with inherently better returns. In other words, no two classes of stakeholders. 
 
-The analysis of the current reward formula in [4] equated 1 pool to 1 entity. In the real world 1 entity can choose to delegate to another entity, operate one pool, **or operate many pools**. This oversight in the original analysis contributed to the proliferation of multipools in defiance of $k$ parameter increases.
+* **Sybil Protection:** Running multiple pools *must* come at a cost. The scheme should *require* a meaningful pledge to support each pool’s delegated stake – not just mildly incentivize it. Creating many low-pledge pools should result in diminishing returns, removing the current advantage of pool splitting (Kiayias, 2020). 
 
-(3) https://iohk.io/en/blog/posts/2020/11/13/the-general-perspective-on-staking-in-cardano/
+* **Decentralization:** The effective number of independent block-producing entities (k-effective) should converge towards the target *k*. The **Minimum Attack Vector (MAV)** (a.k.a. Nakamoto coefficient – number of entities to control 51%) should remain stable or increase. 
 
-(4) https://arxiv.org/ftp/arxiv/papers/1807/1807.11218.pdf
+* **Predictability and Simplicity:** The new reward formula should be as simple and transparent as possible, avoiding unnecessary complexity (e.g. no exotic curves or cryptic parameters). Operators and delegators should easily understand the cause-and-effect of the parameters on rewards. 
 
-### The Current Reward Formula
-
-From “4.1 Our RSS construction” of “Reward Sharing Schemes for Stake Pools” [5] the current rewards equation is:
-
-$ Ref(2) $
-![Equations Set 2](./images/equation2.png)
-
-where:
-
-<img src="./images/equation2-supporting.png" width="250">
-
-A natural choice is $β = 1/k$, where $k$ is the target number of pools, and $k,α$ are fixed parameters.
-
-The following are current protocol parameters:
-
-$k = 500$
-
-$α = a0 = 0.3$
-
-The $a0$ parameter represents the fraction of the rewards $(R/(1+a0))$ which are not paid out unless all of the stake is pledged. An $a0$ of 0.3 ensures that **1.0 - 1.0/(1.0+0.3) = 23% of the total rewards R will be withheld from low pledge fraction pools and returned to the reserve**. The effect of this formula is that increased pledge results in retaining more of the available rewards R. However, this benefit is not linear, rather it is drastically biased towards the saturation limit. The $\sigma’ = min\\{σ,β\\}$ term enforces a reward limit based on $k$. Visualizing the resulting field of outcomes at various pledge amounts from 0.00% to 100.0% is necessary. The red dotted line “Max Reward” represents the maximum available yield available at the stated network size.
-
-<img src="./images/chart current equation a0 0.3 minfee 340.png">
-
-<details><summary>If the minimum fee is 30</summary><img src="./images/chart current equation a0 0.3 minfee 30.png"></details>
-<details><summary>If the minimum fee is 0</summary><img src="./images/chart current equation a0 0.3 minfee 0.png"></details>
-<details><summary>If a0 is increased to 0.5</summary><img src="./images/chart current equation a0 0.5 minfee 340.png"></details>
-<details><summary>If a0 is increased to 1.0</summary><img src="./images/chart current equation a0 1.0 minfee 340.png"></details>
-<details><summary>If a0 is increased to 10.0</summary><img src="./images/chart current equation a0 10.0 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.2</summary><img src="./images/chart current equation a0 0.2 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.1</summary><img src="./images/chart current equation a0 0.1 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.0</summary><img src="./images/chart current equation a0 0.0 minfee 340.png"></details>
-<details><summary>If a0 is decreased to 0.0 and minFee = 0</summary><img src="./images/chart current equation a0 0.0 minfee 0.png"></details>
-<details><summary>If minFee is increaesd to 1000</summary><img src="./images/chart current equation a0 0.3 minfee 1000.png"></details>
-<details><summary>If minFee is increaesd to 2000</summary><img src="./images/chart current equation a0 0.3 minfee 2000.png"></details>
-
-#### The Reality of (a0,k)
-
-The intent of parameters $(a0, k)$ has not been realized. The graph of k-effective shows that increasing $k$ from 150 to 500 did not result in a proportional increase to decentralization. The k parameter is currently $500 / 35 = 14.29$ times larger than the effective decentralization k-effective.
-
-Another important determinant of the ability for small pools to compete with larger pools is the mandatory minimum fee (minFee parameter) which is currently 340₳. This minimum fee is a higher percentage of the total rewards for a small pool compared to a larger pool. It means that delegator yields will not exceed 95% of a saturated pool delegator yields until the pool has at least 15.0% saturation. This is a significant barrier to entry for small pools.
-
-Billions of ADA is currently staked in pools with nearly 0 pledge and extremely high leverage. Also, a billion ADA is currently pledged in nearly saturated private pools closed to community delegation. There are very few public pools accepting community delegation with pledge amounts between 5M₳ and 60M₳ and the vast majority of public pools have less than 1M₳ pledge. The following bubble chart shows the distribution of stake as a function of group leverage on a log(Stake) vs log(Leverage) scale. The current pledge incentive mechanism only becomes relevant in a small segment of this chart below a leverage of 10 and above a pledge amount of 10M₳. The Single Pool Operator Alliance (SPA) is a collective of ~2200 individual pools and pool operators with a collective stake of 5B₳ at an average leverage factor of only 22.
-
-<img src="./images/stake vs leverage current.png">
-
-In the original design, parameter $a0$ represented the influence the operator’s pledge had on the desirability of the pool. In other words, more pledge should mean the pool would be more desirable for stake delegation. However the current reward formula has not produced this effect. See Figure 2. With increasing pledge as a proportion of total stake there is little noticeable effect on rewards until very high pledge percentages. These very high pledge percentages are not attainable except by extremely large stakeholders. Furthermore having such a high pledge percentage would defeat the purpose of community staking since the pool would already be saturated when the maximum pledge benefit is earned.
-
-The reality of the past 18 months is that pool operators have split pledge across multiple pools because it is more profitable to earn fees (minFee + margin%) than it is to benefit from increasing their pledge to a single pool. The small increase in yield for pools with less than 10M₳ pledge is also much less than the random statistical uncertainty of rewards per epoch. The pledge incentive is currently a statistically unnoticed benefit used only by large private stakeholders. The current reward equation has sacrificed fair egalitarian rewards for an incentive that is not providing Sybil protection as intended.
-
-### The SundaeSwap Effect
-
-The SundaeSwap Initial Stake Offering (ISO) proved that community delegator stake can be very mobile. More than a couple billion in stake centralized into ISO groups. After realizing the popularity of their ISO resulted in a centralization of the network SundaeSwap launched a ‘Reverse’ ISO for the benefit of single pools. The RISO temporarily reversed the centralization trend as a billion ADA was delegated to small pools. The Cardano network reached a decentralization factor of 43.22 in epoch 321. After the RISO these decentralization gains reversed because the underlying incentives of the reward formula have not changed. This proves that the community is engaged and their stake is mobile, especially for yield and gains.
-
-### a0: The pledge yield boosting parameter
-
-An intentional design of the current reward equation is to purposefully allow large stakeholders pledging to private pools to earn the maximum possible yields while excluding community delegation. The vast majority of pools with pledge <10% stake saturation have an asymptotic yield currently approaching a maximum yield of 4.25%. A high pledge fraction in a private pool can earn up to the maximum available 5.5% yield, 30% more yield than low pledge community pools.
-
-The $R/(1+a0)$ term guarantees that small pools will not earn the same fraction of the reserve as large pledged pools. Currently, approximately 1.25B₳ is earning full rewards in 19 pools. If left unchanged over time custodial wealth management companies will be able to offer materially higher yields than individuals. Wave financial is an example of a company currently providing this business model to clients. Eternl/ccvalut is introducing multi-signature features to allow many individuals to collectively pledge to pools. Over time this difference results in two different classes of stakeholders and erodes the decentralized self-custodial appeal of Cardano.
-
-### The danger of ‘just increase k’
-
-Forcing the k-parameter to be radically different from the effective decentralization, k-effective, of the network has resulted in unintended consequences. When k was increased large groups created new pools to retain delegators. If the k-parameter is increased without updating the rewards formula, more large stakeholders will be able to earn full yields by pledging to private pools excluding community delegation.
-
-Large differences between k-parameter and the k-effective of the network represents a stress on the current state of the network. More pools under the control of a smaller number of groups does not improve decentralization and in fact takes more time and resources to propagate the blockchain to more relays and nodes. A k-effective of >100.0 with an adjustable k-parameter informed by and leading k-effective is reasonable long term goal. If the k-effective becomes >100.0, it is likely that the Nakamoto Coefficient will be >50.
+This CIP addresses these goals by introducing a new pledge leverage parameter *L* and corresponding modifications to the reward formula. The motivation is to curb extreme leverage (high stake with low pledge) in a targeted way that primarily affects Sybil or multi-pool scenarios, while ordinary single-pool operators with reasonable pledge are largely unaffected (and may even benefit from a fairer playing field). In short, we seek to increase decentralization and security without sacrificing the openness and egalitarian nature of Cardano’s stake pool system.
 
 ## Specification
 
-### Statement of Principles
+### Introducing the Pledge Leverage Parameter (*L*)
 
-> _“Principles matter.”_ -CH
+We propose adding a new protocol parameter *L* (maximum *pledge leverage*) to the staking reward formula. The parameter *L* is defined as the maximum ratio of total stake to pledge that a pool can have *before* its rewards begin to plateau. In other words, *L* imposes a pledge-based saturation point for each pool.
 
-1. Everybody in the community should be treated fairly from tiny starfish delegators (1-2k₳) to massive blue whales (>100M₳) and exchanges.
-2. Everybody in the community should have the opportunity to on average earn the same yield and there should not be two classes of stakeholders.
-3. There should be a very clear cause and effect relationship between the input parameters and the resulting K-effective decentralization.
-4. The equation must require, not incentivize, pool operators to pledge to support community delegation and sybil protection.
-5. The decentralization result will be quantified in terms of group decentralization of block production.
-6. Implementation should be smooth, easy, clear, and beneficial for all stakeholders and operators.
-7. A new reward equation should be computationally simple and elegant.
+* **Range of *L*:** 1 ≤ *L* ≤ 10,000 (dimensionless ratio). An *L* of 10,000 represents an extremely high allowed leverage (i.e. pledge need only be 0.01% of the stake), effectively similar to the status quo with a very weak pledge influence. An *L* of 1 represents a very strict requirement where a pool’s stake cannot exceed its pledge (100% pledge) if it is to earn full rewards. 
 
-### Definitions and Concepts
+* **Reward Formula Changes:** The reward calculation (pool reward *R*) is modified to incorporate *L* as follows: Each pool’s stake is effectively capped by its pledge according to *L*. Let: 
 
-**k, k-parameter**
+    * *R* = Pool rewards 
 
-- The desired number of stake pools for decentralization, which inversely sets a "soft cap" on the stake pools saturation limit (size). The pool size is determined by total circulating supply divided by k number of pools. Pool size is encouraged to converge toward k for optimal staking rewards, in theory.
+    * 𝜎 = pool’s total stake (pledge + delegated stake) 
 
-**k-effective**
+    * *p* = pool’s pledge 
 
-- The “average resulting decentralization” or "effective decentralization" taking into account groups or entities of stake pools.  One group could be running multiple stake pools, which lowers the realistic, effective decentralization.
+    * *k* = target number of equal-sized, active, block-producing pools 
+ 
 
-**Nakamoto Coefficient, Minimum Attack Vector (MAV)**
+* We introduce a **pledge leverage cap** such that the effective stake used in reward computations is:
 
-- The minimum number of entities in a given subsystem required to get to 51% of the total capacity, or more simply, how many stake pool groups it would take to gain 51% control of the blockchain. This is a simple yet decisive decentralization measurement. It is not limited to pools, but any attack vector.  However, for the scope of this paper it is assumed to be pools only. The Nakamoto Coefficient is approximately half of k-effective rounded up to the nearest integer.
+![CIP-50 Formula](images/CIP50Formula.png "CIP-50 Formula")
 
-**Sybil Attack**
+ This means a pool is subject to *two* soft caps: one based on the global saturation (*k*) and one based on its own pledge.
 
-- An attack where the attacker pretends to be an honest pool or pools to gather stake and power in the network.  The attacker can create an infinite number of pools in his effort to maximize his own power in the network.
+* **Stake cap (k):** If a pool’s total stake 𝜎 exceeds *1/k* (the normal saturation point), it gets no extra rewards beyond that point (as in the current formula). 
 
-**Pledge**
+* **Pledge cap (L):** If 𝜎 exceeds *L·p* (i.e. the pool’s stake is more than *L* times its pledge), then any stake above that is not counted for rewards either. In effect, the pool is “leverage-saturated” if it tries to grow too large without sufficient pledge backing. 
 
-- The amount of stake pledged by a stake pool in ADA. This combats a sybil attack with an economic cost of a "down-payment" or stake pool _pledge_ when creating a new stake pool.
+### Implications:
+  * A pool with **very low pledge** relative to its delegation will hit the pledge cap long before the *k* cap. For example, a pool pledging 1k ADA with *L*=100 can fully utilize at most 100k ADA of stake; beyond that, additional delegations won’t increase its rewards. If that pool has, say, 1 million ADA delegated, it will still only earn rewards as if it had 100k (plus its 1k pledge) – the rest of its stake is effectively providing zero rewards to its delegators. This creates a strong incentive for delegators to move to better-pledged pools if their pool is over-leveraged. 
 
-**Pledge Leverage, L**
+  * A pool with **adequate pledge** will not be affected by the *L* cap until it reaches the normal saturation point. For instance, with *L*=100 and *k*=500, a pool needs about 1% pledge to utilize full stake up to *1/k*. In absolute terms, given the current saturation point around 75M ADA. At *L*=100, a pledge of ~750k ADA would be required to support 75M stake. Pools that meet this pledge-to-stake ratio can grow to saturation normally and will earn the same rewards as under the current formula. 
 
-- The ratio between an entity’s pool stake and pledge defined by the parameter L. A leverage-based stake pool saturation is based on pledge rather than a fixed size driven by k-parameter. An entity having high leverage means its total stake is much higher than its pledge.
+  * Pools with a **substantial pledge** relative to their stake will not be constrained by the pledge leverage parameter, *L*. These high-pledge pools will instead only reach the global network saturation point, which is determined by *1/k*. Furthermore, these well-pledged pools will also receive a small additional reward boost based on the pledge influence factor, *a₀*, in the existing reward formula, providing them with a modest advantage over pools that are approaching the leverage cap. 
 
-**VRF Score**
+  * If a pool’s stake is **below saturation**, it can still earn rewards on the full amount of stake as long as its pledge is at least *𝜎·L*. Smaller pools typically have smaller 𝜎, so the pledge needed is modest. For example, at *L*=100 and *k*=500, a pool with 500k ADA total stake would only need a pledge of ~5k ADA (1% of 500k) to not be limited by leverage, and it would offer delegators a competitive APY. This is a reasonable pledge threshold, demonstrating that **honest small pools are not penalized** by *L*. They can achieve comparable yields as large pools on a proportional basis. 
 
-- Verifiable Random Function (VRF) score is essentially the lowest random number generated by the stake pools that determines what pool won the slot leader battle to mint a block.  The lowest random number VFR score generated by a pool wins the block.
+  * Crucially, a pool with **zero pledge will earn zero rewards** if it has any delegated stake. This is a clear break from the current scheme, where a pool with 0 pledge can still generate rewards for delegators (just slightly less). Under the new formula, some amount of pledge becomes absolutely mandatory.  This eliminates the “free rider” problem of profit-seeking pool operators undermining the network’s security.
 
-**Private vs Public Stake Pools**
+## Rationale: How Does This CIP Achieve Its Goals?
 
-- Cardano stake pool operators can be either private, using only their own self-bonded stake, or public, by accepting delegation. A private stake pool retains 100% of the pool’s profits but must also provide 100% of the pool’s staking power. Most stake pool explorers will not give the pool visibility as a staking option because they are already fully saturated.  Private stake pool operators optimize rewards by pledging the whole stake cap for their pool. If you have enough ADA to meet the saturation point alone, your rewards will be 100% of the potential earned when adjusted for the a0 parameter. Public stake pools that do not have full pledge must make up their stake from public delegation.
+### Penalizing Under-Pledged Pools (Sybil Deterrence)
 
-### The Proposed Reward Formula
+The pledge leverage parameter *L* directly targets the worst-offending pools from a Sybil perspective – those with lots of stake but little skin in the game. By establishing an upper limit on stake relative to pledge, *L* introduces a hard economic penalty for over-leveraged pools. An operator can no longer create unlimited pools with minimal pledge and expect nearly full rewards on all of them. Any pool that is* severely under-pledged *will quickly hit the leverage cap and see its additional delegated stake yield zero incremental rewards.
 
-The proposed reward retains the function of $k$ for limiting rewards based on stake and introduces parameter $L$ for enforcing reward limits based on pledge leverage. The equation equally balances both reward parameters. The pledge leverage parameter $L$ is intended to range from 10,000.0 down to 1.0. An $L$ value of 100.0 would require pools to pledge 1.0% of stake and an $L$ of 1.0 would require all pools to be 100.0% pledged.
+This has an immediate discouraging effect on Sybil behaviors:
 
-<p align="center">
- <img src="./images/equation3-newRewardEq.png" width="400">
-</p>
+* A malicious actor attempting to control a large portion of stake by spinning up many pools would now need to proportionally increase pledge for each pool to make them effective. Otherwise, delegators will not join those pools (due to poor returns) or will abandon them once they realize additional stake is wasted. The economic cost of a Sybil attack thus becomes *linearly proportional* to the stake under control, thanks to the pledge requirement, rather than merely the fixed cost of running many nodes. 
 
-The new equation is computationally simple and purposefully does not use logarithms, exponents, or geometric curves. Instead of an incentive based tradeoff between egalitarian rewards and a perceived Sybil resilience the new equation enforces both egalitarian rewards and pledge-based Sybil resilience. A simple flat egalitarian yield ceiling with pledge leverage enforcement for Sybil defense has a profound psychological effect: Stakeholders know there is no way to game the system for yield, either individually or collectively with governance, and pledge is absolutely mandatory. Without any engineered bias Cardano decentralization would converge to the diversity of the underlying community, services, and stakeholder distribution. If this proposal is eventually adopted changes in community diversity, not changes in a formula or parameters, would change decentralization.
+* Importantly, *L* removes the “free ride” incentive that previously existed where splitting one’s stake into multiple pools could circumvent the saturation limit. Under the new scheme, splitting stake across N pools without adding more pledge might split one’s effective rewards as well. For example, if an entity with a fixed total pledge *p* runs two pools, each pool will have at most *p·L* worth of effective stake. If they had combined everything in one pool, they’d have *p·L* effective stake (assuming that was the limiting factor). By splitting into two pools with pledge p/2 each, each pool caps at (p/2·L), for a combined effective stake of *p·L* – the same as one pool. Thus, there is no gain in total rewards by operating multiple pools under a fixed pledge budget. Any attempt to gain more by adding a new pool will just spread the pledge thinner and impose a lower cap per pool, keeping the total unchanged. This is a fundamental change: in the current scheme, splitting stake *can* increase an entity’s total rewards (because each pool can almost fully saturate and earn fees), but with *L* enforced, splitting yields *diminishing returns* unless accompanied by more pledge. 
 
-## Rationale: how does this CIP achieve its goals?
+* Furthermore, *L* ensures pledge is absolutely mandatory for participation, aligning every operator’s incentives with the network’s security. Unlike today where many pools operate with almost zero pledge, under the new formula a pool with 0 pledge simply cannot earn rewards. Even a minimal pledge pool will severely limit its delegators’ returns if it grows, making it unappealing. This policy embodies the principle that if you want to benefit from community delegation, you must put up a bond to secure the network. It converts pledge from a weak nudge into a strict requirement, dramatically strengthening Sybil resistance. 
 
-### Introduction of L
+In short, *L* provides an enforceable limit on Sybil actors and their maximum return on invested capital. It closes the loophole that allows large holders to game the system by simply multiplying pools. By tying rewards to pledge, the economic playing field is leveled: operators must either commit capital or accept a cap on their pool’s influence. This directly realigns incentives with decentralization and security.
 
-The $L$ parameter will establish a maximum pledge leverage before limiting rewards, similar to the k parameter for pool size. Pledge leverage establishes a different ‘saturation point’ for each pool based on its pledge. The $L$ parameter enforces the principle that growing pledge is absolutely required to support growing delegation. This change will directly align the $L$ parameter for protecting the network from Sybil behavior. The pledge leverage factor provides an enforcable limit on sybil actors and their maximum return on invested capital. Pledge will not be a statistically unnoticed slight incentive used only by a handful of large private stakeholders. Community governance to adjust leverage factor $L$ would be the preferred mechanism to constrain sybil behavior.
+### Minimal Impact on Honest Small Pools
 
-The new $L$ parameter will range from 10,000.0 to 1.0. The initial value of the maximum pledge leverage ratio $a0$ should initially be set conservatively high (>=100.0) and optionally decreased slightly over time to a healthy equilibrium by community governance. At $(L=100, k=500)$ approximately 680k₳ pledge would be required to support a fully saturated pool.
+A key advantage of using *L* (a leverage cap) instead of raising *a₀* (linear pledge influence) is that it minimizes negative effects on small or medium operators. The leverage cap kicks in when a pool tries to scale beyond what its pledge supports. Small pools, by definition, are not huge in stake, so most will not even reach the cap if *L* is tuned reasonably. For example, a pool with 1M ADA stake and 10k ADA pledge at *L*=100 is right at the cap (since 10k*100 = 1M); if it grows above 1M, then yes, it would need more pledge to maintain max rewards. But if that pool stays small or gradually grows alongside its pledge, its delegators experience no reduction in yield. In practice, many community pools already maintain a healthy pledge relative to their current delegation. These pools will see no change in their rewards from the new formula, except that they might actually become more attractive to delegators compared to under-pledged competitors.
 
-### The new reward equation
+By contrast, increasing *a₀* would hurt small pools immediately by lowering their rewards relative to large pools (regardless of the small pool’s size). The *L* parameter avoids that blunt harm by acting as a soft cut-off rather than a across-the-board tax. Pools earn normally up to a point, then flatline. Thus, a small pool that isn’t anywhere near saturation or leverage limits will function just as before (or better, since delegators may redistribute in its favor). The reward system aims to remain largely egalitarian: most pools that meet the pledge ratio can reach a similar maximum reward per stake. While increasing a₀ can create a slightly steeper reward gradient favoring high-pledge pools, introducing *L* creates a flat plateau for all pools that meet the leverage requirement while still maintaining a minor pledge benefit through *a₀* up to the global saturation point. This leverages the new *L* parameter to be more egalitarian while still incentivizing pledge, aiming to minimize the creation of disparate classes of participants.
 
-The proposed reward formula should be visualized on a linear(yield) vs log(saturation) scale independent of $k$. The chart below shows the field of possible outcomes for various levels of pledge and stake spanning more than 3 orders of magnitude. The effect of $L$ becomes obvious, pool saturation will be limited first by pledge amount and then eventually by $k$. A very important feature of this relationship is that 0₳ pledge will always result in 0₳ rewards. At $L=100.0$ to support a 100.0% saturated stake pool 1.0% pledge will be required.
 
-<img src="./images/chart constant leverage L 100 minfee 30.png">
+### Discouraging Multi-Pool Splitting and Easing *k* Increases
 
-### The new reward equation without a minimum fee
+One of the strongest arguments for the leverage-based approach is its effect on multi-pool operators (MPOs). In the current scheme, an MPO (like an exchange or a pool group) can slice their stake into *N* pools and, aside from the minor dilution of pledge, face little downside. They often benefit by collecting multiple fixed fees and saturating more pools. This has led directly to the situation of single entities running tens of pools and dominating the top ranks.
 
-<img src="./images/chart constant leverage L 100 minfee 0.png">
+With *L*, the advantage of operating multiple pools is blunted for operators with too little pledge to support them. Since the rewards of each pool are limited by pledge, an MPO with a fixed total pledge won’t gain by spreading it thin. In fact, operating more pools could reduce their overall efficiency if their pledge per pool drops. The rationale is simple: if splitting your pledge into two pools halves the effective cap of each, you end up with the same total effective stake across your pools (and thus the same total rewards) as if you kept one pool fully pledged. Therefore, a rational operator under the new scheme would have no incentive to run more pools than necessary to accommodate their stake and pledge. We anticipate that many MPOs will consolidate or reduce the number of pools they run once *L* is in effect, because having many half-pledged pools would just advertise their leverage weakness and fail to increase their earnings.
 
-### The new reward equation zone
+This property is especially important when considering future increases in *k*. If Cardano wants to raise *k* (say to 1000 or beyond) to encourage further decentralization, *L* will ensure that those additional pool “slots” actually translate to new operators, not just existing MPOs multiplying again. As noted earlier, raising *k* alone without leverage control might invite big players to split stake into more pools. But if those players are constrained by pledge, they cannot effectively occupy all the new slots at full rewards. For instance, an exchange with limited pledge might fill some pools to the cap, but then either stop or create more pools that are underperforming. This leaves room (and incentive) for other operators to step in and operate the remaining pools, because delegators will seek out pools that *can* give full rewards. Thus, *L* works in synergy with raising *k*: it amplifies the decentralization impact of a larger *k* by preventing single entities from monopolizing the new capacity. In effect, *L* helps align *k* (the protocol’s target) with *k-effective* (the real outcome). We can safely pursue higher *k* values knowing that effective decentralization will follow more closely, rather than being undermined by Sybil pool clusters.
 
-<img src="./images/stake vs leverage proposed.png">
+### Validating Behavior with Reward Sharing Simulation Engine
 
-### The yield ceiling
+To test whether the leverage cap (*L*) proposed in CIP-50 delivers the intended balance between Sybil resistance and fairness, we re-ran the University of Edinburgh Reward-Sharing Simulation Engine with two configurations:
 
-The new equation is purposefully designed so that stakeholders of dramatically different size can all reach the exact same maximum yield. The yield ceiling feature prevents the formation of two classes of stakeholders and removes the economic benefits of custodial centralization. The yield ceiling is the ‘egalitarian reward’ described but not implemented by the original paper.
+1. **Baseline** – the current Cardano rewards formula exploring *k = 250 → 2,000* and *a₀ ∈ {0.1, 0.3, 0.5, 1, 10}*. 
 
-With the minFee < 30 once a pool grows to >0.5% of saturation the intermittent rewards will, on average, provide a competitive yield for delegators at >5.0%. At $k=500$ and $L=100$ this corresponds to a pool size 500k₳ with a minimum pledge of only 5k₳. The yield ceiling is also compatible with a potential future implementation of the Conclave collective stake pool concept. Because of the yield ceiling large collective stake pools will only provide more predictable returns, not a materially larger yield which would compete with smaller independent pools.
+2. **CIP-50** – identical *k* sweep but with *a₀ locked at 0.3* and *L ∈ {10, 100, 1 000, 10,000}*.
 
-### Leverage-based Pool Ranking Recommendation
+![Current RSS vs CIP-50](images/RSS2.png "Current RSS vs CIP-50")
 
-Pool ranking scores in wallet browsers have a significant and powerful game theory impact on delegator pool choices, yet it is often overlooked and not transparent in wallets.
+(University of Edinburgh: Blockchain Technology Lab, 2025)
 
-When pledge becomes the most important factor for total pool size, lower leverage factors are more desirable. Lists should be sorted by leverage and presented in an descending order with the lowest leverage pools first.
+**Decentralization is roughly the same or slightly improved.**    
+Where the baseline delivers 159 independent entities for the current parameter set (*k=500, a₀=0.3*), CIP-50 achieves **~160** at almost all settings of *L*. Thus the new rule neither harms decentralization nor relies on an unpalatable increase to *a₀*.
 
-#### Ranking Equation
+**Network pledge rises slightly.**    
+Total pledged stake in the baseline hovers between **0.73 and 0.93** of the maximum possible, depending on *a₀* and *k*. CIP-50 nudges this figure upward at *a₀*=0.3, showing that a leverage ceiling likely would entice operators to increase their pledges rather than spawn extra pools.
 
-The recommended ranking equation starts with the highest score of 10. The pools are down-ranked solely based on leverage, saturation, and fee factors.
+**Lower *L* values are preferred.**    
+While any finite *L* blocks the worst Sybil behavior, tighter caps yield the best Sybil protection without penalizing small-to-medium operators the way a large *a₀* increase would. The sweet spot lies at the lower end of the tested range (~10 to ~100), where Sybil protection is strongest yet the number of viable pools remains healthy.
 
-    //equation
-    ranking_score = 10 - max{ leverage_factor, saturation_factor } - fee_factor
+***L* primarily strengthens Sybil protection.**    
+In the baseline, lowering *a₀* to 0.1 caused a notable drop in Nakamoto coefficient at *k=2000*. To investigate this particular issue, further simulations were run with extremely low values of *a₀* with the current rewards formula and with CIP-50 and a flat *L* value of 10.
 
-    //variables
-    leverage_factor = 10 * (pool_leverage/L)^A
-    saturation_factor = 2 * (pool_stake/(saturation_stake * C))^B
-    fee_factor = D * pool_fee_margin
+![Current RSS with low a0 values](images/RSS3.png "Current RSS with low a0 values")
 
-    //parameters
-    - A is 2.0, has range (0,10.0), can be tweaked
-    - B is 5.0, has range (0,10.0), can be tweaked
-    - C is 0.9, has range (0,2.0), can be tweaked
-    - D is 50, has range (0-100) ish to be harsh, can be tweaked
-    - pool_leverage = delegation / pledge
-    - pool_stake = pledge + delegation
-    - saturation_stake = total_live_stake/k (e.g. 68M₳ "soft-cap upper limit")
-    - pool_fee_margin is in range (0-100)% (fixed fee + margin combined)
+![CIP-50 with low a0 values and L=10](images/RSS4.png "CIP-50 with low a0 values and L=10")
 
-To evaluate rank using the current reward scheme:
+(University of Edinburgh: Blockchain Technology Lab, 2025)
 
-    //current reward scheme only
-    ranking_score = 10 - max{ leverage_factor , saturation_factor } - fee_factor - fixed_fee_factor
-
-    //variables
-    //if fee = minFee, term drops out
-    //if fee > minFee, term nonzero but loses relevance w/ increased stake
-    //fixed fee matters less to rewards as stake grows, so too here
-    fixed_fee_factor = E * (fee-minFee) / stake
-
-    //parameters
-    - E is 100, has range (0,100_000), can be tweaked
-    - fee cannot be less than minFee
-
-#### A Pool's Life-Cycle
-
-A leverage-based ranking system will create interesting pool free market business dynamics. It's envisioned a pool will undergo "business life-cycles" based on price supply and demand (fees) and leverage (pledge raising to grow the business) as described below. Currently, the yield-based pool ranking creates a market based on fees (driving yield), but not leverage, thus pools  can grow indefinitely with no "leverage ranking costs".
-
-_A Leverage-Based Pool's Life-Cycle_
-1. Start-up: Low pledge, very low leverage, very low fees, very highly ranked.
-2. Growth: Gain delegation, leverage grows, rewards gained, high rank.
-3. Sustainment: Raise fees, sustainable operation, moderate ranked.
-4. Accumulation: Delegator surplus, high leverage, raise fees, high rewards, low rank.
-5. Reset: Lower fees, increase pledge, regain low leverage and high rank. Repeat.
-
-With the need to grow pledge to grow pool size and regain better ranking, the business cycle is cyclical indefinitely until the pool reaches max saturation based on the k-parameter.
-
-### Oversaturation Attacks (OA)
-
-An oversaturation attack occurs when a large stakeholder would significantly oversaturate a pool with the intention of pressuring current and future delegators to select a new pool. Limiting pool sizes based on pledge leverage provides a robust sybil enforcement, however lower saturation limits also lowers the cost of an oversaturation attack. The ultimate mitigation is not a formula modification, but instead 2-way at-will delegator acceptance staking which would allow a stake pool operator to exclude or 'veto' select stake keys. This solution has been previously discussed in the community and would benefit from its own CIP.
-
-### The economic motivations of large stakeholders and collective pools
-
-The new formula will not decrease the yields of any large stakeholders pledging to private pools. Large ADA stakeholders such as exchanges, liquidity pools, or smart contracts would not be required to pledge a vast majority of those holdings to earn yields currently only achievable with fully pledged pools. This property improves overall liquidity. The large stakeholders who voluntarily choose to divide their stake to dozens of community pools will also achieve more fault tolerance than self-operating a small number of centralized private pools. A number of wallets including Eternl are offering the capability to divide stake delegation between many pools.
-
-This design decision aligns the interest of the largest stakeholders with the interests of the whole community. The only economic motivation remaining for groups with large stake including founder(s), founding organizations, exchanges, investment capital, trusts, and venture capital would be to enhance the value of the entire network by dividing delegation to secure diversification. Large stakeholders being able to divide stake without penalty to many smaller community pools will have the greatest impact on improving the effective decentralization and Nakamoto Coefficient of Cardano.
-
-### Relevant prior CIP proposals and drafts
-
-1. https://cips.cardano.org/cips/cip7/
-2. https://github.com/cardano-foundation/CIPs/pull/163
-3. https://github.com/cardano-foundation/CIPs/pull/229
-4. https://forum.cardano.org/t/cip-leverage-based-saturation-and-pledge-benefit/95632
-5. https://forum.cardano.org/t/cip-change-the-reward-formula/33615
-6. https://forum.cardano.org/t/an-alternative-to-a0-and-k/42784
-7. https://dynamicstrategies.io/crewardcalculator
-
-### Methods and paradigms for equation validation
-
-To validate any reward equation simulations must consider that an entity can choose to delegate to another entity, operate one stake pool, or operate many stake pools. Any new equation should be compared to the current equation with $a0=0.3$ and the current equation with minFee=0, $a0=0.0$. A large and increasing number of entities (1k - 1B) should be simulated for each trial of each equation. Additionally, during each epoch of each simulation for each equation block production should be sampled VRF-style from a discrete binomial or skellam distribution. Block production and rewards have statistical uncertainty.
-
-```
-Each equation:
-  Each epoch:
-    sample block production (rewards) per pool
-    Each entity may choose to:
-      create/retire 1 or more pools
-      adjust the fee/margin structure of their pool(s)
-      delegate to the pool of a different entity
-```
-
-For each equation in consideration the average (and variation) of the nakamoto coefficient, k-effective coefficient (or an entity/group based equivalent), and a sybil coefficient shall be computed for every epoch until conclusion. The sybil coefficient would quantify the fraction of stake controlled by all entities operating multiple pools excluding regulated businesses such as exchanges.
-
-### Alternate Equation Forms and Parameter Variations
-
-Parameter Ranges:
-$k = [100 - 2000]$
-$L = [10 - 10000]$
-$a0 = [0.0 - 10.0]$
-$bias = [0.00 - 0.95]$
-
-#### Proposed Unbiased Egalitarian Leverage Limiting Equation:
-
-<img src="./images/equation4-newRewardsEq.png" width="300">
-
-<img src="./images/chart constant leverage L 100 minfee 0.png">
-
-#### Current RSS Equation Form:
-
-<img src="./images/equation4-currentEq.png" width="400">
-
-#### CIP-7 Equation Form
-
-<img src="./images/equation5-cip7-currentEq.png" width="500">
-
-Where equations and independent variables to test are:
-- Eq (1) CIP-7 Rewards: Legacy rewards equation with n-root curved pledge benefit
-- Eq (2) Repurposed lambda_alt_prime, and legacy sigma_prime
-- Eq (3) Lambda_alt: N-root curve pledge benefit
-- Eq (4) Crossover: An expression called crossover represents the point where the new curve crosses the line of the original curve, and the benefit in the new and original equations is identical.
-  - The crossover_factor is a divisor of saturation that calculates the pledge where the curve crosses the line. crossover_factor > 1.
-- Eq (5) Curve_root: The n-root curve exponent used in Eq 2 to alter the rewards. 1 = linear, 2 = square root, 3 = cube root, etc.
-
-And the recommended testing permutations are:
-
-    For crossover in crossover_factor range [10,20,50]:
-      For n in curved_root range [2,3,4]:
-
-#### Linearly Biased Variation with a Leverage Limit:
-
-<img src="./images/equation4-newRewardsEqBiased.png" width="400">
-
-- with $k = 150$, $bias=0.05$, and $L = 50$
-- with $k = 150$, $bias=0.05$, and $L = 100$
-- with $k = 150$, $bias=0.05$, and $L = 1000$
-- with $k = 500$, $bias=0.05$, and $L = 50$
-- with $k = 500$, $bias=0.05$, and $L = 100$
-- with $k = 500$, $bias=0.05$, and $L = 1000$
-- with $k = 1000$, $bias=0.05$, and $L = 50$
-- with $k = 1000$, $bias=0.05$, and $L = 100$
-- with $k = 1000$, $bias=0.05$, and $L = 1000$
-
-<img src="./images/chart constant leverage L 100 minfee 0 bias 0.05.png">
-
-#### Linearly Biased Variation with a Diminishing Leverage Limit:
-
-(incomplete)
-
-#### Mahmoud Nimer Ada Link Pool Pledge to Network Pledge Reward Equation
-
-Mahmoud Nimer's proposed reward equation presented in the [Ada Link's Stakepool Pledge Influence in Stake Rewards Distribution Paper](https://github.com/ADA-Link/Papers/blob/main/Stakepool%20Pledge%20Influence%20in%20Stake%20Rewards%20Distribution.pdf) seeks to compare pool pledge to total network pool pledge, and reward pool pledge growth relative to stake pool size growth.
-
-<img src="./images/equation8-nimer-adalink.png" width="400">
-
-Where:
-* Eq (1) The Nimer Rewards Equation
-* Eq (2) s_hat_primt: The pledge saturation equation
-* Eq (3) s_hat: Pool pledge / Total Network Pool Pledge
+The addition of *L* resulted in a notable improvement in the Nakamoto coefficient over the baseline rewards formula.  Taken together, the simulations support the hypothesis that CIP-50’s leverage cap will accomplish its primary mission of curbing Sybil pool proliferation.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] The change for the new equation is implemented in the ledger and has been activated through a hard fork.
+**Consensus on an Initial *L*** – An initial value of *L* must be agreed upon before hard-fork combinator (HFC) activation. The choice should balance Sybil protection against operational viability, drawing on empirical analyses (e.g., RSS results) and community feedback. 
+
+**Endorsement by Technical Bodies** – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap. 
+
+**CIP Editorial Approval** – Cardano CIP Editors must confirm that the specification is complete, unambiguous, and internally consistent with existing CIPs. 
+
+**Stakeholder Concurrence** – A majority of stake pool operators (SPOs), ecosystem tooling maintainers, dReps, and other infrastructure providers must signal readiness to upgrade. 
+
+**Governance Ratification** – The on-chain Hard-Fork Governance Action must pass the requisite dRep and Constitutional Committee thresholds, establishing legal-constitutional legitimacy and stakeholder support for the change.
 
 ### Implementation Plan
 
-Implementation will occur in two distinct phases with the first phase being only parameter changes requiring no hard fork. During this first phase any changes will be reversible. The second phase will require a hard fork. The implementation of this proposal must be smooth, justified, staged, deliberate, and well communicated through advertising and education.
+**Community Deliberation (Preparation Phase)**
 
-Each change in the implementation schedule should include clear communication to the community on expectations. Transparent education on how the parameters will work and the effect on rewards is important.
+* Publish the finalized CIP-50 revision and present it to the PCP committee , TSC, CIP Editors, and wider community channels (Discord, X, Cardano Forum, etc.). 
 
-1. Get statements of support from a large fraction of the Cardano community.
+* Collect structured feedback—particularly on candidate values for *L*—and iterate until broad technical consensus emerges. 
 
-Although we haven't entered the Voltaire era yet, we should still reach community concensus.
+**Specification & Code Integration (Development Phase)**
 
-2. Reduce minFee from 340₳ to 0₳.
+* Once an initial *L* is determined, integrate the leverage-cap logic into cardano-node and related libraries (ledger, CLI, wallet APIs). 
 
-Reducing the mandatory minimum fee to 0 will allow smaller pools to become more competitive while allowing each individual pool to select an appropriate fixed fee.
+* Submit pull requests to the canonical repositories; obtain code reviews from IOG, CF, and community contributors. 
 
-3. Create an open source simulation suite to benchmark all of the possible equation forms and parameter variations.
+* Release a new protocol version that includes the changes made in this CIP. 
 
-4. Competitively evaluate, compare, contrast, and analyze the results of all possible equation forms and parameter variations.
+* Use a dedicated pre-production testnet that mirrors main-net parameters but enforces the new *L* rule, allowing SPOs and exchanges to test end-to-end flows. 
 
-5. Include the community in selecting the winning equation form and parameter set.
+**Readiness Sign-off (Testing Phase)**
 
-6. HARDFORK implementation of the new equation and parameter set.
+* Require at least two weeks of uninterrupted testnet stability plus green results from regression and property-based tests. 
 
-7. Measure decentralization, gather community feedback.
+* Monitor ecosystem dApps and tooling to confirm that major node implementations, explorers, wallets, and exchange integrations support the new rule set. 
 
-8. Slightly adjust parameters by at most approximately 5% every 10 epochs until the end of Voltaire.
+**On-chain Governance (Ratification Phase)**
 
-10. After Voltaire adjust parameters annually/bi-annually by community vote.
+* File the Hard-Fork Governance Action on-chain with the agreed *L*, tagged for the next hard fork event. 
 
-### List of Potential Reviewers:
+* Mobilize dRep outreach to ensure quorum and super-majority passage; concurrently, the Constitutional Committee validates procedural compliance. 
 
-- Aggelos Kiayias
-- Aikaterini-Panagiota Stouka
-- Charles Hoskinson
-- Christia Ovezik
-- Colin Edwards
-- Duncan Coutts
-- Elias Koutsoupias
-- Francisco Landino
-- Lars Brünjes
-- Mark Stopka
-- Philipp Kant
-- Shawn McMurdo
-- Tobias Francee
-- Tom Stafford
+**Hard-Fork Activation (Deployment Phase)**
+
+* Upon successful vote, the hard fork event is automatically triggered upon epoch turnover. 
+
+* Monitor main-net metrics during the changeover epoch; provide real-time support for any late-upgrading SPOs.
+
+## References
+
+  AdaPulse. (2023, February 23). *MAV: The Safety Metric In Block Production Decentralization*. AdaPulse. Retrieved May 20, 2025, from https://adapulse.io/mav-the-safety-metric-in-block-production-decentralization
+
+  *Balance Analytics*. (2025, May 20). Average Resulting Decentralization. Retrieved May 20, 2025, from https://www.balanceanalytics.io/chartboards/decentralization
+
+  Balance Analytics. (2025, May 20). *Group Stake Donut Chart*. Balance Analytics. Retrieved May 20, 2025, from https://www.balanceanalytics.io/chartboards/donut_shop
+
+  Fancee, T. (2022, February 1). *CIP - Leverage-based Saturation and Pledge Benefit*. Cardano Forum. Retrieved May 20, 2025, from https://forum.cardano.org/t/cip-leverage-based-saturation-and-pledge-benefit/95632
+
+  Kiayias, A. (2020, November 12). *The general perspective on staking in Cardano*. Input | Output. Retrieved May 20, 2025, from https://iohk.io/en/blog/posts/2020/11/13/the-general-perspective-on-staking-in-cardano/
+
+  Kiayias, A. (2020, November 29). *Blockchain reward sharing - a comparative systematization from first principles*. Input | Output. https://iohk.io/en/blog/posts/2020/11/30/blockchain-reward-sharing-a-comparative-systematization-from-first-principles/
+
+  Koios. (2025, May 28). *Pool List API*. https://api.koios.rest/
+
+  Liesenfelt, M. (2022, April 4). *Pledge Leverage-Based Staking Rewards*. Cardano Improvement Proposals. Retrieved May 20, 2025, from https://cips.cardano.org/cip/CIP-0050
+
+  University of Edinburgh: Blockchain Technology Lab. (2025, May 28). *Rewards Sharing Simulation Engine*. https://github.com/Blockchain-Technology-Lab/Rewards-Sharing-Simulation-Engine
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)
-
-Copyright 2022 - Michael Liesenfelt
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
