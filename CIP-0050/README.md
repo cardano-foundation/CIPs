@@ -12,7 +12,10 @@ Authors:
   - Chad [BBHMM] 
 Status: Draft (Updated) 
 Created: 4 April 2022 (original), 20 May 2025 (updated) 
-Discussion: Cardano SPO Incentives Working Group
+  - https://github.com/cardano-foundation/CIPs/pull/242
+  - https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
+  - https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
+  - https://github.com/cardano-foundation/CIPs/pull/1042/files
 ---
 
 ## Abstract
