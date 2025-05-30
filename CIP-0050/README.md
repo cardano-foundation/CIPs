@@ -10,7 +10,7 @@ Authors:
   - Wayne [OTG]
   - Homer J (AAA)
   - Chad [BBHMM] 
-Status: Draft (Updated) 
+Status: Proposed
 Created: 4 April 2022 (original), 20 May 2025 (updated) 
   - https://github.com/cardano-foundation/CIPs/pull/242
   - https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
