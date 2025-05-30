@@ -1,7 +1,7 @@
 ---
 CIP: 50 
 Title: Pledge Leverage-Based Staking Rewards 
-Category: Ledger / Protocol 
+Category: Ledger
 Authors: 
   - Michael Liesenfelt <michael.liesenfelt@gmail.com>
   - Ryan Wiley
