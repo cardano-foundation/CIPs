@@ -31,8 +31,6 @@ This CIP proposes a new node for an uplc tree.
 
 The node is intended to have the same effect of n consecutive lambda nodes for 1/n the cost. Improving contracts in all measurable metrics (size, cpu, memory)
 
-([See rendered proposal in branch](https://github.com/HarmonicLabs/multi-arity-lambda/blob/master/CIP-%3F%3F%3F%3F/README.md))
-
 ## Motivation: why is this CIP necessary?
 <!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
 
