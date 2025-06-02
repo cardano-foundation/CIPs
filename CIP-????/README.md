@@ -7,7 +7,7 @@ Authors:
     - Michele Nuzzi <michele@harmoniclabs.tech>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1043
 Created: 2025-06-02
 License: CC-BY-4.0
 ---
