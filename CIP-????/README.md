@@ -36,7 +36,7 @@ The node is intended to have the same effect of n consecutive lambda nodes for 1
 
 Patterns like
 ```uplc
-(lam a (lam b (lam c <funciton body>)))
+(lam a (lam b (lam c <body>)))
 ```
 are increasingly common in uplc contracts.
 
