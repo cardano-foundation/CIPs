@@ -27,7 +27,7 @@ License: CC-BY-4.0
 
 ## Abstract
 <!-- A short (\~200 word) description of the proposed solution and the technical issue being addressed. -->
-This CIP proposes a new CIP node for an uplc tree.
+This CIP proposes a new node for an uplc tree.
 
 The node is intended to have the same effect of n consecutive lambda nodes for 1/n the cost. Improving contracts in all measurable metrics (size, cpu, memory)
 
