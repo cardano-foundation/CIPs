@@ -34,9 +34,9 @@ We consider DPs as applications, which construct their own network and relay on 
 
 Bootstraping networks requires sharing information about available services.
 
-Historically, this was done by sharing IP or DNS names and PORT numbers, but this approach has its limitations.
+Historically, this was done by sharing IP or DNS names and PORT numbers (note that `A` or `AAAA` records do not contain PORT numbers), but this approach has its limitations.
 
-SRV records were designed to make deployment independent of hard-coded service end-points (see [RFC#2782]).
+SRV records were designed to make deployment independent of hard-coded service end-points (see [RFC#2782] or [cloudflare documentation][srv]).  They include PORT numbers together with a DNS name (point to an `A` or `AAAA` record) together with `TTL`, priority, weight, and some other data.
 
 Thus they can be instrumental in `Cardano`, since relays are registered on the blockchain through the registration certificate.
 
@@ -56,11 +56,11 @@ DP developers SHOULD submit proposals to the SRV Prefix Registry, so SPOs, who d
 
 ### SRV Prefix Registry
 
-| **service** | **scope**     | **SRV prefix**                       | **Status** |
-|:------------|:--------------| ------------------------------------:|:-----------|
-| _cardano_   |               |                      `_cardano._tcp` | Active     |
-| _mithril_   | _dmq_         |       `_.dmq._mithril._cardano._tcp` | Active     |
-| _mithril_   | _aggregator_  | `_aggregator._mithril._cardano._tcp` | Active     |
+| **service**          | **SRV prefix**                       | **Status** |
+|:---------------------| ------------------------------------:|:-----------|
+| _cardano_            |                      `_cardano._tcp` | Active     |
+| _mithril.dmq_        |       `_.dmq._mithril._cardano._tcp` | Active     |
+| _mithril.aggregator_ | `_aggregator._mithril._cardano._tcp` | Active     |
 
 ### SRV Prefix Semantics
 
@@ -85,7 +85,13 @@ cardano-cli latest stake-pool ... --multi-host-pool-relay example.com
 ```
 (see [register-stake-pool]); and configure SRV record at `_cardano._tcp.example.com` to point to **Cardano** relays, `_mithril._tcp.example.com` to point to **Mithril** relays (see [srv], currently under development).
 
-A **Cardano** node implementation when retrieving information from a registration certificate from the ledger will receive `example.com` and it must prepend the `_cardano._tcp` prefix to make an SRV query.
+A **Cardano** node implementation, when retrieving information from a registration certificate from the ledger, will receive `example.com`, and it must prepend the `_cardano._tcp` prefix to make an SRV query.  Such a query might return:
+
+```
+_cardano._tcp.example.com 86400 IN SRV 10 5 3001 cardano.example.com
+```
+From this, we learn that a Cardano node is available on port `3001` on IPs resolved by a regular DNS query to `cardano.example.com`.
+Refer to the [Cloudflare documentation][srv] for a deeper understanding of other fields.
 
 It may as well append `.` to indicate it is a top-level query, resulting in querying the `_cardano._tcp.example.com.` domain.
 
@@ -108,7 +114,8 @@ And when there's no major objection from one of the currently involved parties:
 
 ### Implementation Plan
 
-Each **Cardano** node implementation or other tools which rely on SRV records stored in the ledger should comply with this proposal.
+Each **Cardano** node implementation or other tools which rely on SRV records stored in the ledger should comply with this proposal,
+e.g. whenever obtaining _multi-pool relay information_ one needs to prepend a registered prefix before making an SRV query.
 
 ## Rationale: how does this CIP achieve its goals?
 
