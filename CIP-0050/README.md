@@ -1,21 +1,23 @@
 ---
-CIP: 50 
-Title: Pledge Leverage-Based Staking Rewards 
+CIP: 50
+Title: Pledge Leverage-Based Staking Rewards
 Category: Ledger
-Authors: 
+Status: Proposed
+Authors:
   - Michael Liesenfelt <michael.liesenfelt@gmail.com>
   - Ryan Wiley
   - Rich Manderino [ECP]
   - Stef M [RABIT]
   - Wayne [OTG]
   - Homer J (AAA)
-  - Chad [BBHMM] 
-Status: Proposed
-Created: 4 April 2022 (original), 20 May 2025 (updated) 
+  - Chad [BBHMM]
+Implementors: []
+Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/242
   - https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
   - https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
   - https://github.com/cardano-foundation/CIPs/pull/1042/files
+Created: 4 April 2022 (original), 20 May 2025 (updated)
 ---
 
 ## Abstract
