@@ -16,33 +16,32 @@ License: CC-BY-4.0
 
 This CIP defines the procedure for assigning Service Record (SRV) prefixes for Cardano applications (like `cardano-node`, `mithril`, etc.).
 
-This creates a means of sharing authoritative information between SPOs who deploy services and _decentralised protocol_ (DP) developers who write them.
+This creates a means of sharing authoritative information between SPOs who deploy services and _decentralised protocol_ developers who write them.
 
 ## Motivation: why is this CIP necessary?
 
 The **Cardano Ledger** allows the use of SRV records in the **SPO** registration certificate (see [register-stake-pool]).
 
-In this CIP, we propose to make them usable by decentralised applications running on `Cardano`.
-
 Having access to the ledger (either directly or through tools like `cardano-cli`) will allow decentralised protocols developers to construct networks based on registered relays. 
 
-All involved parties (SPOs, DP developers, etc) need to agree on SRV prefixes used by various DPs and thus a public registry governed by a public CIP process is required to foster DPs that co-exist with the **Cardano** network, like **Mithril** (see [CIP#137]).
+In this CIP, we propose to make them usable by decentralised applications running on `Cardano`.
 
-We consider DPs as applications, which construct their own network and relay on ledger peers published on the block-chain. This include node implementations, or 2nd-layer solutions like Mithril or Hydra.
+
+All involved parties (SPOs, decentralised protocol developers, etc) need to agree on SRV prefixes used by various decentralised protocols and thus a public registry governed by a public CIP process is required to foster decentralised protocols that co-exist with the **Cardano** network, like **Mithril** (see [CIP#137]).
+
+We consider decentralised protocols as applications, which construct their own network and relay on ledger peers published on the block-chain. This include node implementations, overlay networks like Mithril, or Layer 2 protocols like Hydra.
 
 ### Problem
 
 Bootstraping networks requires sharing information about available services.
 
 Historically, this was done by sharing IP or DNS names and PORT numbers (note that `A` or `AAAA` records do not contain PORT numbers), but this approach has its limitations.
-
 SRV records were designed to make deployment independent of hard-coded service end-points (see [RFC#2782] or [cloudflare documentation][srv]).  They include PORT numbers together with a DNS name (point to an `A` or `AAAA` record) together with `TTL`, priority, weight, and some other data.
-
 Thus they can be instrumental in `Cardano`, since relays are registered on the blockchain through the registration certificate.
 
-By using SRV records in the registration certificate (which is supported by the `cardano-ledger`, but not by `cardano-node`), we wish to solve this problem not just for `Cardano` node implementation, but also for any DP that requires constructing its own network.
+By using SRV records in the registration certificate (which is supported by the `cardano-ledger`, but not by `cardano-node`), we wish to solve this problem not just for `Cardano` node implementation, but also for any decentralised protocol that requires constructing its own network.
 
-SRV provides a mechanism for exposing DPs co-deployed with a node, like **mithril** or **hydra**.
+SRV provides a mechanism for exposing decentralised protocols co-deployed with a node, like **mithril** or **hydra**.
 
 Making such services discoverable is one of the key features addressed by this CIP.
 
@@ -50,7 +49,7 @@ In this CIP, we propose prefixes for both **Cardano** and **Mithril**; in the fu
 
 SPOs who deploy services need to configure their system according to the registry, e.g. SPO's cardano relays node MUST be available at `_cardano._tcp.<SPO_DOMAIN_NAME>`, as other nodes on the system will be looking at this address.
 
-DP developers SHOULD submit proposals to the SRV Prefix Registry, so SPOs, who deploy them, can have an authoritative information how to do it.
+Decentralised protocol developers SHOULD submit proposals to the SRV Prefix Registry, so SPOs, who deploy them, can have an authoritative information how to do it.
 
 ## Specification
 
@@ -66,16 +65,16 @@ DP developers SHOULD submit proposals to the SRV Prefix Registry, so SPOs, who d
 
 When a **cardano** node implementation reads an SRV record from a ledger, it must add the _cardano_ prefix from the table above before making a DNS lookup, e.g. it should do a DNS query for `_cardano._tcp.<srv-record-from-ledger>`.
 
-This design allows DPs to use SRV records registered in the ledger for different purposes, e.g. a **mithril** node can use them to learn about end-points of its network.
+This design allows decentralised protocols to use SRV records registered in the ledger for different purposes, e.g. a **mithril** node can use them to learn about end-points of its network.
 
 Each prefix SHOULD start with `_cardano._tcp` or `_cardano._udp`, to avoid clashes with services not related to `Cardano`.
 
 #### SRV Registry Rules
 
-* Each DP can have at most one entry in the registry.
+* Each decentralised protocol can have at most one entry in the registry.
 * A CIP process assigns new entries, after a careful consideration and consultation with all the involved parties (see #acceptance-criteria below).
 * Entries cannot be removed, but can be revoked by assigning a `Revoked` status.
-  This can only happen if a DP is no longer supported.
+  This can only happen if a decentralised protocol is no longer supported.
 
 ### Example
 
@@ -119,7 +118,7 @@ e.g. whenever obtaining _multi-pool relay information_ one needs to prepend a re
 
 ## Rationale: how does this CIP achieve its goals?
 
-This CIP constructs a process to maintain SRV registry, and thus provides authritative information for SPOs and DP developers.
+This CIP constructs a process to maintain SRV registry, and thus provides authritative information for SPOs and decentralised protocol developers.
 
 
 ## Copyright
