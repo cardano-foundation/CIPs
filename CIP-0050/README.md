@@ -68,22 +68,26 @@ This CIP addresses these goals by introducing a new pledge leverage parameter *L
 
 ### Introducing the Pledge Leverage Parameter (*L*)
 
-We propose adding a new protocol parameter *L* (maximum *pledge leverage*) to the staking reward formula. The parameter *L* is defined as the maximum ratio of total stake to pledge that a pool can have *before* its rewards begin to plateau. In other words, *L* imposes a pledge-based saturation point for each pool.
+For reference we will share the relevant elements of the existing Cardano rewards formula here:
+
+![Cardano Rewards Formula](images/RewardsFormula.png "Current Cardano Rewards Formula")    
+
+(Pledging and Rewards | Cardano Docs, n.d.)
+
+*  *R* - Epoch Rewards Pot
+*  *a₀* - Pledge Influence Factor
+*  *k*  - Target Number of Stake Pools
+*  *𝜎'* - Pool stake eligible for rewards
+*  *𝜎* = Pool’s total stake (pledge + delegated stake)
+*  *p'* = Pool pledge eligible for rewards
+*  *p* = Pool’s pledge
+*  *z0*  - Circulating ADA divided by k
+
+We propose adding a new protocol parameter L (maximum pledge leverage) to the staking reward formula that fits in the third equation for calculating 𝜎'. The parameter L is defined as the maximum ratio of total stake to pledge that a pool can have before its rewards begin to plateau. In other words, L imposes a pledge-based saturation point for each pool.
 
 * **Range of *L*:** 1 ≤ *L* ≤ 10,000 (dimensionless ratio). An *L* of 10,000 represents an extremely high allowed leverage (i.e. pledge need only be 0.01% of the stake), effectively similar to the status quo with a very weak pledge influence. An *L* of 1 represents a very strict requirement where a pool’s stake cannot exceed its pledge (100% pledge) if it is to earn full rewards. 
 
-* **Reward Formula Changes:** The reward calculation (pool reward *R*) is modified to incorporate *L* as follows: Each pool’s stake is effectively capped by its pledge according to *L*. Let: 
-
-    * *R* = Pool rewards 
-
-    * 𝜎 = pool’s total stake (pledge + delegated stake) 
-
-    * *p* = pool’s pledge 
-
-    * *k* = target number of equal-sized, active, block-producing pools 
- 
-
-* We introduce a **pledge leverage cap** such that the effective stake used in reward computations is:
+* **Reward Formula Changes:** The reward calculation (pool reward R) is modified to incorporate a pledge leverage cap as a new parameter L. Each pool’s stake is effectively capped by its pledge according to L such that the eligible pool stake used in reward computations is:
 
 ![CIP-50 Formula](images/CIP50Formula.png "CIP-50 Formula")
 
@@ -234,6 +238,8 @@ The addition of *L* resulted in a notable improvement in the Nakamoto coefficien
   Koios. (2025, May 28). *Pool List API*. https://api.koios.rest/
 
   Liesenfelt, M. (2022, April 4). *Pledge Leverage-Based Staking Rewards*. Cardano Improvement Proposals. Retrieved May 20, 2025, from https://cips.cardano.org/cip/CIP-0050
+
+  Pledging and rewards | Cardano Docs. (n.d.). Cardano Docs. Retrieved June 4, 2025, from https://docs.cardano.org/about-cardano/learn/pledging-rewards
 
   University of Edinburgh: Blockchain Technology Lab. (2025, May 28). *Rewards Sharing Simulation Engine*. https://github.com/Blockchain-Technology-Lab/Rewards-Sharing-Simulation-Engine
 
