@@ -5,7 +5,7 @@ Status: Proposed
 Category: Wallets
 Authors: 
   - Leo
-Implementors: NA
+Implementors: BroClan
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/798
 Created: 2023-10-12
@@ -16,12 +16,11 @@ License: CC-BY-4.0
 
 This document describes a CIP-30 extension allowing webpages (i.e., DApps) to interface with Cardano Plutus wallets. This interface is a work in progress, and new versions are expected to be included as the ecosystem evolves. 
 
+## Motivation: why is this CIP necessary?
   
-  ## Motivation: why is this CIP necessary?
+Plutus wallets is a class of wallets where the holding address does not correspond to a public key, but to a script. This enables more complex validation logic to be implemented in the wallet, allowing for more complex spending conditions to be enforced.
   
-  Plutus wallets is a class of wallets where the holding address does not correspond to a public key, but to a script. This enables more complex validation logic to be implemented in the wallet, allowing for more complex spending conditions to be enforced.
-  
-  Examples of Plutus wallets include :
+Examples of Plutus wallets include :
   - Updatable Multi-signature wallets
   - Subscription wallets (wallet that allow for periodic payments to be made)
   - Maltifactor authetication wallets
@@ -30,10 +29,9 @@ This document describes a CIP-30 extension allowing webpages (i.e., DApps) to in
   - EstatePlanning wallets
   - wallets controlled by non-cardano addresses
   
+In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
   
-  In order to facilitate future DApp development, we will need a way for DApps to communicate with Plutus wallets. Given the unique complexities of Plutus script-based addresses, special provisions need to be made to make the connector compatible with them.
-  
-  ### Rationale for the required data
+### Rationale for the required data
   
   - Script descriptor: Any transaction consuming a UTXO from a Plutus-based address must attach the corresponding script.
   - `ScriptRequirement` list: 
@@ -193,7 +191,6 @@ Returns the CBOR-encoded redeemer.
 
 This endpoint will now optionally return an error if the smart Wallet is a multiparty schema and signatures need to be gathered from multiple parties asynchronously.
 
-
 #### `api.signData(addr: Address, payload: Bytes)`: Promise<DataSignature>
 
 Plutus contracts cannot sign data, only validate transactions. This endpoint will be disabled when connecting to a wallet using this extension.
@@ -201,7 +198,6 @@ Plutus contracts cannot sign data, only validate transactions. This endpoint wil
 ## Rationale: how does this CIP achieve its goals?
 
 By altering the API endpoints and adding new ones, we can provide the necessary information for DApps to interact with Plutus wallets. This will allow any developer to integrate smart-wallets into their DApps, while providing a consistent interface for all wallets.
-
 
 ## Path to Active
 
@@ -213,7 +209,7 @@ By altering the API endpoints and adding new ones, we can provide the necessary 
 ### Implementation Plan
 
 - [x] Provide some reference implementation of wallet providers
-    - [leo42/BroClanWallet](#inProgress)
+    - [x] [leo42/BroClanWallet](https://github.com/leo42/BroClanWallet)
 
 ## Copyright
 
