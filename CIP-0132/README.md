@@ -106,10 +106,10 @@ We propose to define a cost model linear in the size of `n`, the number of eleme
 ## Path to Active
 
 ### Acceptance Criteria
-- [ ] Fully implemented in Cardano.
+- [ ] Fully implemented in Cardano with hard fork that includes Plutus V4.
       
 ### Implementation Plan
-- [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
+- [x] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
       
 ## Copyright
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
