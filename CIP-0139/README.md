@@ -11,7 +11,6 @@ Discussions:
     - https://discord.gg/MU8vHAgmGy
 Created: 2024-05-14
 License: CC-BY-4.0
-Version: 0.0.0
 ---
 
 ## Abstract
