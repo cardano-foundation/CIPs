@@ -155,9 +155,6 @@ Evaluations are being issued on-chain by multiple auditors using this CIP.
 
 ### Implementation Plan
 
-- [x] This CIP will be discussed and agreed by the Cardano Certification Working Group where multiple auditors are being represented. This will ensure that certification issuer have agreed on the content and are ready to issue certificates under this format.
-
-- [x] This CIP will be presented to the IOG Lace team and Cardano Fans team which will display certificates for DApps. This is to ensure that the format contains all the necessary information for a DApp store or an aggregator to correctly link and display a certificate from the on-chain and off-chain metadata.
 
 ## Copyright
 
