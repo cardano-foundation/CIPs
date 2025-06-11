@@ -194,15 +194,15 @@ CIPs are licensed in the public domain. More so, they must be licensed under one
 | For software / code | Apache-2.0 - [Apache License, version 2.0][Apache-2.0]                                 |
 | For documentation   | CC-BY-4.0 - [Creative Commons Attribution 4.0 International Public License][CC-BY-4.0] |
 
-> **Warning**
->
+> [!WARNING]
 > All licenses not explicitly included in the above lists are not acceptable terms for a Cardano Improvement Proposal unless a later CIP extends this one to add them.
 
 #### Statuses
 
 CIPs can have three statuses: `Proposed`, `Active` or `Inactive`. [The CIP Process section](#process) highlights how CIPs move through these statuses; no CIP should be given one of these statuses without satisfying the criteria described here below.
 
-> **Note** There is no "draft" status: a proposal which has not been merged (and hence exists in a PR) is a draft CIP. Draft CIPs should include the status they are aiming for on acceptance. Typically, but not always, this will be _'Proposed'_.
+> [!NOTE]
+> There is no "draft" status: a proposal which has not been merged (and hence exists in a PR) is a draft CIP. Draft CIPs should include the status they are aiming for on acceptance. Typically, but not always, this will be _'Proposed'_.
 
 ##### Status: Proposed
 
