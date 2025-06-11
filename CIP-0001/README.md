@@ -274,7 +274,6 @@ These tentatively enlisted categories await CIPs to describe any enlistment rela
 
 Category  | Description
 ---       | ---
-Catalyst  | For proposals affecting Project Catalyst or the Jörmungandr project
 Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
 Network   | Specifications and implementations of Cardano's network protocols and applications
 
