@@ -246,7 +246,8 @@ This must be subdivided into two sub-sections:
 
     In particular, an implementation that requires a hard-fork should explicitly mention it in its _'Implementation Plan'_.
 
-> **Note** the statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may still be helpful to have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
+> [!NOTE]
+> The statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may still be helpful to have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
 
 #### Categories
 
@@ -291,7 +292,8 @@ It should be noted that single organisations can no longer represent any ecosyst
 
 Any guidelines for this cooperation should be described by a dedicated CIP whenever possible.  When such a CIP is posted or supersedes another one, it will be entered into the above table in the Categories section.  Participants of enlisted categories should follow the requirements outlined in that CIP and should update such proposals whenever these requirements or relationships change.
 
-> **Warning** A positive review by any enlisted project representative does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors.
+> [!WARNING]
+> A positive review by any enlisted project representative does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors.
 
 Editors occasionally invite representatives from enlisted categories to speak during review meetings and solicit them for ultimate approvals of proposals in their area of expertise.
 
