@@ -377,7 +377,8 @@ A dedicated Discord channel may also be created for some long-running discussion
 
 Once a proposal has reached all requirements for its target status (as explained in [Statuses](#statuses)) and has been sufficiently and faithfully discussed by community members, it is merged with its target status.
 
-> **Warning** Ideas deemed unsound shall be rejected with justifications or withdrawn by the authors. Similarly, proposals that appear abandoned by their authors shall be rejected until resurrected by their authors or another community member.
+> [!WARNING]
+> Ideas deemed unsound shall be rejected with justifications or withdrawn by the authors. Similarly, proposals that appear abandoned by their authors shall be rejected until resurrected by their authors or another community member.
 
 CIPs are generally merged with the status _'Proposed'_ until they meet their _'Path to Active'_ requirements. In some rare cases (mainly when written after the facts and resulting in a broad consensus), proposals may be merged as _'Active'_ immediately.
 
