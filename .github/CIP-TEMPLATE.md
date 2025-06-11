@@ -21,7 +21,6 @@ License: CC-BY-4.0
 - Tools     | A broad category for ecosystem tools not falling into any other category.
 - Plutus    | Changes or additions to Plutus
 - Ledger    | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
-- Catalyst  | For proposals affecting Project Catalyst / the Jörmungandr project
 - Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
 - Network   | Specifications and implementations of Cardano's network protocols and applications
 
