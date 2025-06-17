@@ -151,7 +151,11 @@ batch fails, none of the transactions in the batch are applied, only the collate
 3. Transactions using new features are not allowed to run scripts of PlutusV3 or earlier.
 
 4. All scripts are shared across all transactions within a single batch, so attaching one script to either a sub- or a top-level-transaction 
-allows other transactions to run it without also including it in its own scripts.
+allows other transactions to run it without also including it in its own scripts. This includes references scripts that are sourced from the 
+outputs to which reference inputs point in the UTxO. These referenced UTxO entries could be outputs of preceding transactions in the batch. 
+Datums (both from reference inputs and ones attached to other transactions) are also shared in this way. As before, only the datums fixed by the 
+executing transaction are included in the `TxInfo` constructed for its scripts, however, now they don't necessarily have to be attached to 
+that transaction.
 
 5. All inputs of all transactions in a single batch must be contained in the UTxO set before any of the 
 batch transactions are applied. This ensures that operation of scripts is not disrupted, for example, by 
