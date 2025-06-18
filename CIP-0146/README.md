@@ -109,7 +109,8 @@ After the multisig wallet has been defined according to the Cardano native scrip
 [rules](#specification), either a registration transaction can be put on the blockchain or a JSON download provided for 
 off-chain sharing. 
 
->Note that the registration **must** use previously unused keys in the scripts **if** registered in a transaction. 
+> [!NOTE]
+> The registration **must** use previously unused keys in the scripts **if** registered in a transaction. 
 
 The transaction auxiliary data metadata ([MultiSigRegistration](#multisigregistration)) should be formatted using 
 NoConversions JSON schema.
@@ -142,7 +143,8 @@ can be done in the following way.
 - Use `types` field in metadata to map native scripts and figure out its purpose
 - Repeat until no more matches are found, either sequentially or in bulk.
 
->Note that there might be updated metadata for the registration. In addition to locating the initial registration, a
+> [!NOTE]
+> There might be updated metadata for the registration. In addition to locating the initial registration, a
 > scan for updated metadata conforming to specification and at least one input UTxO matching the multisig payment script 
 > should be performed. If available, the last valid metadata update is to be used.
 
@@ -157,9 +159,15 @@ to verify ownership. If this transaction includes label `1854` metadata accordin
 
 To increase anonymity, encrypting the metadata following the specification of [CIP-83 | Encrypted Transaction message/comment metadata](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0083/README.md)
 is supported. For this to be valid, the `enc` key should be added to the root metadata object and each value 
-(**except** `types`) within the metadata should be base64 encrypted according to CIP-83 specification.
+(**except** `types`) within the metadata should be base64 encrypted and split into 64 character chunks according to CIP-83 specification.
 
->Note that `types` mapping array within metadata should always be unencrypted! 
+> [!NOTE]
+> `types` mapping array within metadata should always be unencrypted!
+
+> [!IMPORTANT]
+> The fields for `name | desciprion | icon` for the wallet and each participant is in encrypted mode a string array. 
+> As encrypting the content might push the length outside the 64 character limitation, data needs to be split in 64 
+> character chunks and later merged when decrypting.
 
 Example structure:
 ```json
@@ -167,15 +175,15 @@ Example structure:
   "1854": { 
     "enc": "<encryption-method>",
     "types": [0,2],
-    "name": "base64-string",
-    "description": "base64-string",
-    "icon": "base64-string",
+    "name": ["base64-string"],
+    "description": ["base64-string"],
+    "icon": ["base64-string"],
     "participants": {
       "<pub-key-hash>": {
-        "name": "base64-string",
-        "description": "base64-string",
-        "icon": "base64-string"
-      }
+        "name": ["base64-string"],
+        "description": ["base64-string"],
+        "icon": ["base64-string"]
+      },
       ...
     }
   }
