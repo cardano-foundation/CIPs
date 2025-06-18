@@ -242,6 +242,7 @@ that this is a multisig registration and easier to scan for.
 
 - [ ] The specification is implemented by three wallet providers or dApps (web applications).
   - [x] [Eternl Wallet](https://eternl.io)
+  - [ ] [MeshJS/multisig](https://github.com/MeshJS/multisig)
 
 ### Implementation Plan
 
