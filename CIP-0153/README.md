@@ -14,31 +14,32 @@ License: CC-BY-4.0
 
 ## Abstract
 
-We propose to introduce a number of functions for safely and efficiently working with `BuiltinData` as Value, alternatively we propose a `BuiltinMaryEraValue` type for Plutus Core.
+We propose to extend the `Data` type in Plutus Core with a new constructor `Value BuiltinValue`, introducing native, first-class support for multi-asset values that adhere to the invariants of multi-asset values in the Cardano ledger.
+
+This addition enables on-chain scripts to operate on multi-asset values directly and efficiently, without resorting to nested map encodings. It eliminates the need for costly emulation of value operations, reduces validator script size, enables faster execution, and significantly lowers the ex-unit budgets required to process multi-asset logic. By elevating multi-asset values to a primitive type, this change aligns Plutus Core more closely with its primary domain—expressing constraints over the transfer of value—and unlocks substantial improvements in performance, safety, and consistency across the smart contract ecosystem.
 
 ## Motivation: why is this CIP necessary?
 
-UPLC is not a general-purpose programming language. It is a language specifically designed to write validation logic to set constraints for the creation and transfer of Value and Data across the Cardano blockchain. Given that half of the entire purpose of this language is to add constraints to the creation and transfer of Value, why should Value be a “standard library concept”?
-The whole value proposition behind domain specific languages (ie UPLC) is that the design is informed by and tailored to, the problem space. As such, it should be better suited to the task in that domain than a general-purpose language. To me it seems like this has not been taken into consideration much historically in the design of Plutus. How is there not first-class language support for Values in a domain specific language designed primarily to manage the transfer of Value?
+UPLC is not a general-purpose programming language. It is a language specifically designed to write validation logic to set constraints for the creation and transfer of Value and Data across the Cardano blockchain. **Given that half of the entire purpose of this language is to express constraints over the creation and transfer of** `Value`, why is Value treated as a standard library concept rather than a first-class language primitive?
 
-Currently Mary-era (multi-asset) Values are represented in PlutusCore as a nested builtin map, `Map CurrencySymbol (Map TokenName Integer)`. The issue is that in reality multi-asset Values in the Cardano ledger are not Maps as such, a generic `ByteStringMap` type is not sufficient, because Values are nested maps with *very important* invariants. The failure to understand and take into account these invariants lead to a lot of common vulnerabilities in onchain code. 
+The value proposition of domain-specific languages like UPLC is that they are purpose-built for a specific problem space, and as such, are able to outperform general-purpose languages within that domain. This foundational consideration seems to have been largely absent from the historical design of Plutus. It is difficult to reconcile the absence of first-class support for `Value` in a language explicitly designed to manage the transfer of value.
 
-For a concrete example, if we want to implement `unionValue` with `ByteStringMap` and limited higher order builtins it would look like:
+Currently, Plutus Core has no concept of multi-asset values. Instead, `Value` is a standard library construct, implemented as a nested `Map`:
 
 ```haskell
-unionValue v =
- let res = builtinUnionWith (builtinUnionWith (builtinAddInteger)) v
-     res2 = builtinMapValues (builtinMapFilterKeys (builtinEquals 0)) res
- in builtinMapFilterKeys ((/=) BI.null) res2
+newtype Value = Value (Map CurrencySymbol (Map TokenName Integer))
 ```
+While this representation superficially resembles the structure of ledger-level values, it lacks the necessary semantic guarantees. The critical invariants upheld by the ledger—such as omitting zero-valued assets, eliminating empty maps, and maintaining canonical order—must be manually replicated in every implementation targeting Plutus Core. This makes secure and correct usage of `Value` significantly harder than it should be.
 
-This requires a non-trivial number of limited higher order builtins, and is not a very intuitive function to define. Language designers targeting Plutus Core (Aiken, Plutarch, Plu-Ts, Scalus, Purus, Helios) will still need to implement the value operations using the `ByteStringMap` in their standard library which means that on top of being less performant than executing natively, there is still security risk that some implementation is insecure. On top of all that, the above implementation is non-canonical! This means that different language standard libraries could implement `unionValue` differently (for instance not filtering 0 entries or empty inner map entries) and then implement `equalsValue` to handle equality regardless of zero entries or empty map entries (ex. Plinth currently does this). 
- 
-We argue that it should not be the responsibility of language authors to implement secure operations over a type that is primitive to the domain task.
+Smart contract languages like Plinth, Aiken, Plutarch, and Helios must each implement their own standard library for value manipulation, resulting in duplicated logic, inconsistent behavior, and non-trivial security risks. Even operations as fundamental as value equality and union require verbose logic to normalize entries—adding cost and complexity to every validator.
+
+It should not be the responsibility of language authors or smart contract developers to implement secure and efficient operations over a type that is fundamental to the domain itself.
+
+## Specification
 
 ### MaryEraValue 
 
-A _map_ is a collection of _values_ indexed by _keys_. We consider a map to be _well-defined_ if each key uniquely identifies each value. The canonical representation of Mary-era multi-asset Values in PlutusCore is a nested map where the keys of the outer map are `AsData CurrencySymbol`s and the keys of the inner map are `AsData TokenName`s and the _values_ of the inner map are `AsData Integer` (representing the quantity of the asset). 
+A _map_ is a collection of _values_ indexed by _keys_. We consider a map to be _well-defined_ when each key uniquely identifies each value, and when additional structural and semantic constraints are satisfied. The canonical representation of Mary-era multi-asset Values in Plutus Core is a nested map where the keys of the outer map are `AsData CurrencySymbol`s and the keys of the inner map are `AsData TokenName`s and the _values_ of the inner map are `AsData Integer` (representing the quantity of the asset). 
 
 Here are the important invariants of the PlutusCore representation of the Mary-era Value types from the Cardano ledger:
 1. All _keys_ in the outer map are unique (each `CurrencySymbol` appears only once)
@@ -50,52 +51,92 @@ Here are the important invariants of the PlutusCore representation of the Mary-e
 
 ### Mary-era Value as a builtin type
 
-The only remaining solutions are to consider:
+We propose introducing a new builtin type, `BuiltinValue`, along with a set of builtins for efficient manipulation of multi-asset values. These builtins will enforce all invariants defined for multi-asset values in the Cardano ledger. Additionally propose extending the Data type with a new constructor to support BuiltinValue:
 
-1. Introduce builtin operations for efficient manipulation of `BuiltinData = Value` that take into consideration the invariants of ledger multi-asset values.
-2. Introduce a new builtin type `BuiltinMaryEraValue` with efficient Value operations that take into consideration the invariants of ledger multi-asset values. 
-
-
-## Specification
-
-We propose the addition of the following builtin functions: 
-
-All functions below work with:
+```haskell
+data Data =
+      Constr Integer [Data]
+    | Map [(Data, Data)]
+    | List [Data]
+    | I Integer
+    | B BS.ByteString
+    | Value BuiltinValue
+    -- ^ New constructor for `BuiltinValue`
 ```
-type BuiltinMaryEraValue = BuiltinData -- or possibly (BuiltinList BuiltinCurrencySymbol (BuiltinMap BuiltinTokenName BuiltinData)) 
+This enables direct representation of BuiltinValue within `Data`, eliminating the expensive computation that would otherwise be required to convert back and forth between the `Data` representation of `Value` as nested Map structures and the `BuiltinValue` type.
+
+### On the Necessity of a `Data` Constructor for `BuiltinValue`
+
+Introducing a `BuiltinValue` type to Plutus Core without also adding a corresponding constructor to the `Data` type (i.e. `Value BuiltinValue`) would result in a fragmented and inefficient design. In such a scenario, smart contracts would require dedicated conversion builtins to translate between `BuiltinData`—the standard interface type in validators—and `BuiltinValue`. Although these conversions are linear in the size of the structure and less expensive than conversions like `Data → ScriptContext`, they are still nontrivial and, in practice, can become prohibitively expensive.
+
+Consider, for instance, a `Value` containing hundreds of assets where a script only needs to access ADA. Converting the entire structure to a `BuiltinValue` simply to look up a single entry would be significantly more expensive than directly inspecting the original `Data` representation. Even more critically, this approach creates ambiguity for developers: they must decide when to convert, weigh the performance trade-offs, and handle two separate representations of the same underlying concept.
+
+This defeats the entire purpose of introducing `BuiltinValue`, which is to simplify, secure, and optimize multi-asset handling in Plutus. If this proposal were to result in developers continuing to use nested `Map` structures within `Data` for performance reasons, it would not only fail to unify the representation of `Value` in Plutus Core—it would add yet another layer of complexity.
+
+It is therefore a strong requirement of this proposal that `BuiltinValue` be made a first-class constructor within the `Data` type (i.e. `Value BuiltinValue`). Only with this addition can we ensure that all value-related logic is handled canonically, efficiently, and securely via the new builtins—eliminating the need for conversions or manual manipulation of `BuiltinData`.
+
+### BuiltinValue Operations
+We propose the introduction of the following builtin functions to support efficient and invariant-preserving manipulation of multi-asset values through a new `BuiltinValue` type.
+
+These functions operate on the following types:
+```haskell
+type BuiltinValue -- A new primitive type
 type BuiltinCurrencySymbol = BuiltinByteString
 type BuiltinTokenName = BuiltinByteString
 type BuiltinQuantity = BuiltinInteger 
 ```
 
 We propose the following set of builtin functions to accompany the new builtin type:
-1. `insertCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinInteger -> BuiltinMaryEraValue -> BuiltinMaryEraValue`
+1. `insertCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinInteger -> BuiltinValue -> BuiltinValue`
     - it returns a Mary-era Value with the `Coin` inserted, silently discarding any previous value
-2. `deleteCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinMaryEraValue -> BuiltinMaryEraValue`
+2. `deleteCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinValue -> BuiltinValue`
     - it returns a Mary-era Value with the `Coin` removed, or unmodified if the `Coin` was not present. 
-3. `lookupCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinMaryEraValue -> BuiltinQuantity`
+3. `lookupCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinValue -> BuiltinQuantity`
    - it returns the quantity of a given `Coin` in a Mary-era Value. 
-4. `unionValues :: BuiltinList BuiltinMaryEraValue -> BuiltinMaryEraValue`
+4. `unionValues :: BuiltinList BuiltinaValue -> BuiltinValue`
     - it merges all the values in the provided list
     - when there are collisions it adds the quantities, if the resulting sum is zero it removes the entry to maintain the Mary-era Value invariants (no zero-quantity entries, no empty inner maps) such that the result is a normalized value. 
     - this is not strictly necessary, however, it becomes extremely useful if we get limited higher order builtins, or even a `fieldMap` builtin. 
-5. `unionValue :: BuiltinMaryEraValue -> BuiltinMaryEraValue -> BuiltinMaryEraValue`
+5. `unionValue :: BuiltinValue -> BuiltinValue -> BuiltinValue`
     - it merges two provided values
     - when there are collisions it adds the quantities, if the resulting sum is zero it removes the entry to maintain the Mary-era Value invariants (no zero-quantity entries, no empty inner maps) such that the result is a normalized value. 
-6. `valueContains :: BuiltinMaryEraValue -> BuiltinMaryEraValue -> Bool`
+6. `valueContains :: BuiltinValue -> BuiltinValue -> Bool`
     - it strictly compares the two Mary-era Values and determines if the first value is a superset of the second.
     - returns true if Value `a` contains each and every `Coin` in Value `b` with greater or equal quantities.
     - returns false if Value `b` contains any `Coin` that is not contained in Value `a`, or if Value `b` contains a greater quantity of any `Coin` than Value `a`.
+7. `mkValueData :: BuiltinValue -> BuiltinData`
+   - Constructs a 'BuiltinData' value with the `Value` constructor.
+8. `unsafeDataAsValue :: BuiltinData -> BuiltinValue`
+   - Deconstructs a 'BuiltinData' as an `Value`, or fails if it is not one.
 
 ## Rationale: how does this CIP achieve its goals?
 
 ### Efficiency
 
-Builtins are strictly more efficient than CEK operations. 
+Builtins are strictly more efficient than user-defined operations evaluated by the CEK machine. Today, operations on `Value` must be implemented at the Plutus level using nested `Map` structures and generic functional constructs. These are significantly slower and more memory-intensive than equivalent builtins due to their interpretive overhead and lack of optimization opportunities.
 
-### Security and Abstraction
+By introducing a dedicated `BuiltinValue` type and associated builtins, we enable:
 
-The introduction of a canonical implementation of standard multi-asset value operations vastly improves ecosystem security and 
+- Elimination of the need to deconstruct and traverse deeply nested data-encoded maps to perform operations on `Value`s, which significantly improves execution efficiency.
+- Drastically reduced script sizes, since `Value` operations no longer need to be defined in the bytecode of every validator; they are now provided natively by the language as builtins.
+
+This directly addresses a major pain point for developers working with large or complex multi-asset values.
+
+### Security & Abstraction
+
+Introducing a single, standardized `BuiltinValue` type — including a constructor on `Data` and associated conversion builtins — eliminates the need for dual representations of multi-asset values. Without this, developers would be forced to evaluate trade-offs in every instance where value manipulation is required: either operate directly on `BuiltinData`, or incur the overhead of converting to and from SOP-style encodings in order to gain performance benefits from subsequent operations on the structured representation. This added friction increases both complexity and fragmentation across the ecosystem.
+
+Instead, developers will have:
+
+- A consistent and canonical representation of multi-asset values.
+- Simple, expressive, and performant builtins for common operations.
+- Fewer footguns and edge cases to reason about in critical onchain logic.
+
+By elevating `Value` to a first-class builtin type, this CIP ensures that the semantics of `Value` and its operations are uniform across all languages targeting Plutus Core. Currently, each language (e.g., Aiken, Plutarch, Helios, Plu-Ts, etc.) must independently define a `Value` type and implement its operations in their standard libraries. This fragmentation introduces the risk of divergent behaviors and subtle inconsistencies across Cardano’s smart contract ecosystem. 
+
+With `BuiltinValue`, all implementations inherit a single, authoritative definition of `Value` and its operations, removing this burden from language authors and guaranteeing consistency across the entire platform.
+
+This CIP ultimately shifts the responsibility for correctness and optimization away from the application layer and into the language itself — the appropriate place for enforcing invariants and performance guarantees for such a core domain primitive.
 
 ## Path to Active
 
