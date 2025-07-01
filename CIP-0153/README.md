@@ -140,7 +140,7 @@ This CIP ultimately shifts the responsibility for correctness and optimization a
 
 ## Path to Active
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 - [ ] The feature is implemented according to the implementation plan and merged into
 the master branch of the [plutus][6] repository.
