@@ -1443,6 +1443,8 @@ The next table compares the cost (in US\$/month) for different outgoing data tra
 | OVH          |    $70 |     $70 |      $70 |      $70 |
 | Hetzner      |    $32 |     $32 |      $32 |      $32 |
 
+At present, this CIP does not include a design for a Peras-specific rewards system to e.g. directly incentivize voting participation. Any such design (where rewards are distributed on-chain) would require including certificates on-chain, therefore itself increasing the resource impact of Peras.
+
 [^9]: https://cexplorer.io/usage
 
 [^10]: https://iohk.io/en/research/library/papers/mind-your-outcomes-the-dqsd-paradigm-for-quality-centric-systems-development-and-its-application-to-a-blockchain-case-study/
