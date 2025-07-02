@@ -1283,7 +1283,7 @@ The figure below shows the race between honest parties and a modestly powerful a
 
 ### Why Peras is practical to implement
 
-Peras is compatible with many stake-based voting schemes, which means it has synergies with protocol enhancements like Ouroboros Genesis and Leios. Because Peras only modifies Praos's chain-weight computation and adds voting, its effects are mostly orthogonal to other existing and proposed aspects of Ouroboros. Peras utilizes the node's existing cryptographic primitives and keys, so it does not require any new key exchanges.
+Peras is compatible with many stake-based voting schemes, which means it has synergies with protocol enhancements like Ouroboros Genesis and Leios. Because Peras only modifies Praos's chain-weight computation and adds voting, its effects are mostly orthogonal to other existing and proposed aspects of Ouroboros.
 
 Peras is straightforward to implement, as it requires the following additions to the node, which have minimal or modest impact on node resources[^6].
 - Chain selection that includes the boosting from certificates
