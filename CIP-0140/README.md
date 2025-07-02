@@ -1412,7 +1412,7 @@ The impact of Peras upon nodes falls into four categories: [network](#network), 
 For a fully synced nodes, the impact of Peras on network traffic is modest:
 
 * For votes, assuming $U \approx 100$, a committee size of 2000 SPOs, a single vote size of 700 bytes, means we will be adding an average of 14 kB/s to the expected traffic to each node,
-* For certificates, assuming an average of 50 kB size consistent with the size of current Mithril certificates, means an negligible increase of 0.5 kB/s on average. Note that a node will download either votes or certificate for a given round, but never both so these numbers are not cumulative.
+* For certificates, assuming an average of 50 kB size consistent with the size of current Mithril certificates, means an negligible increase of 0.5 kB/s on average. Note that a node will download either votes or certificate for a given round, but never both so these numbers are not cumulative. An exception to this is the needless adversarial inclusion of certificates into their blocks when Peras is *not* in a cooldown period.
 
 A fully non-synced node will have to catch-up with the _tip_ of the chain and therefore download all relevant blocks _and_ certificates. At 50% load (current monthly load is 34% as of this writing[^9]), the chain produces a 45 kB block every 20 s on average. Below are rough estimates of the amount of data a node would have to download (and store) for synchronizing, depending on how long it has been offline:
 
@@ -1456,6 +1456,8 @@ The next table compares the cost (in US\$/month) for different outgoing data tra
 #### Persistent storage
 
 Under similar assumptions, we can estimate the storage requirements entailed by Peras: ignoring the impact of cool-down periods, which last for a period at least as long as $k$ blocks, the requirement to store certificates for every round increases node's storage by about **20%**. Votes are expected to be kept in memory so their impact on storage will be null.
+
+Additionally, again ignoring cooldown periods, adversaries can include certificates in blocks they forge. Implementations could implement optimizations to avoid storing certificates twice in that case.
 
 #### CPU
 
