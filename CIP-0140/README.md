@@ -139,7 +139,9 @@ A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 - Fetch new chains $\mathcal{C}\_\text{new}$ and votes $\mathcal{V}\_\text{new}$.
 - Add any new chains in $\mathcal{C}\_\text{new}$ to $\mathcal{C}$, add any new certificates contained in chains in $\mathcal{C}\_\text{new}$ to $\mathsf{Certs}$.
 - Add $\mathcal{V}\_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
-    -  Discard any equivocated votes: i.e., do not add them to $\mathcal{V}$.
+    -  Ignore all but the first equivocating vote: i.e., do not add them to $\mathcal{V}$.
+
+       This requires diffusing certificates in cases where different honest nodes received different equivocating votes.
 - Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}\_\mathsf{P}(\cdot)$ ) valid chain in $\mathcal{C}$.
     - Each party $\mathsf{P}$ assigns a certain weight to every chain $C$, based on $C$'s length and all certificates that vote for blocks in $C$ that $\mathsf{P}$ has seen so far (and thus stored in a local list $\mathsf{Certs}$).
     - Let $\mathsf{certCount}\_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}\_\mathsf{P}(C) := \left| \left\\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\\} \right|$.
@@ -1394,7 +1396,7 @@ The plot below illustrates how shorter rounds and stronger adversaries make such
 
 ![Plot of the probability of the dishonest boost as a function of the adversarial fraction of stake and the round length.](images/adversarial-chain-receives-boost-variant.plot.svg)
 
-Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version of a vote to some honest nodes and a different version to the other honest nodes will not affect the outcome of voting any more than if the adversary were not to vote at all. Equivocated votes burden the nodes slightly by creating extra network traffic.
+Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version of a vote to some honest nodes and a different version to the other honest nodes can be handled by diffusing certificates in this case, such that no permanent disagreements on whether a round was successful arise. Equivocated votes burden the nodes slightly by creating extra network traffic.
 
 Natural events or adversaries might interfere with the diffusion of votes over the network. Peras voting is not affected so long as the network diffuses at least the 75% threshold for reaching a quorum. One quarter of the votes could be lost, dishonest, or withheld. Furthermore, the Peras $L$ parameter ensures that there is plenty of time for honest blocks to diffuse and for them to be in a common prefix of the active forks before voting begins. The Peras $R$ parameter, the number of slots for which certificates (votes) are ignored once a cool-down period starts, guards against an adversary holding onto votes and then releasing them to try to revert an already-begun cool-down period.
 
