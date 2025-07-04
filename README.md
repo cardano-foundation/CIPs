@@ -129,6 +129,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0138 | [Plutus Core Builtin Type - Array](./CIP-0138) | Proposed |
 | 0140 | [Ouroboros Peras - Faster Settlement](./CIP-0140) | Proposed |
 | 0143 | [Interoperable Programmable Tokens](./CIP-0143) | Inactive |
+| 0146 | [Multi-signature wallet registration and discovery](./CIP-0146) | Proposed |
 | 0149 | [Optional DRep Compensation](./CIP-0149) | Proposed |
 | 0150 | [Block Data Compression](./CIP-0150) | Proposed |
 | 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
@@ -140,7 +141,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-06-18</i></p>
+<p align="right"><i>Last updated on 2025-07-04</i></p>
 
 > 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
 
