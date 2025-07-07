@@ -152,18 +152,20 @@ stateDiagram-v2
 24  messageSizeInBytes = word32
 25  kesSignature = bstr
 26  operationalCertificate = bstr
-27  blockNumber = word32
-28  ttl = word16
-29
-30  message = [
-31    messageId,
-32    messageBody,
-33    blockNumber,
-34    ttl,
-35    kesSignature,
-36    operationalCertificate
-37  ]
-38
+27  kesPeriod = word32
+28  blockNumber = word32
+29  ttl = word16
+30
+31  message = [
+32    messageId,
+33    messageBody,
+34    blockNumber,
+35    ttl,
+36    kesSignature,
+37    operationalCertificate,
+38    kesPeriod
+39  ]
+40
 ```
 
 #### Inbound side and outbound side implementation
@@ -304,10 +306,11 @@ The following tables gather figures about expected network load in the case of *
 | ttl                    | 2 B         | 2 B         |
 | kesSignature           | 448 B       | 448 B       |
 | operationalCertificate | 304 B       | 304 B       |
+| kesPeriod              | 4 B         | 4 B         |
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,150 B     | 2,790 B     |
+| total   | 1,154 B     | 2,794 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
