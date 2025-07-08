@@ -72,8 +72,16 @@
     "description": "CIP-72: dApp registration & Discovery"
   },
   {
+    "transaction_metadatum_label": 1668,
+    "description": "Begin Wallet: dApp rating record from dApp Store"
+  },
+  {
     "transaction_metadatum_label": 1694,
     "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
+  },
+  {
+    "transaction_metadatum_label": 1854,
+    "description": "CIP-146 Multi-signatures wallet registration"
   },
   {
     "transaction_metadatum_label": 1870,
@@ -106,6 +114,10 @@
   {
     "transaction_metadatum_label": 1989,
     "description": "cardahub.io services metadata"
+  },
+  {
+    "transaction_metadatum_label": 3692,
+    "description": "CIP-0149 - Optional DRep compensation"
   },
   {
     "transaction_metadatum_label": 6770,
