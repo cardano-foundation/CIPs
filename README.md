@@ -130,11 +130,15 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0136 | [Governance metadata - Constitutional Committee votes](./CIP-0136) | Proposed |
 | 0137 | [Decentralized Message Queue](./CIP-0137) | Proposed |
 | 0138 | [Plutus Core Builtin Type - Array](./CIP-0138) | Proposed |
+| 0139 | [Universal Query Layer](./CIP-0139) | Proposed |
 | 0140 | [Ouroboros Peras - Faster Settlement](./CIP-0140) | Proposed |
+| 0141 | [Web-Wallet Bridge - Plutus wallets](./CIP-0141) | Proposed |
 | 0143 | [Interoperable Programmable Tokens](./CIP-0143) | Inactive |
+| 0146 | [Multi-signature wallet registration and discovery](./CIP-0146) | Proposed |
 | 0149 | [Optional DRep Compensation](./CIP-0149) | Proposed |
 | 0150 | [Block Data Compression](./CIP-0150) | Proposed |
 | 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
+| 0153 | [Plutus Core Builtin Type - MaryEraValue](./CIP-0153) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -143,7 +147,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-06-18</i></p>
+<p align="right"><i>Last updated on 2025-07-08</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
@@ -171,9 +175,10 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0016 | [Cardano URIs](./CPS-0016) | Open |
 | 0017 | [Settlement Speed](./CPS-0017) | Open |
 | 0018 | [Greater Transaction Throughput](./CPS-0018) | Open |
+| 0020 | [Governance Stakeholder Incentivization](./CPS-0020) | Open |
 | 0021 | [Ouroboros Randomness Manipulation](./CPS-0021) | Open |
 
-<p align="right"><i>Last updated on 2025-04-15</i></p>
+<p align="right"><i>Last updated on 2025-07-08</i></p>
 
 > [!NOTE]
 > For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
