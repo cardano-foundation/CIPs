@@ -38,7 +38,7 @@ multiIndexArray :: forall a. List Integer -> Array a -> List a
 - **Inputs**:
   1. A `List Integer` of zero-based indices, in the order elements should be retrieved.
   2. An `Array a` to index.
-- **Output**: A `List a` containing the elements at the specified indices, in the same order.
+- **Output**: A `List a` containing the elements at the specified indices, in the same order. In case of repeated indices, the same element is returned multiple times.
 - **Error handling**: If any index is out of bounds (< 0 or ≥ lengthOfArray), the entire call fails with the same error semantics as `indexArray`.
 - **Cost**: Time and memory usage are linear in the length of the index list.
 
@@ -47,7 +47,7 @@ multiIndexArray :: forall a. List Integer -> Array a -> List a
 By batching multiple lookups into one builtin, `multiIndexArray`:
 
 - Eliminates repetitive script code for loops or folds over `indexArray`.
-- Reduces gas and size overhead of repeated builtins.
+- Reduces execution budget and size overhead of repeated builtins.
 - Guarantees elements are returned in caller-specified order, enabling efficient streaming or traversal.
 
 ### Alternatives considered
@@ -70,8 +70,9 @@ Failing on first error mirrors `indexArray` and keeps the API simple.
 ### Implementation Plan
 
 1. Add `multiIndexArray` to Plutus Core spec and runtime.
-2. Define preliminary cost model (linear in index list length).
-3. Write unit tests covering valid and out-of-bounds cases.
-4. Benchmark against manual `indexArray` loops to refine costing.
-5. Update formal documentation (`plutus-metatheory`, spec PDF).
-6. Complete integration and include in the next hard fork.
+2. Define preliminary cost model (linear in index list length for both CPU usage and memory usage).
+3. Write conformance tests covering valid and out-of-bounds cases.
+4. Extend an E2E test suite to include `multiIndexArray` scenarios.
+5. Benchmark against manual `indexArray` loops to refine costing.
+6. Update formal documentation (`plutus-metatheory`, spec PDF).
+7. Complete integration and include in the next hard fork.
