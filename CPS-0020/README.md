@@ -7,7 +7,6 @@ Authors:
 - Seomon (Cardano After Dark) <Seomonregister@gmail.com>  
 - Martin Marinov <martin.marinov@cardano.marketing>  
 - Sebastián Pereira Gutiérrez <sebpereira33@gmail.com> 
-
 Proposed Solutions:
 - 
 
