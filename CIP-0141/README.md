@@ -166,7 +166,7 @@ If the transaction contains hidden metadata, the wallet should not submit the tr
 
 It is expected that this will be the endpoint used by all wallets that require multiple signatures to sign a transaction.
 
-#### `api.cipxxxx.getCompletedTx(txId: hash32)`: Promise[<CBOR<transaction>,CBOR<transaction_witness_set>>]
+#### `api.cip141.getCompletedTx(txId: hash32)`: Promise[<CBOR<transaction>,CBOR<transaction_witness_set>>]
 
 Errors: `APIError`, `CompletedTxError`
 
