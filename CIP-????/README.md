@@ -7,7 +7,7 @@ Authors:
     - Chase Maity <chase@mlabs.city>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1052
 Created: 2025-07-08
 License: CC-BY-4.0
 ---
