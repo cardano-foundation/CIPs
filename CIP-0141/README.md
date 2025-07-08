@@ -180,7 +180,7 @@ Returns the secret associated with the given secretId. The secret should be retu
 
 Wallets should request authorization from the user before returning the secret to the DApp.
 
-#### `api.cipxxxx.signRedeemer(data: Data, primitive : encriptionPrimitive  )`: Promise<CBOR<redeemer>>
+#### `api.cip141.signRedeemer(data: Data, primitive : encriptionPrimitive  )`: Promise<CBOR<redeemer>>
 
 Errors: `APIError`
 Returns the CBOR-encoded redeemer.
