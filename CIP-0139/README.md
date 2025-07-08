@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Plutus Core Builtin Function - `multiIndexArray`
+Title: Plutus Core Builtin Function - multiIndexArray
 Category: Plutus
 Status: Proposed
 Authors:
