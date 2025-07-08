@@ -152,18 +152,20 @@ stateDiagram-v2
 24  messageSizeInBytes = word32
 25  kesSignature = bstr
 26  operationalCertificate = bstr
-27  blockNumber = word32
-28  ttl = word16
-29
-30  message = [
-31    messageId,
-32    messageBody,
-33    blockNumber,
-34    ttl,
-35    kesSignature,
-36    operationalCertificate
-37  ]
-38
+27  kesPeriod = word32
+28  blockNumber = word32
+29  ttl = word16
+30
+31  message = [
+32    messageId,
+33    messageBody,
+34    blockNumber,
+35    ttl,
+36    kesSignature,
+37    operationalCertificate,
+38    kesPeriod
+39  ]
+40
 ```
 
 #### Inbound side and outbound side implementation
@@ -304,10 +306,11 @@ The following tables gather figures about expected network load in the case of *
 | ttl                    | 2 B         | 2 B         |
 | kesSignature           | 448 B       | 448 B       |
 | operationalCertificate | 304 B       | 304 B       |
+| kesPeriod              | 4 B         | 4 B         |
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,150 B     | 2,790 B     |
+| total   | 1,154 B     | 2,794 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
@@ -444,7 +447,6 @@ stateDiagram-v2
 | StBusy     | MsgRejectMessage | reason     | StIdle   |
 | StIdle     | MsgDone          |            | StDone   |
 
-
 ##### CDDL Encoding Specification
 
 ```cddl
@@ -500,10 +502,10 @@ The protocol follows a simple request-response pattern:
 
 #### State machine
 
-| Agency            |                |
-| ----------------- | -------------- |
-| Client has Agency | StIdle         |
-| Server has Agency | StBusy, StDone |
+| Agency            |                                          |
+| ----------------- | ---------------------------------------- |
+| Client has Agency | StIdle                                   |
+| Server has Agency | StBusyNonBlocking,StBusyBlocking, StDone |
 
 ```mermaid
 stateDiagram-v2
@@ -556,7 +558,7 @@ localMessageNotificationMessage
   / msgClientDone
   / msgServerDone
 
-msgRequestMessages          = [0, isBlocking, ackedMessages]
+msgRequestMessages          = [0, isBlocking]
 msgReplyMessagesNonBlocking = [1, messages, hasMore]
 msgReplyMessagesBlocking    = [2, messages]
 msgClientDone               = [3]
@@ -579,7 +581,6 @@ message = [
 
 hasMore = false / true
 isBlocking = false / true
-ackedMessages = * messageId
 messages = [* message]
 ```
 
@@ -687,16 +688,22 @@ the KES key.
 
 - [x] Write a "formal" specification of the protocols along with vectors/conformance checker for protocol's structure and state machine logic.
 - [x] Write an architecture document extending this CIP with more technical details about the implementation.
-    - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Decentralized-Message-Queue-(DMQ)-Implementation-Overview)
+  - See [here](<https://github.com/IntersectMBO/ouroboros-network/wiki/Decentralized-Message-Queue-(DMQ)-Implementation-Overview>)
 - [x] Validate protocol behaviour with all relevant parties (Network and Node teams).
 - [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
-    - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
+  - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
 - [ ] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
-    - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
+  - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
 - [ ] Implement the n2n and n2c mini-protocols:
-    - [ ] DMQ Node
-    - [ ] Pallas Library (TxPipe)
-- [ ] Implement the n2c mini-protocols in Mithril signer and aggregator nodes.
+  - [ ] Haskell DMQ Node:
+    - [ ] n2c mini-protocols
+    - [ ] n2n mini-protocols
+  - [ ] Pallas Library (TxPipe):
+    - [x] n2c mini-protocols
+    - [ ] n2n mini-protocols
+- [x] Implement the n2c mini-protocols in Mithril nodes:
+  - [x] Mithril signer
+  - [x] Mithril aggregator
 
 ## References
 
