@@ -156,7 +156,7 @@ Errors: `APIError`
 
 Returns the CBOR-encoded Plutus script that controls this wallet.
 
-#### `api.cipxxxx.submitUnsignedTx(tx: CBOR<unsignedTransaction>)`: Promise<hash32>
+#### `api.cip141.submitUnsignedTx(tx: CBOR<unsignedTransaction>)`: Promise<hash32>
 
 Errors: `APIError`, `TxError`
 
