@@ -142,7 +142,7 @@ CompletedTxErrorCode = {
 
 ### V2 Additional API Endpoints
 
-#### `api.cipxxxx.getScriptRequirements`: Promise<ScriptRequirement[]>
+#### `api.cip141.getScriptRequirements`: Promise<ScriptRequirement[]>
 
 Errors: `APIError`
 
