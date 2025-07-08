@@ -9,7 +9,6 @@ Authors:
 - Sebastián Pereira Gutiérrez <sebpereira33@gmail.com> 
 Proposed Solutions:
 - 
-
 Discussions:  
 - https://github.com/cardano-foundation/CIPs/pull/997
 
