@@ -172,7 +172,7 @@ Errors: `APIError`, `CompletedTxError`
 
 If the transaction is not ready, the wallet should throw a `CompletedTxError` with the appropriate error code. If the transaction is ready, the wallet should return the CBOR-encoded transaction and the signatures.
 
-#### `api.cipxxxx.getSecret(secretId: String)`: Promise<String>
+#### `api.cip141.getSecret(secretId: String)`: Promise<String>
 
 Errors: `APIError`
 
