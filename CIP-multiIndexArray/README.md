@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: "?"
 Title: Plutus Core Builtin Function - multiIndexArray
 Category: Plutus
 Status: Proposed
