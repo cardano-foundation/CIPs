@@ -21,7 +21,7 @@ A transport-agnostic query layer specification for use in dApps and wallets.
 
 ## Motivation: why is this CIP necessary?
 
-See [CPS-12](https://github.com/cardano-foundation/CIPs/pull/625) for motivation.
+See [CPS-12 | Query Layer Standardization](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0012/README.md) for motivation.
 
 ## Specification
 
