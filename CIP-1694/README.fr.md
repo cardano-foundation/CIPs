@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: b11b540
+Revision: 5a2fc66
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -140,7 +140,8 @@ Comment les entreprises privées, les institutions publiques ou privées, les pa
   - [Clés du comité constitutionnel](#clés-du-comité-constitutionnel)
   - [Remplacement du comité constitutionnel](#remplacement-du-comité-constitutionnel)
   - [Taille du comité constitutionnel](#taille-du-comité-constitutionnel)
-  - [Limites de mandat](#limites-de-mandat)
+  - [Mandat](#mandat)
+  - [Script de rambardes](#script-de-rambardes)
 + [Représentants délégués (DReps)](#représentants-délégués-dreps)
   - [Options de vote prédéfinies](#options-de-vote-prédéfinies)
   - [DReps enregistrés](#dreps-enregistrés)
@@ -206,10 +207,10 @@ Le comité constitutionnel utilisera une configuration de clé chaude et froide,
 #### Remplacement du comité constitutionnel
 
 Le comité constitutionnel peut être remplacé via une action de gouvernance spécifique
-("Nouveau comité constitutionnel", décrit ci-dessous) qui requiert l'approbation à la fois
+("Mise à jour du comité", décrit ci-dessous) qui requiert l'approbation à la fois
 des **SPOs** et des **DReps**
 Le seuil de ratification peut être différent dépendamment de si la gouvernance est
-dans un état de confiance ou dans un état de non-confiance.
+dans un état normal ou dans un état de non-confiance.
 
 Le nouveau comité constitutionnel pourrait, en principe, être identique ou partiellement chevaucher le comité sortant tant que l’action est dûment ratifiée.
 Cela pourrait se produire, par exemple, si les électeurs ont une confiance collective dans tout ou une partie du comité et souhaitent prolonger son mandat.
@@ -218,14 +219,14 @@ Cela pourrait se produire, par exemple, si les électeurs ont une confiance coll
 #### Taille du comité constitutionnel
 
 Contrairement à la conception de la gouvernance Shelley, la taille du comité constitutionnel n’est pas fixe et peut être n’importe quel nombre non négatif.
-Il peut être modifié chaque fois qu’un nouveau comité est élu (« Nouveau comité constitutionnel et/ou seuil »).
+Il peut être modifié chaque fois qu’un nouveau comité est élu (« Mise à jour du comité »).
 De même, le seuil du comité (la fraction des votes `Yes` du comité qui sont nécessaires pour ratifier les mesures de gouvernance) n’est pas fixe et
 peut également varier en fonction de la mesure de gouvernance.
 Cela donne beaucoup de flexibilité à la composition du comité.
 En particulier, il est possible d’élire un comité vide si la communauté souhaite supprimer entièrement le comité constitutionnel. Notez que cela est différent d’un état de non-confiance et constitue toujours un système de gouvernance capable de mettre en oeuvre des propositions.
 
 Il y aura un nouveau paramètre du protocole pour la taille minimale du comité,
-lui-même un nombre non négatif appelé `ccMinSize`.
+lui-même un nombre non négatif appelé `committeeMinSize`.
 
 #### Mandat
 
@@ -251,16 +252,16 @@ La durée maximale du mandat est un paramètre du protocole de gouvernance, spé
 Pendant un état de non-confiance, aucune action ne peut être ratifiée,
 le comité devrait donc prévoir son propre remplacement s'il souhaite éviter les perturbations.
 
-#### Politique de proposition
+#### Script de rambardes
 
 Bien que la constitution soit un document informel hors chaîne, il y aura
 également un script facultatif qui pourra appliquer certaines directives. Ce scénario
 agit pour compléter le comité constitutionnel en restreignant certains
 types de propositions. Par exemple, si la communauté souhaite avoir des règles
 strictes pour la trésorerie qui ne peuvent être violées, un script qui applique
-ces règles peut être voté en tant que politique de proposition.
+ces règles peut être voté en tant que script de rambardes.
 
-La politique de proposition s'applique uniquement aux propositions de mise à jour des paramètres de protocole et 
+Le script de rambardes s'applique uniquement aux propositions de mise à jour des paramètres du protocole et 
 de retrait de trésorerie.
 
 <!---------------------------           DReps          -------------------------->
@@ -302,6 +303,9 @@ qui voteront en leur nom. De plus, deux options de vote prédéfinies sont dispo
 > **Note**
 > Tout détenteur d'Ada peut s'inscrire en tant que DRep et se déléguer s'il souhaite participer activement à
 > vote.
+
+> **Note**
+> Tout portefeuille servant de portefeuille de récompenses enregistré pour un pool de participation peut être délégué à l'une de ces options de vote prédéfinies et servira ainsi d'option de vote par défaut sélectionnée par le SPO pour tous les votes d'action de gouvernance, à l'exception des actions de gouvernance de hard fork. En raison de la nécessité d'un consensus robuste autour des initiations de hard fork, ces votes doivent être respectés en pourcentage de la participation détenue par tous les pools de participation.
 
 #### DReps enregistrés
 
@@ -449,9 +453,9 @@ Ils doivent fournir un dépôt de `govActionDeposit` Lovelace, qui sera retourn�
 Le montant du dépôt sera ajouté au _pot de dépôt_, similaire aux dépôts clés de mise.
 Il sera également pris en compte dans la mise de l’adresse de récompense à laquelle il sera remboursé, afin de ne pas réduire le pouvoir de vote du déposant pour voter sur ses propres actions (et concurrentes).
 
-Si une politique de proposition est présente, la transaction doit inclure cette
-politique dans le témoin soit directement, soit via des entrées de référence,
-et toutes les autres exigences imposées par la politique de proposition doivent être
+Si un script de rambardes est présente, la transaction doit inclure ce
+script dans le témoin soit directement, soit via des entrées de référence,
+et toutes les autres exigences imposées par le script de rambardes doivent être
 satisfaites.
 
 Notez qu’une motion de non-confiance est une mesure extrême qui permet aux détenteurs d’Ada de révoquer le pouvoir
@@ -469,15 +473,15 @@ Selon le type d’action de gouvernance, une action sera donc ratifiée lorsqu�
 
 * le comité constitutionnel approuve l’action (le nombre de membres qui votent `Yes` atteint le seuil du comité constitutionnel)
 * les DReps approuvent l’action (la participation contrôlée par les DReps qui votent `Yes` atteint un certain seuil de la mise totale active des votes)
-* les SPO approuvent l’action (la participation contrôlée par les SPO qui votent `Yes` atteint un certain seuil par rapport à la mise active totale déléguée pour l'époque)
+* les SPO approuvent l'action (la participation contrôlée par les SPO qui votent « Oui » atteint un certain seuil de la participation totale de vote active, à l'exception des actions de gouvernance Hard Fork)
 
 > **Warning**
 > Comme expliqué ci-dessus, différentes distributions de mise s’appliquent aux DReps et aux SPO.
 
-Une motion de non-confiance réussie, l'élection d'un nouveau comité constitutionnel,
+Une motion de non-confiance réussie, la mise à jour du comité constitutionnel,
 un changement constitutionnel, ou un hard fork, retarde
 la ratification de toutes les autres mesures de gouvernance jusqu’à la première époque suivant leur promulgation. Cela donne
-un nouveau comité constitutionnel suffisamment de temps pour voter sur les propositions actuelles, réévaluer les propositions existantes
+à un comité constitutionnel mis à jour suffisamment de temps pour voter sur les propositions actuelles, réévaluer les propositions existantes
 à l’égard d’une nouvelle constitution, et veille à ce que les changements sémantiques arbitraires de principe entraîné
 en adoptant un hard-fork n’ont pas de conséquences imprévues en combinaison avec d’autres actions.
 
@@ -493,18 +497,18 @@ Le tableau suivant détaille les exigences de ratification pour chaque scénario
  Une valeur de - signifie que les votes du comité constitutionnel ne s’appliquent pas.
 
 * **DReps**<br/>
-Le seuil de vote DRep qui doit être atteint en pourcentage de la *participation de vote active*.
+ Le seuil de vote DRep qui doit être atteint en pourcentage de la *participation de vote active*.
 
 * **SPO**<br/>
- Le seuil de vote SPO qui doit être atteint en pourcentage de la mise détenue par tous les pools de mise.<br/>
+ Le seuil de vote SPO doit être atteint en tant que certain seuil de la participation totale active au vote, à l'exception des actions de gouvernance Hard Fork. En raison de la nécessité d'un consensus solide autour des initiations Hard Fork, ces votes doivent être atteints en tant que pourcentage de la participation détenue par tous les pools de participation.<br/>
  Une valeur de - signifie que les votes SPO ne s’appliquent pas.
 
 | Type d’action de gouvernance                                                    | CC  | DReps    | SPOs     |
 |:--------------------------------------------------------------------------------|:----|:---------|:---------|
 | 1. Motion de non-confiance                                                      | \-  | $P_1$    | $Q_1$    |
-| 2<sub>a</sub>. Nouveau comité/seuil (_état normal_)                             | \-  | $P_{2a}$ | $Q_{2b}$ |
-| 2<sub>b</sub>. Nouveau comité/seuil (_état de non-confiance_)                   | \-  | $P_{2b}$ | $Q_{2b}$ |
-| 3. Mise à jour de la Constitution ou politique de proposition                   | ✓   | $P_3$    | \-       |
+| 2<sub>a</sub>. Mise à jour du comité/seuil (_état normal_)                      | \-  | $P_{2a}$ | $Q_{2b}$ |
+| 2<sub>b</sub>. Mise à jour du comité/seuil (_état de non-confiance_)            | \-  | $P_{2b}$ | $Q_{2b}$ |
+| 3. Nouvelle Constitution ou script de rambardes                                 | ✓   | $P_3$    | \-       |
 | 4. Initiation du hard fork                                                      | ✓   | $P_4$    | $Q_4$    |
 | 5<sub>a</sub>. Modifications des paramètres de protocole, groupe réseau         | ✓   | $P_{5a}$ | \-       |
 | 5<sub>b</sub>. Modifications des paramètres du protocole, groupe économique     | ✓   | $P_{5b}$ | \-       |
@@ -517,7 +521,7 @@ Chacun de ces seuils est un paramètre de gouvernance. Il y a un
 seuil supplémentaire, « Q5 », lié aux paramètres de protocole pertinents pour la sécurité, 
 qui est expliqué ci-dessous.
 Les seuils initiaux devraient être choisis par la communauté Cardano dans son ensemble.
-Les deux seuils de l'action Info sont définis à 100 % car le fixer plus bas
+Tous les seuils de l'action Info sont définis à 100 % car le fixer plus bas
 entraînerait l'impossibilité de sonder au-dessus du seuil.
 
 Certains paramètres sont pertinents pour les propriétés de sécurité du système. Toute
@@ -525,16 +529,16 @@ proposition tentant de modifier un tel paramètre nécessite un vote supplément
 des SPOs, avec le seuil `Q5`.
 
 Les paramètres de protocole pertinents pour la sécurité sont :
-* `maxBBSize`
+* `maxBlockBodySize`
 * `maxTxSize`
-* `maxBHSize`
-* `maxValSize`
-* `maxBlockExUnits`
-* `minFeeA`
-* `minFeeB`
-* `coinsPerUTxOByte`
+* `maxBlockHeaderSize`
+* `maxValueSize`
+* `maxBlockExecutionUnits`
+* `txFeePerByte`
+* `txFeeFixed`
+* `utxoCostPerByte`
 * `govActionDeposit`
-* `minFeeRefScriptsCoinsPerByte`
+* `minFeeRefScriptCostPerByte`
 
 > **Note**
 > Il peut être logique que certains ou tous les seuils s’adaptent en ce qui concerne le Lovelace qui est activement inscrit pour voter.
@@ -561,8 +565,8 @@ Mais ils doivent être *délibérément* conçus pour le faire.
 Les actions qui ont été ratifiées à l’époque actuelle sont classées par ordre de priorité comme suit pour la promulgation :
 
 1. Motion de non-confiance
-2. Nouveau comité/seuil
-3. Mises à jour de la Constitution ou politique de proposition
+2. Mise à jour du comité/seuil
+3. Nouvelle Constitution ou script de rambardes
 4. Initiation du hard fork
 5. Modifications des paramètres du protocole
 6. Retraits du Trésor
@@ -605,8 +609,8 @@ De plus, chaque action comprendra certains éléments spécifiques à son type :
 | Type d’action de gouvernance                                  | Données supplémentaires                                                                                                                            |
 |:--------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1. Motion de non-confiance                                    | Aucune                                                                                                                                             |
-| 2. Nouveau comité/seuil                                       | L’ensemble des résumés de hachage de clé de vérification (membres à supprimer), une carte des résumés de hachage de clé de vérification aux numéros d'époque (nouveaux membres et leur limite de mandat) et une fraction (nouveau seuil)                                                                                                                               |
-| 3. Mise à jour de la Constitution ou politique de proposition | Un condensé de hachage du document constitutionnel                                                                                                 |
+| 2. Mise à jour du comité/seuil                                | L’ensemble des résumés de hachage de clé de vérification (membres à supprimer), une carte des résumés de hachage de clé de vérification aux numéros d'époque (nouveaux membres et leur limite de mandat) et une fraction (nouveau seuil)                                                                                                                               |
+| 3. Nouvelle Constitution ou script de rambardes               | Un condensé de hachage du document constitutionnel                                                                                                 |
 | 4. Initiation du hard fork                                    | La nouvelle version majeure du protocole                                                                                                           |
 | 5. Modifications des paramètres du protocole                  | Les paramètres modifiés                                                                                                                            |
 | 6. Retrait du Trésor                                          | Une carte d’identification de mise à un nombre positif de Lovelace                                                                                 |
@@ -636,29 +640,29 @@ Les groupes de paramètres _réseaux_, _économique_ et _technique_ collectent l
 De plus, nous introduisons un nouveau groupe _gouvernance_ qui est spécifique aux nouveaux paramètres de gouvernance qui seront introduits par le CIP-1694.
 
 Le **groupe de réseaux** se compose de :
-* taille maximale du corps du bloc (`maxBBSize`)
+* taille maximale du corps du bloc (`maxBlockBodySize`)
 * taille maximale de la transaction (`maxTxSize`)
-* taille maximale de l’en-tête de bloc (`maxBHSize`)
-* taille maximale d’une valeur de ressource sérialisée (`maxValSize`)
-* nombre maximal d’unités d’exécution de script dans une seule transaction (`maxTxExUnits`)
-* nombre maximal d’unités d’exécution de script dans un seul bloc (`maxBlockExUnits`)
+* taille maximale de l’en-tête de bloc (`maxBlockHeaderSize`)
+* taille maximale d’une valeur de ressource sérialisée (`maxValueSize`)
+* nombre maximal d’unités d’exécution de script dans une seule transaction (`maxTxExecutionUnits`)
+* nombre maximal d’unités d’exécution de script dans un seul bloc (`maxBlockExecutionUnits`)
 * nombre maximal d’entrées collatérales (`maxCollateralInputs`)
 
 Le **groupe économique** comprend :
-* coefficient de redevance minimal (`minFeeA`)
-* constante de frais minimum (`minFeeB`)
-* clé de délégation Lovelace dépôt (`keyDeposit`)
-* inscription à la piscine Dépôt Lovelace (`poolDeposit`)
-* expansion monétaire (`rho`)
-* expansion de la trésorerie (`tau`)
+* coefficient de redevance minimal (`txFeePerByte`)
+* constante de frais minimum (`txFeeFixed`)
+* clé de délégation Lovelace dépôt (`stakeAddressDeposit`)
+* inscription à la piscine Dépôt Lovelace (`stakePoolDeposit`)
+* expansion monétaire (`monetaryExpansion`)
+* expansion de la trésorerie (`treasuryCut`)
 * réduction des primes fixes minimales pour les pools (`minPoolCost`)
-* dépôt minimum de Lovelace par octet d’UTxO sérialisé (`coinsPerUTxOByte`)
-* prix des unités d’exécution de Plutus (`prix`)
+* dépôt minimum de Lovelace par octet d’UTxO sérialisé (`utxoCostPerByte`)
+* prix des unités d’exécution de Plutus (`executionUnitPrices`)
 
 Le **groupe technique** est composé de :
-* l'influence du pool pledge (`A0`)
-* époque maximale du retrait du pool (`eMax`)
-* nombre souhaité de pools (`nOpt`)
+* l'influence du pool pledge (`poolPledgeInfluence`)
+* époque maximale du retrait du pool (`poolRetireMaxEpoch`)
+* nombre souhaité de pools (`stakePoolTargetNum`)
 * modèles de coûts d’exécution de Plutus (`costModels`)
 * proportion de collatéral nécessaire pour les scripts (`collateralPercentage`)
 
@@ -666,10 +670,10 @@ Le **groupe de gouvernance** comprend tous les nouveaux paramètres de protocole
 * seuils de vote de gouvernance ($P_1$, $P_{2a}$, $P_{2b}$, $P_3$, $P_4$, $P_{5a}$, $P_{5b}$, $P_{5c}$, $P_{5d}$, $P_6$, $Q_1$, $Q_{2a}$, $Q_{2b}$, $Q_4$, $Q_5$)
 * durée de vie maximale de l'action de gouvernance en époques (`govActionLifetime`)
 * dépôt d'action de gouvernance (`govActionDeposit`)
-* montant du dépôt DRep (`drepDeposit`)
-* période d’activité DRep en époques (`drepActivity`)
-* taille minimale du comité constitutionnel (`ccMinSize`)
-* durée maximale du mandat (en époques) des membres du comité constitutionnel (`ccMaxTermLength`)
+* montant du dépôt DRep (`dRepDeposit`)
+* période d’activité DRep en époques (`dRepActivity`)
+* taille minimale du comité constitutionnel (`committeeMinSize`)
+* durée maximale du mandat (en époques) des membres du comité constitutionnel (`committeeMaxTermLength`)
 
 <!-- À faire :
  - Décider des valeurs initiales des nouveaux paramètres de gouvernance
@@ -751,7 +755,7 @@ Nous définissons un certain nombre de nouveaux termes liés à la participation
 + [Le but des DReps](#le-but-des-dreps)
 + [Tableau des exigences de ratification](#tableau-des-exigences-de-ratification)
 + [Motion de non-confiance](#motion-de-non-confiance)
-+ [Nouveau comité/seuil (état de défiance)](#nouveau-comitéseuil-état-de-non-confiance)
++ [Mise à jour du comité/seuil (état de non-confiance)](#mide-à-jours-du-comitéseuil-état-de-non-confiance)
 + [La polyvalence de l’action de gouvernance de l'information](#la-polyvalence-de-laction-de-gouvernance-de-linformation)
 + [Initiation hard-fork](#initiation-hard-fork)
 + [Nouvelles structures de métadonnées](#nouvelles-structures-de-métadonnées)
@@ -831,8 +835,8 @@ La plupart des actions de gouvernance ont le même type d’exigences :
 le comité constitutionnel et le DReps doivent atteindre un nombre suffisant de
 Votes 'Oui'.
 Cela inclut les actions suivantes :
-* Nouveau comité/seuil (état normal)
-* Mise à jour de la Constitution
+* Mise à jour du comité/seuil (état normal)
+* Nouvelle Constitution
 * Modifications des paramètres de protocole
 * Retrait du Trésor
 
@@ -843,7 +847,7 @@ Le Comité constitutionnel actuel et, par conséquent, le Comité constitutionne
 être inclus dans ce type de mesure de gouvernance.
 Dans cette situation, les SPOs et les DReps sont laissés à représenter la volonté de la communauté.
 
-### Nouveau comité/seuil (état de non-confiance)
+### Mise à jour du comité/seuil (état de non-confiance)
 
 Semblable à la motion de non-confiance, l’élection d’un comité constitutionnel
 dépend à la fois des SPOs et des DReps pour représenter la volonté de la communauté.
@@ -938,7 +942,7 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 
 * Remerciez les participants à l'atelier.
 * Nous avons ajouté les termes du Comité constitutionnel.
-* Deux nouvelles options DRep « prédéfinies » : abstention et non-confiance.
+* Deux nouvelles options de vote « prédéfinies » : abstention et non-confiance.
 * Nouvelle action de gouvernance « Info ».
 * Utilisez la distribution de participation DRep la plus récente pour la ratification.
   Cela signifie que si jamais votre DRep vote comme vous ne l'aimez pas,
@@ -952,7 +956,7 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
       3) combien d'ada est libéré à chaque époque
 * Divisez les mises à jour des paramètres de protocole en quatre groupes :
   réseau, économique, technique et gouvernemental.
-* La plupart des actions gouvernementales peuvent être promulguées (après ratification)
+* La plupart des actions de gouvernance peuvent être promulguées (après ratification)
   immédiatement. Tout sauf : les paramètres de protocole et les hard forks.
 * Supprimez la restriction « une action par type et par époque » en faveur du
   suivi du dernier ID d'action de chaque type, et de son inclusion
@@ -960,7 +964,7 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 * Pas d'AVST.
 * Phase d'amorçage : jusqu'à ce que X % des ADA soient inscrits pour voter ou que Y époques se
   soient écoulées, seuls les changements de paramètres et les hard forks peuvent se produire.
-  Les changements du PP ont juste besoin du quorum CC, les HF ont besoin du CC et des SPOs.
+  Les changements du PP ont juste besoin du seuil du CC, les HF ont besoin du CC et des SPOs.
   Après la phase de bootstrap, nous mettons en place l'incitation à maintenir des
   DReps bas, mais ce mécanisme se détend **automatiquement**.
 * Nouvel objectif de script plutus pour DReps.
@@ -977,7 +981,7 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 
 #### Modifications après l'atelier d'Édimbourg (Juillet 2023)
 
-* Ajoutez une politique de proposition, qui peut contrôler quels retraits de trésorerie et
+* Ajoutez un script de rambardes, qui peut contrôler quels retraits de trésorerie et
   modifications des paramètres de protocole sont autorisés.
 * Supprimer l'abandon des actions de gouvernance. Le seul effet que cela a est que si
   une mesure de censure est adoptée, les actions restent
@@ -1013,7 +1017,9 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 
 ### Critères d’acceptation
 
-- [ ] Une nouvelle ère du grand livre est activée sur le réseau principal Cardano, qui implémente la spécification ci-dessus.
+- [x] Une nouvelle ère du grand livre est activée sur le réseau principal Cardano, qui implémente la spécification ci-dessus.
+- Gouvernance de la phase d'amorçage via le hardfork Chang #1
+- Gouvernance complète via le hardfork Plomin
 
 ### Plan de mise en oeuvre
 
@@ -1038,18 +1044,18 @@ Le CIP-1694 va sans doute au-delà de la portée habituelle du processus de CIP 
 Toutefois, ce processus n’a pas encore été défini et reste une question ouverte.
 Le processus de ratification finale sera probablement un mélange de diverses idées, telles que:
 
-- [ ] Recueillir les opinions des ateliers communautaires, semblables à l’atelier du Colorado de février-mars 2023.
+- [x] Recueillir les opinions des ateliers communautaires, semblables à l’atelier du Colorado de février-mars 2023.
 - [ ] Exercer des actions de vote sur un réseau de test public, avec une participation suffisante.
 - [ ] Interrogez les fournisseurs de services établis.
 - [ ] Tirer parti de Project Catalyst pour recueillir les contributions de la communauté électorale existante (bien que petite en termes de participation active).
 
 #### Modifications apportées au corps de la transaction
 
-- [ ] De nouveaux éléments seront ajoutés au corps de la transaction, et les fonctionnalités de mise à jour et MIR existantes seront supprimées. En particulier
+- [x] De nouveaux éléments seront ajoutés au corps de la transaction, et les fonctionnalités de mise à jour et MIR existantes seront supprimées. En particulier
 
  Les actions de gouvernance et les votes comprendront deux nouveaux champs d’organe de transaction.
 
-- [ ] Trois nouveaux types de certificats seront ajoutés en plus des certificats existants :
+- [x] Trois nouveaux types de certificats seront ajoutés en plus des certificats existants :
 
   * Inscription DRep
   * Désinscription DRep
@@ -1057,7 +1063,7 @@ Le processus de ratification finale sera probablement un mélange de diverses id
 
  De même, les certificats MIR et genesis actuels seront supprimés.
 
-- [ ] Un nouvel objectif `Voting` sera ajouté aux contextes de script Plutus.
+- [x] Un nouvel objectif `Voting` sera ajouté aux contextes de script Plutus.
  Cela prévoira, en particulier, le vote aux scripts on-chain.
 
 > **Warning** Comme d’habitude, nous fournirons une spécification CDDL pour chacune de ces modifications.
@@ -1127,7 +1133,7 @@ La pondération doit être choisie avec soin.
 Un DRep pourrait éventuellement indiquer un autre identifiant DRep dans son certificat d’enregistrement.
 À la retraite, toutes les délégations du DRep seraient automatiquement transférées vers
 les informations d’identification DRep choisi. Si ce DRep avait déjà pris sa retraite, la délégation serait transférée
-au DRep 'Abstention'.
+à l'option de vote 'Abstention'.
 
 ##### Pas d’inscription DRep
 
@@ -1186,7 +1192,7 @@ uniquement lorsqu’un niveau minimum de mise a été délégué à DReps.
 ##### Renommer DReps / état de non-confiance ?
 
 Il a été dit à plusieurs reprises que « DReps » tel que présenté ici, pourrait être confondu avec Project Catalyst DReps.
-De même, certaines personnes ont exprimé une confusion entre l’état de non-confiance, la motion de non-confiance et les DReps non-confiance.
+De même, certaines personnes ont exprimé une confusion entre l’état de non-confiance, la motion de non-confiance et l'option de vote non-confiance.
 
 Nous pourrions imaginer trouver de meilleurs termes pour ces concepts.
 

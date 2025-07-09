@@ -1,0 +1,158 @@
+{
+    "title": "CIP-136 Common",
+    "description": "Metadata document for Cardano Constitutional Committee vote rationales, extending CIP-100",
+    "type": "object",
+    "required": ["hashAlgorithm", "authors", "body"],
+    "properties": {
+        "hashAlgorithm": {
+            "$ref": "#/definitions/hashAlgorithm"
+        },
+        "authors": {
+            "$ref": "#/definitions/authors"
+        },
+        "body": {
+            "$ref": "#/definitions/body"
+        }
+    },
+    "definitions": {
+        "hashAlgorithm": {
+            "type": "string",
+            "enum": ["blake2b-256"],
+            "title": "Hash Algorithm",
+            "description": "The algorithm used to authenticate this document externally (CIP-100)"
+        },
+        "authors": {
+            "title": "Authors",
+            "description": "The authors of this governance metadata (CIP-100)",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/author"
+            }
+        },
+        "author": {
+            "title": "Author",
+            "description": "An author endorsing the content of a metadata document (CIP-100)",
+            "type": "object",
+            "required": ["name", "witness"],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "Name"
+                },
+                "witness": {
+                    "$ref": "#/definitions/witness"
+                }
+            }
+        },
+        "witness": {
+            "title": "Witness",
+            "description": "A witness proving that the author endorses the content of the metadata",
+            "type": "object",
+            "properties": {
+                "witnessAlgorithm": {
+                    "title": "WitnessAlgorithm",
+                    "type": "string",
+                    "enum": [
+                        "ed25519"
+                    ]
+                },
+                "publicKey": {
+                    "title": "PublicKey",
+                    "type": "string"
+                },
+                "signature": {
+                    "title": "Signature",
+                    "type": "string"
+                }
+            }
+        },
+        "body": {
+            "title": "Body",
+            "description": "The body of the metadata document that is hashed to produce a signature (CIP-100)",
+            "type": "object",
+            "required": ["summary", "rationaleStatement"],
+            "properties": {
+                "references": {
+                    "title": "References",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/reference"
+                    }
+                },
+                "summary": {
+                    "type": "string",
+                    "title": "Summary",
+                    "description": "The summary of the voting rationale"
+                },
+                "rationaleStatement": {
+                    "type": "string",
+                    "title": "Rationale Statement",
+                    "description": "The summary of the voting rationale"
+                },
+                "precedentDiscussion": {
+                    "type": "string",
+                    "title": "Precedent Discussion",
+                    "description": "Discussion of existing precedent"
+                },
+                "counterargumentDiscussion": {
+                    "type": "string",
+                    "title": "Counterargument Discussion",
+                    "description": "Discussion of counter points to the rationale"
+                },
+                "conclusion": {
+                    "type": "string",
+                    "title": "conclusion",
+                    "description": "Closing conclusion of the rationale"
+                }
+            }
+        },
+        "reference": {
+            "title": "Reference",
+            "description": "A reference to a document",
+            "type": "object",
+            "required": ["type", "label", "uri"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["GovernanceMetadata", "Other", "RelevantArticles"],
+                    "title": "Type"
+                },
+                "label": {
+                    "type": "string",
+                    "title": "Label"
+                },
+                "uri": {
+                    "type": "string",
+                    "title": "URI"
+                }
+            }
+        },
+        "internalVote": {
+            "title": "Internal Vote",
+            "description": "Used to reflect voting intents of individuals within the committee member",
+            "type": "object",
+            "properties": {
+                "constitutional": {
+                    "type": "integer",
+                    "title": "Constitutional Internal Vote Total"
+                },
+                "unconstitutional": {
+                    "type": "integer",
+                    "title": "Unconstitutional Internal Vote Total"
+                },
+                "abstain": {
+                    "type": "integer",
+                    "title": "Abstain Internal Vote Total"
+                },
+                "didNotVote": {
+                    "type": "integer",
+                    "title": "Total of individuals who did not vote"
+                },
+                "againstVote": {
+                    "type": "integer",
+                    "title": "Total of individuals who did not want the member to vote"
+                }
+            }
+        }
+    }
+}

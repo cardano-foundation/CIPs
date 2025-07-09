@@ -2,7 +2,7 @@
 CIP: 122
 Title: Logical operations over BuiltinByteString
 Category: Plutus
-Status: Proposed
+Status: Active
 Authors: 
     - Koz Ross <koz@mlabs.city>
 Implementors: 
@@ -184,7 +184,7 @@ to access individual bytes by index as a primitive operation. Thus, we can view
 a `BuiltinByteString` as an indexed collection of bytes; for any
 `BuiltinByteString` $b$ of length $n$, and any $i \in 0, 1, \ldots, n - 1$, we
 define $b\\{i\\}$ as the byte at index $i$ in $b$, as defined by the
-`builtinIndexByteString` primitive. In essence, for any `BuiltinByteString` of
+`indexByteString` primitive. In essence, for any `BuiltinByteString` of
 length `n`, we have _byte_ indexes as follows:
 
 ```
@@ -354,7 +354,7 @@ their lengths in bytes; see the
 for the exact specification of this. Let the result of `bitwiseLogicalAnd`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
-analogously for $b_2$, $b_r#); see the [section on the bit indexing
+analogously for $b_2$, $b_r$); see the [section on the bit indexing
 scheme](#bit-indexing-scheme) for the exact specification of this.
 
 For all $i \in 0, 1, \ldots, n - 1$, we have 
@@ -381,11 +381,11 @@ bitwiseLogicalAnd True [] [0xFF] => [0xFF]
 
 bitwiseLogicalAnd True [0xFF] [] => [0xFF]
 
-bitwiseLogicalAnd False [0xFF] [0x00] => [0x00]
+bitwiseLogicalAnd True [0xFF] [0x00] => [0x00]
 
-bitwiseLogicalAnd False [0x00] [0xFF] => [0x00]
+bitwiseLogicalAnd True [0x00] [0xFF] => [0x00]
 
-bitwiseLogicalAnd False [0x4F, 0x00] [0xF4] => [0x44, 0x00]
+bitwiseLogicalAnd True [0x4F, 0x00] [0xF4] => [0x44, 0x00]
 ```
 
 #### `bitwiseLogicalOr`
@@ -405,7 +405,7 @@ their lengths in bytes; see the
 for the exact specification of this. Let the result of `bitwiseLogicalOr`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
-analogously for $b_2$, $b_r#); see the [section on the bit indexing
+analogously for $b_2$, $b_r$); see the [section on the bit indexing
 scheme](#bit-indexing-scheme) for the exact specification of this.
 
 For all $i \in 0, 1, \ldots, n - 1$, we have 
@@ -429,11 +429,11 @@ bitwiseLogicalOr True [] [0xFF] => [0xFF]
 
 bitwiseLogicalOr True [0xFF] [] => [0xFF]
 
-bitwiseLogicalOr False [0xFF] [0x00] => [0xFF]
+bitwiseLogicalOr True [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalOr False [0x00] [0xFF] => [0xFF]
+bitwiseLogicalOr True [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalOr False [0x4F, 0x00] [0xF4] => [0xFF, 0x00]
+bitwiseLogicalOr True [0x4F, 0x00] [0xF4] => [0xFF, 0x00]
 ```
 
 #### `bitwiseLogicalXor`
@@ -453,7 +453,7 @@ their lengths in bytes; see the
 for the exact specification of this. Let the result of `bitwiseLogicalXor`, given 
 $b_1, b_2$ and some padding semantics argument, be $b_r$, also of length $n$ 
 in bytes. We use $b_1\\{i\\}$ to refer to the byte at index $i$ in $b_1$ (and
-analogously for $b_2$, $b_r#); see the [section on the bit indexing
+analogously for $b_2$, $b_r$); see the [section on the bit indexing
 scheme](#bit-indexing-scheme) for the exact specification of this.
 
 For all $i \in 0, 1, \ldots, n - 1$, we have 
@@ -480,11 +480,11 @@ bitwiseLogicalOr True [] [0xFF] => [0xFF]
 
 bitwiseLogicalOr True [0xFF] [] => [0xFF]
 
-bitwiseLogicalOr False [0xFF] [0x00] => [0xFF]
+bitwiseLogicalOr True [0xFF] [0x00] => [0xFF]
 
-bitwiseLogicalOr False [0x00] [0xFF] => [0xFF]
+bitwiseLogicalOr True [0x00] [0xFF] => [0xFF]
 
-bitwiseLogicalOr False [0x4F, 0x00] [0xF4] => [0xBB, 0x00]
+bitwiseLogicalOr True [0x4F, 0x00] [0xF4] => [0xBB, 0x00]
 ```
 
 #### `bitwiseLogicalComplement`
@@ -526,7 +526,7 @@ bitwiseLogicalComplement [0x4F, 0xF4] => [0xB0, 0x0B]
    _index argument_.
 
 Let $b$ refer to the data argument, of length $n$ in bytes, and let $i$ refer to
-the index argument. We use $b[i]$ to refer to the value at index $i$t of $b$; see 
+the index argument. We use $b[i]$ to refer to the value at index $i$ of $b$; see 
 the [section on the bit indexing scheme](#bit-indexing-scheme) for the exact 
 specification of this.
 
@@ -938,16 +938,16 @@ replicateByteString (n + m) w = replicateByteString n w <> replicateByteString m
 ```
 
 Additionally, for any 'in-bounds' index (that is, any index for which
-`builtinIndexByteString` won't error) `i`, we have
+`indexByteString` won't error) `i`, we have
 
 ```haskell
-builtinIndexByteString (replicateByteString n w) i = w
+indexByteString (replicateByteString n w) i = w
 ```
 
 Lastly, we have
 
 ```haskell
-builtinSizeOfByteString (replicateByteString n w) = n
+lengthByteString (replicateByteString n w) = n
 ```
 
 ## Rationale: how does this CIP achieve its goals?
@@ -1490,6 +1490,11 @@ We consider the following criteria to be essential for acceptance:
 Ideally, the implementation should also demonstrate its performance 
 characteristics by well-designed benchmarks.
 
+- [x] Included within a major haskell cardano-node release
+  - https://github.com/IntersectMBO/cardano-node/releases/tag/10.1.1  
+- [x] Enabled on Cardano mainnet via a hardfork
+  - Enabled by Plomin hardfork
+
 ### Implementation Plan
 
 MLabs has begun the [implementation of the proof-of-concept][mlabs-impl] as 
@@ -1522,7 +1527,7 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [cip-58]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0058
 [croaring]: https://github.com/RoaringBitmap/CRoaring
 [too-many-ways-1]: https://fgiesen.wordpress.com/2018/02/19/reading-bits-in-far-too-many-ways-part-1
-[conversion-cip]: https://github.com/mlabs-haskell/CIPs/blob/koz/to-from-bytestring/CIP-0121/README.md
+[conversion-cip]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0121/README.md
 [benchmarks-bits]: https://github.com/mlabs-haskell/plutus-integer-bytestring/blob/main/bench/naive/Main.hs#L74-L83
 [vector]: https://hackage.haskell.org/package/vector-0.13.1.0/docs/Data-Vector.html#v:-47--47-
 [boolean-algebra-2]: https://en.wikipedia.org/wiki/Two-element_Boolean_algebra
@@ -1531,7 +1536,8 @@ This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [blake2b]: https://en.wikipedia.org/wiki/BLAKE_(hash_function)
 [argon2]: https://en.wikipedia.org/wiki/Argon2
 [xor-crypto]: https://en.wikipedia.org/wiki/Exclusive_or#Bitwise_operation
-[cip-121-big-endian]: https://github.com/mlabs-haskell/CIPs/blob/koz/to-from-bytestring/CIP-0121/README.md#representation
+[cip-121]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0121/README.md
+[cip-121-big-endian]:https://github.com/cardano-foundation/CIPs/blob/master/CIP-0121/README.md/#representation
 [bitwise-and]: https://en.wikipedia.org/wiki/Bitwise_operation#AND
 [bitwise-or]: https://en.wikipedia.org/wiki/Bitwise_operation#OR
 [bitwise-xor]: https://en.wikipedia.org/wiki/Bitwise_operation#XOR

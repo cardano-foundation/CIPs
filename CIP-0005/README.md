@@ -65,12 +65,20 @@ We define the following set of common prefixes with their corresponding semantic
 | `drep_vk`          | CIP-1852’s DRep verification key                                      | Ed25519 public key                 |
 | `drep_xsk`         | CIP-1852’s DRep extended signing key                                  | Ed25519-bip32 extended private key |
 | `drep_xvk`         | CIP-1852’s DRep extended verification key                             | Ed25519 public key with chain code |
+| `gen_sk`           | Genesis signing key                                                   | Ed25519 private key                |
+| `gen_vk`           | Genesis verification key                                              | Ed25519 public key                 |
+| `gen_deleg_sk`     | Genesis delegate private key                                          | Ed25519 private key                |
+| `gen_deleg_vk`     | Genesis delegate public key                                           | Ed25519 public key                 |
+| `gen_utxo_sk`      | Genesis UTXO private key                                              | Ed25519 private key                |
+| `gen_utxo_vk`      | Genesis UTXO public key                                               | Ed25519 public key                 |
 | `kes_sk`           | KES signing key                                                       | KES signing key                    |
 | `kes_vk`           | KES verification key                                                  | KES verification key               |
 | `policy_sk`        | CIP-1855's policy private key                                         | Ed25519 private key                |
 | `policy_vk`        | CIP-1855's policy public key                                          | Ed25519 public key                 |
 | `pool_sk`          | Pool operator signing key                                             | Ed25519 private key                |
 | `pool_vk`          | Pool operator verification key                                        | Ed25519 public key                 |
+| `pool_xsk`         | Pool operator extended signing key                                    | Ed25519-bip32 extended private key |
+| `pool_xvk`         | Pool operator extended verification key                               | Ed25519 public key with chain code |
 | `root_sk`          | CIP-1852's root private key                                           | Ed25519 private key                |
 | `root_vk`          | CIP-1852's root public key                                            | Ed25519 public key                 |
 | `root_xsk`         | CIP-1852's extended root private key                                  | Ed25519-bip32 extended private key |
@@ -92,35 +100,56 @@ We define the following set of common prefixes with their corresponding semantic
 
 ### Hashes
 
-| Prefix             | Meaning                                                               | Contents                                                                 |
-| ---                | ---                                                                   | ---                                                                      |
-| `asset`            | Fingerprint of a native asset for human comparison                    | See [CIP-0014]                                                           |
-| `pool`             | Pool operator verification key hash (pool ID)                         | blake2b\_224 digest of an operator verification key                      |
-| `script`           | Script hash                                                           | blake2b\_224 digest of a serialized transaction script                   |
-| `addr_vkh`         | Address verification key hash                                         | blake2b\_224 digest of a payment verification key                        |
-| `addr_shared_vkh`  | Shared address verification key hash                                  | blake2b\_224 digest of a payment verification key                        |
-| `policy_vkh`       | Policy verification key hash                                          | blake2b\_224 digest of a policy verification key                         |
-| `stake_vkh`        | Stake address verification key hash                                   | blake2b\_224 digest of a delegation verification key                     |
-| `stake_shared_vkh` | Shared stake address verification key hash                            | blake2b\_224 digest of a delegation verification key                     |
-| `req_signer_vkh`   | Required signer verification key hash                                 | blake2b\_224 digest of a required signer verification key                |
-| `vrf_vkh`          | VRF verification key hash                                             | blake2b\_256 digest of a VRF verification key                            |
-| `datum`            | Output datum hash                                                     | blake2b\_256 digest of output datum                                      |
-| `script_data`      | Script data hash                                                      | blake2b\_256 digest of script data                                       |
-| `drep`             | Delegate representative verification key hash (DRep ID)               | blake2b\_224 digest of a delegate representative verification key        |
-| `drep_script`      | Delegate representative script hash (DRep ID)                         | blake2b\_224 digest of a serialized delegate representative script       |
-| `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a consitutional committee cold verification key   |
-| `cc_cold_script`   | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
-| `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a consitutional committee hot verification key    |
-| `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
+| Prefix                 | Meaning                                                               | Contents                                                                 |
+| ---                    | ---                                                                   | ---                                                                      |
+| `asset`                | Fingerprint of a native asset for human comparison                    | See [CIP-0014]                                                           |
+| `pool`                 | Pool operator verification key hash (pool ID)                         | blake2b\_224 digest of an operator verification key                      |
+| `script`               | Script hash                                                           | blake2b\_224 digest of a serialized transaction script                   |
+| `addr_vkh`             | Address verification key hash                                         | blake2b\_224 digest of a payment verification key                        |
+| `addr_shared_vkh`      | Shared address verification key hash                                  | blake2b\_224 digest of a payment verification key                        |
+| `policy_vkh`           | Policy verification key hash                                          | blake2b\_224 digest of a policy verification key                         |
+| `stake_vkh`            | Stake address verification key hash                                   | blake2b\_224 digest of a delegation verification key                     |
+| `stake_shared_vkh`     | Shared stake address verification key hash                            | blake2b\_224 digest of a delegation verification key                     |
+| `req_signer_vkh`       | Required signer verification key hash                                 | blake2b\_224 digest of a required signer verification key                |
+| `vrf_vkh`              | VRF verification key hash                                             | blake2b\_256 digest of a VRF verification key                            |
+| `datum`                | Output datum hash                                                     | blake2b\_256 digest of output datum                                      |
+| `script_data`          | Script data hash                                                      | blake2b\_256 digest of script data                                       |
+| `drep_vkh`             | Delegate representative verification key hash                         | blake2b\_224 digest of a delegate representative verification key        |
+| `cc_cold_vkh`          | Constitutional committee cold verification key hash                   | blake2b\_224 digest of a constitutional committee cold verification key  |
+| `cc_hot_vkh`           | Constitutional committee hot verification key hash                    | blake2b\_224 digest of a constitutional committee hot verification key   |
 
 ### Miscellaneous
 
-| Prefix           | Meaning                                               | Contents                                                      |
-| ---              | ---                                                   | ---                                                           |
-| `addr`           | Mainnet address                                       | Network tag, payment credential and optional stake credential |
-| `addr_test`      | Testnet address                                       | Network tag, payment credential and optional stake credential |
-| `stake`          | Mainnet stake address                                 | Network tag and stake credential                              |
-| `stake_test`     | Testnet stake address                                 | Network tag and stake credential                              |
+| Prefix              | Meaning                                               | Contents                                                      |
+| ---                 | ---                                                   | ---                                                           |
+| `addr`              | Mainnet address                                       | Network tag, payment credential and optional stake credential |
+| `addr_test`         | Testnet address                                       | Network tag, payment credential and optional stake credential |
+| `stake`             | Mainnet stake address                                 | Network tag and stake credential                              |
+| `stake_test`        | Testnet stake address                                 | Network tag and stake credential                              |
+| `drep`              | DRep identifier                                       | DRep credential, see [CIP-0129]                               |
+| `cc_cold`           | Constitutional committee cold identifier              | Constitutional committee cold credential, see [CIP-0129]      |
+| `cc_hot`            | Constitutional committee hot identifier               | Constitutional committee hot credential, see [CIP-0129]       |
+| `gov_action`        | Governance action identifier                          | Governance action ID, see [CIP-0129]                          |
+
+
+### Deprecated Governance Prefixes
+
+The some governance prefixes contained within the tables above were originally defined via [CIP-0105].
+With the authoring of and acceptance of [CIP-0129], the community decide to replace some governance prefix definitions whilst depreciating others.
+
+Further details on the depreciation and replacement of definitions can be seen via [CIP-105 Deprecated Governance ID Definition](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0105#deprecated-governance-id-definition).
+
+Below is a table of entries of prefix definitions which were defined via [CIP-0105], but have now been marked as depreciated as [CIP-0129] defined replacements.\
+The [CIP-0129] definitions are included within the tables above.
+
+| Prefix             | Meaning                                                               | Contents                                                                 |
+| ---                | ---                                                                   | ---                                                                      |
+| `drep`             | Delegate representative verification key hash (DRep ID)               | blake2b\_224 digest of a delegate representative verification key        |
+| `drep_script`      | Delegate representative script hash (DRep ID)                         | blake2b\_224 digest of a serialized delegate representative script       |
+| `cc_cold`          | Constitutional committee cold verification key hash (cold credential) | blake2b\_224 digest of a constitutional committee cold verification key  |
+| `cc_cold_script`   | Constitutional committee cold script hash (cold credential)           | blake2b\_224 digest of a serialized constitutional committee cold script |
+| `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a constitutional committee hot verification key   |
+| `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -173,14 +202,26 @@ The only prior work done towards that direction has been [jcli](https://input-ou
   - [x] cardano-wallet
   - [x] Blockfrost
   - [x] cardanoscan, cexplorer
+  - [x] cardano-signer 
   - ... and more
 
 ### Implementation Plan
 
 - Available JavaScript library: [cip5-js](https://www.npmjs.com/package/@dcspark/cip5-js)
 
+## Changelog
+
+In order to make it easy to keep up with updates to this CIP, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
+
+| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
+| --- | ---         | ---                                                             | ---                                                           |
+| 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#1036](https://github.com/cardano-foundation/CIPs/pull/1036) |
+| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
+
 ## Copyright
 
 This CIP is licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 [CIP-0014]: https://github.com/cardano-foundation/CIPs/blob/645243e30b5aae109a70ec2b47af70dcc808bc56/CIP-0014
+[CIP-0105]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md
+[CIP-0129]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md

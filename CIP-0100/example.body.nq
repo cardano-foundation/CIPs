@@ -1,9 +1,8 @@
-_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#body> _:c14n1 .
-_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#comment> "This is a test vector for CIP-100"@en-us .
-_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#externalUpdates> _:c14n3 .
-_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#references> _:c14n2 .
-_:c14n2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference> .
-_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "CIP-100"@en-us .
-_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md"@en-us .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#body> _:c14n2 .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "CIP-100"@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md"@en-us .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#comment> "This is a test vector for CIP-100"@en-us .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#externalUpdates> _:c14n3 .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#references> _:c14n1 .
 _:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#update-title> "Blog"@en-us .
 _:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#update-uri> "https://314pool.com"@en-us .

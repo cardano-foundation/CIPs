@@ -4,8 +4,9 @@ Title: Cardano Smart NFTs
 Status: Proposed
 Category: Tokens
 Authors:
+  - Kieran Simkin <hi@clg.wtf>
+Implementors:
   - Kieran Simkin
-Implementors: []
 Discussions:
   - https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
   - https://github.com/cardano-foundation/CIPs/pull/263
@@ -233,6 +234,18 @@ This proposal suggests an addition to the 721 metadata key from [CIP-0025](https
 
 In tandem with the additional metadata, we also define a standard for the Javascript API which is provided to the NFT within the sandbox.
 
+## The Smart NFT toolchain
+
+This CIP now has a [reference implementation](https://clg.wtf/policy/smart-life) which consists of a [front-end React control](https://github.com/kieransimkin/SmartNFTPortal) which takes care of rendering an NFT - it creates the sandbox and exposes the CIP54 Javascript API to it. This works in tandem with a [backend library](https://github.com/kieransimkin/libcip54) which takes care of reading the necessary data from a dbsync instance and making it available for the front end control to render. 
+
+There is also an [integrated development environment](https://nft-playground.dev/) made available to enable realtime experimentation and debugging of Smart NFTs without having to repeatedly mint new tokens. 
+
+Furthermore, [a complete visual blockchain explorer](https://clg.wtf/) has been made available which utilises libcip54 and SmartNFTPortal and fully supports the reference implementation of this standard. 
+
+The first CIP54 collection has been minted on mainnet under the policy ID `1eaf3b3ffb75ff27c43c512c23c6450b307f138281efb1d690b84652` and is [available to see here](https://clg.wtf/policy/smart-life). [A number of other instructive example NFTs](https://nft-playground.dev/examples) have also been provided as part of the NFT Playground website.
+
+[Libcip54](https://github.com/kieransimkin/libcip54), [SmartNFTPortal](https://github.com/kieransimkin/SmartNFTPortal), [Cardano Looking Glass](https://github.com/kieransimkin/looking-glass) and the [NFT Playground](https://github.com/kieransimkin/cip54-playground) are all opensource - pull requests are welcome!
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -243,9 +256,10 @@ In tandem with the additional metadata, we also define a standard for the Javasc
 
 ### Implementation Plan
 
-- [ ] Provide a reference implementation of this scheme, which illustrates both:
-  - [ ] a means of creating a "Smart NFT"
-  - [ ] a means of rendering it
+- [X] Provide a [reference](https://github.com/kieransimkin/libcip54) [implementation](https://github.com/kieransimkin/smartnftportal) of this scheme, which illustrates both:
+  - [X] [a means of creating a "Smart NFT"](https://nft-playground.dev/)
+  - [X] [a means of rendering it](https://clg.wtf/)
+  - [ ] Update this specification to match the new features added in the reference implementation.
 
 ## Copyright
 

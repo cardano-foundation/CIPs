@@ -19,7 +19,7 @@ See [cip-0108.common.schema.json](./cip-0108.common.schema.json).
 ### Treasury Withdrawal
 
 Example metadata document file: [treasury-withdrawal.jsonld](./examples/treasury-withdrawal.jsonld).
-Blake2b-256 of the canonicalized document (to go onchain): `6685960f5884922e135a951f8acb581ff7202fc111ec405a7e014ae725927aae`
+Blake2b-256 of the file content (to go onchain): `311b148ca792007a3b1fee75a8698165911e306c3bc2afef6cf0145ecc7d03d4`
 
 #### Intermediate files
 
@@ -30,14 +30,11 @@ Body files, used to correctly generate author's witness:
 - [treasury-withdrawal.body.nq](./examples/treasury-withdrawal.body.nq)
 
 Blake2b-256 hash digest of canonicalized body: `68d6fe27087457acf0164e65414238c43573192c99f30341926d1524924d71ca`
-  
-Whole document canonical representation, used to generate final hash:
-- [treasury-withdrawal.nq](./examples/treasury-withdrawal.nq)
 
 ### Motion of No-Confidence
 
 Example metadata document file: [no-confidence.jsonld](./examples/no-confidence.jsonld).
-Blake2b-256 of the canonicalized document (to go onchain): `c382be96dd98c4bbd6d3afe81f0c8143e70fbb6b8855303e69a6606991a4e909`
+Blake2b-256 of the file content (to go onchain): `87ba5c10c89484c52265b50d669b4acf116aaeb8a6fa35fbf06e5ec67cda9270`
 
 #### Intermediate files
 
@@ -48,9 +45,6 @@ Body files, used to correctly generate author's witness:
 - [no-confidence.body.nq](./examples/no-confidence.body.nq)
 
 Blake2b-256 hash digest of canonicalized body: `4a7ecc544559df67ece3f7f90f76c4e3e7e329a274c79a06dcfbf28351db600e`
-
-Whole document canonical representation, used to generate final hash:
-- [no-confidence.nq](./examples/no-confidence.nq)
 
 ## How-to Recreate Examples
 
@@ -97,7 +91,9 @@ For [Treasury Withdrawal](#treasury-withdrawal), this will result in: `68d6fe270
 
 ### 4. Authors witness over the hash of canonicalized `body`
 
-Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures), for `cip-0008` refer to [CIP-108 New Witness Type](./README.md#new-witness-type).
+Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures), for `CIP-0008` refer to [CIP-108 New Witness Type](./README.md#new-witness-type).
+
+One tool for Ed25519 signatures is [Ed25519 Online Tool](https://cyphr.me/ed25519_tool/ed.html).
 
 For [Treasury Withdrawal](#treasury-withdrawal), we use the keys described in [Author](#author) resulting in: `a476985b4cc0d457f247797611799a6f6a80fc8cb7ec9dcb5a8223888d0618e30de165f3d869c4a0d9107d8a5b612ad7c5e42441907f5b91796f0d7187d64a01`.
 
@@ -111,23 +107,14 @@ By adding this information we create our `example.jsonld`.
 
 For [Treasury Withdrawal](#treasury-withdrawal), this will result in [treasury-withdrawal.jsonld](./examples/treasury-withdrawal.jsonld).
 
-### 6. Canonicalize example.jsonld
+### 6. Hash example.jsonld
 
-To be able to create a final metadata hash which can be attached on-chain we must first canonicalize the `example.jsonld`.
-Ensure the results ends in a newline.
+To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [Treasury Withdrawal](#treasury-withdrawal.jsonld) as is.
 
-This creates `example.nq`.
+This results is: `311b148ca792007a3b1fee75a8698165911e306c3bc2afef6cf0145ecc7d03d4`.
 
-For [Treasury Withdrawal](#treasury-withdrawal), this will result in the intermediate file of [treasury-withdrawal.nq](./examples/treasury-withdrawal.nq).
-
-### 7. Hash the canonicalized example.jsonld
-
-We then use the specified `hashAlgorithm` on `example.nq`.
-
-For [Treasury Withdrawal](#treasury-withdrawal), this will result in `6685960f5884922e135a951f8acb581ff7202fc111ec405a7e014ae725927aae`.
-
-### 8. Submit to chain
+### 7. Submit to chain
 
 We can then host `example.jsonld` somewhere easily accessible following [CIP-100 Best Practices](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#best-practices).
 
-Then at submission time of the governance metadata anchor we can provide the on-chain transaction both the URI to the hosted `example.jsonld` but also the hash generated via [7.](#7-hash-the-canonicalized-examplejsonld).
+Then at submission time of the governance metadata anchor we can provide the on-chain transaction both the URI to the hosted `example.jsonld` but also the hash generated via [6.](#6-Hash-examplejsonld).

@@ -18,12 +18,4 @@ See [cip-0119.common.schema.json](./cip-0119.common.schema.json).
 
 CIP-119 off-chain metadata json example: [drep.jsonld](./examples/drep.jsonld)
 
-Blake2b-256 hash of the canonicalize example (to go on-chain): `a7a5cf6bfcad40e7b43653dae26344d6fbb5d7a2ef8de56a5e43703b298b94b5`
-
-### Intermediate files
-
-File produced to articulate process, these are not necessary in implementations.
-
-Whole document canonical representation, used to generate final hash:
-
-- [drep.nq](./examples/drep.nq)
+Blake2b-256 hash of content of the file (to go on-chain): `a14a5ad4f36bddc00f92ddb39fd9ac633c0fd43f8bfa57758f9163d10ef916de`

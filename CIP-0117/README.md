@@ -2,7 +2,7 @@
 CIP: 117
 Title: Explicit script return values
 Category: Plutus
-Status: Proposed
+Status: Active
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors: 
@@ -72,7 +72,7 @@ This is very unlikely to happen by accident: mistakes in the number of arguments
 ### Acceptance Criteria
 
 - [x] The proposal is implemented in the Ledger.
-- [ ] The ledger changes are released on Mainnnet.
+- [x] The ledger changes are released on Mainnnet.
 
 ### Implementation Plan
 

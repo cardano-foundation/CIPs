@@ -44,7 +44,7 @@
     },
     "body": {
       "references": [
-        { "@type": "other", "label": "CIP-100", "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md" }
+        { "@type": "Other", "label": "CIP-100", "uri": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md" }
       ],
       "comment": "This is a test vector for CIP-100",
       "externalUpdates": [
