@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: API for Using Native Tokens to Pay For Transaction Fees and Deposits
+Title: Native Token Fee Payment API
 Category: Tools
 Status: Proposed
 Authors:
