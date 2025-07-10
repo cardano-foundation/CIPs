@@ -76,3 +76,7 @@ Failing on first error mirrors `indexArray` and keeps the API simple.
 5. Benchmark against manual `indexArray` loops to refine costing.
 6. Update formal documentation (`plutus-metatheory`, spec PDF).
 7. Complete integration and include in the next hard fork.
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
