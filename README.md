@@ -89,7 +89,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0082 | [Improved Rewards Scheme Parameters](./CIP-0082) | Proposed |
 | 0083 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
 | 0084 | [Cardano Ledger Evolution](./CIP-0084) | Active |
-| 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
+| 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Active |
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0088 | [Token Policy Registration](./CIP-0088) | Proposed |
 | 0089 | [Distributed DApps & Beacon Tokens](./CIP-0089) | Active |
@@ -98,12 +98,12 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
 | 0095 | [Web-Wallet Bridge - Conway ledger era](./CIP-0095) | Active |
 | 0099 | [Proof of Onboarding](./CIP-0099) | Active |
-| 0100 | [Governance Metadata](./CIP-0100) | Proposed |
+| 0100 | [Governance Metadata](./CIP-0100) | Active |
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0102 | [Royalty Datum Metadata](./CIP-0102) | Proposed |
 | 0103 | [Web-Wallet Bridge - Bulk transaction signing](./CIP-0103) | Active |
 | 0104 | [Web-Wallet Bridge - Account public key](./CIP-0104) | Proposed |
-| 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
+| 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Active |
 | 0106 | [Web-Wallet Bridge - Multisig wallets](./CIP-0106) | Proposed |
 | 0107 | [URI Scheme - Block and transaction objects](./CIP-0107) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
@@ -139,15 +139,15 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0150 | [Block Data Compression](./CIP-0150) | Proposed |
 | 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
 | 0153 | [Plutus Core Builtin Type - MaryEraValue](./CIP-0153) | Proposed |
-| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
+| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Proposed |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Active |
-| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
+| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-07-08</i></p>
+<p align="right"><i>Last updated on 2025-07-10</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
