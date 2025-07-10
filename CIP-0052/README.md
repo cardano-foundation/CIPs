@@ -113,6 +113,7 @@ DApps are used by *DApp users*, and built by *DApp developers*. Audit is perform
 | Tweag                | https://www.tweag.io                  | sales@tweag.io                  | |
 | Vacuumlabs      | https://vacuumlabs.com/smart-contract-auditing/   | audit@vacuumlabs.com  | 16541FD112978F3C6D49E79881E6B1F9C0BC6BF9 (PGP, ed25519) |
 | CertiK      | https://www.certik.com/products/smart-contract-audit/   | sales@certik.com  | |
+| Invariant0  | https://invariant0.com/                     | info@invariant0.com  | 3C010EA5654D57D0AEF0E50B75D3AA3D42D52499 (PGP, ed25519) |
 
 
 ### Tendering
