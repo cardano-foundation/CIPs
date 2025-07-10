@@ -60,8 +60,12 @@
     "description": "on-chain certification metadata"
   },
   {
-    "transaction_metadatum_label": 1517,
+    "transaction_metadatum_label": 1447,
     "description": "Reeve - transparent and verifiable financial records on-chain"
+  },
+  {
+    "transaction_metadatum_label": 1517,
+    "description": "Reeve - obsolete - pre-launch metadata"
   },
   {
     "transaction_metadatum_label": 1564,
