@@ -45,6 +45,7 @@ individualTransactions = {
 }
 
 transaction = {
+  id: tstr .regexp "^[a-fA-F0-9]{64}$",  ; SHA3-256 hash
   number: tstr,
   type: tstr,
   date: tstr, ; Should conform to ISO 8601 date format, e.g., "YYYY-MM-DD"

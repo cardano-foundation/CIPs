@@ -69,12 +69,13 @@ Additionally to the general structure the type `INDIVIDUAL_TRANSACTIONS` stores 
 
 Required fields:
 
-| Field    | Type   | Description                                                                                                    |
-|----------|--------|----------------------------------------------------------------------------------------------------------------|
-| `number` | string | Unique identifier for the transaction given from the accounting system used for identifying the transaction    |
-| `type`   | string | Type of the transaction (e.g., "income", "expense", "transfer")                                                |
-| `date`   | string | Date of the transaction in ISO 8601 format (YYYY-MM-DD)                                                        |
-| `items`  | array  | Array of items in the transaction, each item can have additional fields like event, project, cost center, etc. |
+| Field    | Type   | Description                                                                                                                        |
+|----------|--------|------------------------------------------------------------------------------------------------------------------------------------|
+| `id`     | string | Unique identifier for the organisation, SHA3-256 hash of organisation ID and the transactionn number (e.g., "<ORGID>::<TxNumber>") |
+| `number` | string | Unique identifier for the transaction given from the accounting system used for identifying the transaction                        |
+| `type`   | string | Type of the transaction (e.g., "income", "expense", "transfer")                                                                    |
+| `date`   | string | Date of the transaction in ISO 8601 format (YYYY-MM-DD)                                                                            |
+| `items`  | array  | Array of items in the transaction, each item can have additional fields like event, project, cost center, etc.                     |
 
 Additional fields can be added to the data object, such as accounting period, custom id, etc.
 
@@ -99,6 +100,7 @@ Example json
   "type": "INDIVIDUAL_TRANSACTIONS",
   "data": [
     {
+      "id": "string", // SHA3-256 hash of <OrgId>::<TxNumber>
       "number": "Transaction123", 
       "type": "JOURNAL",
       "date": "2025-01-01",

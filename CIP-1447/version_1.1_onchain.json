@@ -150,6 +150,11 @@
     "transaction": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "SHA3-256 hash of <OrgId>::<TxNumber>.",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
         "number": {
           "type": "string"
         },
@@ -169,6 +174,7 @@
         }
       },
       "required": [
+        "id",
         "number",
         "type",
         "date",
