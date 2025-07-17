@@ -1,0 +1,94 @@
+; Main entry point for the financial data structure
+; The top-level key is a transaction metadata label, represented as an integer.
+financial_data = {
+  * uint => cipBody
+}
+
+; The main body of the CIP data, which can be one of two types.
+cipBody = {
+  org: organisation,
+  metadata: metadataInfo,
+  ( report / individualTransactions )
+}
+
+; -- Organisation and Metadata Definitions --
+
+organisation = {
+  id: tstr .regexp "^[a-fA-F0-9]{64}$",  ; SHA3-256 hash
+  name: tstr,
+  currency_id: tstr .regexp "^ISO_4217:[A-Z]{3}$",
+  country_code: tstr .regexp "^[A-Z]{2}$",
+  tax_id_number: tstr,
+}
+
+metadataInfo = {
+  version: tstr,
+}
+
+; -- Report Type Definition --
+
+report = {
+  type: "REPORT",
+  interval: tstr,
+  year: tstr .regexp "^[12][0-9]{3}$",
+  period: uint,
+  subtype: tstr,
+  data: (tstr / recursiveObject),
+  * tstr => any ; Allows for additional, non-specified properties
+}
+
+; -- Individual Transactions Type Definition --
+
+individualTransactions = {
+  type: "INDIVIDUAL_TRANSACTIONS",
+  data: [+ transaction] ; Array of one or more transactions
+}
+
+transaction = {
+  number: tstr,
+  type: tstr,
+  date: tstr, ; Should conform to ISO 8601 date format, e.g., "YYYY-MM-DD"
+  items: [+ lineItem],
+  * tstr => any ; Allows for additional properties like 'accounting_period'
+}
+
+lineItem = {
+  id: tstr,
+  amount: tstr,
+  fx_rate: tstr,
+  document: document,
+  ? event: eventDetail,
+  ? project: classificationDetail,
+  ? cost_center: classificationDetail,
+  ? vat: classificationDetail,
+  ? counterparty: classificationDetail,
+  * tstr => any ; Allows for additional, non-specified properties
+}
+
+; -- Reusable Component Definitions --
+
+document = {
+  number: tstr,
+  currency: currency,
+}
+
+currency = {
+  cust_code: tstr,
+  id: tstr .regexp "^ISO_4217:[A-Z]{3}$",
+}
+
+eventDetail = {
+  code: tstr,
+  name: tstr,
+}
+
+; A reusable structure for dimensional data like project, cost center, etc.
+classificationDetail = {
+  cust_code: tstr,
+  name: tstr,
+}
+
+; A recursive structure for nested report data (e.g., categories/subcategories)
+recursiveObject = {
+  * tstr => (tstr / recursiveObject)
+}

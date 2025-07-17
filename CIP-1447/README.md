@@ -5,6 +5,7 @@ Category: Metadata
 Status: Proposed
 Authors:
     - Thomas Kammerlocher <thomas.kammerlocher@cardanofoundation.org>
+    - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
 Implementors:
     -   Reeve: https://github.com/cardano-foundation/cf-reeve-platform
 Discussions:
@@ -42,12 +43,14 @@ The metadata structure is designed to be extensible, allowing for future enhance
 
 The general structure contains the base information of the organisation, the metadata version, and the type of these financial records. 
 The json structure is as follows:
-```
+```json
 "1447": {
     "org": {
-        "id": "string", // Unique identifier for the organisation
+        "id": "string", // SHA3-256 hash of <CountryCode>::<TaxIdNumber>
         "name": "string", // Name of the organisation
-        ... // Additional organisation-specific metadata can be added here
+        "currency_id": "ISO_4217:XXX", // ISO 4217 currency code of the organisation
+        "country_code": "CH" // ISO 3166-1 alpha-2 country code of the organisation
+        "tax_id_number": "string" // tax identification number of the organisation
     },
     "metadata": {
         "version": "1.1" // Version of the metadata format

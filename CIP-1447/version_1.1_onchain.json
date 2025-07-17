@@ -1,0 +1,305 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CIP Financial Data Standard",
+  "description": "A schema for anchoring financial transactions and reports on-chain, based on the specified CIP format.",
+  "type": "object",
+  "patternProperties": {
+    "^[0-9]+$": {
+      "$ref": "#/definitions/cipBody"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "cipBody": {
+      "type": "object",
+      "properties": {
+        "org": {
+          "$ref": "#/definitions/organisation"
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadataInfo"
+        }
+      },
+      "oneOf": [
+        {
+          "$ref": "#/definitions/report"
+        },
+        {
+          "$ref": "#/definitions/individualTransactions"
+        }
+      ],
+      "required": [
+        "org",
+        "metadata"
+      ],
+      "additionalProperties": false
+    },
+    "organisation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "SHA3-256 hash of <CountryCode>::<TaxIdNumber>.",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the organisation."
+        },
+        "currency_id": {
+          "type": "string",
+          "description": "Default currency of the organisation, formatted as ISO_4217:<CODE>.",
+          "pattern": "^ISO_4217:[A-Z]{3}$"
+        },
+        "country_code": {
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code of the organisation.",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "tax_id_number": {
+          "type": "string",
+          "description": "Tax identification number of the organisation."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "currency_id",
+        "country_code",
+        "tax_id_number"
+      ],
+      "additionalProperties": true
+    },
+    "metadataInfo": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Version of the metadata format."
+        }
+      },
+      "required": [
+        "version"
+      ]
+    },
+    "report": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "REPORT"
+        },
+        "interval": {
+          "type": "string",
+          "description": "The reporting interval, e.g., 'YEARLY', 'QUARTERLY', 'MONTHLY'."
+        },
+        "year": {
+          "type": "string",
+          "description": "The four-digit year of the report.",
+          "pattern": "^[12][0-9]{3}$"
+        },
+        "period": {
+          "type": "integer",
+          "description": "The period of the report according to the interval.",
+          "minimum": 1
+        },
+        "subtype": {
+          "type": "string",
+          "description": "The specific type of report, e.g., 'BALANCE_SHEET'."
+        },
+        "data": {
+          "description": "Custom report data, which can be a simple string or a nested object representing categories and subcategories.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/recursiveObject"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "interval",
+        "year",
+        "period",
+        "subtype",
+        "data"
+      ],
+      "additionalProperties": true
+    },
+    "individualTransactions": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "INDIVIDUAL_TRANSACTIONS"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/transaction"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "transaction": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lineItem"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "number",
+        "type",
+        "date",
+        "items"
+      ],
+      "additionalProperties": true
+    },
+    "lineItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        },
+        "fx_rate": {
+          "type": "string"
+        },
+        "document": {
+          "$ref": "#/definitions/document"
+        },
+        "event": {
+          "$ref": "#/definitions/eventDetail"
+        },
+        "project": {
+          "$ref": "#/definitions/classificationDetail"
+        },
+        "cost_center": {
+          "$ref": "#/definitions/classificationDetail"
+        },
+        "vat": {
+          "$ref": "#/definitions/classificationDetail"
+        },
+        "counterparty": {
+          "$ref": "#/definitions/classificationDetail"
+        }
+      },
+      "required": [
+        "id",
+        "amount",
+        "fx_rate",
+        "document"
+      ],
+      "additionalProperties": true
+    },
+    "eventDetail": {
+        "type": "object",
+        "description": "Details about the event associated with the transaction, such as code and name.",
+        "properties": {
+            "code": {
+            "type": "string",
+            "description": "Event code, e.g., '71103100'."
+            },
+            "name": {
+            "type": "string",
+            "description": "Name of the event, e.g., 'Payroll Expenses - Salaries and wages/Accounts payable'."
+            }
+        },
+        "required": [
+            "code",
+            "name"
+        ]
+    },
+    "classificationDetail": {
+      "type": "object",
+      "description": "Details for classification such as project, cost center, VAT, or counterparty.",
+      "properties": {
+        "cust_code": {
+          "type": "string",
+          "description": "Custom code for the classification, e.g., '9000' for cost center."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the classification, e.g., 'Internal' for cost center."
+        }
+      },
+      "required": [
+          "cust_code",
+          "name"
+      ]
+    },
+    "document": {
+      "type": "object",
+      "description": "A formal record of a transaction, which can include invoices, receipts",
+      "properties": {
+        "number": {
+          "type": "string",
+          "description": "Document number or identifier."
+        },
+        "currency": {
+          "$ref": "#/definitions/currency"
+        }
+      },
+        "required": [
+            "number",
+            "currency"
+        ]
+    },
+    "currency": {
+      "type": "object",
+      "description": "Currency information, formatted as ISO_4217:<CODE>.",
+      "properties": {
+        "cust_code": {
+          "type": "string",
+          "description": "Custom code for the currency, e.g., 'USD'."
+        },
+        "id": {
+          "type": "string",
+          "description": "Currency identifier, formatted as ISO_4217:<CODE>.",
+          "pattern": "^ISO_4217:[A-Z]{3}$"
+        }
+      },
+      "required": [
+        "cust_code",
+        "id"
+      ]
+    },
+    "recursiveObject": {
+      "type": "object",
+      "description": "A flexible object for categories and subcategories where each value can be a string or another nested object.",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/definitions/recursiveObject"
+          }
+        ]
+      }
+    }
+  }
+}
