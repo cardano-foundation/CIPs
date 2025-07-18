@@ -32,6 +32,10 @@ To achieve this, the format must be as easy as possible to read and understand f
 
 **This readability comes with a price:** the format is not as compact as it could be, but this is a trade-off that is worth making to achieve the goal of transparency.
 
+However, this is a necessary investment in universal accessibility and long-term trust. 
+It ensures that any person, from an accountant to a stakeholder, can view the raw data on a block explorer and understand it immediately, without needing specialized software. 
+This approach guarantees that the financial records remain transparent and independently verifiable, ensuring their value and integrity persist even if the application used to publish them shuts down.
+
 # Specification
 
 This proposal defines how to structure metadata to anchor financial transactions and reports on-chain, ensuring they are both human-readable and machine-interpretable.
