@@ -52,12 +52,12 @@ The json structure is as follows:
     "org": {
         "id": "string", // SHA3-256 hash of <CountryCode>::<TaxIdNumber>
         "name": "string", // Name of the organisation
-        "currency_id": "ISO_4217:XXX", // ISO 4217 currency code of the organisation
-        "country_code": "CH" // ISO 3166-1 alpha-2 country code of the organisation
+        "currency_id": "string", // ISO 4217 currency code of the organisation
+        "country_code": "string" // ISO 3166-1 alpha-2 country code of the organisation
         "tax_id_number": "string" // tax identification number of the organisation
     },
     "metadata": {
-        "version": "1.1" // Version of the metadata format
+        "version": "1.string" // Version of the metadata format
     },
     "type": "string", // Type of the metadata
     "data": // data object is defined through the Type of the metadata 
@@ -69,33 +69,50 @@ The type can have two values:
 - `REPORT`: This type is used to anchor a custom report of the organisation
 
 ### Individual Transactions
-Additionally to the general structure the type `INDIVIDUAL_TRANSACTIONS` stores the individual transactions of the organisation within the data object.
+Additionally to the general structure the type `INDIVIDUAL_TRANSACTIONS` stores the individual accounting transactions of the organisation within the data object.
 
 Required fields:
 
-| Field    | Type   | Description                                                                                                                        |
-|----------|--------|------------------------------------------------------------------------------------------------------------------------------------|
-| `id`     | string | Unique identifier for the organisation, SHA3-256 hash of organisation ID and the transactionn number (e.g., "<ORGID>::<TxNumber>") |
-| `number` | string | Unique identifier for the transaction given from the accounting system used for identifying the transaction                        |
-| `type`   | string | Type of the transaction (e.g., "income", "expense", "transfer")                                                                    |
-| `date`   | string | Date of the transaction in ISO 8601 format (YYYY-MM-DD)                                                                            |
-| `items`  | array  | Array of items in the transaction, each item can have additional fields like event, project, cost center, etc.                     |
+| Field    | Type   | Description                                                                                                                            |
+|----------|--------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `id`     | string | Unique identifier for the organisation, SHA3-256 hash of organisation ID and the transactionn number (e.g., "<ORGID>::<TxNumber>")     |
+| `number` | string | Unique identifier for the transaction given from the accounting system used for identifying the transaction                            |
+| `type`   | enum   | Type of the transaction represented as an enum to limit the space. The list of specific transactions types can be extended.            |
+| `date`   | string | Date of the transaction in ISO 8601 format (YYYY-MM-DD)                                                                                |
+| `items`  | array  | Array of items in the transaction, each item represents an event and can have additional fields like event, project, cost center, etc. |
+
+The list of possible transactions type is to be extended, but the following types are defined as a starting point:
+
+| Type              | Description                                                                                  |
+|-------------------|----------------------------------------------------------------------------------------------|
+| `Journal`         | General journal entry, used for recording various financial transactions                     |
+| `VendorBill`      | Bill from a vendor, representing an amount owed to a supplier                                |
+| `VendorPayment`   | Payment made to a vendor, reducing the amount owed to them                                   |
+| `CustomerInvoice` | Invoice issued to a customer, representing an amount owed by them                            |
+| `CustomerPayment` | Payment received from a customer, reducing the amount owed by them                           |
+| `BILL_CREDIT`     | Credit note issued against a vendor bill, reducing the amount owed to the vendor             |
+| `CARD_CHARGE`     | Charge made to a credit card, representing an expense incurred by the organisation           |
+| `CARD_REFUND`     | Refund issued to a credit card, representing a return of funds to the organisation's card    |
+| `FX_REVALUATION`  | Foreign exchange revaluation, used to adjust the value of foreign currency transactions      |
+| `TRANSFER`        | Transfer of funds between accounts, representing a movement of money within the organisation |
+| `EXPENSE_REPORT`  | Report of expenses incurred by employees, summarizing various costs and reimbursements       |
 
 Additional fields can be added to the data object, such as accounting period, custom id, etc.
 
+#### Transaction Items
 Items are the individual financial entries within the transaction. Each item can have the following fields:
 
-| Field          | Type   | Description                                                                                                       |
-|----------------|--------|-------------------------------------------------------------------------------------------------------------------|
-| `id`           | string | Unique identifier for the item, e.g., a unique identifier from the accounting system                              |
-| `amount`       | string | Amount of the transaction item, represented as a string to allow for large numbers and decimal precision          |
-| `fx_rate`      | string | Foreign exchange rate if applicable, represented as a string to allow for decimal precision                       |
-| `document`     | object | Document details related to the transaction item, can include number, currency, event, project, cost center, etc. |
-| `event`        | object | Optional event details related to the transaction item, can include code and name                                 |
-| `project`      | object | Optional project details related to the transaction item, can include cust_code and name                          |
-| `cost_center`  | object | Optional cost center details related to the transaction item, can include cust_code and name                      |
-| `vat`          | object | Optional VAT details related to the transaction item, can include cust_code and rate                              |
-| `counterparty` | object | Optional counterparty details related to the transaction item, can include cust_code and type                     |
+| Field          | Type   | Description                                                                                                          |
+|----------------|--------|----------------------------------------------------------------------------------------------------------------------|
+| `id`           | string | Unique identifier for the item, SHA3-256 hash of the transaction id and the item number                              |
+| `amount`       | string | Monetary amount of the transaction item, in the item currency                                                        |
+| `fx_rate`      | string | Foreign exchange rate on effect at the date of the transaction, that converts the amount to the functional currency. |
+| `document`     | object | Document details related to the transaction item, can include number, currency, event, project, cost center, etc.    |
+| `event`        | object | Event details related to the transaction item, can include code and name                                             |
+| `project`      | object | Optional project details related to the transaction item, can include cust_code and name                             |
+| `cost_center`  | object | Optional cost center details related to the transaction item, can include cust_code and name                         |
+| `vat`          | object | Optional VAT details related to the transaction item, can include cust_code and rate                                 |
+| `counterparty` | object | Optional counterparty details related to the transaction item, can include cust_code and type                        |
 
 Example json
 ```json
@@ -111,7 +128,7 @@ Example json
       "accounting_period": "2025-12",
       "items": [
         {
-          "id": "UniqueIdentifier123",
+          "id": "string", // SHA3-256 hash of <TransactionId>::<LineNo>
           "amount": "2874",
           "fx_rate": "0.93",
           "document": {
@@ -141,7 +158,7 @@ Required fields:
 |-------------|-----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `interval`  | string                      | The reporting interval, e.g., "YEARLY", "QUARTERLY", "MONTHLY", etc.                                                                                                   |
 | `year`      | string                      | The year of the report, e.g., "2025".                                                                                                                                  |
-| `period`    | integer                     | The period of the report according to the interval, e.g., if Monthly 1 for January, 2 for February, etc.                                                               |
+| `period`    | integer                     | The period of the report according to the interval, e.g., if Monthly 1 for January, 2 for February, if quarterly 1 for Q1, 2 for Q2                                    |
 | `subtype`   | string                      | Definition of what of the report type - Organisations can have custom reports, e.g., "BALANCE_SHEET", "INCOME_STATEMENT"                                               |
 | `data`      | anyOf [string, data object] | The actual report data, which can be highly customized and structured according to the organisation's needs. This object should repesent categories and subcategories. |
 
