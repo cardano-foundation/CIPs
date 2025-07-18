@@ -57,7 +57,7 @@ The json structure is as follows:
         "tax_id_number": "string" // tax identification number of the organisation
     },
     "metadata": {
-        "version": "1.string" // Version of the metadata format
+        "version": "string" // Version of the metadata format
     },
     "type": "string", // Type of the metadata
     "data": // data object is defined through the Type of the metadata 
