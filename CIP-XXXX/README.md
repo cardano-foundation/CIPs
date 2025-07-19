@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: Cardano URIs | Browse Application
+Title: Cardano URIs - Browse Application
 Category: Wallets
 Status: Proposed
 Authors:
