@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This CIP defines the procedure for assigning Service Record (SRV) prefixes for Cardano applications (like `cardano-node`, `mithril`, etc.).
 
-This means of sharing authoritative information between SPOs who deploy services and _decentralised protocol_ (DP) developers who write them.
+This creates a means of sharing authoritative information between SPOs who deploy services and _decentralised protocol_ (DP) developers who write them.
 
 ## Motivation: why is this CIP necessary?
 
