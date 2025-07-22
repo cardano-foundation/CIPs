@@ -218,7 +218,7 @@ A _'Proposed'_ CIP is any CIP that meets the essential CIP criteria but is not y
 An _'Active'_ CIP has taken effect according to the criteria defined in its _'Path to Active'_ section. Said differently, each CIP defines by which criteria it can become _'Active'_ and those criteria are included in the review process. Exact criteria thereby depends on the nature of the CIP, typically:
 
 - For CIPs that relate to particular projects or pieces of technology, it becomes _'Active'_ by being implemented and released;
-- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet;
+- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet within one or more implementation;
 - For ecosystem standards, it means gaining sufficient and visible adoption in the community.
 - It must have a valid [Path to Active](#path-to-active) as defined below: even the CIP is already acknowledged as `Active` or being documented retroactively (after acceptance and implementation).
 
@@ -239,6 +239,8 @@ This must be subdivided into two sub-sections:
   - _'Acceptance Criteria'_
 
     This sub-section must define a list of criteria by which the proposal can become active. Criteria must relate to observable metrics or deliverables and be reviewed by editors and project maintainers when applicable. For example: "The changes to the ledger rules are implemented and deployed on Cardano mainnet by a majority of the network", or "The following key projects have implemented support for this standard".
+
+    For proposals under core categories (Ledger, Plutus, Network, Consensus), _'Acceptance Criteria'_ must include reference to multiple node implementations.
 
   - _'Implementation Plan'_
 
