@@ -1,6 +1,6 @@
 ---
 CPS: ????
-Title: Linking Off-Chain identities 
+Title: Linking Off-Chain Identities 
 Status: Open
 Category: Tools
 Authors:
