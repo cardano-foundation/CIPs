@@ -8,7 +8,7 @@ Authors:
 Proposed Solutions:
   - 
 Discussions:
-  - 
+  - https://github.com/cardano-foundation/CIPs/pull/1059
 Created: 2025-07-09
 License: _
 ---
