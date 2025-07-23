@@ -2,7 +2,7 @@
 CPS: ????
 Title: Linking Off-Chain identity solutions to On-Chain Transactions
 Status: Open
-Category: Identity
+Category: Tools
 Authors:
   - 
 Proposed Solutions:
