@@ -164,9 +164,9 @@ data TxInfo = TxInfo
 In order to give plutus scripts some idea of what is happening with the account address without
 introducing a dependency on global state which can cause contention, transactions can specify
 account balance intervals similarly to how time intervals are set. In order for the transaction to
-be valid, the account's actual balance *must* fall within the validity interval. Both of the
-interval bounds are *inclusive*. The account balance intervals will be passed to plutus scripts as
-part of their script contexts.
+be valid, the account's actual balance *must* fall within the validity interval. The lower bound is
+inclusive while the upper bound is exclusive (i.e., `[1,5)`). The account balance intervals will be
+passed to plutus scripts as part of their script contexts.
 
 **Using the account balance interval does not require the associated credential to witness the
 transaction.**
@@ -181,8 +181,9 @@ builders may wish to specify intervals for multiple accounts in a single transac
 intervals need a different representation than what is used for time intervals:
 
 ```cbor
-; Proposed alternative. Both bounds are INCLUSIVE.
-account_balance_checks = { + reward_account => [ lower_bound: coin, upper_bound: coin ] }
+; Proposed alternative.
+account_balance_checks = 
+  { + reward_account => [ inclusive_lower_bound: coin, exclusive_upper_bound: coin ] }
 
 transaction_body = 
   {   0  : set<transaction_input>         
@@ -211,8 +212,7 @@ data TxInfo = TxInfo
 ```
 
 > [!Tip]
-> It is possible to specify the *exact* current balance of the account by setting both account
-> interval bounds to the same balance.
+> It is possible to specify the *exact* current balance of the account using the the intervals.
 
 **Be careful around epoch boundaries since reward payouts will change the actual balance!**
 
