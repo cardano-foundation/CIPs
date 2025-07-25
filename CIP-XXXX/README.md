@@ -7,7 +7,7 @@ Authors:
     - Adam Dean <adam@crypto2099.io>
 Implementors:
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1058
 Created: 2025-07-17
 License: CC-BY-4.0
 ---
