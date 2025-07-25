@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 158
 Title: Cardano URIs - Browse Application
 Category: Wallets
 Status: Proposed
