@@ -29,7 +29,8 @@
                     "constitutional": "CIP136:constitutional",
                     "unconstitutional": "CIP136:unconstitutional",
                     "abstain": "CIP136:abstain",
-                    "didNotVote": "CIP136:didNotVote"
+                    "didNotVote": "CIP136:didNotVote",
+                    "againstVote": "CIP136:againstVote"
                 }
             }
         }

@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: d8fdbc4
+Revision: 5a2fc66
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -1018,7 +1018,8 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 ### Critères d’acceptation
 
 - [x] Une nouvelle ère du grand livre est activée sur le réseau principal Cardano, qui implémente la spécification ci-dessus.
- - Activé via le hardfork Chang #1
+- Gouvernance de la phase d'amorçage via le hardfork Chang #1
+- Gouvernance complète via le hardfork Plomin
 
 ### Plan de mise en oeuvre
 

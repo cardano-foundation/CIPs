@@ -33,6 +33,7 @@ If they choose to opt-in, they enter the percentage of their staking rewards tha
     }
 }
 ```
+
 Where the integer stored in the metadata is the thousandths place in the decimal so 1 would convey that the user is electing to donate 0.1% of their staking rewards to their DRep. This value should be obtained directly from the percentage the user described in the prompt (ie. the user put 0.5% in the prompt then the integer in the metadata would be 5).
 
 When a user claims their staking rewards, their wallet will look up their delegation transaction and determine if they have opted-in to compensate their DRep (by checking the tx metadata). If metadata in the format described above is found, then the wallet will add an additional output to the reward withdrawal transaction that sends the intended percentage of their rewards to their DRep. If there is not enough ada in their reward balance to produce a output which satisfies minimum `lovelacePerUTxOWord`, the wallet will convey this to the user and let them decide how to proceed (or the user can establish how to handle this via wallet settings). 
