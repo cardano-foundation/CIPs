@@ -6,7 +6,8 @@ Status: Open
 Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
     - Raphael Toledo <raphael.toledo@iohk.io>
-Proposed Solutions: []
+Proposed Solutions: 
+  ["CIP-???? : Ouroboros Φalanx: Breaking the Economics of Grinding Attacks"]
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/1009
 Created: 2025-10-03
