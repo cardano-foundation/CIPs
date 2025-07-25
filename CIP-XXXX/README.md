@@ -1,6 +1,5 @@
 ---
-CIP:
-    ?
+CIP: 157
 Title: Cardano URIs - Enhanced Payments
 Category: Wallets
 Status: Proposed
