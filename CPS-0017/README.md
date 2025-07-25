@@ -7,6 +7,10 @@ Authors:
   - Arnaud Bailly <arnaud.bailly@iohk.io>
   - Brian W. Bush <brian.bush@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
+Proposed Solutions: 
+	["CIP-0140 : Ouroboros Peras - Faster Settlement"
+	,"CIP-???? : Ouroboros Φalanx: Breaking the Economics of Grinding Attacks"
+	]
 Implementors: N/A
 Discussions: 
 Created: 2024-09-30
