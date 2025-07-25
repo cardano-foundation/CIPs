@@ -4,18 +4,18 @@ import matplotlib.pyplot as plt
 # Define the range for rho (Grinding Depth), starting at 0.1 to avoid division by zero
 rho = np.linspace(0.1, 256, 1000)  # 1000 points for smooth curve
 
-# Define N_CPU functions for each scenario based on the developed formulas
+# Define N_CPU functions for each scenario based on the updated formulas
 def ant_glance(rho):
-    return 5e-10 * 2**(rho - 1) + 1.8e-11 * 2**(rho - 1)
+    return 5e-10 * 2**(rho - 2) 
 
 def ant_patrol(rho):
-    return 5e-10 * 2**(rho - 1) + 2.16e-9 * 2**(rho - 1)
+    return 5e-10 * 2**(rho - 2) + 2.16e-2 * 2**(rho - 1) / rho
 
 def owl_stare(rho):
-    return 5e-10 * 2**(rho - 1) + 1.8e-11 * 2**(rho - 1) + 5e-2 * 2**(rho - 1) / rho
+    return 5e-10 * 2**(rho - 2) + 5e-2 * 2**(rho - 1) / rho
 
 def owl_survey(rho):
-    return 5e-10 * 2**(rho - 1) + 2.16e-9 * 2**(rho - 1) + 5e-2 * 2**(rho - 1) / rho
+    return 5e-10 * 2**(rho - 2) + 7.16e-2 * 2**(rho - 1) / rho
 
 # Calculate log10(N_CPU) for each scenario
 log_ant_glance = np.log10(ant_glance(rho))
@@ -55,5 +55,5 @@ plt.text(53, mid_y-3.5, f'$\\Delta \\log_{{10}}(N_{{CPU}}) \\approx {delta_log_n
 plt.tight_layout()
 
 # Save the plot as an image with higher resolution
-plt.savefig('grinding_depth_scenarios_with_delta.png', dpi=300)
+plt.savefig('grinding_depth_scenarios_with_delta_updated.png', dpi=300)
 plt.show()
