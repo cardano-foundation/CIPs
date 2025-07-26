@@ -9,6 +9,7 @@ Authors:
     - Mathieu Montin <mathieu.montin@tweag.io>
     - M. Ali Modiri <mixaxim@gimbalabs.io>
     - Simon Thompson <simon.thompson@iohk.io>
+    - Philip DiSarro 
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/499
@@ -69,6 +70,38 @@ It could then both: verify that the user interacts with the latest version of th
 Evaluation issuers will mint on-chain evaluation that will represent the level of certification desired and present evidence of the work done.
 
 The minting policy for these NFTs must be controlled by each evaluation issuer. This policy ID could be used as the root of trust for evaluation, preventing evaluation forgeries.
+
+
+### Certification Issuers
+
+Certification issuers will mint on-chain certification that will represent the level of certification desired and present evidence of the work done.
+
+Certification issuers are identified by the presence of a node in the `certification_issuers` on-chain linked list, which contains a Policy ID that proves their authenticity, and a datum which uniquely identifies them via their public key hash.  
+ 
+Consensus of existing certification issuers is required to:
+1. Add a new certification issuer to the `certification_issuers` linked list.  
+2. Remove a certificate issuer from the `certification_issuers` linked list, effectively revoking their license to issue audit certificates.
+3. Revoke any audit certificate issued by a revoked certificate issuer.
+
+Individual certificate issuers are able to:
+1. Issue new audit certificates.
+2. Revoke audit certificates which they have issued.
+
+Importantly, they cannot modify audit certificates which were issued by other certification issuers.
+
+
+#### Requirements for Certification Issuers
+
+##### Initialization
+
+The `certification_issuers` on-chain linked list will start with an initial list of well-known and established audit firms.
+
+##### Certificate Issuer Application
+ 
+1. The `candidate_list` is an on-chain linked list, in which each node represents an application to become a certificate issuer. To become a certificate issuer, a candidate must submit an application to join the `certification_issuers` on-chain linked list. 
+2. The result must include proof of the necessary credentials justifying their capacity to do audits and the number of DApps that they have already audited and any audit reports they have published.
+3. New certification issuers can be added to the audit committees list only when a quorum of the existing certification issuers has approved their candidacy (node transfer from candidate list to committee list).
+4. In case that their application is rejected, they are only removed from the candidate list.
 
 ### On-chain datum Schemas
 
