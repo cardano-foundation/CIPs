@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: GuardScriptCredential and Guard Script Purpose
+Title: Guard Script Purpose and Credential
 Category: Ledger
 Status: Proposed
 Authors:
