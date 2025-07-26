@@ -37,7 +37,7 @@ We propose:
      | ScriptCredential ScriptHash
      | GuardScriptCredential ScriptHash -- new
    ```
-2. **A new ScriptPurpose:**
+2. **Two new `ScriptPurpose`s:**
    ```haskell
     data ScriptPurpose =
         Spending TxOutRef
@@ -46,13 +46,21 @@ We propose:
     | Rewarding StakingCredential
     | Voting Vote
     | Proposing Proposal
-    | Guarding ScriptHash Integer (Maybe Integer) -- new
+    | Guarding ScriptHash         -- NEW: only output(s) to script
+    | GuardingContinuing ScriptHash -- NEW: both input(s) and output(s)
    ```
 
 **Guard validation rule:**
-During phase-2 script validation, for each transaction output to a `GuardScriptCredential`, the associated script must be executed using the `Guarding` purpose, where `ScriptHash` is the hash of the guarding script and the first `Integer` is the index of the output sent to the guarding script that is being validated, the `Maybe Integer` an optional type that may contain the index of an input from the same script. There is one important exception to this rule, if the `Maybe Integer` argument is `Just idx` and the credential of the input at index `idx` in the transaction inputs set corresponds to the `GuardScriptCredential` associated with the Guarding script then the script succeeds by default and does not need to be executed. This rule is very important to avoid redundant scirpt executions, as if the script is already invoked with a `Spending` purpose then it can already reject unauthorized `UTxOs. Without this rule, the same script would need to be evaluated twice for all state transitions with continuing outputs (extremely common) and this would simply be too inefficient for production use.  
+During phase-2 script validation, for each transaction output to a `GuardScriptCredential`, the associated script must be executed using one of two new script purposes:
 
-If any `Guarding` script **fails** during evaluation, the **entire transaction is invalid** and is rejected during phase-2 validation.
+- `Guarding` is used when the transaction includes one or more outputs to the script, but no inputs from it.
+- `GuardingContinuing` is used when the transaction includes both inputs and outputs involving the same `GuardScriptCredential`.
+
+This separation ensures that input-side and output-side logic can remain cleanly isolated. Output validation logic can be entirely handled within `Guarding` and `GuardingContinuing`, while spending logic can be isolated to the `Spending` script purpose.
+
+Critically, this design avoids redundant script execution. Without it, spending scripts would need to inspect transaction outputs in every case — even when no guarding logic is necessary — leading to wasted validation effort and bloated execution budgets.
+
+If any `Guarding` or `GuardingContinuing` script **fails** during evaluation, the **entire transaction is invalid** and is rejected during phase-2 validation.
 
 ### CDDL Extension
 
@@ -116,20 +124,20 @@ Node software, CLI, Plutus libraries, and serialization tooling (e.g., `cardano-
 - Agreement from Cardano Ledger and Plutus teams
 - Implementation of:
   - `GuardScriptCredential` in address serialization
-  - `Guarding` in ledger script validation rules and Plutus interpreter
+  - `Guarding` in ledger script validation rules
+  - `Guarding` and `GuardingContinuing` in Plutus
   - Phase-2 validation for guarded outputs
 - Inclusion in a future era upgrade (e.g., Voltaire or beyond)
 
 ### Implementation Plan
 
-1. Extend ledger types to include `GuardScriptCredential` and `Guarding ScriptPurpose`.
+1. Extend ledger types to introduce the `GuardingScriptCredential` type. 
 2. Modify transaction validation logic to detect guarded outputs and invoke appropriate scripts.
 3. Add redeemer indexing logic for `Guarding` purposes tied to `txOutputs`.
 4. Introduce CDDL changes for redeemer tags and address credential variants.
 5. Update transaction witnesses, CLI tooling, and Plutus interpreter to support `Guarding`.
 6. Provide test cases for:
    - Correct execution of `Guarding` scripts
-   - Optimized bypass logic when corresponding inputs exist
    - Rejection of invalid guarded outputs
 7. Provide examples and documentation for contract authors.
 
