@@ -58,7 +58,7 @@ QR-based "deeplink" to a precise session or page within an application, we
 enable developers to build richer, safer and more interactive experiences such
 as:
 
-* Showing a full "checkout" process and later "recipt" to the user on their
+* Showing a full "checkout" process and later "receipt" to the user on their
   mobile device rather than simply a payment request out of context
 * Navigating users directly to complex application paths that would otherwise be
   prone to user data-entry errors and typos
