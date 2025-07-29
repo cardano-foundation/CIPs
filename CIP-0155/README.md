@@ -55,11 +55,7 @@ Decentralised protocol developers SHOULD submit proposals to the SRV Prefix Regi
 
 ### SRV Prefix Registry
 
-| **service**          | **SRV prefix**                       | **Status** |
-|:---------------------| ------------------------------------:|:-----------|
-| _cardano_            |                      `_cardano._tcp` | Active     |
-| _mithril.dmq_        |       `_.dmq._mithril._cardano._tcp` | Active     |
-| _mithril.aggregator_ | `_aggregator._mithril._cardano._tcp` | Active     |
+The registry is available in `JSON` format [registry.json].
 
 ### SRV Prefix Semantics
 
@@ -72,7 +68,7 @@ Each prefix SHOULD start with `_cardano._tcp` or `_cardano._udp`, to avoid clash
 #### SRV Registry Rules
 
 * Each decentralised protocol can have at most one entry in the registry.
-* A CIP process assigns new entries, after a careful consideration and consultation with all the involved parties (see #acceptance-criteria below).
+* A CIP process assigns new entries to [registry.json], after a careful consideration and consultation with all the involved parties (see #acceptance-criteria below).
 * Entries cannot be removed, but can be revoked by assigning a `Revoked` status.
   This can only happen if a decentralised protocol is no longer supported.
 
@@ -138,3 +134,5 @@ This CIP is licensed under [CC-BY-4.0]: https://creativecommons.org/licenses/by/
 [tsc]: https://docs.intersectmbo.org/intersect-overview/intersect-committees/technical-steering-committee-tsc
 [hydra]: https://github.com/cardano-scaling/hydra
 [register-stake-pool]: https://developers.cardano.org/docs/operate-a-stake-pool/register-stake-pool/#generate-the-stake-pool-registration-certificate
+
+[registry.json]: ./registry.json
