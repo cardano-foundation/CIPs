@@ -48,7 +48,7 @@ This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/m
 - Parse and validate the given DRep-Id against [CIP-129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) or one of the default options
 - Check on-chain if the given DRep-Id belongs to a registered and/or active DRep
 - Create a DRep delegation transaction
-- Display the DRep-Id (and registration status) to the user and prompt to sign and submit the delegation transaction
+- Display the DRep-Id (and registration/active status) to the user and prompt to sign and submit the delegation transaction
 
 ### Security Considerations
 
