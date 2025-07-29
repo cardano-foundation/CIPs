@@ -88,8 +88,6 @@ _cardano._tcp.example.com 86400 IN SRV 10 5 3001 cardano.example.com
 From this, we learn that a Cardano node is available on port `3001` on IPs resolved by a regular DNS query to `cardano.example.com`.
 Refer to the [Cloudflare documentation][srv] for a deeper understanding of other fields.
 
-It may as well append `.` to indicate it is a top-level query, resulting in querying the `_cardano._tcp.example.com.` domain.
-
 
 ## Rationale: how does this CIP achieve its goals?
 
