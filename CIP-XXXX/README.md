@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP proposes a new CIP-13 extension: A new URI scheme authority named `delegate` under `web+cardano` to enable Cardano wallets to create and submit a DRep delegation transaction for a given DRep-Id, using a standardized, interoperable URI format.
+This CIP proposes a new [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) extension: A new URI scheme authority named `delegate` under `web+cardano` to enable Cardano wallets to create and submit a DRep delegation transaction for a given DRep-Id, using a standardized, interoperable URI format.
 
 ## Motivation: why is this CIP necessary?
 
@@ -30,14 +30,14 @@ Especially for real world events this will provide a feasible solution for insta
 
 ## Specification
 
-This extension to the CIP-13 URN scheme defines the delegate authority for Cardano URIs.
+This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) URN scheme defines the delegate authority for Cardano URIs.
 
 ### URI Format
 
 `web+cardano://delegate/<DRep-Id>`
 
 - Authority (REQUIRED): delegate
-- DRep-Id (REQUIRED): Bech32 CIP-105/CIP-129 DRep-Id | "always_abstain" | "always_no_confidence"
+- DRep-Id (REQUIRED): Bech32 [CIP-129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) DRep-Id | "always_abstain" | "always_no_confidence"
 
 ### Example URIs
 
@@ -45,14 +45,14 @@ This extension to the CIP-13 URN scheme defines the delegate authority for Carda
 
 ### Wallet Behavior
 
-- Parse and validate the given DRep-Id against CIP-129 or one of the default options
+- Parse and validate the given DRep-Id against [CIP-129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) or one of the default options
 - Check on-chain if the given DRep-Id belongs to a registered DRep
 - Create a delegation transaction
 - Display the DRep-Id (and registration status) to the user and prompt to sign and submit the delegation transaction
 
 ### Security Considerations
 
-- Wallets SHOULD validate if the given DRep-Id is a valid CIP-129 DRep-Id, otherwise provide a warning to the user
+- Wallets SHOULD validate if the given DRep-Id is a valid [CIP-129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) DRep-Id, otherwise provide a warning to the user
 - Wallets SHOULD validate if the given DRep-Id belongs to a registered DRep - otherwise provide a warning to the user.
 
 ## Rationale: how does this CIP achieve its goals?
