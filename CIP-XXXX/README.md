@@ -7,7 +7,7 @@ Authors:
     - Mad Orkestra <mad@madorkestra.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1068
 Created: 2025-07-29
 License: CC-BY-4.0
 ---
