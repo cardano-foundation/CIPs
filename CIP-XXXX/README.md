@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP proposes a new [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) extension: A new URI scheme authority named `delegate` under `web+cardano` to enable Cardano wallets to create and submit a DRep delegation transaction for a given DRep-Id, using a standardized, interoperable URI format.
+This CIP proposes a new [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) extension: A new URI scheme authority named `delegate` under `web+cardano` to enable Cardano mobile wallets and wallet extensions to create and submit a DRep delegation transaction for a given DRep-Id, using a standardized, interoperable URI format.
 
 ## Motivation: why is this CIP necessary?
 
