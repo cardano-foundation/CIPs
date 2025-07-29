@@ -57,7 +57,7 @@ This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/m
 
 ## Rationale: how does this CIP achieve its goals?
 
-A dedicated `delegate` authority isolates app navigation from other authorities such as pay, browse or stake, improving clarity and interoperability.
+A dedicated `delegate` authority isolates app navigation from other authorities such as `pay`, `browse` or `stake`, improving clarity and interoperability.
 
 ## Path to Active
 
