@@ -53,7 +53,7 @@ This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/m
 ### Security Considerations
 
 - Wallets SHOULD validate if the given DRep-Id is a valid [CIP-129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) DRep-Id, otherwise provide a warning to the user
-- Wallets SHOULD validate if the given DRep-Id belongs to a registered DRep - otherwise provide a warning to the user.
+- Wallets SHOULD validate if the given DRep-Id belongs to a registered/active DRep - otherwise provide a warning to the user.
 
 ## Rationale: how does this CIP achieve its goals?
 
