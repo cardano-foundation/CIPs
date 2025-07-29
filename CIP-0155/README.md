@@ -7,7 +7,7 @@ Authors:
   - Marcin Szamotulski <marcin.szamotulski@iohk.io>
 Implementors: N/A
 Discussions: 
-  - [PR](https://github.com/cardano-foundation/CIPs/pull/1033)
+  - Submission: https://github.com/cardano-foundation/CIPs/pull/1033
 Created: 2025-04-22
 License: CC-BY-4.0
 ---
@@ -95,6 +95,11 @@ Refer to the [Cloudflare documentation][srv] for a deeper understanding of other
 It may as well append `.` to indicate it is a top-level query, resulting in querying the `_cardano._tcp.example.com.` domain.
 
 
+## Rationale: how does this CIP achieve its goals?
+
+This CIP constructs a process to maintain SRV registry, and thus provides authritative information for SPOs and decentralised protocol developers.
+
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -115,10 +120,6 @@ And when there's no major objection from one of the currently involved parties:
 
 Each **Cardano** node implementation or other tools which rely on SRV records stored in the ledger should comply with this proposal,
 e.g. whenever obtaining _multi-pool relay information_ one needs to prepend a registered prefix before making an SRV query.
-
-## Rationale: how does this CIP achieve its goals?
-
-This CIP constructs a process to maintain SRV registry, and thus provides authritative information for SPOs and decentralised protocol developers.
 
 
 ## Copyright
