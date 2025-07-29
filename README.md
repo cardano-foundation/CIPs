@@ -1,32 +1,35 @@
 ## Cardano Improvement Proposals (CIPs)
 
-A [Cardano Improvement Proposal (CIP)](./CIP-0001) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP  provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
+A [Cardano Improvement Proposal (CIP)](./CIP-0001) is a formalised design document for the Cardano community and the name of the process by which such documents are produced and listed. A CIP provides information or describes a change to the Cardano ecosystem, processes, or environment concisely and in sufficient technical detail. In this CIP, we explain what a CIP is; how the CIP process functions; the role of the CIP Editors; and how users should go about proposing, discussing and structuring a CIP.
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-> **Note** For new CIP, a reference template is available in [.github/CIP-TEMPLATE.md](.github/CIP-TEMPLATE.md)
+For more about the human factors of the CIP process, and to learn how to get involved, click the Wiki tab above (**[CIP Wiki](https://github.com/cardano-foundation/CIPs/wiki)**).
+
+> [!TIP]
+> For new CIPs, a reference template is available in [.github/CIP-TEMPLATE.md](./.github/CIP-TEMPLATE.md)
 
 ## Cardano Problem Statements (CPS)
 
 A [Cardano Problem Statement (CPS)](./CIP-9999) is a formalised document for the Cardano ecosystem and the name of the process by which such documents are produced and listed. CPSs are meant to complement CIPs and live side-by-side in the CIP repository as first-class citizens.
 
-> **Note** For new CPS, a reference template is available in [.github/CPS-TEMPLATE.md](.github/CPS-TEMPLATE.md)
+> [!TIP]
+> For new CPSs, a reference template is available in [.github/CPS-TEMPLATE.md](./.github/CPS-TEMPLATE.md)
 
 ## Communication Channels
 
 Extend or discuss ‘ideas’ in the [Developer Forums](https://forum.cardano.org/c/developers/cips/122), Cardano’s Official [Developer Telegram Group](https://t.me/CardanoDevelopersOfficial) or in `#developers` in Cardano Ambassadors Slack.
 
-CIP editors will review discussions and progress in bi-weekly meetings held [on Discord](https://discord.gg/Jy9YM69Ezf), then transcribe and summarise them [in the BikweeklyMeetings folder](https://github.com/cardano-foundation/CIPs/tree/master/BiweeklyMeetings).
+CIP editors facilitate discussions and progress submissions on GitHub, reviewing progress in bi-weekly meetings held [on Discord](https://discord.gg/J8sGdCuKhs) which are open to the public. The Discord server also has channels for developer working groups to discuss details and implementations of selected CIPs.
 
-CIP Editors meetings are public, recorded, and [published on Youtube](https://www.youtube.com/playlist?list=PL831pmH4tfw1YkMK4FhBzoHyuSaadjdxn): do join and participate in discussions/PRs of significance to you.
-
-> **Note** To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
+> [!NOTE]
+> To facilitate browsing and information sharing for non-Github users, an auto-generated site is also provided at [cips.cardano.org](https://cips.cardano.org/).
 
 ## Cardano Improvement Proposals (CIP)
 
 | #    | Title | Status |
 | ---- | --- | --- |
-| 0001 | [CIP process](./CIP-0001/) | Active |
+| 0001 | [CIP Process](./CIP-0001/) | Active |
 | 0002 | [Coin Selection Algorithms for Cardano](./CIP-0002/) | Active |
 | 0003 | [Wallet key generation](./CIP-0003/) | Active |
 | 0004 | [Wallet Checksums](./CIP-0004/) | Proposed |
@@ -77,7 +80,7 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0060 | [Music Token Metadata](./CIP-0060) | Active |
 | 0067 | [Asset Name Label Registry](./CIP-0067) | Proposed |
 | 0068 | [Datum Metadata Standard](./CIP-0068) | Active |
-| 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Proposed |
+| 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Active |
 | 0071 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
 | 0072 | [DApp Registration](./CIP-0072) | Proposed |
 | 0074 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
@@ -86,131 +89,132 @@ CIP Editors meetings are public, recorded, and [published on Youtube](https://ww
 | 0082 | [Improved Rewards Scheme Parameters](./CIP-0082) | Proposed |
 | 0083 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
 | 0084 | [Cardano Ledger Evolution](./CIP-0084) | Active |
-| 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
+| 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Active |
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0088 | [Token Policy Registration](./CIP-0088) | Proposed |
+| 0089 | [Distributed DApps & Beacon Tokens](./CIP-0089) | Active |
+| 0091 | [Don't force Built-In functions](./CIP-0091) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
 | 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
 | 0095 | [Web-Wallet Bridge - Conway ledger era](./CIP-0095) | Active |
 | 0099 | [Proof of Onboarding](./CIP-0099) | Active |
-| 0100 | [Governance Metadata](./CIP-0100) | Proposed |
+| 0100 | [Governance Metadata](./CIP-0100) | Active |
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0102 | [Royalty Datum Metadata](./CIP-0102) | Proposed |
 | 0103 | [Web-Wallet Bridge - Bulk transaction signing](./CIP-0103) | Active |
 | 0104 | [Web-Wallet Bridge - Account public key](./CIP-0104) | Proposed |
-| 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
+| 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Active |
 | 0106 | [Web-Wallet Bridge - Multisig wallets](./CIP-0106) | Proposed |
 | 0107 | [URI Scheme - Block and transaction objects](./CIP-0107) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
-| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Proposed |
+| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Active |
 | 0112 | [Observe script type](./CIP-0112) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
 | 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
-| 0117 | [Explicit script return values](./CIP-0117) | Proposed |
+| 0117 | [Explicit script return values](./CIP-0117) | Active |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
+| 0120 | [Constitution specification](./CIP-0120) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
-| 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Proposed |
-| 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Proposed |
-| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
-| 1694 | [A proposal for entering the Voltaire phase](./CIP-1694) | Proposed |
+| 0122 | [Logical operations over BuiltinByteString](./CIP-0122) | Active |
+| 0123 | [Bitwise operations over BuiltinByteString](./CIP-0123) | Active |
+| 0124 | [Extend token metadata for translations](./CIP-0124) | Proposed |
+| 0127 | [Integration of ripemd_160 into Plutus](./CIP-0127) | Active |
+| 0128 | [Preserving Order of Transaction Inputs](./CIP-0128) | Proposed |
+| 0129 | [Governance Identifiers](./CIP-0129) | Proposed |
+| 0132 | [New Plutus Builtin DropList](./CIP-0132) | Proposed |
+| 0133 | [Plutus support for Multi-Scalar Multiplication over BLS12-381](./CIP-0133) | Proposed |
+| 0134 | [Cardano URIs - Address Representation](./CIP-0134) | Proposed |
+| 0135 | [Disaster Recovery Plan for Cardano networks](./CIP-0135) | Active |
+| 0136 | [Governance metadata - Constitutional Committee votes](./CIP-0136) | Proposed |
+| 0137 | [Decentralized Message Queue](./CIP-0137) | Proposed |
+| 0138 | [Plutus Core Builtin Type - Array](./CIP-0138) | Proposed |
+| 0139 | [Universal Query Layer](./CIP-0139) | Proposed |
+| 0140 | [Ouroboros Peras - Faster Settlement](./CIP-0140) | Proposed |
+| 0141 | [Web-Wallet Bridge - Plutus wallets](./CIP-0141) | Proposed |
+| 0143 | [Interoperable Programmable Tokens](./CIP-0143) | Inactive |
+| 0146 | [Multi-signature wallet registration and discovery](./CIP-0146) | Proposed |
+| 0149 | [Optional DRep Compensation](./CIP-0149) | Proposed |
+| 0150 | [Block Data Compression](./CIP-0150) | Proposed |
+| 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
+| 0153 | [Plutus Core Builtin Type - MaryEraValue](./CIP-0153) | Proposed |
+| 0156 | [Plutus Core Builtin Function - multiIndexArray](./CIP-0156) | Proposed |
+| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
+| 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Proposed |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Active |
-| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
+| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2024-07-14</i></p>
+<p align="right"><i>Last updated on 2025-07-23</i></p>
 
-> 💡 For more details about CIP statuses, refer to [CIP-0001](./CIP-0001).
+> [!NOTE]
+> For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
 
 ### Proposals Under Review (CIP)
 
-Below are listed tentative CIPs still under discussion with the community. They are listed below for easing navigation and tentatively allocating numbers to avoid later clashes.
+The following link lists "candidate" CIPs still under discussion with the community; these are assigned numbers to avoid later clashes and to facilitate community discussion (see further below for stalled proposals):
 
-| #     | Title |
-| ----- | --- |
-| 0039? | [Language Annotated Address](https://github.com/cardano-foundation/CIPs/pull/310) |
-| 0073? | [Oracle Datum Standard](https://github.com/cardano-foundation/CIPs/pull/357) |
-| 0076? | [Hash-Checked Data](https://github.com/cardano-foundation/CIPs/pull/363) |
-| 0077? | [Verified Stake Pool Identity](https://github.com/cardano-foundation/CIPs/pull/361) |
-| 0079? | [Implement Ouroboros Leios to increase Cardano throughput](https://github.com/cardano-foundation/CIPs/pull/379) |
-| 0089? | [Beacon Tokens & Distributed Dapps](https://github.com/cardano-foundation/CIPs/pull/466) |
-| 0090? | [Extendable dApp-Wallet Web Bridge](https://github.com/cardano-foundation/CIPs/pull/462/) |
-| 0091? | [Don't force Built-In functions](https://github.com/cardano-foundation/CIPs/pull/459) |
-| 0092? | [First-class errors in Plutus](https://github.com/cardano-foundation/CIPs/pull/469) |
-| 0096? | [On-chain dApp Certification Metadata](https://github.com/cardano-foundation/CIPs/pull/499) |
-| 0097? | [Representing the Script Context as a SOP term](https://github.com/cardano-foundation/CIPs/pull/507) |
-| 0111? | [Web-Wallet Bridge - Wallet Transaction Caching](https://github.com/cardano-foundation/CIPs/pull/733) |
-| 0113? | [Programmable token-like assets](https://github.com/cardano-foundation/CIPs/pull/444) |
-| 0118? | [Validation zones](https://github.com/cardano-foundation/CIPs/pull/862) |
-| 0120? | [Constitution specification](https://github.com/cardano-foundation/CIPs/pull/796) |
-| 0124? | [Extend token metadata for translations](https://github.com/cardano-foundation/CIPs/pull/488) |
-| 0125? | [Arrestable native assets](https://github.com/cardano-foundation/CIPs/pull/832) |
-| 0126? | [Multi-Stake Delegation from a Single Account](https://github.com/cardano-foundation/CIPs/pull/628) |
-| 0127? | [Integration of ripemd_160 into Plutus](https://github.com/cardano-foundation/CIPs/pull/826) |
-| 0128? | [Preserving Order of Transaction Inputs](https://github.com/cardano-foundation/CIPs/pull/758) |
-| 0129? | [Governance Identifiers](https://github.com/cardano-foundation/CIPs/pull/857) |
-| 0130? | [Transaction Pieces](https://github.com/cardano-foundation/CIPs/pull/873) |
-
-<p align="right"><i>Last updated on 2024-08-06</i></p>
+**[CIP pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECIP-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-desc)** (most recently discussed first)
 
 ## Cardano Problem Statements (CPS)
 
 | #    | Title | Status |
 | ---- | --- | --- |
+| 0003 | [Smart tokens](./CPS-0003) | Open |
 | 0005 | [Plutus Script Usability](./CPS-0005) | Open |
 | 0007 | [Voltaire era Governance](./CPS-0007) | Open |
+| 0008 | [Domain Name Resolution](./CPS-0008) | Open |) |
 | 0009 | [Coin Selection Including Native Tokens](./CPS-0009) | Open |
 | 0010 | [Wallet Connectors](./CPS-0010) | Open |
 | 0011 | [Universal JSON Encoding for Domain Types](./CPS-0011) | Open |
+| 0012 | [Query Layer Standardization](./CPS-0012) | Open |
 | 0013 | [Better builtin data structures in Plutus](./CPS-0013) | Open |
 | 0014 | [Register of CBOR Tags](./CPS-0014) | Open |
 | 0016 | [Cardano URIs](./CPS-0016) | Open |
+| 0017 | [Settlement Speed](./CPS-0017) | Open |
+| 0018 | [Greater Transaction Throughput](./CPS-0018) | Open |
+| 0020 | [Governance Stakeholder Incentivization](./CPS-0020) | Open |
+| 0021 | [Ouroboros Randomness Manipulation](./CPS-0021) | Open |
 
-<p align="right"><i>Last updated on 2024-07-27</i></p>
+<p align="right"><i>Last updated on 2025-07-08</i></p>
 
-> 💡 For more details about CPS statuses, refer to [CIP-9999](./CIP-9999).
+> [!NOTE]
+> For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
 
 ### Proposals Under Review (CPS)
 
-Below are listed tentative CPSs still under discussion with the community. They are listed below for easing navigation and also tentatively allocating numbers to avoid clashes later on.
+The following link lists "candidate" CPSs still under discussion with the community; these are assigned numbers to avoid later clashes and to facilitate community discussion (see further below for stalled proposals):
 
-| #     | Title |
-| ----- | --- |
-| 0001? | [Metadata Discoverability and Trust](https://github.com/cardano-foundation/CIPs/pull/371) |
-| 0004? | [Spending Script Redundant Execution](https://github.com/cardano-foundation/CIPs/pull/418/) |
-| 0006? | [Governance Security](https://github.com/cardano-foundation/CIPs/pull/491) |
-| 0008? | [Domain Name Resolution](https://github.com/cardano-foundation/CIPs/pull/605) |
-| 0012? | [Query Layer Standardization](https://github.com/cardano-foundation/CIPs/pull/625) |
-| 0015? | [Intents for Cardano](https://github.com/cardano-foundation/CIPs/pull/779) |
+**[CPS pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECPS-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-desc)** (most recently discussed first)
 
-<p align="right"><i>Last updated on 2024-07-27</i></p>
+## Updates Under Consideration
+
+The following link shows updates to existing CIPs and CPSs that have entered the review process:
+
+**[CIP and CPS updates under consideration](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+label%3AUpdate+sort%3Aupdated-desc)** (most recently discussed first)
 
 ## Stalled / Waiting For Authors
 
-The following list contains proposals that have been under review and for which actions are now awaiting updates from their original authors. Proposals stalled for several months without any updates from their authors and will eventually be closed. However, authors are invited to re-open pull requests or open new ones should they want to bring the discussion back to life.
+The following links list proposals deemed ready for review but requiring further update
+from the original author(s) or other confirmation of proposal elgibility (if considered deprecated):
 
-- [Address Resolution Through DNS](https://github.com/cardano-foundation/CIPs/pull/319)
-- [Extended Local Chain Sync Protocol](https://github.com/cardano-foundation/CIPs/pull/375)
-- [Tiered Pricing Protocol](https://github.com/cardano-foundation/CIPs/pull/381)
-- [Properly burning NFTs/tokens](https://github.com/cardano-foundation/CIPs/pull/392)
-- [On-chain Transaction Chaining](https://github.com/cardano-foundation/CIPs/pull/508)
-- [Merklised Plutus Scripts](https://github.com/cardano-foundation/CIPs/pull/385)
-- [Rejected Ideas w.r.t Spending Policies](https://github.com/cardano-foundation/CIPs/pull/336)
-- [Post Quantum signatures and native wallets](https://github.com/cardano-foundation/CIPs/pull/441)
+[**Stalled CIPs and CPSs**](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22%2C%22State%3A+Likely+Abandoned%22%2C%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc) (all lists least recently discussed first) - consisting of:
+* [proposals Waiting for Author](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
+* [proposals Likely Abandoned](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Abandoned%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
+* [proposals Likely Deprecated](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
 
-<p align="right"><i>Last updated on 2023-07-27</i></p>
+Proposals stalled without any updates from their authors will eventually be closed. However, authors are invited to re-open pull requests or open new ones should they want to bring the discussion back to life.
 
 ## Editors
 
-| Matthias Benkort <br/> [@KtorZ][] | Sebastien Guillemot <br/> [@SebastienGllmt][] | Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] |
-| ---                               | ---                                           | ---                            | ---                            | ---                             |
+| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] | Thomas Vellekoop <br/> [@perturbing][] |
+| ---                            | ---                            | ---                             | ---                                    |
 
-[@KtorZ]: https://github.com/KtorZ
-[@SebastienGllmt]: https://github.com/SebastienGllmt
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
 [@Crypto2099]: https://github.com/Crypto2099
+[@perturbing]: https://github.com/perturbing
 

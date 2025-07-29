@@ -71,9 +71,9 @@
             "title": "Reference",
             "description": "A reference to a document",
             "type": "object",
-            "required": ["type", "label", "uri"],
+            "required": ["@type", "label", "uri"],
             "properties": {
-                "type": {
+                "@type": {
                     "type": "string",
                     "enum": ["GovernanceMetadata", "Other", "Link", "Identity"],
                     "title": "Type"

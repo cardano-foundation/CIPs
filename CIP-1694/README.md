@@ -1,7 +1,7 @@
 ---
 CIP: 1694
 Title: A First Step Towards On-Chain Decentralized Governance
-Status: Proposed
+Status: Active
 Category: Ledger
 Authors:
     - Jared Corduan <jared.corduan@iohk.io>
@@ -23,6 +23,7 @@ Discussions:
     - <https://twitter.com/danny_cryptofay/status/1631606919071776768>
     - <https://www.youtube.com/watch?v=2hCnmMG1__8>
     - <https://www.youtube.com/watch?v=KiLhhOVXQOg>
+    - <https://github.com/cardano-foundation/CIPs/pull/916>
 Created: 2022-11-18
 License: CC-BY-4.0
 ---
@@ -322,6 +323,9 @@ that will vote on their behalf. In addition, two pre-defined voting options are 
 > Any Ada holder may register themselves as a DRep and delegate to themselves if they wish to actively participate in
 > voting.
 
+> **Note**
+> Any wallet serving as the Registered Reward Wallet for a Stake Pool can be delegated to one of these Pre-defined Voting Options and doing so will serve as the default voting option selected by the SPO for all Governance Action votes, excepting Hard Fork Governance Actions. Due to the need for robust consensus around Hard Fork initiations, these votes must be met as a percentage of the stake held by all stake pools. 
+
 #### Registered DReps
 
 In Voltaire, existing stake credentials will be
@@ -488,7 +492,7 @@ Depending on the type of governance action, an action will thus be ratified when
 
 * the constitutional committee approves of the action (the number of members who vote `Yes` meets the threshold of the constitutional committee)
 * the DReps approve of the action (the stake controlled by the DReps who vote `Yes` meets a certain threshold of the total active voting stake)
-* the SPOs approve of the action (the stake controlled by the SPOs who vote `Yes` meets a certain threshold over the total delegated active stake for the epoch)
+* the SPOs approve of the action (the stake controlled by the SPOs who vote `Yes` meets a certain threshold of the total active voting stake, excepting Hard Fork Governance Actions)
 
 > **Warning**
 > As explained above, different stake distributions apply to DReps and SPOs.
@@ -515,7 +519,7 @@ The following table details the ratification requirements for each governance ac
   The DRep vote threshold that must be met as a percentage of *active voting stake*.
 
 * **SPOs**<br/>
-  The SPO vote threshold which must be met as a percentage of the stake held by all stake pools.<br/>
+  The SPO vote threshold which must be met as a certain threshold of the total active voting stake, excepting Hard Fork Governance Actions. Due to the need for robust consensus around Hard Fork initiations, these votes must be met as a percentage of the stake held by all stake pools. <br/>
   A value of - means that SPO votes do not apply.
 
 | Governance action type                                               | CC | DReps    | SPOs     |
@@ -1032,7 +1036,9 @@ We solve the long-term participation problem by not allowing reward withdrawals
 
 ### Acceptance Criteria
 
-- [ ] A new ledger era is enabled on the Cardano mainnet, which implements the above specification.
+- [x] A new ledger era is enabled on the Cardano mainnet, which implements the above specification.
+ - Bootstrapping phase governance via Chang #1 hardfork
+ - Full governance via Plomin hardfork
 
 ### Implementation Plan
 
@@ -1057,18 +1063,18 @@ CIP-1694 arguably goes beyond the usual scope of the CIP process and there is a 
 However, that process is yet to be defined and it remains an open question.
 The final ratification process is likely to be a blend of various ideas, such as:
 
-- [ ] Gather opinions from community-held workshops, akin to the Colorado workshop of February-March 2023.
+- [x] Gather opinions from community-held workshops, akin to the Colorado workshop of February-March 2023.
 - [ ] Exercise voting actions on a public testnet, with sufficient participation.
 - [ ] Poll the established SPOs.
 - [ ] Leverage Project Catalyst to gather inputs from the existing voting community (albeit small in terms of active stake).
 
 #### Changes to the transaction body
 
-- [ ] New elements will be added to the transaction body, and existing update and MIR capabilities will be removed. In particular,
+- [x] New elements will be added to the transaction body, and existing update and MIR capabilities will be removed. In particular,
 
   The governance actions and votes will comprise two new transaction body fields.
 
-- [ ] Three new kinds of certificates will be added in addition to the existing ones:
+- [x] Three new kinds of certificates will be added in addition to the existing ones:
 
   * DRep registration
   * DRep de-registration
@@ -1076,7 +1082,7 @@ The final ratification process is likely to be a blend of various ideas, such as
 
   And similarly, the current MIR and genesis certificates will be removed.
 
-- [ ] A new `Voting` purpose will be added to Plutus script contexts.
+- [x] A new `Voting` purpose will be added to Plutus script contexts.
   This will provide, in particular, the vote to on-chain scripts.
 
 > **Warning** As usual, we will provide a CDDL specification for each of those changes.

@@ -12,7 +12,7 @@ Scripts were constructed according to the following native script templates:
 
 **Script 2:** `any [$vKeyhash, all [active_from 5001, active_until 6001]]`
 
-Where `$vKeyhash` is the Verification key hash aka `{drep1... | cc_cold1... | cc_hot1...}`.
+Where `$vKeyhash` is the Verification key hash aka `{drep_vkh1... | cc_cold_vkh1... | cc_hot_vhk1...}`.
 
 ### DRep Keys
 
@@ -40,23 +40,48 @@ Hex: `ab5d2187f2f4419421b0457f7ac8ab0d4b4ec0802af5de21dde64f603248a381571a0b4d92
 
 Bech32: `drep_xvk14dwjrplj73qeggdsg4lh4j9tp495asyq9t6augwaue8kqvjg5wq4wxstfkf8waakk8pwv8fkrde2cwd47rklfx9xxpn9ulc7nl7sndcvdjh2m`
 
-#### Verification key hash (DRep ID)
+#### [DEPRECATED] Verification key hash (DRep ID)
 
 Hex: `c1a342f0dfb82b93ca2e6b406bacb04802f7d56a99d8f95a80a8b6c5`
 
 Bech32: `drep1cx359uxlhq4e8j3wddqxht9sfqp004t2n8v0jk5q4zmv27sh0h5`
 
-#### Script 1 hash (DRep ID)
+#### Verification key hash (DRep VKH)
+
+Hex: `c1a342f0dfb82b93ca2e6b406bacb04802f7d56a99d8f95a80a8b6c5`
+
+Bech32: `drep_vkh1cx359uxlhq4e8j3wddqxht9sfqp004t2n8v0jk5q4zmv2chvj7w`
+
+#### [CIP-0129 compliant] Verification key hash appended with  '22' hex-encoded byte (DRep key hash credential)
+
+Hex: `22c1a342f0dfb82b93ca2e6b406bacb04802f7d56a99d8f95a80a8b6c5`
+
+Bech32: `drep1ytq6xshsm7uzhy729e45q6avkpyq9a74d2va3726sz5td3gqrgcll`
+
+#### Script 1 hash (DRep Script Hash)
 
 Hex: `c5875315458ec9c20a91f15d36debd43df8f1fd75cc4e118db0a6691`
 
 Bech32: `drep_script1ckr4x9293myuyz5379wndh4ag00c787htnzwzxxmpfnfzjzk4cq`
 
-#### Script 2 hash (DRep ID)
+#### [CIP-0129] Script 1 hash appended with '23' hex-encoded byte (DRep script hash credential)
+
+Hex: `23c5875315458ec9c20a91f15d36debd43df8f1fd75cc4e118db0a6691`
+
+Bech32: `drep1y0zcw5c4gk8vnss2j8c46dk7h4palrcl6awvfcgcmv9xdyghfewm4`
+
+#### Script 2 hash (DRep Script Hash)
 
 Hex: `723e4a09b4897bddf8861f963312a76df8183b6ee438bdd4157b5d6c`
 
 Bech32: `drep_script1wgly5zd539aam7yxr7trxy48dhupswmwusutm4q40dwkcquwecx`
+
+#### [CIP-0129] Script 2 hash appended with '23' hex-encoded byte (DRep script hash credential)
+
+Hex: `23723e4a09b4897bddf8861f963312a76df8183b6ee438bdd4157b5d6c`
+
+Bech32: `drep1yderujsfkjyhhh0csc0evvcj5aklsxpmdmjr30w5z4a46mqsgv4sm`
+
 
 ### Constitutional Committee Cold
 
@@ -84,11 +109,23 @@ Hex: `fec199631209a0d2e3f5e758693e4324be9b5067767637b4f0ef7f52fd6b0aaa7566bf28da
 
 Bech32: `cc_cold_xvk1lmqejccjpxsd9cl4uavxj0jryjlfk5r8wemr0d8saal49lttp2482e4l9rdxpan5zdmeyg20md8fjdw3dt2jk8ejrvhjlwmha266w9syf55nr`
 
-#### Constitutional Committee Cold Verification Key Hash
+#### [DEPRECATED] Constitutional Committee Cold Verification Key Hash
 
 Hex: `4cb32ae705fb3bba3cac9742356880c912a36a4a7cca74d4956c7f41`
 
 Bech32: `cc_cold1fjej4ec9lvam509vjapr26yqeyf2x6j20n98f4y4d3l5zygwxt4`
+
+#### Constitutional Committee Cold Verification key hash (Constitutional Committee Cold VKH)
+
+Hex: `4cb32ae705fb3bba3cac9742356880c912a36a4a7cca74d4956c7f41`
+
+Bech32: `cc_cold_vkh1fjej4ec9lvam509vjapr26yqeyf2x6j20n98f4y4d3l5zhlcvpe`
+
+#### [CIP-0129 compliant] Constitutional Committee Cold Verification key hash appended with  '12' hex-encoded byte (Constitutional Committee Cold key hash credential)
+
+Hex: `124cb32ae705fb3bba3cac9742356880c912a36a4a7cca74d4956c7f41`
+
+Bech32: `cc_cold1zfxtx2h8qhanhw3u4jt5ydtgsry39gm2ff7v5ax5j4k87sgmkas3l`
 
 #### Constitutional Committee Cold Script 1 Hash
 
@@ -96,11 +133,24 @@ Hex: `07ede1a2cda4f48e9f33759e76397bfdbf71267b92e5f17dd96e94be`
 
 Bech32: `cc_cold_script1qlk7rgkd5n6ga8enwk08vwtmlklhzfnmjtjlzlwed62tuycmmh5`
 
+#### [CIP-0129] Constitutional Committee Cold Script 1 hash appended with '13' hex-encoded byte (Constitutional Committee Cold script hash credential)
+
+Hex: `1307ede1a2cda4f48e9f33759e76397bfdbf71267b92e5f17dd96e94be`
+
+Bech32: `cc_cold1zvr7mcdzekj0fr5lxd6eua3e007m7ufx0wfwtutam9hff0s6qkedk`
+
 #### Constitutional Committee Cold Script 2 Hash
 
 Hex: `ed41b6d1b16802132c147639cef6264e4fa3b093aeba965962a73061`
 
 Bech32: `cc_cold_script1a4qmd5d3dqppxtq5wcuuaa3xfe868vyn46afvktz5ucxzxvflg4`
+
+#### [CIP-0129] Constitutional Committee Cold Script 2 hash appended with '13' hex-encoded byte (Constitutional Committee Cold script hash credential)
+
+Hex: `13ed41b6d1b16802132c147639cef6264e4fa3b093aeba965962a73061`
+
+Bech32: `cc_cold1z0k5rdk3k95qyyevz3mrnnhkye8ylgasjwht49jev2nnqcgmwf9vk`
+
 
 ### Constitutional Committee Hot
 
@@ -128,11 +178,23 @@ Hex: `428aaa4d7c9ed7776b5019d7e64419f27f0ad3d47078b8963ac2382b7b7a755366f8e9d1c6
 
 Bech32: `cc_hot_xvk1g2925ntunmthw66sr8t7v3qe7fls4575wput3936cguzk7m6w4fkd78f68rffef6uqk40dkmcxe2qe4t3kz3z2yq4m0yvpdnxwed55q798msd`
 
-#### Constitutional Committee Hot Verification Key Hash
+#### [DEPRECATED] Constitutional Committee Hot Verification Key Hash
 
 Hex: `a9eb44d0aa1ce5559b7c22270ac23d1e61bf2e114dd8e5a44ed3a529`
 
 Bech32: `cc_hot14845f592rnj4txmuygns4s3aresm7ts3fhvwtfzw6wjjj3l0520`
+
+#### Constitutional Committee Hot Verification key hash (Constitutional Committee Hot VKH)
+
+Hex: `a9eb44d0aa1ce5559b7c22270ac23d1e61bf2e114dd8e5a44ed3a529`
+
+Bech32: `cc_hot_vkh14845f592rnj4txmuygns4s3aresm7ts3fhvwtfzw6wjjjmgmw3p`
+
+#### [CIP-0129 compliant] Constitutional Committee Hot Verification key hash appended with  '02' hex-encoded byte (Constitutional Committee Hot key hash credential)
+
+Hex: `02a9eb44d0aa1ce5559b7c22270ac23d1e61bf2e114dd8e5a44ed3a529`
+
+Bech32: `cc_hot1q257k3xs4gww24vm0s3zwzkz850xr0ewz9xa3edyfmf622g5zjp8w`
 
 #### Constitutional Committee Hot Script 1 Hash
 
@@ -140,8 +202,20 @@ Hex: `9d55b1aab952b24807bedbc9af8283b1d798023432f484a2d9160dfe`
 
 Bech32: `cc_hot_script1n42mr24e22eyspa7m0y6lq5rk8tesq35xt6gfgkezcxluqysk4n`
 
+#### [CIP-0129] Constitutional Committee Hot Script 1 hash appended with '03' hex-encoded byte (Constitutional Committee Hot script hash credential)
+
+Hex: `039d55b1aab952b24807bedbc9af8283b1d798023432f484a2d9160dfe`
+
+Bech32: `cc_hot1qww4tvd2h9ftyjq8hmduntuzswca0xqzxse0fp9zmytqmlsve25xm`
+
 #### Constitutional Committee Hot Script 2 Hash
 
 Hex: `4241b3550fc0aca9895b50d3d722bbca8f197fce155c9843817c7ac5`
 
 Bech32: `cc_hot_script1gfqmx4g0czk2nz2m2rfawg4me283jl7wz4wfssup03av2yzf2kd`
+
+#### [CIP-0129] Constitutional Committee Hot Script 2 hash appended with '03' hex-encoded byte (Constitutional Committee Hot script hash credential)
+
+Hex: `034241b3550fc0aca9895b50d3d722bbca8f197fce155c9843817c7ac5`
+
+Bech32: `cc_hot1qdpyrv64plq2e2vftdgd84ezh09g7xtlec24exzrs97843g99j85a`

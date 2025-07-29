@@ -42,6 +42,7 @@ This tutorial creates additional intermediate files, these are not required in i
 
 Private extended signing key (hex):
 `105d2ef2192150655a926bca9cccf5e2f6e496efa9580508192e1f4a790e6f53de06529129511d1cacb0664bcf04853fdc0055a47cc6d2c6d205127020760652`
+
 Public verification key (hex):
 `7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a`
 
@@ -65,11 +66,13 @@ This creates a intermediate file of [example.body.nq](./example.body.nq).
 Using a tool create a Blake2b-256 hash of the canonicalized [example.body.nq](./example.body.nq).
 One such tool is the [ToolKit Bay](https://toolkitbay.com/tkb/tool/BLAKE2b_256).
 
-For our example this will result in: `cc4ab8ead604ddb498ed4b2916af7b454c65ac783b5d836fddf388e72a40eccb`.
+For our example this will result in: `6d17e71c5793ed5945f58bf48e13bb1b3543187ab9c2afbd280a21afb4a90d35`.
 
 #### 4. Authors witness over the hash of canonicalized `body`
 
 Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witness as described in [Hashing and Signatures](./README.md#hashing-and-signatures) for the chosen `witnessAlgorithm`.
+
+One tool for Ed25519 signatures is [Ed25519 Online Tool](https://cyphr.me/ed25519_tool/ed.html).
 
 For the provided [example.json](./example.json), we use the keys described in [Author](#author) resulting in a `signature` of: `68078efeff90970d2320a2bb5021d1aea81bc4907bf33d54fd17989f020719f3f5c4da3dccf7aa61d51c1e6fececd95309c37e7eef331b199cd5f8e78992ea0d`
 

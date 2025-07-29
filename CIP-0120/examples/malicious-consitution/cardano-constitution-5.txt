@@ -1,0 +1,16 @@
+# Malicious Constitution
+
+This document is brought to you by Cardano-more.
+We wish to see the end of Cardano, so there is no-more Cardano (get it?).
+
+## Aims
+
+Reduce the `maxBlockSize` protocol parameter to a value of `1`.
+
+Remove all funds from the treasury.
+
+Increase the `lovelacePerUTxOWord` to a value of `1000000`.
+
+## Angry face
+
+**>:(**

@@ -9,11 +9,13 @@ Proposed Solutions:
   - CIP-0013: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013
   - CIP-0099: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0099
   - CIP-0107: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
+  - CIP-0134: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0134
 Discussions:
   - https://github.com/cardano-foundation/CIPs/issues/836
   - https://github.com/cardano-foundation/CIPs/pull/559
   - https://github.com/cardano-foundation/CIPs/pull/635
   - https://github.com/cardano-foundation/CIPs/pull/841
+  - https://github.com/cardano-foundation/CIPs/pull/888
 Created: 2024-06-15
 License: CC-BY-4.0
 ---
@@ -136,6 +138,7 @@ CIPs:
 * `//claim`: supports versioning, registered in [CIP-99]
 * `//transaction`: supports versioning (?), registered in [CIP-107]
 * `//block`: supports versioning (?), registered in [CIP-107]
+* `//addr/`: registered in [CIP-134]
 
 ## Copyright
 
@@ -150,6 +153,8 @@ This CPS is licensed under [CC-BY-4.0].
 [CIP-99]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0099
 
 [CIP-107]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
+
+[CIP-134]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0134
 
 [CC-BY-4.0]:https://creativecommons.org/licenses/by/4.0/legalcode
 

@@ -5,7 +5,7 @@ Authors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors: 
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Status: Proposed
+Status: Active
 Category: Plutus
 Created: 2023-01-30
 Discussions: 
@@ -311,18 +311,18 @@ Finally, this is simply a less common design, and so conservatism suggests stick
 
 ### Acceptance Criteria
 
-- [ ] `plutus` changes
-    - [ ] Specification 
+- [x] `plutus` changes
+    - [x] Specification 
     - [x] Production implementation
     - [x] Costing of the new operations
-- [ ] `cardano-ledger` changes
-    - [ ] Implementation of new ledger language including SOPs
-- [ ] Further benchmarking 
+- [x] `cardano-ledger` changes
+    - [x] Implementation of new ledger language including SOPs
+- [x] Further benchmarking 
     - [x] Ensure that regressions on existing scripts do not occur 
-    - [ ] Check additional real-world examples
-- [ ] Release
-    - [ ] New Plutus language version supported in a released node version
-    - [ ] New ledger language supported in a released node version
+    - [x] Check additional real-world examples
+- [x] Release
+    - [x] New Plutus language version supported in a released node version
+    - [x] New ledger language supported in a released node version
 
 ### Implementation Plan
 

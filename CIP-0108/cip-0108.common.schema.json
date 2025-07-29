@@ -44,6 +44,26 @@
                 }
             }
         },
+        "witness": {
+            "title": "Witness",
+            "description": "A witness proving that the author endorses the content of the metadata",
+            "type": "object",
+            "properties": {
+                "witnessAlgorithm": {
+                    "title": "WitnessAlgorithm",
+                    "type": "string",
+                    "enum": [ "ed25519", "CIP-0008"]
+                },
+                "publicKey": {
+                    "title": "PublicKey",
+                    "type": "string"
+                },
+                "signature": {
+                    "title": "Signature",
+                    "type": "string"
+                }
+            }
+        },
         "body": {
             "title": "Body",
             "description": "The body of the metadata document that is hashed to produce a signature (CIP-100)",
@@ -83,9 +103,9 @@
             "title": "Reference",
             "description": "A reference to a document",
             "type": "object",
-            "required": ["type", "label", "uri"],
+            "required": ["@type", "label", "uri"],
             "properties": {
-                "type": {
+                "@type": {
                     "type": "string",
                     "enum": ["GovernanceMetadata", "Other"],
                     "title": "Type"
