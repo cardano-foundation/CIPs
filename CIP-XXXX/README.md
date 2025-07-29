@@ -64,7 +64,7 @@ A dedicated `delegate` authority isolates app navigation from other authorities 
 ### Acceptance Criteria
 
 - [ ] Community Feedback and Review Integrated
-- [ ] One or more wallets support this new delegate authority
+- [ ] One or more wallets support this new `delegate` authority
 
 ### Implementation Plan
 
