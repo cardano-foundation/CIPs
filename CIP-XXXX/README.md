@@ -20,7 +20,7 @@ This CIP proposes a new CIP-13 extension: A new URI scheme authority named `dele
 
 With Cardano Governance now in full effect a high level of participation / DRep delegation is needed to solidify and secure the consensus mechanisms put in place and ensure decentralisation of power. Delegating to a DRep however - especially on mobile devices - can be a cumbersome task involving multiple steps from copying or typing a complicated DRep-Id or visiting a dedicated website, search for DRep by Id or Name, create and sign a transaction - or use in-app DRep explorers which some wallets offer right now, others don’t.
 
-The goal of this CIP is to make DRep delegation as easy as scanning a QR-Code with your mobile device, which automatically opens the user's preferred wallet via deep-linking compatible method and create a DRep-delegation transaction for the transmitted DRep-Id for the user to review, sign and submit the transaction.
+The goal of this CIP is to make DRep delegation as easy as clicking a button on desktop browsers or scanning a QR-Code with your mobile device, which automatically opens the user's preferred wallet via deep-linking compatible method and create a DRep-delegation transaction for the transmitted DRep-Id for the user to review, sign and submit the transaction.
 
 With the existing `web+cardano://` URIs for almost all other methods of participation in the Cardano ecosystem such as payments and Stake Pool delegation already defined, this proposed extension adds another missing piece of the puzzle.
 
