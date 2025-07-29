@@ -46,9 +46,11 @@ The lost-stake problem is the accumulation of this unreachable-yet-delegated ADA
 
 > **Note:** The exact amount of ADA that is lost but still delegated is difficult to quantify. We use a *conservative* working assumption of ~1.5% of the circulating ADA being lost per year, which is less than half the 4% per-year loss rate measured for Bitcoin by Ledger and Chainalysis.
 
+### Detrimental effects
+
 Lost stake and lost ADA have several detrimental effects on the Cardano network:
 
-- **Perpetual reward dilution:**  
+#### Perpetual reward dilution
   Each epoch, a portion of the total ADA rewards is distributed to all staked ADA (active or lost). Rewards going to addresses with lost ADA are effectively removed from circulation permanently, which means active delegators and stake-pool operators (SPOs) receive a smaller share than they would if that lost stake were absent. In essence, active participants subsidize the lost stake. Over years and decades, the compounding nature of this lost ADA can significantly dilute the reward pool available to real users and operators.
 
 - **Reward increases worsen the problem:**  
