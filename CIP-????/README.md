@@ -12,12 +12,30 @@ Created: 2025-07-16
 License: CC-BY-4.0
 ---
 
+## Table of Contents
+
+- [Abstract](#abstract)
+- [Motivation](#motivation-why-is-this-cip-necessary)
+  - [Wallet Revenue](#wallet-revenue)
+  - [Cheaper Batchers/Aggregators](#cheaper-batchersaggregators)
+  - [Multi-Asset Cardano Treasury](#mutli-asset-cardano-treasury)
+  - [Decentralized Fixed-Supply Token Minting](#decentralized-fixed-supply-token-minting)
+  - [L2 Reserves](#l2-reserves)
+- [Specification]
+  - [Definitions](#definitions)
+  - [Enable Direct Deposits](#enable-direct-deposits)
+  - [Partial Withdrawals and Native Asset Withdrawals](#partial-withdrawals-and-native-asset-withdrawals)
+  - [Account Balance Intervals](#account-balance-intervals)
+- [Rationale](#rationale-how-does-this-cip-achieve-its-goals)
+- [Path To Active](#path-to-active)
+
 ## Abstract
 
 Currently, Cardano's account addresses (a.k.a. reward addresses) can only be used for receiving ADA
-from the Cardano protocol (e.g., staking rewards). Users are not allowed to deposit ADA into these
-addresses. By removing this restriction, and enabling very specific plutus script support, Cardano
-can unlock new use cases **without sacrificing local determinism**.
+from the Cardano protocol (e.g., staking rewards). Users are not allowed to deposit assets into
+these addresses. By removing this restriction, and enabling very specific plutus script support,
+Cardano can unlock new use cases **without sacrificing local determinism**. And by still requiring
+UTxO inputs in transactions, these accounts avoid many of the pitfalls from Ethereum-style accounts.
 
 ## Motivation: why is this CIP necessary?
 
@@ -60,12 +78,18 @@ Most batcher/aggregator networks charge at least 1 ADA. For some, the reason is 
 requirement. If it was actually possible to charge smaller fee amounts, Cardano's DeFi would be much
 cheaper!
 
+### Multi-Asset Cardano Treasury
+
+Cardano's Treasury account is currently only allowed to hold ADA. But it would be more fiscally
+responsible for the Treasury to diversify itself across other assets like stablecoins.
+
 ### Decentralized Fixed-Supply Token Minting
 
 Imagine you only wanted to have 1 million units of a token minted. How can you keep a global count
 while supporting decentralized minting? Currently, you can't. But what if users needed to deposit 1
-ADA into an account address for every token minted. The account address' balance would be the global
-count!
+"count" token into an account address for every unit of the target token minted? The account
+address' balance of the "count" token would be the global count! Since addition is commutative, the
+transactions that mint the tokens can be processed in any order and fully parallel.
 
 > [!IMPORTANT]
 > In order to prevent actually needing global state, this CIP proposes account balance *intervals*.
@@ -74,9 +98,8 @@ count!
 > with time (a.k.a. slot intervals). Plutus scripts will be able to see the interval constraints as
 > part of their contexts.
 
-By using account balance intervals, users can mint this token and their transactions can be
-processed *in any order* - incrementing the account's balance doesn't invalidate other transactions
-until the interval's upper bound is met.
+By using account balance intervals, incrementing the account's balance doesn't invalidate other
+transactions until the interval's upper bound is met.
 
 ### L2 reserves
 
@@ -85,174 +108,269 @@ Initially, users typically create "deposit" event UTxOs; but eventually, the L2 
 deposits and move the ADA into a "reserve UTxO". Since the reserve itself is a UTxO, there may be
 contention issues around how it is managed.
 
-*With this CIP, L2s can process the deposit events UTxOs by depositing the ADA into an account
+*With this CIP, L2s can process the deposit event UTxOs by depositing the ADA into an account
 address.*
 
 ## Specification
 
-### No datum support
+### Definitions
 
-In order to avoid global state issues, datums will not be supported. Consider the decentralized
-minting example: what if each user needed to update the datum after each account deposit? The datum
-itself would be a source of contention. As far as the authors are aware, there are no compelling use
-cases for adding datums to account addresses.
+For clarity:
+  - *Protocol Deposit* will refer to the deposits required by the protocol for registration.
+  - *Direct Deposit* will refer to assets being sent to an account address.
 
-> [!TIP]
-> If a staking script *needs* data for its execution, it can use a datum attached to an existing
-> UTxO.
+### Enable Direct Deposits
 
-### Enable ADA Deposits -- NO NATIVE ASSETS
+The ledger rules currently disallow directly depositing assets into account addresses. This
+restriction will be lifted to support direct deposits. The transaction balancing rules will need to
+be updated to consider these direct deposits.
 
-The ledger rules currently disallow depositing into account addresses. This restriction will be
-lifted to support ADA deposits. The transaction balancing rules will need to be updated to consider
-these deposits.
-
-**Depositing into an account address does not require a witness from the receiving account.** In
-other words, the receiving staking script does *not* need to be executed. This behavior mirrors how
-UTxOs can be created at script addresses without having to execute the spending script.
+**Direct depositing into an account address does not require a witness from the receiving account.**
+In other words, the receiving staking script does *not* need to be executed. This behavior mirrors
+how UTxOs can be created at script addresses without having to execute the spending script.
 
 > [!IMPORTANT]
-> Adding support for depositing native assets into account addresses is **out of scope** for this
-> CIP. There are open questions for *how* to safely add support for native assets discussed in the
-> [Rationale section](#future-cip---native-asset-deposit-support) of this CIP.
+> In order to support direct deposits, the account address must be registered.
 
-In order to deposit ADA into an account address, the receiving account address *must* be registered.
+By default, only direct deposits of ADA are supported. Pre-existing registered account addresses
+will be automatically upgraded to support direct deposits of ADA through a hardfork-combinator
+event. 
 
-> [!NOTE]
-> Withdrawing from the account address still requires delegation to a DRep.
+To enable direct deposits of native assets, a dedicated certificate event will be required to
+*initialize* the account address with effectively a whitelist of allowed native assets (ADA is
+always allowed). **All native assets that can be accepted by the account address must be listed in the
+certificate.** The certificate will initialize the account address with an `AccountValue` where the
+balances for each native asset in the certificate is set to `0`.
 
-When a deposit is made, plutus scripts can see the deposit amount in their contexts similarly to how
-they can see the withdrawal amount. Since it is not recommended to enable negative numbers in the
-[withdrawal
-field](https://github.com/IntersectMBO/cardano-ledger/blob/cd7a8fd7ca833d120b87563a7e99e9b8c1db2dc1/eras/conway/impl/cddl-files/conway.cddl#L136)
-of the transaction body, a new optional field needs to be added to the transaction body:
+> [!IMPORTANT]
+> The difference between the current `Value` and the new `AccountValue` is that you cannot add or
+> remove assets in the `AccountValue`. You can only increase or decrease the asset quantities. If a
+> transaction tries directly depositing a native asset that is not found in the `AccountValue`, it
+> will fail phase 1 validation.
+
+The only way to alter which native assets are found in the `AccountValue` is through another
+dedicated certificate event. The new certificates are outlined below:
 
 ```cbor
+certificate = 
+  [  stake_registration
+  // stake_deregistration
+  // stake_delegation
+  ...
+
+  // reg_account_value_cert   ; Certificate to initialize the `AccountValue` and requires an extra
+                              ; protocol deposit.
+
+  // unreg_account_value_cert ; Certificate to disable native asset direct deposits and reclaim
+                              ; associated protocol deposit.
+  ]
+```
+
+Crucially, since the `AccountValue` will take up space in memory, it must be accompanied with an
+extra protocol deposit that is proportional to the size of the `AccountValue`. This extra protocol
+deposit must be paid in the transaction using the `reg_account_value_cert`.
+
+> [!NOTE]
+> With UTxOs, the minUTxO protocol deposit is paid by the creator of the UTxO. With account
+> addresses, the `AccountValue` protocol deposit will be paid upfront by the address owner. This is
+> what enables the micropayments discussed in the [Motivation section](#motivation-why-is-this-cip-necessary).
+
+There are a few important behaviors to be aware of with these new certificates:
+
+- The `unreg_account_value_cert` forces the user to withdraw all native assets currently in the
+account address.
+- Updating the registered `AccountValue` can be done by submitting the `unreg_account_value_cert`
+and the `reg_account_value_cert` in the same transaction. To carry over the balances from the old
+`AccountValue` to the new `AccountValue`, the transaction must specify direct deposits for those
+assets in the same transaction. The assets must effectively be re-deposited.
+- If you are only using the `unreg_account_value_cert`, you will be able to recover the part of the
+  protocol deposit that was for the `AccountValue`. **The account address itself remains
+registered for delegation.**
+- Transactions involving these certificates must be witnessed by the associated staking credentials.
+  These certificates must be approved by the community to be used on the Cardano Treasury account
+address.
+
+For this to work, the transaction representation needs a new direct deposit field:
+
+```cbor
+direct_deposits = {+ reward_account => value}
+
 transaction_body = 
   {   0  : set<transaction_input>         
   ,   1  : [* transaction_output]      
+  ,   2  : coin                            
+  , ? 3  : slot_no                         
+  , ? 4  : certificates                    
+  , ? 5  : withdrawals                     
   ...
-  , ? 23 : account_deposits ; new field
-  }
-
-account_deposits = {+ reward_account => coin} ; same definition as current withdrawals
-```
-
-And here is the associated change to the `TxInfo` seen by plutus scripts:
-
-```haskell
-data TxInfo = TxInfo
-  { txInfoInputs                :: [TxInInfo]
-  , txInfoReferenceInputs       :: [TxInInfo]
-  , txInfoOutputs               :: [TxOut]
-  , txInfoFee                   :: Value
-  , txInfoMint                  :: Value
-  , txInfoTxCerts               :: [TxCert]
-  , txInfoWdrl                  :: Map Credential Haskell.Integer
-  ...
-  , txInfoDeposits              :: Map Credential Haskell.Integer -- ^ New field.
+  , ? 23 : direct_deposits ; new field
   }
 ```
 
+Plutus scripts will be able to see the direct deposits occuring in the transaction as part of their
+`ScriptContext`.
 
-> [!NOTE]
-> See the [Rationale section](#future-cip---native-asset-deposit-support) for why `account_deposits`
-> uses `coin` instead of preparing the stage for future native asset support.
+> [!IMPORTANT]
+> The direct deposits are only the diff! If the account currently has 100 ADA and the transaction is
+> direct depositing another 0.1 ADA, the transaction only needs to specify 0.1 ADA.
+
+### Partial Withdrawals and Native Asset Withdrawals
+
+In order for direct deposits to actually be useful, partial withdrawals are a fundamental
+requirement. To see why, imagine a wallet charges a 0.1 ADA fee per transaction and these
+transactions are submitted every 30 seconds. Currently, the ledger rules require the wallet to
+withdraw the full balance in the account address. Let's say when the wallet submits the withdrawal
+transaction, the balance is 100 ADA. While this transaction is sitting in the mempool, another user
+directly deposits another 0.1 ADA into the wallet's account address. Now the wallets transaction in
+the mempool is *not* withdrawing the full amount and will fail phase 1 validation! Without partial
+withdrawals, whether the wallet will actually be able to access the assets in the account will
+depend on luck! So the ledger rules *must* be changed to allow withdrawing any amount between 0 and
+the current balance. 
+
+> [!IMPORTANT]
+> For all withdrawals, partial or full, the pre-existing `Withdraw` purpose will be used. We do not
+> need a dedicated purpose for partial withdrawals.
+
+To enable support for withdrawing native assets from account addresses, the representation of
+withdrawals inside transactions needs to be updated:
+
+```cbor
+; Old representation.
+withdrawals = {+ reward_account => coin}
+
+; New representation.
+withdrawals = {+ reward_account => value} ; coin -> value
+```
+
+Likewise, since the Cardano Treasury is also able to hold whitelisted native assets, the
+`treasury_withdrawals_action` must be updated:
+
+```cbor
+; Old representation.
+treasury_withdrawals_action = (2, {* reward_account => coin}, policy_hash/ nil)
+
+; New representation.
+treasury_withdrawals_action = (2, {* reward_account => value}, policy_hash/ nil) ; coin -> value
+```
 
 ### Account Balance Intervals
 
-In order to give plutus scripts some idea of what is happening with the account address without
-introducing a dependency on global state which can cause contention, transactions can specify
-account balance intervals similarly to how time intervals are set. In order for the transaction to
-be valid, the account's actual balance *must* fall within the validity interval. The lower bound is
-inclusive while the upper bound is exclusive (i.e., `[1,5)`). The account balance intervals will be
-passed to plutus scripts as part of their script contexts.
-
-**Using the account balance interval does not require the associated credential to witness the
-transaction.**
-
-> [!IMPORTANT]
-> Checking the validity of the withdrawn balance in a transaction is currently validated during
-> Phase 1 validation and so is the time interval. Therefore, checking the account balance intervals
-> should be cheap enough to be part of Phase 1 validation as well.
-
-The transaction body will need to be changed to support these intervals. But considering transaction
-builders may wish to specify intervals for multiple accounts in a single transaction, these
-intervals need a different representation than what is used for time intervals:
+Transactions can specify account balance intervals similarly to how time intervals are set. In order
+for the transaction to be phase 1 valid, the actual balance for the associated asset in the account
+*must* fall within the specified interval. The transaction representation is shown below:
 
 ```cbor
-; Proposed alternative.
-account_balance_checks = 
-  { + reward_account => [ inclusive_lower_bound: coin, exclusive_upper_bound: coin ] }
+account_balance_intervals = 
+  {+ reward_account => 
+      {+ policy_id => 
+          {+ asset_name => [ inclusive_lower_bound: uint, exclusive_upper_bound: uint ] }}}
 
 transaction_body = 
   {   0  : set<transaction_input>         
   ,   1  : [* transaction_output]      
   ...
-  , ? 24 : account_balance_checks ; new field
+  , ? 24 : account_balance_intervals ; new field
   }
 ```
 
-And here is the change for `TxInfo`:
+As the representation shows, the transaction submitter can specify intervals for different assets
+inside a given account address. In addition to this, there are two important behaviors that need to
+be mentioned:
 
-```haskell
-data TxInfo = TxInfo
-  { txInfoInputs                :: [TxInInfo]
-  , txInfoReferenceInputs       :: [TxInInfo]
-  , txInfoOutputs               :: [TxOut]
-  , txInfoFee                   :: Value
-  , txInfoMint                  :: Value
-  , txInfoTxCerts               :: [TxCert]
-  , txInfoWdrl                  :: Map Credential Haskell.Integer
-  , txInfoValidRange            :: POSIXTimeRange
-  ... 
-  , txInfoDeposits              :: Map Credential Haskell.Integer
-  , txInfoBalanceInterval       :: Map Credential BalanceInterval -- ^ New field. 
-  }
-```
+1. Using the account balance interval does *not* require a witness from the associated credential.
+2. To declare an asset in the `AccountValue` has a `0` balance, the interval for that asset must be
+   set to `[0,0)`.
 
-> [!Tip]
-> It is possible to specify the *exact* current balance of the account using the the intervals.
-
-**Be careful around epoch boundaries since reward payouts will change the actual balance!**
-
-### Enable Partial Withdrawals
-
-There is currently a restriction that withdrawing from a stake address is "all-or-nothing". This
-restriction will be lifted. Withdrawing any amount within the interval `0 <= x <= current_balance`
-will be valid. Withdrawing an amount outside of this interval will fail Phase 1 Validation.
-
-### Transactions Still Require UTxO inputs!
-
-UTxO inputs effectively act as a transaction nonce that prevents certain possible attacks on
-Cardano. Essentially, they guarantee every transaction is unique. Account addresses by themselves
-are unable to offer the same guarantee which means this CIP does not remove the transaction's
-requirement for at least one UTxO input.
+Plutus scripts will be able to see the set account balance intervals as part of their
+`ScriptContext`.
 
 ## Rationale: how does this CIP achieve its goals?
 
-This CIP makes Cardano's account addresses more expressive without introducing global state issues.
-And critically, it offers safe ways around the `minUTxOValue` requirement which enables businesses
-to charge fees <1 ADA. This dramatically increases the number of viable business models that can
-operate on Cardano.
+This CIP is able to upgrade Cardano's account addresses to full accounts *without* sacrificing local
+determinism and *without* introducing the issues seen with Ethereum-style accounts. The reasons for
+this are based on what this CIP *does not* enable, more than on what it does enable. The most
+important things are:
 
-These specific changes to how account addresses work enable very simple parallel processing of
-account actions without sacrificing Cardano's local determinism.
+- This CIP *does not* enable submitting transactions without UTxO inputs.
+- This CIP *does not* enable attaching datums to account addresses.
+- This CIP *does not* enable viewing the **exact** account balance.
+- This CIP *does not* enable directly depositing arbitrary native assets into account addresses.
+Only whitelisted native assets are allowed.
 
-### Future CIP - Native Asset Deposit Support
+### Still Require UTxO Inputs
 
-Native asset support dramatically complicates the design since it would allow depositing worthless
-native assets. This creates a type of "dusting attack" on account addresses. At this time, it is
-unclear how to best solve this problem.
+On Ethereum, every address has an integer nonce that must be incremented after each account event.
+This integer is required to prevent replay attacks (e.g., it ensures transactions are processed in
+the right order), but it has the downside of causing contention - if two Ethereum transactions try
+to withdraw using the same nonce integer, only one will succeed. The problem is that the nonce is
+intrinsic to the account.
 
-Due to this uncertainty, it was decided that it was best not to try future-proofing this CIP by
-*guessing* what the future Native Asset CIP would require. If the guess turned out to be wrong,
-Cardano would need to revert the failed future-proofing changes introduced by this CIP.
+Since each Cardano transaction must include a UTxO, the UTxO's output reference acts as a nonce.
+Changing the order of the Cardano transactions does not matter as long as the UTxOs actually exist.
+This means withdrawing from Cardano account addresses *does not* experience contention. Both Alice
+and Bob can each submit a transaction withdrawing from an account address, and these transactions
+can be processed in any order.
+
+### No Datum Support
+
+Consider the decentralized minting example: what if each user needed to update the datum after each
+account deposit? The datum itself would be a source of contention in the same way the integer nonce
+is for Ethereum.
+
+If an account *needs* data for its validation, it can use a datum attached to an existing UTxO.
+UTxOs are the perfect medium for controlling access to data and they enable breaking the data into
+chunks. If an account only needs a piece of the available data, it can reference a UTxO with *just*
+that data. Storing the data with the account would require processing *all* of the stored data, even
+the parts that aren't necessary for a given execution. In short, using the datums attached to UTxOs
+is much more efficient.
+
+### No Exact Balance View
+
+Enabling plutus scripts to view the account's exact balance would require sacrificing Cardano's
+local determinism. If Alice submits a transaction at time `t0` where the account's balance is 100
+ADA and then the transaction gets processed at time `t1` when the account balance is 1000 ADA, the
+smart contracts in the transaction use different numbers in there executions. This can result in
+completely different execution budget usages which results in completely different fees. Same
+transaction; different fees.
+
+By using the account balance intervals instead, Alice's transaction would get the same inputs at
+`t0` and `t1`. As long as the intervals are still satisfied, it does not matter that the account
+balance has actually changed. Both executions result in the same execution budget usages and
+therefore, the same fees. Cardano's local determinism is preserved.
+
+### Whitelisted Native Assets Only
+
+The reason Cardano has a `minUTxOValue` requirement is to prevent native asset dusting attacks - a
+malicious person can create worthless tokens and create UTxOs with *only* these assets. When block
+producers try to validate transactions, they need to load the UTxOs into memory. If the size of
+these UTxOs are not somehow tied to real world resource constraints, the malicious actors can cause
+block producer memory usages to explode with these worthless native assets taking up space. This is
+effectively a ddos attack. By requiring every UTxO to contain ADA, a malicious actor is only able to
+cause this attack if they actually have the required amount of ADA to back the memory usage required
+to process the native asset values.
+
+If account addresses could accept arbitrary native assets like UTxOs, they would be susceptible to
+the same dusting attacks. A first thought might be to have a `minUTxOValue`-like protocol deposit
+for account addresses - the person depositing the native asset into the account would need to cover
+this protocol deposit. But this would actually prevent the account addresses from being used for
+some of the use cases discussed in the [Motivation section](#motivation-why-is-this-cip-necessary).
+Consider if a wallet was charging 0.1 ADA per transaction and decides to accept a stablecoin as
+payment instead. The protocol deposit could be more than 1 ADA which is 10x the amount the wallet
+wanted to charge! Users will not pay the fees in stablecoins if using ADA instead is 10x cheaper!
+
+So the goal is to prevent dusting attacks while still allowing micropayments using non-ADA assets.
+That is why the whitelist is used. The account address owner covers the protocol deposit for the native
+assets they are interested in and now users can just deposit those native assets without having to
+also cover a protocol deposit. The account address owner would not be able to cover the protocol
+deposit if they did not know which native assets would be deposited ahead of time, so this approach
+only works with a whitelist.
 
 ## Path to Active
 
+These changes require a new plutus and ledger version.
+
 ### Acceptance Criteria
-- [ ] These rules included within an official Plutus version, and released via a major hard fork.
+- [ ] These rules included within an official Plutus and Ledger version, and released via a major hard fork.
       
 ### Implementation Plan
 - [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve utility of
