@@ -104,8 +104,8 @@ The CIP should be accepted by:
 
 And when there's no major objection from one of the currently involved parties:
 
+* [x] [**Cardano-Node Team**][cardano-node] accepts the proposal
 * [ ] [**Amaru Team**][amaru] accepts the proposal
-* [ ] [**Cardano-Node Team**][cardano-node] accepts the proposal
 * [ ] [**Gouroboros Team**][gouroboros] accepts the proposal
 * [ ] [**Hydra Team**][hydra] accepts the proposal
 * [ ] [**Mithril Team**][mithril] accepts the proposal
