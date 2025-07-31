@@ -154,17 +154,21 @@ The only way to alter which native assets are found in the `AccountValue` is thr
 dedicated certificate event. The new certificates are outlined below:
 
 ```cbor
+; Certificate to initialize the `AccountValue` and requires an extra protocol deposit.
+; The protocol deposit will be proportional to the `multiasset` in the certificate.
+reg_account_value_cert = (19, stake_credential, multiasset)
+
+; Certificate to disable native asset direct deposits and reclaim the associated
+; protocol deposit.
+unreg_account_value_cert = (20, stake_credential)
+
 certificate = 
   [  stake_registration
   // stake_deregistration
   // stake_delegation
   ...
-
-  // reg_account_value_cert   ; Certificate to initialize the `AccountValue` and requires an extra
-                              ; protocol deposit.
-
-  // unreg_account_value_cert ; Certificate to disable native asset direct deposits and reclaim
-                              ; associated protocol deposit.
+  // reg_account_value_cert
+  // unreg_account_value_cert
   ]
 ```
 
