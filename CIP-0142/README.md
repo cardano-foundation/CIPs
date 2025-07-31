@@ -89,6 +89,8 @@ While CIP-0030's `getNetworkId()` provides basic network identification, the gro
 ### Acceptance Criteria
 
 - [ ] Implementation by at least three wallet providers
+  - [x] Eternl
+  - [x] Lace
 - [ ] Implementation by at least three web app providers
 - [ ] Implementation by at one serialisation library or SDK
 - [ ] No reported conflicts with other CIP-0030 extensions
