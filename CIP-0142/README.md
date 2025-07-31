@@ -91,6 +91,8 @@ While CIP-0030's `getNetworkId()` provides basic network identification, the gro
 - [ ] Implementation by at least three wallet providers
   - [x] Eternl
   - [ ] Lace
+  - [x] Eternl
+  - [ ] Lace
 - [ ] Implementation by at least three web app providers
 - [ ] Implementation by at one serialisation library or SDK
 - [ ] No reported conflicts with other CIP-0030 extensions
