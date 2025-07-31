@@ -18,14 +18,16 @@ License: CC-BY-4.0
 - [Motivation](#motivation-why-is-this-cip-necessary)
   - [Wallet Revenue](#wallet-revenue)
   - [Cheaper Batchers/Aggregators](#cheaper-batchersaggregators)
-  - [Multi-Asset Cardano Treasury](#mutli-asset-cardano-treasury)
+  - [Multi-Asset Cardano Treasury](#multi-asset-cardano-treasury)
   - [Decentralized Fixed-Supply Token Minting](#decentralized-fixed-supply-token-minting)
   - [L2 Reserves](#l2-reserves)
-- [Specification]
+- [Specification](#specification)
   - [Definitions](#definitions)
   - [Enable Direct Deposits](#enable-direct-deposits)
   - [Partial Withdrawals and Native Asset Withdrawals](#partial-withdrawals-and-native-asset-withdrawals)
   - [Account Balance Intervals](#account-balance-intervals)
+  - [New Ledger State](#new-ledger-state)
+  - [New Plutus Script Context](#new-plutus-script-context)
 - [Rationale](#rationale-how-does-this-cip-achieve-its-goals)
 - [Path To Active](#path-to-active)
 
@@ -207,8 +209,17 @@ transaction_body =
   }
 ```
 
+> [!TIP]
+> *Why not just make withdrawals support negative numbers?*
+>
+> 1. It would cut in half the maximum supported number.
+> 2. Withdrawals require witnesses while direct deposits do not. This means we need to be able to
+>    distinguish between direct deposits and withdrawals with for the `ScriptPurpose`.
+>
+> Adding a separate field is the better approach.
+
 Plutus scripts will be able to see the direct deposits occuring in the transaction as part of their
-`ScriptContext`.
+`ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
 
 > [!IMPORTANT]
 > The direct deposits are only the diff! If the account currently has 100 ADA and the transaction is
@@ -282,7 +293,78 @@ be mentioned:
    set to `[0,0)`.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
-`ScriptContext`.
+`ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
+
+### New Ledger State
+
+Currently, account address state is [stored in the ledger](https://github.com/IntersectMBO/cardano-ledger/blob/3fa847bd67a6d1c3c2d5960578c993487e9883b0/eras/conway/impl/src/Cardano/Ledger/Conway/State/Account.hs#L45) as:
+
+```haskell
+data AccountState era
+  = AccountState
+  { balance :: !(CompactForm Coin)
+  -- ^ Current balance of the account
+  , deposit :: !(CompactForm Coin)
+  -- ^ Deposit amount that was left when staking credential was registered
+  , stakePoolDelegation :: !(StrictMaybe (KeyHash 'StakePool))
+  -- ^ Potential delegation to a stake pool
+  , dRepDelegation :: !(StrictMaybe DRep)
+  -- ^ Potential delegation to a DRep
+  }
+```
+
+This CIP proposes changing this ledger state to:
+
+```haskell
+data AccountState era
+  = AccountState
+  { balance :: !(CompactForm Coin)
+  -- ^ Current ADA balance of the account.
+  , deposit :: !(CompactForm Coin)
+  -- ^ Total protocol deposit amount that was left when staking credential
+  -- was registered and when multi-asset whitelist was created.
+  , multiAssetBalance :: MultiAsset (Map PolicyID (Map AssetName Integer))
+  -- ^ Current balance of the native assets in the account address.
+  , stakePoolDelegation :: !(StrictMaybe (KeyHash 'StakePool))
+  , dRepDelegation :: !(StrictMaybe DRep)
+  }
+```
+
+There are a few important points to notice:
+
+1. The ADA balance is kept separate from the multi-asset balance.
+2. The `deposit` field holds *both* the stake credential registration deposit *and* the whitelist
+   registration deposit.
+3. The `multiAssetBalance` map *is the whitelist*. It can only increase/decrease the `Integer`; it
+   cannot add/remove new `PolicyID`s or `AssetName`s to the map. If the asset has no balance, the
+`Integer` should be set to `0`.
+
+> [!IMPORTANT]
+> The required protocol deposit for the whitelist registration will be proportional to the size of
+> the `multiAssetBalance` map. The calculation can be similar to the `minUTxOValue` calculation, but
+> it should get separate protocol parameters so that the `multiAssetBalance` costing can be changed
+> independently to the `minUTxOValue` costing.
+
+### New Plutus Script Context
+
+This CIP does not introduce any new `ScriptPurpose`s, but the `TxInfo` field needs to contain the
+new sub-fields:
+
+```haskell
+data TxInfo = TxInfo
+  { txInfoInputs                :: [TxInInfo]
+  , txInfoReferenceInputs       :: [TxInInfo]
+  , txInfoOutputs               :: [TxOut]
+  , txInfoFee                   :: Value
+  , txInfoMint                  :: Value
+  , txInfoTxCerts               :: [TxCert]
+  , txInfoWdrl                  :: Map Credential Haskell.Integer
+  , txInfoValidRange            :: POSIXTimeRange
+  ... 
+  , txInfoDirectDeposits        :: Map Credential Haskell.Integer -- ^ New field.
+  , txInfoBalanceIntervals      :: Map Credential (Map PolicyID (Map AssetName BalanceInterval)) -- ^ New field. 
+  }
+```
 
 ## Rationale: how does this CIP achieve its goals?
 
