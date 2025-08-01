@@ -108,7 +108,7 @@ And when there's no major objection from one of the currently involved parties:
 * [ ] [**Amaru Team**][amaru] accepts the proposal
 * [ ] [**Gouroboros Team**][gouroboros] accepts the proposal
 * [ ] [**Hydra Team**][hydra] accepts the proposal
-* [ ] [**Mithril Team**][mithril] accepts the proposal
+* [x] [**Mithril Team**][mithril] accepts the proposal
 
 ### Implementation Plan
 
