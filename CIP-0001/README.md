@@ -267,17 +267,17 @@ Tools    | A broad category for ecosystem features not falling into any other ca
 
 Additionally, representatives of ecosystem categories may explicitly _enlist_ their categories (see next section) to suggest a closer relationship with the CIP process. The following categories are confirmed as enlisted according to CIPs which define that relationship:
 
-Category | Description
----      | ---
-Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
+Core Category | Description
+---           | ---
+Plutus        | Changes or additions to Plutus, following the process described in [CIP-0035][]
+Ledger        | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
 
 These tentatively enlisted categories await CIPs to describe any enlistment relationship:
 
-Category  | Description
----       | ---
-Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
-Network   | Specifications and implementations of Cardano's network protocols and applications
+Core Category  | Description
+---            | ---
+Consensus      | For proposals affecting implementations of the Cardano Consensus layer and algorithms
+Network        | Specifications and implementations of Cardano's network protocols and applications
 
 #### Project Enlisting
 
