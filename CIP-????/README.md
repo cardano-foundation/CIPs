@@ -362,10 +362,10 @@ data TxInfo = TxInfo
   , txInfoFee                   :: Value
   , txInfoMint                  :: Value
   , txInfoTxCerts               :: [TxCert]
-  , txInfoWdrl                  :: Map Credential Haskell.Integer
+  , txInfoWdrl                  :: Map Credential AccountValue -- ^ Upgraded field.
   , txInfoValidRange            :: POSIXTimeRange
   ... 
-  , txInfoDirectDeposits        :: Map Credential Haskell.Integer -- ^ New field.
+  , txInfoDirectDeposits        :: Map Credential AccountValue -- ^ New field.
   , txInfoBalanceIntervals      :: Map Credential (Map PolicyID (Map AssetName BalanceInterval)) -- ^ New field. 
   }
 ```
