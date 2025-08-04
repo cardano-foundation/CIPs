@@ -74,6 +74,17 @@ cause UTxO contention.)
 the designated account address!** By being able to charge much smaller fees, Cardano wallets will
 have a significantly easier time finding product-market fit.
 
+> [!IMPORTANT]
+> In order for direct deposits to actually be useful, *partial withdrawals are a fundamental
+> requirement*. To see why, imagine a wallet charges a 0.1 ADA fee per transaction and these
+> transactions are submitted every 30 seconds. Currently, the ledger rules require the wallet to
+> withdraw the full balance in the account address. Let's say when the wallet submits the withdrawal
+> transaction, the balance is 100 ADA. While this transaction is sitting in the mempool, another
+> user directly deposits another 0.1 ADA into the wallet's account address. Now the wallets
+> transaction in the mempool is *not* withdrawing the full amount and will fail phase 1 validation!
+> Without partial withdrawals, whether the wallet will actually be able to access the assets in the
+> account will depend on luck!
+
 ### Cheaper Batchers/Aggregators
 
 Most batcher/aggregator networks charge at least 1 ADA. For some, the reason is the `minUTxOValue`
@@ -229,16 +240,8 @@ Plutus scripts will be able to see the direct deposits occuring in the transacti
 
 ### Partial Withdrawals and Native Asset Withdrawals
 
-In order for direct deposits to actually be useful, partial withdrawals are a fundamental
-requirement. To see why, imagine a wallet charges a 0.1 ADA fee per transaction and these
-transactions are submitted every 30 seconds. Currently, the ledger rules require the wallet to
-withdraw the full balance in the account address. Let's say when the wallet submits the withdrawal
-transaction, the balance is 100 ADA. While this transaction is sitting in the mempool, another user
-directly deposits another 0.1 ADA into the wallet's account address. Now the wallets transaction in
-the mempool is *not* withdrawing the full amount and will fail phase 1 validation! Without partial
-withdrawals, whether the wallet will actually be able to access the assets in the account will
-depend on luck! So the ledger rules *must* be changed to allow withdrawing any amount between 0 and
-the current balance. 
+The ledger rules *must* be changed to allow withdrawing any amount between 0 and the current
+balance. 
 
 > [!IMPORTANT]
 > For all withdrawals, partial or full, the pre-existing `Withdraw` purpose will be used. We do not
