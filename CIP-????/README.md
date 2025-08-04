@@ -82,8 +82,8 @@ cheaper!
 
 ### Multi-Asset Cardano Treasury
 
-Cardano's Treasury account is currently only allowed to hold ADA. But it would be more fiscally
-responsible for the Treasury to diversify itself across other assets like stablecoins.
+Cardano's Treasury account is currently only allowed to hold ADA. However, it would be more fiscally
+responsible for the Treasury to hold a basket of assets. The basket would diversify the risk of price fluctuations and ensure that important protocol developments can continue despite price shocks in any particular asset class.
 
 ### Decentralized Fixed-Supply Token Minting
 
@@ -138,15 +138,13 @@ By default, only direct deposits of ADA are supported. Pre-existing registered a
 will be automatically upgraded to support direct deposits of ADA through a hardfork-combinator
 event. 
 
-To enable direct deposits of native assets, a dedicated certificate event will be required to
-*initialize* the account address with effectively a whitelist of allowed native assets (ADA is
-always allowed). **All native assets that can be accepted by the account address must be listed in the
-certificate.** The certificate will initialize the account address with an `AccountValue` where the
-balances for each native asset in the certificate is set to `0`.
+Users will be able to submit a new certificate event (`reg_account_value_cert`), which will initialize the balances of certain native assets (listed in the certificate) at an account address, starting all of the balances at zero. After these balances are initialized, users will be able to direct-deposit those native assets into that account.
+
+The set of initialized balances at an account also acts as a **whitelist** on the native assets allowed at the account. Direct deposits of other native assets into the account will be rejected by the ledger rules, except for ADA, which can always be deposited into any Cardano account.
 
 > [!IMPORTANT]
-> The difference between the current `Value` and the new `AccountValue` is that you cannot add or
-> remove assets in the `AccountValue`. You can only increase or decrease the asset quantities. If a
+> We implement this by using the new `AccountValue` type, which is similar to `Value` but prevents adding or
+> removing assets in the `AccountValue`. You can only increase or decrease the asset quantities. If a
 > transaction tries directly depositing a native asset that is not found in the `AccountValue`, it
 > will fail phase 1 validation.
 
@@ -254,7 +252,7 @@ withdrawals inside transactions needs to be updated:
 withdrawals = {+ reward_account => coin}
 
 ; New representation.
-withdrawals = {+ reward_account => value} ; coin -> value
+withdrawals = {+ reward_account => value} ; replaced `coin` with `value`
 ```
 
 Likewise, since the Cardano Treasury is also able to hold whitelisted native assets, the
@@ -265,7 +263,7 @@ Likewise, since the Cardano Treasury is also able to hold whitelisted native ass
 treasury_withdrawals_action = (2, {* reward_account => coin}, policy_hash/ nil)
 
 ; New representation.
-treasury_withdrawals_action = (2, {* reward_account => value}, policy_hash/ nil) ; coin -> value
+treasury_withdrawals_action = (2, {* reward_account => value}, policy_hash/ nil) ; replaced `coin` with `value`
 ```
 
 ### Account Balance Intervals
@@ -293,8 +291,7 @@ inside a given account address. In addition to this, there are two important beh
 be mentioned:
 
 1. Using the account balance interval does *not* require a witness from the associated credential.
-2. To declare an asset in the `AccountValue` has a `0` balance, the interval for that asset must be
-   set to `[0,0)`.
+2. To declare that a certain asset in the `AccountValue` has a `0` balance, the asset's balance interval must be set to `[0,0)`.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
 `ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
@@ -379,9 +376,9 @@ important things are:
 
 - This CIP *does not* enable submitting transactions without UTxO inputs.
 - This CIP *does not* enable attaching datums to account addresses.
-- This CIP *does not* enable viewing the **exact** account balance.
+- This CIP *does not* enable phase-2 scripts to view the **exact** account balance.
 - This CIP *does not* enable directly depositing arbitrary native assets into account addresses.
-Only whitelisted native assets are allowed.
+Only whitelisted native assets are allowed (i.e. native assets with balances initialized at the account).
 
 ### Still Require UTxO Inputs
 
