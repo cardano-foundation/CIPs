@@ -133,12 +133,14 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0139 | [Universal Query Layer](./CIP-0139) | Proposed |
 | 0140 | [Ouroboros Peras - Faster Settlement](./CIP-0140) | Proposed |
 | 0141 | [Web-Wallet Bridge - Plutus wallets](./CIP-0141) | Proposed |
+| 0142 | [Web-Wallet Bridge - Network Determination](./CIP-0142) | Proposed |
 | 0143 | [Interoperable Programmable Tokens](./CIP-0143) | Inactive |
 | 0146 | [Multi-signature wallet registration and discovery](./CIP-0146) | Proposed |
 | 0149 | [Optional DRep Compensation](./CIP-0149) | Proposed |
 | 0150 | [Block Data Compression](./CIP-0150) | Proposed |
 | 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
 | 0153 | [Plutus Core Builtin Type - MaryEraValue](./CIP-0153) | Proposed |
+| 0155 | [SRV Registry](./CIP-0155) | Proposed |
 | 0156 | [Plutus Core Builtin Function - multiIndexArray](./CIP-0156) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
@@ -148,7 +150,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-07-23</i></p>
+<p align="right"><i>Last updated on 2025-08-05</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
