@@ -7,7 +7,7 @@ Authors:
     - Michele Nuzzi <michele@harmoniclabs.tech>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1072
 Created: 2025-08-06
 License: CC-BY-4.0
 ---
@@ -43,7 +43,8 @@ data ScriptInfo
       V2.ScriptHash
       -- | 0-based index of the input being spent in `txInfoInputs`
       Haskell.Integer
-      (Haskell.Maybe V2.Datum)
+      -- removed optional datum, since its presence (or not) is determined by the resolved input
+      -- (Haskell.Maybe V2.Datum)
       -- resolved input being spent
       V3.TxOut
       V3.TxOutRef
