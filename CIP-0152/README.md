@@ -1694,31 +1694,6 @@ Developers of compilers for other languages targeting Untyped Plutus Core will n
 
 Alternative Cardano node implementors must update their Plutus evaluator (unless a variant is chosen that doesn't require modifying the Plutus evaluator, which is unlikely), ledger, and transaction balancer to support this feature and align with the Haskell node.
 
-## Categories
-
-This is a Plutus CIP.
-
-As a Plutus CIP, it leaves UPLC, TPLC, PIR and Plinth *unchanged*
-except for the addition of an API for building and using modules in
-Plinth. In the case of the 'modified CEK machine' alternative for
-'balancer modifications', without 'value scripts', it requires *adding
-a construct* to UPLC to tag values so that their use can be observed;
-this is a *minor* change which is backwards-compatible, but it would
-require a new PlutusCore language version.
-
-Building the module environment in to the CEK machine requires *adding
-a construct* to UPLC to refer to components of the module environment;
-this is a *minor* change which is backwards-compatible, but it would
-also require a new PlutusCore language version.
-
-Because this CIP changes the representation of scripts, it requires a
-new Plutus Core ledger language, and can only be introduced at a hard
-fork.
-
-As far as the Ledger is concerned, the representation of a script is
-just `bytes`. This does not change. Therefore there are no changes to
-the Ledger, and thus this is not a Ledger CIP,
-
 ## Acknowledgements
 
 This CIP draws heavily on a design by Michael Peyton Jones, and has
