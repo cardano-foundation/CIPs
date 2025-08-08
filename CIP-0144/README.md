@@ -1,6 +1,6 @@
 ---
 CIP: 144
-Title: Wallet Connector API
+Title: Extensible Wallet Connector Framework
 Category: Tools
 Status: Proposed
 Authors:
