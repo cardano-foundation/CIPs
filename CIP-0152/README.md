@@ -710,6 +710,63 @@ Each UPLC program is tagged with a Plutus Core version (where as for ledger lang
 
 UPLC programs with different Plutus Core versions are incompatible and cannot be combined, and therefore, a validator script and all modules it references must share the same Plutus Core version; otherwise it is a phase-1 error.
 
+### Implementation and Integration Considerations
+
+Here we use the term "script" to refer to either a validator script (which needs to be run to validate a transaction) and a module script (which serves as a dependency for other scripts).
+Both validators and modules can reference other modules.
+
+The feature proposed in this CIP can only be released in a new ledger era.
+As such, it is anticipated that it will be released alongside the next ledger era - the Dijkstra era.
+
+Whether this feature can be used in existing Plutus ledger language versions (V1 through V3) depends on which of the options described in subsection _Plutus Ledger Language Versions_ (i.e., tagged or untagged modules) is chosen.
+If tagged modules are adopted, the feature will be available across all Plutus language versions (V1 through V4) starting at the hard fork that introduces the Dijkstra era.
+If untagged modules are adopted, it will only be usable in Plutus V4, as explained in the subsection.
+
+The bulk of the implementation effort lies on the Plutus side, including updates to `plutus-ledger-api`, updates to the CEK machine, costing and benchmarking, among others.
+The specifics will depend on which of the various alternatives outlined in this CIP is selected.
+The Plutus team aims to complete the implementation of the selected approach according to its specification, in time for the Dijkstra era.
+
+On the ledger and cardano-api side, the effort required to support this feature is not as substantial as it may appear to be.
+This is because the ledger already supports reference inputs and reference scripts since the Babbage era, and this existing mechanism can largely be reused to accommodate module scripts.
+The processes of storing a module script in a UTXO and using it in a transaction are similar to storing and using a reference script.
+
+The main difference between reference scripts and module scripts is that a module script is, like an object file, not directly runnable but must be linked with a validator to form a runnable script.
+To support this, the ledger and cardano-api will need to implement some changes.
+The specifics will slightly vary depending on which of the alternative approaches is chosen, but it will generally involve the following.
+
+Currently, deserialising a script returns a `ScriptForEvaluation`, which contains a deserialised script, along with the original serialised script. The ledger has a `PlutusRunnable` newtype that wraps `ScriptForEvaluation`.
+With the introduction of modules, deserialising a script no longer produces a runnable script unless it is a self-contained validator that doesn't use modules.
+Otherwise, the module hashes it references must be resolved and the modules linked before the validator can be executed.
+
+To do so, the `plutus-ledger-api` package can implement one of two options, depending on which is more suitable for the ledger:
+- Script deserialisation will be modified to return a new data type, `ScriptForLinking`.
+  It is similar to `ScriptForEvaluation` except that the deserialized script is not necessarily a self-contained script and may be accompanied by a list of module hashes it needs.
+
+  Then, a function `linkValidator :: Map ScriptHash ScriptForLinking -> ScriptHash -> LinkedScript` is provided that performs linking for a particular validator identified by `ScriptHash`, where `LinkedScript ~ UPLC.Program DeBruijn DefaultUni DefaultFun ()` is a fully linked script.
+- Alternatively, the following function can be provided: `linkScripts :: Map ScriptHash SerialisedScript -> Map ScriptHash LinkedScript`, which performs deserialisation and linking for all (validator and module) scripts in one go.
+
+In either case, the ledger should ensure that each script (including validator script and module script) is deserialised and processed no more than once.
+
+Moreover, for the transaction builder to decide which modules a validator refers to are used at runtime, `plutus-ledger-api` will also expose the following function:
+
+```haskell
+getUsedModules ::
+  MajorProtocolVersion ->
+  EvaluationContext ->
+  -- | All scripts provided in a transaction
+  Map ScriptHash SerialisedScript ->
+  -- | Hash of the validator
+  ScriptHash ->
+  -- | Script arguments
+  [Data] ->
+  -- | Hashes of used module scripts
+  Set ScriptHash
+```
+
+The value type of the `Map` could instead be `ScriptForLinking` (i.e., deserialised script) rather than `SerialisedScript`.
+
+This function is to be called by the code building transactions (e.g., `Cardano.Api.Fees.makeTransactionBodyAutoBalance`) to determine which modules are necessary to include in a transaction.
+
 ## Rationale: how does this CIP achieve its goals?
 
 This CIP provides a minimal mechanism to split scripts across several
@@ -1626,60 +1683,16 @@ and uncontroversial compared to adding modules.
 
 ### Implementation Plan
 
-Here we use the term "script" to refer to either a validator script (which needs to be run to validate a transaction) and a module script (which serves as a dependency for other scripts).
-Both validators and modules can reference other modules.
+This CIP will be implemented by the Plutus Core team with assistance from the Ledger team and the Cardano API team.
+Should we decide to implement tagged modules - the safer and more recommended option - then modules will be usable in existing Plutus ledger language versions (V1, V2 and V3).
+If we instead opt for untagged modules, modules will only be usable from Plutus V4 onwards.
 
-The feature proposed in this CIP can only be released in a new ledger era.
-As such, it is anticipated that it will be released alongside the next ledger era - the Dijkstra era.
+Enabling modules on-chain requires a new ledger era.
+Therefore modules will be enabled in the Dijkstra era at the earliest.
 
-Whether this feature can be used in existing Plutus ledger language versions (V1 through V3) depends on which of the options described in subsection _Plutus Ledger Language Versions_ (i.e., tagged or untagged modules) is chosen.
-If tagged modules are adopted, the feature will be available across all Plutus language versions (V1 through V4) starting at the hard fork that introduces the Dijkstra era.
-If untagged modules are adopted, it will only be usable in Plutus V4, as explained in the subsection.
+Developers of compilers for other languages targeting Untyped Plutus Core will need to update their languages and compilers accordingly if they wish to support modules.
 
-The bulk of the implementation effort lies on the Plutus side, including updates to `plutus-ledger-api`, updates to the CEK machine, costing and benchmarking, among others.
-The specifics will depend on which of the various alternatives outlined in this CIP is selected.
-The Plutus team aims to complete the implementation of the selected approach according to its specification, in time for the Dijkstra era.
-
-On the ledger and cardano-api side, the effort required to support this feature is not as substantial as it may appear to be.
-This is because the ledger already supports reference inputs and reference scripts since the Babbage era, and this existing mechanism can largely be reused to accommodate module scripts.
-The processes of storing a module script in a UTXO and using it in a transaction are similar to storing and using a reference script.
-
-The main difference between reference scripts and module scripts is that a module script is, like an object file, not directly runnable but must be linked with a validator to form a runnable script.
-To support this, the ledger and cardano-api will need to implement some changes.
-The specifics will slightly vary depending on which of the alternative approaches is chosen, but it will generally involve the following.
-
-Currently, deserialising a script returns a `ScriptForEvaluation`, which contains a deserialised script, along with the original serialised script. The ledger has a `PlutusRunnable` newtype that wraps `ScriptForEvaluation`.
-With the introduction of modules, deserialising a script no longer produces a runnable script unless it is a self-contained validator that doesn't use modules.
-Otherwise, the module hashes it references must be resolved and the modules linked before the validator can be executed.
-
-To do so, the `plutus-ledger-api` package can implement one of two options, depending on which is more suitable for the ledger:
-- Script deserialisation will be modified to return a new data type, `ScriptForLinking`.
-  It is similar to `ScriptForEvaluation` except that the deserialized script is not necessarily a self-contained script and may be accompanied by a list of module hashes it needs.
-
-  Then, a function `linkValidator :: Map ScriptHash ScriptForLinking -> ScriptHash -> LinkedScript` is provided that performs linking for a particular validator identified by `ScriptHash`, where `LinkedScript ~ UPLC.Program DeBruijn DefaultUni DefaultFun ()` is a fully linked script.
-- Alternatively, the following function can be provided: `linkScripts :: Map ScriptHash SerialisedScript -> Map ScriptHash LinkedScript`, which performs deserialisation and linking for all (validator and module) scripts in one go.
-
-In either case, the ledger should ensure that each script (including validator script and module script) is deserialised and processed no more than once.
-
-Moreover, for the transaction builder to decide which modules a validator refers to are used at runtime, `plutus-ledger-api` will also expose the following function:
-
-```haskell
-getUsedModules ::
-  MajorProtocolVersion ->
-  EvaluationContext ->
-  -- | All scripts provided in a transaction
-  Map ScriptHash SerialisedScript ->
-  -- | Hash of the validator
-  ScriptHash ->
-  -- | Script arguments
-  [Data] ->
-  -- | Hashes of used module scripts
-  Set ScriptHash
-```
-
-The value type of the `Map` could instead be `ScriptForLinking` (i.e., deserialised script) rather than `SerialisedScript`.
-
-This function is to be called by the code building transactions (e.g., `Cardano.Api.Fees.makeTransactionBodyAutoBalance`) to determine which modules are necessary to include in a transaction.
+Alternative Cardano node implementors must update their Plutus evaluator (unless a variant is chosen that doesn't require modifying the Plutus evaluator, which is unlikely), ledger, and transaction balancer to support this feature and align with the Haskell node.
 
 ## Categories
 
