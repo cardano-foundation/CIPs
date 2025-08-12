@@ -1,23 +1,18 @@
 ---
-cps: 9999
-title: Proportional Fairness in Stake-based Voting
-status: open
-authors:
-  - name: Qin Wang
-    affiliation: CSIRO Data61
-    github: qinwang-git
-  - name: Yuzhe Zhang
-    affiliation: CSIRO Data61
-  - name: Manvir Schneider
-    affiliation: Cardano Foundation
-  - name: Davide Grossi
-    affiliation: University of Groningen & University of Amsterdam
-date-created: 2025-08-03
-topics:
-  - governance
-  - treasury
-  - stake-based voting
-discussions-to: https://github.com/cardano-foundation/CIPs/discussions/XXX
+CPS: ?
+Title: Proportional Fairness in Stake-based Voting for Project Catalyst
+Category: Meta
+Status: Open
+Authors:
+    - Qin Wang <qin.wang@data61.csiro.au>
+    - Yuzhe Zhang <yuzhe.zhang@data61.csiro.au>
+    - Manvir Schneider <manvir.schneider@cardanofoundation.org>
+    - Davide Grossi <d.grossi@uva.nl>
+Proposed Solutions: []
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/?
+Created: 2025-08-13
+License: CC-BY-4.0
 ---
 
 ## Summary
@@ -39,14 +34,26 @@ This CPS seeks to design a voting rule that:
 - **Aligns voting power proportionally with stake**, and
 - **Avoids single-user dominance**, even under uneven stake distributions.
 
-## Impact
+## Use Cases
+
+### Real-world Evidence from Fund13
+Our own proposal received 196M votes, 92% of which came from a single whale. That voter determined the outcome not only of our proposal but also of several others—some passed, some failed, depending solely on how that user allocated their stake. This demonstrates how current mechanisms enable single stakeholders to override thousands of smaller community members.
+
+### Broader Impact Scenarios
+- **Community Projects**: Grassroots initiatives may lose funding not due to lack of merit but due to insufficient whale backing
+- **Ecosystem Development**: Technical proposals affecting all users may be decided by entities with primarily economic rather than technical interests
+- **Democratic Legitimacy**: Treasury decisions may lack broad community support, undermining governance credibility
+
+
+## Goals
 
 Solving this problem improves fairness in on-chain treasury allocation and strengthens the legitimacy of Catalyst governance. It also provides a reusable methodology for designing stake-aware voting rules in other Cardano governance contexts, such as dReps and constitutional updates.
 
 Expected benefits include:
-- More equitable representation of the Cardano community in governance outcomes.
-- Stronger incentives for broader participation by reducing whale dominance.
-- Mathematical and simulation-based analysis tools to measure fairness and influence.
+- More equitable representation of the Cardano community in governance outcomes
+- Stronger incentives for broader participation by reducing whale dominance
+- Mathematical and simulation-based analysis tools to measure fairness and influence
+- Enhanced democratic legitimacy of treasury governance decisions
 
 ## Prior Art
 
@@ -67,11 +74,8 @@ This CPS only identifies the problem and does not mandate changes. Future CIPs c
 
 ## Reference Implementation
 
-A full mathematical model and theoretical results are available in our accompanying technical report:
-> [Link to PDF report on Google Drive (comment access)](https://drive.google.com/file/d/XXX)
 > [Link to Our proposal in Project Catalyst Fund13](https://projectcatalyst.io/funds/13/cardano-use-cases-concept/proportionality-in-stake-based-voting)
 
-Simulation code and quota-weight calibration experiments are under development and will be provided in the next milestone.
 
 ## Path to Resolution
 
@@ -79,6 +83,12 @@ This problem can be considered resolved once:
 - A CIP proposing a proportionally fair WQR is published and accepted.
 - Empirical simulations show that the expected voting power aligns closely with proportional stake (within reasonable variance).
 - The new voting rule is tested in a Catalyst pilot round or simulation environment.
+
+
+## Copyright
+
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
 
 ---
 
