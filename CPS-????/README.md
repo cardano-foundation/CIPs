@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Proportional Fairness in Stake-based Voting for Project Catalyst
+Title: Proportional Fairness in Stake-based Voting
 Category: Meta
 Status: Open
 Authors:
