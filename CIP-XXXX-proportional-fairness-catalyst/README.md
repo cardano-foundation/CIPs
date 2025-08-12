@@ -1,6 +1,6 @@
 ---
 cps: 9999
-title: Proportional Fairness in Stake-based Voting for Project Catalyst
+title: Proportional Fairness in Stake-based Voting
 status: open
 authors:
   - name: Qin Wang
