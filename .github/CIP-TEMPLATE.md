@@ -46,7 +46,7 @@ It must also explain how the proposal affects the backward compatibility of exis
 ### Acceptance Criteria
 <!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 
-<!-- For core categories the following MUST be included:
+<!-- For core categories (Ledger, Plutus, Network, Consensus) the following MUST be included:
 Implementations present across nodes:
 - [ ] Implementation within Amaru
 - [ ] Implementation within Haskell Cardano Node
