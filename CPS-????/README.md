@@ -23,7 +23,7 @@ We propose formalizing the problem using a weighted quota voting rule (WQR) and 
 
 ## Problem Statement
 
-Catalyst currently adopts a greedy approval voting mechanism: projects are selected by maximizing the sum of approving stake, subject to the treasury budget. This process leads to the following two issues:
+Catalyst currently adopts a local optimization-based approval voting mechanism: projects are selected by maximizing the sum of approving stake, subject to the treasury budget. This process leads to the following two issues:
 
 1. **Disproportionate Influence**: Due to skewed stake distributions, a single voter with a large stake can override the collective approval of thousands of smaller stakeholders.
 2. **Partial Project Visibility**: Voters cannot feasibly review all proposals, leading to low overlap in voting sets and further compounding the influence imbalance.
