@@ -1,13 +1,10 @@
 ---
 CPS: ????
 Title: Lost Stake
-Category: ?
+Category: Ledger
 Status: Open
 Authors:
     - Ryan Wiley <rian222@gmail.com>
-    - Rich Manderino [ECP] 
-    - W Cataldo 
-    - Carlos Lopez de Lara 
 Proposed Solutions: []
 Discussions:
 Created: 2025-07-22
@@ -16,9 +13,15 @@ License: CC-BY-4.0
 
 ## Abstract
 
-In everyday Cardano discussions the umbrella term “Sticky Stake” is used for any stake that stubbornly remains delegated, regardless of whether its owner is still around. This Cardano Problem Statement (CPS) zooms in on the most critical slice of that phenomenon that we dubbed “Lost Stake.”  Lost Stake is ADA that (a) remains delegated to a stake pool or dRep, yet (b) can never again be moved because the controlling private keys are irretrievably lost (e.g., seed-phrase loss, death of the sole key holder, catastrophic wallet failure).
+In everyday Cardano discussions the umbrella term “Sticky Stake” is used for any stake that stubbornly remains delegated, regardless of whether its owner is still around. This Cardano Problem Statement (CPS) zooms in on the most critical slice of that phenomenon that we dubbed “Lost Stake”: ADA that (a) remains delegated to a stake pool or dRep, yet (b) can never again be moved because the controlling private keys are irretrievably lost (e.g., seed-phrase loss, death of the sole key holder, catastrophic wallet failure).
 
-Even though the funds are gone for good, the ledger continues to treat them as live stake.  They keep:
+This CPS formalises the Lost Stake problem and quantifies its systemic impact: dilution of the reward pot available to active participants, distortion of pool-selection incentives, and ossification of governance power. Estimates suggest that as much as 900k ADA per epoch (67M ADA each year) may already be draining into permanently unreachable wallets. Left unchecked, compounding Lost Stake will siphon billions of ADA in rewards and an ever-growing share of voting weight into wallets that nobody controls, making future remediation far costlier and more contentious. 
+
+---
+
+## Problem
+
+Lost Stake continues to earn and compound staking rewards and carries voting weight despite being permanently inaccessible.  Even though the funds are gone for good, the ledger continues to treat them as live stake. They keep:
 
 • earning a proportional share of every epoch’s rewards,  
 • compounding themselves through those rewards, and  
@@ -26,17 +29,11 @@ Even though the funds are gone for good, the ledger continues to treat them as l
 
 “Lost delegation” may be a more technically correct phrase since it is the delegation certificate that survives, but we will use the more familiar term "Lost Stake" to stay consistent with community vocabulary around Sticky Stake.
 
-This CPS formalises the Lost Stake problem and quantifies its systemic impact: dilution of the reward pot available to active participants, distortion of pool-selection incentives, and ossification of governance power.  Left unchecked, compounding Lost Stake will siphon billions of ADA in rewards and an ever-growing share of voting weight into wallets that nobody controls, making future remediation far costlier and more contentious.
-
 **Figure 1** (below) visualises these relationships with overlapping circles:
 
 <img src="fig1.jpg" alt="Figure 1: Circles depict the Total Rewards Pot and its diminishing share with some rewards also flowing to Sticky Stake and Lost Stake addresses every epoch." width="50%" />
 
 > **Figure 1:** Circles depict the Total Rewards Pot and its diminishing share with some rewards also flowing to Sticky Stake and Lost Stake addresses every epoch.
-
----
-
-## Problem
 
 Cardano already distributes a significant amount of ADA every epoch in staking rewards to addresses that are permanently inaccessible. This occurs when ADA is lost, such as when a holder loses their seed phrase or passes away without sharing their keys, rendering the funds permanently unreachable. In most other cryptocurrencies, lost coins simply exit circulation. For example, it is estimated that around 20% of all Bitcoin supply is lost forever [[investopedia.com](https://www.investopedia.com/tech/how-much-bitcoin-has-been-lost/)], with more granular analyses by Ledger Academy and Chainalysis both converging on roughly 4% of all Bitcoin being lost each year [[ledger.com](https://www.ledger.com/academy/topics/economics-and-regulation/how-many-bitcoin-are-lost-ledger); [chainalysis.com](https://www.chainalysis.com/blog/money-supply/)].
 
@@ -50,20 +47,34 @@ The lost-stake problem is the accumulation of this unreachable-yet-delegated ADA
 
 Lost stake and lost ADA have several detrimental effects on the Cardano network:
 
+#### Immediate impact on Rewards  
+Conservative chain-wide modelling indicates that as much as 900k ADA per epoch (~67M ADA per year) is already being paid to permanently lost addresses.  Because those rewards also compound, the gap widens every epoch unless corrective measures are adopted.
+
+<details><summary><em>How this rough estimate was derived</em></summary>
+
+1. Estimated permanently lost ADA (using a 1.5%/yr loss rate and 3% compound since 2020) → **≈5B ADA**  
+2. Assuming 50% of that is still staked → **≈2.5B ADA**  
+3. Total ADA currently staked → **≈21B ADA**  
+4. Lost addresses' share of total stake → **2.5B / 21B ≈ 12%**  
+5. Net rewards pot after treasury cut, pool performance, unmet pledge, and unstaked proportion removed → **≈7.5M ADA/epoch**  
+6. Rewards paid to lost addresses → **7.5M × 12% ≈ 0.9M ADA/epoch**
+
+</details>
+
 #### Perpetual reward dilution
-  Each epoch, a portion of the total ADA rewards is distributed to all staked ADA (active or lost). Rewards going to addresses with lost ADA are effectively removed from circulation permanently, which means active delegators and stake-pool operators (SPOs) receive a smaller share than they would if that lost stake were absent. In essence, active participants subsidize the lost stake. Over years and decades, the compounding nature of this lost ADA can significantly dilute the reward pool available to real users and operators.
+Each epoch, a portion of the total ADA rewards is distributed to all staked ADA, whether active or lost. Rewards sent to addresses with lost ADA are effectively removed from circulation forever, resulting in active delegators and stake-pool operators (SPOs) receiving a smaller share than they would if that lost stake did not exist. In effect, active participants are subsidizing the lost stake. Over time, the compounding of these rewards to lost ADA can significantly dilute the reward pool available to real users and operators.
 
-- **Reward increases worsen the problem:**  
-  Any efforts to increase staking rewards—such as raising the reward rate, boosting incentives for SPOs or delegators, additional yield from Partner Chains, or otherwise enlarging the total rewards pot—will also proportionally increase the amount of rewards paid to lost ADA. This means that well-intentioned efforts to improve returns for active participants can actually exacerbate the lost stake problem, as a fixed percentage of all new rewards will continue to be siphoned off to permanently unreachable addresses.
+#### Reward increases worsen the problem
+Any attempt to increase staking rewards—such as raising the reward rate, boosting incentives for SPOs or delegators, providing additional yield from Partner Chains, or otherwise enlarging the total rewards pot—will also proportionally increase the amount of rewards paid to lost ADA. As a result, well-intentioned efforts to improve returns for active participants can actually make the lost stake problem worse, since a fixed percentage of all new rewards will continue to be siphoned off to permanently unreachable addresses.
 
-- **Skewed stake-pool incentives:**  
-  Lost ADA that remains delegated contributes to a stake pool’s apparent stake and saturation level. Pools benefiting from large amounts of lost stake might continue to produce blocks and earn rewards from that stake without any risk of it ever being withdrawn. This can already distort competitive incentives. For example, a pool might appear reliably saturated or have high loyalty even if some of its delegation is simply abandoned funds. In extreme cases, if a pool amasses substantial lost ADA, it could remain highly ranked or saturated based on stake that no active delegator can respond to (e.g., they cannot move that stake if the pool underperforms). This reduces the efficacy of normal market dynamics in the staking ecosystem and hurts the security of the network.
+#### Skewed stake-pool incentives
+Lost ADA that remains delegated contributes to a stake pool’s apparent stake and saturation level. Pools with large amounts of lost stake may continue to produce blocks and earn rewards from that stake without any risk of it ever being withdrawn. This can distort competitive incentives. For example, a pool might appear reliably saturated or have high loyalty even if some of its delegation is simply abandoned funds. In extreme cases, if a pool amasses substantial lost ADA, it could remain highly ranked or saturated based on stake that no active delegator can respond to (e.g., they cannot move that stake if the pool underperforms). This reduces the effectiveness of normal market dynamics in the staking ecosystem and can harm network security.
 
-- **Governance participation anomalies:**  
-  In Cardano’s governance model (e.g., under [CIP-1694](https://cips.cardano.org/cips/cip1694/)), voting power is tied to stake. Lost ADA that was delegated to a dRep continues to bolster that dRep’s voting power indefinitely. This means decisions will likely be swayed by stake with no active owner, potentially undermining the representativeness of votes. The governance framework acknowledges this risk—for instance, CIP-1694 introduces an inactivity mechanism so that dReps who stop voting are marked inactive. However, if lost ADA remains delegated to an **ACTIVE** dRep, it will keep influencing outcomes with no way for the original holder (or anyone) to ever retract that delegation.
+#### Governance participation anomalies
+In Cardano’s governance model (e.g., under [CIP-1694](https://cips.cardano.org/cips/cip1694/)), voting power is tied to stake. Lost ADA that was delegated to a dRep continues to bolster that dRep’s voting power indefinitely. This means decisions may be swayed by stake with no active owner, potentially undermining the representativeness of votes. The governance framework acknowledges this risk—for instance, CIP-1694 introduces an inactivity mechanism so that dReps who stop voting are marked inactive. However, if lost ADA remains delegated to an **ACTIVE** dRep, it will keep influencing outcomes with no way for the original holder (or anyone) to ever retract that delegation.
 
-- **Long-term economic inefficiencies:**  
-  As the proportion of lost stake grows, Cardano’s monetary and incentive system will face sustainability issues. Eventually, block rewards will rely more on transaction fees (as treasury reserves deplete). If a significant fraction of stake is lost ADA, then a matching fraction of all transaction fees (and any remaining rewards) gets continually paid to unreachable addresses. This reduces fee efficiency and causes the network to effectively waste a chunk of fees on lost stakeholders, making less available to reward the operators and holders who actually secure and use the system. In a scenario where, say, 30% of all stake is lost stake decades from now, that 30% of fees and rewards is perpetually locked up, potentially requiring higher fees or other adjustments to adequately incentivize active validators.
+#### Long-term economic inefficiencies
+As the proportion of lost stake grows, Cardano’s monetary and incentive system will face sustainability issues. Eventually, block rewards will rely more on transaction fees (as treasury reserves deplete). If a significant fraction of stake is lost ADA, then a matching fraction of all transaction fees (and any remaining rewards) gets continually paid to unreachable addresses. This reduces fee efficiency and causes the network to effectively waste a chunk of fees on lost stakeholders, making less available to reward the operators and holders who actually secure and use the system. In a scenario where, say, 30% of all stake is lost stake decades from now, that 30% of fees and rewards is perpetually locked up, potentially requiring higher fees or other adjustments to adequately incentivize active validators.
 
 It is important to formally document the lost-stake problem now, even before it becomes visibly acute, because the Cardano community needs a clear understanding of the issue’s scope and implications.
 
@@ -127,7 +138,27 @@ This scenario highlights the long-term risk of inaction. Even a modest annual lo
   [chainalysis.com](https://www.chainalysis.com/blog/money-supply/)
 
 - **Wall Street Journal Analysis of Lost Bitcoin:** 
-  [[investopedia.com](https://www.investopedia.com/tech/how-much-bitcoin-has-been-lost/)].
+  [[investopedia.com](https://www.investopedia.com/tech/how-much-bitcoin-has-been-lost/)]
+
+## Acknowledgements
+
+<details>
+  <summary><strong>Community SPO Incentives Working Group</strong></summary>
+
+This CPS could not have been created without the support, assistance, and input of all participants in the community-led SPO Incentives Working Group.
+
+ * Stef M [RABIT]
+ * Rich Manderino [ECP] 
+ * Wayne Cataldo [OTG]
+ * Homer [AAA]
+ * Chad [BBHMM]
+ * Mark H [UPSTR]
+ * Carlos Lopez de Lara [Input|Output]
+ * Pedro Lucas
+ * Seomon
+ * OYSTR Pool
+
+</details>
 
 ## Copyright
 
