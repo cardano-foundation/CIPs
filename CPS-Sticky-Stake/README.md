@@ -125,9 +125,6 @@ This scenario highlights the long-term risk of inaction. Even a modest annual lo
 
 ## References
 
-- **Cardano Improvement Proposal 9999 (CIP-9999):** Cardano Problem Statements
-  [cips.cardano.org](https://cips.cardano.org/cip/CIP-9999)
-
 - **Cardano Improvement Proposal 1694 (CIP-1694):** On-Chain Decentralized Governance
   [cips.cardano.org](https://cips.cardano.org/cips/cip1694/)
 
