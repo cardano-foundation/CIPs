@@ -7,7 +7,7 @@ Authors:
     - Philip DiSarro <philipdisarro@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/???
+    - https://github.com/cardano-foundation/CIPs/pull/1063
 Created: 2025-07-24
 License: CC-BY-4.0
 ---
