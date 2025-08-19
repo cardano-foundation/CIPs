@@ -103,7 +103,6 @@ The motivation for addressing lost stake and lost ADA is grounded in preserving 
 
 This scenario highlights the long-term risk of inaction. Even a modest annual loss rate combined with ongoing rewards can, in theory, lead to exponential increases in the amount of ADA effectively trapped as lost stake. Over decades, lost ADA (plus the rewards it continually accrues) could constitute an ever-growing share of the total circulating supply, potentially tens of billions of ADA by the 2050s–2070s in this model. However, it is important to note that the likelihood of this scenario fully playing out is low as the proportion of rewards and transaction fees paid to lost ADA grows, the situation would become increasingly unacceptable to active users. At some point, most users would likely abandon the ecosystem rather than continue subsidizing unreachable addresses, making such runaway growth of lost stake unsustainable in practice. Nevertheless, this projection magnifies all the aforementioned issues: reward dilution becomes more severe, stake pools and governance are heavily influenced by non-recoverable funds, and the active Cardano community would be supporting an increasing “dead weight” in the ecosystem until a breaking point is reached.
 
----
 
 ## Goals
 
