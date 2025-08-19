@@ -13,7 +13,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-In everyday Cardano discussions the umbrella term “Sticky Stake” is used for any stake that stubbornly remains delegated, regardless of whether its owner is still around. This Cardano Problem Statement (CPS) zooms in on the most critical slice of that phenomenon that we dubbed “Lost Stake”: ADA that (a) remains delegated to a stake pool or dRep, yet (b) can never again be moved because the controlling private keys are irretrievably lost (e.g., seed-phrase loss, death of the sole key holder, catastrophic wallet failure).
+In everyday Cardano discussions the umbrella term “Sticky Stake” is used for any stake that stubbornly remains delegated, regardless of whether its owner is still around. This Cardano Problem Statement (CPS) zooms in on the most critical slice of that phenomenon that we dubbed “Lost Stake”: Ada that (a) remains delegated to a stake pool or dRep, yet (b) can never again be moved because the controlling private keys are irretrievably lost (e.g., seed-phrase loss, death of the sole key holder, catastrophic wallet failure).
 
 This CPS formalises the Lost Stake problem and quantifies its systemic impact: dilution of the reward pot available to active participants, distortion of pool-selection incentives, and ossification of governance power. Estimates suggest that as much as 900k ADA per epoch (67M ADA each year) may already be draining into permanently unreachable wallets. Left unchecked, compounding Lost Stake will siphon billions of ADA in rewards and an ever-growing share of voting weight into wallets that nobody controls, making future remediation far costlier and more contentious. 
 
