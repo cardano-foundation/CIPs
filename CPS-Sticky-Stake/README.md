@@ -114,7 +114,6 @@ This scenario highlights the long-term risk of inaction. Even a modest annual lo
 
 - **Economic Sustainability:** In the long term, as block-reward inflation tapers off, Cardano’s security will hinge on transaction fees and community participation. If a significant chunk of ADA is effectively out of economic circulation (yet still “consuming” rewards/fees), it means the active economy has to carry that burden. The security budget (total incentives for validators) would be partially drained to non-participants. This inefficiency will necessitate higher fees or protocol changes to compensate, which is undesirable for growth. In short, allowing lost stake and lost ADA to grow unchecked may undermine the sustainability of the network’s incentive model.
 
----
 
 ## Open Questions 
 - How can the protocol reliably identify truly lost stake keys?
