@@ -17,7 +17,6 @@ In everyday Cardano discussions the umbrella term “Sticky Stake” is used for
 
 This CPS formalises the Lost Stake problem and quantifies its systemic impact: dilution of the reward pot available to active participants, distortion of pool-selection incentives, and ossification of governance power. Estimates suggest that as much as 900k ADA per epoch (67M ADA each year) may already be draining into permanently unreachable wallets. Left unchecked, compounding Lost Stake will siphon billions of ADA in rewards and an ever-growing share of voting weight into wallets that nobody controls, making future remediation far costlier and more contentious. 
 
----
 
 ## Problem
 
