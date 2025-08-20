@@ -1,5 +1,5 @@
 ---
-CIP: ??
+CIP: 161
 Title: "Ouroboros Φalanx : Breaking the Economics of Grinding Attacks"
 Category: Consensus/Security
 Status: Proposed
