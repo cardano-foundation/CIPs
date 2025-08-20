@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 160
 Title: Guard Script Purpose and Credential
 Category: Ledger
 Status: Proposed
