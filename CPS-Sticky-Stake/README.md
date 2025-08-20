@@ -1,5 +1,5 @@
 ---
-CPS: ????
+CPS: 22
 Title: Lost Stake
 Category: Ledger
 Status: Open
