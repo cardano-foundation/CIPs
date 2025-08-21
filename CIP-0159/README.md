@@ -13,25 +13,6 @@ Created: 2025-07-16
 License: CC-BY-4.0
 ---
 
-## Table of Contents
-
-- [Abstract](#abstract)
-- [Motivation](#motivation-why-is-this-cip-necessary)
-  - [Wallet Revenue](#wallet-revenue)
-  - [Cheaper Batchers/Aggregators](#cheaper-batchersaggregators)
-  - [Multi-Asset Cardano Treasury](#multi-asset-cardano-treasury)
-  - [Decentralized Fixed-Supply Token Minting](#decentralized-fixed-supply-token-minting)
-  - [L2 Reserves](#l2-reserves)
-- [Specification](#specification)
-  - [Definitions](#definitions)
-  - [Enable Direct Deposits](#enable-direct-deposits)
-  - [Partial Withdrawals and Native Asset Withdrawals](#partial-withdrawals-and-native-asset-withdrawals)
-  - [Account Balance Intervals](#account-balance-intervals)
-  - [New Ledger State](#new-ledger-state)
-  - [New Plutus Script Context](#new-plutus-script-context)
-- [Rationale](#rationale-how-does-this-cip-achieve-its-goals)
-- [Path To Active](#path-to-active)
-
 ## Abstract
 
 Currently, Cardano's account addresses (a.k.a. reward addresses) can only be used for receiving ADA
