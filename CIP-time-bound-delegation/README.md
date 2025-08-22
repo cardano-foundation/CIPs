@@ -275,4 +275,4 @@ This CPS could not have been created without the support, assistance, and input 
 - OYSTR Pool
 
 ## Copyright
-This CIP is licensed under CC‑BY‑4.0.
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
