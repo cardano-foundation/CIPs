@@ -39,7 +39,7 @@ This CIP intentionally limits itself to two changes to the ledger rules. All oth
 ### 1) Delegation certificate expiration
 
 - Add **two protocol parameters** (measured in epochs), to be set via governance:
-  - stakePoolDelegationLifetime
+  - `stakePoolDelegationLifetime`
   - drepDelegationLifetime
 - A delegation (to a stake pool or dRep) becomes **invalid at the start of the epoch** when its lifetime elapses.
 - **Renewal** is performed by submitting a standard delegation transaction at any time; wallets may prompt or bundle renewals but such UX is out of scope for this CIP.
