@@ -166,17 +166,19 @@ f_{\mathrm{std}} = B = 12{,}642.580060
 $$
 
 $$
-\mathrm{ROI}_{\mathrm{pool,std}} = \frac{f_{\mathrm{std}}}{x+y} 
-= \frac{12{,}642.580060}{36{,}000{,}000} 
-= 0.000351182779
+\begin{align*}
+\mathrm{ROI}_{\mathrm{pool,std}} &= \frac{f_{\mathrm{std}}}{x+y} \\\\
+&= \frac{12{,}642.580060}{36{,}000{,}000} \\\\
+&= 0.000351182779
+\end{align*}
 $$
 
-$$ 
+$$
 \begin{align*}
-\mathrm{Annual\ ROI} &= \left(1 + \mathrm{ROI}_{\mathrm{pool,std}}\right)^{73} - 1 \\
+\mathrm{Annual\ ROI} &= \left(1 + \mathrm{ROI}_{\mathrm{pool,std}}\right)^{73} - 1 \\\\
 &= 0.025963163 \;\; (\approx 2.5963\%)
 \end{align*}
-$$ 
+$$
 
 This gives us about **2.60% Annual ROI** for that pool.
 
@@ -192,20 +194,20 @@ $$
 f_{\mathrm{full}} = R \cdot \frac{B}{W} \;\approx\; (1+a_{0}) \cdot B = 16{,}435.354078
 $$
 
-$$ 
+$$
 \begin{align*}
-\mathrm{ROI}_{\mathrm{epoch,full}} &= \frac{f_{\mathrm{full}}}{x+y} \\
-&= \frac{16{,}435.354078}{36{,}000{,}000} \\
+\mathrm{ROI}_{\mathrm{epoch,full}} &= \frac{f_{\mathrm{full}}}{x+y} \\\\
+&= \frac{16{,}435.354078}{36{,}000{,}000} \\\\
 &= 0.000456537613
 \end{align*}
-$$ 
+$$
 
-$$ 
+$$
 \begin{align*}
-\mathrm{ROI}_{\mathrm{annual,full}} &= \left(1 + \mathrm{ROI}_{\mathrm{epoch,full}}\right)^{73} - 1 \\
+\mathrm{ROI}_{\mathrm{annual,full}} &= \left(1 + \mathrm{ROI}_{\mathrm{epoch,full}}\right)^{73} - 1 \\\\
 &= 0.033880957 \;\; (\approx 3.3881\%)
 \end{align*}
-$$ 
+$$
 
 The result is about **3.39% Annual ROI**. Roughly a 0.79% increase.
 
