@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: Time-Bound Delegation with Dynamic Rewards Distribution
+Title: Time-Bound Delegation with Dynamic Rewards
 Category: Ledger
 Status: Proposed
 Authors:
