@@ -6,7 +6,8 @@ Status: Proposed
 Authors:
   - Ryan Wiley rian222@gmail.com
 Implementors: []
-Discussions: []
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/1077
 Created: 2025-08-15
 License: CC-BY-4.0
 ---
