@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
   - Ryan Wiley rian222@gmail.com
 Implementors: []
-Discussions: - []
+Discussions: []
 Created: 2025-08-15
 License: CC-BY-4.0
 ---
