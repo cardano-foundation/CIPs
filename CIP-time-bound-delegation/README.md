@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: "?"
 Title: Time-Bound Delegation with Dynamic Rewards Distribution
 Category: Ledger
 Status: Proposed
@@ -114,78 +114,94 @@ We can calculate the expected ROI for an average pool with 35M stake and 1M pled
 
 **Constants:**
 
-- \( S = 35698219658 \) (circulating supply)
-- \( \text{Reserves} = 6955875027 \)
-- \( k = 500 \Rightarrow z_0 = 0.002 \)
-- \( a_0 = 0.3 \)
-- \( \text{Rho} = 0.003 \)
-- \( \tau = 0.2 \)
+- $S = 35,698,219,658$ (circulating supply)  
+- $\text{Reserves} = 6,955,875,027$  
+- $k = 500 \;\Rightarrow\; z_0 = 0.002$  
+- $a_0 = 0.3$  
+- $\rho = 0.003$  
+- $\tau = 0.2$  
 
 **Epoch rewards pot after treasury (not accounting for fees or missed blocks):**
 
-\[
-R = (\text{Rho} \cdot \text{Reserves}) \cdot (1 - \tau) = (0.003 \cdot 6955875027) \cdot 0.8 = 16694100.0648
-\]
+$$
+R = (\rho \cdot \text{Reserves}) \cdot (1 - \tau) 
+   = (0.003 \cdot 6,955,875,027) \cdot 0.8 
+   = 16,694,100.0648
+$$
 
 **Pool (average pool with 35M stake and 1M pledge):**
 
-- \( x = 35,000,000 \) (stake)
-- \( y = 1,000,000 \) (pledge)
+- $x = 35,000,000$ (stake)  
+- $y = 1,000,000$ (pledge)  
 
-\[
+$$
 z = \frac{35,000,000}{35,698,219,658} = 0.0009804140510981708
-\]
-\[
+$$
+
+$$
 s = \frac{1,000,000}{35,698,219,658} = 0.000028011264155988
-\]
-\[
-z' = \min(z, z_0)
-\]
-\[
-s' = \min(s, z_0)
-\]
+$$
+
+$$
+z' = \min(z, z_0), \quad s' = \min(s, z_0)
+$$
 
 **Base reward (from Shelley formula):**
 
-\[
-B = \frac{R}{1 + a_0} \cdot \left[z' + s' \cdot a_0 \cdot \frac{z_0 - z'}{z_0}\right] = 0.0000845007526134465 \cdot R
-\]
+$$
+B = \frac{R}{1 + a_0} \cdot \left[z' + s' \cdot a_0 \cdot \frac{z_0 - z'}{z_0}\right] 
+  = 0.0000845007526134465 \cdot R
+$$
 
-**Standard distribution (spec):** distributes \( R \) to active pools and returns the rest to reserves
+**Standard distribution (spec):** distributes $R$ to active pools and returns the rest to reserves
 
-\[
+$$
 f_{\text{std}} = R \cdot 0.0000845007526134465 = 1,414,612.80
-\]
+$$
 
-\[
-\text{ROI}_{\text{pool, std}} = \frac{f_{\text{std}}}{x + y} = \frac{1,414,612.80}{36,000,000} = 0.03929
-\]
+$$
+\text{ROI}_{\text{pool,std}} = \frac{f_{\text{std}}}{x + y} 
+= \frac{1,414,612.80}{36,000,000} 
+= 0.03929
+$$
 
-\[
-\text{Annual ROI} = (1 + \text{ROI}_{\text{pool, std}})^{73} - 1 \approx 0.0267 \text{ or } 2.67\%
-\]
+$$
+\text{Annual ROI} = (1 + \text{ROI}_{\text{pool,std}})^{73} - 1 
+\approx 0.0267 \; \text{or}\; 2.67\%
+$$
 
-This gives us the result of about **2.67% Annual ROI** for that pool.
+This gives us about **2.67% Annual ROI** for that pool.
 
-Now to re-calculate what it would be for this same pool if we instead distributed the full rewards pot to all eligible pools and their delegators:
+---
 
-**Full pot rewards distribution: distribute all of \( R \) with no residual**
+**Full pot rewards distribution: distribute all of $R$ with no residual**
 
-Let \( W = \sum_i B_i \) over all eligible pools (whole circulation). Typically \( W \approx 1 \);
+Let $W = \sum_i B_i$ over all eligible pools (whole circulation). Typically $W \approx 1$.
 
-then normalize: \( f_{\text{full}} = R \cdot \frac{B}{W} \).
+Then normalize:
 
-Using \( W \approx 1 \) (tight when total pledge term is small):
+$$
+f_{\text{full}} = R \cdot \frac{B}{W}
+$$
 
-\[
-f_{\text{full}} \approx R \cdot B = 16694100.0648 \times 0.000984507526134465 = 16435.354078,
-\]
-\[
-\text{ROI}_{\text{epoch, full}} = \frac{f_{\text{full}}}{x + y} = \frac{16435.354078}{35000000} = 0.0004695815415 \approx 1.40\%
-\]
-\[
-\text{ROI}_{\text{annual, full}} = (1 + \text{ROI}_{\text{epoch, full}})^{73} - 1 = 0.03486543814
-\]
+Using $W \approx 1$ (tight when total pledge term is small):
+
+$$
+f_{\text{full}} \approx R \cdot B 
+= 16,694,100.0648 \times 0.000984507526134465 
+= 16,435.354078
+$$
+
+$$
+\text{ROI}_{\text{epoch,full}} = \frac{f_{\text{full}}}{x + y} 
+= \frac{16,435.354078}{35,000,000} 
+= 0.0004695815415 \approx 1.40\%
+$$
+
+$$
+\text{ROI}_{\text{annual,full}} = (1 + \text{ROI}_{\text{epoch,full}})^{73} - 1 
+= 0.03486543814
+$$
 
 The result is about **3.49% Annual ROI**. Roughly a 1% increase.
 
