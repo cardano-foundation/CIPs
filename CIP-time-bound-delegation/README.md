@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 Cardano’s staking and on‑chain voting have drifted toward passivity. As described in CPS-0022, long‑lived “set‑and‑forget” delegations let rewards and governance weight ossify, particularly in wallets that have been permanently lost, diluting staking rewards and voting power engaged participants and harming network security. This CIP reframes delegation as an **active, periodically affirmed contribution to network security** and realigns incentives so rewards flow to those presently and capable of participating. At a high level, it introduces (i) **time‑bound, renewable delegations** for stake pools and dReps, and (ii) **full‑pot reward distribution** to currently eligible delegators and pools each epoch. 
 
-If the network’s total staking ratio remains roughly unchanged, these changes are expected to increase rewards for all delegators and stake pool operators by approximately 1–3% annually. Together, these changes encourage ongoing engagement, reduce sticky/lost‑stake externalities, and keep realized emissions consistent with monetary policy while respecting user property rights.
+If the network’s total staking ratio remains roughly unchanged, these changes are expected to increase rewards for all delegators and stake pool operators by a small annual percent. Together, these changes encourage ongoing engagement, reduce sticky/lost‑stake externalities, and keep realized emissions consistent with monetary policy while respecting user property rights.
 
 ## Motivation: why is this CIP necessary?
 
@@ -68,7 +68,7 @@ This CIP intentionally limits itself to two changes to the ledger rules. All oth
 
 ### Option to adjust Rho
 
-Distributing the full-rewards pot will stop sending residual rewards back to reserves. If Rho is left unchanged, reserves will deplete faster by roughly that amount and true emissions will track much closer to the monetary expansion set by Rho. As a result, this will cause active participants to see roughly ~1–3% higher annual yields. 
+Distributing the full-rewards pot will stop sending residual rewards back to reserves. If Rho is left unchanged, reserves will deplete faster by roughly that amount and true emissions will track much closer to the monetary expansion set by Rho. As a result, this will cause active participants to see a small boost to their annual yields. 
 
 If the community prefers to preserve the current rate of emissions, the community can instead reduce Rho to offset this through a parameter change governance action. However, this will trade away the increase in rewards. This CIP intentionally leaves this choice out of scope.
 
@@ -80,7 +80,7 @@ The Shelley-era design explicitly worried about an incentive for large pools to 
 
 - **Healthy stake distribution & coordination threshold.** With broad dispersion of block‑producing power, a would‑be censor would need to withhold a large number of small delegation transactions across many blocks and coordinate with many other producers to move rewards meaningfully. Any unilateral attempt simply fails whenever other producers include those transactions.
 - **Externality of “success.”** Under full‑pot distribution, even a successful bout of censorship raises everyone else’s yields, not just the censor’s. This dilutes the payoff while increasing incentives for others to defect and include the transactions.
-- **Richer targets exist.** In a DeFi‑enabled ecosystem, **selective censorship of high‑value transactions (e.g., liquidations/arbitrages) offers a concentrated, private payoff from censoring few targeted transactions, whereas delegation censorship requires suppressing many of them for marginal gains.
+- **Richer targets exist.** In a DeFi‑enabled ecosystem, selective censorship of high‑value transactions (e.g., liquidations/arbitrages) offers a concentrated, private payoff from censoring few targeted transactions, whereas delegation censorship requires suppressing many of them for marginal gains.
 - **Operational risk and visibility.** Prolonged, coordinated censorship would be conspicuous, invite social and governance backlash, and likely degrade a censor’s reputation and delegation flow, offsetting any transient gain.
 
 These factors, together with periodic expiration/renewal that naturally spreads delegation updates over time, support removing the “return to reserves” scaling while keeping incentives aligned with **active participation**.
@@ -107,7 +107,7 @@ This dynamic couples network security to real participation and reduces the risk
 
 *Source: [https://x.com/C1cADA_Markus/status/1636023370532749314](https://x.com/C1cADA_Markus/status/1636023370532749314)*
 
-- Estimated **+1–3% APY uplift** from full‑pot distribution:
+- Estimated **~1% APY uplift** from full‑pot distribution:
 
 Given:
 
@@ -125,9 +125,7 @@ We can calculate the expected ROI for an average pool with 35M stake and 1M pled
 **Epoch rewards pot after treasury (not accounting for fees or missed blocks):**
 
 $$
-R = (\rho \cdot \text{Reserves}) \cdot (1 - \tau) 
-   = (0.003 \cdot 6,955,875,027) \cdot 0.8 
-   = 16,694,100.0648
+R = (\rho \cdot \mathrm{Reserves}) \cdot (1 - \tau) = 16{,}694{,}100.0648
 $$
 
 **Pool (average pool with 35M stake and 1M pledge):**
@@ -136,42 +134,49 @@ $$
 - $y = 1,000,000$ (pledge)  
 
 $$
-z = \frac{35,000,000}{35,698,219,658} = 0.0009804140510981708
+z = \frac{35{,}000{,}000}{35{,}698{,}219{,}658} = 0.000980441051
 $$
 
 $$
-s = \frac{1,000,000}{35,698,219,658} = 0.000028011264155988
+s = \frac{1{,}000{,}000}{35{,}698{,}219{,}658} = 0.000028012601
 $$
 
 $$
-z' = \min(z, z_0), \quad s' = \min(s, z_0)
+z' = \min(z, z_{0}), \quad s' = \min(s, z_{0})
 $$
 
 **Base reward (from Shelley formula):**
 
 $$
-B = \frac{R}{1 + a_0} \cdot \left[z' + s' \cdot a_0 \cdot \frac{z_0 - z'}{z_0}\right] 
-  = 0.0000845007526134465 \cdot R
+B = \frac{R}{1+a_{0}} \left(
+z' + s' \cdot a_{0} \cdot \frac{\,z' - s' \cdot \frac{(z_{0}-z')}{z_{0}}\,}{z_{0}}
+\right)
+$$
+
+**For this pool:**
+
+$$
+B = 12{,}642.580060
 $$
 
 **Standard distribution (spec):** distributes $R$ to active pools and returns the rest to reserves
 
 $$
-f_{\text{std}} = R \cdot 0.0000845007526134465 = 1,414,612.80
+f_{\mathrm{std}} = B = 12{,}642.580060
 $$
 
 $$
-\text{ROI}_{\text{pool,std}} = \frac{f_{\text{std}}}{x + y} 
-= \frac{1,414,612.80}{36,000,000} 
-= 0.03929
+\mathrm{ROI}_{\mathrm{pool,std}} = \frac{f_{\mathrm{std}}}{x+y} 
+= \frac{12{,}642.580060}{36{,}000{,}000} 
+= 0.000351182779
 $$
 
 $$
-\text{Annual ROI} = (1 + \text{ROI}_{\text{pool,std}})^{73} - 1 
-\approx 0.0267 \; \text{or}\; 2.67\%
+\mathrm{Annual\ ROI} = \left(1 + \mathrm{ROI}_{\mathrm{pool,std}}\right)^{73} - 1 
+= 0.025963163 \;\;(\approx 2.5963\%)
 $$
 
-This gives us about **2.67% Annual ROI** for that pool.
+This gives us about **2.60% Annual ROI** for that pool.
 
 ---
 
@@ -182,29 +187,21 @@ Let $W = \sum_i B_i$ over all eligible pools (whole circulation). Typically $W \
 Then normalize:
 
 $$
-f_{\text{full}} = R \cdot \frac{B}{W}
-$$
-
-Using $W \approx 1$ (tight when total pledge term is small):
-
-$$
-f_{\text{full}} \approx R \cdot B 
-= 16,694,100.0648 \times 0.000984507526134465 
-= 16,435.354078
+f_{\mathrm{full}} = R \cdot \frac{B}{W} \;\approx\; (1+a_{0}) \cdot B = 16{,}435.354078
 $$
 
 $$
-\text{ROI}_{\text{epoch,full}} = \frac{f_{\text{full}}}{x + y} 
-= \frac{16,435.354078}{35,000,000} 
-= 0.0004695815415 \approx 1.40\%
+\mathrm{ROI}_{\mathrm{epoch,full}} = \frac{f_{\mathrm{full}}}{x+y} 
+= \frac{16{,}435.354078}{36{,}000{,}000} 
+= 0.000456537613
 $$
 
 $$
-\text{ROI}_{\text{annual,full}} = (1 + \text{ROI}_{\text{epoch,full}})^{73} - 1 
-= 0.03486543814
+\mathrm{ROI}_{\mathrm{annual,full}} = \left(1 + \mathrm{ROI}_{\mathrm{epoch,full}}\right)^{73} - 1 
+= 0.033880957 \;\;(\approx 3.3881\%)
 $$
 
-The result is about **3.49% Annual ROI**. Roughly a 1% increase.
+The result is about **3.39% Annual ROI**. Roughly a 0.79% increase.
 
 **Note:** These calculations do not take into account any collected transaction fees, pool performance, or pool fees.
 
@@ -238,20 +235,20 @@ These effects are also modeled in the open source tool available at [https://spo
   - Publish the finalized CIP revision and present it to the PCP committee, TSC, CIP Editors, and wider community channels (Discord, X, Cardano Forum, etc.).
   - Collect structured feedback, particularly on candidate values for the new parameter values and iterate until broad technical consensus emerges.
 - **Specification & Code Integration (Development Phase)**
-  - **Once initial parameter values are determined, integrate the new rewards calculation logic, delegation certificate expiry, and governance features for the new parameters into cardano-node and related libraries (ledger, CLI, wallet APIs).**
-  - **Submit pull requests to the canonical repositories; obtain code reviews from IOG, CF, and community contributors.**
-  - **Release a new protocol version that includes the changes made in this CIP.**
-  - **Use a dedicated pre-production testnet that mirrors main-net parameters but enforces the new changes, allowing SPOs and exchanges to test end-to-end flows.**
+  - Once initial parameter values are determined, integrate the new rewards calculation logic, delegation certificate expiry, and governance features for the new parameters into cardano-node and related libraries (ledger, CLI, wallet APIs).
+  - Submit pull requests to the canonical repositories; obtain code reviews from IOG, CF, and community contributors.
+  - Release a new protocol version that includes the changes made in this CIP.
+  - Use a dedicated pre-production testnet that mirrors main-net parameters but enforces the new changes, allowing SPOs and exchanges to test end-to-end flows.
 - **Readiness Sign-off (Testing Phase)**
-  - **Require at least two weeks of uninterrupted testnet stability plus green results from regression and property-based tests.**
-  - **Monitor ecosystem dApps and tooling to confirm that major node implementations, explorers, wallets, and exchange integrations support the new rule set.**
+  - Require at least two weeks of uninterrupted testnet stability plus green results from regression and property-based tests.
+  - Monitor ecosystem dApps and tooling to confirm that major node implementations, explorers, wallets, and exchange integrations support the new rule set.
 - **On-chain Governance (Ratification Phase)**
-  - **File the Hard-Fork Governance Action on-chain with the agreed initial parameter values tagged for the next hard fork event.**
-  - **Modify the existing Cardano Constitution to include definitions and guardrails for the new protocol parameters and have it ratified by the tripartite government of Cardano.**
-  - **Mobilize dRep outreach to ensure quorum and super-majority passage; concurrently, the Constitutional Committee validates procedural compliance.**
+  - File the Hard-Fork Governance Action on-chain with the agreed initial parameter values tagged for the next hard fork event.
+  - Modify the existing Cardano Constitution to include definitions and guardrails for the new protocol parameters and have it ratified by the tripartite government of Cardano.
+  - Mobilize dRep outreach to ensure quorum and super-majority passage; concurrently, the Constitutional Committee validates procedural compliance.
 - **Hard-Fork Activation (Deployment Phase)**
-  - **Upon successful vote, the hard fork event is automatically triggered upon epoch turnover.**
-  - **Monitor main-net metrics during the changeover epoch; provide real-time support for any late-upgrading SPOs.**
+  - Upon successful vote, the hard fork event is automatically triggered upon epoch turnover.
+  - Monitor main-net metrics during the changeover epoch; provide real-time support for any late-upgrading SPOs.
 
 ## References
 
