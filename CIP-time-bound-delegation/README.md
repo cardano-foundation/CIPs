@@ -40,7 +40,7 @@ This CIP intentionally limits itself to two changes to the ledger rules. All oth
 
 - Add **two protocol parameters** (measured in epochs), to be set via governance:
   - `stakePoolDelegationLifetime`
-  - drepDelegationLifetime
+  - `drepDelegationLifetime`
 - A delegation (to a stake pool or dRep) becomes **invalid at the start of the epoch** when its lifetime elapses.
 - **Renewal** is performed by submitting a standard delegation transaction at any time; wallets may prompt or bundle renewals but such UX is out of scope for this CIP.
 - **Independence:** stake‑pool and dRep delegations expire and renew independently; expiry of one does not imply any fallback for the other.
@@ -232,7 +232,7 @@ These effects are also modeled in the open source tool available at [https://spo
 ### Acceptance Criteria
 
 - **CIP Editor Approval** – Cardano CIP Editors must confirm that the specification is complete, unambiguous, and internally consistent with existing CIPs.
-- **Consensus on initial parameter values** – An initial values of for the new protocol parameters stakePoolDelegationLifetime and drepPoolDelegationLifetime must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses (e.g., RSS results), and community feedback.
+- **Consensus on initial parameter values** – An initial values of for the new protocol parameters `stakePoolDelegationLifetime` and `drepDelegationLifetime` must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses (e.g., RSS results), and community feedback.
 - **Endorsement by Technical Bodies** – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap.
 - **Stakeholder Concurrence** – A majority of stake pool operators (SPOs), ecosystem tooling maintainers, dReps, and other infrastructure providers must signal readiness to upgrade.
 - **Governance Ratification** – The on-chain Hard-Fork Governance Action must pass the requisite dRep and Constitutional Committee thresholds, establishing legal-constitutional legitimacy and stakeholder support for the change.
