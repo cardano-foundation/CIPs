@@ -1,17 +1,17 @@
 ---
 CIP: 161
-Title: Ouroboros Phalanx: Breaking Grinding Incentives
+Title: "Ouroboros Phalanx: Breaking Grinding Incentives"
 Category: Consensus
 Status: Proposed
 Authors:
-    - Nicolas Henin <nicolas.henin@iohk.io>
-    - Raphael Toledo <raphael.toledo@iohk.io>
+  - Nicolas Henin <nicolas.henin@iohk.io>
+  - Raphael Toledo <raphael.toledo@iohk.io>
 Solution-To:
   - CPS-0017
   - CPS-0021
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/1065
-Created: 2025-25-07
+Created: 2025-07-25
 License: Apache-2.0
 ---
 
