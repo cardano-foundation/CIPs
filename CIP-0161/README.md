@@ -1,6 +1,6 @@
 ---
 CIP: 161
-Title: "Ouroboros Phalanx: Breaking Grinding Incentives"
+Title: Ouroboros Phalanx - Breaking Grinding Incentives
 Category: Consensus
 Status: Proposed
 Authors:
@@ -14,6 +14,18 @@ Discussions:
 Created: 2025-07-25
 License: Apache-2.0
 ---
+
+## Abstract
+
+We propose an extension to Ouroboros, called **Ouroboros Phalanx**. The name derives from the [**Phalanx**](https://en.wikipedia.org/wiki/Phalanx), an **Ancient Greek military formation** where soldiers stood in tightly packed units, shielding one another to form a nearly impenetrable defense. Just as the phalanx multiplied the strength of individual soldiers through coordination, this protocol enhances Cardano’s consensus by reinforcing its resistance to adversarial attacks.
+
+At its core, **Phalanx Protocol** strengthens the **VRF-based randomness generation sub-protocol** that underpins leader election. It introduces an additional cryptographic primitive that is **lightweight for honest participants** yet **computationally expensive for adversaries** seeking to bias slot leader distributions. This design does not eliminate grinding attacks outright but makes them **economically infeasible at scale**.
+
+By addressing both [CPS-0021: Randomness Manipulation](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0021) and [CPS-0017: Settlement Speed](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0017), Phalanx achieves two goals simultaneously:  
+- It raises the cost of grinding attacks by a factor of roughly <strong>10<sup>10</sup></strong>.  
+- It reduces settlement time by approximately **20–30%** compared to unmodified Praos, without compromising security.  
+
+Ouroboros Phalanx therefore represents a **complementary advancement**: reinforcing Cardano’s consensus security while improving performance, and ensuring the network remains robust against future adversarial strategies.
 
 <details>
 <summary>🔍 Table of Contents</summary>
@@ -108,18 +120,6 @@ License: Apache-2.0
 - [Copyright](#copyright)
 
 </details>
-
-## Abstract
-
-We propose an extension to Ouroboros, called **Ouroboros Phalanx**. The name derives from the [**Phalanx**](https://en.wikipedia.org/wiki/Phalanx), an **Ancient Greek military formation** where soldiers stood in tightly packed units, shielding one another to form a nearly impenetrable defense. Just as the phalanx multiplied the strength of individual soldiers through coordination, this protocol enhances Cardano’s consensus by reinforcing its resistance to adversarial attacks.
-
-At its core, **Phalanx Protocol** strengthens the **VRF-based randomness generation sub-protocol** that underpins leader election. It introduces an additional cryptographic primitive that is **lightweight for honest participants** yet **computationally expensive for adversaries** seeking to bias slot leader distributions. This design does not eliminate grinding attacks outright but makes them **economically infeasible at scale**.
-
-By addressing both [CPS-0021: Randomness Manipulation](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0021) and [CPS-0017: Settlement Speed](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0017), Phalanx achieves two goals simultaneously:  
-- It raises the cost of grinding attacks by a factor of roughly <strong>10<sup>10</sup></strong>.  
-- It reduces settlement time by approximately **20–30%** compared to unmodified Praos, without compromising security.  
-
-Ouroboros Phalanx therefore represents a **complementary advancement**: reinforcing Cardano’s consensus security while improving performance, and ensuring the network remains robust against future adversarial strategies.
 
 ## Motivation: why is this CIP necessary?
 
