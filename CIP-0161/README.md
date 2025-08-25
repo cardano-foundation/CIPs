@@ -28,7 +28,7 @@ By addressing both [CPS-0021: Randomness Manipulation](https://github.com/cardan
 Ouroboros Phalanx therefore represents a **complementary advancement**: reinforcing Cardano’s consensus security while improving performance, and ensuring the network remains robust against future adversarial strategies.
 
 <details>
-<summary>🔍 Table of Contents</summary>
+<summary><h2>🔍 Table of Contents</h2></summary>
 
 - [Abstract](#abstract)
 - [Motivation: why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
