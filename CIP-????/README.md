@@ -656,6 +656,8 @@ their headers and embedding EB certificates in their bodies.
    - `eb_certificate` (optional): aggregated certificate proving EB validity
    - Transactions (when no certificate is included)
 
+A [CDDL for ranking blocks](#ranking-block-cddl) is available in Appendix B.
+
 <a id="rb-inclusion-rules" href="#rb-inclusion-rules"></a>**Inclusion Rules**:
 
 - When an RB header sets `certified_eb` to true, the corresponding body must
@@ -682,8 +684,7 @@ simple structure:
   reference includes the hash of the complete transaction bytes and the
   transaction size in bytes
 
-The precise structure is defined in the <a href="#endorser-block-cddl">Endorser
-Block CDDL specification</a> in Appendix B.
+A [CDDL for endorser blocks](#endorser-block-cddl) is available in Appendix B.
 
 The hash referenced in RB headers (`announced_eb` field) is computed from the
 complete EB structure and serves as the unique identifier for the EB. The
@@ -747,8 +748,8 @@ identifying the EB's hash directly. This ensures the voters validated the EB
 against the same ledger state that it extends when certfied on chain; recall
 that multiple RB headers could announce the same EB.
 
-The precise structure is defined in the <a href="#votes-certificates-cddl">Votes
-and Certificates CDDL specification</a> in Appendix B.
+A [CDDL for votes and certificates](#votes-certificates-cddl) is available in
+Appendix B.
 
 <a id="certificate-validation" href="#certificate-validation"></a>**Certificate
 Validation**: When an RB includes an EB certificate, nodes must validate the
