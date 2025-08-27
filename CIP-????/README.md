@@ -58,7 +58,9 @@ elements.
     - [Step 4: Certification](#step-4-certification)
     - [Step 5: Chain Inclusion](#step-5-chain-inclusion)
   - [Protocol Parameters](#protocol-parameters)
-    - [EB Size Constraints](#eb-size-constraints)
+    - [Timing parameters](#timing-parameters)
+    - [Size parameters](#size-parameters)
+  - [Protocol Security](#protocol-security)
   - [Protocol Entities](#protocol-entities)
     - [Ranking Blocks (RBs)](#ranking-blocks-rbs)
     - [Endorser Blocks (EBs)](#endorser-blocks-ebs)
@@ -279,8 +281,8 @@ precise timing mechanism is detailed in the following section.
 The protocol operates through five sequential steps that involve three critical
 timing constraints. Figure 4 visualizes the precise timing mechanism that
 governs when certificates can be safely included in the chain, showing both the
-protocol parameters and the underlying network characteristics ($\Delta$
-parameters) and protocol parameters ($L$ parameters) that inform their design.
+protocol parameters and the underlying network characteristics ($\Delta$ values)
+and protocol parameters ($L$ values) that inform their design.
 
 <div align="center">
   <a name="figure-4" id="figure-4"></a>
@@ -459,17 +461,7 @@ availability:
 
 </div>
 
-**Protocol Parameters and Timing Constraints**
-
-The three critical timing constraints that are visible in [Figure 4](#figure-4)
-are:
-
-- **Equivocation Detection** ($3 \times L_\text{hdr}$): Equivocation detection
-  occurs immediately after EB announcement
-- **Voting Period** ($L_\text{vote}$): Committee voting takes place during Step
-  3
-- **Diffusion Period** ($L_\text{diff}$): Network-wide diffusion ensures
-  availability before Step 5
+**Protocol Parameters**
 
 <div align="center">
 <a name="table-3" id="table-3"></a>
@@ -492,6 +484,12 @@ are:
 <em>Table 3: Protocol Parameters</em>
 
 </div>
+
+#### Timing parameters
+
+There are three key parameters related to time, which are important for
+[protocol security](#security-argument). All relevant quantities are depdicted
+in [Figure 4](#figure-4).
 
 <a id="equivocation-detection"></a>
 
@@ -580,7 +578,7 @@ $$L_\text{diff} \geq \Delta_\text{EB}^{\text{W}} + \Delta_\text{reapply} - \Delt
 This ensures certified EBs reach all honest parties before any RB' that includes
 their certificate needs processing.
 
-#### EB Size Constraints
+#### Size parameters
 
 Two separate parameters control EB sizes:
 
@@ -604,6 +602,7 @@ RBs are Praos blocks extended to support Leios by optionally announcing EBs in
 their headers and embedding EB certificates in their bodies.
 
 1. **Header additions**:
+
    - `announced_eb` (optional): Hash of the EB created by this block producer
    - `announced_eb_size` (optional): Size in bytes of the announced EB (4 bytes)
    - `certified_eb` (optional): Single bit indicating whether this RB certifies
@@ -2422,8 +2421,8 @@ are:
 - [ ] Detailed node-level (as opposed to this protocol-level) technical
       specification.
 - [ ] Complete ΔQSD analysis of new/changed network interactions.
-- [ ] [Complete formal protocol specification in Agda][linear-leios-formal-spec] of ledger and consensus
-      changes.
+- [ ] [Complete formal protocol specification in Agda][linear-leios-formal-spec]
+      of ledger and consensus changes.
 - [ ] Create network prototypes and conduct large scale experiments.
   - Load tests in a controlled topology
   - Validate protocol parameters
