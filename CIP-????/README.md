@@ -173,15 +173,15 @@ and bandwidth resources of individual nodes often remain significantly
 underutilized.
 
 To transcend these inherent scaling barriers and unlock the latent capacity of
-the Cardano network, a fundamental systematic of the core consensus algorithm is
-imperative. Ouroboros Leios maintains Praos's sequential transaction processing
-model while introducing mechanisms for additional transaction capacity through
-Endorser Blocks, parallel validation workflows, and more efficient aggregation
-of transaction data. By reorganizing how transactions are proposed, validated,
-and ultimately recorded on the blockchain, this protocol upgrade seeks to
-achieve a substantial increase in the network's overall throughput, enabling it
-to handle a significantly greater volume of transactions within a given
-timeframe.
+the Cardano network, a fundamental systematic evolution of the core consensus
+algorithm is imperative. Ouroboros Leios maintains Praos's sequential
+transaction processing model while introducing mechanisms for additional
+transaction capacity through Endorser Blocks, parallel validation workflows, and
+more efficient aggregation of transaction data. By reorganizing how transactions
+are proposed, validated, and ultimately recorded on the blockchain, this
+protocol upgrade seeks to achieve a substantial increase in the network's
+overall throughput, enabling it to handle a significantly greater volume of
+transactions within a given timeframe.
 
 The Cardano Problem Statement [CPS-18 Greater Transaction Throughput][cps-18]
 further motivates the need for higher transaction throughput and marshals
