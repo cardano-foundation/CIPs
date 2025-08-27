@@ -1182,8 +1182,8 @@ familiar, see the Chapter 2 "Multiplexing mini-protocols" and Chapter 3
 A brief summary is that a mini-protocol is a state machine that two nodes
 cooperatively navigate; each node only sends a message when it has _agency_, and
 at most one node has agency in any state. The agencies are indicated in this
-document as gold or cyan. The gold agency is the client, the downstream peer
-that initiated the connection, and cyan is the server. If some of a node's
+document as green or blue. The green agency is the client, the downstream peer
+that initiated the connection, and blue is the server. If some of a node's
 upstream peers are also downstream peers, then there are two instances of the
 mini-protocol running independently for each such peer, with the node as the
 client in one and the server in the other. Recall that Cardano's topology
@@ -1198,8 +1198,8 @@ Syncing peers will be discussed below.
 title: LeiosNotify
 ---
 graph LR
-   style StIdle color:gold;
-   style StBusy color:cyan;
+   style StIdle color:green;
+   style StBusy color:blue;
 
    StIdle -->|MsgLeiosNotificationRequestNext| StBusy
    StBusy -->|MsgLeiosBlockAnnouncement| StIdle
@@ -1222,11 +1222,11 @@ graph LR
 title: LeiosFetch
 ---
 graph LR
-   style StIdle color:gold;
-   style StBlock color:cyan;
-   style StBlockTxs color:cyan;
-   style StVotes color:cyan;
-   style StBlockRange color:cyan;
+   style StIdle color:green;
+   style StBlock color:blue;
+   style StBlockTxs color:blue;
+   style StVotes color:blue;
+   style StBlockRange color:blue;
 
    StIdle -->|MsgLeiosBlockRequest| StBlock -->|MsgLeiosBlock| StIdle
    StIdle -->|MsgLeiosBlockTxsRequest| StBlockTxs -->|MsgLeiosBlockTxs| StIdle
@@ -1364,7 +1364,7 @@ Tolerable Implementation Complexity requirement.
 
 - Depending on how severely the node must prioritize younger Leios traffic over
   older, the mini-protocols' states might need to be less granular. Because
-  distinct client requests transition to distinct cyan states, the server is
+  distinct client requests transition to distinct blue states, the server is
   unable to reply to the client's requests in a different order than the client
   sent them. If a client pipelined several requests and then learned of a new
   youngest EB and requested it, the server - if timing allows - could
