@@ -2208,7 +2208,7 @@ _Required TPS for Current Reward Maintenance:_ To maintain current reward levels
 <em>Table 10: Required TPS for Current Reward Maintenance</em>
 
 </div>
- 
+
 Note that by 2029, to compensate for Reserve depletion, the network would need
 to process approximately 36 TPS with average-sized transactions, requiring a
 transaction throughput of around 51 TxkB/s, roughly 20 times the current mainnet
@@ -2402,8 +2402,6 @@ The proposal will be considered active once the following criteria are met:
       [Cardano blueprint](https://cardano-scaling.github.io/cardano-blueprint/)
       including conformance tests.
 - [ ] Formal specification of the consensus and ledger changes is available.
-      (Note: [Leios formal specification][linear-leios-formal-spec] provides the
-      mathematical foundation)
 - [ ] ΔQSD model available for Leios parameter selection.
 - [ ] Community agreement on initial Leios protocol parameters.
 - [ ] A peer-reviewed implementation of a Leios-enabled node is available.
@@ -2424,7 +2422,7 @@ are:
 - [ ] Detailed node-level (as opposed to this protocol-level) technical
       specification.
 - [ ] Complete ΔQSD analysis of new/changed network interactions.
-- [ ] Complete formal protocol specification in Agda of ledger and consensus
+- [ ] [Complete formal protocol specification in Agda][linear-leios-formal-spec] of ledger and consensus
       changes.
 - [ ] Create network prototypes and conduct large scale experiments.
   - Load tests in a controlled topology
@@ -2442,28 +2440,12 @@ are:
 
 ## Versioning
 
-> [!NOTE]
->
-> if Versioning is not addressed in Specification
->
-> CIPs must indicate how the defined Specification is versioned. **Note** this
-> does not apply to the CIP text, for which annotated change logs are
-> automatically generated and
-> [available through the GitHub UI](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/viewing-and-comparing-commits/differences-between-commit-views)
-> as a history of CIP files and directories.
->
-> Authors are free to describe any approach to versioning that allows versioned
-> alterations to be added without author oversight. Stipulating that the
-> proposal must be superseded by another is also considered to be valid
-> versioning.
->
-> A single Versioning scheme can be placed either as a subsection of the
-> Specification section or in an optional Versioning top-level section near the
-> end. If the Specification contains multiple specification subsections, each of
-> these can have a Versioning subsection within it.
-
-Leios will be versioned via the major and minor version numbers of the Cardano
-protocol.
+Leios changes the consensus algorithm used to create a valid chain on Cardano
+and thus requires a new major protocol version. As the block format will change,
+a new ledger era is also required and
+[CIP-84](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084)
+applies. A hard-fork event will enable Leios on the Cardano network and the
+usual mechanisms of governing a hard-fork will be employed.
 
 ## References
 
