@@ -65,7 +65,6 @@ elements.
     - [Ranking Blocks (RBs)](#ranking-blocks-rbs)
     - [Endorser Blocks (EBs)](#endorser-blocks-ebs)
     - [Votes and Certificates](#votes-and-certificates)
-  - [Security Argument](#security-argument)
   - [Node Behavior](#node-behavior)
     - [Transaction Diffusion](#transaction-diffusion)
     - [RB Block Production and Diffusion](#rb-block-production-and-diffusion)
@@ -488,7 +487,7 @@ availability:
 #### Timing parameters
 
 There are three key parameters related to time, which are important for
-[protocol security](#security-argument). All relevant quantities are depdicted
+[protocol security](#protocol-security). All relevant quantities are depdicted
 in [Figure 4](#figure-4).
 
 <a id="equivocation-detection"></a>
@@ -592,9 +591,53 @@ For example, an EB referencing 10,000 transactions of 100 bytes each would have
 $S_\text{EB-tx} = 1$ MB but the EB itself would be at least 320 KB for the
 transaction hashes alone.
 
+### Protocol Security
+
+Leios security reduces to Praos security. The key insight is ensuring that any
+RB containing an EB certificate is processed within the same $\Delta_\text{RB}$
+time bound as standard Praos blocks.
+
+<a id="eb-reapplication-constraint"></a>
+
+**1. EB Reapplication Constraint**
+
+Reapplying a certified EB cannot cost more than standard transaction processing.
+
+$$\Delta_\text{reapply} < \Delta_\text{applyTxs}$$
+
+<a id="certified-eb-transmission-constraint"></a>
+
+**2. Certified EB Transmission Constraint**
+
+Any certified EB referenced by an RB must be transmitted (but not necessarily be
+processed) before that RB needs to be processed.
+
+$$\Delta_\text{EB}^{\text{W}} < 3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff} + (\Delta_\text{RB} - \Delta_\text{applyTxs})$$
+
+The security argument can now be described. For simplicity, the analysis focuses
+on the case where a single RB (referencing an EB) is diffused, and nodes have
+already computed the ledger state that this RB extends.
+
+The argument proceeds as follows: (i) The certified EB that the RB references
+will be received within $\Delta_\text{RB} - \Delta_\text{applyTxs}$ from the
+initial diffusion time of the RB. This follows directly from
+[Constraint 2](#certified-eb-transmission-constraint) and the fact that the RB
+was generated at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$
+slots after the EB was generated. (ii) The RB will be processed within
+$\Delta_\text{RB}$ slots, due to the fact that it is received within
+$\Delta_\text{RB} - \Delta_\text{applyTxs}$ from its initial diffusion time, and
+processing in the worst-case takes
+$\Delta_\text{reapply} (< \Delta_\text{applyTxs})$ slots according to
+[Constraint 1](#eb-reapplication-constraint).
+
+Given that nodes are caught up when they are about to produce or process an RB,
+Praos safety and liveness is thus preserved.
+
 ### Protocol Entities
 
-The protocol extends Praos with three main entities:
+The protocol extends Praos blocks, introduces endorser blocks, Leios votes and
+certificates. While already introduced briefly, this section specifies these
+entities in more detail.
 
 #### Ranking Blocks (RBs)
 
@@ -746,48 +789,6 @@ certificates specification][bls-spec].
 > The linked BLS specification mentions vote bundling as an optimization.
 > However, this only applies when EB production is decoupled from RBs, which is
 > not the case in this specification where each EB is announced by an RB.
-
-### Security Argument
-
-Leios security reduces to Praos security. The key insight is ensuring that any
-RB containing an EB certificate is processed within the same $\Delta_\text{RB}$
-time bound as standard Praos blocks.
-
-<a id="eb-reapplication-constraint"></a>
-
-**1. EB Reapplication Constraint**
-
-Reapplying a certified EB cannot cost more than standard transaction processing.
-
-$$\Delta_\text{reapply} < \Delta_\text{applyTxs}$$
-
-<a id="certified-eb-transmission-constraint"></a>
-
-**2. Certified EB Transmission Constraint**
-
-Any certified EB referenced by an RB must be transmitted (but not necessarily be
-processed) before that RB needs to be processed.
-
-$$\Delta_\text{EB}^{\text{W}} < 3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff} + (\Delta_\text{RB} - \Delta_\text{applyTxs})$$
-
-The security argument can now be described. For simplicity, the analysis focuses
-on the case where a single RB (referencing an EB) is diffused, and nodes have
-already computed the ledger state that this RB extends.
-
-The argument proceeds as follows: (i) The certified EB that the RB references
-will be received within $\Delta_\text{RB} - \Delta_\text{applyTxs}$ from the
-initial diffusion time of the RB. This follows directly from
-[Constraint 2](#certified-eb-transmission-constraint) and the fact that the RB
-was generated at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$
-slots after the EB was generated. (ii) The RB will be processed within
-$\Delta_\text{RB}$ slots, due to the fact that it is received within
-$\Delta_\text{RB} - \Delta_\text{applyTxs}$ from its initial diffusion time, and
-processing in the worst-case takes
-$\Delta_\text{reapply} (< \Delta_\text{applyTxs})$ slots according to
-[Constraint 1](#eb-reapplication-constraint).
-
-Given that nodes are caught up when they are about to produce or process an RB,
-Praos safety and liveness is thus preserved.
 
 ### Node Behavior
 
@@ -1148,7 +1149,7 @@ _Remark_. In contrast, the EB certified by a RB that also includes some
 transactions is exactly as urgent as that RB, because the RB cannot be selected
 without the EB. The $L_\text{diff}$ parameter prevents such urgency inversion
 from occurring enough to matter, as explained in the
-[Security Argument](#security-argument) section, assuming nodes automatically
+[Security Argument](#protocol-security) section, assuming nodes automatically
 eventually recover when it does happen.
 
 In reality, the prioritization of Praos over Leios does not need to be perfectly
