@@ -6,8 +6,8 @@ Status: Open
 Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
     - Raphael Toledo <raphael.toledo@iohk.io>
-    - Peter Gaži <peter.gazi@iohk.io>
-Proposed Solutions: []
+Proposed Solutions: 
+  ["CIP-???? : Ouroboros Φalanx: Breaking the Economics of Grinding Attacks"]
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/1009
 Created: 2025-10-03
@@ -33,7 +33,7 @@ This **Cardano Problem Statement (CPS)** 📜 builds upon the foundational work 
 
 ### Summary of Findings
 
-This **[**CPD**](./CPD/README.md)** examines the *Randomness Generation Sub-Protocol* within the *Ouroboros framework* ⚙️, highlighting its vulnerabilities and their implications for *Cardano’s* **security** 🔒. Key insights include:
+This **[**CPD**](./CPD/README.md)** examines the *Randomness Generation Sub-Protocol* within the *Ouroboros Praos* ⚙️, highlighting its vulnerabilities and their implications for *Cardano’s* **security** 🔒. Key insights include:
 
 - **Randomness Vulnerability**: *Ouroboros Praos* employs **VRFs** for randomness generation, but this approach is susceptible to *grinding attacks*, where adversaries manipulate outcomes to influence **leader election**, threatening Cardano’s **fairness** ⚖️ and **integrity**.
 - **Attack Likelihood**: Attacks become significantly more feasible when an adversary controls **over 20% of the total stake** (approximately **4.36 billion ADA**, as of March 2025), while smaller stakes (e.g., **5%**) make such attempts highly unlikely over extended periods.
@@ -44,15 +44,22 @@ This **[**CPD**](./CPD/README.md)** examines the *Randomness Generation Sub-Prot
   - The intensity of these attacks scales with stake: the more stake an adversary holds, the greater their influence over **leader election**, amplifying their ability to manipulate randomness. In a simplistic view, this can be likened to manipulating a $256$-bits nonce—a value $\rho$ ranging from $0$ to $256$— where higher stake progressively grants more control, potentially allowing full manipulation of the nonce at the upper limit.
   - The wide cost disparity reflects how the complexity of the attack—such as the scope of the targeted time window and the depth of evaluation—drastically increases resource needs, acting as a natural deterrent for more ambitious manipulations.
 
-To illustrate the **Computational Feasibility**, the table below (sourced from the **CPD**, Section [**3. The Cost of Grinding: Adversarial Effort and Feasibility**](./CPD/README.md#3-the-cost-of-grinding-adversarial-effort-and-feasibility)) maps attack feasibility across four scenarios—**Ant Glance**, **Ant Patrol**, **Owl Stare**, and **Owl Survey**—based on the nonce value $\rho$ (0 to 256 bits). Each scenario reflects different attack complexities, with feasibility shifting as computational and economic demands grow:
+To illustrate the **Computational Feasibility**, the graph below (sourced from the **CPD**, Section [**3. The Cost of Grinding: Adversarial Effort and Feasibility**](./CPD/README.md#3-the-cost-of-grinding-adversarial-effort-and-feasibility)) maps attack feasibility across four scenarios—**Ant Glance**, **Ant Patrol**, **Owl Stare**, and **Owl Survey**—based on the nonce value $\rho$ (0 to 256 bits). Each scenario reflects different attack complexities, with feasibility shifting as computational and economic demands grow:
 
-| **Feasibility Category**                  | **🔵 Ant Glance** | **🟠 Ant Patrol** | **🟢 Owl Stare** | **🔴 Owl Survey** |
-|-------------------------------------------|-------------------|-------------------|------------------|-------------------|
-| **🟢 🌱 Trivial for Any Adversary**       | $[0, 49)$         | $[0, 47)$         | $[0, 27)$        | $[0, 27)$         |
-| **🟡 💰 Feasible with Standard Resources**| $[49, 59)$        | $[47, 57)$        | $[27, 34)$       | $[27, 34)$        |
-| **🟠 🏭 Possible with Large-Scale Infrastructure** | $[59, 73)$ | $[57, 71)$        | $[34, 48)$       | $[34, 48)$        |
-| **🔴 🚫 Borderline Infeasible**           | $[73, 87)$        | $[71, 85)$        | $[48, 62)$       | $[48, 62)$        |
-| **🔴 🚫 Infeasible**                     | $[87, 256)$       | $[85, 256)$       | $[62, 256)$      | $[62, 256)$       |
+<div align="center">
+<img src="./CPD/image/grinding_depth_scenarios_cost_with_feasibility_layers_gradient.png" alt="Grinding Depth Scenarios with Feasibility Thresholds"/>
+</div>
+
+The table below delineates the **$\rho$ values** at which each scenario transitions across feasibility categories, illustrating the computational and economic thresholds:
+
+| **Feasibility Category**                  | **🔵 Ant Glance**   | **🟠 Ant Patrol**   | **🟢 Owl Stare**   | **🔴 Owl Survey**   |
+|--------------------------------------------|---------------------|---------------------|--------------------|--------------------|
+| **🟢 🌱 Trivial for Any Adversary**        | $0 \to 53.6$        | $0 \to 32.9$        | $0 \to 31.6$       | $0 \to 31.1$       |
+| **🟡 💰 Feasible with Standard Resources** | $53.6 \to 60$     | $32.9 \to 39.5$     | $31.6 \to 38.3$    | $31.1 \to 37.8$    |
+| **🟠 🏭 Large-Scale Infrastructure Required** | $60 \to 69.7$  | $39.5 \to 49.5$     | $38.2 \to 48.2$    | $37.8 \to 47.7$    |
+| **🔴 🚫 Borderline Infeasible**            | $69.7 \to 79.4$     | $49.5 \to 59.5$     | $48.2 \to 58.2$    | $47.7 \to 57.7$    |
+| **🔴 🚫 Infeasible**                      | $79.4 \to 256$      | $59.5 \to 256$      | $58.2 \to 256$     | $57.7 \to 256$     |
+
 
 **Context**: The scenarios represent increasing attack sophistication (e.g., *Ant Glance* is a quick, low-effort attack; *Owl Survey* is a comprehensive, resource-intensive one). As $\rho$ increases, so does the difficulty, shifting feasibility from trivial (e.g., a lone actor with a laptop) to infeasible (e.g., requiring nation-state-level resources).
 
