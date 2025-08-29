@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano’s staking and on‑chain voting have drifted toward passivity. As described in CPS-0022, long‑lived “set‑and‑forget” delegations let rewards and governance weight ossify, particularly in wallets that have been permanently lost, diluting staking rewards and voting power engaged participants and harming network security. This CIP reframes delegation as an **active, periodically affirmed contribution to network security** and realigns incentives so rewards flow to those presently and capable of participating. At a high level, it introduces (i) **time‑bound, renewable delegations** for stake pools and dReps, and (ii) **full‑pot reward distribution** to currently eligible delegators and pools each epoch. 
+Cardano’s staking and on‑chain voting have drifted toward passivity. As described in CPS-0022, long‑lived “set‑and‑forget” delegations let rewards and governance weight ossify, particularly in wallets that have been permanently lost, diluting staking rewards and voting power engaged participants and harming network security. This CIP reframes delegation as an **active, periodically affirmed contribution to network security** and realigns incentives so rewards flow to those presently and capable of participating. At a high level, it introduces (i) **reward-account liveness with inactivity expiry** (proof-of-life via any witness-bearing action on the staking credential), and (ii) **full-pot reward distribution** to currently eligible delegators and pools each epoch.
 
 If the network’s total staking ratio remains roughly unchanged, these changes are expected to increase rewards for all delegators and stake pool operators by a small annual percent. Together, these changes encourage ongoing engagement, reduce sticky/lost‑stake externalities, and keep realized emissions consistent with monetary policy while respecting user property rights.
 
@@ -25,7 +25,7 @@ Many users interpret staking rewards as akin to bank interest. If that were the 
 - Delegation is a liquid vote for a pool operator. Delegators are expected to reevaluate and move if performance, fees, or behavior change.
 - Lost or inactive stake no longer contributes to present‑day security yet can lock in block‑production influence and siphon rewards from active participants.
 
-This CIP addresses the broader drift toward **passive and indifferent delegations.** Securing the network is an **active act**, periodically affirmed by the holder, and rewarded accordingly. Expirations introduce a light‑touch proof‑of‑life for delegation and dRep voting power. Furthermore, full‑pot distribution provides a stabilizing incentive: if total stake falls low enough to threaten security, yields rise automatically for active delegators and SPOs, encouraging new delegation rather than letting rewards drip back to reserves.
+This CIP addresses the broader drift toward **passive and indifferent delegations.** Securing the network is an **active act**, periodically affirmed by the holder, and rewarded accordingly. Reward-account inactivity introduces a light-touch **proof-of-life** via any witness-bearing action on the staking credential, covering both stake pool and dRep participation. Furthermore, full‑pot distribution provides a stabilizing incentive: if total stake falls low enough to threaten security, yields rise automatically for active delegators and SPOs, encouraging new delegation rather than letting rewards drip back to reserves.
 
 ## Specification
 
@@ -36,23 +36,22 @@ This CIP addresses the broader drift toward **passive and indifferent delegation
 
 This CIP intentionally limits itself to two changes to the ledger rules. All other reward mechanics (e.g., pledge influence, saturation, treasury cut) are unchanged:
 
-### 1) Delegation certificate expiration
+### 1) Reward-account inactivity expiry (proof-of-life)
 
-- Add **two protocol parameters** (measured in epochs), to be set via governance:
-  - `stakePoolDelegationLifetime`
-  - `drepDelegationLifetime`
-- A delegation (to a stake pool or dRep) becomes **invalid at the start of the epoch** when its lifetime elapses.
-- **Renewal** is performed by submitting a standard delegation transaction at any time; wallets may prompt or bundle renewals but such UX is out of scope for this CIP.
-- **Independence:** stake‑pool and dRep delegations expire and renew independently; expiry of one does not imply any fallback for the other.
-- **Migration:** upon CIP activation, all existing delegations are backdated to their original activation epochs; any older than the chosen lifetime expire immediately. No funds are seized, but rewards will stop accruing and voting power will no longer count.
-- **Exception: always_auto_abstain.** Delegations to this pre‑defined protocol dRep do not expire. This is because voting power that is delegated here is excluded from governance quorum, so lost delegations cannot ossify decision power. Moreover, many users who use Cardano for other things (DeFi, NFTs, etc.) might select this option only to withdraw staking rewards. Exempting it avoids unnecessary UX hurdles.
+- Add a **single protocol parameter** (measured in epochs), to be set via governance:
+  - `delegatorInactivity`
+- **Scope & terminology.** A *reward account* (i.e., staking credential) is the object that delegates, accrues, and withdraws rewards. The ledger maintains an `expirationEpoch` for each registered reward account.
+- **Inactivity rule.** During epoch transitions, when stake and voting power are computed, **expired reward accounts** (those with `expirationEpoch < currentEpoch`) are **ignored** for pool leader election, rewards distribution, and governance tallying.
+- **Proof-of-life.** Any action that requires a **witness by the reward account** resets its expiration to `currentEpoch + delegatorInactivity`. Examples include: reward withdrawal, (re)delegation to an SPO, (re)delegation to a dRep, and stake-key registration or deregistration. (Wallets commonly withdraw rewards when submitting any transaction, so ordinary usage renews automatically.)
+- **Ineligible for rewards.** For epochs in which a reward account is inactive, its epoch reward share is **not credited** to that account. Those uncredited rewards are instead distributed with the rest of the rewards pot (see next section).
+- **Migration.** On activation, determine the epoch that the last witness occurred for each rewards account.  Then initialize each account's `expirationEpoch` to that epoch plus `delegatorInactivity`.
 
 ### 2) Full‑pot reward distribution
 
 - In each epoch, distribute the **full rewards pot** (monetary expansion + fees, less the treasury cut, blocks not produced [Eta], and unmet pledge) to eligible delegators and pools without returning any remainder to reserves **(i.e., eliminate the residual ∆r₂ described in SL‑D5 §11.10 and distribute that proportion as well)**.
-- “Eligibility” remains exactly as today, except that stake tied to an **expired** delegation does **not** earn rewards (and expired dRep delegations contribute **no** voting power).
+- “Eligibility” remains exactly as today, except that stake controlled by an **expired reward account** does **not** earn rewards (and expired reward accounts contribute **no** governance voting power).
 
-**Note:** Initial numeric values for the two lifetime parameters are intentionally **left undefined** here and will be chosen through community governance and deliberation. Potential jittering or lottery mechanisms to stagger per-epoch expiries are not mentioned in this proposal, but may be considered separately if operational data warrants it.
+**Note:** The initial numeric value for `delegatorInactivity` is intentionally **left undefined** here and will be chosen through community governance and deliberation. Potential jittering or lottery mechanisms to stagger per-epoch expiries are not mentioned in this proposal, but may be considered separately if operational data warrants it.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -61,16 +60,18 @@ This CIP intentionally limits itself to two changes to the ledger rules. All oth
 - **Curbing ossification & compounding.** Expirations prevent unreachable wallets from indefinitely accumulating rewards or voting power without threatening their principal investment.
 - **Dynamic & responsive yields.** Full‑pot distribution increases pool/delegator yield when participation drops and compresses it when participation rises, creating a simple and transparent balancing mechanism.
 - **Alignment with policy.** Realized emissions track the monetary expansion set by Rho more closely (rather than being artificially reduced by the active‑stake ratio).
-- **Respect for property.** No seizure or clawback occurs. Expired delegations simply stop earning and can be renewed at any time.
-- **Governance clarity.** With no fallback for expired dRep delegations, governance power reflects currently affirmed participation (CIP‑1694’s “inactive dRep” guardrails remain complementary but insufficient on their own).
+- **Respect for property.** No seizure or clawback occurs. Inactive accounts simply stop earning until the account becomes active againn.
+- **Governance clarity.** Because expired reward accounts contribute zero voting power, governance power reflects currently affirmed participation (CIP-1694’s “inactive dRep” guardrails remain complementary but insufficient on their own).
 - **Sharper SPO accountability.** Periodic renewal nudges delegators to review operator fees, performance, and conduct. If a pool underperforms or raises costs, stake can organically reallocate on renewal.
 - **Fairer path for new pools.** Expirations free stake that would otherwise remain inert with incumbents, reducing entrenched advantages from lost delegations and lowering barriers for competent new operators to attract delegation.
 
 ### Option to adjust Rho
 
-Distributing the full-rewards pot will stop sending residual rewards back to reserves. If Rho is left unchanged, reserves will deplete faster by roughly that amount and true emissions will track much closer to the monetary expansion set by Rho. As a result, this will cause active participants to see a small boost to their annual yields. 
+Distributing the full-rewards pot will stop sending residual rewards back to reserves. If Rho is left unchanged, reserves will deplete faster by roughly that amount and true emissions will track much closer to the monetary expansion set by Rho. As a result, this will cause active participants to see a small boost to their annual yields. If the community prefers to preserve the current rate of emissions, the community can instead reduce Rho to offset this through a parameter change governance action. However, this will trade away the increase in rewards. This CIP intentionally leaves this choice out of scope.
 
-If the community prefers to preserve the current rate of emissions, the community can instead reduce Rho to offset this through a parameter change governance action. However, this will trade away the increase in rewards. This CIP intentionally leaves this choice out of scope.
+A key practical advantage of distributing the full rewards pot while tightening eligibility for rewards (e.g., by requiring a witness within `delegatorInactivity` epochs) and optionally lowering `Rho` to compensate is that it slows the depletion of reserves, yet still marginally increases rewards for active delegators and SPOs. Empirical projections (e.g., Leios/CPS modeling and CPS‑22 forecasts) suggest sustaining current reward trajectories could require materially higher transaction throughput or faster reserve drawdown. By excluding long‑dormant credentials from the payout base we simply avoid paying rewards to wallets that are unlikely to ever reuse them. That reduction in the set of eligible reward accounts lengthens reserve lifetime in a predictable way while still delivering higher per‑unit yields to genuinely active delegators and SPOs.
+ 
+This is a policy lever with clear tradeoffs: the community can preserve the nominal emission schedule by lowering `Rho`, which maintains the same long‑term reserve trajectory but gives up the near‑term yield uplift for active participants; or the community can keep `Rho` and accept faster nominal depletion while shifting more reward flow to active participants today. Because the change is expressed as an eligibility rule rather than a confiscation, it preserves property rights and is operationally simple to reason about.  It therefore offers a modest, low‑risk way to buy more runway for broader, longer‑term value‑creation efforts (e.g., higher fees/tx volume, DeFi growth) that are the real sustainable solution.
 
 ### Prior rationale and revised censorship assessment
 
@@ -83,11 +84,11 @@ The Shelley-era design explicitly worried about an incentive for large pools to 
 - **Richer targets exist.** In a DeFi‑enabled ecosystem, selective censorship of high‑value transactions (e.g., liquidations/arbitrages) offers a concentrated, private payoff from censoring few targeted transactions, whereas delegation censorship requires suppressing many of them for marginal gains.
 - **Operational risk and visibility.** Prolonged, coordinated censorship would be conspicuous, invite social and governance backlash, and likely degrade a censor’s reputation and delegation flow, offsetting any transient gain.
 
-These factors, together with periodic expiration/renewal that naturally spreads delegation updates over time, support removing the “return to reserves” scaling while keeping incentives aligned with **active participation**.
+These factors, together with periodic account-liveness expiry/renewal that naturally spreads liveness-reset actions over time, support removing the “return to reserves” scaling while keeping incentives aligned with **active participation**.
 
 ### Security consideration: participation shocks after large expirations
 
-Introducing expirations could, in the short term, allow portions of stake to lapse if large wallets forget or delay renewal. This temporarily reduces the **active‑stake ratio**, widening the gap between total and active stake. In such windows, the cost for an adversary to assemble a large share of active stake is lower than usual, and block production can concentrate among a smaller set of pools until new delegations occur.
+Introducing inactivity expiry could, in the short term, allow portions of stake to lapse if large wallets forget or delay renewal. This temporarily reduces the **active‑stake ratio**, widening the gap between total and active stake. In such windows, the cost for an adversary to assemble a large share of active stake is lower than usual, and block production can concentrate among a smaller set of pools until new delegations occur.
 
 **Balancing mechanism in this CIP.** The proposal deliberately pairs expirations with full‑pot reward distribution. Because the entire pot is distributed over the then‑active stake, the per‑unit yield rises automatically when participation drops and compresses when it rises. This creates a fast, transparent negative‑feedback loop:
 
@@ -232,7 +233,7 @@ These effects are also modeled in the open source tool available at [https://spo
 ### Acceptance Criteria
 
 - **CIP Editor Approval** – Cardano CIP Editors must confirm that the specification is complete, unambiguous, and internally consistent with existing CIPs.
-- **Consensus on initial parameter values** – An initial values of for the new protocol parameters `stakePoolDelegationLifetime` and `drepDelegationLifetime` must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses (e.g., RSS results), and community feedback.
+- **Consensus on initial parameter value(s)** – An initial value for the new protocol parameter `delegatorInactivity` in epochs must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses, and community feedback.
 - **Endorsement by Technical Bodies** – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap.
 - **Stakeholder Concurrence** – A majority of stake pool operators (SPOs), ecosystem tooling maintainers, dReps, and other infrastructure providers must signal readiness to upgrade.
 - **Governance Ratification** – The on-chain Hard-Fork Governance Action must pass the requisite dRep and Constitutional Committee thresholds, establishing legal-constitutional legitimacy and stakeholder support for the change.
