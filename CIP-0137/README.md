@@ -153,7 +153,7 @@ stateDiagram-v2
 25  kesSignature = bstr
 26  kesPeriod = word32
 27  operationalCertificate = bstr
-28  coldVerificationKey = word32
+28  coldVerificationKey = bstr .size 32
 29  expiresAt = word32
 30
 31  message = [
@@ -479,7 +479,7 @@ messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word32
 operationalCertificate = bstr
-coldVerificationKey = word32
+coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 message = [
@@ -578,7 +578,7 @@ messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word32
 operationalCertificate = bstr
-coldVerificationKey = word32
+coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 message = [
