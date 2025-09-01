@@ -16,6 +16,7 @@ Implementors:
   - Intersect
 Discussions:
   - https://github.com/input-output-hk/ouroboros-leios/discussions
+  - https://github.com/cardano-foundation/CIPs/pull/1078
 Solution-To:
   - CPS-0018
 Created: 2025-03-07
@@ -39,11 +40,9 @@ family, designed to deliver substantial throughput improvements with economic
 sustainability and minimal added complexity through only few new protocol
 elements.
 
-> [!NOTE]
->
-> For comprehensive research documentation, development history, and additional
-> technical resources, visit the Leios Innovation R&D site at
-> [leios.cardano-scaling.org][leios-website].
+For comprehensive research documentation, development history, and additional
+technical resources, visit the Leios Innovation R&D site at
+[leios.cardano-scaling.org][leios-website].
 
 <details>
   <summary><h2>Table of contents</h2></summary>
@@ -2461,7 +2460,7 @@ usual mechanisms of governing a hard-fork will be employed.
 - **Leios Discord channel** - [IOG Discord][leios-discord]
 - **Leios R&D repository** - [GitHub][leios-github]
 - **Leios formal specification** - [GitHub][leios-formal-spec]
-- **Leios Agfa formal specification** - [Agda
+- **Leios Agda formal specification** - [Agda
   specification][linear-leios-formal-spec]
 - **Leios cryptography prototype** - [GitHub][leioscrypto]
 
@@ -2759,15 +2758,5 @@ non_persistent_vote =
 ```
 
 ## Copyright
-
-> [!NOTE]
->
-> The CIP must be explicitly licensed under acceptable copyright terms (see
-> below).
->
-> CIPs are licensed in the public domain. More so, they must be licensed under
-> one of the following licenses. Each new CIP must identify at least one
-> acceptable license in its preamble. In addition, each license must be
-> referenced by its respective abbreviation below in the _"Copyright"_ section.
 
 This CIP is licensed under [Apache-2.0][apache-2.0].
