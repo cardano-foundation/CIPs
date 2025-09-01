@@ -139,6 +139,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0149 | [Optional DRep Compensation](./CIP-0149) | Proposed |
 | 0150 | [Block Data Compression](./CIP-0150) | Proposed |
 | 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
+| 0152 | [Modules in UPLC](./CIP-0152) | Proposed |
 | 0153 | [Plutus Core Builtin Type - MaryEraValue](./CIP-0153) | Proposed |
 | 0155 | [SRV Registry](./CIP-0155) | Proposed |
 | 0156 | [Plutus Core Builtin Function - multiIndexArray](./CIP-0156) | Proposed |
@@ -150,7 +151,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-08-05</i></p>
+<p align="right"><i>Last updated on 2025-08-28</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
