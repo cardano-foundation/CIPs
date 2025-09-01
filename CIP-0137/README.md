@@ -151,21 +151,19 @@ stateDiagram-v2
 23  messageList = [ * message ]
 24  messageSizeInBytes = word32
 25  kesSignature = bstr
-26  operationalCertificate = bstr
-27  kesPeriod = word32
-28  blockNumber = word32
-29  ttl = word16
-30
-31  message = [
-32    messageId,
-33    messageBody,
-34    blockNumber,
-35    ttl,
-36    kesSignature,
-37    operationalCertificate,
-38    kesPeriod
-39  ]
-40
+26  kesPeriod = word32
+27  operationalCertificate = bstr
+28  expiresAt = word32
+29
+30  message = [
+31    messageId,
+32    messageBody,
+33    kesSignature,
+34    kesPeriod,
+35    operationalCertificate,
+36    expiresAt
+37  ]
+38
 ```
 
 #### Inbound side and outbound side implementation
@@ -210,7 +208,10 @@ The protocol supports blocking and non-blocking requests:
 
 ##### Message invalidation mechanism
 
-In order to bound the resource requirements needed to store the messages in a network node, their lifetime should be limited. A time to live can be set as a protocol parameter for each topic, and once the timespan has elapsed the message is discarded in the internal state of the network node. The time to live can be based on the timestamp of reception of the message on the network node or on the block number embedded in the message.
+In order to bound the resource requirements needed to store the messages in a network node, their lifetime should be limited. Thus, they carry an expiration date (formatted as a Unix timestamp) which must be checked before processing the message:
+
+- the message will be invalidated when the local clock of the processing node exceeds the expiration date
+- an expiration date which expires too far in the future will be considered a protocol violation (the maximum allowed time to live is a protocol parameter for each topic which may be negotiated).
 
 ##### Cost of valid message storage
 
@@ -302,15 +303,14 @@ The following tables gather figures about expected network load in the case of *
 | ---------------------- | ----------- | ----------- |
 | messageId              | 32 B        | 32 B        |
 | messageBody            | 360 B       | 2,000 B     |
-| blockNumber            | 4 B         | 4 B         |
-| ttl                    | 2 B         | 2 B         |
 | kesSignature           | 448 B       | 448 B       |
-| operationalCertificate | 304 B       | 304 B       |
 | kesPeriod              | 4 B         | 4 B         |
+| operationalCertificate | 304 B       | 304 B       |
+| expiresAt              | 4 B         | 4 B         |
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,154 B     | 2,794 B     |
+| total   | 1,152 B     | 2,792 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
@@ -463,28 +463,28 @@ msgDone          = [3]
 
 reason = invalid
        / alreadyReceived
-       / ttlTooLarge
+       / expired
        / other
 
 invalid         = [0, tstr]
 alreadyReceived = [1]
-ttlTooLarge     = [2]
+expired     = [2]
 other           = [3, tstr]
 
 messageId    = bstr
 messageBody  = bstr
-blockNumber  = word32
-ttl          = word16
 kesSignature = bstr
+kesPeriod    = word32
 operationalCertificate = bstr
+expiresAt = word32
 
 message = [
   messageId,
   messageBody,
-  blockNumber,
-  ttl
   kesSignature,
-  operationalCertificate
+  kesPeriod,
+  operationalCertificate,
+  expiresAt
 ]
 ```
 
@@ -570,17 +570,18 @@ msgServerDone               = [4]
 
 messageId    = bstr
 messageBody  = bstr
-blockNumber  = word32
-ttl          = word16
 kesSignature = bstr
+kesPeriod    = word32
 operationalCertificate = bstr
+expiresAt = word32
 
 message = [
   messageId,
   messageBody,
-  blockNumber,
   kesSignature,
-  operationalCertificate
+  kesPeriod,
+  operationalCertificate,
+  expiresAt
 ]
 
 hasMore = false / true
