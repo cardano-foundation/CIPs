@@ -471,7 +471,7 @@ reason = invalid
 
 invalid         = [0, tstr]
 alreadyReceived = [1]
-expired     = [2]
+expired         = [2]
 other           = [3, tstr]
 
 messageId    = bstr
