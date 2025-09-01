@@ -1,0 +1,99 @@
+; This is temporary file, because currently data block data is not
+; in CBOR format. However this cddl format is very readable so we
+; use it as a pseudo-code.
+
+
+scls = (hdr, [* record])
+record = (size: uint32, payload: any)
+
+slot_no = uint .size 8
+
+; ----- HDR -----
+hdr = {
+  magic: bstr .size 5,      ; "SCLS\x00"
+  version: uint16,          ; starting with 1
+  network_id: uint .size 1, ; 0 - mainnet , 1 - testnet
+  slot_no: slot_no,         ; slot_no when file was created
+}
+
+; ----- Entry -----
+entry = {
+  key: bstr,                ; key of the data, basically any cbor
+  value: bstr               ; value of the data, basically any cbor
+}
+
+; ----- CHUNK -----
+chunk = {
+  chunk_seq: uint .size 8      ; sequence number of the chunk (used for data integrity)
+  chunk_format: uint .size 1,  ; 0 - raw, 1 - zstd, 2 - zstde
+  namespace: tstr,             ; string representation of the chunk values namespace
+  entries: bstr                ; [* entry] - list of entries, packed as described by the chunk_format
+  footer: {
+    entries_cnt: uint .size 4, ; count of entries
+    chunk_hash: bstr .size 28  ; H(concat (digest e for e in entries))
+  }
+}
+
+; ----- DELTA -----
+; WIP is not considered as a fixed format in this version of CIP
+delta = {
+  chunk_seq: uint .size 8,     ; sequence number
+  chunk_format: uint,          ; 0 - raw, 1 - zstd, 2 - zstde
+  changes: bstr                ; [* entry] — list of entries, thumbstone allowed
+  footer: {
+    entries_cnt: uint .size 4  ; count of entries
+    chunk_hash: bstr .size 28  ; H(concat (digest e for e in entries))
+  }
+}
+
+; ----- MANIFEST -----
+manifest = {
+  total_entries: uint .size 8,             ; number of entries so far (for integrity)
+  total_chunks: uint .size 8,              ; number of chunks so far (for integrity)
+  root_hash: bstr,                         ; multihash of the entries
+  ns_roots: { * tstr => bstr .size 32 },   ; mutlihash of the entries
+  prev_manifest_offset: 0 // uint .size 8, ; offset of the previous manifest entry (required with delta)
+  summary: {
+    created_at: tstr,                      ; date
+    tool: tstr,                            ; information about tool
+    ?comment: tstr                         ; additional comments
+  }
+}
+
+; ----- BLOOM -----
+; WIP is not considered as a fixed format in this version of CIP
+bloom = {
+  chunk_seq: uint,
+  m: uint,
+  k: uint,
+  bitset: bstr
+}
+
+; ----- INDEX -----
+; WIP is not considered as a fixed format in this version of CIP
+index = {
+  kind: uint,
+  items: [* any] ; interpretation depends on kind
+}
+
+; ----- DIR -----
+; WIP is not considered as a fixed format in this version of CIP
+dir = {
+  magic_dir: bstr .size 4, ; "SCLD"
+  manifest_offset: uint,
+  index_region_offset: { * tstr => uint },
+  meta_region_offset: { * tstr => uint },
+}
+
+; ----- META -----
+meta = {
+  entries: [* meta_entry]
+  footer: {
+    entries_cnt: uint .size 4  ; count of entries
+    chunk_hash: bstr .size 28  ; H(concat (digest e for e in entries))
+  }
+}
+meta_entry = {
+  subject: uri, ; URI
+  value: bstr ; multihash
+}
