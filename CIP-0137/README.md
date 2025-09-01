@@ -153,17 +153,19 @@ stateDiagram-v2
 25  kesSignature = bstr
 26  kesPeriod = word32
 27  operationalCertificate = bstr
-28  expiresAt = word32
-29
-30  message = [
-31    messageId,
-32    messageBody,
-33    kesSignature,
-34    kesPeriod,
-35    operationalCertificate,
-36    expiresAt
-37  ]
-38
+28  coldVerificationKey = word32
+29  expiresAt = word32
+30
+31  message = [
+32    messageId,
+33    messageBody,
+34    kesSignature,
+35    kesPeriod,
+36    operationalCertificate,
+37    coldVerificationKey,
+38    expiresAt
+39  ]
+40
 ```
 
 #### Inbound side and outbound side implementation
@@ -242,7 +244,7 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 
 ##### Message authentication mechanism
 
-The message body is signed with the KES key of the SPO. This signature and the operational certificate of the SPO are appended to the message which is diffused.
+The message body is signed with the KES key of the SPO. This KES signature, the operational certificate of the SPO (without the cold verification key) and the cold verification key are appended to the message which is diffused.
 
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
 
@@ -306,11 +308,12 @@ The following tables gather figures about expected network load in the case of *
 | kesSignature           | 448 B       | 448 B       |
 | kesPeriod              | 4 B         | 4 B         |
 | operationalCertificate | 304 B       | 304 B       |
+| coldVerificationKey    | 4 B         | 4 B         |
 | expiresAt              | 4 B         | 4 B         |
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,152 B     | 2,792 B     |
+| total   | 1,156 B     | 2,796 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
@@ -476,6 +479,7 @@ messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word32
 operationalCertificate = bstr
+coldVerificationKey = word32
 expiresAt = word32
 
 message = [
@@ -484,6 +488,7 @@ message = [
   kesSignature,
   kesPeriod,
   operationalCertificate,
+  coldVerificationKey,
   expiresAt
 ]
 ```
@@ -573,6 +578,7 @@ messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word32
 operationalCertificate = bstr
+coldVerificationKey = word32
 expiresAt = word32
 
 message = [
@@ -581,6 +587,7 @@ message = [
   kesSignature,
   kesPeriod,
   operationalCertificate,
+  coldVerificationKey,
   expiresAt
 ]
 
