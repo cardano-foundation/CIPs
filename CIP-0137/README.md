@@ -244,7 +244,7 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 
 ##### Message authentication mechanism
 
-The message body is signed with the KES key of the SPO. This KES signature, the operational certificate of the SPO (without the cold verification key) and the cold verification key are appended to the message which is diffused.
+The message is signed with the KES key of the SPO and the KES signature is appended to the message. The operational certificate of the SPO (without the cold verification key) and the cold verification key are part of the signed fields of the message which is diffused. The message is signed with a CBOR bytes encoding of all the fields of the message (less the KES signature).
 
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
 
