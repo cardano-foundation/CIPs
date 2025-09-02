@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 163
 Title: Time-Bound Delegation with Dynamic Rewards
 Category: Ledger
 Status: Proposed
