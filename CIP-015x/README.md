@@ -315,7 +315,7 @@ Format defines canonical format and ordering for the stored data, thus allows re
 #### Global alternatives:
 
 - **CIP PR #9 by Jean-Philippe Raynaud** <sup>[link](#jpraynad-cip-link)</sup>:
-the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the work [jpraynaud-cip] and related work with our own and use the best of two words.
+the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the [work](jpraynaud-cip-link) and related work with our own and use the best of two words.
 
 - **CIP draft by Paul Clark** <sup>[link](#paul-clark-cip)</sup>:
 this was an early work of the CIP of the canonical ledger state. The work was more targeted towards what is stored in the files. Proposal also uses deterministic CBOR (canonical CBOR in this CIP). Proposal opens a discussion and rules about how and when snapshots should be created by the nodes, that is deliberately not discussed in the current CIP, as we do not want to impose restrictions on the nodes, and the format allow the nodes not to have any agreement on those rules. As a solution for extensibility and partiality the CIP proposes using a file per "namespace" (in the terminology of the current CIP), in our work we proposed to have a single chunked file that is more friendly for the producer. Currently we are considering at least to have an option for extracting multi-files version. See discussion in open questions.
@@ -354,7 +354,7 @@ The proposed SCLS format does not contradict having multiple files, on the contr
 
 ##### Should files be byte-identical?
 
-Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add blocks that are required for them to operate or bootstrap. It's true that other approaches like [paul-clark-cip], does solve that issue by creating multiple files, each of them will be byte-identical.
+Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add blocks that are required for them to operate or bootstrap. It's true that other [approaches](#paul-clark-ci-linkp), does solve that issue by creating multiple files, each of them will be byte-identical.
 
 There are few solutions that we propose:
 
