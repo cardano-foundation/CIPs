@@ -332,6 +332,18 @@ More common container file formats: many container formats were evaluated, but m
 - **gRPC**: current Haskell node is using CBOR-based ecosystem, so nodes have to support CBOR anyway. In contrast to self-describing CBOR, gRPC requires schema to read the document, and that may be a problem for future compatibility.
 - **Plain CBOR stream**: easier decoding, but prevents skipping unwanted chunks needed for filtering and additional properties, like querying the data in the file.
 
+**JSON vs CBOR for Canonical Ledger State**
+
+
+There are strong reasons to prefer CBOR over JSON for representing the canonical ledger state. The ledger state is large and contains binary data; a binary format is therefore much more compact and efficient than JSON.
+
+While JSON libraries are widely available in nearly every language, JSON lacks a notion of canonical form. Two JSON serializations of the same object are not guaranteed to be byte-identical, so additional tooling and specification would be required to achieve determinism.
+
+By contrast, CBOR has a defined deterministic encoding (see [RFC 8949](#cbor-link) and [restrictions](#dcbor-link)), making it suitable for a canonical format. CBOR also has mature implementations across many programming languages (list [here]((https://cbor.io/impls.html).
+
+Importantly, RFC 8949 also defines a mapping between CBOR and JSON. This allows us to specify a JSON view of the format so that downstream applications can consume the data using standard JSON tooling, while the canonical form remains CBOR.
+
+
 ##### Multi-file or single file?
 
 We considered using single file because it's more friendly to the producer, because it's possible to ensure required atomicity and durability properties, together with footers-in blocks, it's possible to validate that the data was actually written and is correct. In case of failure it's possible to find out exactly the place where the failure happened.
