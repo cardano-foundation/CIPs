@@ -274,7 +274,7 @@ Data is stored in the list of `Entries`, each entry consist of the namespace and
 - `key: bstr` - CBOR-encoded string key.
 - `dom : bstr` – CBOR-encoded data (canonical form).
 
-Exact definition of the domain data is left out in this CIP. We propose that ledger team would propose canonical representation for the types in each new era. For the types they must be in a canonical CBOR format [cbor] with restrictions from [dcbor]. Values must not be derivable, that is, if some part of the state can be computed based on another part, then only the base one should be in the state."
+Exact definition of the domain data is left out in this CIP. We propose that ledger team would propose canonical representation for the types in each new era. For the types they must be in a canonical [CBOR format](#cbor-link) with restrictions from [deterministic cbor](#dcbor-link). Values must not be derivable, that is, if some part of the state can be computed based on another part, then only the base one should be in the state."
 
 All concrete formats should be stored in attachment to this CIP and stored in `namespaces/namespaces.cddl`. All the changes should be introduced using current CIP update process.
 
@@ -314,10 +314,10 @@ Format defines canonical format and ordering for the stored data, thus allows re
 
 #### Global alternatives:
 
-- **CIP PR #9 by Jean-Philippe Raynaud [jpraynaud-cip]**:
+- **CIP PR #9 by Jean-Philippe Raynaud** <sup>[link](#jpraynad-cip-link)</sup>:
 the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the work [jpraynaud-cip] and related work with our own and use the best of two words.
 
-- **CIP draft by Paul Clark** [paul-clark-cip]:
+- **CIP draft by Paul Clark** <sup>[link](#paul-clark-cip)</sup>:
 this was an early work of the CIP of the canonical ledger state. The work was more targeted towards what is stored in the files. Proposal also uses deterministic CBOR (canonical CBOR in this CIP). Proposal opens a discussion and rules about how and when snapshots should be created by the nodes, that is deliberately not discussed in the current CIP, as we do not want to impose restrictions on the nodes, and the format allow the nodes not to have any agreement on those rules. As a solution for extensibility and partiality the CIP proposes using a file per "namespace" (in the terminology of the current CIP), in our work we proposed to have a single chunked file that is more friendly for the producer. Currently we are considering at least to have an option for extracting multi-files version. See discussion in open questions.
 - **Do Nothing**: rejected due to interoperability and Mithril requirements.
 
@@ -392,13 +392,13 @@ There are three options that we see:
 
 ## References
 
-1. [https://ipld.io/specs/transport/car/carv2/](https://ipld.io/specs/transport/car/carv2/)
-2. [jpraynaud-cip](https://github.com/cardano-scaling/CIPs/pull/9)
-3. [https://docs.cardano.org/developer-resources/scalability-solutions/mithril](https://docs.cardano.org/developer-resources/scalability-solutions/mithril)
-4. [multihash](https://github.com/multiformats/multihash)
-5. [paul-clark-cip][https://hackmd.io/Q9eSEMYESICI9c4siTnEfw]
-6. [cbor-rfc](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
-7. [dcbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/)
+1. <a name="carv2-link"></a> CARv2 format documentation: [https://ipld.io/specs/transport/car/carv2/](https://ipld.io/specs/transport/car/carv2/)
+2. <a name="jpraynad-cip-link"></a> Draft Canonical ledger state snapshot and immutable data formats CIP: [https://github.com/cardano-scaling/CIPs/pull/9](https://github.com/cardano-scaling/CIPs/pull/9)
+3. <a name="mithril-link"></a> Mithril: [https://docs.cardano.org/developer-resources/scalability-solutions/mithril](https://docs.cardano.org/developer-resources/scalability-solutions/mithril)
+4. <a name="multihash-link"></a> Multhash format: [https://github.com/multiformats/multihash](https://github.com/multiformats/multihash)
+5. <a name="paul-clark-cip-link"></a> Canonical ledger state CIP draft by Paul Clark: [https://hackmd.io/Q9eSEMYESICI9c4siTnEfw](https://hackmd.io/Q9eSEMYESICI9c4siTnEfw)
+6. <a name="cbor-link"></a> Deterministically Encoded CBOR in CBOR RFC: [https://datatracker.ietf.org/doc/html/rfc8949#section-4.2](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
+7. <a name="dcbor-link"></a> A Deterministic CBOR Application Profile: [https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/) 
 
 ## Copyright
 
