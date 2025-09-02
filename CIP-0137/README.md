@@ -156,13 +156,16 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 message = [
-  messageId,
-  messageBody,
-  kesSignature,
-  kesPeriod,
-  operationalCertificate,
-  coldVerificationKey,
-  expiresAt
+  #6.1(bstr) # cbor-in-cbor encoding of messagePayload
+  , kesSignature
+]
+messagePayload = [
+  messageId
+  , messageBody
+  , kesPeriod
+  , operationalCertificate
+  , coldVerificationKey
+  , expiresAt
 ]
 ```
 
@@ -242,7 +245,7 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 
 ##### Message authentication mechanism
 
-The message is signed with the KES key of the SPO and the KES signature is appended to the message. The operational certificate of the SPO (without the cold verification key) and the cold verification key are part of the signed fields of the message which is diffused. The message is signed with a CBOR bytes encoding of all the fields of the message (less the KES signature).
+The message payload part of the message is signed with the KES key of the SPO and the KES signature is appended to the message. The operational certificate of the SPO (without the cold verification key) and the cold verification key are part of the signed fields of the message which is diffused. The message is signed with a CBOR bytes encoding of the message payload, i.e. all the fields of the message (less the KES signature).
 
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
 
@@ -481,13 +484,16 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 message = [
-  messageId,
-  messageBody,
-  kesSignature,
-  kesPeriod,
-  operationalCertificate,
-  coldVerificationKey,
-  expiresAt
+  #6.1(bstr) # cbor-in-cbor encoding of messagePayload
+  , kesSignature
+]
+messagePayload = [
+  messageId
+  , messageBody
+  , kesPeriod
+  , operationalCertificate
+  , coldVerificationKey
+  , expiresAt
 ]
 ```
 
@@ -580,13 +586,16 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 message = [
-  messageId,
-  messageBody,
-  kesSignature,
-  kesPeriod,
-  operationalCertificate,
-  coldVerificationKey,
-  expiresAt
+  #6.1(bstr) # cbor-in-cbor encoding of messagePayload
+  , kesSignature
+]
+messagePayload = [
+  messageId
+  , messageBody
+  , kesPeriod
+  , operationalCertificate
+  , coldVerificationKey
+  , expiresAt
 ]
 
 hasMore = false / true
