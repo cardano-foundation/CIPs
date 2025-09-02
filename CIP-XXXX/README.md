@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 162
 Title: Cardano URIs - DRrep Delegation
 Category: Wallets
 Status: Proposed
