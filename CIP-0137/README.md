@@ -126,46 +126,44 @@ stateDiagram-v2
 ##### CDDL encoding specification
 
 ```cddl
- 1
- 2  messageSubmissionMessage
- 3    = msgInit
- 4    / msgRequestMessageIds
- 5    / msgReplyMessageIds
- 6    / msgRequestMessages
- 7    / msgReplyMessages
- 8    / msgDone
- 9
-10  msgInit = [0]
-11  msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
-12  msgReplyMessageIds = [2, [ *messageIdAndSize ] ]
-13  msgRequestMessages = [3, messageIdList ]
-14  msgReplyMessages = [4, ]
-15  msgDone = [5, ]
-16
-17  isBlocking = false / true
-18  messageCount = word16
-19  messageId = bstr
-20  messageBody = bstr
-21  messageIdAndSize = [ messageId, messageSizeInBytes ]
-22  messageIdList = [ * messageId ]
-23  messageList = [ * message ]
-24  messageSizeInBytes = word32
-25  kesSignature = bstr
-26  kesPeriod = word32
-27  operationalCertificate = bstr
-28  coldVerificationKey = bstr .size 32
-29  expiresAt = word32
-30
-31  message = [
-32    messageId,
-33    messageBody,
-34    kesSignature,
-35    kesPeriod,
-36    operationalCertificate,
-37    coldVerificationKey,
-38    expiresAt
-39  ]
-40
+messageSubmissionMessage
+  = msgInit
+  / msgRequestMessageIds
+  / msgReplyMessageIds
+  / msgRequestMessages
+  / msgReplyMessages
+  / msgDone
+
+msgInit              = [0]
+msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
+msgReplyMessageIds   = [2, [ *messageIdAndSize ] ]
+msgRequestMessages   = [3, messageIdList ]
+msgReplyMessages     = [4, ]
+msgDone              = [5, ]
+
+isBlocking = false / true
+messageCount = word16
+messageId = bstr
+messageBody = bstr
+messageIdAndSize = [ messageId, messageSizeInBytes ]
+messageIdList = [ * messageId ]
+messageList = [ * message ]
+messageSizeInBytes = word32
+kesSignature = bstr
+kesPeriod = word32
+operationalCertificate = bstr
+coldVerificationKey = bstr .size 32
+expiresAt = word32
+
+message = [
+  messageId,
+  messageBody,
+  kesSignature,
+  kesPeriod,
+  operationalCertificate,
+  coldVerificationKey,
+  expiresAt
+]
 ```
 
 #### Inbound side and outbound side implementation
