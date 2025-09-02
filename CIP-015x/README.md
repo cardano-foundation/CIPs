@@ -390,7 +390,7 @@ There are three options that we see:
 1. [ ] Validate with Mithril.
 1. [ ] Rollout and ecosystem tooling.
 
-References:
+## References
 
 1. [https://ipld.io/specs/transport/car/carv2/](https://ipld.io/specs/transport/car/carv2/)
 2. [jpraynaud-cip](https://github.com/cardano-scaling/CIPs/pull/9)
