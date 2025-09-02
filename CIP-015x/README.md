@@ -396,7 +396,7 @@ References:
 2. [jpraynaud-cip](https://github.com/cardano-scaling/CIPs/pull/9)
 3. [https://docs.cardano.org/developer-resources/scalability-solutions/mithril](https://docs.cardano.org/developer-resources/scalability-solutions/mithril)
 4. [multihash](https://github.com/multiformats/multihash)
-5. [paul-clark-cip](https://hackmd.io/Q9eSEMYESICI9c4siTnEfw)
+5. [paul-clark-cip][https://hackmd.io/Q9eSEMYESICI9c4siTnEfw]
 6. [cbor-rfc](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
 7. [dcbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/)
 
