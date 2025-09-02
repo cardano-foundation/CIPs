@@ -341,7 +341,7 @@ The goal is to be able to clearly differentiate and communicate the type of wall
 
 There are two CIPs that are connected with this one:
 
-- [CIP-XXX | Own data wallet](https://github.com/cardano-foundation/CIPs/pull/986) which defines an extension for an [own-data wallet](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#own-data-wallets) which is equivalent to what CIP-30 offers today
+- [CIP-147 | Own data wallet](https://github.com/cardano-foundation/CIPs/pull/986) which defines an extension for an [own-data wallet](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#own-data-wallets) which is equivalent to what CIP-30 offers today
 
 - [CIP-139 | Universal Query Layer](https://github.com/cardano-foundation/CIPs/pull/869) which defines an extension for a [full-data wallet](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#full-data-wallets) which allows the wallet to track blockchain data that is outside of the user's scope
 
