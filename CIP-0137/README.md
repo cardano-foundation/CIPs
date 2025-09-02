@@ -306,14 +306,14 @@ The following tables gather figures about expected network load in the case of *
 | messageId              | 32 B        | 32 B        |
 | messageBody            | 360 B       | 2,000 B     |
 | kesSignature           | 448 B       | 448 B       |
-| kesPeriod              | 4 B         | 4 B         |
+| kesPeriod              | 8 B         | 8 B         |
 | operationalCertificate | 304 B       | 304 B       |
 | coldVerificationKey    | 4 B         | 4 B         |
 | expiresAt              | 4 B         | 4 B         |
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,156 B     | 2,796 B     |
+| total   | 1,160 B     | 2,800 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
@@ -477,7 +477,7 @@ other           = [3, tstr]
 messageId    = bstr
 messageBody  = bstr
 kesSignature = bstr
-kesPeriod    = word32
+kesPeriod    = word
 operationalCertificate = bstr
 coldVerificationKey = bstr .size 32
 expiresAt = word32
@@ -576,7 +576,7 @@ msgServerDone               = [4]
 messageId    = bstr
 messageBody  = bstr
 kesSignature = bstr
-kesPeriod    = word32
+kesPeriod    = word
 operationalCertificate = bstr
 coldVerificationKey = bstr .size 32
 expiresAt = word32
