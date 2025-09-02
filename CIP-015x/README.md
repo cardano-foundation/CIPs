@@ -11,7 +11,8 @@ Implementers:
   - Nicholas Clarke <nicholas.clarke@moduscreate.com>
   - Aleksandr Vershilov <alexander.vershilov@moduscreate.com>
   - João Santos Reis <joao.reis@moduscreate.com>
-Discussions: *TBD (forum thread or PR)*
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/1083
 Created: 2025-08-18
 License: CC-BY-4.0
 ---
