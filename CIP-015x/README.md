@@ -315,9 +315,9 @@ Format defines canonical format and ordering for the stored data, thus allows re
 #### Global alternatives:
 
 - **CIP PR #9 by Jean-Philippe Raynaud** <sup>[link](#jpraynad-cip-link)</sup>:
-the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the [work](#jpraynaud-cip-link) and related work with our own and use the best of two words.
+the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the [work](#jpraynad-cip-link) and related work with our own and use the best of two words.
 
-- **CIP draft by Paul Clark** <sup>[link](#paul-clark-cip)</sup>:
+- **CIP draft by Paul Clark** <sup>[link](#paul-clark-cip-link)</sup>:
 this was an early work of the CIP of the canonical ledger state. The work was more targeted towards what is stored in the files. Proposal also uses deterministic CBOR (canonical CBOR in this CIP). Proposal opens a discussion and rules about how and when snapshots should be created by the nodes, that is deliberately not discussed in the current CIP, as we do not want to impose restrictions on the nodes, and the format allow the nodes not to have any agreement on those rules. As a solution for extensibility and partiality the CIP proposes using a file per "namespace" (in the terminology of the current CIP), in our work we proposed to have a single chunked file that is more friendly for the producer. Currently we are considering at least to have an option for extracting multi-files version. See discussion in open questions.
 - **Do Nothing**: rejected due to interoperability and Mithril requirements.
 
@@ -339,7 +339,7 @@ There are strong reasons to prefer CBOR over JSON for representing the canonical
 
 While JSON libraries are widely available in nearly every language, JSON lacks a notion of canonical form. Two JSON serializations of the same object are not guaranteed to be byte-identical, so additional tooling and specification would be required to achieve determinism.
 
-By contrast, CBOR has a defined deterministic encoding (see [RFC 8949](#cbor-link) and [restrictions](#dcbor-link)), making it suitable for a canonical format. CBOR also has mature implementations across many programming languages (list [here]((https://cbor.io/impls.html).
+By contrast, CBOR has a defined deterministic encoding (see [RFC 8949](#cbor-link) and [restrictions](#dcbor-link)), making it suitable for a canonical format. CBOR also has mature implementations across many programming languages (list [here](https://cbor.io/impls.html)).
 
 Importantly, RFC 8949 also defines a mapping between CBOR and JSON. This allows us to specify a JSON view of the format so that downstream applications can consume the data using standard JSON tooling, while the canonical form remains CBOR.
 
@@ -354,7 +354,7 @@ The proposed SCLS format does not contradict having multiple files, on the contr
 
 ##### Should files be byte-identical?
 
-Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add blocks that are required for them to operate or bootstrap. It's true that other [approaches](#paul-clark-ci-linkp), does solve that issue by creating multiple files, each of them will be byte-identical.
+Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add blocks that are required for them to operate or bootstrap. It's true that other [approaches](#paul-clark-cip-link), does solve that issue by creating multiple files, each of them will be byte-identical.
 
 There are few solutions that we propose:
 
@@ -404,13 +404,13 @@ There are three options that we see:
 
 ## References
 
-1. <a name="carv2-link"></a> CARv2 format documentation: [https://ipld.io/specs/transport/car/carv2/](https://ipld.io/specs/transport/car/carv2/)
-2. <a name="jpraynad-cip-link"></a> Draft Canonical ledger state snapshot and immutable data formats CIP: [https://github.com/cardano-scaling/CIPs/pull/9](https://github.com/cardano-scaling/CIPs/pull/9)
-3. <a name="mithril-link"></a> Mithril: [https://docs.cardano.org/developer-resources/scalability-solutions/mithril](https://docs.cardano.org/developer-resources/scalability-solutions/mithril)
-4. <a name="multihash-link"></a> Multhash format: [https://github.com/multiformats/multihash](https://github.com/multiformats/multihash)
-5. <a name="paul-clark-cip-link"></a> Canonical ledger state CIP draft by Paul Clark: [https://hackmd.io/Q9eSEMYESICI9c4siTnEfw](https://hackmd.io/Q9eSEMYESICI9c4siTnEfw)
-6. <a name="cbor-link"></a> Deterministically Encoded CBOR in CBOR RFC: [https://datatracker.ietf.org/doc/html/rfc8949#section-4.2](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
-7. <a name="dcbor-link"></a> A Deterministic CBOR Application Profile: [https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/) 
+1. <a name="carv2-link"></a> [CARv2 format documentation](https://ipld.io/specs/transport/car/carv2/)
+2. <a name="jpraynad-cip-link"></a> [Draft Canonical ledger state snapshot and immutable data formats CIP](https://github.com/cardano-scaling/CIPs/pull/9)
+3. <a name="mithril-link"></a> [Mithril](https://docs.cardano.org/developer-resources/scalability-solutions/mithril)
+4. <a name="multihash-link"></a> [Multihash format](https://github.com/multiformats/multihash)
+5. <a name="paul-clark-cip-link"></a> [Canonical ledger state CIP draft by Paul Clark](https://hackmd.io/Q9eSEMYESICI9c4siTnEfw)
+6. <a name="cbor-link"></a> [Deterministically Encoded CBOR in CBOR RFC](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
+7. <a name="dcbor-link"></a> [A Deterministic CBOR Application Profile](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor)
 
 ## Copyright
 
