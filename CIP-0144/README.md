@@ -20,6 +20,12 @@ CIP-30 is the standard interface of communication between wallets and dApps. Whi
 
 [CPS-0010](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md) outlines the shortcomings of CIP-30. In this CIP we aim to address some of the issues pointed out by CPS-10: splitting up the connection API from the functionality provided by the [full API](https://cips.cardano.org/cip/CIP-30#full-api), defining the API in a transport agnostic way and defining a versioning mechanism for the connection API and its extensions.
 
+This CIP only aims to re-define the connection API from CIP-30, leaving the full API and other extensions for future CIPs. CIPs that want to build upon this work should use the following naming convention: `CIP-XXXX | Wallet Connector - <CIP name>`. Once such a CIP is proposed, it should also be added to the table below so all extensions can be easily visible from one place.
+
+
+| Extension CIP | Link | Description |
+| --- | --- | --- |
+| CIP-0147 - Wallet Connector - Own-data wallet | https://github.com/cardano-foundation/CIPs/pull/986 | Extension to enable an own-data wallet, matching the full API that was provided in CIP-30 |
 ## Motivation: why is this CIP necessary?
 
 CIP-30 is a universally accepted web-based wallet standard for Cardano. It provides a minimalistic interface that, in principle, can be used to build almost any kind of Cardano dApp. However, the way dApp<->wallet interaction is defined leads to suboptimal dApp architecture due to CIP-30 limits.
