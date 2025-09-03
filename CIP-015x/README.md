@@ -46,8 +46,8 @@ The Simple Canonical Ledger State (SCLS) is a segmented file format for Cardano 
 
 ### File Structure
 
-1. Header block defining the contents of the file,
-2. Sequence of records `(S, D)*` where `S` is a 32-bit size and `D` is the payload stored in typed record blocks.
+1. Header record defining the contents of the file,
+2. Sequence of records `(S, D)*` where `S` is a 32-bit size and `D` is the payload stored in typed record.
 3. Each payload begins with a one-byte type tag, defining its type.
 
 Unsupported record types are skipped; core data remains accessible.
@@ -85,9 +85,9 @@ HDR,
 MANIFEST
 ```
 
-All the other block types allow to introduce additional features, like delta-states, querying data and may be omitted in case if the user does not want those functionality.
+All the other record types allow to introduce additional features, like delta-states, querying data and may be omitted in case if the user does not want those functionality.
 
-For the additional blocks (all except `HDR, CHUNK, MANIFEST`) it's possible to keep such blocks outside of the file and build them iteratively, outside of the main dump process. This is especially useful for indices.
+For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possible to keep such records outside of the file and build them iteratively, outside of the main dump process. This is especially useful for indices.
 
 #### HDR Record
 
@@ -114,7 +114,7 @@ For the additional blocks (all except `HDR, CHUNK, MANIFEST`) it's possible to k
 
 **Structure:**
 
-- `chunk_seq` : `u64` — sequence number of the block
+- `chunk_seq` : `u64` — sequence number of the record
 - `chunk_format` : `u8` - format of the chunks
 - `namespace` : `bstr` — namespace of the values stored in the CHUNK
 - `entries` — CBOR encoded list of unlimited length
@@ -123,12 +123,12 @@ For the additional blocks (all except `HDR, CHUNK, MANIFEST`) it's possible to k
 **Policy:**
 
 - chunk size \~8–16MiB; footer required;
-- data is stored in deterministically defined global order; In the lexical order of the keys
-- all keys in the block must be unique
-- all key-values in the block must refer to the same namespace
-- readers should verify footer before relying on the data.
-- `chunk_hash = H(concat [ digest(e) | e in entries ])`
-- all CHUNKS blocks are ordered in lexicographical namespace order, to preserve canonical order
+- data is stored in deterministically defined global order; In the lexical order of the keys;
+- all keys in the record must be unique;
+- all key-values in the record must refer to the same namespace;
+- readers should verify footer before relying on the data;
+- `chunk_hash = H(concat [ digest(e) | e in entries ])`;
+- all keys in `CHUNK` `n` must be lexicographically lower than all keys in `CHUNK` `n+1`.
 
 The format proposes support of data compression. For future-compatibility the format is described by the `chunk_format` field, and following variants are introduced:
 
@@ -193,10 +193,10 @@ TODO: define details or move to future work, (we propose to define exact format 
 
 **Structure:**
 
-- `chunk_seq: u64` sequence number of the block
-- `m`: `u32` - total number of bits in the Bloom filter’s bitset (the length of the bit array)
+- `chunk_seq: u64` sequence number of the record.
+- `m`: `u32` - total number of bits in the Bloom filter’s bitset (the length of the bit array).
 - `k`: `u8` - number of independent hash functions used to map a key into bit positions in that array.
-- `bitset`: `bytes[ceil(m/8)]` — actual bitset
+- `bitset`: `bytes[ceil(m/8)]` — actual bitset.
 
 #### INDEX Record
 
@@ -216,16 +216,16 @@ The general idea is that we may want to write a query to the raw data using comm
 
 TODO: define structure, (we propose to define exact format and properties, after the first milestone, when basic data will be implemented and tested. Then based on the benchmarks we could define exact properties we want to see)
 
-**Purpose**: If a file has indices blocks then they will be stored after the blocks with actual data, and directory block allow a fast way to find those blocks. Directory block is intended to be the last block of the file and has a fixed size footer.
+**Purpose**: If a file has index records then they will be stored after the records with actual data, and directory record allow a fast way to find them. Directory record is intended to be the last record of the file and has a fixed size footer.
 
 **Structure:**
 
-- `metadata_offset:` `u64` offset of the previous metadata block, zero if there is no block
-- `index_offset:` `u64` offset of the last index block, zero if there is no block
+- `metadata_offset:` `u64` offset of the previous metadata record, zero if there is no record
+- `index_offset:` `u64` offset of the last index record, zero if there is no record
 
 ### META Record
 
-**Purpose:** block with extra metadata that can be used to store 3rd party data, like signatures for Mithril, metadata information. This is an additional block that may be required for in the additional scenarios.
+**Purpose:** record with extra metadata that can be used to store 3rd party data, like signatures for Mithril, metadata information. This is an additional record that may be required for in the additional scenarios.
 
 **Structure:**
 
@@ -263,7 +263,7 @@ Each logical table/type is a namespace identified by a canonical string (e.g., `
 | hdr/v0       | Header state (e.g. nonces)      |
 | tombstone/v0 | Marker of the removed entry     |
 
-New namespaces may and will be introduced in the future. With new eras and features, new types of the data will be introduced and stored. In order to define what data is stored in the SCLS file, tools fill the `HDR` block and define namespaces. The order of the namespaces does not change the signatures and other integrity data.
+New namespaces may and will be introduced in the future. With new eras and features, new types of the data will be introduced and stored. In order to define what data is stored in the SCLS file, tools fill the `HDR` record and define namespaces. The order of the namespaces does not change the signatures and other integrity data.
 
 For future compatibility support we added version tag to the name, but it may be a subject of discussion
 
@@ -293,7 +293,7 @@ Merkle root is computed as a root value of the Merkle trees over all the live en
 
 To describe in detail, basic chunks store all the values in the canonically ordered based in the key order. After having all values in the order we build a full Merkle tree of those values.
 
-The rule of the thumb is that when we calculate a hash of the data we take into account only the live (non deleted) values in canonical order. In the case when there is a single dump without delta blocks, this is exactly the order of how values are stored. But when delta—blocks appear we need to take into account that in the following blocks there may be values that are smaller than the ones in the base and some values may be deleted or updated. As a result writer should calculate a live-set of values, which can be done by running a streaming multi-merge algorithm (when we search a minimal value from a multiple blocks). In the case a value exists in multiple blocks we use a last—writer—wins rule. If there is a tombstone, we consider a value deleted and do not include it in a live-set.
+The rule of the thumb is that when we calculate a hash of the data we take into account only the live (non deleted) values in canonical order. In the case when there is a single dump without delta records, this is exactly the order of how values are stored. But when delta—records appear we need to take into account that in the following records there may be values that are smaller than the ones in the base and some values may be deleted or updated. As a result writer should calculate a live-set of values, which can be done by running a streaming multi-merge algorithm (when we search a minimal value from a multiple records). In the case a value exists in multiple records we use a last—writer—wins rule. If there is a tombstone, we consider a value deleted and do not include it in a live-set.
 
 ### Extensibility
 
@@ -346,20 +346,20 @@ Importantly, RFC 8949 also defines a mapping between CBOR and JSON. This allows 
 
 ##### Multi-file or single file?
 
-We considered using single file because it's more friendly to the producer, because it's possible to ensure required atomicity and durability properties, together with footers-in blocks, it's possible to validate that the data was actually written and is correct. In case of failure it's possible to find out exactly the place where the failure happened.
+We considered using single file because it's more friendly to the producer, because it's possible to ensure required atomicity and durability properties, together with footers-in records, it's possible to validate that the data was actually written and is correct. In case of failure it's possible to find out exactly the place where the failure happened.
 
 However, we agree that for the consumer who wants to get partial states in will be much simpler to use multiple files.
 
-The proposed SCLS format does not contradict having multiple files, on the contrary for things like additional indices we suggest using additional files, it will work as the blocks has sequential numbers and we can reconstruct full file and have an order. In this proposal we would file to set an additional constraints of the tooling that will come with the libraries and the tool should be able to generate multi-files on a request and convert formats between those
+The proposed SCLS format does not contradict having multiple files, on the contrary for things like additional indices we suggest using additional files, it will work as the records have sequential numbers and we can reconstruct full file and have an order. In this proposal we would file to set an additional constraint of the tooling that will come with the libraries: that the tool should be able to generate multi-files on a request and convert formats between those
 
 ##### Should files be byte-identical?
 
-Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add blocks that are required for them to operate or bootstrap. It's true that other [approaches](#paul-clark-cip-link), does solve that issue by creating multiple files, each of them will be byte-identical.
+Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add records that are required for them to operate or bootstrap. It's true that other [approaches](#paul-clark-cip-link), does solve that issue by creating multiple files, each of them will be byte-identical.
 
 There are few solutions that we propose:
 
 1. allow tooling to export (or even generate) raw cbor files, that will have required byte-identical property
-2. set additional restrictions on the policies for the block, and instead of defining variable size blocks require all the blocks to have exact number of entries inside. It will harm some properties of the hardware but the files will be byte-identical in case if they have similar metadata. Or the metadata we can place it in separate file, then everything will be byte-identical.
+2. set additional restrictions on the policies for the records, and instead of defining variable size records require all the records to have exact number of entries inside. It will harm some properties of the hardware but the files will be byte-identical in case if they have similar metadata. Or the metadata we can place it in separate file, then everything will be byte-identical.
 
 ## Open Questions
 
@@ -370,10 +370,10 @@ properties. It's an open question which of them do we want to support.
 
 **Do we want the file be optimized for querying with external tools? If so how to achieve that?**
 
-We are proposing adding additional block types:
+We are proposing adding additional records types:
 
-- bloom blocks — they would allow faster search of the values by the key, still require file traversal
-- index blocks - it would allow faster search by key without full file traversal
+- bloom records — they would allow faster search of the values by the key, still require file traversal
+- index records - it would allow faster search by key without full file traversal
 
 Both changes will not change the structure of the file.
 
@@ -381,9 +381,9 @@ Both changes will not change the structure of the file.
 
 There are three options that we see:
 
-- In chunks block make key optional, that will support such values. That will change the spec, as we must allow many of such values in the chunks block.
+- In chunks records make key optional, that will support such values. That will change the spec, as we must allow many of such values in the chunks records.
 - Keep value in key, and zero value.
-- Create a separate block type for values without keys.
+- Create a separate record type for values without keys.
 
 ## Path to Active
 
