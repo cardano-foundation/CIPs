@@ -29,11 +29,12 @@ The anticipated growth of the Cardano ecosystem necessitates a fundamental
 enhancement of network throughput to accommodate increasing transaction volumes
 and support complex decentralized applications.
 
-We propose Ouroboros Leios, a consensus protocol designed for high-throughput
-operation while preserving Ouroboros Praos security properties. Block producers
-simultaneously create both a standard Praos block and a larger secondary block
-referencing additional transactions. Secondary blocks undergo committee
-validation before ledger inclusion, enabling significantly higher throughput.
+We propose Ouroboros Leios, an optimistic consensus protocol designed for
+high-throughput operation while preserving Ouroboros Praos security properties.
+Block producers simultaneously create both a standard Praos block and a larger
+secondary block referencing additional transactions. Secondary blocks undergo
+committee validation before ledger inclusion, enabling significantly higher
+throughput.
 
 This specification presents the first version of the Ouroboros Leios protocol
 family, designed to deliver substantial throughput improvements with economic
