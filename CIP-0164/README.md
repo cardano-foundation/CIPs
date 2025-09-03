@@ -267,9 +267,10 @@ inclusion: some EBs get certified and are included in the chain (green), while
 others cannot be certified in time (gray). This happens because Praos block
 production is probabilistic - some RBs will naturally occur before there has
 been sufficient time for the preceding EB to gather the necessary votes and
-certification. The key insight is that proposed Leios utilizes the natural
-intervals between Praos blocks to perform additional work on transaction
-processing without interfering with the base chain operation.
+certification, invalidating these EBs to become adopted. The key insight is that
+proposed Leios utilizes the natural intervals between Praos blocks to perform
+additional work on transaction processing without interfering with the base
+chain operation.
 
 EB inclusion is therefore opportunistic rather than guaranteed, depending on the
 random timing of block production relative to the certification process. The
