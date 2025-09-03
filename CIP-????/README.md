@@ -48,7 +48,7 @@ technical resources, visit the Leios Innovation R&D site at
   <summary><h2>Table of contents</h2></summary>
 
 - [Abstract](#abstract)
-- [Motivation](#motivation)
+- [Motivation: why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
 - [Specification](#specification)
   - [Protocol Flow](#protocol-flow)
     - [Step 1: Block Production](#step-1-block-production)
@@ -79,7 +79,7 @@ technical resources, visit the Leios Innovation R&D site at
   - [Incentives](#incentives)
     - [Adaptive EB production](#adaptive-eb-production)
     - [Hardware upgrade](#hardware-upgrade)
-- [Rationale](#rationale)
+- [Rationale: how does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
   - [How Leios addresses CPS-18](#how-leios-addresses-cps-18)
   - [Evidence](#evidence)
     - [Performance Metrics](#performance-metrics)
@@ -2273,7 +2273,7 @@ in RBs and provides strong network assumptions for certified EB propagation. New
 threats include equivocation by EB producers/voters and transaction availability
 attacks, mitigated through cryptographic validation, equivocation detection, and
 the high voting threshold requirement. Comprehensive analysis is documented in
-the [Security Analysis](#security-analysis) section and
+the [Protocol Security](#protocol-security) section and
 [threat model](https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/threat-model.md).
 
 ### Alternatives & Extensions
