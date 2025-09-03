@@ -60,7 +60,7 @@ technical resources, visit the Leios Innovation R&D site at
     - [Timing parameters](#timing-parameters)
     - [Size parameters](#size-parameters)
   - [Protocol Security](#protocol-security)
-  - [Protocol Entities](#protocol-entities)
+  - [Protocol Artifacts](#protocol-artifacts)
     - [Ranking Blocks (RBs)](#ranking-blocks-rbs)
     - [Endorser Blocks (EBs)](#endorser-blocks-ebs)
     - [Votes and Certificates](#votes-and-certificates)
@@ -103,7 +103,7 @@ technical resources, visit the Leios Innovation R&D site at
 **Figures**
 
 - [Figure 1: Forecast of rewards on Cardano mainnet](#figure-1)
-- [Figure 2: SPO profitability under Praos, as a function of transaction volume](#figure-2)
+- [Figure 2: SPO profitability under Praos if the Reserves did not contribute to rewards, as a function of transaction volume.[^profitability]](#figure-2)
 - [Figure 3: Leios chain structure showing the relationship between Ranking Blocks, Endorser Blocks, and Certificates](#figure-3)
 - [Figure 4: Detailed timing mechanism showing the three critical timing constraints for EB certification](#figure-4)
 - [Figure 5: Up- and downstream interactions of a node (simplified)](#figure-5)
@@ -221,8 +221,8 @@ Treasury, and increasing SPO and delegator rewards.
   <img src="images/spo-profitability.svg" alt="SPO profitability under Praos, as a function of transaction volume">
 </p>
 
-<em>Figure 2: SPO profitability under Praos, as a function of transaction
-volume</em>
+<em>Figure 2: SPO profitability under Praos if the Reserves did not contribute
+to rewards, as a function of transaction volume.[^profitability]</em>
 
 </div>
 
@@ -297,7 +297,7 @@ constraints for EB certification</em>
 
 Leios preserves the existing Praos chain structure while adding additional
 transaction capacity through EBs. When a stake pool wins block leadership, it
-may create two entities:
+may create two objects:
 
 1. **[Ranking Block (RB)](#ranking-blocks-rbs)** A standard Praos block with
    extended header fields to optionally certify one previously announced EB and
@@ -632,11 +632,11 @@ $\Delta_\text{reapply} (< \Delta_\text{applyTxs})$ slots according to
 Given that nodes are caught up when they are about to produce or process an RB,
 Praos safety and liveness is thus preserved.
 
-### Protocol Entities
+### Protocol Artifacts
 
 The protocol extends Praos blocks, introduces endorser blocks, Leios votes and
 certificates. While already introduced briefly, this section specifies these
-entities in more detail.
+artifacts in more detail.
 
 #### Ranking Blocks (RBs)
 
@@ -644,7 +644,6 @@ RBs are Praos blocks extended to support Leios by optionally announcing EBs in
 their headers and embedding EB certificates in their bodies.
 
 1. **Header additions**:
-
    - `announced_eb` (optional): Hash of the EB created by this block producer
    - `announced_eb_size` (optional): Size in bytes of the announced EB (4 bytes)
    - `certified_eb` (optional): Single bit indicating whether this RB certifies
@@ -757,7 +756,7 @@ following before accepting the block:
 1. **CDDL Format Compliance**: Certificate structure matches the specification
    format defined in the <a href="#votes-certificates-cddl">Votes and
    Certificates CDDL specification</a> in Appendix B
-2. **Cryptographic Signatures**: All cryptographic signatures are valid (BLS
+2. **Cryptographic Signatures**: The cryptographic signature is valid (BLS
    signatures in this implementation)
 
 3. **Voter Eligibility**:
@@ -2615,6 +2614,10 @@ usual mechanisms of governing a hard-fork will be employed.
 [^2]: Leios: Dynamic Availability for Blockchain Sharding (2025)
 
 [^leioscrypto]: Leios cryptography prototype implementation
+
+[^profitability]:
+    Analysis documented in the
+    [Praos profitability notebook](https://github.com/input-output-hk/ouroboros-leios/blob/main/analysis/profitability-praos.ipynb)
 
 [praos-delta-q]:
   https://github.com/IntersectMBO/cardano-formal-specifications/tree/main?tab=readme-ov-file#performance-model
