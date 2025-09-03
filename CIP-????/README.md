@@ -1428,7 +1428,7 @@ demonstrated in the [operating costs analysis](#operating-costs), SPO
 profitability improves significantly once sustained throughput exceeds 30-50
 TPS, providing clear economic incentives for infrastructure upgrades.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 Ouroboros Leios introduces a committee-based voting layer over Nakamoto-style
 consensus to handle transaction surplus beyond current Praos block limits,
