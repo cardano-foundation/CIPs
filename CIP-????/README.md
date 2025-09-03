@@ -137,7 +137,7 @@ technical resources, visit the Leios Innovation R&D site at
 
 </details>
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 Cardano's current throughput generally satisfies the immediate needs of its
 users. However, the Ouroboros Praos consensus protocol imposes inherent
