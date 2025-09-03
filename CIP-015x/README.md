@@ -216,7 +216,7 @@ The general idea is that we may want to write a query to the raw data using comm
 
 TODO: define structure, (we propose to define exact format and properties, after the first milestone, when basic data will be implemented and tested. Then based on the benchmarks we could define exact properties we want to see)
 
-**Purpose**: If a file has indices records then they will be stored after the records with actual data, and directory record allow a fast way to find them. Directory record is intended to be the last record of the file and has a fixed size footer.
+**Purpose**: If a file has index records then they will be stored after the records with actual data, and directory record allow a fast way to find them. Directory record is intended to be the last record of the file and has a fixed size footer.
 
 **Structure:**
 
