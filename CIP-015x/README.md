@@ -350,7 +350,7 @@ We considered using single file because it's more friendly to the producer, beca
 
 However, we agree that for the consumer who wants to get partial states in will be much simpler to use multiple files.
 
-The proposed SCLS format does not contradict having multiple files, on the contrary for things like additional indices we suggest using additional files, it will work as the records has sequential numbers and we can reconstruct full file and have an order. In this proposal we would file to set an additional constraints of the tooling that will come with the libraries and the tool should be able to generate multi-files on a request and convert formats between those
+The proposed SCLS format does not contradict having multiple files, on the contrary for things like additional indices we suggest using additional files, it will work as the records have sequential numbers and we can reconstruct full file and have an order. In this proposal we would file to set an additional constraint of the tooling that will come with the libraries: that the tool should be able to generate multi-files on a request and convert formats between those
 
 ##### Should files be byte-identical?
 
