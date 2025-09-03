@@ -158,13 +158,13 @@ expiresAt = word32
 message = [
   #6.1(bstr) # cbor-in-cbor encoding of messagePayload
   , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
 ]
 messagePayload = [
   messageId
   , messageBody
   , kesPeriod
-  , operationalCertificate
-  , coldVerificationKey
   , expiresAt
 ]
 ```
@@ -486,13 +486,13 @@ expiresAt = word32
 message = [
   #6.1(bstr) # cbor-in-cbor encoding of messagePayload
   , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
 ]
 messagePayload = [
   messageId
   , messageBody
   , kesPeriod
-  , operationalCertificate
-  , coldVerificationKey
   , expiresAt
 ]
 ```
@@ -588,13 +588,13 @@ expiresAt = word32
 message = [
   #6.1(bstr) # cbor-in-cbor encoding of messagePayload
   , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
 ]
 messagePayload = [
   messageId
   , messageBody
   , kesPeriod
-  , operationalCertificate
-  , coldVerificationKey
   , expiresAt
 ]
 
