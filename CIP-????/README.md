@@ -328,8 +328,11 @@ EB body contains references to transactions. If a node does not already possess
 a transaction referenced in the EB, it explicitly requests that transaction from
 peers. The whole process of propagating EBs and referenced transactions is
 called EB diffusion. Only minimal validation is done before forwarding this data
-to ensure rapid dissemination while full validity is determined by the voting
-committee.
+to ensure rapid dissemination while full validity is determined by the
+[voting committee](#step-3-committee-validation).
+
+Minimal validation includes basic structural and cryptographic integrity checks
+(VRF verification, block hash validation, and header format verification).
 
 #### Step 3: Committee Validation
 
