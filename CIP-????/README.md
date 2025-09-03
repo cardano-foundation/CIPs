@@ -302,7 +302,7 @@ may create two objects:
 1. **[Ranking Block (RB)](#ranking-blocks-rbs)** A standard Praos block with
    extended header fields to optionally certify one previously announced EB and
    optionally announce one EB for the next subsequent RB (i.e., `RB'`) to
-   certify.
+   optionally certify.
 1. **[Endorser Block (EB)](#endorser-blocks-ebs)** A larger block containing
    references to additional transactions.
 
@@ -380,22 +380,26 @@ aggregating the collected votes.
 
 #### Step 5: Chain Inclusion
 
-If an RB opportunity is after the [diffusion period](#diffusion-period)
-$L_\text{diff}$, a block producer may include in block `RB'` a certificate for
-the EB announced by the preceding block `RB`. As shown in Figure 4, this occurs
-only after the complete timing sequence has elapsed. The inclusion rules for
-valid chain inclusion are:
+Block producers creating subsequent RBs (`RB'`) may include a certificate for
+the EB announced by a preceding block (`RB`) if sufficient time has elapsed for
+the complete certification process. As shown in Figure 4, this occurs only after
+the complete timing sequence has elapsed. The inclusion rules for valid chain
+inclusion are:
 
-1. `RB'` contains **either**
+1. `RB'` **may** include a certificate for the EB announced in `RB` if and only
+   if `RB'` is at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$
+   slots after `RB`.
 
-   a. a certificate for the EB announced in `RB`, **or**
-
-   b. a list of transactions forming a valid extension of `RB`.
-
-2. The included certificate is valid as defined in
+2. Any included certificate must be valid as defined in
    [Certificate Validation](#certificate-validation).
-3. A certificate may only be included if `RB'` is at least
-   $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after `RB`.
+
+3. If `RB'` cannot include a certificate due to timing constraints (i.e., fewer
+   than $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots have
+   elapsed since `RB`), then `RB'` operates as a standard Praos block containing
+   its own transactions, and the EB announced by `RB` is discarded.
+
+4. Regardless of whether `RB'` includes a certificate, it may optionally
+   announce its own EB for future certification by subsequent blocks.
 
 where $L_\text{hdr}$, $L_\text{vote}$ and $L_\text{diff}$ are
 <a href="#protocol-parameters">protocol parameters</a> represented by a number
