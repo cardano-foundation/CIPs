@@ -355,7 +355,7 @@ The proposed SCLS format does not contradict having multiple files, on the contr
 
 ##### Should files be byte-identical?
 
-Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add records that are required for them to operate or bootstrap. It's true that other [approaches](https://hackmd.io/Q9eSEMYESICI9c4siTnEfwk), does solve that issue by creating multiple files, each of them will be byte-identical.
+Current approach does not provide byte-identical files, only the domain data that is stored and it's hashes are canonical. It means that tools like Mithril will have to use additional tooling or recalculate hash on their own. It's done for the purpose, this way software may add additional metadata entries, e.g. Mithril can add its own signatures to the file without violating validation properties. Other implementation may add records that are required for them to operate or bootstrap. It's true that other [approaches](https://hackmd.io/Q9eSEMYESICI9c4siTnEfw), does solve that issue by creating multiple files, each of them will be byte-identical.
 
 There are few solutions that we propose:
 
