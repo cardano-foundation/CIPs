@@ -123,12 +123,12 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 **Policy:**
 
 - chunk size \~8–16MiB; footer required;
-- data is stored in deterministically defined global order; In the lexical order of the keys
-- all keys in the record must be unique
-- all key-values in the record must refer to the same namespace
-- readers should verify footer before relying on the data.
-- `chunk_hash = H(concat [ digest(e) | e in entries ])`
-- all values in `CHUNKS` record are ordered in lexicographical namespace order, to preserve canonical order
+- data is stored in deterministically defined global order; In the lexical order of the keys;
+- all keys in the record must be unique;
+- all key-values in the record must refer to the same namespace;
+- readers should verify footer before relying on the data;
+- `chunk_hash = H(concat [ digest(e) | e in entries ])`;
+- all keys in `CHUNK` `n` must be lexicographically lower than all keys in `CHUNK` `n+1`.
 
 The format proposes support of data compression. For future-compatibility the format is described by the `chunk_format` field, and following variants are introduced:
 
