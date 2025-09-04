@@ -3,8 +3,8 @@
 ; use it as a pseudo-code.
 
 
-scls = (hdr, [* record])
-record = (size: uint32, payload: any)
+scls = [* record]
+record = (size: uint32, chunk_type: uint .size 1, payload: any)
 
 slot_no = uint .size 8
 
