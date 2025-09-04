@@ -21,7 +21,7 @@ License: CC-BY-4.0
 
 This proposal defines the Simple Canonical Ledger State (SCLS), a stable, versioned, and verifiable file format for representing the Cardano ledger state. It specifies a segmented binary container with deterministic CBOR encodings, per-chunk commitments, and a manifest that enables identical snapshots across implementations, supports external tools (e.g., Mithril), and future-proofs distribution and verification of state.
 
-## Motivation: Why is a canonical ledger state format needed?
+## Motivation: why is this CIP necessary?
 
 Ledger state serialisations are currently implementation details that may change over time. This makes them unsuitable as stable artifacts for distribution, signing, fast sync, or external tooling (e.g., db-sync, conformance testing, and Mithril checkpoints). Without a canonical format, two nodes at the same chain point can legitimately produce different byte streams for the same state, complicating verification and opening room for error in multi-implementation ecosystems.
 
