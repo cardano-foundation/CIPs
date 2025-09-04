@@ -235,7 +235,7 @@ TODO: define structure, (we propose to define exact format and properties, after
 Entry:
 
 - `subject: URI` — subject stored in the `URI` format
-- `value: blake28` — data stored by the metadata entry owner.
+- `value: cbor` — data stored by the metadata entry owner.
 
 **Policy:**
 
