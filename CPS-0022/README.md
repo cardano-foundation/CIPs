@@ -90,7 +90,6 @@ As noted earlier, governance proposals like [CIP-1694](https://cips.cardano.org/
 
 Some might argue that lost coins simply increase the value of the remaining ones (through scarcity) or that the effect is negligible for now. However, as the projections show, the effect is not static. It grows over time and can reach levels that materially impact network operation. Unlike in Bitcoin (where lost coins arguably don’t harm network security or functionality [[investopedia.com](https://www.investopedia.com/tech/how-much-bitcoin-has-been-lost/)]), in Cardano most lost coins still participate in consensus. Therefore, ignoring lost stake and lost ADA means accepting a slow-growing skew in the system that could ultimately undermine user trust and network performance. Early recognition allows for carefully researched, minimally disruptive solutions before the problem becomes too large and contentious to fix.
 
----
 
 ## Use Cases
 
