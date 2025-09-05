@@ -533,7 +533,6 @@ stateDiagram-v2
   StBusyNonBlocking:::Green --> StIdle:::Blue : MsgReplyMessagesNonBlocking
   StIdle:::Blue --> StBusyBlocking:::Green : MsgRequestMessagesBlocking
   StBusyBlocking:::Green --> StIdle:::Blue : MsgReplyMessagesBlocking
-  StBusyBlocking:::Green --> StDone:::Black : MsgServerDone
   StIdle:::Blue --> StDone:::Black : MsgClientDone
 
 ```
@@ -545,7 +544,6 @@ stateDiagram-v2
 - **MsgRequestMessagesBlocking**: The client asks for available messages and acknowledges old message ids. The server will only reply once there are available messages.
 - **MsgReplyMessagesBlocking([message])**: The server has received new messages and indicates if further message are available. In the blocking case, the reply is guaranteed to contain at least one message.
 - **MsgClientDone**: The client terminates the mini-protocol.
-- **MsgServerDone**: The server terminates the mini-protocol.
 
 #### Transition table
 
@@ -555,7 +553,6 @@ stateDiagram-v2
 | StBusyNonBlocking | MsgReplyMessagesNonBlocking   | ([message], hasMore) | StIdle            |
 | StIdle            | MsgRequestMessagesBlocking    |                      | StBusyBlocking    |
 | StBusyBlocking    | MsgReplyMessagesBlocking      | [message]            | StIdle            |
-| StBusyBlocking    | MsgServerDone                 |                      | StDone            |
 | StIdle            | MsgClientDone                 |                      | StDone            |
 
 ##### CDDL Encoding Specification
@@ -569,13 +566,11 @@ localMessageNotificationMessage
   / MsgReplyMessagesNonBlocking
   / msgReplyMessagesBlocking
   / msgClientDone
-  / msgServerDone
 
 msgRequestMessages          = [0, isBlocking]
 msgReplyMessagesNonBlocking = [1, messages, hasMore]
 msgReplyMessagesBlocking    = [2, messages]
 msgClientDone               = [3]
-msgServerDone               = [4]
 
 messageId    = bstr
 messageBody  = bstr
