@@ -151,21 +151,21 @@ messageList = [ * message ]
 messageSizeInBytes = word32
 kesSignature = bstr
 kesPeriod = word32
-operationalCertificate = bstr
+operationalCertificate = [ bstr, word64, word64, bstr ]
 coldVerificationKey = bstr .size 32
 expiresAt = word32
 
-message = [
-  #6.1(bstr) # cbor-in-cbor encoding of messagePayload
-  , kesSignature
-  , operationalCertificate
-  , coldVerificationKey
-]
 messagePayload = [
   messageId
   , messageBody
   , kesPeriod
   , expiresAt
+]
+message = [
+  bstr .cbor messagePayload
+  , kesSignature
+  , bstr .cbor operationalCertificate
+  , coldVerificationKey
 ]
 ```
 
@@ -479,21 +479,21 @@ messageId    = bstr
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
-operationalCertificate = bstr
+operationalCertificate = [ bstr, word64, word64, bstr ]
 coldVerificationKey = bstr .size 32
 expiresAt = word32
 
-message = [
-  #6.1(bstr) # cbor-in-cbor encoding of messagePayload
-  , kesSignature
-  , operationalCertificate
-  , coldVerificationKey
-]
 messagePayload = [
   messageId
   , messageBody
   , kesPeriod
   , expiresAt
+]
+message = [
+  bstr .cbor messagePayload
+  , kesSignature
+  , bstr .cbor operationalCertificate
+  , coldVerificationKey
 ]
 ```
 
@@ -576,21 +576,21 @@ messageId    = bstr
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
-operationalCertificate = bstr
+operationalCertificate = [ bstr, word64, word64, bstr ]
 coldVerificationKey = bstr .size 32
 expiresAt = word32
 
-message = [
-  #6.1(bstr) # cbor-in-cbor encoding of messagePayload
-  , kesSignature
-  , operationalCertificate
-  , coldVerificationKey
-]
 messagePayload = [
   messageId
   , messageBody
   , kesPeriod
   , expiresAt
+]
+message = [
+  bstr .cbor messagePayload
+  , kesSignature
+  , bstr .cbor operationalCertificate
+  , coldVerificationKey
 ]
 
 hasMore = false / true
