@@ -9,7 +9,7 @@ Authors:
   - Hans Lahe <hans.lahe@iohk.io>
 Proposed Solutions: 
 	["CIP-0140 : Ouroboros Peras - Faster Settlement"
-	,"CIP-???? : Ouroboros Φalanx: Breaking the Economics of Grinding Attacks"
+	,"CIP-0161 : Ouroboros Phalanx - Breaking Grinding Incentives"
 	]
 Implementors: N/A
 Discussions: 

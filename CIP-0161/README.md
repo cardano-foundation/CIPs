@@ -32,7 +32,7 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
 
 - [Abstract](#abstract)
 - [Motivation: why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
-- [Specification / The Phalanx Sub-Protocol](#specification--the-phalanx-sub-protocol)
+- [Specification](#specification)
   - [1. High-Level Overview ](#1-high-level-overview)
     - [1.1 Changes Relative to Praos](#11-changes-relative-to-praos)
     - [1.2 Inputs & Outputs ](#12-inputs--outputs)
@@ -168,7 +168,7 @@ This translates into slower settlement and weaker guarantees for the network as 
 
 Peras is fully compatible with Praos:  
 - When enough committee members participate, it achieves **rapid settlement**.  
-- When they do not (e.g., if too many operators are offline), Peras **gracefully falls back to Praos**.  
+- When they do not (e.g., if too many operators are offline), Peras **gracefully falls back to Praos**. Peras would only fall back to Praos if there were massive network disruption or an attack by a 25% adversary.  
 
 In these fallback situations, the network still relies on Praos’ guarantees—precisely where Phalanx becomes relevant as a **complementary defense layer**. Phalanx ensures that even when Peras cannot certify blocks, the protocol still benefits from:  
 - **Stronger protection against grinding attacks**, and  
@@ -185,7 +185,7 @@ The remainder of this document provides the full technical specification for nod
 Please refer to the CPD "[Ouroboros Randomness Generation Sub-Protocol – The Coin-Flipping Problem](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0021/CPD/README.md)" for a detailed understanding of **randomness generation, leader election in Praos, and the coin-flipping dilemma in consensus protocols**. Moving forward, we will **dive into the core details**, assuming you have the **relevant background** to understand the proposal.
 
 
-## Specification / The Phalanx Sub-Protocol
+## Specification
 
 The core principle of the proposed protocol change is to **substantially escalate the computational cost of each grinding attempt for an adversary**. To achieve this, every honest participant is required to perform a designated computation for each block they produce over an epoch (**432,000 slots - 5 days**). Consequently, an adversary attempting a grinding attack must **recompute these operations for every single attempt**, while being **constrained by the grinding window**, which dramatically increases the resource expenditure. By enforcing this computational burden, we **drastically reduce the feasible number of grinding attempts** an adversary with a fixed resource budget can execute, making randomness manipulation **more expensive and significantly less practical**.
  
