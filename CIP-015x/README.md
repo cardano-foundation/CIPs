@@ -46,9 +46,8 @@ The Simple Canonical Ledger State (SCLS) is a segmented file format for Cardano 
 
 ### File Structure
 
-1. Header record defining the contents of the file,
-2. Sequence of records `(S, D)*` where `S` is a 32-bit size and `D` is the payload stored in typed record.
-3. Each payload begins with a one-byte type tag, defining its type.
+1. Sequence of records `(S, D)*` where `S` is a 32-bit size and `D` is the payload stored in typed record.
+1. Each payload begins with a one-byte type tag, defining its type.
 
 Unsupported record types are skipped; core data remains accessible.
 
