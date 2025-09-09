@@ -7,7 +7,7 @@ Authors:
   - Nicholas Clarke <nicholas.clarke@moduscreate.com>
   - Aleksandr Vershilov <alexander.vershilov@moduscreate.com>
   - João Santos Reis <joao.reis@moduscreate.com>
-Implementers:
+Implementors:
   - Nicholas Clarke <nicholas.clarke@moduscreate.com>
   - Aleksandr Vershilov <alexander.vershilov@moduscreate.com>
   - João Santos Reis <joao.reis@moduscreate.com>
