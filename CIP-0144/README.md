@@ -20,13 +20,13 @@ CIP-30 is the standard interface of communication between wallets and dApps. Whi
 
 [CPS-0010](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md) outlines the shortcomings of CIP-30. In this CIP we aim to address some of the issues pointed out by CPS-10: splitting up the connection API from the functionality provided by the [full API](https://cips.cardano.org/cip/CIP-30#full-api), defining the API in a transport agnostic way and defining a versioning mechanism for the connection API and its extensions.
 
-This CIP only aims to re-define the connection API from CIP-30, leaving the full API and other extensions for future CIPs. CIPs that want to build upon this work should use the following naming convention: `CIP-XXXX | Wallet Connector - <CIP name>`. Once such a CIP is proposed, it should also be added to the table below so all extensions can be easily visible from one place.
+This CIP only aims to redefine the connection API from CIP-30, leaving the full API and other extensions for future CIPs. CIPs that want to build upon this work should use the following naming convention: `CIP-XXXX | Wallet Connector - <CIP name>`. Once such a CIP is proposed, it should also be added to the table below so all extensions can be easily visible from one place.
 
 
 | Extension CIP | Link | Description |
 | --- | --- | --- |
 | CIP-0147 - Wallet Connector - Own-data wallet | https://github.com/cardano-foundation/CIPs/pull/986 | Extension to enable an own-data wallet, matching the full API that was provided in CIP-30 |
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIP-30 is a universally accepted web-based wallet standard for Cardano. It provides a minimalistic interface that, in principle, can be used to build almost any kind of Cardano dApp. However, the way dApp<->wallet interaction is defined leads to suboptimal dApp architecture due to CIP-30 limits.
 
@@ -54,9 +54,9 @@ The goal of this CIP is to provide a better alternative to CIP-30, providing a b
 ### Transport agnostic operations
 
 In its current state, CIP-30 defines it API through a specific transport layer, namely an injected Javascript object.
-In this CIP we want to be able to define an API without committing to a specific transport layer. Implementors of this API can choose to support this API through several transports such as: HTTP, an injected Javascript object, JSON-RPC etc.
+In this CIP we want to be able to define an API without committing to a specific transport layer. Implementors of this API can choose to support this API through several transports such as: HTTP, an injected Javascript object, JSON-RPC, etc.
 Furthermore, we want to use JSON-schema to clearly define the types that each method, or operation, expects to receive or returns.
-To keep the specification abstract we will use the word "operation" to describe the actions supported by the API: these would map to "endpoints" for an HTTP implementation of the API, or to "methods" for an implementation based on an injected Javascript object.
+To keep the specification abstract, we will use the word "operation" to describe the actions supported by the API: these would map to "endpoints" for an HTTP implementation of the API, or to "methods" for an implementation based on an injected Javascript object.
 
 
 We will use the following schema to define operations:
@@ -74,16 +74,16 @@ We will use the following schema to define operations:
 ```
 
 where `operation` will be the identifier for the operation, `request` and `response` will be the JSON-schemas for the request and response types respectively, and `errors` will be a list of schemas for the errors that the operation may raise.
-We do not add an explicit scope to operation names, we do however encourage transport-specific implementations of this API to pick the scoping structure that makes more sense to them.
+We do not add an explicit scope to operation names; we do however, encourage transport-specific implementations of this API to pick the scoping structure that makes more sense to them.
 
-We will reference several JSON schemas throughout the document, these are:
+We will reference several JSON schemas throughout the document. These are:
 
-- [CIP-116 | Standard JSON encoding for Domain Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema we refer to an `anyOf` of all the schemas in which that type is defined.
+- [CIP-116 | Standard JSON encoding for Domain Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116) which provides a JSON encoding of Cardano ledger types. Note that this CIP defines a schema for each ledger era. When referring to a type from this schema, we refer to an `anyOf` of all the schemas in which that type is defined.
 - [appendix](#appendix) in which we define schemas for types required by the connection API and the error types
 
 We will use an identifier in the anchor to refer to the schema where each type is defined. For example, if we want to reference the `Transaction` type, as defined in CIP-116 we will use the following schema reference `{ "$ref": "#/cip-116/Transaction" }`.
 
-If an operation does not require any arguments as part of it's request, or does not return a meaningful response, we will represent this as an `{}` on the respective operation field. The arguments to an operation will always be represented as an object. If a field is not marked as `required`, then that argument is to be considered optional.
+If an operation does not require any arguments as part of its request, or does not return a meaningful response, we will represent this as an `{}` on the respective operation field. The arguments to an operation will always be represented as an object. If a field is not marked as `required`, then that argument is to be considered optional.
 
 For each operation we will provide some details on how the implementation should behave. Note that some of these are taken verbatim from CIP-30.
 
@@ -96,7 +96,16 @@ The role of the connection API is to provide generic information about the walle
 ```json
 {
   "operation": "enable",
-  "request": { "$ref": "#/appendix/Extensions" },
+
+  "request": {
+    "type": "object",
+    "properties": {
+      "chainId": { "type": "string" },
+      "extensions": { "$ref": "#/appendix/Extensions" }
+    },
+    "required": ["extensions"]
+    
+  },
   "response": {},
   "errors": [
     { "$ref": "#/appendix/APIError" }
@@ -104,20 +113,22 @@ The role of the connection API is to provide generic information about the walle
 }
 ```
 
-This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the APIs will be made available for the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected this function should not request access a second time.
+This is the entrypoint to start communication with the user's wallet. The wallet should request the user's permission to connect the web page to the user's wallet, and if permission has been granted, the APIs will be made available for the dApp to use. The wallet can choose to maintain a whitelist to not necessarily ask the user's permission every time access is requested, but this behavior is up to the wallet and should be transparent to web pages using this API. If a wallet is already connected, this function should not request access a second time.
 
-Through the `extension` field, dApps can request a list of what functionality they expect as a list of CIP numbers (and optional versions) capturing those extensions. This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface. We will see later in this document examples of what such extensions might be and which functionalities they will enable. New functionalities can be introduced via additional CIPs and may be all or partially supported by wallets.
+Through the `extension` field, dApps can request a list of what functionality they expect as a list of CIP numbers (and optional versions), capturing those extensions. This is used as an extensibility mechanism to document what functionalities can be provided by the wallet interface. We will see later in this document examples of what such extensions might be and which functionalities they will enable. New functionalities can be introduced via additional CIPs and may be partially or fully supported by wallets.
 
-When requesting the functionalities of a cip extension, dApps can optionally specify a version number for it. Every cip extension defined in the future, must also define a versioning scheme following SemVer. When the version argument is not specified, wallets should take that as the greater version they implement. In this context - and for the rest of this discussion - we will assume versions are ordered with the canonical ordering of SemVer. If the dApp requests a specific version of an extension, wallets can only accept the request if a version of the extension they implement has:
+When requesting the functionalities of a CIP extension, dApps can optionally specify a version number for it. Every CIP extension defined in the future must also define a versioning scheme following SemVer. When the version argument is not specified, wallets should take that as the greatest version they implement. In this context - and for the rest of this discussion - we will assume versions are ordered with the canonical ordering of SemVer. If the dApp requests a specific version of an extension, wallets can only accept the request if a version of the extension they implement has:
 
 - the same major value as the one requested by the dApp AND
-  - a greater minor value as the one requested by the dApp, OR
+  - a greater minor value than the one requested by the dApp, OR
   - an equal minor value AND
-    - a greater or equal patch value as the one requested by the dApp
+    - a greater or equal patch value than the one requested by the dApp
 
 If multiple versions satisfy these requirements, then wallets must return the greatest version amongst all candidate versions.
 
-DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsibility of wallet providers to assess whether they can support a given combination of extensions, or not. Wallets should throw an error with code `NotSatisfiable` if either they do not support the required extension, or they deem the combination of extensions requested by the dApp to be incompatible. In this case, it is up to the dApp to decide to retry with different requirements, or to give up on establishing a connection with the wallet.
+DApps can also use the optional field `chainId` to request connecting to a specific chain. This field should follow the human-readable format specified in [CIP-0034](https://cips.cardano.org/cip/CIP-0034). Wallets should return an error with code `NetworkUnavailable` if they are unable to connect to the requested network
+
+DApps are expected to use this endpoint to perform an initial handshake and ensure that the wallet supports all their required functionalities. Note that it's possible for two extensions to be mutually incompatible (because they provide two conflicting features). While we may try to avoid this as much as possible while designing CIPs, it is also the responsibility of wallet providers to assess whether they can support a given combination of extensions, or not. Wallets should return an error with code `NotSatisfiable` if either they do not support the required extension, or they deem the combination of extensions requested by the dApp to be incompatible. In this case, it is up to the dApp to decide to retry with different requirements or to give up on establishing a connection with the wallet.
 
 ##### IsEnabled
 
@@ -280,7 +291,7 @@ This section lists the possible errors the wallet connector may return. Each err
     "code": {
       "type": "number",
       "title": "APIErrorCode"
-      "enum": [-1, -2, -3, -4, -5]
+      "enum": [-1, -2, -3, -4, -5, -6]
     },
     "info": {
       "type": "string"
@@ -295,6 +306,7 @@ This section lists the possible errors the wallet connector may return. Each err
 - `Refused`: (-3) The request was refused due to lack of access - e.g. wallet disconnects.
 - `AccountChange`: (-4) The account has changed. The dApp should call wallet.enable() to reestablish connection to the new account. The wallet should not ask for confirmation as the user was the one who initiated the account change in the first place.
 - `NotSatisfiable`: (-5) The request is structurally correct, but the wallet can not satisfy it for some reason.
+- `NetworkUnavailable`: (-6) The requested network is not available. This covers both the case when the requested network does not exist, and the case where the network can't be reached.
 
 
 #### Transport specific connectors
