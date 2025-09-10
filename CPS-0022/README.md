@@ -119,6 +119,7 @@ This scenario highlights the long-term risk of inaction. Even a modest annual lo
 - How can the protocol reliably identify truly lost credentials?
 - Could an inactivity period (epochs/years) be acceptable before stake is considered “lost”?
 - Which economic / social mechanisms can prevent reward dilution without violating property rights?
+- Would the introduction of some solution to lost stake violate some of prior promises from the protocol?
 
 ## References
 
