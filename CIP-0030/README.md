@@ -289,7 +289,7 @@ Errors: `APIError`
 
 Since [CIP-0040 | Collateral Output](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0040/README.md) and Babbage era "Collateral Return" and "Total Collateral" fields on a transaction body are supported, a transaction can now use up to three **any** collateral inputs and specify the collateral return outputs to receive extra ADA and tokens back as change. Transaction-building SDKs and libraries now all support this functionality as well.  This removes the actual **need** for dedicated cumbersome API for providing *special* collateral inputs to exist.
 
-DApps should make effort to build transactions using the latest available best methods and practices. In this case it means always utilising collateral return and not risking burning UTxOs with no return. Wallets looking to implement this standard are free to **not** support this ancient special API function, which does require some extra special management of UTxOs within the wallet, beyond normal logic.
+DApps should make effort to build transactions using the latest available best methods and practices. In this case it means always utilising collateral return and not risking burning UTxOs with no return. Wallets looking to implement this standard are free to **not** support this deprecated API function, which does require some extra special management of UTxOs within the wallet, beyond normal logic.
 
 Deprecating this method aims to motivate DApp implementors not to use this method, but rather to use newer better techniques.
 
