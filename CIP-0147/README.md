@@ -87,44 +87,6 @@ Returns the network id of the currently connected account. 0 is testnet and 1 is
 
 If amount is not supplied, this shall return a list of all UTXOs controlled by the wallet. If amount is present, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in amount, and if this cannot be attained, an `APIError` with error code `NotSatisfiable` (and optionally an info string) must be returned. 
 
-#### GetCollateral
-
-```
-{
-  "operation": "getCollateral",
-  "request": {
-    "type": "object",
-    "properties": {
-      "amount": { "type": "number" }
-    },
-    "required": ["amount"]
-  },
-  "response": {
-    "type": "array",
-    "items": {
-      "$ref": "#/cip-116/TransactionUnspentOutput"
-    }
-  },
-  "errors": [
-    { "$ref": "#/appendix/APIError" }
-  ]
-}
-```
-
-The operation takes an amount parameter. (NOTE: some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the amount parameter is required:
-
-- DApps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
-
-- Depending on the specific wallet implementation, requesting more collateral than necessarily might worsen the user experience with that dapp, requiring the wallet to make explicit wallet reorganisation when it is not necessary and can be avoided.
-
-- If dApps don't understand how much collateral they actually need to make their transactions work - they are placing more user funds than necessary in risk.
-
-So requiring the amount parameter would be a by-spec behavior for a wallet. Not requiring it is possible, but not specified, so dApps should not rely on that and the behavior is not recommended.
-
-This shall return a list of one or more UTXOs controlled by the wallet that are required to reach AT LEAST the combined ADA value target specified in amount AND the best suitable to be used as collateral inputs for transactions with plutus script inputs (pure ADA-only utxos). If this cannot be attained, an `APIError` with code `NotSatisfiable` and an explanation of the blocking problem shall be returned. NOTE: wallets are free to return utxos that add up to a greater total ADA value than requested in the amount parameter, but wallets must never return any result where utxos would sum up to a smaller total ADA value, instead in a case like that an error must be returned.
-
-The main point is to allow the wallet to encapsulate all the logic required to handle, maintain, and create (possibly on-demand) the UTXOs suitable for collateral inputs. For example, whenever attempting to create a plutus-input transaction the dapp might encounter a case when the set of all user UTXOs don't have any pure entries at all, which are required for the collateral, in which case the dapp itself is forced to try and handle the creation of the suitable entries by itself. If a wallet implements this function it allows the dapp to not care whether the suitable utxos exist among all utxos, or whether they have been stored in a separate address chain (see #104), or whether they have to be created at the moment on-demand - the wallet guarantees that the dapp will receive enough utxos to cover the requested amount, or get an error in case it is technically impossible to get collateral in the wallet (e.g. user does not have enough ADA at all).
-
 
 #### GetBalance
 
@@ -488,6 +450,7 @@ CIP-0144 includes a [section](https://github.com/nazrhom/CIPs/blob/nazrhom/full-
 - This API has no pagination, while CIP-30 generally does. The wrapper can either implement pagination locally, or error and inform the user if they request it.
 - In the original CIP-30, the `api` object returned has, on the top-level, the methods that we expect on `api.cip30`. The wrapper must take care to translate calls appropriately.
 - CIP-30 endpoints will return `null` in some situations where the request is correct, but not satisfiable. In this CIP we introduce an error code specifically for that. The wrapper will need to check some results for `null` and throw an appropriate error.
+- Remove the `getCollateral` endpoint from the API as this is in the process of getting [deprecated](https://github.com/cardano-foundation/CIPs/pull/1082)
 
 ## Path to Active
 
