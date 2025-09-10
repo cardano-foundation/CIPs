@@ -93,7 +93,7 @@ The role of the connection API is to provide generic information about the walle
 
 ##### Enable
 
-```
+```json
 {
   "operation": "enable",
   "request": { "$ref": "#/appendix/Extensions" },
