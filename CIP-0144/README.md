@@ -340,11 +340,8 @@ The goal of this CIP is to define the standard for a new wallet connector. This 
 The goal is to be able to clearly differentiate and communicate the type of wallet that is needed, following the distinction made in the [wallet role](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#4-work-within-the-role-of-wallet) section of CPS-10.
 
 There are two CIPs that are connected with this one:
-
-- [CIP-147 | Own data wallet](https://github.com/cardano-foundation/CIPs/pull/986) which defines an extension for an [own-data wallet](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#own-data-wallets) which is equivalent to what CIP-30 offers today
-
-- [CIP-139 | Universal Query Layer](https://github.com/cardano-foundation/CIPs/pull/869) which defines an extension for a [full-data wallet](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#full-data-wallets) which allows the wallet to track blockchain data that is outside of the user's scope
-
+- [CIP-0147 | Own data wallet](https://github.com/cardano-foundation/CIPs/pull/986) which defines an extension for an [own-data wallet](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#own-data-wallets) which is equivalent to what CIP-30 offers today
+- [CIP-0139 | Universal Query Layer](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0139) which defines an extension for a [full-data wallet](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0010/README.md#full-data-wallets) which allows the wallet to track blockchain data that is outside of the user's scope
 
 ## Path to Active
 
