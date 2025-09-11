@@ -73,7 +73,7 @@ technical resources, visit the Leios Innovation R&D site at
     - [Next Block Production](#next-block-production)
     - [Ledger Management](#ledger-management)
     - [Epoch Boundary](#epoch-boundary)
-    - [Operational certficate issue numbers](#operational-certficate-issue-numbers)
+    - [Operational certificate issue numbers](#operational-certificate-issue-numbers)
   - [Network](#network)
     - [Praos Mini-Protocols](#praos-mini-protocols)
     - [Leios Mini-Protocols](#leios-mini-protocols)
@@ -101,38 +101,38 @@ technical resources, visit the Leios Innovation R&D site at
 </details>
 
 <details>
-  <summary><h2>Table of figures and tables</h2></summary>
+  <summary><h2>Index of figures and tables</h2></summary>
 
 **Figures**
 
 - [Figure 1: Forecast of rewards on Cardano mainnet](#figure-1)
-- [Figure 2: SPO profitability under Praos if the Reserves did not contribute to rewards, as a function of transaction volume.[^profitability]](#figure-2)
-- [Figure 3: Leios chain structure showing the relationship between Ranking Blocks, Endorser Blocks, and Certificates](#figure-3)
-- [Figure 4: Detailed timing mechanism showing the three critical timing constraints for EB certification](#figure-4)
-- [Figure 5: Up- and downstream interactions of a node (simplified)](#figure-5)
+- [Figure 2: SPO profitability under Praos if the Reserves did not contribute to rewards](#figure-2)
+- [Figure 3: Leios chain structure showing Ranking Blocks, Endorser Blocks, and Certificates](#figure-3)
+- [Figure 4: Detailed timing mechanism showing timing constraints for EB certification](#figure-4)
+- [Figure 5: Up- and downstream interactions of a node](#figure-5)
 - [Figure 6: LeiosNotify mini-protocol state machine](#figure-6)
 - [Figure 7: LeiosFetch mini-protocol state machine](#figure-7)
-- [Figure 8: SPO profitability forecast under Leios showing clear economic benefits once sustained throughput exceeds 50-70 TxkB/s (36-50 TPS equivalent)](#figure-8)
+- [Figure 8: SPO profitability forecast under Leios](#figure-8)
 - [Figure 9: Time for transaction to reach the ledger](#figure-9)
 - [Figure 10: Transactions reaching the ledger](#figure-10)
 - [Figure 11: Number of TX references](#figure-11)
-- [Figure 12: Disposition of transactions in blocks (RBs are so small as not to be visible in the histograms. When an EB is generated, it is labeled in the plot as to whether it will eventually be certified ("EB later certified") or not ("EB later not certified"). When the certificate is included in an RB, the EB is labeled "EB now certified".)](#figure-12)
+- [Figure 12: Disposition of transactions in blocks](#figure-12)
 - [Figure 13: Size of transactions referenced by EBs](#figure-13)
-- [Figure 14: Arrival delays for transactions ("TX", upper left), ranking blocks ("RB", upper right), votes ("VT", lower left), and endorser blocks ("EB", lower right)](#figure-14)
-- [Figure 15: Mean nodal ingress (left) and Mean CPU load among all nodes (right)](#figure-15)
-- [Figure 16: Mean CPU load among all nodes ("Gen" = generated, "Val" = validated, "RH" = ranking block header, "RB" = ranking block body, "EH" = endorser block header, "EB" = endorser block body", "TX" = transaction)](#figure-16)
+- [Figure 14: Arrival delays for transactions, ranking blocks, votes, and endorser blocks](#figure-14)
+- [Figure 15: Mean nodal ingress and Mean CPU load among all nodes](#figure-15)
+- [Figure 16: Mean CPU load among all nodes](#figure-16)
 - [Figure 17: Fate of Plutus-heavy transactions in Leios](#figure-17)
 - [Figure 18: CPU usage in Plutus-heavy workloads for Leios](#figure-18)
-- [Figure 19: Comparison: Praos (red), proposed Leios (teal), and research Leios (orange)](#figure-19)
+- [Figure 19: Comparison: Praos, proposed Leios, and research Leios](#figure-19)
 
 **Tables**
 
 - [Table 1: Network Characteristics](#table-1)
 - [Table 2: Ledger Characteristics](#table-2)
 - [Table 3: Protocol Parameters](#table-3)
-- [Table 4: Leios Information Exchange Requirements table (IER table)](#table-4)
+- [Table 4: Leios Information Exchange Requirements (IER) table](#table-4)
 - [Table 5: Performance Metrics](#table-5)
-- [Table 6: Leios effficiency at different throughputs](#table-6)
+- [Table 6: Leios efficiency at different throughputs](#table-6)
 - [Table 7: Feasible Protocol Parameters](#table-7)
 - [Table 8: Operating Costs by Transaction Throughput](#table-8)
 - [Table 9: Required TPS for Infrastructure Cost Coverage](#table-9)
@@ -176,14 +176,14 @@ underutilized.
 
 To transcend these inherent scaling barriers and unlock the latent capacity of
 the Cardano network, a fundamental systematic evolution of the core consensus
-algorithm is imperative. Ouroboros Leios maintains Praos's sequential
-transaction processing model while introducing mechanisms for additional
-transaction capacity through Endorser Blocks, parallel validation workflows, and
-more efficient aggregation of transaction data. By reorganizing how transactions
-are proposed, validated, and ultimately recorded on the blockchain, this
-protocol upgrade seeks to achieve a substantial increase in the network's
-overall throughput, enabling it to handle a significantly greater volume of
-transactions within a given timeframe.
+algorithm is imperative. Ouroboros Leios maintains Praos' sequential transaction
+processing model while introducing mechanisms for additional transaction
+capacity through Endorser Blocks, parallel validation workflows, and more
+efficient aggregation of transaction data. By reorganizing how transactions are
+proposed, validated, and ultimately recorded on the blockchain, this protocol
+upgrade seeks to achieve a substantial increase in the network's overall
+throughput, enabling it to handle a significantly greater volume of transactions
+within a given timeframe.
 
 The Cardano Problem Statement [CPS-18 Greater Transaction Throughput][cps-18]
 further motivates the need for higher transaction throughput and marshals
@@ -191,7 +191,7 @@ quantitative evidence of existing mainnet bottlenecks. Realizing higher
 transaction rates is also necessary for long-term Cardano techno-economic
 viability as rewards contributions from the Reserve pot diminish: fees from more
 transactions will be needed to make up that deficit and keep sound the finances
-of stakepool operations.
+of stake pool operations.
 
 A major protocol upgrade like Leios will take significant time to implement,
 test, and audit. It is therefore critical to have begun implementation well
@@ -244,7 +244,7 @@ transactions that would otherwise wait for the standard Praos blocks (called
 ensure data availability and correctness, these blocks undergo committee
 validation before their transactions become part of the permanent ledger.
 
-The key insight is that we can maintain Praos's security guarantees while
+The key insight is that we can maintain Praos' security guarantees while
 processing more transactions by carefully managing when and how these additional
 blocks are validated and included in the chain.
 
@@ -283,8 +283,8 @@ precise timing mechanism is detailed in the following section.
 The protocol operates through five sequential steps that involve three critical
 timing constraints. Figure 4 visualizes the precise timing mechanism that
 governs when certificates can be safely included in the chain, showing both the
-protocol parameters and the underlying network characteristics ($\Delta$ values)
-and protocol parameters ($L$ values) that inform their design.
+underlying network characteristics ($\Delta$ values) and the protocol parameters
+($L$ values) that inform their design.
 
 <div align="center">
   <a name="figure-4" id="figure-4"></a>
@@ -300,8 +300,8 @@ constraints for EB certification</em>
 #### Step 1: Block Production
 
 Leios preserves the existing Praos chain structure while adding additional
-transaction capacity through EBs. When a stake pool wins block leadership, it
-may create two objects:
+transaction capacity through EBs. When a stake pool wins slot leadership, it may
+create two objects:
 
 1. **[Ranking Block (RB)](#ranking-blocks-rbs)** A standard Praos block with
    extended header fields to optionally certify one previously announced EB and
@@ -319,11 +319,11 @@ Due to the voting overhead per EB, EBs should only be announced if a transaction
 cannot be included in the base RB. Empty EBs should not be announced in the
 network as they induce a non-zero cost. Note that whether an RB is full is not
 solely determined by its byte size; in particular, the per-block Plutus limits
-could be the reason a full RB cannot contain additional transactions.
-Additionally, transactions requiring higher size or Plutus execution limits
-available through proposed Leios may necessitate placement in EBs rather than
-RBs. The lower latency provided by RBs naturally incentivizes their use first,
-enabling gradual adoption of Leios capabilities.
+could be the reason an RB cannot contain additional transactions. Additionally,
+transactions requiring higher size or Plutus execution limits available through
+proposed Leios may necessitate placement in EBs rather than RBs. The lower
+latency provided by RBs naturally incentivizes their use first, enabling gradual
+adoption of Leios capabilities.
 
 #### Step 2: EB Distribution
 
@@ -331,8 +331,8 @@ Nodes receiving the RB header discover the announced EB and fetch its body. The
 EB body contains references to transactions. If a node does not already possess
 a transaction referenced in the EB, it explicitly requests that transaction from
 peers. The whole process of propagating EBs and referenced transactions is
-called EB diffusion. Only minimal validation is done before forwarding this data
-to ensure rapid dissemination while full validity is determined by the
+called EB transmission. Only minimal validation is done before forwarding this
+data to ensure rapid dissemination while full validity is determined by the
 [voting committee](#step-3-committee-validation).
 
 Minimal validation includes basic structural and cryptographic integrity checks
@@ -421,9 +421,9 @@ network characteristics below and timing constraints, and size/resource
 parameters that manage throughput.
 
 The certificate inclusion process (Steps 3-5) involves three timing constraints
-that work together to maintain Praos's security assumptions while enabling
-higher throughput. These constraints prevent scenarios where honest nodes would
-be forced to delay chain adoption due to missing data.
+that work together to maintain Praos' security assumptions while enabling higher
+throughput. These constraints prevent scenarios where honest nodes would be
+forced to delay chain adoption due to missing data.
 
 <a id="network-characteristics"></a>**Network Characteristics**
 
@@ -503,7 +503,7 @@ There are three key parameters related to time, which are important for
 
 **Equivocation Detection ($3 L_\text{hdr}$)**
 
-This period occurs immediately when an RB announces an EB. During this time, the
+This period starts exactly when an RB announces an EB. During this time, the
 network detects any attempts by adversaries to create multiple conflicting
 blocks for the same slot. The equivocation detection mechanism ensures that
 honest nodes can reliably identify and reject equivocating behavior before
@@ -520,11 +520,11 @@ adversarial EB if honest nodes vote on different versions.
 multi-step detection process that must accommodate the worst-case propagation
 scenario:
 
-1. **$L_\text{hdr}$**: Initial header propagation - the first (honest or
+1. **$L_\text{hdr}$**: Initial header propagation — the first (honest or
    adversarial) RB header reaches all honest nodes
-2. **$L_\text{hdr}$**: Conflicting header propagation - any equivocating header
+2. **$L_\text{hdr}$**: Conflicting header propagation — any equivocating header
    from the same slot reaches honest nodes
-3. **$L_\text{hdr}$**: Equivocation evidence propagation - proof of conflicting
+3. **$L_\text{hdr}$**: Equivocation evidence propagation — proof of conflicting
    headers propagates network-wide, allowing all honest nodes to detect the
    equivocation
 
@@ -702,9 +702,7 @@ simple structure:
 A [CDDL for endorser blocks](#endorser-block-cddl) is available in Appendix B.
 
 The hash referenced in RB headers (`announced_eb` field) is computed from the
-complete EB structure and serves as the unique identifier for the EB. The
-`certified_eb` field is a boolean that references the EB announced by the
-previous RB in the chain.
+complete EB structure and serves as the unique identifier for the EB.
 
 #### Votes and Certificates
 
@@ -760,7 +758,7 @@ include the `endorser_block_hash` field that uniquely identifies the target EB:
 
 The `endorser_block_hash` identifies the header that announces the EB instead of
 identifying the EB's hash directly. This ensures the voters validated the EB
-against the same ledger state that it extends when certfied on chain; recall
+against the same ledger state that it extends when certified on chain; recall
 that multiple RB headers could announce the same EB.
 
 A [CDDL for votes and certificates](#votes-certificates-cddl) is available in
@@ -779,17 +777,19 @@ following before accepting the block:
 3. **Voter Eligibility**:
    - Persistent voters must have been selected as such by the [Fait Accompli
      scheme][fait-accompli-sortition] for the current epoch
-   - Non-persistent voters must provide valid sortition proofs based on the
+   - Non-persistent voters have provided valid sortition proofs based on the
      `election_id`
-   - **Vote Eligibility Determination**: For non-persistent voters, sortition
-     eligibility is determined using the `election_id` derived from the slot
-     number of the RB that announced the target EB. This ensures that vote
-     eligibility is verifiable and deterministic - nodes can independently agree
-     on which stake pools are eligible to vote for a specific EB based solely on
-     the EB's announcing RB slot, preventing multiple voting opportunities
-     across different slots for the same EB. This requirement stems from the BLS
-     sortition mechanism which uses the election identifier as input to the VRF
-     calculation for non-persistent voter selection.
+
+   **Vote Eligibility Determination**: For non-persistent voters, sortition
+   eligibility is determined using the `election_id` derived from the slot
+   number of the RB that announced the target EB. This ensures that vote
+   eligibility is verifiable and deterministic — nodes can independently agree
+   on which stake pools are eligible to vote for a specific EB based solely on
+   the EB's announcing RB slot, preventing multiple voting opportunities across
+   different slots for the same EB. This requirement stems from the BLS
+   sortition mechanism which uses the election identifier as input to the VRF
+   calculation for non-persistent voter selection.
+
 4. **Stake Verification**: Total voting stake meets the required quorum
    threshold
 5. **EB Consistency**: Certificate references the correct EB hash announced in
@@ -834,13 +834,13 @@ introduce new behaviors, several core Praos mechanisms remain unchanged.
 Propagation**: Uses the TxSubmission mini-protocol exactly as implemented in
 Praos. Transactions flow from downstream to upstream nodes through diffusion,
 where they are validated against the current ledger state before being added to
-local mempools. The protocol maintains the same FIFO ordering and duplicate
-detection mechanisms.
+local mempools. The protocol maintains the same FIFO ordering and
+duplicate-detection mechanisms.
 
 <a id="mempool-design" href="#mempool-design"></a>**Mempool Design**: The
 mempool follows the same design as current Praos deployment with increased
 capacity to support both RB and EB production. A node's mempool capacity must
-accommodates expanded transaction volume:
+accommodate expanded transaction volume:
 
 <div align="center">
 
@@ -854,7 +854,7 @@ reuse, with detailed processing rules specified in the
 
 #### RB Block Production and Diffusion
 
-When a stake pool wins block leadership (step 1), they create a Ranking Block
+When a stake pool wins slot leadership (step 1), they create a Ranking Block
 (RB) and **optionally** an Endorser Block (EB) based on the
 [chain inclusion rules](#step-5-chain-inclusion). The RB is a standard Praos
 block with extended header fields to reference one EB and announce another EB
@@ -870,10 +870,9 @@ and 2b). This separate mechanism enables rapid EB discovery within the strict
 timing bound $\Delta_\text{hdr}$. EBs are diffused freshest-first to facilitate
 timely EB delivery, with nodes propagating at most two headers per (slot,
 issuer) pair to detect <a href="#equivocation-detection">equivocation</a> -
-where an attacker creates multiple EBs for the same block generation
-opportunity - while limiting network overhead. The header contains the EB hash
-when the block producer created an EB, allowing peers to discover the
-corresponding EB.
+where an attacker creates multiple EBs for the same block generation opportunity
+— while limiting network overhead. The header contains the EB hash when the
+block producer created an EB, allowing peers to discover the corresponding EB.
 
 <a id="rb-body-diffusion" href="#rb-body-diffusion"></a>**RB Body Diffusion**:
 After receiving headers, nodes fetch RB bodies via standard BlockFetch protocol
@@ -958,7 +957,7 @@ allowing nodes to discard votes that are no longer relevant.
 Construction**: All nodes receive votes from upstream peers, maintaining a
 running tally for each EB to track progress toward the quorum threshold (step
 11). However, only RB producers create certificates when they are about to
-produce a new ranking block. Block producing nodes know their ownleadership
+produce a new ranking block. Block producing nodes know their own leadership
 schedule, so they know when they are eligible to construct a certificate for an
 upcoming RB they will produce. When enough votes are collected during the vote
 diffusion period, the RB producer aggregates them into a compact certificate.
@@ -1013,7 +1012,7 @@ boundary and represents a minimal computational overhead based on current
 Nodes complete this computation well before voting begins in the new epoch to
 ensure seamless participation.
 
-#### Operational certficate issue numbers
+#### Operational certificate issue numbers
 
 Each node must relay at most two EB announcements that equivocate the same Praos
 election. This would be trivial for senders and receivers to enforce, if it were
@@ -1022,7 +1021,7 @@ not for
 which complicate the notion of which sets of headers qualify as equivocating.
 
 With the current Praos system, an SPO is free to issue an arbitrary operational
-certficate issue numbers (OCIN) every time they issue an RB header, but honest
+certificate issue number (OCIN) every time they issue an RB header, but honest
 SPOs will only increment their OCIN when they need to. Whether the OCIN carried
 by some header is valid depends on the chain it extends, because the Praos
 protocol rules along a single chain only allow an SPO's OCIN to be incremented
@@ -1052,7 +1051,7 @@ any way for the adversary to have revealed incremented OCINs to some nodes but
 definitely not all, then the worst-case diffusion behavior of adversarial EBs
 might be worse than that of honest EBs, which would complicate the acceptable
 lower bound on $L_\text{diff}$, for example. On the other hand, if every OCIN
-increment - even those disallowed by Praos - is always eventually relayed to all
+increment — even those disallowed by Praos — is always eventually relayed to all
 nodes, then an adversary can create unbounded work by constantly incrementing
 their OCINs. In the absence of the context provided by forks, there's no bound
 on the OCINs the Leios protocol would relay.
@@ -1067,8 +1066,8 @@ any subsequent announcements for that election.
 
 With this rule, a node will crucially disconnect if and only if a peer sends
 more than two announcements with the same election. It will also ignore headers
-from leaked hot keys once the SPO increments their OCIN, but unfortunately - and
-in contrast to Praos - not immediately. The Leios node will only ignore
+from leaked hot keys once the SPO increments their OCIN, but unfortunately — and
+in contrast to Praos — not immediately. The Leios node will only ignore
 unincremented OCINs after all honest nodes necessarily agree that the SPO
 incremented their OCIN. In the strictest case, that could require the increment
 to be at least 36 hr old on Cardano mainnet before Leios ignores the
@@ -1102,12 +1101,12 @@ mempool capacity to support both RB and EB transaction pools.
 Leios must introduce new mini-protocols to handle the additional message types
 required for EB distribution, voting, and certificate construction. Despite the
 precedent for some CIPs to leave those concrete details for implementors to
-decide, the diffculty of satisfying all of the requirements on a Leios
+decide, the difficulty of satisfying all of the requirements on a Leios
 implementation motivates including a concrete proposal in this CIP.
 
 In addition, this section summarizes the requirements for the proposed
 mini-protocols and why they're satisfied. This demonstrates the collective
-requirements are satisfiable - that some implementation is feasible and not
+requirements are satisfiable — that some implementation is feasible and not
 prohibitively complicated.
 
 **Requirements**
@@ -1118,7 +1117,7 @@ protocol evolves, with updates to this specification reflecting proven
 improvements.
 
 - **Leios Correctness**: The nodes must exchange the Leios data while
-  prioritizing younger over older as implied by Leios's freshest-first delivery
+  prioritizing younger over older as implied by Leios' freshest-first delivery
   assumption. Because Leios is about improved resource utilization, wasting
   resources via unnecessary overhead/latency/etc can be considered a correctness
   violation, even more so than in Praos.
@@ -1161,7 +1160,7 @@ example, when a node simultaneously issues an RB and the EB it announces, the
 diffusion of the EB should not delay the diffusion of the RB; that RB is
 strictly more urgent than that EB.
 
-_Remark_. In contrast, the EB certified by a RB that also includes some
+_Remark_. In contrast, the EB certified by an RB that also includes some
 transactions is exactly as urgent as that RB, because the RB cannot be selected
 without the EB. The $L_\text{diff}$ parameter prevents such urgency inversion
 from occurring enough to matter, as explained in the
@@ -1171,11 +1170,11 @@ eventually recover when it does happen.
 In reality, the prioritization of Praos over Leios does not need to be perfectly
 strict (and in fact could never be on hardware and software infrastructure that
 is mostly commodity and partly public). The fundamental requirement is that the
-network assumptions that were originally used to parametrize Praos must still be
-valid — up to some tolerated error probability — when the same nodes are
+network assumptions that were originally used to parameterize Praos must still
+be valid — up to some tolerated error probability — when the same nodes are
 simultaneously executing the Leios overlay. Concretely, the worst case delay
 between an honest block producer issuing a uniquely best RB and the last honest
-block producer selecting that RB (i.e., Praos's $\Delta$) must not be protracted
+block producer selecting that RB (i.e., Praos' $\Delta$) must not be protracted
 by Leios so much that the existing Praos parameter values (e.g., the stability
 window of 36 hr) are no longer sufficient.
 
@@ -1198,12 +1197,12 @@ A brief summary is that a mini-protocol is a state machine that two nodes
 cooperatively navigate; each node only sends a message when it has _agency_, and
 at most one node has agency in any state. The agencies are indicated in this
 document as green or blue. The green agency is the client, the downstream peer
-that initiated the connection, and blue is the server. If some of a node's
-upstream peers are also downstream peers, then there are two instances of the
-mini-protocol running independently for each such peer, with the node as the
-client in one and the server in the other. Recall that Cardano's topology
-results in each relay having many more downstream peers than upstream peers.
-Syncing peers will be discussed below.
+that initiated the connection, and blue is the server (black means no agency).
+If some of a node's upstream peers are also downstream peers, then there are two
+instances of the mini-protocol running independently for each such peer, with
+the node as the client in one and the server in the other. Recall that Cardano's
+topology results in each relay having many more downstream peers than upstream
+peers. Syncing peers will be discussed below.
 
 <div align="center">
 <a name="figure-6" id="figure-6"></a>
@@ -1258,7 +1257,8 @@ graph LR
 The primary messages will carry information that is directly required by the
 Leios description above: headers, blocks, transactions referenced by blocks, and
 votes for blocks. However, some lower-level information must also be carried by
-secondary messages, eg indicating when the peer is first able to send the block.
+secondary messages, e.g. indicating when the peer is first able to send the
+block.
 
 The required exchanges between two neighboring nodes is captured by the
 following Information Exchange Requirements table (IER table). For the sake of
@@ -1305,7 +1305,7 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   MsgLeiosNextBlockAndTxsInRange, and MsgLeiosLastBlockAndTxsInRange may
   occasionally need to have the same priority as Praos. If it would benefit the
   prioritization implementation, those three messages could be isolated in a
-  third Leios mini-protocol that has equal priorty as the Praos mini-protocols.
+  third Leios mini-protocol that has equal priority as the Praos mini-protocols.
 - LeiosNotify and LeiosFetch can also progress independently, because they are
   separate mini-protocols. A client can therefore receive notifications about
   new Leios data and when it could be fetched from this peer even while a large
@@ -1323,7 +1323,7 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   bitmap-based addressing scheme allows for compact requests for even thousands
   of transactions: a few hundred bytes of MsgLeiosBlockTxsRequest can request
   every transaction in even the largest EB, while a MsgLeiosBlockTxsRequest for
-  a single transaction would old cost tens of bytes. Without a compact
+  a single transaction would only cost tens of bytes. Without a compact
   addressing scheme, a node that requires every transaction for some EB would
   essentially need to send a request that's the same size as the EB itself,
   which is large enough to be considered an unnecessary risk of increased
@@ -1333,15 +1333,16 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   vote in a bundle could have arrived sooner than the last vote in a bundle if
   it had not been bundled, maximal bundling risks unnecessary increases in
   latency. Some heuristic will balance the overhead decrease and latency
-  increase, such as the client gradually stopps bundling its vote requests as
-  its set of received votes approaches a quorum.
+  increase, such as the client gradually stops bundling its vote requests as its
+  set of received votes approaches a quorum.
 - The server can do the same when bundling vote offers, but it should be more
-  conservative, in case the client is already closer to a quorum than it is.
+  conservative, in case the client is already closer to a quorum than the former
+  is.
 - MsgLeiosBlockRangeRequest lets syncing nodes avoid wasting resources on
   overhead due to the (hopefully) high rate of EBs per RB. BlockFetch already
   bundles its RB requests when syncing, and this message lets LeiosFetch do the
   same. The starvation detection and avoidance mechanism used by Ouroboros
-  Genesis's Devoted BlockFetch variant can be easily copied for
+  Genesis' Devoted BlockFetch variant can be easily copied for
   MsgLeiosBlockRangeRequest if Ouroboros Genesis is enabled.
 - Recall that the `certified_eb` bit enables the client to correctly predict the
   total payload size of the valid replies to a MsgLeiosBlockRangeRequest. This
@@ -1374,7 +1375,7 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   memory bound is low enough to admit existing Cardano infrastructure.
 
 The mini-protocol pair does not already address the following challenges, but
-the corresponding enrichments - if necessary - would not contradict the
+the corresponding enrichments — if necessary — would not contradict the
 Tolerable Implementation Complexity requirement.
 
 - Depending on how severely the node must prioritize younger Leios traffic over
@@ -1382,7 +1383,7 @@ Tolerable Implementation Complexity requirement.
   distinct client requests transition to distinct blue states, the server is
   unable to reply to the client's requests in a different order than the client
   sent them. If a client pipelined several requests and then learned of a new
-  youngest EB and requested it, the server - if timing allows - could
+  youngest EB and requested it, the server — if timing allows — could
   conceptually reply to that last request before the others, for the sake of
   freshest-first delivery. But it cannot do so if the mini-protocol's structure
   prevents those replies, as the existing granular states do. The existing
@@ -1394,7 +1395,7 @@ Tolerable Implementation Complexity requirement.
   obfuscated.
 - With server-side reordering, LeiosFetch could also be free to interleave small
   replies to vote requests with large replies to block/transaction requests.
-  Without it, however, the colocation of small replies and large replies in a
+  Without it, however, the collocation of small replies and large replies in a
   single mini-protocol with granular states incurs head-of-line blocking. That
   risks occasionally increasing some key latencies, thereby threatening
   freshest-first delivery or even motivating inflations of $L_\text{vote}$
@@ -1429,7 +1430,7 @@ and more details on the
 
 In time of low-traffic demand, the protocol will naturally incentivize usage of
 RBs over EBs due to the lower inclusion latency. Only transactions which would
-not fit into an RB (in terms of size or plutus budgets) would be processed
+not fit into an RB (in terms of size or Plutus budgets) would be processed
 through Leios via an EB. When traffic levels can be adequately served by RBs
 alone within both size and computational constraints, no EBs are announced,
 reducing operational costs to Praos levels. This mechanism ensures that cost
@@ -1454,8 +1455,8 @@ properties.
 ### How Leios addresses CPS-18
 
 The [Leios research paper][leios-paper] describes a highly concurrent protocol
-with three block types - Input Blocks (IBs), Endorser Blocks (EBs), and Ranking
-Blocks (RBs) - produced independently across decoupled, pipelined stages. This
+with three block types — Input Blocks (IBs), Endorser Blocks (EBs), and Ranking
+Blocks (RBs) — produced independently across decoupled, pipelined stages. This
 specification simplifies that design by eliminating IBs and coupling EB
 production with RB production, reducing complexity while preserving substantial
 throughput gains.
@@ -1484,7 +1485,7 @@ As the Cardano Reserve diminishes, transaction fees must replace rewards to
 maintain network security and SPO profitability. Currently, the Reserve
 contributes more than 85% of epoch rewards, with less than 15% coming from
 transaction fees. By 2029, to compensate for Reserve depletion, the network
-requires approximately 36-50 TPS with average-sized transactions - roughly 10
+requires approximately 36-50 TPS with average-sized transactions — roughly 10
 times current mainnet throughput. This conservative lower bound represents the
 breakeven point for running the protocol sustainably while maintaining the same
 level of decentralization.
@@ -1495,7 +1496,7 @@ second (TxB/s) rather than Transactions per second (TPS). TPS does not account
 for transaction size or computational complexity, making systems with smaller
 transactions appear "faster" while providing less utility. Current Cardano
 mainnet provides 4,500 TxB/s, while this specification targets 140,000-300,000
-TxB/s (equivalent to roughly 100-200 TPS) - a 30-65x increase sufficient for
+TxB/s (equivalent to roughly 100-200 TPS) — a 30-65x increase sufficient for
 economic sustainability.
 
 <div align="center">
@@ -1522,7 +1523,7 @@ weighed against the throughput increase.
 High concurrency allows for higher throughput by doing more transaction
 processing at the same time. In the published design and otherwise discussed
 variants concurrency is introduced by allowing agreement on sequences of
-transactions independently of the Proas block production. This is the case for
+transactions independently of the Praos block production. This is the case for
 when endorser blocks would be announced separately from Praos blocks or input
 blocks be produced on a completely separate schedule. While such protocol
 designs often result in higher latency due to more rounds, concurrency in itself
@@ -1547,7 +1548,7 @@ preservation**
 
 Beyond preserving transaction behavior, the design minimizes infrastructure and
 operational disruption for the existing ecosystem. The proposed protocol still
-functions as an overlay extending Praos - like the research paper version,
+functions as an overlay extending Praos — like the research paper version,
 allowing SPOs to upgrade progressively without coordinated migrations.
 
 The most obvious approach to increasing throughput while minimizing disruption
@@ -1613,7 +1614,7 @@ future implementations of Leios can be assessed in these terms.
 |            | I/O operations, $\bar{q}_\text{iops}(b)$           | Mean number of I/O operations per second, where each operation writes a filesystem block of $b$ bytes |
 |            | Mean CPU usage, $\bar{q}_\text{vcpu}$              | Mean virtual CPU cores used by a node                                                                 |
 |            | Peak CPU usage, $\hat{q}_\text{vcpu}$              | Maximum virtual CPU cores used by a node over a one-slot window                                       |
-| Resilience | Adversarial stake, $\eta_\text{adversary}(s)$      | Fractional loss in throughput due to adversial stake of $s$                                           |
+| Resilience | Adversarial stake, $\eta_\text{adversary}(s)$      | Fractional loss in throughput due to adversarial stake of $s$                                         |
 
 <em>Table 5: Performance Metrics</em>
 
@@ -1698,7 +1699,7 @@ during any slot, $\hat{q}_\text{vcpu}$, provides a useful indication of
 computational burstiness and of how a virtual machine should be sized for Leios.
 
 **_Adversarial stake:_** Similarly, when adversarial stake is appreciable and
-active, the throughput of Leios might be drop.
+active, the throughput of Leios might drop.
 
 $$
 \eta_\text{adversary}(s) = \frac{\text{bytes of transactions reaching the ledger without adversarial activity}}{\text{bytes of transactions reaching the ledger with adversarial activity given fraction } s \text{ of the total stake}}
@@ -1775,7 +1776,7 @@ of transactions, in data that must be stored permanently as the ledger history.
 |               0.250 |            166.7 | some congestion |              51.6 |                  81.9 |                 96.6 |
 |               0.300 |            200.0 | much congestion |             146.6 |                 173.2 |                 97.2 |
 
-<em>Table 6: Leios effficiency at different throughputs</em>
+<em>Table 6: Leios efficiency at different throughputs</em>
 
 </div>
 
@@ -1826,7 +1827,7 @@ The effect of EBs being discarded when RBs are too close together is evidenced
 in the following plot. A transaction referenced only once by an EB is one that
 reaches the ledger on the first attempt. If a transaction is referenced by more
 than one EB, it means that several attempts were made to before a relevant EB's
-certificate was included in an RB. The subsequent plot shows Leios's irregular
+certificate was included in an RB. The subsequent plot shows Leios' irregular
 rhythm of forging, sometimes discarding, and certifying EB. (Note that RBs are
 so small relative to most EBs that they are difficult to see in the histogram.)
 The diagram also provides a sense of the intermittency of successful
@@ -1977,10 +1978,10 @@ block is being generated or validated. A more nuanced model of CPU usage in the
 simulators would account for Plutus execution explicitly, but the linear models
 described above are used to account for Plutus workloads implicitly. The
 following plot of simulation results limit each node to 4 vCPU cores and suggest
-that workloads of 2e13 Plutus execution steps per EB may be feasible: this
-is 1000 times the current Cardano mainnet limit of 2e10 steps for Praos blocks.
-The subsequent plot shows the 4 vCPUs becoming progressively more saturated with
-heavier Plutus execution. Although these results suggest that Leios's
+that workloads of 2e13 Plutus execution steps per EB may be feasible: this is
+1000 times the current Cardano mainnet limit of 2e10 steps for Praos blocks. The
+subsequent plot shows the 4 vCPUs becoming progressively more saturated with
+heavier Plutus execution. Although these results suggest that Leios'
 _block-level_ Plutus budget can safely be 5000 billion steps or more, it is
 important to remember that this is for conditions where honest nodes faithfully
 and promptly diffuse the transactions requiring the relatively expensive phase 2
@@ -2019,8 +2020,8 @@ The Leios simulations do not model memory or disk. With the advent of
 [UTxO-HD][utxohd], 16 GB of memory will remain be sufficient for Leios if the
 `OnDisk` option is used for the UTxO set. Disk requirements depend upon the
 growth of the ledger, but a sustained 0.150 MB/s throughput amounts to ledger
-size increasing by 4.7 TB each year: see the section below on Operating Costs
-for further discussion.
+size increasing by 4.7 TB each year: see the [section below](operating-costs) on
+Operating Costs for further discussion.
 
 ### Feasible Protocol Parameters
 
@@ -2042,7 +2043,7 @@ consider the following example based on simulated network measurements:
 
 **Given Network Characteristics:**
 
-- $\Delta_\text{hdr} = 1$ slot, $\Delta_\text{RB} = 5$ slots (Cardano Mainnet
+- $\Delta_\text{hdr} = 1$ slot, $\Delta_\text{RB} = 5$ slots (Cardano mainnet
   assumption for Praos security)
 - $\Delta_\text{EB}^{\text{O}} = 7$ slots (EB diffusion: transmission +
   processing), $\Delta_\text{EB}^{\text{W}} = 15$ slots (EB transmission time
@@ -2086,7 +2087,7 @@ consideration of tradeoffs.
 | Maximum Plutus steps per transaction          |        -         |  100G step units   | Raise per-transaction limit by a factor of twenty relative to Praos.                                                                                                                   |
 | Maximum Plutus memory per transaction         |        -         | 350M memory units  | Raise per-transaction limit by a factor of twenty relative to Praos.                                                                                                                   |
 | Ranking block max size                        |  $S_\text{RB}$   |    90,112 bytes    | This is the current value on the Cardano mainnet.                                                                                                                                      |
-| Mean committee size                           |       $n$        |   600 stakepools   | Modeling of the proposed certificate scheme indicates that certificates reach their minimum size of ~8 kB at this committee size, given a realistic distribution of stake among pools. |
+| Mean committee size                           |       $n$        |  600 stake pools   | Modeling of the proposed certificate scheme indicates that certificates reach their minimum size of ~8 kB at this committee size, given a realistic distribution of stake among pools. |
 | Quorum size                                   |      $\tau$      |        75%         | High threshold ensures certified EBs are known to >25% of honest nodes even with 50% adversarial stake. This enables the network assumption for safe diffusion within L_diff.          |
 
 <em>Table 7: Feasible Protocol Parameters</em>
@@ -2186,15 +2187,15 @@ increase each month as the ledger becomes larger.
 
 _Required TPS for Infrastructure Cost Coverage:_ Using average transaction sizes
 and fees, we can calculate the required TPS to generate enough fees to cover
-infrastructure costs. Not that only about 20% of fees currently accrue to SPOs,
-but the table assumes 100% would accrue to them: to maintain the current 80%-20%
+infrastructure costs. Note that only about 20% of fees currently accrue to SPOs,
+but the table assumes 100% would accrue to them; to maintain the current 80%-20%
 split, fives times as much fee would have to be collected compared to what is
 listed in the table.
 
 <div align="center">
 <a name="table-9" id="table-9"></a>
 
-| Infrastructure cost | Required ada<br/>@ $0.45/ADA | Required transactions<br/>(average size)<br/>@ $0.45/ADA | Required transactions<br/>(small size)<br/>@ $0.45/ADA |
+| Infrastructure cost | Required ADA<br/>@ $0.45/ADA | Required transactions<br/>(average size)<br/>@ $0.45/ADA | Required transactions<br/>(small size)<br/>@ $0.45/ADA |
 | ------------------: | ---------------------------: | -------------------------------------------------------: | -----------------------------------------------------: |
 |         $14.6M/year |               444k ADA/epoch |                                                4.75 Tx/s |                                              6.19 Tx/s |
 |         $15.9M/year |               485k ADA/epoch |                                                5.17 Tx/s |                                              6.75 Tx/s |
@@ -2228,10 +2229,10 @@ _Required TPS for Current Reward Maintenance:_ To maintain current reward levels
 Note that by 2029, to compensate for Reserve depletion, the network would need
 to process approximately 36 TPS with average-sized transactions, requiring a
 transaction throughput of around 51 TxkB/s, roughly 20 times the current mainnet
-throughput. Leios's design would comfortably support this increased throughput
+throughput. Leios' design would comfortably support this increased throughput
 while maintaining decentralization.
 
-While the empirical evidence demonstrates Leios's performance capabilities, any
+While the empirical evidence demonstrates Leios' performance capabilities, any
 protocol modification introduces new attack vectors and operational constraints
 that must be carefully assessed. The following section examines potential
 security risks and practical constraints that inform deployment considerations.
@@ -2375,8 +2376,8 @@ efficiency.
 **Interaction with Peras**
 
 The integration pathway with Peras remains an active area of research, focusing
-on optimizing the interaction between Leios's enhanced throughput mechanisms and
-Peras's finality guarantees. Key considerations include synchronizing committee
+on optimizing the interaction between Leios' enhanced throughput mechanisms and
+Peras' finality guarantees. Key considerations include synchronizing committee
 selection processes, coordinating voting mechanisms to avoid redundancy, and
 ensuring that enhanced throughput periods align effectively with finality
 checkpoints. This integration could provide both higher throughput and stronger
@@ -2434,7 +2435,7 @@ The proposal will be considered active once the following criteria are met:
 - [ ] A peer-reviewed implementation of a Leios-enabled node is available.
 - [ ] Successful operation with open participation in testnet environments over
       several months.
-- [ ] Key infrastructure signalled readiness for Leios-enhanced throughput.
+- [ ] Key infrastructure signaled readiness for Leios-enhanced throughput.
 - [ ] Hard-fork enabling Leios is successfully executed on mainnet.
 
 ### Implementation plan
@@ -2457,7 +2458,7 @@ are:
   - Stake- and network-based attacks
 - [ ] Develop node-level, but implementation-independent conformance test suites
       (blueprint).
-- [ ] Create a public leios-specific testnet with repeated load tests and
+- [ ] Create a public Leios-specific testnet with repeated load tests and
       encourage dependant infrastructure updates.
 - [ ] Implement / integrate necessary changes to `cardano-node` and other node
       implementations (this is big).
@@ -2478,54 +2479,54 @@ usual mechanisms of governing a hard-fork will be employed.
 
 **Primary Documents**
 
-- **CPS-18: Greater transaction throughput** - [CPS-0018][cps-18]
-- **Ouroboros Leios: Design Goals and Concepts** - [Research Paper][leios-paper]
+- **CPS-18: Greater transaction throughput** — [CPS-0018][cps-18]
+- **Ouroboros Leios: Design Goals and Concepts** — [Research Paper][leios-paper]
 
 **Leios Resources**
 
-- **Leios R&D website** - [leios.cardano-scaling.org][leios-website]
-- **Leios Discord channel** - [IOG Discord][leios-discord]
-- **Leios R&D repository** - [GitHub][leios-github]
-- **Leios formal specification** - [GitHub][leios-formal-spec]
-- **Leios Agda formal specification** - [Agda
+- **Leios R&D website** — [leios.cardano-scaling.org][leios-website]
+- **Leios Discord channel** — [IOG Discord][leios-discord]
+- **Leios R&D repository** — [GitHub][leios-github]
+- **Leios formal specification** — [GitHub][leios-formal-spec]
+- **Leios Agda formal specification** — [Agda
   specification][linear-leios-formal-spec]
-- **Leios cryptography prototype** - [GitHub][leioscrypto]
+- **Leios cryptography prototype** — [GitHub][leioscrypto]
 
 **Technical Specifications**
 
-- **BLS certificates specification** - [Specification][bls-spec]
-- **BLS certificates benchmarks** - [Benchmarks][bls-benchmarks]
-- **Fait Accompli sortition** - [Specification][fait-accompli-sortition]
+- **BLS certificates specification** — [Specification][bls-spec]
+- **BLS certificates benchmarks** — [Benchmarks][bls-benchmarks]
+- **Fait Accompli sortition** — [Specification][fait-accompli-sortition]
 
 **Technical Reports**
 
 - **Committee size and quorum requirement** -
   [Analysis][committee-size-analysis]
-- **Threat model** - [Report #1][threat-model]
-- **Leios attack surface** - [Report #2][threat-model-report2]
-- **Node operating costs** - [Cost estimate][cost-estimate]
+- **Threat model** — [Report #1][threat-model]
+- **Leios attack surface** — [Report #2][threat-model-report2]
+- **Node operating costs** — [Cost estimate][cost-estimate]
 
 **Related**
 
-- **CPS-0017** - [Settlement layer CPS][cps-17]
-- **Praos performance model** - [Specification][praos-performance]
+- **CPS-0017** — [Settlement layer CPS][cps-17]
+- **Praos performance model** — [Specification][praos-performance]
 
 **Simulation Resources**
 
-- **Synthetic mainnet** - [Mainnet-like topologies for Leios][mainnet-topology]
-- **10k-node network** - [Leios pseudo-mainnet topology][pseudo-mainnet]
-- **750-node network** - [Leios mini-mainnet topology][mini-mainnet]
-- **Comparison of 10k-node and 750-node networks** - [Mainnet comparison
+- **Synthetic mainnet** — [Mainnet-like topologies for Leios][mainnet-topology]
+- **10k-node network** — [Leios pseudo-mainnet topology][pseudo-mainnet]
+- **750-node network** — [Leios mini-mainnet topology][mini-mainnet]
+- **Comparison of 10k-node and 750-node networks** — [Mainnet comparison
   study][topology-comparison]
-- **Validation times** - [Analysis of mainnet transaction validation
+- **Validation times** — [Analysis of mainnet transaction validation
   times][timings]
 
 **External**
 
-- **RIPE Atlas** - [Network measurements][ripe-atlas]
-- **Ledger analyser tool** - [db-analyser][dbanalyser]
-- **UTXO-HD** - [Cardano Node 10.5.1][utxohd]
-- **SPO hardware requirements** - [Minimmum hardware requirements to run a stake
+- **RIPE Atlas** — [Network measurements][ripe-atlas]
+- **Ledger analyser tool** — [db-analyser][dbanalyser]
+- **UTXO-HD** — [Cardano Node 10.5.1][utxohd]
+- **SPO hardware requirements** — [Minimum hardware requirements to run a stake
   pool][spohw]
 
 <!-- Reference Index - DO NOT REMOVE -->
