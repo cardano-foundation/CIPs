@@ -2625,8 +2625,8 @@ usual mechanisms of governing a hard-fork will be employed.
   https://developers.cardano.org/docs/operate-a-stake-pool/hardware-requirements
   "Minimum hardware requirements to run a stake pool"
 [utxohd]:
-  https://github.com/IntersectMBO/cardano-node/releases/tag/10.5.1
-  "Cardano Node 10.5.1 release notes"
+  https://ouroboros-consensus.cardano.intersectmbo.org/docs/references/miscellaneous/utxo-hd/
+  "UTXO-HD documentation"
 [dbanalyser]:
   https://github.com/IntersectMBO/ouroboros-consensus/blob/main/ouroboros-consensus-cardano/README.md#db-analyser
   "Cardano instantiation of the Consensus Layer: db-analyser"
