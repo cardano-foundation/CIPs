@@ -352,14 +352,12 @@ if:
 4. The EB is the one announced by the latest RB in the voter's current chain,
 5. The EB's transactions form a **valid** extension of the RB that announced it,
 6. For non-persistent voters, it is eligible to vote based on sortition using
-   the announcing RB's slot number as the election identifier.
+   the announcing RB's slot number as the election identifier,
+7. The EB contains at least one transaction (i.e., is not empty), as specified in the [formal specification][leios-formal-spec-empty-eb].
 
 where $L_\text{hdr}$ and $L_\text{vote}$ are
 <a href="#protocol-parameters">protocol parameters</a> represented by a number
 of slots.
-
-While not strictly a required check, honest nodes should not vote on empty EBs
-as that is obviously pointless and wasteful.
 
 #### Step 4: Certification
 
@@ -2539,6 +2537,9 @@ usual mechanisms of governing a hard-fork will be employed.
 [linear-leios-formal-spec]:
   https://github.com/input-output-hk/ouroboros-leios-formal-spec/blob/V1.0/formal-spec/Leios/Linear.lagda.md
   "Leios formal specification in Agda"
+[leios-formal-spec-empty-eb]:
+  https://github.com/input-output-hk/ouroboros-leios-formal-spec/blob/c7f8d61865360cd16e04c7c3f0fd481c8081deff/formal-spec/Leios/Linear.lagda.md#L135
+  "Formal specification requirement: EndorserBlockOSig.txs eb ≢ []"
 
 <!-- Technical specifications and benchmarks -->
 
