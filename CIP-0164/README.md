@@ -87,6 +87,8 @@ technical resources, visit the Leios Innovation R&D site at
     - [Simulation Results](#simulation-results)
   - [Feasible Protocol Parameters](#feasible-protocol-parameters)
   - [Trade-offs \& Limitations](#trade-offs--limitations)
+  - [Design Decisions](#design-decisions)
+    - [Transaction References in Endorser Blocks](#transaction-references-in-endorser-blocks)
   - [Alternatives \& Extensions](#alternatives--extensions)
 - [Path to active](#path-to-active)
   - [Acceptance criteria](#acceptance-criteria)
@@ -353,7 +355,8 @@ if:
 5. The EB's transactions form a **valid** extension of the RB that announced it,
 6. For non-persistent voters, it is eligible to vote based on sortition using
    the announcing RB's slot number as the election identifier,
-7. The EB contains at least one transaction (i.e., is not empty), as specified in the [formal specification][leios-formal-spec-empty-eb].
+7. The EB contains at least one transaction (i.e., is not empty), as specified
+   in the [formal specification][leios-formal-spec-empty-eb].
 
 where $L_\text{hdr}$ and $L_\text{vote}$ are
 <a href="#protocol-parameters">protocol parameters</a> represented by a number
@@ -2281,6 +2284,17 @@ attacks, mitigated through cryptographic validation, equivocation detection, and
 the high voting threshold requirement. Comprehensive analysis is documented in
 the [Protocol Security](#protocol-security) section and
 [threat model](https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/threat-model.md).
+
+### Design Decisions
+
+#### Transaction References in Endorser Blocks
+
+EBs contain transaction references rather than full transaction bodies to avoid
+re-transmitting data already diffused through the network. Nodes fetch only
+transactions they don't possess, reducing bandwidth and avoiding redundant
+validation when transactions are endorsed by multiple EBs. Complete transaction
+data remains available through network diffusion and local storage for immutable
+chain purposes.
 
 ### Alternatives & Extensions
 
