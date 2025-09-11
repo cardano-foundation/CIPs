@@ -596,6 +596,13 @@ Two separate parameters control EB sizes:
 - $S_\text{EB-tx}$ limits the total size of transactions that can be referenced,
   controlling the actual transaction payload
 
+Note that $S_\text{EB-tx}$ does not change the maximum size of individual
+transactions. The existing `maxTxSize` parameter remains unchanged and continues
+to limit individual transaction sizes. The purpose of $S_\text{EB-tx}$ is to
+limit the total computational work required for validation and ledger state
+updates when processing an EB, since the EB size itself does not account for the
+full size of all referenced transaction data that must be validated.
+
 For example, an EB referencing 10,000 transactions of 100 bytes each would have
 $S_\text{EB-tx} = 1$ MB but the EB itself would be at least 320 KB for the
 transaction hashes alone.
