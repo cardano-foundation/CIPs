@@ -1977,8 +1977,8 @@ block is being generated or validated. A more nuanced model of CPU usage in the
 simulators would account for Plutus execution explicitly, but the linear models
 described above are used to account for Plutus workloads implicitly. The
 following plot of simulation results limit each node to 4 vCPU cores and suggest
-that workloads of 20,000e9 Plutus execution steps per EB may be feasible: this
-is 1000 times the current Cardano mainnet limit of 20e9 steps for Praos blocks.
+that workloads of 2e13 Plutus execution steps per EB may be feasible: this
+is 1000 times the current Cardano mainnet limit of 2e10 steps for Praos blocks.
 The subsequent plot shows the 4 vCPUs becoming progressively more saturated with
 heavier Plutus execution. Although these results suggest that Leios's
 _block-level_ Plutus budget can safely be 5000 billion steps or more, it is
