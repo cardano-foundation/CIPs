@@ -496,8 +496,8 @@ availability:
 #### Timing parameters
 
 There are three key parameters related to time, which are important for
-[protocol security](#protocol-security). All relevant quantities are depdicted
-in [Figure 4](#figure-4).
+[protocol security](#protocol-security). All relevant quantities are depicted in
+[Figure 4](#figure-4).
 
 <a id="equivocation-detection"></a>
 
