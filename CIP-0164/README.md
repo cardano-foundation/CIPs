@@ -1360,7 +1360,7 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   benefit would be.
 - If MsgLeiosBlockRequest and MsgLeiosBlockTxsRequest were restricted to young
   EBs, then MsgLeiosBlockRangeRequest would not only enable syncing nodes but
-  also the unfortunate node that suffers from a $\Delta^\text{A}_\text{EB}$
+  also the unfortunate node that suffers from a $\Delta^\text{W}_\text{EB}$
   violation. The protocol design requires that that event is rare or at least
   confined to a small portion of honest stake at a time. But it will
   occasionally happen to some honest nodes, and they must be able to recover
@@ -1666,11 +1666,11 @@ $$
 $$
 
 **_Voting failure:_** An unlucky set of VRF evaluations might result in
-insufficient voters being selected in a given pipeline, thus making it
-impossible to certify an EB in that pipeline.
+insufficient voters being selected for a given EB, thus making it
+impossible to certify that EB.
 
 $$
-p_\text{noquorum} = \text{probability of sufficient voters to achieve a quorum in a given pipeline}
+p_\text{noquorum} = \text{probability of sufficient voters to achieve a quorum for a given EB}
 $$
 
 **_Network egress:_** Cloud service providers typically charge for network
@@ -2028,7 +2028,7 @@ Operating Costs for further discussion.
 **Parameter Relationships and Network Assumptions**
 
 The key relation in the proposed protocol is between the voting threshold
-($\tau = 75\%$) and propagation delay of EBs ($\Delta_\text{EB}$). The high
+($\tau = 75\\%$) and propagation delay of EBs ($\Delta_\text{EB}$). The high
 voting threshold ensures that any certified EB is already known to at least 25%
 of honest nodes by the end of $L_\text{vote}$, even assuming 50% adversarial
 stake. This widespread initial knowledge enables the critical network
@@ -2155,7 +2155,7 @@ number of voters increases, so larger committee sizes might be permitted for
 broader SPO participation and higher security. The committee size should be
 large enough that fluctuations in committee membership do not create an
 appreciable probability of an adversarial quorum when the adversarial stake is
-just under 50%. The quorum size should be kept large enough above 50% so that
+just under 50%. The quorum size should be kept just large enough above 50% so that
 those same fluctuations do not prevent an honest quorum. Larger committees
 require more network traffic, of course.
 
