@@ -536,10 +536,10 @@ Praos security assumptions.
 **Security Guarantee**: By waiting $3 L_\text{hdr}$ slots before voting begins,
 the protocol ensures that if any equivocation occurred soon enough to matter,
 all honest nodes will have detected it and will refuse to vote for any EB from
-the equivocating issuer. This prevents adversaries from exploiting network
-partitions to gain unfair advantages in the voting process, as honest nodes will
-only vote for EBs where no equivocation was detected during the detection
-period.
+an RB slot where equivocation was detected. This prevents adversaries from
+exploiting network partitions to gain unfair advantages in the voting process,
+as honest nodes will only vote for EBs where no equivocation was detected during
+the detection period.
 
 Note that EB diffusion (but not voting) continues to happen during this phase.
 
