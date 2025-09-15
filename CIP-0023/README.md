@@ -150,7 +150,6 @@ See the minfees.php code to test different potential values of the parameters.
 
 ### Acceptance Criteria
 
-- CIP Editor Approval – Cardano CIP Editors must confirm that the specification is complete, unambiguous, and internally consistent with existing CIPs.
 - Consensus on initial parameter value – An initial value for the new protocol parameter `minMargin` must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses, and community feedback.
 - Endorsement by Technical Bodies – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap.
 - Stakeholder Concurrence – A majority of stake pool operators (SPOs), ecosystem tooling maintainers, dReps, and other infrastructure providers must signal readiness to upgrade.
