@@ -245,7 +245,7 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 
 ##### Message authentication mechanism
 
-The payload part of the message (message id, message body, KES period and expiration timestamp fields encoded as CBOR) is signed with the KES key of the SPO. The message is composed of the aforementioned payload (encoded as CBOR bytes), the KES signature (raw bytes), the operational certificate (without the cold verification key and encoded as CBOR bytes) and the cold verification key (raw bytes) are appended to the message.
+The payload part of the message (message id, message body, KES period and expiration timestamp fields encoded as CBOR) is signed with the KES key of the SPO. The message is composed of the aforementioned payload (encoded as CBOR bytes), the KES signature (raw bytes), the operational certificate (the KES public key, the issue number of the operational certificate, the KES period at the time of creation of the operational certificate and their cold signing key signature, encoded as CBOR bytes) and the cold verification key (raw bytes) are appended to the message.
 
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
 
