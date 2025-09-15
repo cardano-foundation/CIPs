@@ -1,0 +1,64 @@
+; This c509 Certificate format is based upon:
+; https://datatracker.ietf.org/doc/draft-ietf-cose-cbor-encoded-cert/11/
+; and is restricted / customized to enhance compatibility with Plutus scripts 
+; that consume them, without losing essential X.509 features.
+; Not all x509 features are supported and some fields have different semantics to improve
+; certificate size and ability to be processed by Plutus Scripts.
+
+; cspell: words reencoded, biguint 
+
+C509CertificatePlutusRestrictedSubset = [
+    TBSCertificate, 
+    issuerSignatureValue: ed25519Signature
+]
+
+; The elements of the following group are used in a CBOR Sequence:
+TBSCertificate = (
+    c509CertificateType: int, ; Always 2 as a natively signed
+    certificateSerialNumber: CertificateSerialNumber, ; Can be ignored/set to 0 or used as intended.
+    issuerSignatureAlgorithm: AlgorithmIdentifier, ; Must be int(12) = Ed25519
+    issuer: Name / null, ; If the 'issuer' field is identical to the 'subject' field (in case of self-signed), then it must be encoded as CBOR null 
+                         ; This could be an on-chain reference to the issuer cert. What would be the best way? Transaction hash/cert hash?
+    validityNotBefore: ~time, ; c509 uses UTC
+    validityNotAfter: ~time / null, ; c509 uses UTC, no expiration date must be set to null
+    subject: Name, ; Reference to on-chain keys related to this certificate
+    subjectPublicKeyAlgorithm: AlgorithmIdentifier, ; Must be int(12) = Ed25519
+    subjectPublicKey: subjectPublicKey, ; Ed25519 public key
+    extensions: Extensions ; Set to [] if no Extensions provided
+)
+
+CertificateSerialNumber = ~biguint
+
+; Currently ONLY AlgorithmIdentifier int(12) - Ed25519 is supported.
+; oid and [ algorithm: oid, parameters: bytes ] are not supported by Plutus.
+AlgorithmIdentifier = int / ~oid / [ algorithm: ~oid, parameters: bytes ]
+
+Name = [ * Attribute ] / text / bytes
+
+Attribute = ( attributeType: int, attributeValue: text ) 
+          // ( attributeType: ~oid, attributeValue: bytes )
+
+subjectPublicKey = bytes .size (32..32) ; Ed25519 public key stored in bytes, adjust size if other key types are supported.
+
+; For ~time, Plutus will need to convert the Unix epoch timestamp to the nearest slot number
+; validityNotBefore rounds up to the next Slot after that time.
+; validityNotAfter rounds down to the next Slot before that time.
+
+ed25519Signature = bstr .size 64 ; Ed25519 signature must be tagged to identify their type.
+
+; The only Extension supported is int(3) = SubjectAltName where GeneralNames need to be 
+; int(6) = uniformResourceIdentifier.
+; This uniformResourceIdentifier must conform to the URI based line in CIP-0134:
+; https://github.com/input-output-hk/catalyst-CIPs/tree/cip13-simple-cardano-address-extension/CIP-0134
+; for example, web+cardano://addr/stake1uyehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gh6ffgw
+
+Extensions = [ * Extension ] / int
+
+Extension = (
+    ( extensionID: int, extensionValue: any )
+    // ( extensionID: ~oid, ? critical: true, extensionValue: bytes )
+)
+
+SubjectAltName = GeneralNames / text
+GeneralNames = [ + GeneralName ]
+GeneralName = ( GeneralNameType: int, GeneralNameValue: any )
