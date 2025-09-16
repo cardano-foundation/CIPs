@@ -3,6 +3,7 @@ CIP: 23
 Title: Fair Min Fees
 Authors:
   - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
+  - Ryan Wiley <rian222@gmail.com>
 Category: Ledger
 Status: Proposed
 Created: 2021-02-04
