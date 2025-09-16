@@ -7,7 +7,7 @@ Authors:
     - Ilia Rodionov <hey@euony.me>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1087
 Created: 2025-09-11
 License: CC-BY-4.0
 ---
