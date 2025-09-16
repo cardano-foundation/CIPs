@@ -1770,11 +1770,11 @@ of transactions, in data that must be stored permanently as the ledger history.
 
 | Throughput [TxMB/s] | TPS at 1500 B/tx | Conditions      | Mempool to EB [s] | Mempool to ledger [s] | Space efficiency [%] |
 | ------------------: | ---------------: | --------------- | ----------------: | --------------------: | -------------------: |
-|               0.100 |             66.7 | light load      |              19.6 |                  48.0 |                 94.2 |
-|               0.150 |            100.0 | moderate load   |              21.6 |                  51.2 |                 96.3 |
-|               0.200 |            142.9 | heavy load      |              31.3 |                  57.7 |                 96.4 |
-|               0.250 |            166.7 | some congestion |              51.6 |                  81.9 |                 96.6 |
-|               0.300 |            200.0 | much congestion |             146.6 |                 173.2 |                 97.2 |
+|               0.050 |             33.3 | light load      |              17.5 |                  54.0 |                 93.9 |
+|               0.100 |             66.7 | moderate load   |              18.0 |                  54.9 |                 95.8 |
+|               0.150 |            100.0 | heavy load      |              21.1 |                  58.9 |                 96.3 |
+|               0.200 |            142.9 | congestion      |             130.1 |                 171.6 |                 95.7 |
+|               0.250 |            166.7 | over capacity   |             238.8 |                 282.4 |                 94.3 |
 
 <em>Table 6: Leios efficiency at different throughputs</em>
 
