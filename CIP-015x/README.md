@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 165
 Title: Canonical Ledger State
 Category: Ledger
 Status: Proposed
