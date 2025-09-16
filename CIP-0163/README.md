@@ -224,7 +224,7 @@ These effects are also modeled in the open source tool available at [https://spo
 
   - After:
 
-    ![Runaway lost-stake after mitigation (Fig. 3)](Fig3.png)
+    ![Runaway lost-stake after mitigation (Fig. 3)](fig3.png)
 
 **Note:** The baseline numbers in the previous two charts were rough estimates taken from CPS-0022. These estimates may be off by a wide margin, but the effects in preventing the compounding of lost ADA beyond their expiration date will apply generally regardless.
 
