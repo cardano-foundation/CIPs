@@ -37,7 +37,7 @@ Versioning and Upgrade Complexity: the proposed format defines a solution that w
 The concrete use-case scenarios for this CIP are:
 
 - allow building dump of the Cardano Ledger node state in a canonical format, so any two nodes would generate the same file. This would allow persistence, faster bootstrap and verification.
-- such state can be verified by the other node against its own state and signed. It would allow use fully utilize Mithril, when each node can sign the state independently.
+- such state can be verified by the other node against its own state and signed. It would allow us to fully utilize Mithril, when each node can sign the state independently.
 - full conformance testing. Any implementation would be able to reuse test-suite of the Haskell node by importing data applying the test transaction and exporting data back.
 
 ## Specification
