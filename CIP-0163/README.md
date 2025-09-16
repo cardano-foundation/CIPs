@@ -104,7 +104,7 @@ This dynamic couples network security to real participation and reduces the risk
   - Yellow = ADA in reserves account for actual blocks produced (Eta) and missing pledge. This is the track the reserves is expected to follow after the inclusion of this CIP.
   - Green = Actual amount of ADA in reserves
 
-  ![Reserve Depletion)](Fig1.png)
+  ![Reserve Depletion)](fig1.png)
 
 *Source: [https://x.com/C1cADA_Markus/status/1636023370532749314](https://x.com/C1cADA_Markus/status/1636023370532749314)*
 
