@@ -32,7 +32,7 @@ SCLS addresses these problems by:
 - being extensible (e.g., optional indexes/Bloom filters) without breaking compatibility;
 - remaining compatible with UTxO-HD/LSM on-disk structures and incremental (delta) updates.
 
-Versioning and Upgrade Complexity: the proposed format defines a solution that will be able to support future protocol extensions with new eras without changing this CIP. Chosen approach allows to define a client that will be interested only in a particular parts of the state, but that will not prevent it from storing, loading and verifying the interesting parts of the state.
+Versioning and Upgrade Complexity: the proposed format defines a solution that will be able to support future protocol extensions with new eras without changing this CIP. The chosen approach allows implementers to define a client that will be interested only in particular parts of the state, but will not prevent it from storing, loading and verifying the interesting parts of the state.
 
 The concrete use-case scenarios for this CIP are:
 
