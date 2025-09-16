@@ -220,7 +220,7 @@ These effects are also modeled in the open source tool available at [https://spo
 
   - Before:
 
-    ![Runaway lost-stake before mitigation (Fig. 2)](Fig2.png)
+    ![Runaway lost-stake before mitigation (Fig. 2)](fig2.png)
 
   - After:
 
