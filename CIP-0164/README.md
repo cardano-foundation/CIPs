@@ -1750,7 +1750,7 @@ with a set of protocol parameters suitable for running Leios at 200 kB/s of
 transactions, which corresponds to approximately 150 tx/s of transactions of
 sizes typical on the Cardano mainnet. The maximum size of transactions
 referenced by an EB is 12 MB and the stage lengths are
-$3 \times L_\text{hdr} = 3$, $L_\text{vote} = 4$, and
+$3 \times L_\text{hdr} = 3 \text{ slots}$, $L_\text{vote} = 4$, and
 $L_\text{diff} = 7 \text{ slots}$. In order to illustrate the minimal
 infrastructure resources used by Leios at these throughputs, we have limited
 nodes to 4 virtual CPUs each and limited inter-node bandwidth to 10 Mb/s. We
@@ -1761,7 +1761,7 @@ effects of clearing the memory pool are apparent. The table below summarizes the
 results of the simulation experiment. We see that a transaction at the front of
 the memory pool can become referenced by an EB in as few as 20 seconds when the
 system is lightly or moderately loaded and that it can reach certification on
-the ledger in about one minute. These times can double under congested
+the ledger in about one minute. These times more than double under congested
 conditions. In all cases there is little overhead, relative to the total bytes
 of transactions, in data that must be stored permanently as the ledger history.
 
@@ -1978,11 +1978,11 @@ block is being generated or validated. A more nuanced model of CPU usage in the
 simulators would account for Plutus execution explicitly, but the linear models
 described above are used to account for Plutus workloads implicitly. The
 following plot of simulation results limit each node to 4 vCPU cores and suggest
-that workloads of 2e13 Plutus execution steps per EB may be feasible: this is
-1000 times the current Cardano mainnet limit of 2e10 steps for Praos blocks. The
+that workloads of 10<sup>13</sup> Plutus execution steps per EB may be feasible: this is
+500 times the current Cardano mainnet limit of 2×10<sup>10</sup> steps for Praos blocks. The
 subsequent plot shows the 4 vCPUs becoming progressively more saturated with
-heavier Plutus execution. Although these results suggest that Leios'
-_block-level_ Plutus budget can safely be 5000 billion steps or more, it is
+heavier Plutus execution. Although these results suggest that Leios's
+_block-level_ Plutus budget can safely be 2000 billion steps, it is
 important to remember that this is for conditions where honest nodes faithfully
 and promptly diffuse the transactions requiring the relatively expensive phase 2
 (Plutus) validation: adversarial nodes could attempt to delay diffusion of
