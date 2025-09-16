@@ -2170,16 +2170,20 @@ pricing of ten common hyperscale and discount cloud providers. The cost of a
 10,000-node Leios network can be computed from the cost per node. Storage costs
 increase each month as the ledger becomes larger.
 
+Throughput	Average-size transactions	Small transactions	Per-node operation	Per-node storage	10k-node network<br/>(first year)	10k-node network<br/>(first year)
+<chr>	<chr>	<chr>	<chr>	<chr>	<chr>	<chr>
+
+
 <div align="center">
 <a name="table-8" id="table-8"></a>
 
 | Throughput | Average-size transactions | Small transactions | Per-node operation | Per-node storage | 10k-node network<br/>(first year) | 10k-node network<br/>(first year) |
 | ---------: | ------------------------: | -----------------: | -----------------: | ---------------: | --------------------------------: | --------------------------------: |
-| 100 TxkB/s |                   67 Tx/s |           333 Tx/s |      $112.99/month |    $17.85/month² |                            $14.6M |                       $200k/epoch |
-| 150 TxkB/s |                  100 Tx/s |           500 Tx/s |      $119.51/month |    $26.80/month² |                            $15.9M |                       $218k/epoch |
-| 200 TxkB/s |                  133 Tx/s |           667 Tx/s |      $128.35/month |    $38.35/month² |                            $17.7M |                       $242k/epoch |
-| 250 TxkB/s |                  167 Tx/s |           833 Tx/s |      $133.07/month |    $44.61/month² |                            $18.6M |                       $255k/epoch |
-| 300 TxkB/s |                  200 Tx/s |          1000 Tx/s |      $139.18/month |    $53.20/month² |                            $19.9M |                       $272k/epoch |
+|  50 TxkB/s |                   33 Tx/s |           167 Tx/s |      $105.97/month |     $8.89/month² |                            $13.2M |                       $181k/epoch |
+| 100 TxkB/s |                   67 Tx/s |           333 Tx/s |      $112.68/month |    $17.79/month² |                            $14.6M |                       $200k/epoch |
+| 150 TxkB/s |                  100 Tx/s |           500 Tx/s |      $119.44/month |    $26.71/month² |                            $15.9M |                       $218k/epoch |
+| 200 TxkB/s |                  133 Tx/s |           667 Tx/s |      $128.01/month |    $37.91/month² |                            $17.6M |                       $241k/epoch |
+| 250 TxkB/s |                  167 Tx/s |           833 Tx/s |      $132.56/month |    $44.01/month² |                            $18.5M |                       $254k/epoch |
 
 <em>Table 8: Operating Costs by Transaction Throughput</em>
 
@@ -2197,11 +2201,11 @@ listed in the table.
 
 | Infrastructure cost | Required ADA<br/>@ $0.45/ADA | Required transactions<br/>(average size)<br/>@ $0.45/ADA | Required transactions<br/>(small size)<br/>@ $0.45/ADA |
 | ------------------: | ---------------------------: | -------------------------------------------------------: | -----------------------------------------------------: |
-|         $14.6M/year |               444k ADA/epoch |                                                4.75 Tx/s |                                              6.19 Tx/s |
-|         $15.9M/year |               485k ADA/epoch |                                                5.17 Tx/s |                                              6.75 Tx/s |
-|         $17.7M/year |               537k ADA/epoch |                                                5.74 Tx/s |                                              7.49 Tx/s |
-|         $18.6M/year |               566k ADA/epoch |                                                6.05 Tx/s |                                              7.89 Tx/s |
-|         $19.9M/year |               605k ADA/epoch |                                                6.45 Tx/s |                                              8.42 Tx/s |
+|         $13.2M/year |               403k ADA/epoch |                                                4.30 Tx/s |                                              5.61 Tx/s |
+|         $14.6M/year |               444k ADA/epoch |                                                4.73 Tx/s |                                              6.17 Tx/s |
+|         $15.9M/year |               485k ADA/epoch |                                                5.17 Tx/s |                                              6.74 Tx/s |
+|         $17.6M/year |               536k ADA/epoch |                                                5.72 Tx/s |                                              7.46 Tx/s |
+|         $18.5M/year |               564k ADA/epoch |                                                6.02 Tx/s |                                              7.85 Tx/s |
 
 <em>Table 9: Required TPS for Infrastructure Cost Coverage</em>
 
