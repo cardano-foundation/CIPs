@@ -17,7 +17,7 @@ License: Apache-2.0
 
 ## Abstract
 
-We propose an extension to Ouroboros, called **Ouroboros Phalanx**. The name derives from the [**Phalanx**](https://en.wikipedia.org/wiki/Phalanx), an **Ancient Greek military formation** where soldiers stood in tightly packed units, shielding one another to form a nearly impenetrable defense. Just as the phalanx multiplied the strength of individual soldiers through coordination, this protocol enhances Cardano’s consensus by reinforcing its resistance to adversarial attacks.
+We propose an extension to Ouroboros Praos, called **Ouroboros Phalanx**. The name derives from the [**Phalanx**](https://en.wikipedia.org/wiki/Phalanx), an **Ancient Greek military formation** where soldiers stood in tightly packed units, shielding one another to form a nearly impenetrable defense. Just as the phalanx multiplied the strength of individual soldiers through coordination, this protocol enhances Cardano’s consensus by reinforcing its resistance to adversarial attacks.
 
 At its core, **Phalanx Protocol** strengthens the **VRF-based randomness generation sub-protocol** that underpins leader election. It introduces an additional cryptographic primitive that is **lightweight for honest participants** yet **computationally expensive for adversaries** seeking to bias slot leader distributions. This design does not eliminate grinding attacks outright but makes them **economically infeasible at scale**.
 
@@ -123,7 +123,7 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
 
 ## Motivation: why is this CIP necessary?
 
-This proposal strengthens Cardano’s consensus protocol (Ouroboros Praos) against a class of weaknesses known as *grinding attacks*. These attacks allow adversaries to bias the randomness used in block leader elections, statistically slowing settlement and weakening security guarantees.
+This proposal strengthens Cardano’s consensus protocol (Ouroboros Praos) against a class of attacks known as *grinding attacks*. These attacks allow adversaries to bias the randomness used in block leader elections in their favor, statistically slowing down settlement times and thys weakening the effectivness of Praos.
 
 The improvement introduces an additional computation step that is lightweight for honest participants but significantly more expensive for attackers, making grinding attacks economically infeasible.
 
@@ -187,7 +187,7 @@ Please refer to the CPD "[Ouroboros Randomness Generation Sub-Protocol – The C
 
 ## Specification
 
-The core principle of the proposed protocol change is to **substantially escalate the computational cost of each grinding attempt for an adversary**. To achieve this, every honest participant is required to perform a designated computation for each block they produce over an epoch (**432,000 slots - 5 days**). Consequently, an adversary attempting a grinding attack must **recompute these operations for every single attempt**, while being **constrained by the grinding window**, which dramatically increases the resource expenditure. By enforcing this computational burden, we **drastically reduce the feasible number of grinding attempts** an adversary with a fixed resource budget can execute, making randomness manipulation **more expensive and significantly less practical**.
+The core principle of the proposed protocol change is to **substantially escalate the computational cost of each grinding attempt for an adversary**. To achieve this, every honest participant is required to perform a designated computation for each block they produce over an epoch (**432,000 slots - 5 days**) - note that this computation can be preprocessed locally at the beginning of the epoch. Consequently, an adversary attempting a grinding attack must **recompute these operations for every single attempt**, while being **constrained by the grinding window**, which dramatically increases the resource expenditure. By enforcing this computational burden, we **drastically reduce the feasible number of grinding attempts** an adversary with a fixed resource budget can execute, making randomness manipulation **more expensive and significantly less practical**.
  
 ### 1. High-Level Overview 
 
@@ -204,7 +204,7 @@ In **Phalanx** , the randomness generation and leader election flows are modifie
 
 #### 1.2. Inputs & Outputs 
 
-The Randomness Generation sub-protocol pipelines two parallel streams η stream and Φ Stream, which synchronize at $`9.\frac{k}{f}`$ at each epoch :  
+The Randomness Generation sub-protocol pipelines two parallel streams η stream and Φ Stream, which synchronize at $`9 \cdot \frac{k}{f}`$ at each epoch :  
 
 ![alt text](./image/Phalanx-Streams.png)
 
