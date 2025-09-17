@@ -20,12 +20,12 @@ License: CC-BY-4.0
 
 We propose a set of changes that revolve around nested transactions, a construct for composing
 certain kinds of _partially valid transactions_, such as unbalanced transactions, or transactions
-with insufficient fees. The missing value or data must be provided by a subsequent
+with missing fees. The missing value or data must be provided by a subsequent
 transaction. Such partially valid transactions, which are called sub-transactions,
 must be placed into batches by aggregators.
 The batch must also include a _top-level_ transaction. The completed batch must be fully balanced.
 Applying a complete batch results in a valid ledger update,
-however, applying each of the individual transactions may not. This scheme allows users
+however, applying each of the individual transactions would not be possible. This scheme allows users
 to make and accept swap offers without the need for a centralized exchange or two-way communication.
 It gives non-ADA holders a way to engage with the Cardano ecosystem. It also creates new business opportunities
 for users willing to make and accept offers, run aggregator services, subsidize the use of their DApps, etc.
