@@ -437,10 +437,10 @@ availability:
 
 | Characteristic                                                       |            Symbol             | Description                                                                                                                 | Observed Range by Simulations |
 | -------------------------------------------------------------------- | :---------------------------: | --------------------------------------------------------------------------------------------------------------------------- | :---------------------------: |
-| <a id="delta-hdr" href="#delta-hdr"></a>Header propagation           |      $\Delta_\text{hdr}$      | Time for constant size headers (< 1,500 bytes) to propagate network-wide                                                    |            <1 slot            |
-| <a id="delta-rb" href="#delta-rb"></a>RB diffusion                   |      $\Delta_\text{RB}$       | Complete ranking block propagation and adoption time                                                                        |           <5 slots            |
-| <a id="delta-eb-H" href="#delta-eb-H"></a>EB optimistic diffusion    | $\Delta_\text{EB}^{\text{O}}$ | EB **diffusion** time (transmission + processing) under favorable network conditions                                        |           1-3 slots           |
-| <a id="delta-eb-A" href="#delta-eb-A"></a>EB worst-case transmission | $\Delta_\text{EB}^{\text{W}}$ | EB **transmission** time for certified EBs starting from >25% network coverage (processing already completed during voting) |          15-20 slots          |
+| <a id="delta-hdr" href="#delta-hdr"></a>Header propagation           |      $\Delta_\text{hdr}$      | Time for constant size headers (< 1,500 bytes) to propagate network-wide                                                    |          < 1 second           |
+| <a id="delta-rb" href="#delta-rb"></a>RB diffusion                   |      $\Delta_\text{RB}$       | Complete ranking block propagation and adoption time                                                                        |          < 5 seconds          |
+| <a id="delta-eb-H" href="#delta-eb-H"></a>EB optimistic diffusion    | $\Delta_\text{EB}^{\text{O}}$ | EB **diffusion** time (transmission + processing) under favorable network conditions                                        |          1-3 seconds          |
+| <a id="delta-eb-A" href="#delta-eb-A"></a>EB worst-case transmission | $\Delta_\text{EB}^{\text{W}}$ | EB **transmission** time for certified EBs starting from >25% network coverage (processing already completed during voting) |         15-20 seconds         |
 
 <em>Table 1: Network Characteristics</em>
 
@@ -462,8 +462,8 @@ availability:
 
 | Characteristic                                                           |          Symbol          | Description                                                     | Observed Range by Simulations |
 | ------------------------------------------------------------------------ | :----------------------: | --------------------------------------------------------------- | :---------------------------: |
-| <a id="delta-reapply" href="#delta-reapply"></a>EB reapplication         | $\Delta_\text{reapply}$  | Certified EB reapplication with minimal checks and UTxO updates |            <1 slot            |
-| <a id="delta-applytxs" href="#delta-applytxs"></a>Transaction validation | $\Delta_\text{applyTxs}$ | Standard Praos transaction validation time for RB processing    |            ~1 slot            |
+| <a id="delta-reapply" href="#delta-reapply"></a>EB reapplication         | $\Delta_\text{reapply}$  | Certified EB reapplication with minimal checks and UTxO updates |          < 1 second           |
+| <a id="delta-applytxs" href="#delta-applytxs"></a>Transaction validation | $\Delta_\text{applyTxs}$ | Standard Praos transaction validation time for RB processing    |           ~1 second           |
 
 <em>Table 2: Ledger Characteristics</em>
 
@@ -1666,8 +1666,8 @@ $$
 $$
 
 **_Voting failure:_** An unlucky set of VRF evaluations might result in
-insufficient voters being selected for a given EB, thus making it
-impossible to certify that EB.
+insufficient voters being selected for a given EB, thus making it impossible to
+certify that EB.
 
 $$
 p_\text{noquorum} = \text{probability of sufficient voters to achieve a quorum for a given EB}
@@ -1768,13 +1768,13 @@ of transactions, in data that must be stored permanently as the ledger history.
 <div align="center">
 <a name="table-6" id="table-6"></a>
 
-| Throughput [TxMB/s] | TPS at 1500 B/tx | Conditions      | Mempool to EB [s] | Mempool to ledger [s] | Space efficiency [%] |
-| ------------------: | ---------------: | --------------- | ----------------: | --------------------: | -------------------: |
-|               0.050 |             33.3 | light load      |              17.5 |                  54.0 |                 93.9 |
-|               0.100 |             66.7 | moderate load   |              18.0 |                  54.9 |                 95.8 |
-|               0.150 |            100.0 | heavy load      |              21.1 |                  58.9 |                 96.3 |
-|               0.200 |            142.9 | congestion      |             130.1 |                 171.6 |                 95.7 |
-|               0.250 |            166.7 | over capacity   |             238.8 |                 282.4 |                 94.3 |
+| Throughput [TxMB/s] | TPS at 1500 B/tx | Conditions    | Mempool to EB [s] | Mempool to ledger [s] | Space efficiency [%] |
+| ------------------: | ---------------: | ------------- | ----------------: | --------------------: | -------------------: |
+|               0.050 |             33.3 | light load    |              17.5 |                  54.0 |                 93.9 |
+|               0.100 |             66.7 | moderate load |              18.0 |                  54.9 |                 95.8 |
+|               0.150 |            100.0 | heavy load    |              21.1 |                  58.9 |                 96.3 |
+|               0.200 |            142.9 | congestion    |             130.1 |                 171.6 |                 95.7 |
+|               0.250 |            166.7 | over capacity |             238.8 |                 282.4 |                 94.3 |
 
 <em>Table 6: Leios efficiency at different throughputs</em>
 
@@ -1978,11 +1978,11 @@ block is being generated or validated. A more nuanced model of CPU usage in the
 simulators would account for Plutus execution explicitly, but the linear models
 described above are used to account for Plutus workloads implicitly. The
 following plot of simulation results limit each node to 4 vCPU cores and suggest
-that workloads of 10<sup>13</sup> Plutus execution steps per EB may be feasible: this is
-500 times the current Cardano mainnet limit of 2×10<sup>10</sup> steps for Praos blocks. The
-subsequent plot shows the 4 vCPUs becoming progressively more saturated with
-heavier Plutus execution. Although these results suggest that Leios's
-_block-level_ Plutus budget can safely be 2000 billion steps, it is
+that workloads of 10<sup>13</sup> Plutus execution steps per EB may be feasible:
+this is 500 times the current Cardano mainnet limit of 2×10<sup>10</sup> steps
+for Praos blocks. The subsequent plot shows the 4 vCPUs becoming progressively
+more saturated with heavier Plutus execution. Although these results suggest
+that Leios's _block-level_ Plutus budget can safely be 2000 billion steps, it is
 important to remember that this is for conditions where honest nodes faithfully
 and promptly diffuse the transactions requiring the relatively expensive phase 2
 (Plutus) validation: adversarial nodes could attempt to delay diffusion of
@@ -2043,12 +2043,15 @@ consider the following example based on simulated network measurements:
 
 **Given Network Characteristics:**
 
-- $\Delta_\text{hdr} = 1$ slot, $\Delta_\text{RB} = 5$ slots (Cardano mainnet
-  assumption for Praos security)
-- $\Delta_\text{EB}^{\text{O}} = 7$ slots (EB diffusion: transmission +
-  processing), $\Delta_\text{EB}^{\text{W}} = 15$ slots (EB transmission time
-  for certified EBs)
-- $\Delta_\text{reapply} = 1$ slot (EB reapplication time)
+Based on the [network timing measurements](#network-characteristics):
+
+- $\Delta_\text{hdr} = 1$ second, $\Delta_\text{RB} = 5$ seconds - Cardano
+  mainnet assumption for Praos security
+- $\Delta_\text{EB}^{\text{O}} = 3$ seconds - EB diffusion: transmission +
+  processing
+- $\Delta_\text{EB}^{\text{W}} = 15$ seconds - EB transmission time for
+  certified EBs
+- $\Delta_\text{reapply} = 1$ second - EB reapplication time
 
 **Timing Parameter Calibration:**
 
@@ -2155,8 +2158,8 @@ number of voters increases, so larger committee sizes might be permitted for
 broader SPO participation and higher security. The committee size should be
 large enough that fluctuations in committee membership do not create an
 appreciable probability of an adversarial quorum when the adversarial stake is
-just under 50%. The quorum size should be kept just large enough above 50% so that
-those same fluctuations do not prevent an honest quorum. Larger committees
+just under 50%. The quorum size should be kept just large enough above 50% so
+that those same fluctuations do not prevent an honest quorum. Larger committees
 require more network traffic, of course.
 
 <a name="operating-costs"></a>**Operating costs**
@@ -2169,10 +2172,6 @@ market conditions. The estimates below were made in April 2025 for the median
 pricing of ten common hyperscale and discount cloud providers. The cost of a
 10,000-node Leios network can be computed from the cost per node. Storage costs
 increase each month as the ledger becomes larger.
-
-Throughput	Average-size transactions	Small transactions	Per-node operation	Per-node storage	10k-node network<br/>(first year)	10k-node network<br/>(first year)
-<chr>	<chr>	<chr>	<chr>	<chr>	<chr>	<chr>
-
 
 <div align="center">
 <a name="table-8" id="table-8"></a>
