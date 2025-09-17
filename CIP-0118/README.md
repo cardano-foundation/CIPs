@@ -62,22 +62,22 @@ new use cases and functionality are supported by the changes :
 - batch contains one top-level transaction, with multiple possible sub-transactions ;
 
 2. the batch must be balanced, but individual transactions in it do not have to be, so
-- transactions in a single batch may pay each others' fees and minUTxOValue ;
-- unbalanced transactions can be interpreted as swap offers, getting resolved within a complete batch ;
+- transactions in a single batch may satisfy each others' fees and minUTxOValue ;
+- unbalanced transactions can be interpreted as swap offers or intents, getting resolved within a complete batch ;
 
 3. scripts are shared across all transactions in a single batch
 - enables script deduplication ;
 
 4. batch observer scripts enable sub-transactions to specify properties required of batches in which they may be included
 - design inspired by script observers ;
-- allows all transaction authors the impose constraints
+- allows all transaction authors to impose constraints
 on the batches into which their transactions are added, despite the fact that they do no get to approve
 the final batches (i.e. counterparty irrelevance) ;
 
 5. the top-level transaction must provide collateral for all scripts in its sub-transactions
-- sub-transactions are not required to cover their own collateral ;
+- sub-transactions will not be required to cover the collateral for scripts that they will include ;
 
-We note that the functionality added by (4) makes it possible to view each transaction as on *intent*
+We note that the functionality added by (4) makes it possible to view each sub-transaction as an *intent*
 to perform a specific action (whose fulfillment within the batch is ensured by the validation of the batch observer script).
 The types of intents supported by this are ones that *do not require
 the relaxation of existing ledger rules*. That is, a user can specify any intent the rest of the batch
