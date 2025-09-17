@@ -46,10 +46,11 @@ the standard protocol parameter update process.
 
 ### Backward Compatibility
 
-There are 2 ways to handle the existing pool certificates with minimum variable pool fee less than the proposed value:
-1. These pool certificates would be treated as if they had the new mimimum variable pool fee.
-2. These pool certificates would be invalid and pool operators would be required to create new certificates with valid values.    
-If option 1 is possible, it would provide a better user experience for both stakepool operators and delegators and would cause less disruption to the network.
+To maintain compatibility for existing pool certificates whose current margin is below the new `minMargin`, the rewards calculation logic should apply a `min` function so that the protocol parameter `minMargin` overwrites any individual pool margin that is smaller than the chosen value. This lets legacy pool certificates remain valid while ensuring the ledger enforces the new minimum fee during reward distribution.
+
+It is also recommended to introducce the hard-fork with `minMargin` initially set to `0`. Doing so minimizes migration friction for stake pool operators and gives governance time to raise the parameter to its target value through the normal paramater change governance action process.
+
+Should this clamping approach prove infeasible, pool certificates with a margin lower than `minMargin` would need to be re-registered with compliant values, but the goal is to avoid disruption as much as possible.
 
 ## Rationale: how does this CIP achieve its goals?
 
