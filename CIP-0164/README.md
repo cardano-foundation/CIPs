@@ -1750,7 +1750,7 @@ with a set of protocol parameters suitable for running Leios at 200 kB/s of
 transactions, which corresponds to approximately 150 tx/s of transactions of
 sizes typical on the Cardano mainnet. The maximum size of transactions
 referenced by an EB is 12 MB and the stage lengths are
-$3 \times L_\text{hdr} = 3$, $L_\text{vote} = 4$, and
+$3 \times L_\text{hdr} = 3 \text{ slots}$, $L_\text{vote} = 4$, and
 $L_\text{diff} = 7 \text{ slots}$. In order to illustrate the minimal
 infrastructure resources used by Leios at these throughputs, we have limited
 nodes to 4 virtual CPUs each and limited inter-node bandwidth to 10 Mb/s. We
@@ -1761,7 +1761,7 @@ effects of clearing the memory pool are apparent. The table below summarizes the
 results of the simulation experiment. We see that a transaction at the front of
 the memory pool can become referenced by an EB in as few as 20 seconds when the
 system is lightly or moderately loaded and that it can reach certification on
-the ledger in about one minute. These times can double under congested
+the ledger in about one minute. These times more than double under congested
 conditions. In all cases there is little overhead, relative to the total bytes
 of transactions, in data that must be stored permanently as the ledger history.
 
@@ -1770,11 +1770,11 @@ of transactions, in data that must be stored permanently as the ledger history.
 
 | Throughput [TxMB/s] | TPS at 1500 B/tx | Conditions      | Mempool to EB [s] | Mempool to ledger [s] | Space efficiency [%] |
 | ------------------: | ---------------: | --------------- | ----------------: | --------------------: | -------------------: |
-|               0.100 |             66.7 | light load      |              19.6 |                  48.0 |                 94.2 |
-|               0.150 |            100.0 | moderate load   |              21.6 |                  51.2 |                 96.3 |
-|               0.200 |            142.9 | heavy load      |              31.3 |                  57.7 |                 96.4 |
-|               0.250 |            166.7 | some congestion |              51.6 |                  81.9 |                 96.6 |
-|               0.300 |            200.0 | much congestion |             146.6 |                 173.2 |                 97.2 |
+|               0.050 |             33.3 | light load      |              17.5 |                  54.0 |                 93.9 |
+|               0.100 |             66.7 | moderate load   |              18.0 |                  54.9 |                 95.8 |
+|               0.150 |            100.0 | heavy load      |              21.1 |                  58.9 |                 96.3 |
+|               0.200 |            142.9 | congestion      |             130.1 |                 171.6 |                 95.7 |
+|               0.250 |            166.7 | over capacity   |             238.8 |                 282.4 |                 94.3 |
 
 <em>Table 6: Leios efficiency at different throughputs</em>
 
@@ -1978,11 +1978,11 @@ block is being generated or validated. A more nuanced model of CPU usage in the
 simulators would account for Plutus execution explicitly, but the linear models
 described above are used to account for Plutus workloads implicitly. The
 following plot of simulation results limit each node to 4 vCPU cores and suggest
-that workloads of 2e13 Plutus execution steps per EB may be feasible: this is
-1000 times the current Cardano mainnet limit of 2e10 steps for Praos blocks. The
+that workloads of 10<sup>13</sup> Plutus execution steps per EB may be feasible: this is
+500 times the current Cardano mainnet limit of 2×10<sup>10</sup> steps for Praos blocks. The
 subsequent plot shows the 4 vCPUs becoming progressively more saturated with
-heavier Plutus execution. Although these results suggest that Leios'
-_block-level_ Plutus budget can safely be 5000 billion steps or more, it is
+heavier Plutus execution. Although these results suggest that Leios's
+_block-level_ Plutus budget can safely be 2000 billion steps, it is
 important to remember that this is for conditions where honest nodes faithfully
 and promptly diffuse the transactions requiring the relatively expensive phase 2
 (Plutus) validation: adversarial nodes could attempt to delay diffusion of
@@ -2170,16 +2170,20 @@ pricing of ten common hyperscale and discount cloud providers. The cost of a
 10,000-node Leios network can be computed from the cost per node. Storage costs
 increase each month as the ledger becomes larger.
 
+Throughput	Average-size transactions	Small transactions	Per-node operation	Per-node storage	10k-node network<br/>(first year)	10k-node network<br/>(first year)
+<chr>	<chr>	<chr>	<chr>	<chr>	<chr>	<chr>
+
+
 <div align="center">
 <a name="table-8" id="table-8"></a>
 
 | Throughput | Average-size transactions | Small transactions | Per-node operation | Per-node storage | 10k-node network<br/>(first year) | 10k-node network<br/>(first year) |
 | ---------: | ------------------------: | -----------------: | -----------------: | ---------------: | --------------------------------: | --------------------------------: |
-| 100 TxkB/s |                   67 Tx/s |           333 Tx/s |      $112.99/month |    $17.85/month² |                            $14.6M |                       $200k/epoch |
-| 150 TxkB/s |                  100 Tx/s |           500 Tx/s |      $119.51/month |    $26.80/month² |                            $15.9M |                       $218k/epoch |
-| 200 TxkB/s |                  133 Tx/s |           667 Tx/s |      $128.35/month |    $38.35/month² |                            $17.7M |                       $242k/epoch |
-| 250 TxkB/s |                  167 Tx/s |           833 Tx/s |      $133.07/month |    $44.61/month² |                            $18.6M |                       $255k/epoch |
-| 300 TxkB/s |                  200 Tx/s |          1000 Tx/s |      $139.18/month |    $53.20/month² |                            $19.9M |                       $272k/epoch |
+|  50 TxkB/s |                   33 Tx/s |           167 Tx/s |      $105.97/month |     $8.89/month² |                            $13.2M |                       $181k/epoch |
+| 100 TxkB/s |                   67 Tx/s |           333 Tx/s |      $112.68/month |    $17.79/month² |                            $14.6M |                       $200k/epoch |
+| 150 TxkB/s |                  100 Tx/s |           500 Tx/s |      $119.44/month |    $26.71/month² |                            $15.9M |                       $218k/epoch |
+| 200 TxkB/s |                  133 Tx/s |           667 Tx/s |      $128.01/month |    $37.91/month² |                            $17.6M |                       $241k/epoch |
+| 250 TxkB/s |                  167 Tx/s |           833 Tx/s |      $132.56/month |    $44.01/month² |                            $18.5M |                       $254k/epoch |
 
 <em>Table 8: Operating Costs by Transaction Throughput</em>
 
@@ -2197,11 +2201,11 @@ listed in the table.
 
 | Infrastructure cost | Required ADA<br/>@ $0.45/ADA | Required transactions<br/>(average size)<br/>@ $0.45/ADA | Required transactions<br/>(small size)<br/>@ $0.45/ADA |
 | ------------------: | ---------------------------: | -------------------------------------------------------: | -----------------------------------------------------: |
-|         $14.6M/year |               444k ADA/epoch |                                                4.75 Tx/s |                                              6.19 Tx/s |
-|         $15.9M/year |               485k ADA/epoch |                                                5.17 Tx/s |                                              6.75 Tx/s |
-|         $17.7M/year |               537k ADA/epoch |                                                5.74 Tx/s |                                              7.49 Tx/s |
-|         $18.6M/year |               566k ADA/epoch |                                                6.05 Tx/s |                                              7.89 Tx/s |
-|         $19.9M/year |               605k ADA/epoch |                                                6.45 Tx/s |                                              8.42 Tx/s |
+|         $13.2M/year |               403k ADA/epoch |                                                4.30 Tx/s |                                              5.61 Tx/s |
+|         $14.6M/year |               444k ADA/epoch |                                                4.73 Tx/s |                                              6.17 Tx/s |
+|         $15.9M/year |               485k ADA/epoch |                                                5.17 Tx/s |                                              6.74 Tx/s |
+|         $17.6M/year |               536k ADA/epoch |                                                5.72 Tx/s |                                              7.46 Tx/s |
+|         $18.5M/year |               564k ADA/epoch |                                                6.02 Tx/s |                                              7.85 Tx/s |
 
 <em>Table 9: Required TPS for Infrastructure Cost Coverage</em>
 
