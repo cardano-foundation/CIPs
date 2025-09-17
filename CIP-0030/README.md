@@ -281,9 +281,21 @@ Errors: `APIError`, `PaginateError`
 
 If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `null` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
 
-#### `api.getCollateral(params: { amount: cbor<Coin> }): Promise<TransactionUnspentOutput[] | null>`
+#### (DEPRECATED) `api.getCollateral(params: { amount: cbor<Coin> }): Promise<TransactionUnspentOutput[] | null>`
 
 Errors: `APIError`
+
+##### DEPRECATION NOTICE
+
+Since [CIP-0040 | Collateral Output](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0040/README.md) and Babbage era "Collateral Return" and "Total Collateral" fields on a transaction body are supported, a transaction can now use up to three **any** collateral inputs and specify the collateral return outputs to receive extra ada and tokens back as change. Transaction-building SDKs and libraries now all support this functionality as well (see [Blaze](https://blaze.butane.dev/), [Mesh](https://meshjs.dev/), [Lucid Evolution](https://anastasia-labs.github.io/lucid-evolution/), [CSL](https://github.com/Emurgo/cardano-serialization-lib)). The dedicated transaction fields and strong tooling support removes the **need** for dedicated cumbersome API for providing *special* collateral inputs to exist.
+
+DApps should make effort to build transactions using the latest available best methods and practices. In this case it means always utilising collateral return and not risking burning UTxOs with no return. Wallets looking to implement this standard are free to **not** support this deprecated API function, which does require some extra special management of UTxOs within the wallet, beyond normal logic.
+
+Deprecating this method aims to motivate DApp implementors not to use this method, but rather to use newer better techniques.
+
+Any future versions of "wallet-to-dapp" APIs seeking to replace CIP30 should **not ever** include any methods of this kind. This mistake of history should be forgotten forever.
+
+##### Description
 
 The function takes a required object with parameters. With a single **required** parameter for now: `amount`. (**NOTE:** some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the `amount` parameter is required:
 1. Dapps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
