@@ -41,8 +41,8 @@ wherein a transaction author is not required to approve the batch into which the
 transaction will be included, and that decision can be made autonomously by the batcher.
 This property allows batches to be made with one-way communication (i.e. broadcast) only.
 
-The motivation behind designing this solution is _Babel fees_,
-which is a requirement to support "paying transaction fees in a non-Ada currency".
+One of the motivations behind designing this solution is _Babel fees_,
+which is a requirement to support "paying transaction fees in a non-ADA tokens".
 The Babel-fees usecase is a special case of a swap. Supporting swaps is very desirable functionality for cryptocurrency
 ledgers.
 
@@ -56,7 +56,7 @@ with smart contracts.
 The ledger changes we describe have been developed as a result of the discussions and
 proposals in previous CIPs, including previous versions of validation zones proposals,
 and Transaction Swaps. The following
-new usecases and functionality are supported by the changes :
+new use cases and functionality are supported by the changes :
 
 1. transactions can be batched
 - batch contains one top-level transaction, with multiple possible sub-transactions ;
