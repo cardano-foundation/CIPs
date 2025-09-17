@@ -27,8 +27,8 @@ The batch must also include a _top-level_ transaction. The completed batch must 
 Applying a complete batch results in a valid ledger update, 
 however, applying each of the individual transactions may not. This scheme allows users 
 to make and accept swap offers without the need for a centralized exchange or two-way communication.
-It gives non-ada holders a way to engage with the Cardano ecosystem. It also creates new business opportunities 
-for users willing to make and accept offers, run aggregator services, subsidize the use of their Dapps, etc.
+It gives non-ADA holders a way to engage with the Cardano ecosystem. It also creates new business opportunities
+for users willing to make and accept offers, run aggregator services, subsidize the use of their DApps, etc.
 
 ## Motivation: why is this CIP necessary?
 
@@ -36,7 +36,7 @@ This CIP provides a partial solution to the problems described in
 [CPS-15](https://github.com/cardano-foundation/CIPs/pull/779).
 In particular, it describes some ledger changes that allow settlement
 of intents that require *counterparty irrelevance*, including many of the swap use cases
-and dApp fee sponsorship. *Counterparty irrelevance* is a property of a transaction batching protocol 
+and DApp fee sponsorship. *Counterparty irrelevance* is a property of a transaction batching protocol 
 wherein a transaction author is not required to approve the batch into which the 
 transaction will be included, and that decision can be made autonomously by the batcher.
 This property allows batches to be made with one-way communication (i.e. broadcast) only. 
