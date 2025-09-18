@@ -46,7 +46,7 @@ the standard protocol parameter update process.
 
 ### Backward Compatibility
 
-To maintain compatibility for existing pool certificates whose current margin is below the new `minMargin`, the rewards calculation logic should apply a `min` function so that the protocol parameter `minMargin` overwrites any individual pool margin that is smaller than the chosen value. This lets legacy pool certificates remain valid while ensuring the ledger enforces the new minimum fee during reward distribution.
+To maintain compatibility for existing pool certificates whose current margin is below the new `minMargin`, the ledger's rewards calculation should treat the protocol parameter `minMargin` as the effective margin for those pools. In other words, if a pool's margin is less than `minMargin`, the protocol-level `minMargin` overrides the pool's registered `margin` during reward calculation. This minimizes disruption and lets legacy pool certificates remain valid while ensuring the ledger enforces the new minimum fee during reward distribution.
 
 It is also recommended to introducce the hard-fork with `minMargin` initially set to `0`. Doing so minimizes migration friction for stake pool operators and gives governance time to raise the parameter to its target value through the normal paramater change governance action process.
 
