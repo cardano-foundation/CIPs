@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: Standalone transaction serialization without the `isValid` flag
+Title: Remove the `isValid` flag from standalone transaction serialization
 
 Category: Ledger
 Authors:
