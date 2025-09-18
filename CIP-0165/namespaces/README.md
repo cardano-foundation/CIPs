@@ -11,7 +11,7 @@ Each namespace defines a non-intersecting slices of the data.
 | rewards   | Reward accounts                 |
 | params    | Protocol parameters             |
 | pots      | Accounting pots (reserves etc.) |
-| spo       | SPO state                       |
+| stake_pools       | Stake Pools State                       |
 | drep      | DRep state                      |
 | gov       | Governance action state         |
 | hdr       | Header state (e.g. nonces)      |
