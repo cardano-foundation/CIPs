@@ -173,7 +173,7 @@ All updates are written in the following way:
 
 **Structure:**
 
-- `transaction:` `u64` — transaction number
+- `slot_no:` `u64` — slot number where changes were introduced
 - `changes:` `CBOR` array of the entries
 - `footer:` `{entries_count, chunk_hash}`
 
