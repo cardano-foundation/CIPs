@@ -39,7 +39,7 @@ chunk = {
 delta = {
   chunk_seq: uint .size 8,     ; sequence number
   chunk_format: uint,          ; 0 - raw, 1 - zstd, 2 - zstde
-  changes: bstr                ; [* entry] — list of entries, thumbstone allowed
+  changes: bstr                ; [* entry] — list of entries, tombstone allowed
   footer: {
     entries_cnt: uint .size 4  ; count of entries
     chunk_hash: bstr .size 28  ; H(concat (digest e for e in entries))
