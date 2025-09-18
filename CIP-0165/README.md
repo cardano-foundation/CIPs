@@ -28,7 +28,7 @@ Ledger state serialisations are currently implementation details that may change
 SCLS addresses these problems by:
 
 - specifying a canonical, language-agnostic container and encoding rules;
-- enabling streaming builds and partial verification (per-namespace roots);
+- enabling streaming builds and data consistency validation (per-namespace roots);
 - being extensible (e.g., optional indexes/Bloom filters) without breaking compatibility;
 - remaining compatible with UTxO-HD/LSM on-disk structures and incremental (delta) updates.
 
