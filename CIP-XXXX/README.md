@@ -22,7 +22,7 @@ Proposed layout: each transaction is serialized in full before the next transact
 
 ## Motivation: why is this CIP necessary?
 
-Segregated serialization of [Nested transactions](https://github.com/cardano-foundation/CIPs/pull/862) would be challenging both to specify and implement.
+Segregated serialization of [CIP-0118? | Nested Transactions](https://github.com/cardano-foundation/CIPs/pull/862) would be challenging both to specify and implement.
 Separating and concatenating components across nested and non-nested transactions introduces complexity that is error-prone and potentially inefficient, as it may require tracking offsets and performing additional buffering and copying at runtime.
 
 Currently, segregated serialization also complicates the logic used by Consensus to estimate transaction sizes when selecting transactions to fit within a block. Switching to a format where full transactions are encoded sequentially would simplify this process.
