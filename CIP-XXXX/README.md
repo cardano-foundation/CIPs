@@ -17,7 +17,7 @@ License: CC-BY-4.0
 ## Abstract
 
 We propose removing the `isValid` boolean from the CBOR encoding of standalone transactions (e.g. for mempool).
-This would not affect the serialization of the transactions within blocks.
+This would not affect the serialization of the transactions within blocks, since isValid flag is already stored separately from the transaction
 
 ## Motivation: why is this CIP necessary?
 
