@@ -51,13 +51,26 @@ manifest = {
   total_entries: uint .size 8,             ; number of entries so far (for integrity)
   total_chunks: uint .size 8,              ; number of chunks so far (for integrity)
   root_hash: bstr,                         ; multihash of the entries
-  ns_roots: { * tstr => bstr .size 32 },   ; mutlihash of the entries
   prev_manifest_offset: 0 // uint .size 8, ; offset of the previous manifest entry (required with delta)
   summary: {
     created_at: tstr,                      ; date
     tool: tstr,                            ; information about tool
     ?comment: tstr                         ; additional comments
   }
+  ns_info: { * tstr => bstr .size 28 },    ; blake28 of the entries
+  manifest_offset: uint .size 4,           ; offset to the start of the manifest entry block
+}
+
+; This spec is not precise here, because we have
+; a binary format and not cbor. Instead we use the following encoding:
+;   uint .usize  4 - for string length
+;   uint .usize  8 - for number of entries
+;   uint .usize  8 - for number of chunks
+;   .bstr .size 28 - for hash
+ns_info = {
+  ns_entries: uint .size 8,                ; entries count
+  ns_chunks: uint .size 8,                 ; chunks count
+  hash: bstr .size 28,                     ; blake28 merkle tree hash for the entries
 }
 
 ; ----- BLOOM -----
