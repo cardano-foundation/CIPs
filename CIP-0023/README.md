@@ -29,28 +29,28 @@ This creates a more fair marketplace for all stakepool operators and increases d
 
 ## Specification
 
-This CIP introduces a new protocol parameter, `minMargin`, which represents the
+This CIP introduces a new protocol parameter, `minPoolMargin`, which represents the
 minimum variable fee (margin) that a stake pool can set. This parameter is
 distinct from the existing `minPoolCost`, which represents the minimum fixed
 fee a pool can set. Both limits are enforced independently by the ledger.
 
-- `minMargin` defines the lower bound for the pool margin (variable fee), i.e.,
+- `minPoolMargin` defines the lower bound for the pool margin (variable fee), i.e.,
   the minimum allowable percentage of rewards a pool can take. Pool
-  registration and update certificates MUST have `margin >= minMargin`.
+  registration and update certificates MUST have `margin >= minPoolMargin`.
 - `minPoolCost` retains its current meaning and enforcement as the minimum
   fixed fee a pool can set.
 
 This CIP does not prescribe specific values for either parameter. Concrete
-values for `minMargin` and `minPoolCost` are to be chosen and enacted through
+values for `minPoolMargin` and `minPoolCost` are to be chosen and enacted through
 the standard protocol parameter update process.
 
 ### Backward Compatibility
 
-To maintain compatibility for existing pool certificates whose current margin is below the new `minMargin`, the ledger's rewards calculation should treat the protocol parameter `minMargin` as the effective margin for those pools. In other words, if a pool's margin is less than `minMargin`, the protocol-level `minMargin` overrides the pool's registered `margin` during reward calculation. This minimizes disruption and lets legacy pool certificates remain valid while ensuring the ledger enforces the new minimum fee during reward distribution.
+To maintain compatibility for existing pool certificates whose current margin is below the new `minPoolMargin`, the ledger's rewards calculation should treat the protocol parameter `minPoolMargin` as the effective margin for those pools. In other words, if a pool's margin is less than `minPoolMargin`, the protocol-level `minPoolMargin` overrides the pool's registered `margin` during reward calculation. This minimizes disruption and lets legacy pool certificates remain valid while ensuring the ledger enforces the new minimum fee during reward distribution.
 
-It is also recommended to introducce the hard-fork with `minMargin` initially set to `0`. Doing so minimizes migration friction for stake pool operators and gives governance time to raise the parameter to its target value through the normal paramater change governance action process.
+It is also recommended to introducce the hard-fork with `minPoolMargin` initially set to `0`. Doing so minimizes migration friction for stake pool operators and gives governance time to raise the parameter to its target value through the normal paramater change governance action process.
 
-Should this clamping approach prove infeasible, pool certificates with a margin lower than `minMargin` would need to be re-registered with compliant values, but the goal is to avoid disruption as much as possible.
+Should this clamping approach prove infeasible, pool certificates with a margin lower than `minPoolMargin` would need to be re-registered with compliant values, but the goal is to avoid disruption as much as possible.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -152,7 +152,7 @@ See the minfees.php code to test different potential values of the parameters.
 
 ### Acceptance Criteria
 
-- Consensus on initial parameter value – An initial value for the new protocol parameter `minMargin` must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses, and community feedback.
+- Consensus on initial parameter value – An initial value for the new protocol parameter `minPoolMargin` must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses, and community feedback.
 - Endorsement by Technical Bodies – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap.
 - Stakeholder Concurrence – A majority of stake pool operators (SPOs), ecosystem tooling maintainers, dReps, and other infrastructure providers must signal readiness to upgrade.
 - Governance Ratification – The on-chain Hard-Fork Governance Action must pass the requisite dRep and Constitutional Committee thresholds, establishing legal-constitutional legitimacy and stakeholder support for the change.
@@ -164,7 +164,7 @@ See the minfees.php code to test different potential values of the parameters.
   - Collect structured feedback, particularly on candidate values for the new parameter values and iterate until broad technical consensus emerges.
 - Specification & Code Integration (Development Phase)
   - Once initial parameter values are determined, integrate the new rewards calculation logic and governance features for the new parameter into cardano-node and related libraries (ledger, CLI, wallet APIs).
-  - Determine the best method to deal with existing pool registration certificates that currently have a variable fee lower than what the new `minMargin` parameter allows.
+  - Determine the best method to deal with existing pool registration certificates that currently have a variable fee lower than what the new `minPoolMargin` parameter allows.
   - Submit pull requests to the canonical repositories; obtain code reviews from IOG, CF, and community contributors.
   - Release a new protocol version that includes the changes made in this CIP.
   - Use a dedicated pre-production testnet that mirrors main-net parameters but enforces the new changes, allowing SPOs and exchanges to test end-to-end flows.
