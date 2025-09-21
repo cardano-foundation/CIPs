@@ -267,7 +267,7 @@ These effects are also modeled in the open source tool available at [https://spo
 
 ## Acknowledgements
 
-This CPS could not have been created without the support, assistance, and input of all participants in the community-led SPO Incentives Working Group.
+This CIP could not have been created without the support, assistance, and input of all participants in the community-led SPO Incentives Working Group.
 
 - Stef M [RABIT]
 - Rich Manderino [ECP] 
