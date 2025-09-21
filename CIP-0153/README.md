@@ -98,8 +98,7 @@ We propose the following set of builtin functions to accompany the new builtin t
     - This operation is commutative and associative, thus makes `BuiltinValue` a commutative semigroup.
 4. `valueContains :: BuiltinValue -> BuiltinValue -> Bool`
     - it compares the two Mary-era Values and determines if the first value is a superset of the second.
-    - `valueContains a b == True` if and only if: for each `(currency, token, quantity)` in `b`, if `quantity > 0`, then `lookupCoin currency token a >= quantity`; if `quantity < 0`, then `lookupCoin currency token a == quantity`.
-    - We require `==` for negative quantities, rather than `>=`,because (1) it avoids nonsensical behaviors like `valueContains [] [("c", "t", -1)] == True` (2) it preserves `valueContains` as a partial order.
+    - `valueContains a b == True` if and only if: for each `(currency, token, quantity)` in `b`, `lookupCoin currency token a >= quantity`.
 5. `valueData :: BuiltinValue -> BuiltinData`
     - encodes a `BuiltinValue` as `BuiltinData`.
 6. `unValueData :: BuiltinData -> BuiltinValue`
