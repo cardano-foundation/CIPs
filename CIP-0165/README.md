@@ -118,13 +118,13 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 - `chunk_seq` : `u64` — sequence number of the record
 - `chunk_format` : `u8` - format of the chunks
 - `namespace` : `bstr` — namespace of the values stored in the CHUNK
-- `entries` — CBOR encoded list of unlimited length
+- `entries` : `Entry` — list of length-prefixed CBOR entries
 - `footer {entries_count: u64, chunk_hash: u64}` — hash value of the chunk of data, is used to keep integrity of the file.
 
 **Policy:**
 
 - chunk size \~8–16MiB; footer required;
-- data is stored in deterministically defined global order; In the lexical order of the keys;
+- data is stored in deterministically defined global order; in the lexical order of the keys;
 - all keys in the record must be unique;
 - all key-values in the record must refer to the same namespace;
 - readers should verify footer before relying on the data;
@@ -150,7 +150,7 @@ When calculating and verifying hashes, it's build over the uncompressed data.
 - `total_entries`: `u64` — number of data entries in the file (integrity purpose only)
 - `total_chunks`: `u64` — number of chunks in the file (integrity purpose only)
 - `root_hash`: **Merkle root** of all `entry_e` in the chosen order, see verification for details
-- `namespace_hashes`: CBOR table of Merkle roots for each namespace, mapping namespace name to the hash in a multihash format
+- `namespace_hashes`: CBOR table of Merkle roots for each namespace, mapping namespace name to the hash in a blake28
 - `prev_manifest_offset`: `u64` — offset of the previous manifest (used with delta files), zero if there is no previous manifest entry
 - `summary`: `{ created_at, tool, comment? }`
 
@@ -169,14 +169,14 @@ Updating of the file in-place is unsafe so instead we store list of updated.
 
 All updates are written in the following way:
 
-- if an entry has a natural key and we want to update data we can store a new value;
-- if we want to remove a value with natural key we should write a special tombstone entry, see namespaces;
-- if a value has no natural key we must first delete old value and then insert a new one.
+- to update value a new entry with the same key should be stored;
+- to remove value a special tombstone entry for the key should be stored.
 
 **Structure:**
 
 - `slot_no:` `u64` — slot number where changes were introduced
-- `changes:` `CBOR` array of the entries
+- `namespace:` `bstr` — namespace name
+- `changes:` `CBOR` — array of the entries, either tombstone entry or value entry
 - `footer:` `{entries_count, chunk_hash}`
 
 **Policy:**
@@ -262,7 +262,6 @@ Each logical table/type is a namespace identified by a canonical string (e.g., `
 | drep/v0      | DRep state                      |
 | gov/v0       | Governance action state         |
 | hdr/v0       | Header state (e.g. nonces)      |
-| tombstone/v0 | Marker of the removed entry     |
 
 New namespaces may and will be introduced in the future. With new eras and features, new types of the data will be introduced and stored. In order to define what data is stored in the SCLS file, tools fill the `HDR` record and define namespaces. The order of the namespaces does not change the signatures and other integrity data.
 
@@ -272,8 +271,11 @@ For future compatibility support we added version tag to the name, but it may be
 
 Data is stored in the list of `Entries`, each entry consist of the namespace and its data:
 
-- `key: bstr` - CBOR-encoded string key.
-- `dom : bstr` – CBOR-encoded data (canonical form).
+- `size` : `u32` — length of the entry, stored in big endian;
+- `key` : `bstr` - CBOR-encoded string key;
+- `dom` : `bstr` – CBOR-encoded data (canonical form).
+
+`size` is used in a fast search scenario, this way its possible to skip values without interpretation.
 
 Exact definition of the domain data is left out in this CIP. We propose that ledger team would propose canonical representation for the types in each new era. For the types they must be in a canonical [CBOR format](https://datatracker.ietf.org/doc/html/rfc8949) with restrictions from [deterministic cbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor). Values must not be derivable, that is, if some part of the state can be computed based on another part, then only the base one should be in the state."
 
@@ -336,7 +338,6 @@ More common container file formats: many container formats were evaluated, but m
 
 **JSON vs CBOR for Canonical Ledger State**
 
-
 There are strong reasons to prefer CBOR over JSON for representing the canonical ledger state. The ledger state is large and contains binary data; a binary format is therefore much more compact and efficient than JSON.
 
 While JSON libraries are widely available in nearly every language, JSON lacks a notion of canonical form. Two JSON serializations of the same object are not guaranteed to be byte-identical, so additional tooling and specification would be required to achieve determinism.
@@ -374,8 +375,8 @@ properties. It's an open question which of them do we want to support.
 
 We are proposing adding additional records types:
 
-- bloom records — they would allow faster search of the values by the key, still require file traversal
-- index records - it would allow faster search by key without full file traversal
+- bloom records — they would allow faster search of the values by the key, still require file traversal;
+- index records - it would allow faster search by key without full file traversal.
 
 Both changes will not change the structure of the file.
 
@@ -407,12 +408,11 @@ There are three options that we see:
 ## References
 
 1. [CARv2 format documentation](https://ipld.io/specs/transport/car/carv2/)
-2. [Draft Canonical ledger state snapshot and immutable data formats CIP](https://github.com/cardano-scaling/CIPs/pull/9)
-3. [Mithril](https://docs.cardano.org/developer-resources/scalability-solutions/mithril)
-4. [Multihash format](https://github.com/multiformats/multihash)
-5. [Canonical ledger state CIP draft by Paul Clark](https://hackmd.io/Q9eSEMYESICI9c4siTnEfw)
-6. [Deterministically Encoded CBOR in CBOR RFC](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
-7. [A Deterministic CBOR Application Profile](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor)
+1. [Draft Canonical ledger state snapshot and immutable data formats CIP](https://github.com/cardano-scaling/CIPs/pull/9)
+1. [Mithril](https://docs.cardano.org/developer-resources/scalability-solutions/mithril)
+1. [Canonical ledger state CIP draft by Paul Clark](https://hackmd.io/Q9eSEMYESICI9c4siTnEfw)
+1. [Deterministically Encoded CBOR in CBOR RFC](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
+1. [A Deterministic CBOR Application Profile](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor)
 
 ## Copyright
 

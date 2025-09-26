@@ -1,4 +1,4 @@
-; This is temporary file, because currently data block data is not
+; This is temporary file, because currently data record data is not
 ; in CBOR format. However this cddl format is very readable so we
 ; use it as a pseudo-code.
 
@@ -18,6 +18,7 @@ hdr = {
 
 ; ----- Entry -----
 entry = {
+  size: uint .size 4        ; size of entry
   key: bstr,                ; key of the data, basically any cbor
   value: bstr               ; value of the data, basically any cbor
 }
@@ -38,6 +39,7 @@ chunk = {
 ; WIP is not considered as a fixed format in this version of CIP
 delta = {
   chunk_seq: uint .size 8,     ; sequence number
+  namespace: bstr,             ; namespace for the delta record
   chunk_format: uint,          ; 0 - raw, 1 - zstd, 2 - zstde
   changes: bstr                ; [* entry] — list of entries, tombstone allowed
   footer: {
@@ -45,6 +47,11 @@ delta = {
     chunk_hash: bstr .size 28  ; H(concat (digest e for e in entries))
   }
 }
+
+change_entry = tombstone_entry // delta_value_entry
+
+tombstone_entry = (0, key: bstr )
+delta_value_entry = (1, key: bstr, ?value: bstr)
 
 ; ----- MANIFEST -----
 manifest = {
