@@ -19,8 +19,7 @@
 <a name='type-scls_file'></a>
 <h1>Type: SclsFile</h1>
 
-<p>
-A seekable, versioned container for CBOR payloads whose structure is defined
+<p>A seekable, versioned container for CBOR payloads whose structure is defined
 by an external CDDL schema.
 </p>
 <table class="table">
@@ -185,11 +184,11 @@ by an external CDDL schema.
 <td>8</td>
 <td>...</td>
 <td>format</td>
-<td>u8be→ChunkFormat</td>
+<td>u1→ChunkFormat</td>
 <td></td>
 </tr>
 <tr>
-<td>16</td>
+<td>9</td>
 <td>...</td>
 <td>ns</td>
 <td><a href="#type-scls_file-tstr">Tstr</a></td>
@@ -235,7 +234,7 @@ by an external CDDL schema.
 <td>...</td>
 <td>magic</td>
 <td></td>
-<td>Magic bytes "CDDL"</td>
+<td>Magic bytes "SCLS"</td>
 </tr>
 <tr>
 <td>4</td>

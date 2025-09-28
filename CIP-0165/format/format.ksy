@@ -6,7 +6,6 @@ meta:
   endian: be
 
 doc: |
-
   A seekable, versioned container for CBOR payloads whose structure is defined
   by an external CDDL schema.
 
@@ -37,8 +36,8 @@ types:
     doc: Header block
     seq:
       - id: magic
-        contents: CDDL
-        doc: Magic bytes "CDDL"
+        contents: SCLS
+        doc: Magic bytes "SCLS"
       - id: version
         type: u4
         doc: Version of the file format
