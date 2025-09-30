@@ -1264,7 +1264,12 @@ The required exchanges between two neighboring nodes is captured by the
 following Information Exchange Requirements table (IER table). For the sake of
 minimizing this proposal, each row is a mini-protocol message, but that
 correspondence does not need to remain one-to-one as the mini-protocols evolve
-over time.
+over time. Note that the table does not list the messages in the anticipated
+chronological order; they're grouped by request/response semantics. The
+mini-protocols permit the client to react to some messages before it has
+received all messages related to an EB. For example, the client can send
+MsgLeiosBlockRequest as soon as it receives MsgLeiosBlockOffer, even if it has
+not yet received MsgLeiosBlockTxsOffer.
 
 <div align="center">
 <a name="table-4" id="table-4"></a>
