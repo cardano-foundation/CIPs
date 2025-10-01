@@ -90,6 +90,7 @@ We propose the following set of builtin functions to accompany the new builtin t
 1. `insertCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinInteger -> BuiltinValue -> BuiltinValue`
     - it returns a Mary-era Value with the `Coin` inserted, silently discarding any previous value.
       If the `BuiltinInteger` argument (the quantity) is zero, the `Coin` is removed.
+    - Both `BuiltinCurrencySymbol` and `BuiltinTokenName` must be no longer than 32 bytes (unless the amount is zero).
 2. `lookupCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinValue -> BuiltinQuantity`
    - it returns the quantity of a given `Coin` in a Mary-era Value.
 3. `unionValue :: BuiltinValue -> BuiltinValue -> BuiltinValue`
@@ -98,11 +99,13 @@ We propose the following set of builtin functions to accompany the new builtin t
     - This operation is commutative and associative, thus makes `BuiltinValue` a commutative semigroup.
 4. `valueContains :: BuiltinValue -> BuiltinValue -> Bool`
     - it compares the two Mary-era Values and determines if the first value is a superset of the second.
+    - All amounts in both values must be positive.
     - `valueContains a b == True` if and only if: for each `(currency, token, quantity)` in `b`, `lookupCoin currency token a >= quantity`.
 5. `valueData :: BuiltinValue -> BuiltinData`
     - encodes a `BuiltinValue` as `BuiltinData`.
 6. `unValueData :: BuiltinData -> BuiltinValue`
     - decodes a `BuiltinData` into a `BuiltinValue`, or fails if it is not one.
+    - All currency symbols and token names must be no longer than 32 bytes.
 
 A note on `valueData` and `unValueData`: in Plutus V1, V2 and V3, the encoding of `BuiltinValue` in `BuiltinData` is identical to that of the [existing `Value` type](https://plutus.cardano.intersectmbo.org/haddock/latest/plutus-ledger-api/PlutusLedgerApi-V1-Value.html#t:Value) in plutus-ledger-api.
 This ensures backwards compatibility.
