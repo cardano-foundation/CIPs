@@ -548,7 +548,8 @@ Note that EB diffusion (but not voting) continues to happen during this phase.
 > **Comparison with Research Paper**: The [Leios research paper][leios-paper]
 > describes a more complex protocol variant that requires $5\Delta_\text{hdr}$
 > for equivocation detection due to additional coordination mechanisms between
-> Input Blocks and Endorser Blocks. This specification's simplified approach,
+> Input Blocks (a third block type in the research paper, eliminated in this
+> specification) and Endorser Blocks. This specification's simplified approach,
 > where EBs are directly announced by RBs, reduces the equivocation detection
 > requirement to $3\Delta_\text{hdr}$ while maintaining the same security
 > guarantees against equivocation attacks.
@@ -2747,8 +2748,9 @@ block_header =
    , vrf_result               : vrf_cert
    , block_body_size          : uint
    , block_body_hash          : hash32
-+  , ? announced_eb           : hash32
-+  , ? announced_eb_size      : uint32
++  , ? ( announced_eb         : hash32
++      , announced_eb_size    : uint32
++      )
 +  , ? certified_eb           : bool
    ]
 ```
