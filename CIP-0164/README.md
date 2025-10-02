@@ -582,10 +582,10 @@ to >25% of honest nodes, and the network assumption that data with such
 widespread initial knowledge propagates fully within this period. The diffusion
 period must satisfy:
 
-$$L_\text{diff} \geq \Delta_\text{EB}^{\text{W}} + \Delta_\text{reapply} - \Delta_\text{RB'} - 3 \times L_\text{hdr} - L_\text{vote}$$
+$$L_\text{diff} \geq \Delta_\text{EB}^{\text{W}} + \Delta_\text{reapply} - \Delta_\text{RB} - 3 \times L_\text{hdr} - L_\text{vote}$$
 
-This ensures certified EBs reach all honest parties before any RB' that includes
-their certificate needs processing.
+This ensures certified EBs reach all honest parties before any `RB'` that
+includes their certificate needs processing.
 
 #### Size parameters
 
@@ -721,7 +721,8 @@ infrastructure across Ouroboros Leios, Ouroboros Peras, and other protocols.
 To participate in the Leios protocol as voting member/ block producing node,
 stake pool operators must register one additional cryptographic key for the
 voting scheme alongside their existing VRF and KES keys. In the BLS
-implementation described here, this would be a BLS12-381 key.
+implementation described here, this would be a BLS key over the BLS12-381
+elliptic curve.
 
 <a id="committee-structure" href="#committee-structure"></a>**Committee
 Structure**: Two types of voters validate EBs, balancing security,
