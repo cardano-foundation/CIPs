@@ -912,11 +912,11 @@ parameter, as such forks cannot affect chain selection decisions. EBs are
 forwarded before complete validity checks are performed.
 
 <a id="transaction-retrieval" href="#transaction-retrieval"></a>**Transaction
-Retrieval**: Nodes check transaction availability for the EB and fetch any
-missing transactions from peers (steps 6a and 7a). Once all transactions are
-available, nodes can serve EBs to downstream peers (step 7). This guarantees
-that when a node announces an EB its downstream peers can trust it has all EB
-transactions available.
+Retrieval**: Nodes check their local mempool for the transactions referenced by
+an EB and fetch any missing ones from peers (steps 6a and 7a). Once a node has
+successfully secured all of the referenced transactions, it can serve the EB to
+its downstream peers (step 7). This guarantees that when a peer receives an EB
+from it, all the referenced transaction data is already available at the source.
 
 <a id="eb-transaction-validation" href="#eb-transaction-validation"></a>**Transaction
 Validation**: As endorsed transactions become available, nodes validate them in
