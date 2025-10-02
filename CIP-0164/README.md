@@ -1,6 +1,6 @@
 ---
 CIP: 164
-Title: Ouroboros Leios - Greater transaction throughput
+Title: Ouroboros Linear Leios - Greater transaction throughput
 Status: Proposed
 Category: Consensus
 Authors:
