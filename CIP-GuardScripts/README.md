@@ -1,6 +1,6 @@
 ---
 CIP: 160
-Title: Guard Script Purpose and Credential
+Title: Receiving Script Purpose and Addresses
 Category: Ledger
 Status: Proposed
 Authors:
@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP proposes the introduction of a new script credential type, `GuardScriptCredential`, and a corresponding `Guard` script purpose. This enhancement allows a smart contract to validate not only UTxO spends from its address, but also UTxO creations to its address. The lack of such a mechanism today forces developers to implement complex workarounds involving authentication tokens, threaded NFTs, and registry UTxOs to guard against unauthorized or malformed deposits. This CIP aims to provide a native mechanism to guard script addresses against incoming UTxOs, thereby improving protocol safety, reducing engineering overhead, and eliminating a wide class of vulnerabilities in the Cardano smart contract ecosystem.
+This CIP proposes the introduction of a new Address type, `ProtectedAddress`, and a corresponding `Receiving` script purpose. This enhancement allows a smart contract to validate not only UTxO spends from its address, but also UTxO creations to its address. The lack of such a mechanism today forces developers to implement complex workarounds involving authentication tokens, threaded NFTs, and registry UTxOs to guard against unauthorized or malformed deposits. This CIP aims to provide a native mechanism to guard script addresses against incoming UTxOs, thereby improving protocol safety, reducing engineering overhead, and eliminating a wide class of vulnerabilities in the Cardano smart contract ecosystem.
 
 ## Motivation: why is this CIP necessary?
 
@@ -30,14 +30,22 @@ These workarounds add significant complexity, on-chain cost, and surface area fo
 ## Specification
 We propose:
 
-1. **A new credential type**:
+1. **A new address type**:
    ```haskell
-   data Credential =
-       KeyCredential PubKeyHash
-     | ScriptCredential ScriptHash
-     | GuardScriptCredential ScriptHash -- new
+data Address = 
+  Address
+    { addressCredential        :: Credential
+    -- ^ the payment credential
+    , addressStakingCredential :: Maybe StakingCredential
+    -- ^ the staking credential
+    }
+  ProtectedAddress -- new 
+    { address :: Credential 
+    , addressStakingCredential :: Maybe StakingCredential 
+    }
+
    ```
-2. **Two new `ScriptPurpose`s:**
+2. **A new `ScriptPurpose`:**
    ```haskell
     data ScriptPurpose =
         Spending TxOutRef
@@ -46,33 +54,26 @@ We propose:
     | Rewarding StakingCredential
     | Voting Vote
     | Proposing Proposal
-    | Guarding ScriptHash         -- NEW: only output(s) to script
-    | GuardingContinuing ScriptHash -- NEW: both input(s) and output(s)
+    | Receiving ScriptHash         -- NEW: only output(s) to script
    ```
 
-**Guard validation rule:**
-During phase-2 script validation, for each transaction output to a `GuardScriptCredential`, the associated script must be executed using one of two new script purposes:
+Normal addresses and protected addresses are differentiated by the introduction of an `isProtected` bit in the address header bytes, if the bit is set then the address is a protected address, otherwise it is unprotected.  
 
-- `Guarding` is used when the transaction includes one or more outputs to the script, but no inputs from it.
-- `GuardingContinuing` is used when the transaction includes both inputs and outputs involving the same `GuardScriptCredential`.
+**Receiving validation rule:**
 
-This separation ensures that input-side and output-side logic can remain cleanly isolated. Output validation logic can be entirely handled within `Guarding` and `GuardingContinuing`, while spending logic can be isolated to the `Spending` script purpose.
+Any output to a protected address requires the witness for the payment credential of that address to be provided in the transaction. For outputs to protected addresses with public key payment credentials this means the transaction must be signed 
+by the owner of that public key. For outputs to protected addresses with plutus script payment credentials this means the associated plutus script must be executed in phase-2 validation. 
 
-Critically, this design avoids redundant script execution. Without it, spending scripts would need to inspect transaction outputs in every case — even when no guarding logic is necessary — leading to wasted validation effort and bloated execution budgets.
+During phase-2 script validation, for each transaction output to a `ProtectedAddress`, with a script payment credential the associated script must be executed using the script purpose:
 
-If any `Guarding` or `GuardingContinuing` script **fails** during evaluation, the **entire transaction is invalid** and is rejected during phase-2 validation.
+- `Receiving` is used when the transaction includes an output to a `ProtectedAddress` where the payment credential is a script.
+
+If any `Receiving` script **fails** during evaluation, the **entire transaction is invalid** and is rejected during phase-2 validation. 
 
 ### CDDL Extension
 
 ```cddl
-; Extend Credential with GuardScriptCredential
-credential = 
-  [ 0, addr_keyhash             ; KeyCredential
-  // 1, script_hash             ; ScriptCredential
-  // 2, script_hash             ; GuardScriptCredential (NEW)
-  ]
-
-; Extend ScriptPurpose with Guarding
+; Extend ScriptPurpose with Receiving
 redeemer_tag =
     0 ; spend    
   / 1 ; mint     
@@ -80,12 +81,12 @@ redeemer_tag =
   / 3 ; reward   
   / 4 ; voting   
   / 5 ; proposing
-  / 6 ; guarding   ; NEW: script validates output creation to GuardScriptCredential
+  / 6 ; receiving   ; NEW: script validates output creation to a ProtectedAddress
 ```
 
 ## Rationale: how does this CIP achieve its goals?
 
-The proposed `GuardScriptCredential` and `Guard` script purpose solve the long-standing problem of uncontrolled UTxO injection at script addresses. By giving smart contracts the ability to validate outputs being sent to them during phase-2 validation, developers can:
+The proposed `ProtectedAddress` and `Receiving` script purpose solve the long-standing problem of uncontrolled UTxO injection at script addresses. By giving smart contracts the ability to validate outputs being sent to them during phase-2 validation, developers can:
 
 - Ensure only valid state transitions or authenticated deposits are accepted
 - Enforce access control and structural correctness of datums before a UTxO is created
@@ -94,7 +95,7 @@ The proposed `GuardScriptCredential` and `Guard` script purpose solve the long-s
   - Threading/state tokens
   - The issues from cyclic depenencies that are inherent in both of the above. 
 
-This CIP is also forward-compatible and additive. Existing contracts using `ScriptCredential` remain unaffected. Contracts that require guarded output validation may opt-in by using `GuardScriptCredential`.
+This CIP is also forward-compatible and additive. Existing contracts using unprotected `Address` remain unaffected. Contracts that require guarded output validation may opt-in by using `GuardScriptCredential`.
 
 ### Alternatives considered
 
@@ -107,39 +108,36 @@ This CIP is also forward-compatible and additive. Existing contracts using `Scri
 ### Backward Compatibility
 
 This proposal can be **fully backward-compatible** with previous Plutus versions. There are no obvious issues with this. However, for extra-safety and to avoid any 
-unintended consequences, it is also possible to strictly disallow Guarding scripts to be present in transactions that also execute scripts from Plutus versions before they
+unintended consequences, it is also possible to strictly disallow Receiving scripts to be present in transactions that also execute scripts from Plutus versions before they
 are introduced.
 
 Wallets, nodes, and off-chain tooling must be updated to:
-- Recognize and encode/decode `GuardScriptCredential` addresses
-- Include `Guarding` redeemers in transactions with guarded outputs
-- Extend phase-2 validation to evaluate `Guarding` scripts
-- Address decoding/encoding that correctly identifies the new credential
+- Recognize and encode/decode `ProtectedAddress` addresses
+- Include `Receiving` redeemers in transactions with outputs to `ProtectedAddress`s
+- Extend phase-2 validation to evaluate `Receiving` scripts
 
 Node software, CLI, Plutus libraries, and serialization tooling (e.g., `cardano-api`, `cardano-ledger`, `plutus-ledger-api`) would require coordinated upgrades.
-
 
 ### Acceptance Criteria
 
 - Agreement from Cardano Ledger and Plutus teams
 - Implementation of:
-  - `GuardScriptCredential` in address serialization
-  - `Guarding` in ledger script validation rules
-  - `Guarding` and `GuardingContinuing` in Plutus
-  - Phase-2 validation for guarded outputs
+  - `ProtectedAddress` in address serialization
+  - `Receiving` in ledger script validation rules
+  - `Receiving` in Plutus
+  - Phase-2 validation for transactions with outputs to protected addresses
 - Inclusion in a future era upgrade (e.g., Voltaire or beyond)
 
 ### Implementation Plan
 
-1. Extend ledger types to introduce the `GuardingScriptCredential` type. 
-2. Modify transaction validation logic to detect guarded outputs and invoke appropriate scripts.
-3. Add redeemer indexing logic for `Guarding` purposes tied to `txOutputs`.
-4. Introduce CDDL changes for redeemer tags and address credential variants.
-5. Update transaction witnesses, CLI tooling, and Plutus interpreter to support `Guarding`.
-6. Provide test cases for:
-   - Correct execution of `Guarding` scripts
-   - Rejection of invalid guarded outputs
-7. Provide examples and documentation for contract authors.
+1. Extend ledger types to introduce the `ProtectedAddress` type. 
+2. Modify transaction validation logic to detect outputs to protected addresses and invoke appropriate scripts.
+3. Introduce CDDL changes for redeemer tags and the new address variant.
+4. Update transaction witnesses, CLI tooling, and Plutus interpreter to support `Receiving`.
+5. Provide test cases for:
+   - Correct execution of `Receiving` scripts
+   - Rejection of transactions that include outputs to protected addresses and do not have the required witnesses or where the associated `Receiving` script execution fails. 
+6. Provide examples and documentation for contract authors.
 
 ## Copyright
 
