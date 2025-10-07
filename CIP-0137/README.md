@@ -706,15 +706,15 @@ the KES key.
 - [x] Validate protocol behaviour with all relevant parties (Network and Node teams).
 - [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
   - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
-- [ ] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
+- [x] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
   - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
-- [ ] Implement the n2n and n2c mini-protocols:
-  - [ ] Haskell DMQ Node:
-    - [ ] n2c mini-protocols
-    - [ ] n2n mini-protocols
-  - [ ] Pallas Library (TxPipe):
+- [x] Implement the n2n and n2c mini-protocols:
+  - [x] Haskell DMQ Node:
     - [x] n2c mini-protocols
-    - [ ] n2n mini-protocols
+    - [x] n2n mini-protocols
+  - [x] Pallas Library (TxPipe):
+    - [x] n2c mini-protocols
+    - [x] ~~n2n mini-protocols~~ (will be done in a separate stream of work)
 - [x] Implement the n2c mini-protocols in Mithril nodes:
   - [x] Mithril signer
   - [x] Mithril aggregator
