@@ -151,7 +151,7 @@ messageList = [ * message ]
 messageSizeInBytes = word32
 kesSignature = bstr
 kesPeriod = word32
-operationalCertificate = [ bstr, word64, word64, bstr ]
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
 coldVerificationKey = bstr .size 32
 expiresAt = word32
 
@@ -162,9 +162,9 @@ messagePayload = [
   , expiresAt
 ]
 message = [
-  bstr .cbor messagePayload
+  messagePayload
   , kesSignature
-  , bstr .cbor operationalCertificate
+  , operationalCertificate
   , coldVerificationKey
 ]
 ```
@@ -245,7 +245,7 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 
 ##### Message authentication mechanism
 
-The payload part of the message (message id, message body, KES period and expiration timestamp fields encoded as CBOR) is signed with the KES key of the SPO. The message is composed of the aforementioned payload (encoded as CBOR bytes), the KES signature (raw bytes), the operational certificate (the KES public key, the issue number of the operational certificate, the KES period at the time of creation of the operational certificate and their cold signing key signature, encoded as CBOR bytes) and the cold verification key (raw bytes) are appended to the message.
+The payload part of the message (message id, message body, KES period and expiration timestamp fields) is signed with the KES key of the SPO (the message signed is the CBOR encoding of the payload: `bstr .cbor messagePayload`). The message is composed of the aforementioned payload (encoded as an array), the KES signature (raw bytes), the operational certificate (the KES public key, the issue number of the operational certificate, the KES period at the time of creation of the operational certificate and their cold signing key signature, encoded as an array) and the cold verification key (raw bytes) are appended to the message.
 
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
 
@@ -479,7 +479,7 @@ messageId    = bstr
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
-operationalCertificate = [ bstr, word64, word64, bstr ]
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
 coldVerificationKey = bstr .size 32
 expiresAt = word32
 
@@ -490,9 +490,9 @@ messagePayload = [
   , expiresAt
 ]
 message = [
-  bstr .cbor messagePayload
+  messagePayload
   , kesSignature
-  , bstr .cbor operationalCertificate
+  , operationalCertificate
   , coldVerificationKey
 ]
 ```
@@ -576,7 +576,7 @@ messageId    = bstr
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
-operationalCertificate = [ bstr, word64, word64, bstr ]
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
 coldVerificationKey = bstr .size 32
 expiresAt = word32
 
@@ -587,9 +587,9 @@ messagePayload = [
   , expiresAt
 ]
 message = [
-  bstr .cbor messagePayload
+  messagePayload
   , kesSignature
-  , bstr .cbor operationalCertificate
+  , operationalCertificate
   , coldVerificationKey
 ]
 
