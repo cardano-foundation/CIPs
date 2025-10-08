@@ -16,16 +16,16 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposes to create a more fair marketplace for stakepools by reducing the minimum fixed pool fee and adding a minimum variable pool fee.
+This proposes to create a more fair marketplace for stake pools by reducing the minimum fixed pool fee and adding a minimum variable pool fee.
 
 ## Motivation: why is this CIP necessary?
 
 The current minimum fixed pool fee places a large and unfair burden on delegators to pools with smaller amounts of stake.
-This incentivizes people to delegate to pools with higher stake causing centralization and creating an unequal playing field for stakepool operators.
+This incentivizes people to delegate to pools with higher stake causing centralization and creating an unequal playing field for stake pool operators.
 
-Reducing the minimum fixed pool fee and adding a minimum variable pool fee reduces the imbalance between stakepools with less or more stake to a more reasonable range that allows for more fair competition between stakepools and more fair rewards for delegators to stakepools with less stake.
+Using a minimum variable pool fee reduces the imbalance between stake pools with less or more stake to a more reasonable range that allows for more fair competition between stake pools and more fair rewards for delegators to stake pools with less stake.
 
-This creates a more fair marketplace for all stakepool operators and increases decentralization, which is a goal of Cardano.
+This creates a more fair marketplace for all stake pool operators and increases decentralization, which is a goal of Cardano.
 
 ## Specification
 
@@ -110,12 +110,12 @@ Staker New Rew - The amount of rewards received by a staker who delegates 100k A
 New Fee % - The percentage of rewards taken by the pool as fees with proposed parameters.
 Note: All amounts other than %s are in ADA.
 
-The table above shows that currently a delegator staking 100k ADA to a stakepool with 2m ADA total delegation to the pool is paying an exorbitant 22.7% in fees while the same delegator staking with a fully saturated pool would only pay 0.7% in fees.
-This is a substantial and unfair advantage that large pools have in the stakepool marketplace.
+The table above shows that currently a delegator staking 100k ADA to a stake pool with 2m ADA total delegation to the pool is paying an exorbitant 22.7% in fees while the same delegator staking with a fully saturated pool would only pay 0.7% in fees.
+This is a substantial and unfair advantage that large pools have in the stake pool marketplace.
 This is a strong incentive to centralize stake to fewer larger pools which reduces the resiliency of the network.
 
 The proposed minimum fees bring this imbalance into a more reasonable range of 1.6% to 4.8%.
-It is much more likely that a small stakepool with other advantages or selling points would be able to convince a delegator to accept about 2 less ADA in rewards per epoch for their 100k delegation than about 17 ADA as in the current case.
+It is much more likely that a small stake pool with other advantages or selling points would be able to convince a delegator to accept about 2 less ADA in rewards per epoch for their 100k delegation than about 17 ADA as in the current case.
 This is particularly true as the price of ADA increases.
 At current price of $0.90 USD, a delegator staking 100k ADA is giving up over $1000 USD per year by delegating to a small pool!
 This does not even include the amount lost by comounding rewards being staked over the year.
@@ -128,21 +128,21 @@ With proposed parameters the same delegator would only be giving up about $150 U
 2.3 ADA/epoch * 73 epochs/year =  167.9 ADA/year
 167.9 ADA/year * $0.90 USD/ADA = $151.11 USD/year
 
-The calculations below show that given the price increase in ADA compared to when the protocol parameters were first set, we can maintain viable funding for stakepool operators with the proposed parameter changes.
+The calculations below show that given the price increase in ADA compared to when the protocol parameters were first set, we can maintain viable funding for stake pool operators with the proposed parameter changes.
 
 Annual pool operator funding given initial parameters:
 340 ADA/epoch * $0.08 USD/ADA = $27.20 USD/epoch
 $27.20 USD/epoch * 73 epochs/year = $1985.60 USD/year
 
-Annual pool operator funding given proposed parameters for stakepool with 2 million ADA delegation:
+Annual pool operator funding given proposed parameters for stake pool with 2 million ADA delegation:
 71.8 ADA/epoch * $0.90 USD/ADA = $64.62 USD/epoch
 $64.62 USD/epoch * 73 epochs/year = $4717.26 USD/year
 
-Annual pool operator funding given proposed parameters for fully saturated stakepool:
+Annual pool operator funding given proposed parameters for fully saturated stake pool:
 769.6 ADA/epoch * $0.90 USD/ADA = $692.64 USD/epoch
 $692.64 USD/epoch * 73 epochs/year = $50,562.72 USD/year
 
-In summary, the proposed parameter changes would create a more fair marketplace for stakepools, provide more fair rewards for delegators to smaller pools and would lower incentives for centralization providing a more resilient network.
+In summary, the proposed parameter changes would create a more fair marketplace for stake pools, provide more fair rewards for delegators to smaller pools and would lower incentives for centralization providing a more resilient network.
 
 ### Test Cases
 
