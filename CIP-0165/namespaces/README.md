@@ -15,4 +15,3 @@ Each namespace defines a non-intersecting slices of the data.
 | drep      | DRep state                      |
 | gov       | Governance action state         |
 | hdr       | Header state (e.g. nonces)      |
-| tombstone | Marker of the removed entry     |
