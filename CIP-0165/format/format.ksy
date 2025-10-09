@@ -93,9 +93,6 @@ types:
       - id: ns
         type: tstr
         doc: namespace
-      - id: len_data
-        type: u4
-        doc: size of payload
       - id: data
         size: len_data
         doc: payload
@@ -105,6 +102,14 @@ types:
       - id: digest
         type: digest
         doc: blake28 hash of the entries in the block
+    instances:
+      # size of record_data for this scls_record (total - size:u4 - record_type:u1)
+      rec_payload_size:
+        value: _parent._parent.len_payload - 5
+      ns_size:
+        value: 4 + ns.len_data
+      len_data:
+        value: rec_payload_size - (8 + 1 + ns_size + 4 + 28)
   summary:
     doc: Summary
     seq:

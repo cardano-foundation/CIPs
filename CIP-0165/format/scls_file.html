@@ -197,13 +197,6 @@ by an external CDDL schema.
 <tr>
 <td>???</td>
 <td>...</td>
-<td>len_data</td>
-<td>u4be</td>
-<td>size of payload</td>
-</tr>
-<tr>
-<td>???</td>
-<td>...</td>
 <td>data</td>
 <td></td>
 <td>payload</td>
@@ -223,6 +216,9 @@ by an external CDDL schema.
 <td>blake28 hash of the entries in the block</td>
 </tr>
 </table>
+value instance: ValueInstanceSpec(InstanceIdentifier(rec_payload_size),List(types, rec_chunk, instances, rec_payload_size),DocSpec(None,List()),BinOp(Attribute(Attribute(Name(identifier(_parent)),identifier(_parent)),identifier(len_payload)),Sub,IntNum(5)),None,Some(CalcIntType))
+value instance: ValueInstanceSpec(InstanceIdentifier(ns_size),List(types, rec_chunk, instances, ns_size),DocSpec(None,List()),BinOp(IntNum(4),Add,Attribute(Name(identifier(ns)),identifier(len_data))),None,Some(CalcIntType))
+value instance: ValueInstanceSpec(InstanceIdentifier(len_data),List(types, rec_chunk, instances, len_data),DocSpec(None,List()),BinOp(Name(identifier(rec_payload_size)),Sub,BinOp(BinOp(BinOp(BinOp(IntNum(8),Add,IntNum(1)),Add,Name(identifier(ns_size))),Add,IntNum(4)),Add,IntNum(28))),None,Some(CalcIntType))
 <a name='type-scls_file-rec_header'></a>
 <h2>Type: RecHeader</h2>
 
