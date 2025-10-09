@@ -18,14 +18,21 @@ seq:
 types:
   scls_record:
     seq:
-      - id: size
+      - id: len_payload
         type: u4
         doc: Size of the record, including size and record type
+      - id: payload
+        type: scls_record_data
+        doc: payload of the record
+        size: len_payload
+  scls_record_data:
+    seq:
       - id: record_type
         type: u1
         doc: Type of the record
       - id: record_data
         doc: Record payload
+        size-eos: true
         type:
           switch-on: record_type
           cases:

@@ -266,22 +266,35 @@ by an external CDDL schema.
 <tr>
 <td>0</td>
 <td>...</td>
-<td>size</td>
+<td>len_payload</td>
 <td>u4be</td>
 <td>Size of the record, including size and record type</td>
 </tr>
 <tr>
 <td>4</td>
 <td>...</td>
+<td>payload</td>
+<td><a href="#type-scls_file-scls_record_data">SclsRecordData</a></td>
+<td>payload of the record</td>
+</tr>
+</table>
+<a name='type-scls_file-scls_record_data'></a>
+<h2>Type: SclsRecordData</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
 <td>record_type</td>
 <td>u1</td>
 <td>Type of the record</td>
 </tr>
 <tr>
-<td>5</td>
+<td>1</td>
 <td>...</td>
 <td>record_data</td>
-<td>SwitchType(Name(identifier(record_type)),Map(IntNum(0) -> UserTypeInstream(List(rec_header),None,List()), IntNum(1) -> UserTypeInstream(List(rec_manifest),None,List()), IntNum(16) -> UserTypeInstream(List(rec_chunk),None,List())),true)</td>
+<td>SwitchType(Name(identifier(record_type)),Map(IntNum(0) -> UserTypeFromBytes(List(rec_header),None,List(),BytesEosType(None,false,None,None),None), IntNum(1) -> UserTypeFromBytes(List(rec_manifest),None,List(),BytesEosType(None,false,None,None),None), IntNum(16) -> UserTypeFromBytes(List(rec_chunk),None,List(),BytesEosType(None,false,None,None),None), Name(identifier(_)) -> BytesEosType(None,false,None,None)),true)</td>
 <td>Record payload</td>
 </tr>
 </table>
