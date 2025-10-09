@@ -24,7 +24,7 @@ types:
       - id: payload
         type: scls_record_data
         doc: payload of the record
-        size: len_payload
+        size: len_payload - 4
   scls_record_data:
     seq:
       - id: record_type
@@ -32,6 +32,7 @@ types:
         doc: Type of the record
       - id: record_data
         doc: Record payload
+        # size: _parent.len_payload - 5
         size-eos: true
         type:
           switch-on: record_type
@@ -90,12 +91,18 @@ types:
       - id: format
         type: u1
         enum: chunk_format
+      - id: len_ns
+        type: u4
+        doc: size of the namespace
       - id: ns
-        type: tstr
-        doc: namespace
+        type: str
+        encoding: UTF-8
+        doc: namespace name
+        size: len_ns
       - id: data
-        size: len_data
-        doc: payload
+        type: entries_block(len_key)
+        size: len_data                # substream; entries parse to EOS here
+        doc: payload parsed as entries
       - id: entries_count
         type: u4
         doc: Number of entries in the chunk
@@ -107,9 +114,45 @@ types:
       rec_payload_size:
         value: _parent._parent.len_payload - 5
       ns_size:
-        value: 4 + ns.len_data
+        value: 4 + len_ns
       len_data:
         value: rec_payload_size - (8 + 1 + ns_size + 4 + 28)
+      len_key:
+        value: |
+          (ns == "utxo")  ? 32 :
+          (ns == "stake") ? 28 :
+          (ns == "pool")  ? 28 :
+          0
+  entries_block:
+    params:
+      - id: len_key
+        type: u2
+    seq:
+      - id: entries
+        type: entry(len_key)
+        repeat: eos
+  entry:
+    params:
+      - id: len_key
+        type: u2
+    seq:
+      - id: len_body
+        type: u4                        # size of this entry INCLUDING this u4
+      - id: body
+        type: entry_body(len_key)
+        size: len_body
+  entry_body:
+    doc: Body of the entry with the key of the fixes size, that depends on the namespace
+    params:
+      - id: len_key
+        type: u2
+    seq:
+      - id: key
+        doc: fixed size key
+        size: len_key
+      - id: value
+        doc: cbor encoded entry
+        size-eos: true
   summary:
     doc: Summary
     seq:

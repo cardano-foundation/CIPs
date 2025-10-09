@@ -63,6 +63,19 @@ by an external CDDL schema.
 <td>2</td><td>zstde</td><td></td></tr>
 </tr>
 </table>
+<a name='type-scls_file-entries_block'></a>
+<h2>Type: EntriesBlock</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-scls_file-entry">Entry</a></td>
+<td></td>
+</tr>
+</table>
 <a name='type-scls_file-digest'></a>
 <h2>Type: Digest</h2>
 
@@ -133,6 +146,26 @@ by an external CDDL schema.
 <td>relative offset to the beginning of the block</td>
 </tr>
 </table>
+<a name='type-scls_file-entry'></a>
+<h2>Type: Entry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>len_body</td>
+<td>u4be</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>body</td>
+<td><a href="#type-scls_file-entry_body">EntryBody</a></td>
+<td></td>
+</tr>
+</table>
 <a name='type-scls_file-ns_info'></a>
 <h2>Type: NsInfo</h2>
 
@@ -190,16 +223,23 @@ by an external CDDL schema.
 <tr>
 <td>9</td>
 <td>...</td>
+<td>len_ns</td>
+<td>u4be</td>
+<td>size of the namespace</td>
+</tr>
+<tr>
+<td>13</td>
+<td>...</td>
 <td>ns</td>
-<td><a href="#type-scls_file-tstr">Tstr</a></td>
-<td>namespace</td>
+<td>str(UTF-8)</td>
+<td>namespace name</td>
 </tr>
 <tr>
 <td>???</td>
 <td>...</td>
 <td>data</td>
-<td></td>
-<td>payload</td>
+<td><a href="#type-scls_file-entries_block">EntriesBlock</a></td>
+<td>payload parsed as entries</td>
 </tr>
 <tr>
 <td>???</td>
@@ -217,8 +257,9 @@ by an external CDDL schema.
 </tr>
 </table>
 value instance: ValueInstanceSpec(InstanceIdentifier(rec_payload_size),List(types, rec_chunk, instances, rec_payload_size),DocSpec(None,List()),BinOp(Attribute(Attribute(Name(identifier(_parent)),identifier(_parent)),identifier(len_payload)),Sub,IntNum(5)),None,Some(CalcIntType))
-value instance: ValueInstanceSpec(InstanceIdentifier(ns_size),List(types, rec_chunk, instances, ns_size),DocSpec(None,List()),BinOp(IntNum(4),Add,Attribute(Name(identifier(ns)),identifier(len_data))),None,Some(CalcIntType))
+value instance: ValueInstanceSpec(InstanceIdentifier(ns_size),List(types, rec_chunk, instances, ns_size),DocSpec(None,List()),BinOp(IntNum(4),Add,Name(identifier(len_ns))),None,Some(CalcIntType))
 value instance: ValueInstanceSpec(InstanceIdentifier(len_data),List(types, rec_chunk, instances, len_data),DocSpec(None,List()),BinOp(Name(identifier(rec_payload_size)),Sub,BinOp(BinOp(BinOp(BinOp(IntNum(8),Add,IntNum(1)),Add,Name(identifier(ns_size))),Add,IntNum(4)),Add,IntNum(28))),None,Some(CalcIntType))
+value instance: ValueInstanceSpec(InstanceIdentifier(len_key),List(types, rec_chunk, instances, len_key),DocSpec(None,List()),IfExp(Compare(Name(identifier(ns)),Eq,Str(utxo)),IntNum(32),IfExp(Compare(Name(identifier(ns)),Eq,Str(stake)),IntNum(28),IfExp(Compare(Name(identifier(ns)),Eq,Str(pool)),IntNum(28),IntNum(0)))),None,Some(Int1Type(true)))
 <a name='type-scls_file-rec_header'></a>
 <h2>Type: RecHeader</h2>
 
@@ -332,6 +373,27 @@ value instance: ValueInstanceSpec(InstanceIdentifier(len_data),List(types, rec_c
 <td>data</td>
 <td>str(UTF-8)</td>
 <td>value of the string</td>
+</tr>
+</table>
+<a name='type-scls_file-entry_body'></a>
+<h2>Type: EntryBody</h2>
+
+<p>Body of the entry with the key of the fixes size, that depends on the namespace</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>key</td>
+<td></td>
+<td>fixed size key</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>value</td>
+<td></td>
+<td>cbor encoded entry</td>
 </tr>
 </table>
 <a name='type-scls_file-summary'></a>
