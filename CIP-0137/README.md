@@ -515,10 +515,6 @@ The protocol follows a simple request-response pattern:
 | ----------------- | ---------------------------------------- |
 | Client has Agency | StIdle                                   |
 | Server has Agency | StBusyNonBlocking,StBusyBlocking, StDone |
-| Agency            |                                          |
-| ----------------- | ---------------------------------------- |
-| Client has Agency | StIdle                                   |
-| Server has Agency | StBusyNonBlocking,StBusyBlocking, StDone |
 
 ```mermaid
 stateDiagram-v2
