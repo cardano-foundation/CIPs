@@ -564,8 +564,8 @@ localMessageNotificationMessage
   / msgClientDone
 
 msgRequestMessages          = [0, isBlocking]
-msgReplyMessagesNonBlocking = [1, messages, hasMore]
-msgReplyMessagesBlocking    = [2, messages]
+msgReplyMessagesNonBlocking = [1, [*sig.message], hasMore]
+msgReplyMessagesBlocking    = [2, [+sig.message]]
 msgClientDone               = [3]
 
 messageId    = bstr
