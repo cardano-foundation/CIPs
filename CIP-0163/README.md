@@ -216,18 +216,6 @@ The result is about **3.39% Annual ROI**. Roughly a 0.79% increase.
 
 These effects are also modeled in the open source tool available at [https://spo-incentives.vercel.app/](https://spo-incentives.vercel.app/). Setting the rewards formula radio button to “Current” represents the current rewards calculation behavior. Setting it to “Full” represents the rewards calculation after applying this CIP. It is also recommended to experiment with the “Staked Ratio” slider under both of those settings to see how it will affect rewards.
 
-- **Runaway lost‑stake mitigation efficacy**
-
-  - Before:
-
-    ![Runaway lost-stake before mitigation (Fig. 2)](Fig2.png)
-
-  - After:
-
-    ![Runaway lost-stake after mitigation (Fig. 3)](Fig3.png)
-
-**Note:** The baseline numbers in the previous two charts were rough estimates taken from CPS-0022. These estimates may be off by a wide margin, but the effects in preventing the compounding of lost ADA beyond their expiration date will apply generally regardless.
-
 ## Path to Active
 
 ### Acceptance Criteria
