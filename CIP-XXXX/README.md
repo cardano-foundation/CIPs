@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 167
 Title: Remove `isValid` from transactions
 Category: Ledger
 Authors:
