@@ -564,8 +564,8 @@ localMessageNotificationMessage
   / msgClientDone
 
 msgRequestMessages          = [0, isBlocking]
-msgReplyMessagesNonBlocking = [1, [*sig.message], hasMore]
-msgReplyMessagesBlocking    = [2, [+sig.message]]
+msgReplyMessagesNonBlocking = [1, [* message], hasMore]
+msgReplyMessagesBlocking    = [2, [+ message]]
 msgClientDone               = [3]
 
 messageId    = bstr
@@ -591,7 +591,6 @@ message = [
 
 hasMore = false / true
 isBlocking = false / true
-messages = [* message]
 ```
 
 ## Rationale: how does this CIP achieve its goals?
