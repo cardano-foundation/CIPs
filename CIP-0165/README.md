@@ -118,8 +118,19 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 - `chunk_seq` : `u64` — sequence number of the record
 - `chunk_format` : `u8` - format of the chunks
 - `namespace` : `bstr` — namespace of the values stored in the CHUNK
-- `entries` : `Entry` — list of length-prefixed CBOR entries
-- `footer {entries_count: u64, chunk_hash: u64}` — hash value of the chunk of data, is used to keep integrity of the file.
+- `entries` : `DataEntry` — list of length-prefixed data entries
+- `footer {entries_count: u64, chunk_hash: blake28}` — hash value of the chunk of data, is used to keep integrity of the file.
+
+DataEntry is a blob of a key-valued data. The structure of the `DataEntry` is the following:
+
+- `size` : `u32` - size of the data
+- `key` : `fixed size` - key is a fixed size blob where size depends on the namespace
+- `value` : `bstr` — cbor data entry
+
+While the format requires each entry to have a key, it's still possible to support hierarchical structures, either by normalizing them
+and keeping a path or hash as a key or by introducing an artificial key and keeping the entire hierarchy in a single key. The choice depends on each
+namespace. If there are ways to express and support updating of a part of the tree, it is worth normalizing the tree. If the data is kept
+and updated as a whole, a single artificial key can be used.
 
 **Policy:**
 

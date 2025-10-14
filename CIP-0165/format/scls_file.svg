@@ -1,630 +1,908 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1521pt" height="918pt" viewBox="0.00 0.00 1521.00 918.00">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 914)">
-<polygon fill="white" stroke="none" points="-4,4 -4,-914 1516.82,-914 1516.82,4 -4,4"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2493pt" height="974pt" viewBox="0.00 0.00 2493.00 974.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 970)">
+<polygon fill="white" stroke="none" points="-4,4 -4,-970 2488.93,-970 2488.93,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster__scls_file</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-8 8,-902 1504.82,-902 1504.82,-8 8,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="756.41" y="-885.4" font-family="Times,serif" font-size="14.00">SclsFile</text>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-44 8,-958 2476.93,-958 2476.93,-44 8,-44"/>
+<text xml:space="preserve" text-anchor="middle" x="1242.47" y="-941.4" font-family="Times,serif" font-size="14.00">SclsFile</text>
 </g>
 <g id="clust2" class="cluster">
-<title>cluster__digest</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1082.96,-199 1082.96,-294 1227.59,-294 1227.59,-199 1082.96,-199"/>
-<text xml:space="preserve" text-anchor="middle" x="1155.27" y="-277.4" font-family="Times,serif" font-size="14.00">SclsFile::Digest</text>
+<title>cluster__entries_block</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1560.86,-360 1560.86,-477 1727.13,-477 1727.13,-360 1560.86,-360"/>
+<text xml:space="preserve" text-anchor="middle" x="1644" y="-460.4" font-family="Times,serif" font-size="14.00">SclsFile::EntriesBlock</text>
 </g>
 <g id="clust3" class="cluster">
-<title>cluster__rec_manifest</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="746.28,-187 746.28,-441 1022.3,-441 1022.3,-187 746.28,-187"/>
-<text xml:space="preserve" text-anchor="middle" x="884.29" y="-424.4" font-family="Times,serif" font-size="14.00">SclsFile::RecManifest</text>
+<title>cluster__digest</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1571.68,-109 1571.68,-204 1716.31,-204 1716.31,-109 1571.68,-109"/>
+<text xml:space="preserve" text-anchor="middle" x="1644" y="-187.4" font-family="Times,serif" font-size="14.00">SclsFile::Digest</text>
 </g>
 <g id="clust4" class="cluster">
-<title>cluster__ns_info</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="723.13,-16 723.13,-179 1045.45,-179 1045.45,-16 723.13,-16"/>
-<text xml:space="preserve" text-anchor="middle" x="884.29" y="-162.4" font-family="Times,serif" font-size="14.00">SclsFile::NsInfo</text>
+<title>cluster__rec_manifest</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1096.75,-223 1096.75,-477 1372.77,-477 1372.77,-223 1096.75,-223"/>
+<text xml:space="preserve" text-anchor="middle" x="1234.76" y="-460.4" font-family="Times,serif" font-size="14.00">SclsFile::RecManifest</text>
 </g>
 <g id="clust5" class="cluster">
-<title>cluster__rec_chunk</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="734,-449 734,-698 1034.57,-698 1034.57,-449 734,-449"/>
-<text xml:space="preserve" text-anchor="middle" x="884.29" y="-681.4" font-family="Times,serif" font-size="14.00">SclsFile::RecChunk</text>
+<title>cluster__entry</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1962.86,-342 1962.86,-477 2203.96,-477 2203.96,-342 1962.86,-342"/>
+<text xml:space="preserve" text-anchor="middle" x="2083.41" y="-460.4" font-family="Times,serif" font-size="14.00">SclsFile::Entry</text>
 </g>
 <g id="clust6" class="cluster">
-<title>cluster__rec_header</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="761.23,-706 761.23,-869 1007.35,-869 1007.35,-706 761.23,-706"/>
-<text xml:space="preserve" text-anchor="middle" x="884.29" y="-852.4" font-family="Times,serif" font-size="14.00">SclsFile::RecHeader</text>
+<title>cluster__ns_info</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1073.6,-52 1073.6,-215 1395.92,-215 1395.92,-52 1073.6,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1234.76" y="-198.4" font-family="Times,serif" font-size="14.00">SclsFile::NsInfo</text>
 </g>
 <g id="clust7" class="cluster">
-<title>cluster__scls_record</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="224.73,-528 224.73,-686 683.89,-686 683.89,-528 224.73,-528"/>
-<text xml:space="preserve" text-anchor="middle" x="454.31" y="-669.4" font-family="Times,serif" font-size="14.00">SclsFile::SclsRecord</text>
+<title>cluster__rec_chunk</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1084.47,-485 1084.47,-744 2274.75,-744 2274.75,-485 1084.47,-485"/>
+<text xml:space="preserve" text-anchor="middle" x="1679.61" y="-727.4" font-family="Times,serif" font-size="14.00">SclsFile::RecChunk</text>
 </g>
 <g id="clust8" class="cluster">
-<title>cluster__namespace_info</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="525.03,-147 525.03,-264 703.13,-264 703.13,-147 525.03,-147"/>
-<text xml:space="preserve" text-anchor="middle" x="614.08" y="-247.4" font-family="Times,serif" font-size="14.00">SclsFile::NamespaceInfo</text>
+<title>cluster__rec_header</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1111.7,-752 1111.7,-915 1357.82,-915 1357.82,-752 1111.7,-752"/>
+<text xml:space="preserve" text-anchor="middle" x="1234.76" y="-898.4" font-family="Times,serif" font-size="14.00">SclsFile::RecHeader</text>
 </g>
 <g id="clust9" class="cluster">
-<title>cluster__tstr</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1265.1,-370 1265.1,-505 1496.82,-505 1496.82,-370 1265.1,-370"/>
-<text xml:space="preserve" text-anchor="middle" x="1380.96" y="-488.4" font-family="Times,serif" font-size="14.00">SclsFile::Tstr</text>
+<title>cluster__scls_record</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="224.73,-737 224.73,-872 555.2,-872 555.2,-737 224.73,-737"/>
+<text xml:space="preserve" text-anchor="middle" x="389.97" y="-855.4" font-family="Times,serif" font-size="14.00">SclsFile::SclsRecord</text>
 </g>
 <g id="clust10" class="cluster">
+<title>cluster__scls_record_data</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="575.2,-658 575.2,-798 1034.36,-798 1034.36,-658 575.2,-658"/>
+<text xml:space="preserve" text-anchor="middle" x="804.78" y="-781.4" font-family="Times,serif" font-size="14.00">SclsFile::SclsRecordData</text>
+</g>
+<g id="clust11" class="cluster">
+<title>cluster__namespace_info</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="875.5,-183 875.5,-300 1053.6,-300 1053.6,-183 875.5,-183"/>
+<text xml:space="preserve" text-anchor="middle" x="964.55" y="-283.4" font-family="Times,serif" font-size="14.00">SclsFile::NamespaceInfo</text>
+</g>
+<g id="clust12" class="cluster">
+<title>cluster__tstr</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1967.55,-199 1967.55,-334 2199.27,-334 2199.27,-199 1967.55,-199"/>
+<text xml:space="preserve" text-anchor="middle" x="2083.41" y="-317.4" font-family="Times,serif" font-size="14.00">SclsFile::Tstr</text>
+</g>
+<g id="clust13" class="cluster">
+<title>cluster__entry_body</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="2294.75,-186 2294.75,-303 2468.93,-303 2468.93,-186 2294.75,-186"/>
+<text xml:space="preserve" text-anchor="middle" x="2381.84" y="-286.4" font-family="Times,serif" font-size="14.00">SclsFile::EntryBody</text>
+</g>
+<g id="clust14" class="cluster">
 <title>cluster__summary</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1065.45,-358 1065.45,-498 1245.1,-498 1245.1,-358 1065.45,-358"/>
-<text xml:space="preserve" text-anchor="middle" x="1155.27" y="-481.4" font-family="Times,serif" font-size="14.00">SclsFile::Summary</text>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="1554.17,-212 1554.17,-352 1733.82,-352 1733.82,-212 1554.17,-212"/>
+<text xml:space="preserve" text-anchor="middle" x="1644" y="-335.4" font-family="Times,serif" font-size="14.00">SclsFile::Summary</text>
 </g>
 <!-- scls_file__seq -->
 <g id="node1" class="node">
 <title>scls_file__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="24,-597.4 24,-620.2 49.45,-620.2 49.45,-597.4 24,-597.4"/>
-<polygon fill="none" stroke="black" points="24,-597.4 24,-620.2 49.45,-620.2 49.45,-597.4 24,-597.4"/>
-<text xml:space="preserve" text-anchor="start" x="27" y="-604.6" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="49.45,-597.4 49.45,-620.2 77.21,-620.2 77.21,-597.4 49.45,-597.4"/>
-<polygon fill="none" stroke="black" points="49.45,-597.4 49.45,-620.2 77.21,-620.2 77.21,-597.4 49.45,-597.4"/>
-<text xml:space="preserve" text-anchor="start" x="52.45" y="-604.6" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="77.21,-597.4 77.21,-620.2 146.98,-620.2 146.98,-597.4 77.21,-597.4"/>
-<polygon fill="none" stroke="black" points="77.21,-597.4 77.21,-620.2 146.98,-620.2 146.98,-597.4 77.21,-597.4"/>
-<text xml:space="preserve" text-anchor="start" x="100.04" y="-604.6" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="146.98,-597.4 146.98,-620.2 188.73,-620.2 188.73,-597.4 146.98,-597.4"/>
-<polygon fill="none" stroke="black" points="146.98,-597.4 146.98,-620.2 188.73,-620.2 188.73,-597.4 146.98,-597.4"/>
-<text xml:space="preserve" text-anchor="start" x="162.41" y="-604.6" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="24,-574.6 24,-597.4 49.45,-597.4 49.45,-574.6 24,-574.6"/>
-<text xml:space="preserve" text-anchor="start" x="33.22" y="-581.8" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="49.45,-574.6 49.45,-597.4 77.21,-597.4 77.21,-574.6 49.45,-574.6"/>
-<text xml:space="preserve" text-anchor="start" x="58.08" y="-581.8" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="77.21,-574.6 77.21,-597.4 146.98,-597.4 146.98,-574.6 77.21,-574.6"/>
-<text xml:space="preserve" text-anchor="start" x="80.21" y="-581.8" font-family="Times,serif" font-size="14.00">SclsRecord</text>
-<polygon fill="none" stroke="black" points="146.98,-574.6 146.98,-597.4 188.73,-597.4 188.73,-574.6 146.98,-574.6"/>
-<text xml:space="preserve" text-anchor="start" x="149.98" y="-581.8" font-family="Times,serif" font-size="14.00">record</text>
-<polygon fill="none" stroke="black" points="24,-551.8 24,-574.6 188.73,-574.6 188.73,-551.8 24,-551.8"/>
-<text xml:space="preserve" text-anchor="start" x="42.23" y="-559" font-family="Times,serif" font-size="14.00">repeat to end of stream</text>
+<polygon fill="#e0ffe0" stroke="none" points="24,-794.4 24,-817.2 49.45,-817.2 49.45,-794.4 24,-794.4"/>
+<polygon fill="none" stroke="black" points="24,-794.4 24,-817.2 49.45,-817.2 49.45,-794.4 24,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="27" y="-801.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="49.45,-794.4 49.45,-817.2 77.21,-817.2 77.21,-794.4 49.45,-794.4"/>
+<polygon fill="none" stroke="black" points="49.45,-794.4 49.45,-817.2 77.21,-817.2 77.21,-794.4 49.45,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="52.45" y="-801.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="77.21,-794.4 77.21,-817.2 146.98,-817.2 146.98,-794.4 77.21,-794.4"/>
+<polygon fill="none" stroke="black" points="77.21,-794.4 77.21,-817.2 146.98,-817.2 146.98,-794.4 77.21,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="100.04" y="-801.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="146.98,-794.4 146.98,-817.2 188.73,-817.2 188.73,-794.4 146.98,-794.4"/>
+<polygon fill="none" stroke="black" points="146.98,-794.4 146.98,-817.2 188.73,-817.2 188.73,-794.4 146.98,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="162.41" y="-801.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="24,-771.6 24,-794.4 49.45,-794.4 49.45,-771.6 24,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="33.22" y="-778.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="49.45,-771.6 49.45,-794.4 77.21,-794.4 77.21,-771.6 49.45,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="58.08" y="-778.8" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="77.21,-771.6 77.21,-794.4 146.98,-794.4 146.98,-771.6 77.21,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="80.21" y="-778.8" font-family="Times,serif" font-size="14.00">SclsRecord</text>
+<polygon fill="none" stroke="black" points="146.98,-771.6 146.98,-794.4 188.73,-794.4 188.73,-771.6 146.98,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="149.98" y="-778.8" font-family="Times,serif" font-size="14.00">record</text>
+<polygon fill="none" stroke="black" points="24,-748.8 24,-771.6 188.73,-771.6 188.73,-748.8 24,-748.8"/>
+<text xml:space="preserve" text-anchor="start" x="42.23" y="-756" font-family="Times,serif" font-size="14.00">repeat to end of stream</text>
 </g>
 <!-- scls_record__seq -->
-<g id="node7" class="node">
+<g id="node13" class="node">
 <title>scls_record__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="240.73,-608.8 240.73,-631.6 266.18,-631.6 266.18,-608.8 240.73,-608.8"/>
-<polygon fill="none" stroke="black" points="240.73,-608.8 240.73,-631.6 266.18,-631.6 266.18,-608.8 240.73,-608.8"/>
-<text xml:space="preserve" text-anchor="start" x="243.73" y="-616" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="266.18,-608.8 266.18,-631.6 293.95,-631.6 293.95,-608.8 266.18,-608.8"/>
-<polygon fill="none" stroke="black" points="266.18,-608.8 266.18,-631.6 293.95,-631.6 293.95,-608.8 266.18,-608.8"/>
-<text xml:space="preserve" text-anchor="start" x="269.18" y="-616" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="293.95,-608.8 293.95,-631.6 416.18,-631.6 416.18,-608.8 293.95,-608.8"/>
-<polygon fill="none" stroke="black" points="293.95,-608.8 293.95,-631.6 416.18,-631.6 416.18,-608.8 293.95,-608.8"/>
-<text xml:space="preserve" text-anchor="start" x="343.01" y="-616" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="416.18,-608.8 416.18,-631.6 489.03,-631.6 489.03,-608.8 416.18,-608.8"/>
-<polygon fill="none" stroke="black" points="416.18,-608.8 416.18,-631.6 489.03,-631.6 489.03,-608.8 416.18,-608.8"/>
-<text xml:space="preserve" text-anchor="start" x="447.16" y="-616" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="240.73,-586 240.73,-608.8 266.18,-608.8 266.18,-586 240.73,-586"/>
-<text xml:space="preserve" text-anchor="start" x="249.96" y="-593.2" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="266.18,-586 266.18,-608.8 293.95,-608.8 293.95,-586 266.18,-586"/>
-<text xml:space="preserve" text-anchor="start" x="276.56" y="-593.2" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="293.95,-586 293.95,-608.8 416.18,-608.8 416.18,-586 293.95,-586"/>
-<text xml:space="preserve" text-anchor="start" x="341.45" y="-593.2" font-family="Times,serif" font-size="14.00">u4be</text>
-<polygon fill="none" stroke="black" points="416.18,-586 416.18,-608.8 489.03,-608.8 489.03,-586 416.18,-586"/>
-<text xml:space="preserve" text-anchor="start" x="441.72" y="-593.2" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="none" stroke="black" points="240.73,-563.2 240.73,-586 266.18,-586 266.18,-563.2 240.73,-563.2"/>
-<text xml:space="preserve" text-anchor="start" x="249.96" y="-570.4" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="266.18,-563.2 266.18,-586 293.95,-586 293.95,-563.2 266.18,-563.2"/>
-<text xml:space="preserve" text-anchor="start" x="276.56" y="-570.4" font-family="Times,serif" font-size="14.00">1</text>
-<polygon fill="none" stroke="black" points="293.95,-563.2 293.95,-586 416.18,-586 416.18,-563.2 293.95,-563.2"/>
-<text xml:space="preserve" text-anchor="start" x="348.06" y="-570.4" font-family="Times,serif" font-size="14.00">u1</text>
-<polygon fill="none" stroke="black" points="416.18,-563.2 416.18,-586 489.03,-586 489.03,-563.2 416.18,-563.2"/>
-<text xml:space="preserve" text-anchor="start" x="419.18" y="-570.4" font-family="Times,serif" font-size="14.00">record_type</text>
-<polygon fill="none" stroke="black" points="240.73,-540.4 240.73,-563.2 266.18,-563.2 266.18,-540.4 240.73,-540.4"/>
-<text xml:space="preserve" text-anchor="start" x="249.96" y="-547.6" font-family="Times,serif" font-size="14.00">5</text>
-<polygon fill="none" stroke="black" points="266.18,-540.4 266.18,-563.2 293.95,-563.2 293.95,-540.4 266.18,-540.4"/>
-<text xml:space="preserve" text-anchor="start" x="274.81" y="-547.6" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="293.95,-540.4 293.95,-563.2 416.18,-563.2 416.18,-540.4 293.95,-540.4"/>
-<text xml:space="preserve" text-anchor="start" x="296.95" y="-547.6" font-family="Times,serif" font-size="14.00">switch (record_type)</text>
-<polygon fill="none" stroke="black" points="416.18,-540.4 416.18,-563.2 489.03,-563.2 489.03,-540.4 416.18,-540.4"/>
-<text xml:space="preserve" text-anchor="start" x="419.57" y="-547.6" font-family="Times,serif" font-size="14.00">record_data</text>
+<polygon fill="#e0ffe0" stroke="none" points="240.73,-794.4 240.73,-817.2 266.18,-817.2 266.18,-794.4 240.73,-794.4"/>
+<polygon fill="none" stroke="black" points="240.73,-794.4 240.73,-817.2 266.18,-817.2 266.18,-794.4 240.73,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="243.73" y="-801.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="266.18,-794.4 266.18,-817.2 368.59,-817.2 368.59,-794.4 266.18,-794.4"/>
+<polygon fill="none" stroke="black" points="266.18,-794.4 266.18,-817.2 368.59,-817.2 368.59,-794.4 266.18,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="306.5" y="-801.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="368.59,-794.4 368.59,-817.2 464.78,-817.2 464.78,-794.4 368.59,-794.4"/>
+<polygon fill="none" stroke="black" points="368.59,-794.4 368.59,-817.2 464.78,-817.2 464.78,-794.4 368.59,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="404.63" y="-801.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="464.78,-794.4 464.78,-817.2 539.2,-817.2 539.2,-794.4 464.78,-794.4"/>
+<polygon fill="none" stroke="black" points="464.78,-794.4 464.78,-817.2 539.2,-817.2 539.2,-794.4 464.78,-794.4"/>
+<text xml:space="preserve" text-anchor="start" x="496.55" y="-801.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="240.73,-771.6 240.73,-794.4 266.18,-794.4 266.18,-771.6 240.73,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="249.96" y="-778.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="266.18,-771.6 266.18,-794.4 368.59,-794.4 368.59,-771.6 266.18,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="313.88" y="-778.8" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="368.59,-771.6 368.59,-794.4 464.78,-794.4 464.78,-771.6 368.59,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="403.08" y="-778.8" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="464.78,-771.6 464.78,-794.4 539.2,-794.4 539.2,-771.6 464.78,-771.6"/>
+<text xml:space="preserve" text-anchor="start" x="467.78" y="-778.8" font-family="Times,serif" font-size="14.00">len_payload</text>
+<polygon fill="none" stroke="black" points="240.73,-748.8 240.73,-771.6 266.18,-771.6 266.18,-748.8 240.73,-748.8"/>
+<text xml:space="preserve" text-anchor="start" x="249.96" y="-756" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="266.18,-748.8 266.18,-771.6 368.59,-771.6 368.59,-748.8 266.18,-748.8"/>
+<text xml:space="preserve" text-anchor="start" x="269.18" y="-756" font-family="Times,serif" font-size="14.00">(len_payload - 4)</text>
+<polygon fill="none" stroke="black" points="368.59,-748.8 368.59,-771.6 464.78,-771.6 464.78,-748.8 368.59,-748.8"/>
+<text xml:space="preserve" text-anchor="start" x="371.59" y="-756" font-family="Times,serif" font-size="14.00">SclsRecordData</text>
+<polygon fill="none" stroke="black" points="464.78,-748.8 464.78,-771.6 539.2,-771.6 539.2,-748.8 464.78,-748.8"/>
+<text xml:space="preserve" text-anchor="start" x="479.83" y="-756" font-family="Times,serif" font-size="14.00">payload</text>
 </g>
 <!-- scls_file__seq&#45;&gt;scls_record__seq -->
 <g id="edge1" class="edge">
 <title>scls_file__seq:record_type-&gt;scls_record__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M189.73,-586C200.17,-586 210.95,-586 221.81,-586"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="220.1,-589.5 230.1,-586 220.1,-582.5 220.1,-589.5"/>
+<path fill="none" stroke="black" stroke-width="2" d="M189.73,-783C200.13,-783 210.83,-783 221.62,-783"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="219.87,-786.5 229.87,-783 219.87,-779.5 219.87,-786.5"/>
+</g>
+<!-- entries_block__seq -->
+<g id="node2" class="node">
+<title>entries_block__seq</title>
+<polygon fill="#e0ffe0" stroke="none" points="1576.86,-417.4 1576.86,-440.2 1602.47,-440.2 1602.47,-417.4 1576.86,-417.4"/>
+<polygon fill="none" stroke="black" points="1576.86,-417.4 1576.86,-440.2 1602.47,-440.2 1602.47,-417.4 1576.86,-417.4"/>
+<text xml:space="preserve" text-anchor="start" x="1579.94" y="-424.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="1602.47,-417.4 1602.47,-440.2 1630.39,-440.2 1630.39,-417.4 1602.47,-417.4"/>
+<polygon fill="none" stroke="black" points="1602.47,-417.4 1602.47,-440.2 1630.39,-440.2 1630.39,-417.4 1602.47,-417.4"/>
+<text xml:space="preserve" text-anchor="start" x="1605.55" y="-424.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="1630.39,-417.4 1630.39,-440.2 1667.66,-440.2 1667.66,-417.4 1630.39,-417.4"/>
+<polygon fill="none" stroke="black" points="1630.39,-417.4 1630.39,-440.2 1667.66,-440.2 1667.66,-417.4 1630.39,-417.4"/>
+<text xml:space="preserve" text-anchor="start" x="1636.97" y="-424.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="1667.66,-417.4 1667.66,-440.2 1711.13,-440.2 1711.13,-417.4 1667.66,-417.4"/>
+<polygon fill="none" stroke="black" points="1667.66,-417.4 1667.66,-440.2 1711.13,-440.2 1711.13,-417.4 1667.66,-417.4"/>
+<text xml:space="preserve" text-anchor="start" x="1683.95" y="-424.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1576.86,-394.6 1576.86,-417.4 1602.47,-417.4 1602.47,-394.6 1576.86,-394.6"/>
+<text xml:space="preserve" text-anchor="start" x="1586.16" y="-401.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="1602.47,-394.6 1602.47,-417.4 1630.39,-417.4 1630.39,-394.6 1602.47,-394.6"/>
+<text xml:space="preserve" text-anchor="start" x="1611.18" y="-401.8" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1630.39,-394.6 1630.39,-417.4 1667.66,-417.4 1667.66,-394.6 1630.39,-394.6"/>
+<text xml:space="preserve" text-anchor="start" x="1633.47" y="-401.8" font-family="Times,serif" font-size="14.00">Entry</text>
+<polygon fill="none" stroke="black" points="1667.66,-394.6 1667.66,-417.4 1711.13,-417.4 1711.13,-394.6 1667.66,-394.6"/>
+<text xml:space="preserve" text-anchor="start" x="1670.74" y="-401.8" font-family="Times,serif" font-size="14.00">entries</text>
+<polygon fill="none" stroke="black" points="1576.86,-371.8 1576.86,-394.6 1711.13,-394.6 1711.13,-371.8 1576.86,-371.8"/>
+<text xml:space="preserve" text-anchor="start" x="1579.86" y="-379" font-family="Times,serif" font-size="14.00">repeat to end of stream</text>
+</g>
+<!-- entry__seq -->
+<g id="node5" class="node">
+<title>entry__seq</title>
+<polygon fill="#e0ffe0" stroke="none" points="1978.86,-399.4 1978.86,-422.2 2004.31,-422.2 2004.31,-399.4 1978.86,-399.4"/>
+<polygon fill="none" stroke="black" points="1978.86,-399.4 1978.86,-422.2 2004.31,-422.2 2004.31,-399.4 1978.86,-399.4"/>
+<text xml:space="preserve" text-anchor="start" x="1981.86" y="-406.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="2004.31,-399.4 2004.31,-422.2 2062.41,-422.2 2062.41,-399.4 2004.31,-399.4"/>
+<polygon fill="none" stroke="black" points="2004.31,-399.4 2004.31,-422.2 2062.41,-422.2 2062.41,-399.4 2004.31,-399.4"/>
+<text xml:space="preserve" text-anchor="start" x="2022.48" y="-406.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="2062.41,-399.4 2062.41,-422.2 2129.85,-422.2 2129.85,-399.4 2062.41,-399.4"/>
+<polygon fill="none" stroke="black" points="2062.41,-399.4 2062.41,-422.2 2129.85,-422.2 2129.85,-399.4 2062.41,-399.4"/>
+<text xml:space="preserve" text-anchor="start" x="2084.08" y="-406.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="2129.85,-399.4 2129.85,-422.2 2187.96,-422.2 2187.96,-399.4 2129.85,-399.4"/>
+<polygon fill="none" stroke="black" points="2129.85,-399.4 2129.85,-422.2 2187.96,-422.2 2187.96,-399.4 2129.85,-399.4"/>
+<text xml:space="preserve" text-anchor="start" x="2153.46" y="-406.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1978.86,-376.6 1978.86,-399.4 2004.31,-399.4 2004.31,-376.6 1978.86,-376.6"/>
+<text xml:space="preserve" text-anchor="start" x="1988.08" y="-383.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="2004.31,-376.6 2004.31,-399.4 2062.41,-399.4 2062.41,-376.6 2004.31,-376.6"/>
+<text xml:space="preserve" text-anchor="start" x="2029.86" y="-383.8" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="2062.41,-376.6 2062.41,-399.4 2129.85,-399.4 2129.85,-376.6 2062.41,-376.6"/>
+<text xml:space="preserve" text-anchor="start" x="2082.53" y="-383.8" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="2129.85,-376.6 2129.85,-399.4 2187.96,-399.4 2187.96,-376.6 2129.85,-376.6"/>
+<text xml:space="preserve" text-anchor="start" x="2132.85" y="-383.8" font-family="Times,serif" font-size="14.00">len_body</text>
+<polygon fill="none" stroke="black" points="1978.86,-353.8 1978.86,-376.6 2004.31,-376.6 2004.31,-353.8 1978.86,-353.8"/>
+<text xml:space="preserve" text-anchor="start" x="1988.08" y="-361" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="2004.31,-353.8 2004.31,-376.6 2062.41,-376.6 2062.41,-353.8 2004.31,-353.8"/>
+<text xml:space="preserve" text-anchor="start" x="2007.31" y="-361" font-family="Times,serif" font-size="14.00">len_body</text>
+<polygon fill="none" stroke="black" points="2062.41,-353.8 2062.41,-376.6 2129.85,-376.6 2129.85,-353.8 2062.41,-353.8"/>
+<text xml:space="preserve" text-anchor="start" x="2065.41" y="-361" font-family="Times,serif" font-size="14.00">EntryBody</text>
+<polygon fill="none" stroke="black" points="2129.85,-353.8 2129.85,-376.6 2187.96,-376.6 2187.96,-353.8 2129.85,-353.8"/>
+<text xml:space="preserve" text-anchor="start" x="2144.91" y="-361" font-family="Times,serif" font-size="14.00">body</text>
+</g>
+<!-- entries_block__seq&#45;&gt;entry__seq -->
+<g id="edge2" class="edge">
+<title>entries_block__seq:entries_type-&gt;entry__seq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M1712.13,-406C1794.76,-406 1887.64,-401.47 1959.7,-396.96"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1958.3,-400.56 1968.06,-396.43 1957.86,-393.57 1958.3,-400.56"/>
 </g>
 <!-- digest__seq -->
-<g id="node2" class="node">
+<g id="node3" class="node">
 <title>digest__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="1098.96,-234 1098.96,-256.8 1124.41,-256.8 1124.41,-234 1098.96,-234"/>
-<polygon fill="none" stroke="black" points="1098.96,-234 1098.96,-256.8 1124.41,-256.8 1124.41,-234 1098.96,-234"/>
-<text xml:space="preserve" text-anchor="start" x="1101.96" y="-241.2" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="1124.41,-234 1124.41,-256.8 1152.17,-256.8 1152.17,-234 1124.41,-234"/>
-<polygon fill="none" stroke="black" points="1124.41,-234 1124.41,-256.8 1152.17,-256.8 1152.17,-234 1124.41,-234"/>
-<text xml:space="preserve" text-anchor="start" x="1127.41" y="-241.2" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="1152.17,-234 1152.17,-256.8 1182.27,-256.8 1182.27,-234 1152.17,-234"/>
-<polygon fill="none" stroke="black" points="1152.17,-234 1152.17,-256.8 1182.27,-256.8 1182.27,-234 1152.17,-234"/>
-<text xml:space="preserve" text-anchor="start" x="1155.17" y="-241.2" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="1182.27,-234 1182.27,-256.8 1211.59,-256.8 1211.59,-234 1182.27,-234"/>
-<polygon fill="none" stroke="black" points="1182.27,-234 1182.27,-256.8 1211.59,-256.8 1211.59,-234 1182.27,-234"/>
-<text xml:space="preserve" text-anchor="start" x="1191.49" y="-241.2" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="1098.96,-211.2 1098.96,-234 1124.41,-234 1124.41,-211.2 1098.96,-211.2"/>
-<text xml:space="preserve" text-anchor="start" x="1108.18" y="-218.4" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="1124.41,-211.2 1124.41,-234 1152.17,-234 1152.17,-211.2 1124.41,-211.2"/>
-<text xml:space="preserve" text-anchor="start" x="1131.29" y="-218.4" font-family="Times,serif" font-size="14.00">28</text>
-<polygon fill="none" stroke="black" points="1152.17,-211.2 1152.17,-234 1182.27,-234 1182.27,-211.2 1152.17,-211.2"/>
-<polygon fill="none" stroke="black" points="1182.27,-211.2 1182.27,-234 1211.59,-234 1211.59,-211.2 1182.27,-211.2"/>
-<text xml:space="preserve" text-anchor="start" x="1185.27" y="-218.4" font-family="Times,serif" font-size="14.00">data</text>
+<polygon fill="#e0ffe0" stroke="none" points="1587.68,-144 1587.68,-166.8 1613.13,-166.8 1613.13,-144 1587.68,-144"/>
+<polygon fill="none" stroke="black" points="1587.68,-144 1587.68,-166.8 1613.13,-166.8 1613.13,-144 1587.68,-144"/>
+<text xml:space="preserve" text-anchor="start" x="1590.68" y="-151.2" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="1613.13,-144 1613.13,-166.8 1640.89,-166.8 1640.89,-144 1613.13,-144"/>
+<polygon fill="none" stroke="black" points="1613.13,-144 1613.13,-166.8 1640.89,-166.8 1640.89,-144 1613.13,-144"/>
+<text xml:space="preserve" text-anchor="start" x="1616.13" y="-151.2" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="1640.89,-144 1640.89,-166.8 1671,-166.8 1671,-144 1640.89,-144"/>
+<polygon fill="none" stroke="black" points="1640.89,-144 1640.89,-166.8 1671,-166.8 1671,-144 1640.89,-144"/>
+<text xml:space="preserve" text-anchor="start" x="1643.89" y="-151.2" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="1671,-144 1671,-166.8 1700.31,-166.8 1700.31,-144 1671,-144"/>
+<polygon fill="none" stroke="black" points="1671,-144 1671,-166.8 1700.31,-166.8 1700.31,-144 1671,-144"/>
+<text xml:space="preserve" text-anchor="start" x="1680.21" y="-151.2" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1587.68,-121.2 1587.68,-144 1613.13,-144 1613.13,-121.2 1587.68,-121.2"/>
+<text xml:space="preserve" text-anchor="start" x="1596.9" y="-128.4" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="1613.13,-121.2 1613.13,-144 1640.89,-144 1640.89,-121.2 1613.13,-121.2"/>
+<text xml:space="preserve" text-anchor="start" x="1620.01" y="-128.4" font-family="Times,serif" font-size="14.00">28</text>
+<polygon fill="none" stroke="black" points="1640.89,-121.2 1640.89,-144 1671,-144 1671,-121.2 1640.89,-121.2"/>
+<polygon fill="none" stroke="black" points="1671,-121.2 1671,-144 1700.31,-144 1700.31,-121.2 1671,-121.2"/>
+<text xml:space="preserve" text-anchor="start" x="1674" y="-128.4" font-family="Times,serif" font-size="14.00">data</text>
 </g>
 <!-- rec_manifest__seq -->
-<g id="node3" class="node">
+<g id="node4" class="node">
 <title>rec_manifest__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="762.28,-381.8 762.28,-404.6 787.73,-404.6 787.73,-381.8 762.28,-381.8"/>
-<polygon fill="none" stroke="black" points="762.28,-381.8 762.28,-404.6 787.73,-404.6 787.73,-381.8 762.28,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="765.28" y="-389" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="787.73,-381.8 787.73,-404.6 815.5,-404.6 815.5,-381.8 787.73,-381.8"/>
-<polygon fill="none" stroke="black" points="787.73,-381.8 787.73,-404.6 815.5,-404.6 815.5,-381.8 787.73,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="790.73" y="-389" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="815.5,-381.8 815.5,-404.6 909.34,-404.6 909.34,-381.8 815.5,-381.8"/>
-<polygon fill="none" stroke="black" points="815.5,-381.8 815.5,-404.6 909.34,-404.6 909.34,-381.8 815.5,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="850.37" y="-389" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="909.34,-381.8 909.34,-404.6 1006.3,-404.6 1006.3,-381.8 909.34,-381.8"/>
-<polygon fill="none" stroke="black" points="909.34,-381.8 909.34,-404.6 1006.3,-404.6 1006.3,-381.8 909.34,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="952.37" y="-389" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="762.28,-359 762.28,-381.8 787.73,-381.8 787.73,-359 762.28,-359"/>
-<text xml:space="preserve" text-anchor="start" x="771.51" y="-366.2" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="787.73,-359 787.73,-381.8 815.5,-381.8 815.5,-359 787.73,-359"/>
-<text xml:space="preserve" text-anchor="start" x="798.11" y="-366.2" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="815.5,-359 815.5,-381.8 909.34,-381.8 909.34,-359 815.5,-359"/>
-<text xml:space="preserve" text-anchor="start" x="848.81" y="-366.2" font-family="Times,serif" font-size="14.00">u8be</text>
-<polygon fill="none" stroke="black" points="909.34,-359 909.34,-381.8 1006.3,-381.8 1006.3,-359 909.34,-359"/>
-<text xml:space="preserve" text-anchor="start" x="923.22" y="-366.2" font-family="Times,serif" font-size="14.00">total_entries</text>
-<polygon fill="none" stroke="black" points="762.28,-336.2 762.28,-359 787.73,-359 787.73,-336.2 762.28,-336.2"/>
-<text xml:space="preserve" text-anchor="start" x="771.51" y="-343.4" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="787.73,-336.2 787.73,-359 815.5,-359 815.5,-336.2 787.73,-336.2"/>
-<text xml:space="preserve" text-anchor="start" x="798.11" y="-343.4" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="815.5,-336.2 815.5,-359 909.34,-359 909.34,-336.2 815.5,-336.2"/>
-<text xml:space="preserve" text-anchor="start" x="848.81" y="-343.4" font-family="Times,serif" font-size="14.00">u8be</text>
-<polygon fill="none" stroke="black" points="909.34,-336.2 909.34,-359 1006.3,-359 1006.3,-336.2 909.34,-336.2"/>
-<text xml:space="preserve" text-anchor="start" x="922.04" y="-343.4" font-family="Times,serif" font-size="14.00">total_chunks</text>
-<polygon fill="none" stroke="black" points="762.28,-313.4 762.28,-336.2 787.73,-336.2 787.73,-313.4 762.28,-313.4"/>
-<text xml:space="preserve" text-anchor="start" x="768.01" y="-320.6" font-family="Times,serif" font-size="14.00">16</text>
-<polygon fill="none" stroke="black" points="787.73,-313.4 787.73,-336.2 815.5,-336.2 815.5,-313.4 787.73,-313.4"/>
-<text xml:space="preserve" text-anchor="start" x="796.36" y="-320.6" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="815.5,-313.4 815.5,-336.2 909.34,-336.2 909.34,-313.4 815.5,-313.4"/>
-<text xml:space="preserve" text-anchor="start" x="835.2" y="-320.6" font-family="Times,serif" font-size="14.00">Summary</text>
-<polygon fill="none" stroke="black" points="909.34,-313.4 909.34,-336.2 1006.3,-336.2 1006.3,-313.4 909.34,-313.4"/>
-<text xml:space="preserve" text-anchor="start" x="931.77" y="-320.6" font-family="Times,serif" font-size="14.00">summary</text>
-<polygon fill="none" stroke="black" points="762.28,-290.6 762.28,-313.4 787.73,-313.4 787.73,-290.6 762.28,-290.6"/>
-<text xml:space="preserve" text-anchor="start" x="769.76" y="-297.8" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="787.73,-290.6 787.73,-313.4 815.5,-313.4 815.5,-290.6 787.73,-290.6"/>
-<text xml:space="preserve" text-anchor="start" x="796.36" y="-297.8" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="815.5,-290.6 815.5,-313.4 909.34,-313.4 909.34,-290.6 815.5,-290.6"/>
-<text xml:space="preserve" text-anchor="start" x="818.5" y="-297.8" font-family="Times,serif" font-size="14.00">NamespaceInfo</text>
-<polygon fill="none" stroke="black" points="909.34,-290.6 909.34,-313.4 1006.3,-313.4 1006.3,-290.6 909.34,-290.6"/>
-<text xml:space="preserve" text-anchor="start" x="912.34" y="-297.8" font-family="Times,serif" font-size="14.00">namespace_info</text>
-<polygon fill="none" stroke="black" points="762.28,-267.8 762.28,-290.6 1006.3,-290.6 1006.3,-267.8 762.28,-267.8"/>
-<text xml:space="preserve" text-anchor="start" x="812.44" y="-275" font-family="Times,serif" font-size="14.00">repeat until _.len_ns == 0</text>
-<polygon fill="none" stroke="black" points="762.28,-245 762.28,-267.8 787.73,-267.8 787.73,-245 762.28,-245"/>
-<text xml:space="preserve" text-anchor="start" x="769.76" y="-252.2" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="787.73,-245 787.73,-267.8 815.5,-267.8 815.5,-245 787.73,-245"/>
-<text xml:space="preserve" text-anchor="start" x="798.11" y="-252.2" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="815.5,-245 815.5,-267.8 909.34,-267.8 909.34,-245 815.5,-245"/>
-<text xml:space="preserve" text-anchor="start" x="848.81" y="-252.2" font-family="Times,serif" font-size="14.00">u8be</text>
-<polygon fill="none" stroke="black" points="909.34,-245 909.34,-267.8 1006.3,-267.8 1006.3,-245 909.34,-245"/>
-<text xml:space="preserve" text-anchor="start" x="917.78" y="-252.2" font-family="Times,serif" font-size="14.00">prev_manifest</text>
-<polygon fill="none" stroke="black" points="762.28,-222.2 762.28,-245 787.73,-245 787.73,-222.2 762.28,-222.2"/>
-<text xml:space="preserve" text-anchor="start" x="769.76" y="-229.4" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="787.73,-222.2 787.73,-245 815.5,-245 815.5,-222.2 787.73,-222.2"/>
-<text xml:space="preserve" text-anchor="start" x="794.61" y="-229.4" font-family="Times,serif" font-size="14.00">28</text>
-<polygon fill="none" stroke="black" points="815.5,-222.2 815.5,-245 909.34,-245 909.34,-222.2 815.5,-222.2"/>
-<text xml:space="preserve" text-anchor="start" x="844.14" y="-229.4" font-family="Times,serif" font-size="14.00">Digest</text>
-<polygon fill="none" stroke="black" points="909.34,-222.2 909.34,-245 1006.3,-245 1006.3,-222.2 909.34,-222.2"/>
-<text xml:space="preserve" text-anchor="start" x="930.21" y="-229.4" font-family="Times,serif" font-size="14.00">root_hash</text>
-<polygon fill="none" stroke="black" points="762.28,-199.4 762.28,-222.2 787.73,-222.2 787.73,-199.4 762.28,-199.4"/>
-<text xml:space="preserve" text-anchor="start" x="769.76" y="-206.6" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="787.73,-199.4 787.73,-222.2 815.5,-222.2 815.5,-199.4 787.73,-199.4"/>
-<text xml:space="preserve" text-anchor="start" x="798.11" y="-206.6" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="815.5,-199.4 815.5,-222.2 909.34,-222.2 909.34,-199.4 815.5,-199.4"/>
-<text xml:space="preserve" text-anchor="start" x="848.81" y="-206.6" font-family="Times,serif" font-size="14.00">u4be</text>
-<polygon fill="none" stroke="black" points="909.34,-199.4 909.34,-222.2 1006.3,-222.2 1006.3,-199.4 909.34,-199.4"/>
-<text xml:space="preserve" text-anchor="start" x="941.88" y="-206.6" font-family="Times,serif" font-size="14.00">offset</text>
+<polygon fill="#e0ffe0" stroke="none" points="1112.75,-417.8 1112.75,-440.6 1138.2,-440.6 1138.2,-417.8 1112.75,-417.8"/>
+<polygon fill="none" stroke="black" points="1112.75,-417.8 1112.75,-440.6 1138.2,-440.6 1138.2,-417.8 1112.75,-417.8"/>
+<text xml:space="preserve" text-anchor="start" x="1115.75" y="-425" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="1138.2,-417.8 1138.2,-440.6 1165.97,-440.6 1165.97,-417.8 1138.2,-417.8"/>
+<polygon fill="none" stroke="black" points="1138.2,-417.8 1138.2,-440.6 1165.97,-440.6 1165.97,-417.8 1138.2,-417.8"/>
+<text xml:space="preserve" text-anchor="start" x="1141.2" y="-425" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="1165.97,-417.8 1165.97,-440.6 1259.81,-440.6 1259.81,-417.8 1165.97,-417.8"/>
+<polygon fill="none" stroke="black" points="1165.97,-417.8 1165.97,-440.6 1259.81,-440.6 1259.81,-417.8 1165.97,-417.8"/>
+<text xml:space="preserve" text-anchor="start" x="1200.83" y="-425" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="1259.81,-417.8 1259.81,-440.6 1356.77,-440.6 1356.77,-417.8 1259.81,-417.8"/>
+<polygon fill="none" stroke="black" points="1259.81,-417.8 1259.81,-440.6 1356.77,-440.6 1356.77,-417.8 1259.81,-417.8"/>
+<text xml:space="preserve" text-anchor="start" x="1302.84" y="-425" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1112.75,-395 1112.75,-417.8 1138.2,-417.8 1138.2,-395 1112.75,-395"/>
+<text xml:space="preserve" text-anchor="start" x="1121.98" y="-402.2" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="1138.2,-395 1138.2,-417.8 1165.97,-417.8 1165.97,-395 1138.2,-395"/>
+<text xml:space="preserve" text-anchor="start" x="1148.58" y="-402.2" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1165.97,-395 1165.97,-417.8 1259.81,-417.8 1259.81,-395 1165.97,-395"/>
+<text xml:space="preserve" text-anchor="start" x="1199.28" y="-402.2" font-family="Times,serif" font-size="14.00">u8be</text>
+<polygon fill="none" stroke="black" points="1259.81,-395 1259.81,-417.8 1356.77,-417.8 1356.77,-395 1259.81,-395"/>
+<text xml:space="preserve" text-anchor="start" x="1273.69" y="-402.2" font-family="Times,serif" font-size="14.00">total_entries</text>
+<polygon fill="none" stroke="black" points="1112.75,-372.2 1112.75,-395 1138.2,-395 1138.2,-372.2 1112.75,-372.2"/>
+<text xml:space="preserve" text-anchor="start" x="1121.98" y="-379.4" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1138.2,-372.2 1138.2,-395 1165.97,-395 1165.97,-372.2 1138.2,-372.2"/>
+<text xml:space="preserve" text-anchor="start" x="1148.58" y="-379.4" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1165.97,-372.2 1165.97,-395 1259.81,-395 1259.81,-372.2 1165.97,-372.2"/>
+<text xml:space="preserve" text-anchor="start" x="1199.28" y="-379.4" font-family="Times,serif" font-size="14.00">u8be</text>
+<polygon fill="none" stroke="black" points="1259.81,-372.2 1259.81,-395 1356.77,-395 1356.77,-372.2 1259.81,-372.2"/>
+<text xml:space="preserve" text-anchor="start" x="1272.51" y="-379.4" font-family="Times,serif" font-size="14.00">total_chunks</text>
+<polygon fill="none" stroke="black" points="1112.75,-349.4 1112.75,-372.2 1138.2,-372.2 1138.2,-349.4 1112.75,-349.4"/>
+<text xml:space="preserve" text-anchor="start" x="1118.48" y="-356.6" font-family="Times,serif" font-size="14.00">16</text>
+<polygon fill="none" stroke="black" points="1138.2,-349.4 1138.2,-372.2 1165.97,-372.2 1165.97,-349.4 1138.2,-349.4"/>
+<text xml:space="preserve" text-anchor="start" x="1146.83" y="-356.6" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1165.97,-349.4 1165.97,-372.2 1259.81,-372.2 1259.81,-349.4 1165.97,-349.4"/>
+<text xml:space="preserve" text-anchor="start" x="1185.67" y="-356.6" font-family="Times,serif" font-size="14.00">Summary</text>
+<polygon fill="none" stroke="black" points="1259.81,-349.4 1259.81,-372.2 1356.77,-372.2 1356.77,-349.4 1259.81,-349.4"/>
+<text xml:space="preserve" text-anchor="start" x="1282.24" y="-356.6" font-family="Times,serif" font-size="14.00">summary</text>
+<polygon fill="none" stroke="black" points="1112.75,-326.6 1112.75,-349.4 1138.2,-349.4 1138.2,-326.6 1112.75,-326.6"/>
+<text xml:space="preserve" text-anchor="start" x="1120.23" y="-333.8" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1138.2,-326.6 1138.2,-349.4 1165.97,-349.4 1165.97,-326.6 1138.2,-326.6"/>
+<text xml:space="preserve" text-anchor="start" x="1146.83" y="-333.8" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1165.97,-326.6 1165.97,-349.4 1259.81,-349.4 1259.81,-326.6 1165.97,-326.6"/>
+<text xml:space="preserve" text-anchor="start" x="1168.97" y="-333.8" font-family="Times,serif" font-size="14.00">NamespaceInfo</text>
+<polygon fill="none" stroke="black" points="1259.81,-326.6 1259.81,-349.4 1356.77,-349.4 1356.77,-326.6 1259.81,-326.6"/>
+<text xml:space="preserve" text-anchor="start" x="1262.81" y="-333.8" font-family="Times,serif" font-size="14.00">namespace_info</text>
+<polygon fill="none" stroke="black" points="1112.75,-303.8 1112.75,-326.6 1356.77,-326.6 1356.77,-303.8 1112.75,-303.8"/>
+<text xml:space="preserve" text-anchor="start" x="1162.91" y="-311" font-family="Times,serif" font-size="14.00">repeat until _.len_ns == 0</text>
+<polygon fill="none" stroke="black" points="1112.75,-281 1112.75,-303.8 1138.2,-303.8 1138.2,-281 1112.75,-281"/>
+<text xml:space="preserve" text-anchor="start" x="1120.23" y="-288.2" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1138.2,-281 1138.2,-303.8 1165.97,-303.8 1165.97,-281 1138.2,-281"/>
+<text xml:space="preserve" text-anchor="start" x="1148.58" y="-288.2" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1165.97,-281 1165.97,-303.8 1259.81,-303.8 1259.81,-281 1165.97,-281"/>
+<text xml:space="preserve" text-anchor="start" x="1199.28" y="-288.2" font-family="Times,serif" font-size="14.00">u8be</text>
+<polygon fill="none" stroke="black" points="1259.81,-281 1259.81,-303.8 1356.77,-303.8 1356.77,-281 1259.81,-281"/>
+<text xml:space="preserve" text-anchor="start" x="1268.25" y="-288.2" font-family="Times,serif" font-size="14.00">prev_manifest</text>
+<polygon fill="none" stroke="black" points="1112.75,-258.2 1112.75,-281 1138.2,-281 1138.2,-258.2 1112.75,-258.2"/>
+<text xml:space="preserve" text-anchor="start" x="1120.23" y="-265.4" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1138.2,-258.2 1138.2,-281 1165.97,-281 1165.97,-258.2 1138.2,-258.2"/>
+<text xml:space="preserve" text-anchor="start" x="1145.08" y="-265.4" font-family="Times,serif" font-size="14.00">28</text>
+<polygon fill="none" stroke="black" points="1165.97,-258.2 1165.97,-281 1259.81,-281 1259.81,-258.2 1165.97,-258.2"/>
+<text xml:space="preserve" text-anchor="start" x="1194.61" y="-265.4" font-family="Times,serif" font-size="14.00">Digest</text>
+<polygon fill="none" stroke="black" points="1259.81,-258.2 1259.81,-281 1356.77,-281 1356.77,-258.2 1259.81,-258.2"/>
+<text xml:space="preserve" text-anchor="start" x="1280.68" y="-265.4" font-family="Times,serif" font-size="14.00">root_hash</text>
+<polygon fill="none" stroke="black" points="1112.75,-235.4 1112.75,-258.2 1138.2,-258.2 1138.2,-235.4 1112.75,-235.4"/>
+<text xml:space="preserve" text-anchor="start" x="1120.23" y="-242.6" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1138.2,-235.4 1138.2,-258.2 1165.97,-258.2 1165.97,-235.4 1138.2,-235.4"/>
+<text xml:space="preserve" text-anchor="start" x="1148.58" y="-242.6" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="1165.97,-235.4 1165.97,-258.2 1259.81,-258.2 1259.81,-235.4 1165.97,-235.4"/>
+<text xml:space="preserve" text-anchor="start" x="1199.28" y="-242.6" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="1259.81,-235.4 1259.81,-258.2 1356.77,-258.2 1356.77,-235.4 1259.81,-235.4"/>
+<text xml:space="preserve" text-anchor="start" x="1292.35" y="-242.6" font-family="Times,serif" font-size="14.00">offset</text>
 </g>
 <!-- rec_manifest__seq&#45;&gt;digest__seq -->
-<g id="edge5" class="edge">
+<g id="edge6" class="edge">
 <title>rec_manifest__seq:root_hash_type-&gt;digest__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1007.3,-233.6C1030.76,-233.6 1056.34,-233.65 1079.48,-233.72"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1077.94,-237.21 1087.95,-233.74 1077.96,-230.21 1077.94,-237.21"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1357.77,-269.6C1397.94,-269.6 1389,-227.86 1423.92,-208 1468.76,-182.51 1524.64,-166.39 1568.74,-156.71"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1567.96,-160.45 1577.01,-154.95 1566.5,-153.61 1567.96,-160.45"/>
 </g>
 <!-- namespace_info__seq -->
-<g id="node9" class="node">
+<g id="node16" class="node">
 <title>namespace_info__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="541.03,-204.4 541.03,-227.2 566.48,-227.2 566.48,-204.4 541.03,-204.4"/>
-<polygon fill="none" stroke="black" points="541.03,-204.4 541.03,-227.2 566.48,-227.2 566.48,-204.4 541.03,-204.4"/>
-<text xml:space="preserve" text-anchor="start" x="544.03" y="-211.6" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="566.48,-204.4 566.48,-227.2 594.25,-227.2 594.25,-204.4 566.48,-204.4"/>
-<polygon fill="none" stroke="black" points="566.48,-204.4 566.48,-227.2 594.25,-227.2 594.25,-204.4 566.48,-204.4"/>
-<text xml:space="preserve" text-anchor="start" x="569.48" y="-211.6" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="594.25,-204.4 594.25,-227.2 639.13,-227.2 639.13,-204.4 594.25,-204.4"/>
-<polygon fill="none" stroke="black" points="594.25,-204.4 594.25,-227.2 639.13,-227.2 639.13,-204.4 594.25,-204.4"/>
-<text xml:space="preserve" text-anchor="start" x="604.64" y="-211.6" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="639.13,-204.4 639.13,-227.2 687.13,-227.2 687.13,-204.4 639.13,-204.4"/>
-<polygon fill="none" stroke="black" points="639.13,-204.4 639.13,-227.2 687.13,-227.2 687.13,-204.4 639.13,-204.4"/>
-<text xml:space="preserve" text-anchor="start" x="657.68" y="-211.6" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="541.03,-181.6 541.03,-204.4 566.48,-204.4 566.48,-181.6 541.03,-181.6"/>
-<text xml:space="preserve" text-anchor="start" x="550.26" y="-188.8" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="566.48,-181.6 566.48,-204.4 594.25,-204.4 594.25,-181.6 566.48,-181.6"/>
-<text xml:space="preserve" text-anchor="start" x="576.86" y="-188.8" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="594.25,-181.6 594.25,-204.4 639.13,-204.4 639.13,-181.6 594.25,-181.6"/>
-<text xml:space="preserve" text-anchor="start" x="603.08" y="-188.8" font-family="Times,serif" font-size="14.00">u4be</text>
-<polygon fill="none" stroke="black" points="639.13,-181.6 639.13,-204.4 687.13,-204.4 687.13,-181.6 639.13,-181.6"/>
-<text xml:space="preserve" text-anchor="start" x="644.85" y="-188.8" font-family="Times,serif" font-size="14.00">len_ns</text>
-<polygon fill="none" stroke="black" points="541.03,-158.8 541.03,-181.6 566.48,-181.6 566.48,-158.8 541.03,-158.8"/>
-<text xml:space="preserve" text-anchor="start" x="550.26" y="-166" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="566.48,-158.8 566.48,-181.6 594.25,-181.6 594.25,-158.8 566.48,-158.8"/>
-<text xml:space="preserve" text-anchor="start" x="575.11" y="-166" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="594.25,-158.8 594.25,-181.6 639.13,-181.6 639.13,-158.8 594.25,-158.8"/>
-<text xml:space="preserve" text-anchor="start" x="597.25" y="-166" font-family="Times,serif" font-size="14.00">NsInfo</text>
-<polygon fill="none" stroke="black" points="639.13,-158.8 639.13,-181.6 687.13,-181.6 687.13,-158.8 639.13,-158.8"/>
-<text xml:space="preserve" text-anchor="start" x="642.13" y="-166" font-family="Times,serif" font-size="14.00">ns_info</text>
+<polygon fill="#e0ffe0" stroke="none" points="891.5,-240.4 891.5,-263.2 916.95,-263.2 916.95,-240.4 891.5,-240.4"/>
+<polygon fill="none" stroke="black" points="891.5,-240.4 891.5,-263.2 916.95,-263.2 916.95,-240.4 891.5,-240.4"/>
+<text xml:space="preserve" text-anchor="start" x="894.5" y="-247.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="916.95,-240.4 916.95,-263.2 944.72,-263.2 944.72,-240.4 916.95,-240.4"/>
+<polygon fill="none" stroke="black" points="916.95,-240.4 916.95,-263.2 944.72,-263.2 944.72,-240.4 916.95,-240.4"/>
+<text xml:space="preserve" text-anchor="start" x="919.95" y="-247.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="944.72,-240.4 944.72,-263.2 989.6,-263.2 989.6,-240.4 944.72,-240.4"/>
+<polygon fill="none" stroke="black" points="944.72,-240.4 944.72,-263.2 989.6,-263.2 989.6,-240.4 944.72,-240.4"/>
+<text xml:space="preserve" text-anchor="start" x="955.11" y="-247.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="989.6,-240.4 989.6,-263.2 1037.6,-263.2 1037.6,-240.4 989.6,-240.4"/>
+<polygon fill="none" stroke="black" points="989.6,-240.4 989.6,-263.2 1037.6,-263.2 1037.6,-240.4 989.6,-240.4"/>
+<text xml:space="preserve" text-anchor="start" x="1008.15" y="-247.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="891.5,-217.6 891.5,-240.4 916.95,-240.4 916.95,-217.6 891.5,-217.6"/>
+<text xml:space="preserve" text-anchor="start" x="900.73" y="-224.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="916.95,-217.6 916.95,-240.4 944.72,-240.4 944.72,-217.6 916.95,-217.6"/>
+<text xml:space="preserve" text-anchor="start" x="927.33" y="-224.8" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="944.72,-217.6 944.72,-240.4 989.6,-240.4 989.6,-217.6 944.72,-217.6"/>
+<text xml:space="preserve" text-anchor="start" x="953.55" y="-224.8" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="989.6,-217.6 989.6,-240.4 1037.6,-240.4 1037.6,-217.6 989.6,-217.6"/>
+<text xml:space="preserve" text-anchor="start" x="995.32" y="-224.8" font-family="Times,serif" font-size="14.00">len_ns</text>
+<polygon fill="none" stroke="black" points="891.5,-194.8 891.5,-217.6 916.95,-217.6 916.95,-194.8 891.5,-194.8"/>
+<text xml:space="preserve" text-anchor="start" x="900.73" y="-202" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="916.95,-194.8 916.95,-217.6 944.72,-217.6 944.72,-194.8 916.95,-194.8"/>
+<text xml:space="preserve" text-anchor="start" x="925.58" y="-202" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="944.72,-194.8 944.72,-217.6 989.6,-217.6 989.6,-194.8 944.72,-194.8"/>
+<text xml:space="preserve" text-anchor="start" x="947.72" y="-202" font-family="Times,serif" font-size="14.00">NsInfo</text>
+<polygon fill="none" stroke="black" points="989.6,-194.8 989.6,-217.6 1037.6,-217.6 1037.6,-194.8 989.6,-194.8"/>
+<text xml:space="preserve" text-anchor="start" x="992.6" y="-202" font-family="Times,serif" font-size="14.00">ns_info</text>
 </g>
 <!-- rec_manifest__seq&#45;&gt;namespace_info__seq -->
-<g id="edge3" class="edge">
+<g id="edge4" class="edge">
 <title>rec_manifest__seq:namespace_info_type-&gt;namespace_info__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1007.3,-302C1030.99,-302 1023.13,-391.93 1006.3,-408.6 966.51,-448.01 803.46,-435.39 754.28,-408.6 689.63,-373.38 650.44,-293.8 630.78,-241.8"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="634.65,-242.18 627.92,-233.99 628.08,-244.58 634.65,-242.18"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1357.77,-338C1381.46,-338 1373.6,-427.93 1356.77,-444.6 1316.98,-484.01 1153.93,-471.39 1104.75,-444.6 1040.1,-409.38 1000.91,-329.8 981.25,-277.8"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="985.12,-278.18 978.39,-269.99 978.54,-280.58 985.12,-278.18"/>
 </g>
 <!-- summary__seq -->
-<g id="node11" class="node">
+<g id="node19" class="node">
 <title>summary__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="1081.45,-438.8 1081.45,-461.6 1106.9,-461.6 1106.9,-438.8 1081.45,-438.8"/>
-<polygon fill="none" stroke="black" points="1081.45,-438.8 1081.45,-461.6 1106.9,-461.6 1106.9,-438.8 1081.45,-438.8"/>
-<text xml:space="preserve" text-anchor="start" x="1084.45" y="-446" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="1106.9,-438.8 1106.9,-461.6 1134.66,-461.6 1134.66,-438.8 1106.9,-438.8"/>
-<polygon fill="none" stroke="black" points="1106.9,-438.8 1106.9,-461.6 1134.66,-461.6 1134.66,-438.8 1106.9,-438.8"/>
-<text xml:space="preserve" text-anchor="start" x="1109.9" y="-446" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="1134.66,-438.8 1134.66,-461.6 1164.77,-461.6 1164.77,-438.8 1134.66,-438.8"/>
-<polygon fill="none" stroke="black" points="1134.66,-438.8 1134.66,-461.6 1164.77,-461.6 1164.77,-438.8 1134.66,-438.8"/>
-<text xml:space="preserve" text-anchor="start" x="1137.66" y="-446" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="1164.77,-438.8 1164.77,-461.6 1229.1,-461.6 1229.1,-438.8 1164.77,-438.8"/>
-<polygon fill="none" stroke="black" points="1164.77,-438.8 1164.77,-461.6 1229.1,-461.6 1229.1,-438.8 1164.77,-438.8"/>
-<text xml:space="preserve" text-anchor="start" x="1191.49" y="-446" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="1081.45,-416 1081.45,-438.8 1106.9,-438.8 1106.9,-416 1081.45,-416"/>
-<text xml:space="preserve" text-anchor="start" x="1090.67" y="-423.2" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="1106.9,-416 1106.9,-438.8 1134.66,-438.8 1134.66,-416 1106.9,-416"/>
-<text xml:space="preserve" text-anchor="start" x="1115.53" y="-423.2" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="1134.66,-416 1134.66,-438.8 1164.77,-438.8 1164.77,-416 1134.66,-416"/>
-<text xml:space="preserve" text-anchor="start" x="1138.44" y="-423.2" font-family="Times,serif" font-size="14.00">Tstr</text>
-<polygon fill="none" stroke="black" points="1164.77,-416 1164.77,-438.8 1229.1,-438.8 1229.1,-416 1164.77,-416"/>
-<text xml:space="preserve" text-anchor="start" x="1168.18" y="-423.2" font-family="Times,serif" font-size="14.00">created_at</text>
-<polygon fill="none" stroke="black" points="1081.45,-393.2 1081.45,-416 1106.9,-416 1106.9,-393.2 1081.45,-393.2"/>
-<text xml:space="preserve" text-anchor="start" x="1088.92" y="-400.4" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="1106.9,-393.2 1106.9,-416 1134.66,-416 1134.66,-393.2 1106.9,-393.2"/>
-<text xml:space="preserve" text-anchor="start" x="1115.53" y="-400.4" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="1134.66,-393.2 1134.66,-416 1164.77,-416 1164.77,-393.2 1134.66,-393.2"/>
-<text xml:space="preserve" text-anchor="start" x="1138.44" y="-400.4" font-family="Times,serif" font-size="14.00">Tstr</text>
-<polygon fill="none" stroke="black" points="1164.77,-393.2 1164.77,-416 1229.1,-416 1229.1,-393.2 1164.77,-393.2"/>
-<text xml:space="preserve" text-anchor="start" x="1167.77" y="-400.4" font-family="Times,serif" font-size="14.00">tool_bytes</text>
-<polygon fill="none" stroke="black" points="1081.45,-370.4 1081.45,-393.2 1106.9,-393.2 1106.9,-370.4 1081.45,-370.4"/>
-<text xml:space="preserve" text-anchor="start" x="1088.92" y="-377.6" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="1106.9,-370.4 1106.9,-393.2 1134.66,-393.2 1134.66,-370.4 1106.9,-370.4"/>
-<text xml:space="preserve" text-anchor="start" x="1115.53" y="-377.6" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="1134.66,-370.4 1134.66,-393.2 1164.77,-393.2 1164.77,-370.4 1134.66,-370.4"/>
-<text xml:space="preserve" text-anchor="start" x="1138.44" y="-377.6" font-family="Times,serif" font-size="14.00">Tstr</text>
-<polygon fill="none" stroke="black" points="1164.77,-370.4 1164.77,-393.2 1229.1,-393.2 1229.1,-370.4 1164.77,-370.4"/>
-<text xml:space="preserve" text-anchor="start" x="1170.88" y="-377.6" font-family="Times,serif" font-size="14.00">comment</text>
+<polygon fill="#e0ffe0" stroke="none" points="1570.17,-292.8 1570.17,-315.6 1595.62,-315.6 1595.62,-292.8 1570.17,-292.8"/>
+<polygon fill="none" stroke="black" points="1570.17,-292.8 1570.17,-315.6 1595.62,-315.6 1595.62,-292.8 1570.17,-292.8"/>
+<text xml:space="preserve" text-anchor="start" x="1573.17" y="-300" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="1595.62,-292.8 1595.62,-315.6 1623.39,-315.6 1623.39,-292.8 1595.62,-292.8"/>
+<polygon fill="none" stroke="black" points="1595.62,-292.8 1595.62,-315.6 1623.39,-315.6 1623.39,-292.8 1595.62,-292.8"/>
+<text xml:space="preserve" text-anchor="start" x="1598.62" y="-300" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="1623.39,-292.8 1623.39,-315.6 1653.49,-315.6 1653.49,-292.8 1623.39,-292.8"/>
+<polygon fill="none" stroke="black" points="1623.39,-292.8 1623.39,-315.6 1653.49,-315.6 1653.49,-292.8 1623.39,-292.8"/>
+<text xml:space="preserve" text-anchor="start" x="1626.39" y="-300" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="1653.49,-292.8 1653.49,-315.6 1717.82,-315.6 1717.82,-292.8 1653.49,-292.8"/>
+<polygon fill="none" stroke="black" points="1653.49,-292.8 1653.49,-315.6 1717.82,-315.6 1717.82,-292.8 1653.49,-292.8"/>
+<text xml:space="preserve" text-anchor="start" x="1680.21" y="-300" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1570.17,-270 1570.17,-292.8 1595.62,-292.8 1595.62,-270 1570.17,-270"/>
+<text xml:space="preserve" text-anchor="start" x="1579.4" y="-277.2" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="1595.62,-270 1595.62,-292.8 1623.39,-292.8 1623.39,-270 1595.62,-270"/>
+<text xml:space="preserve" text-anchor="start" x="1604.25" y="-277.2" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1623.39,-270 1623.39,-292.8 1653.49,-292.8 1653.49,-270 1623.39,-270"/>
+<text xml:space="preserve" text-anchor="start" x="1627.16" y="-277.2" font-family="Times,serif" font-size="14.00">Tstr</text>
+<polygon fill="none" stroke="black" points="1653.49,-270 1653.49,-292.8 1717.82,-292.8 1717.82,-270 1653.49,-270"/>
+<text xml:space="preserve" text-anchor="start" x="1656.9" y="-277.2" font-family="Times,serif" font-size="14.00">created_at</text>
+<polygon fill="none" stroke="black" points="1570.17,-247.2 1570.17,-270 1595.62,-270 1595.62,-247.2 1570.17,-247.2"/>
+<text xml:space="preserve" text-anchor="start" x="1577.65" y="-254.4" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1595.62,-247.2 1595.62,-270 1623.39,-270 1623.39,-247.2 1595.62,-247.2"/>
+<text xml:space="preserve" text-anchor="start" x="1604.25" y="-254.4" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1623.39,-247.2 1623.39,-270 1653.49,-270 1653.49,-247.2 1623.39,-247.2"/>
+<text xml:space="preserve" text-anchor="start" x="1627.16" y="-254.4" font-family="Times,serif" font-size="14.00">Tstr</text>
+<polygon fill="none" stroke="black" points="1653.49,-247.2 1653.49,-270 1717.82,-270 1717.82,-247.2 1653.49,-247.2"/>
+<text xml:space="preserve" text-anchor="start" x="1656.49" y="-254.4" font-family="Times,serif" font-size="14.00">tool_bytes</text>
+<polygon fill="none" stroke="black" points="1570.17,-224.4 1570.17,-247.2 1595.62,-247.2 1595.62,-224.4 1570.17,-224.4"/>
+<text xml:space="preserve" text-anchor="start" x="1577.65" y="-231.6" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1595.62,-224.4 1595.62,-247.2 1623.39,-247.2 1623.39,-224.4 1595.62,-224.4"/>
+<text xml:space="preserve" text-anchor="start" x="1604.25" y="-231.6" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1623.39,-224.4 1623.39,-247.2 1653.49,-247.2 1653.49,-224.4 1623.39,-224.4"/>
+<text xml:space="preserve" text-anchor="start" x="1627.16" y="-231.6" font-family="Times,serif" font-size="14.00">Tstr</text>
+<polygon fill="none" stroke="black" points="1653.49,-224.4 1653.49,-247.2 1717.82,-247.2 1717.82,-224.4 1653.49,-224.4"/>
+<text xml:space="preserve" text-anchor="start" x="1659.61" y="-231.6" font-family="Times,serif" font-size="14.00">comment</text>
 </g>
 <!-- rec_manifest__seq&#45;&gt;summary__seq -->
-<g id="edge2" class="edge">
+<g id="edge3" class="edge">
 <title>rec_manifest__seq:summary_type-&gt;summary__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1007.3,-324.8C1039.66,-324.8 1070.82,-340.96 1096.06,-359.68"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1092.64,-361.45 1102.68,-364.81 1096.92,-355.92 1092.64,-361.45"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1357.77,-360.8C1425.02,-360.8 1497.16,-337.6 1552.07,-314.65"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1551.85,-318.55 1559.68,-311.41 1549.11,-312.11 1551.85,-318.55"/>
+</g>
+<!-- entry__seq&#45;&gt;entry__seq -->
+<g id="edge7" class="edge">
+<title>entry__seq:len_body_type-&gt;entry__seq:body_size</title>
+<path fill="none" stroke="#404040" d="M2187.88,-397.8C2230.24,-417.4 2212.32,-444.2 2096.13,-444.2 1989.48,-444.2 1965.63,-407.88 1995.2,-382.86"/>
+<polygon fill="#404040" stroke="#404040" points="1996.94,-385.92 2003.14,-377.33 1992.94,-380.17 1996.94,-385.92"/>
+</g>
+<!-- entry_body__seq -->
+<g id="node18" class="node">
+<title>entry_body__seq</title>
+<polygon fill="#e0ffe0" stroke="none" points="2310.75,-243.4 2310.75,-266.2 2336.19,-266.2 2336.19,-243.4 2310.75,-243.4"/>
+<polygon fill="none" stroke="black" points="2310.75,-243.4 2310.75,-266.2 2336.19,-266.2 2336.19,-243.4 2310.75,-243.4"/>
+<text xml:space="preserve" text-anchor="start" x="2313.75" y="-250.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="2336.19,-243.4 2336.19,-266.2 2386.51,-266.2 2386.51,-243.4 2336.19,-243.4"/>
+<polygon fill="none" stroke="black" points="2336.19,-243.4 2336.19,-266.2 2386.51,-266.2 2386.51,-243.4 2336.19,-243.4"/>
+<text xml:space="preserve" text-anchor="start" x="2350.47" y="-250.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="2386.51,-243.4 2386.51,-266.2 2416.61,-266.2 2416.61,-243.4 2386.51,-243.4"/>
+<polygon fill="none" stroke="black" points="2386.51,-243.4 2386.51,-266.2 2416.61,-266.2 2416.61,-243.4 2386.51,-243.4"/>
+<text xml:space="preserve" text-anchor="start" x="2389.51" y="-250.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="2416.61,-243.4 2416.61,-266.2 2452.93,-266.2 2452.93,-243.4 2416.61,-243.4"/>
+<polygon fill="none" stroke="black" points="2416.61,-243.4 2416.61,-266.2 2452.93,-266.2 2452.93,-243.4 2416.61,-243.4"/>
+<text xml:space="preserve" text-anchor="start" x="2429.33" y="-250.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="2310.75,-220.6 2310.75,-243.4 2336.19,-243.4 2336.19,-220.6 2310.75,-220.6"/>
+<text xml:space="preserve" text-anchor="start" x="2319.97" y="-227.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="2336.19,-220.6 2336.19,-243.4 2386.51,-243.4 2386.51,-220.6 2336.19,-220.6"/>
+<text xml:space="preserve" text-anchor="start" x="2339.19" y="-227.8" font-family="Times,serif" font-size="14.00">len_key</text>
+<polygon fill="none" stroke="black" points="2386.51,-220.6 2386.51,-243.4 2416.61,-243.4 2416.61,-220.6 2386.51,-220.6"/>
+<polygon fill="none" stroke="black" points="2416.61,-220.6 2416.61,-243.4 2452.93,-243.4 2452.93,-220.6 2416.61,-220.6"/>
+<text xml:space="preserve" text-anchor="start" x="2424.67" y="-227.8" font-family="Times,serif" font-size="14.00">key</text>
+<polygon fill="none" stroke="black" points="2310.75,-197.8 2310.75,-220.6 2336.19,-220.6 2336.19,-197.8 2310.75,-197.8"/>
+<text xml:space="preserve" text-anchor="start" x="2318.22" y="-205" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="2336.19,-197.8 2336.19,-220.6 2386.51,-220.6 2386.51,-197.8 2336.19,-197.8"/>
+<text xml:space="preserve" text-anchor="start" x="2356.1" y="-205" font-family="Times,serif" font-size="14.00">⇲</text>
+<polygon fill="none" stroke="black" points="2386.51,-197.8 2386.51,-220.6 2416.61,-220.6 2416.61,-197.8 2386.51,-197.8"/>
+<polygon fill="none" stroke="black" points="2416.61,-197.8 2416.61,-220.6 2452.93,-220.6 2452.93,-197.8 2416.61,-197.8"/>
+<text xml:space="preserve" text-anchor="start" x="2419.61" y="-205" font-family="Times,serif" font-size="14.00">value</text>
+</g>
+<!-- entry__seq&#45;&gt;entry_body__seq -->
+<g id="edge8" class="edge">
+<title>entry__seq:body_type-&gt;entry_body__seq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M2188.96,-365.2C2228.96,-365.2 2240.56,-358.77 2274.75,-338 2300.56,-322.31 2324.77,-299.08 2343.52,-278.35"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="2344.94,-282.03 2348.94,-272.22 2339.7,-277.39 2344.94,-282.03"/>
 </g>
 <!-- ns_info__seq -->
-<g id="node4" class="node">
+<g id="node6" class="node">
 <title>ns_info__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="739.13,-119.2 739.13,-142 764.58,-142 764.58,-119.2 739.13,-119.2"/>
-<polygon fill="none" stroke="black" points="739.13,-119.2 739.13,-142 764.58,-142 764.58,-119.2 739.13,-119.2"/>
-<text xml:space="preserve" text-anchor="start" x="742.13" y="-126.4" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="764.58,-119.2 764.58,-142 852.61,-142 852.61,-119.2 764.58,-119.2"/>
-<polygon fill="none" stroke="black" points="764.58,-119.2 764.58,-142 852.61,-142 852.61,-119.2 764.58,-119.2"/>
-<text xml:space="preserve" text-anchor="start" x="797.71" y="-126.4" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="852.61,-119.2 852.61,-142 920.04,-142 920.04,-119.2 852.61,-119.2"/>
-<polygon fill="none" stroke="black" points="852.61,-119.2 852.61,-142 920.04,-142 920.04,-119.2 852.61,-119.2"/>
-<text xml:space="preserve" text-anchor="start" x="874.27" y="-126.4" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="920.04,-119.2 920.04,-142 1029.45,-142 1029.45,-119.2 920.04,-119.2"/>
-<polygon fill="none" stroke="black" points="920.04,-119.2 920.04,-142 1029.45,-142 1029.45,-119.2 920.04,-119.2"/>
-<text xml:space="preserve" text-anchor="start" x="969.3" y="-126.4" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="739.13,-96.4 739.13,-119.2 764.58,-119.2 764.58,-96.4 739.13,-96.4"/>
-<text xml:space="preserve" text-anchor="start" x="748.35" y="-103.6" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="764.58,-96.4 764.58,-119.2 852.61,-119.2 852.61,-96.4 764.58,-96.4"/>
-<text xml:space="preserve" text-anchor="start" x="805.09" y="-103.6" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="852.61,-96.4 852.61,-119.2 920.04,-119.2 920.04,-96.4 852.61,-96.4"/>
-<text xml:space="preserve" text-anchor="start" x="872.72" y="-103.6" font-family="Times,serif" font-size="14.00">u8be</text>
-<polygon fill="none" stroke="black" points="920.04,-96.4 920.04,-119.2 1029.45,-119.2 1029.45,-96.4 920.04,-96.4"/>
-<text xml:space="preserve" text-anchor="start" x="937.04" y="-103.6" font-family="Times,serif" font-size="14.00">entries_count</text>
-<polygon fill="none" stroke="black" points="739.13,-73.6 739.13,-96.4 764.58,-96.4 764.58,-73.6 739.13,-73.6"/>
-<text xml:space="preserve" text-anchor="start" x="748.35" y="-80.8" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="764.58,-73.6 764.58,-96.4 852.61,-96.4 852.61,-73.6 764.58,-73.6"/>
-<text xml:space="preserve" text-anchor="start" x="805.09" y="-80.8" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="852.61,-73.6 852.61,-96.4 920.04,-96.4 920.04,-73.6 852.61,-73.6"/>
-<text xml:space="preserve" text-anchor="start" x="872.72" y="-80.8" font-family="Times,serif" font-size="14.00">u8be</text>
-<polygon fill="none" stroke="black" points="920.04,-73.6 920.04,-96.4 1029.45,-96.4 1029.45,-73.6 920.04,-73.6"/>
-<text xml:space="preserve" text-anchor="start" x="935.86" y="-80.8" font-family="Times,serif" font-size="14.00">chunks_count</text>
-<polygon fill="none" stroke="black" points="739.13,-50.8 739.13,-73.6 764.58,-73.6 764.58,-50.8 739.13,-50.8"/>
-<text xml:space="preserve" text-anchor="start" x="744.85" y="-58" font-family="Times,serif" font-size="14.00">16</text>
-<polygon fill="none" stroke="black" points="764.58,-50.8 764.58,-73.6 852.61,-73.6 852.61,-50.8 764.58,-50.8"/>
-<text xml:space="preserve" text-anchor="start" x="767.58" y="-58" font-family="Times,serif" font-size="14.00">_parent.len_ns</text>
-<polygon fill="none" stroke="black" points="852.61,-50.8 852.61,-73.6 920.04,-73.6 920.04,-50.8 852.61,-50.8"/>
-<text xml:space="preserve" text-anchor="start" x="855.61" y="-58" font-family="Times,serif" font-size="14.00">str(UTF-8)</text>
-<polygon fill="none" stroke="black" points="920.04,-50.8 920.04,-73.6 1029.45,-73.6 1029.45,-50.8 920.04,-50.8"/>
-<text xml:space="preserve" text-anchor="start" x="923.04" y="-58" font-family="Times,serif" font-size="14.00">namespaces_bytes</text>
-<polygon fill="none" stroke="black" points="739.13,-28 739.13,-50.8 764.58,-50.8 764.58,-28 739.13,-28"/>
-<text xml:space="preserve" text-anchor="start" x="746.6" y="-35.2" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="764.58,-28 764.58,-50.8 852.61,-50.8 852.61,-28 764.58,-28"/>
-<text xml:space="preserve" text-anchor="start" x="801.59" y="-35.2" font-family="Times,serif" font-size="14.00">28</text>
-<polygon fill="none" stroke="black" points="852.61,-28 852.61,-50.8 920.04,-50.8 920.04,-28 852.61,-28"/>
-<text xml:space="preserve" text-anchor="start" x="868.05" y="-35.2" font-family="Times,serif" font-size="14.00">Digest</text>
-<polygon fill="none" stroke="black" points="920.04,-28 920.04,-50.8 1029.45,-50.8 1029.45,-28 920.04,-28"/>
-<text xml:space="preserve" text-anchor="start" x="958.03" y="-35.2" font-family="Times,serif" font-size="14.00">digest</text>
+<polygon fill="#e0ffe0" stroke="none" points="1089.6,-155.2 1089.6,-178 1115.05,-178 1115.05,-155.2 1089.6,-155.2"/>
+<polygon fill="none" stroke="black" points="1089.6,-155.2 1089.6,-178 1115.05,-178 1115.05,-155.2 1089.6,-155.2"/>
+<text xml:space="preserve" text-anchor="start" x="1092.6" y="-162.4" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="1115.05,-155.2 1115.05,-178 1203.08,-178 1203.08,-155.2 1115.05,-155.2"/>
+<polygon fill="none" stroke="black" points="1115.05,-155.2 1115.05,-178 1203.08,-178 1203.08,-155.2 1115.05,-155.2"/>
+<text xml:space="preserve" text-anchor="start" x="1148.18" y="-162.4" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="1203.08,-155.2 1203.08,-178 1270.51,-178 1270.51,-155.2 1203.08,-155.2"/>
+<polygon fill="none" stroke="black" points="1203.08,-155.2 1203.08,-178 1270.51,-178 1270.51,-155.2 1203.08,-155.2"/>
+<text xml:space="preserve" text-anchor="start" x="1224.74" y="-162.4" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="1270.51,-155.2 1270.51,-178 1379.92,-178 1379.92,-155.2 1270.51,-155.2"/>
+<polygon fill="none" stroke="black" points="1270.51,-155.2 1270.51,-178 1379.92,-178 1379.92,-155.2 1270.51,-155.2"/>
+<text xml:space="preserve" text-anchor="start" x="1319.77" y="-162.4" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1089.6,-132.4 1089.6,-155.2 1115.05,-155.2 1115.05,-132.4 1089.6,-132.4"/>
+<text xml:space="preserve" text-anchor="start" x="1098.82" y="-139.6" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="1115.05,-132.4 1115.05,-155.2 1203.08,-155.2 1203.08,-132.4 1115.05,-132.4"/>
+<text xml:space="preserve" text-anchor="start" x="1155.56" y="-139.6" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1203.08,-132.4 1203.08,-155.2 1270.51,-155.2 1270.51,-132.4 1203.08,-132.4"/>
+<text xml:space="preserve" text-anchor="start" x="1223.19" y="-139.6" font-family="Times,serif" font-size="14.00">u8be</text>
+<polygon fill="none" stroke="black" points="1270.51,-132.4 1270.51,-155.2 1379.92,-155.2 1379.92,-132.4 1270.51,-132.4"/>
+<text xml:space="preserve" text-anchor="start" x="1287.51" y="-139.6" font-family="Times,serif" font-size="14.00">entries_count</text>
+<polygon fill="none" stroke="black" points="1089.6,-109.6 1089.6,-132.4 1115.05,-132.4 1115.05,-109.6 1089.6,-109.6"/>
+<text xml:space="preserve" text-anchor="start" x="1098.82" y="-116.8" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1115.05,-109.6 1115.05,-132.4 1203.08,-132.4 1203.08,-109.6 1115.05,-109.6"/>
+<text xml:space="preserve" text-anchor="start" x="1155.56" y="-116.8" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1203.08,-109.6 1203.08,-132.4 1270.51,-132.4 1270.51,-109.6 1203.08,-109.6"/>
+<text xml:space="preserve" text-anchor="start" x="1223.19" y="-116.8" font-family="Times,serif" font-size="14.00">u8be</text>
+<polygon fill="none" stroke="black" points="1270.51,-109.6 1270.51,-132.4 1379.92,-132.4 1379.92,-109.6 1270.51,-109.6"/>
+<text xml:space="preserve" text-anchor="start" x="1286.33" y="-116.8" font-family="Times,serif" font-size="14.00">chunks_count</text>
+<polygon fill="none" stroke="black" points="1089.6,-86.8 1089.6,-109.6 1115.05,-109.6 1115.05,-86.8 1089.6,-86.8"/>
+<text xml:space="preserve" text-anchor="start" x="1095.32" y="-94" font-family="Times,serif" font-size="14.00">16</text>
+<polygon fill="none" stroke="black" points="1115.05,-86.8 1115.05,-109.6 1203.08,-109.6 1203.08,-86.8 1115.05,-86.8"/>
+<text xml:space="preserve" text-anchor="start" x="1118.05" y="-94" font-family="Times,serif" font-size="14.00">_parent.len_ns</text>
+<polygon fill="none" stroke="black" points="1203.08,-86.8 1203.08,-109.6 1270.51,-109.6 1270.51,-86.8 1203.08,-86.8"/>
+<text xml:space="preserve" text-anchor="start" x="1206.08" y="-94" font-family="Times,serif" font-size="14.00">str(UTF-8)</text>
+<polygon fill="none" stroke="black" points="1270.51,-86.8 1270.51,-109.6 1379.92,-109.6 1379.92,-86.8 1270.51,-86.8"/>
+<text xml:space="preserve" text-anchor="start" x="1273.51" y="-94" font-family="Times,serif" font-size="14.00">namespaces_bytes</text>
+<polygon fill="none" stroke="black" points="1089.6,-64 1089.6,-86.8 1115.05,-86.8 1115.05,-64 1089.6,-64"/>
+<text xml:space="preserve" text-anchor="start" x="1097.07" y="-71.2" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1115.05,-64 1115.05,-86.8 1203.08,-86.8 1203.08,-64 1115.05,-64"/>
+<text xml:space="preserve" text-anchor="start" x="1152.06" y="-71.2" font-family="Times,serif" font-size="14.00">28</text>
+<polygon fill="none" stroke="black" points="1203.08,-64 1203.08,-86.8 1270.51,-86.8 1270.51,-64 1203.08,-64"/>
+<text xml:space="preserve" text-anchor="start" x="1218.52" y="-71.2" font-family="Times,serif" font-size="14.00">Digest</text>
+<polygon fill="none" stroke="black" points="1270.51,-64 1270.51,-86.8 1379.92,-86.8 1379.92,-64 1270.51,-64"/>
+<text xml:space="preserve" text-anchor="start" x="1308.5" y="-71.2" font-family="Times,serif" font-size="14.00">digest</text>
 </g>
 <!-- ns_info__seq&#45;&gt;digest__seq -->
-<g id="edge7" class="edge">
+<g id="edge10" class="edge">
 <title>ns_info__seq:digest_type-&gt;digest__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1030.45,-39.4C1104.07,-39.4 1135.81,-139.75 1147.85,-196.33"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1144.07,-195.27 1149.47,-204.38 1150.93,-193.89 1144.07,-195.27"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1380.92,-75.4C1446.02,-75.4 1517.33,-95.45 1569.11,-113.87"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1566.41,-116.62 1577.01,-116.74 1568.8,-110.04 1566.41,-116.62"/>
 </g>
 <!-- rec_chunk__seq -->
-<g id="node5" class="node">
+<g id="node7" class="node">
 <title>rec_chunk__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="750,-620.4 750,-643.2 775.45,-643.2 775.45,-620.4 750,-620.4"/>
-<polygon fill="none" stroke="black" points="750,-620.4 750,-643.2 775.45,-643.2 775.45,-620.4 750,-620.4"/>
-<text xml:space="preserve" text-anchor="start" x="753" y="-627.6" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="775.45,-620.4 775.45,-643.2 828.87,-643.2 828.87,-620.4 775.45,-620.4"/>
-<polygon fill="none" stroke="black" points="775.45,-620.4 775.45,-643.2 828.87,-643.2 828.87,-620.4 775.45,-620.4"/>
-<text xml:space="preserve" text-anchor="start" x="791.28" y="-627.6" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="828.87,-620.4 828.87,-643.2 937.15,-643.2 937.15,-620.4 828.87,-620.4"/>
-<polygon fill="none" stroke="black" points="828.87,-620.4 828.87,-643.2 937.15,-643.2 937.15,-620.4 828.87,-620.4"/>
-<text xml:space="preserve" text-anchor="start" x="870.96" y="-627.6" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="937.15,-620.4 937.15,-643.2 1018.57,-643.2 1018.57,-620.4 937.15,-620.4"/>
-<polygon fill="none" stroke="black" points="937.15,-620.4 937.15,-643.2 1018.57,-643.2 1018.57,-620.4 937.15,-620.4"/>
-<text xml:space="preserve" text-anchor="start" x="972.42" y="-627.6" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="750,-597.6 750,-620.4 775.45,-620.4 775.45,-597.6 750,-597.6"/>
-<text xml:space="preserve" text-anchor="start" x="759.23" y="-604.8" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="775.45,-597.6 775.45,-620.4 828.87,-620.4 828.87,-597.6 775.45,-597.6"/>
-<text xml:space="preserve" text-anchor="start" x="798.66" y="-604.8" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="828.87,-597.6 828.87,-620.4 937.15,-620.4 937.15,-597.6 828.87,-597.6"/>
-<text xml:space="preserve" text-anchor="start" x="869.41" y="-604.8" font-family="Times,serif" font-size="14.00">u8be</text>
-<polygon fill="none" stroke="black" points="937.15,-597.6 937.15,-620.4 1018.57,-620.4 1018.57,-597.6 937.15,-597.6"/>
-<text xml:space="preserve" text-anchor="start" x="961.53" y="-604.8" font-family="Times,serif" font-size="14.00">seqno</text>
-<polygon fill="none" stroke="black" points="750,-574.8 750,-597.6 775.45,-597.6 775.45,-574.8 750,-574.8"/>
-<text xml:space="preserve" text-anchor="start" x="759.23" y="-582" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="775.45,-574.8 775.45,-597.6 828.87,-597.6 828.87,-574.8 775.45,-574.8"/>
-<text xml:space="preserve" text-anchor="start" x="798.66" y="-582" font-family="Times,serif" font-size="14.00">1</text>
-<polygon fill="none" stroke="black" points="828.87,-574.8 828.87,-597.6 937.15,-597.6 937.15,-574.8 828.87,-574.8"/>
-<text xml:space="preserve" text-anchor="start" x="831.87" y="-582" font-family="Times,serif" font-size="14.00">u1→ChunkFormat</text>
-<polygon fill="none" stroke="black" points="937.15,-574.8 937.15,-597.6 1018.57,-597.6 1018.57,-574.8 937.15,-574.8"/>
-<text xml:space="preserve" text-anchor="start" x="959.21" y="-582" font-family="Times,serif" font-size="14.00">format</text>
-<polygon fill="none" stroke="black" points="750,-552 750,-574.8 775.45,-574.8 775.45,-552 750,-552"/>
-<text xml:space="preserve" text-anchor="start" x="759.23" y="-559.2" font-family="Times,serif" font-size="14.00">9</text>
-<polygon fill="none" stroke="black" points="775.45,-552 775.45,-574.8 828.87,-574.8 828.87,-552 775.45,-552"/>
-<text xml:space="preserve" text-anchor="start" x="796.91" y="-559.2" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="828.87,-552 828.87,-574.8 937.15,-574.8 937.15,-552 828.87,-552"/>
-<text xml:space="preserve" text-anchor="start" x="871.74" y="-559.2" font-family="Times,serif" font-size="14.00">Tstr</text>
-<polygon fill="none" stroke="black" points="937.15,-552 937.15,-574.8 1018.57,-574.8 1018.57,-552 937.15,-552"/>
-<text xml:space="preserve" text-anchor="start" x="971.64" y="-559.2" font-family="Times,serif" font-size="14.00">ns</text>
-<polygon fill="none" stroke="black" points="750,-529.2 750,-552 775.45,-552 775.45,-529.2 750,-529.2"/>
-<text xml:space="preserve" text-anchor="start" x="757.48" y="-536.4" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="775.45,-529.2 775.45,-552 828.87,-552 828.87,-529.2 775.45,-529.2"/>
-<text xml:space="preserve" text-anchor="start" x="798.66" y="-536.4" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="828.87,-529.2 828.87,-552 937.15,-552 937.15,-529.2 828.87,-529.2"/>
-<text xml:space="preserve" text-anchor="start" x="869.41" y="-536.4" font-family="Times,serif" font-size="14.00">u4be</text>
-<polygon fill="none" stroke="black" points="937.15,-529.2 937.15,-552 1018.57,-552 1018.57,-529.2 937.15,-529.2"/>
-<text xml:space="preserve" text-anchor="start" x="954.15" y="-536.4" font-family="Times,serif" font-size="14.00">len_data</text>
-<polygon fill="none" stroke="black" points="750,-506.4 750,-529.2 775.45,-529.2 775.45,-506.4 750,-506.4"/>
-<text xml:space="preserve" text-anchor="start" x="757.48" y="-513.6" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="775.45,-506.4 775.45,-529.2 828.87,-529.2 828.87,-506.4 775.45,-506.4"/>
-<text xml:space="preserve" text-anchor="start" x="778.45" y="-513.6" font-family="Times,serif" font-size="14.00">len_data</text>
-<polygon fill="none" stroke="black" points="828.87,-506.4 828.87,-529.2 937.15,-529.2 937.15,-506.4 828.87,-506.4"/>
-<polygon fill="none" stroke="black" points="937.15,-506.4 937.15,-529.2 1018.57,-529.2 1018.57,-506.4 937.15,-506.4"/>
-<text xml:space="preserve" text-anchor="start" x="966.21" y="-513.6" font-family="Times,serif" font-size="14.00">data</text>
-<polygon fill="none" stroke="black" points="750,-483.6 750,-506.4 775.45,-506.4 775.45,-483.6 750,-483.6"/>
-<text xml:space="preserve" text-anchor="start" x="757.48" y="-490.8" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="775.45,-483.6 775.45,-506.4 828.87,-506.4 828.87,-483.6 775.45,-483.6"/>
-<text xml:space="preserve" text-anchor="start" x="798.66" y="-490.8" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="828.87,-483.6 828.87,-506.4 937.15,-506.4 937.15,-483.6 828.87,-483.6"/>
-<text xml:space="preserve" text-anchor="start" x="869.41" y="-490.8" font-family="Times,serif" font-size="14.00">u4be</text>
-<polygon fill="none" stroke="black" points="937.15,-483.6 937.15,-506.4 1018.57,-506.4 1018.57,-483.6 937.15,-483.6"/>
-<text xml:space="preserve" text-anchor="start" x="940.15" y="-490.8" font-family="Times,serif" font-size="14.00">entries_count</text>
-<polygon fill="none" stroke="black" points="750,-460.8 750,-483.6 775.45,-483.6 775.45,-460.8 750,-460.8"/>
-<text xml:space="preserve" text-anchor="start" x="757.48" y="-468" font-family="Times,serif" font-size="14.00">...</text>
-<polygon fill="none" stroke="black" points="775.45,-460.8 775.45,-483.6 828.87,-483.6 828.87,-460.8 775.45,-460.8"/>
-<text xml:space="preserve" text-anchor="start" x="795.16" y="-468" font-family="Times,serif" font-size="14.00">28</text>
-<polygon fill="none" stroke="black" points="828.87,-460.8 828.87,-483.6 937.15,-483.6 937.15,-460.8 828.87,-460.8"/>
-<text xml:space="preserve" text-anchor="start" x="864.74" y="-468" font-family="Times,serif" font-size="14.00">Digest</text>
-<polygon fill="none" stroke="black" points="937.15,-460.8 937.15,-483.6 1018.57,-483.6 1018.57,-460.8 937.15,-460.8"/>
-<text xml:space="preserve" text-anchor="start" x="961.14" y="-468" font-family="Times,serif" font-size="14.00">digest</text>
+<polygon fill="#e0ffe0" stroke="none" points="1100.47,-656.4 1100.47,-679.2 1125.92,-679.2 1125.92,-656.4 1100.47,-656.4"/>
+<polygon fill="none" stroke="black" points="1100.47,-656.4 1100.47,-679.2 1125.92,-679.2 1125.92,-656.4 1100.47,-656.4"/>
+<text xml:space="preserve" text-anchor="start" x="1103.47" y="-663.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="1125.92,-656.4 1125.92,-679.2 1179.34,-679.2 1179.34,-656.4 1125.92,-656.4"/>
+<polygon fill="none" stroke="black" points="1125.92,-656.4 1125.92,-679.2 1179.34,-679.2 1179.34,-656.4 1125.92,-656.4"/>
+<text xml:space="preserve" text-anchor="start" x="1141.75" y="-663.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="1179.34,-656.4 1179.34,-679.2 1287.62,-679.2 1287.62,-656.4 1179.34,-656.4"/>
+<polygon fill="none" stroke="black" points="1179.34,-656.4 1179.34,-679.2 1287.62,-679.2 1287.62,-656.4 1179.34,-656.4"/>
+<text xml:space="preserve" text-anchor="start" x="1221.43" y="-663.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="1287.62,-656.4 1287.62,-679.2 1369.04,-679.2 1369.04,-656.4 1287.62,-656.4"/>
+<polygon fill="none" stroke="black" points="1287.62,-656.4 1287.62,-679.2 1369.04,-679.2 1369.04,-656.4 1287.62,-656.4"/>
+<text xml:space="preserve" text-anchor="start" x="1322.89" y="-663.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1100.47,-633.6 1100.47,-656.4 1125.92,-656.4 1125.92,-633.6 1100.47,-633.6"/>
+<text xml:space="preserve" text-anchor="start" x="1109.7" y="-640.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="1125.92,-633.6 1125.92,-656.4 1179.34,-656.4 1179.34,-633.6 1125.92,-633.6"/>
+<text xml:space="preserve" text-anchor="start" x="1149.13" y="-640.8" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1179.34,-633.6 1179.34,-656.4 1287.62,-656.4 1287.62,-633.6 1179.34,-633.6"/>
+<text xml:space="preserve" text-anchor="start" x="1219.88" y="-640.8" font-family="Times,serif" font-size="14.00">u8be</text>
+<polygon fill="none" stroke="black" points="1287.62,-633.6 1287.62,-656.4 1369.04,-656.4 1369.04,-633.6 1287.62,-633.6"/>
+<text xml:space="preserve" text-anchor="start" x="1312" y="-640.8" font-family="Times,serif" font-size="14.00">seqno</text>
+<polygon fill="none" stroke="black" points="1100.47,-610.8 1100.47,-633.6 1125.92,-633.6 1125.92,-610.8 1100.47,-610.8"/>
+<text xml:space="preserve" text-anchor="start" x="1109.7" y="-618" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1125.92,-610.8 1125.92,-633.6 1179.34,-633.6 1179.34,-610.8 1125.92,-610.8"/>
+<text xml:space="preserve" text-anchor="start" x="1149.13" y="-618" font-family="Times,serif" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="1179.34,-610.8 1179.34,-633.6 1287.62,-633.6 1287.62,-610.8 1179.34,-610.8"/>
+<text xml:space="preserve" text-anchor="start" x="1182.34" y="-618" font-family="Times,serif" font-size="14.00">u1→ChunkFormat</text>
+<polygon fill="none" stroke="black" points="1287.62,-610.8 1287.62,-633.6 1369.04,-633.6 1369.04,-610.8 1287.62,-610.8"/>
+<text xml:space="preserve" text-anchor="start" x="1309.67" y="-618" font-family="Times,serif" font-size="14.00">format</text>
+<polygon fill="none" stroke="black" points="1100.47,-588 1100.47,-610.8 1125.92,-610.8 1125.92,-588 1100.47,-588"/>
+<text xml:space="preserve" text-anchor="start" x="1109.7" y="-595.2" font-family="Times,serif" font-size="14.00">9</text>
+<polygon fill="none" stroke="black" points="1125.92,-588 1125.92,-610.8 1179.34,-610.8 1179.34,-588 1125.92,-588"/>
+<text xml:space="preserve" text-anchor="start" x="1149.13" y="-595.2" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="1179.34,-588 1179.34,-610.8 1287.62,-610.8 1287.62,-588 1179.34,-588"/>
+<text xml:space="preserve" text-anchor="start" x="1219.88" y="-595.2" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="1287.62,-588 1287.62,-610.8 1369.04,-610.8 1369.04,-588 1287.62,-588"/>
+<text xml:space="preserve" text-anchor="start" x="1310.06" y="-595.2" font-family="Times,serif" font-size="14.00">len_ns</text>
+<polygon fill="none" stroke="black" points="1100.47,-565.2 1100.47,-588 1125.92,-588 1125.92,-565.2 1100.47,-565.2"/>
+<text xml:space="preserve" text-anchor="start" x="1106.2" y="-572.4" font-family="Times,serif" font-size="14.00">13</text>
+<polygon fill="none" stroke="black" points="1125.92,-565.2 1125.92,-588 1179.34,-588 1179.34,-565.2 1125.92,-565.2"/>
+<text xml:space="preserve" text-anchor="start" x="1134.36" y="-572.4" font-family="Times,serif" font-size="14.00">len_ns</text>
+<polygon fill="none" stroke="black" points="1179.34,-565.2 1179.34,-588 1287.62,-588 1287.62,-565.2 1179.34,-565.2"/>
+<text xml:space="preserve" text-anchor="start" x="1202.77" y="-572.4" font-family="Times,serif" font-size="14.00">str(UTF-8)</text>
+<polygon fill="none" stroke="black" points="1287.62,-565.2 1287.62,-588 1369.04,-588 1369.04,-565.2 1287.62,-565.2"/>
+<text xml:space="preserve" text-anchor="start" x="1322.11" y="-572.4" font-family="Times,serif" font-size="14.00">ns</text>
+<polygon fill="none" stroke="black" points="1100.47,-542.4 1100.47,-565.2 1125.92,-565.2 1125.92,-542.4 1100.47,-542.4"/>
+<text xml:space="preserve" text-anchor="start" x="1107.95" y="-549.6" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1125.92,-542.4 1125.92,-565.2 1179.34,-565.2 1179.34,-542.4 1125.92,-542.4"/>
+<text xml:space="preserve" text-anchor="start" x="1128.92" y="-549.6" font-family="Times,serif" font-size="14.00">len_data</text>
+<polygon fill="none" stroke="black" points="1179.34,-542.4 1179.34,-565.2 1287.62,-565.2 1287.62,-542.4 1179.34,-542.4"/>
+<text xml:space="preserve" text-anchor="start" x="1196.94" y="-549.6" font-family="Times,serif" font-size="14.00">EntriesBlock</text>
+<polygon fill="none" stroke="black" points="1287.62,-542.4 1287.62,-565.2 1369.04,-565.2 1369.04,-542.4 1287.62,-542.4"/>
+<text xml:space="preserve" text-anchor="start" x="1316.67" y="-549.6" font-family="Times,serif" font-size="14.00">data</text>
+<polygon fill="none" stroke="black" points="1100.47,-519.6 1100.47,-542.4 1125.92,-542.4 1125.92,-519.6 1100.47,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="1107.95" y="-526.8" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1125.92,-519.6 1125.92,-542.4 1179.34,-542.4 1179.34,-519.6 1125.92,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="1149.13" y="-526.8" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="1179.34,-519.6 1179.34,-542.4 1287.62,-542.4 1287.62,-519.6 1179.34,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="1219.88" y="-526.8" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="1287.62,-519.6 1287.62,-542.4 1369.04,-542.4 1369.04,-519.6 1287.62,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="1290.62" y="-526.8" font-family="Times,serif" font-size="14.00">entries_count</text>
+<polygon fill="none" stroke="black" points="1100.47,-496.8 1100.47,-519.6 1125.92,-519.6 1125.92,-496.8 1100.47,-496.8"/>
+<text xml:space="preserve" text-anchor="start" x="1107.95" y="-504" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="1125.92,-496.8 1125.92,-519.6 1179.34,-519.6 1179.34,-496.8 1125.92,-496.8"/>
+<text xml:space="preserve" text-anchor="start" x="1145.63" y="-504" font-family="Times,serif" font-size="14.00">28</text>
+<polygon fill="none" stroke="black" points="1179.34,-496.8 1179.34,-519.6 1287.62,-519.6 1287.62,-496.8 1179.34,-496.8"/>
+<text xml:space="preserve" text-anchor="start" x="1215.21" y="-504" font-family="Times,serif" font-size="14.00">Digest</text>
+<polygon fill="none" stroke="black" points="1287.62,-496.8 1287.62,-519.6 1369.04,-519.6 1369.04,-496.8 1287.62,-496.8"/>
+<text xml:space="preserve" text-anchor="start" x="1311.61" y="-504" font-family="Times,serif" font-size="14.00">digest</text>
+</g>
+<!-- rec_chunk__seq&#45;&gt;entries_block__seq -->
+<g id="edge13" class="edge">
+<title>rec_chunk__seq:data_type-&gt;entries_block__seq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M1370.04,-553.8C1410.3,-553.8 1391.44,-504.77 1423.92,-481 1463.39,-452.12 1514.82,-433.75 1557.93,-422.42"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1557.22,-426.21 1566.05,-420.37 1555.5,-419.43 1557.22,-426.21"/>
 </g>
 <!-- rec_chunk__seq&#45;&gt;digest__seq -->
-<g id="edge10" class="edge">
+<g id="edge14" class="edge">
 <title>rec_chunk__seq:digest_type-&gt;digest__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1019.57,-472.2C1065.51,-472.2 1053.25,-380.84 1065.45,-354 1079.66,-322.76 1102.93,-291.73 1122.09,-269.05"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1123.63,-272.63 1127.5,-262.77 1118.32,-268.07 1123.63,-272.63"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1370.04,-508.2C1386.73,-508.2 1388.94,-496.16 1395.92,-481 1421.42,-425.6 1384.89,-254.86 1423.92,-208 1458.84,-166.07 1519.58,-150.73 1568.26,-145.51"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1567.07,-149.13 1576.71,-144.72 1566.42,-142.16 1567.07,-149.13"/>
 </g>
 <!-- rec_chunk__seq&#45;&gt;rec_chunk__seq -->
-<g id="edge9" class="edge">
-<title>rec_chunk__seq:len_data_type-&gt;rec_chunk__seq:data_size</title>
-<path fill="none" stroke="#404040" d="M994.37,-551.86C1044.16,-593.24 1031.45,-665.2 890.01,-665.2 756.01,-665.2 737.56,-583.66 778.33,-537.01"/>
-<polygon fill="#404040" stroke="#404040" points="780.65,-539.63 785.23,-530.08 775.69,-534.69 780.65,-539.63"/>
+<g id="edge11" class="edge">
+<title>rec_chunk__seq:len_ns_type-&gt;rec_chunk__seq:ns_size</title>
+<path fill="none" stroke="#404040" d="M1345.48,-610.63C1394.52,-648.58 1381.32,-701.2 1240.48,-701.2 1107.61,-701.2 1088.35,-637.69 1127.78,-595.69"/>
+<polygon fill="#404040" stroke="#404040" points="1130.13,-598.29 1135.02,-588.9 1125.34,-593.19 1130.13,-598.29"/>
 </g>
-<!-- tstr__seq -->
+<!-- rec_chunk__inst__ns_size -->
+<g id="node9" class="node">
+<title>rec_chunk__inst__ns_size</title>
+<polygon fill="#e0ffe0" stroke="none" points="1583.5,-612 1583.5,-634.8 1630.72,-634.8 1630.72,-612 1583.5,-612"/>
+<polygon fill="none" stroke="black" points="1583.5,-612 1583.5,-634.8 1630.72,-634.8 1630.72,-612 1583.5,-612"/>
+<text xml:space="preserve" text-anchor="start" x="1601.67" y="-619.2" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="#e0ffe0" stroke="none" points="1630.72,-612 1630.72,-634.8 1704.49,-634.8 1704.49,-612 1630.72,-612"/>
+<polygon fill="none" stroke="black" points="1630.72,-612 1630.72,-634.8 1704.49,-634.8 1704.49,-612 1630.72,-612"/>
+<text xml:space="preserve" text-anchor="start" x="1652.44" y="-619.2" font-family="Times,serif" font-size="14.00">value</text>
+<polygon fill="none" stroke="black" points="1583.5,-589.2 1583.5,-612 1630.72,-612 1630.72,-589.2 1583.5,-589.2"/>
+<text xml:space="preserve" text-anchor="start" x="1586.5" y="-596.4" font-family="Times,serif" font-size="14.00">ns_size</text>
+<polygon fill="none" stroke="black" points="1630.72,-589.2 1630.72,-612 1704.49,-612 1704.49,-589.2 1630.72,-589.2"/>
+<text xml:space="preserve" text-anchor="start" x="1633.72" y="-596.4" font-family="Times,serif" font-size="14.00">(4 + len_ns)</text>
+</g>
+<!-- rec_chunk__seq&#45;&gt;rec_chunk__inst__ns_size -->
+<g id="edge16" class="edge">
+<title>rec_chunk__seq:len_ns_type-&gt;rec_chunk__inst__ns_size</title>
+<path fill="none" stroke="#404040" d="M1370.04,-599.4C1435.59,-599.4 1509.9,-603.07 1564.41,-606.45"/>
+<polygon fill="#404040" stroke="#404040" points="1564.02,-609.93 1574.22,-607.07 1564.46,-602.95 1564.02,-609.93"/>
+</g>
+<!-- rec_chunk__inst__len_key -->
+<g id="node11" class="node">
+<title>rec_chunk__inst__len_key</title>
+<polygon fill="#e0ffe0" stroke="none" points="1431.92,-540 1431.92,-562.8 1482.24,-562.8 1482.24,-540 1431.92,-540"/>
+<polygon fill="none" stroke="black" points="1431.92,-540 1431.92,-562.8 1482.24,-562.8 1482.24,-540 1431.92,-540"/>
+<text xml:space="preserve" text-anchor="start" x="1451.63" y="-547.2" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="#e0ffe0" stroke="none" points="1482.24,-540 1482.24,-562.8 1856.07,-562.8 1856.07,-540 1482.24,-540"/>
+<polygon fill="none" stroke="black" points="1482.24,-540 1482.24,-562.8 1856.07,-562.8 1856.07,-540 1482.24,-540"/>
+<text xml:space="preserve" text-anchor="start" x="1654" y="-547.2" font-family="Times,serif" font-size="14.00">value</text>
+<polygon fill="none" stroke="black" points="1431.92,-517.2 1431.92,-540 1482.24,-540 1482.24,-517.2 1431.92,-517.2"/>
+<text xml:space="preserve" text-anchor="start" x="1434.92" y="-524.4" font-family="Times,serif" font-size="14.00">len_key</text>
+<polygon fill="none" stroke="black" points="1482.24,-517.2 1482.24,-540 1856.07,-540 1856.07,-517.2 1482.24,-517.2"/>
+<text xml:space="preserve" text-anchor="start" x="1485.24" y="-524.4" font-family="Times,serif" font-size="14.00">(ns == "utxo" ? 32 : (ns == "stake" ? 28 : (ns == "pool" ? 28 : 0)))</text>
+</g>
+<!-- rec_chunk__seq&#45;&gt;rec_chunk__inst__len_key -->
+<g id="edge19" class="edge">
+<title>rec_chunk__seq:ns_type-&gt;rec_chunk__inst__len_key</title>
+<path fill="none" stroke="#404040" d="M1370.04,-576.6C1386.22,-574.22 1402.89,-571.52 1419.64,-568.66"/>
+<polygon fill="#404040" stroke="#404040" points="1419.91,-572.16 1429.16,-567.01 1418.72,-565.26 1419.91,-572.16"/>
+</g>
+<!-- rec_chunk__seq&#45;&gt;rec_chunk__inst__len_key -->
+<g id="edge20" class="edge">
+<title>rec_chunk__seq:ns_type-&gt;rec_chunk__inst__len_key</title>
+<path fill="none" stroke="#404040" d="M1370.4,-576.6C1408.24,-576.58 1448.75,-573.07 1486.66,-568.23"/>
+<polygon fill="#404040" stroke="#404040" points="1486.85,-571.74 1496.31,-566.96 1485.94,-564.8 1486.85,-571.74"/>
+</g>
+<!-- rec_chunk__seq&#45;&gt;rec_chunk__inst__len_key -->
+<g id="edge21" class="edge">
+<title>rec_chunk__seq:ns_type-&gt;rec_chunk__inst__len_key</title>
+<path fill="none" stroke="#404040" d="M1370.4,-576.65C1437.35,-586.44 1512.66,-579.92 1567.13,-569.07"/>
+<polygon fill="#404040" stroke="#404040" points="1567.54,-572.56 1576.6,-567.08 1566.1,-565.71 1567.54,-572.56"/>
+</g>
+<!-- rec_chunk__inst__rec_payload_size -->
+<g id="node8" class="node">
+<title>rec_chunk__inst__rec_payload_size</title>
+<polygon fill="#e0ffe0" stroke="none" points="1495.73,-684 1495.73,-706.8 1598.9,-706.8 1598.9,-684 1495.73,-684"/>
+<polygon fill="none" stroke="black" points="1495.73,-684 1495.73,-706.8 1598.9,-706.8 1598.9,-684 1495.73,-684"/>
+<text xml:space="preserve" text-anchor="start" x="1541.87" y="-691.2" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="#e0ffe0" stroke="none" points="1598.9,-684 1598.9,-706.8 1792.27,-706.8 1792.27,-684 1598.9,-684"/>
+<polygon fill="none" stroke="black" points="1598.9,-684 1598.9,-706.8 1792.27,-706.8 1792.27,-684 1598.9,-684"/>
+<text xml:space="preserve" text-anchor="start" x="1680.42" y="-691.2" font-family="Times,serif" font-size="14.00">value</text>
+<polygon fill="none" stroke="black" points="1495.73,-661.2 1495.73,-684 1598.9,-684 1598.9,-661.2 1495.73,-661.2"/>
+<text xml:space="preserve" text-anchor="start" x="1498.73" y="-668.4" font-family="Times,serif" font-size="14.00">rec_payload_size</text>
+<polygon fill="none" stroke="black" points="1598.9,-661.2 1598.9,-684 1792.27,-684 1792.27,-661.2 1598.9,-661.2"/>
+<text xml:space="preserve" text-anchor="start" x="1601.9" y="-668.4" font-family="Times,serif" font-size="14.00">(_parent._parent.len_payload - 5)</text>
+</g>
+<!-- rec_chunk__inst__len_data -->
 <g id="node10" class="node">
-<title>tstr__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="1281.1,-427.4 1281.1,-450.2 1306.55,-450.2 1306.55,-427.4 1281.1,-427.4"/>
-<polygon fill="none" stroke="black" points="1281.1,-427.4 1281.1,-450.2 1306.55,-450.2 1306.55,-427.4 1281.1,-427.4"/>
-<text xml:space="preserve" text-anchor="start" x="1284.1" y="-434.6" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="1306.55,-427.4 1306.55,-450.2 1359.97,-450.2 1359.97,-427.4 1306.55,-427.4"/>
-<polygon fill="none" stroke="black" points="1306.55,-427.4 1306.55,-450.2 1359.97,-450.2 1359.97,-427.4 1306.55,-427.4"/>
-<text xml:space="preserve" text-anchor="start" x="1322.37" y="-434.6" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="1359.97,-427.4 1359.97,-450.2 1427.4,-450.2 1427.4,-427.4 1359.97,-427.4"/>
-<polygon fill="none" stroke="black" points="1359.97,-427.4 1359.97,-450.2 1427.4,-450.2 1427.4,-427.4 1359.97,-427.4"/>
-<text xml:space="preserve" text-anchor="start" x="1381.63" y="-434.6" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="1427.4,-427.4 1427.4,-450.2 1480.82,-450.2 1480.82,-427.4 1427.4,-427.4"/>
-<polygon fill="none" stroke="black" points="1427.4,-427.4 1427.4,-450.2 1480.82,-450.2 1480.82,-427.4 1427.4,-427.4"/>
-<text xml:space="preserve" text-anchor="start" x="1448.67" y="-434.6" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="1281.1,-404.6 1281.1,-427.4 1306.55,-427.4 1306.55,-404.6 1281.1,-404.6"/>
-<text xml:space="preserve" text-anchor="start" x="1290.32" y="-411.8" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="1306.55,-404.6 1306.55,-427.4 1359.97,-427.4 1359.97,-404.6 1306.55,-404.6"/>
-<text xml:space="preserve" text-anchor="start" x="1329.76" y="-411.8" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="1359.97,-404.6 1359.97,-427.4 1427.4,-427.4 1427.4,-404.6 1359.97,-404.6"/>
-<text xml:space="preserve" text-anchor="start" x="1380.08" y="-411.8" font-family="Times,serif" font-size="14.00">u4be</text>
-<polygon fill="none" stroke="black" points="1427.4,-404.6 1427.4,-427.4 1480.82,-427.4 1480.82,-404.6 1427.4,-404.6"/>
-<text xml:space="preserve" text-anchor="start" x="1430.4" y="-411.8" font-family="Times,serif" font-size="14.00">len_data</text>
-<polygon fill="none" stroke="black" points="1281.1,-381.8 1281.1,-404.6 1306.55,-404.6 1306.55,-381.8 1281.1,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="1290.32" y="-389" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="1306.55,-381.8 1306.55,-404.6 1359.97,-404.6 1359.97,-381.8 1306.55,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="1309.55" y="-389" font-family="Times,serif" font-size="14.00">len_data</text>
-<polygon fill="none" stroke="black" points="1359.97,-381.8 1359.97,-404.6 1427.4,-404.6 1427.4,-381.8 1359.97,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="1362.97" y="-389" font-family="Times,serif" font-size="14.00">str(UTF-8)</text>
-<polygon fill="none" stroke="black" points="1427.4,-381.8 1427.4,-404.6 1480.82,-404.6 1480.82,-381.8 1427.4,-381.8"/>
-<text xml:space="preserve" text-anchor="start" x="1442.45" y="-389" font-family="Times,serif" font-size="14.00">data</text>
+<title>rec_chunk__inst__len_data</title>
+<polygon fill="#e0ffe0" stroke="none" points="1908.07,-612 1908.07,-634.8 1961.49,-634.8 1961.49,-612 1908.07,-612"/>
+<polygon fill="none" stroke="black" points="1908.07,-612 1908.07,-634.8 1961.49,-634.8 1961.49,-612 1908.07,-612"/>
+<text xml:space="preserve" text-anchor="start" x="1929.34" y="-619.2" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="#e0ffe0" stroke="none" points="1961.49,-612 1961.49,-634.8 2258.75,-634.8 2258.75,-612 1961.49,-612"/>
+<polygon fill="none" stroke="black" points="1961.49,-612 1961.49,-634.8 2258.75,-634.8 2258.75,-612 1961.49,-612"/>
+<text xml:space="preserve" text-anchor="start" x="2094.96" y="-619.2" font-family="Times,serif" font-size="14.00">value</text>
+<polygon fill="none" stroke="black" points="1908.07,-589.2 1908.07,-612 1961.49,-612 1961.49,-589.2 1908.07,-589.2"/>
+<text xml:space="preserve" text-anchor="start" x="1911.07" y="-596.4" font-family="Times,serif" font-size="14.00">len_data</text>
+<polygon fill="none" stroke="black" points="1961.49,-589.2 1961.49,-612 2258.75,-612 2258.75,-589.2 1961.49,-589.2"/>
+<text xml:space="preserve" text-anchor="start" x="1964.49" y="-596.4" font-family="Times,serif" font-size="14.00">(rec_payload_size - ((((8 + 1) + ns_size) + 4) + 28))</text>
 </g>
-<!-- rec_chunk__seq&#45;&gt;tstr__seq -->
-<g id="edge8" class="edge">
-<title>rec_chunk__seq:ns_type-&gt;tstr__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1019.57,-563.4C1123.46,-563.4 1150.11,-544.05 1245.1,-502 1270.43,-490.79 1296.49,-475.26 1318.88,-460.47"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1319.36,-464.36 1325.72,-455.89 1315.46,-458.55 1319.36,-464.36"/>
+<!-- rec_chunk__inst__rec_payload_size&#45;&gt;rec_chunk__inst__len_data -->
+<g id="edge17" class="edge">
+<title>rec_chunk__inst__rec_payload_size:rec_payload_size_type-&gt;rec_chunk__inst__len_data</title>
+<path fill="none" stroke="#404040" d="M1799.99,-658.54C1821.51,-655 1843.34,-651.41 1864.07,-648 1878.64,-645.6 1893.75,-643.11 1908.92,-640.61"/>
+<polygon fill="#404040" stroke="#404040" points="1909.17,-644.12 1918.47,-639.04 1908.03,-637.21 1909.17,-644.12"/>
+</g>
+<!-- rec_chunk__inst__ns_size&#45;&gt;rec_chunk__inst__len_data -->
+<g id="edge18" class="edge">
+<title>rec_chunk__inst__ns_size:ns_size_type-&gt;rec_chunk__inst__len_data</title>
+<path fill="none" stroke="#404040" d="M1712.38,-612C1759.74,-612 1825.68,-612 1888.78,-612"/>
+<polygon fill="#404040" stroke="#404040" points="1888.6,-615.5 1898.6,-612 1888.6,-608.5 1888.6,-615.5"/>
+</g>
+<!-- rec_chunk__inst__len_data&#45;&gt;rec_chunk__seq -->
+<g id="edge12" class="edge">
+<title>rec_chunk__inst__len_data:len_data_type-&gt;rec_chunk__seq:data_size</title>
+<path fill="none" stroke="#404040" d="M2042.7,-585.32C2000.5,-558.7 1930.78,-519.6 1864.07,-504 1611.67,-444.99 1296.23,-516.02 1190.26,-543.69"/>
+<polygon fill="#404040" stroke="#404040" points="1189.47,-540.27 1180.7,-546.22 1191.26,-547.04 1189.47,-540.27"/>
 </g>
 <!-- rec_header__seq -->
-<g id="node6" class="node">
+<g id="node12" class="node">
 <title>rec_header__seq</title>
-<polygon fill="#e0ffe0" stroke="none" points="777.23,-809.2 777.23,-832 802.67,-832 802.67,-809.2 777.23,-809.2"/>
-<polygon fill="none" stroke="black" points="777.23,-809.2 777.23,-832 802.67,-832 802.67,-809.2 777.23,-809.2"/>
-<text xml:space="preserve" text-anchor="start" x="780.23" y="-816.4" font-family="Times,serif" font-size="14.00">pos</text>
-<polygon fill="#e0ffe0" stroke="none" points="802.67,-809.2 802.67,-832 830.44,-832 830.44,-809.2 802.67,-809.2"/>
-<polygon fill="none" stroke="black" points="802.67,-809.2 802.67,-832 830.44,-832 830.44,-809.2 802.67,-809.2"/>
-<text xml:space="preserve" text-anchor="start" x="805.67" y="-816.4" font-family="Times,serif" font-size="14.00">size</text>
-<polygon fill="#e0ffe0" stroke="none" points="830.44,-809.2 830.44,-832 921.59,-832 921.59,-809.2 830.44,-809.2"/>
-<polygon fill="none" stroke="black" points="830.44,-809.2 830.44,-832 921.59,-832 921.59,-809.2 830.44,-809.2"/>
-<text xml:space="preserve" text-anchor="start" x="863.96" y="-816.4" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="#e0ffe0" stroke="none" points="921.59,-809.2 921.59,-832 991.35,-832 991.35,-809.2 921.59,-809.2"/>
-<polygon fill="none" stroke="black" points="921.59,-809.2 921.59,-832 991.35,-832 991.35,-809.2 921.59,-809.2"/>
-<text xml:space="preserve" text-anchor="start" x="951.03" y="-816.4" font-family="Times,serif" font-size="14.00">id</text>
-<polygon fill="none" stroke="black" points="777.23,-786.4 777.23,-809.2 802.67,-809.2 802.67,-786.4 777.23,-786.4"/>
-<text xml:space="preserve" text-anchor="start" x="786.45" y="-793.6" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="802.67,-786.4 802.67,-809.2 830.44,-809.2 830.44,-786.4 802.67,-786.4"/>
-<text xml:space="preserve" text-anchor="start" x="813.06" y="-793.6" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="830.44,-786.4 830.44,-809.2 921.59,-809.2 921.59,-786.4 830.44,-786.4"/>
-<polygon fill="none" stroke="black" points="921.59,-786.4 921.59,-809.2 991.35,-809.2 991.35,-786.4 921.59,-786.4"/>
-<text xml:space="preserve" text-anchor="start" x="939.37" y="-793.6" font-family="Times,serif" font-size="14.00">magic</text>
-<polygon fill="none" stroke="black" points="777.23,-763.6 777.23,-786.4 802.67,-786.4 802.67,-763.6 777.23,-763.6"/>
-<text xml:space="preserve" text-anchor="start" x="786.45" y="-770.8" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="802.67,-763.6 802.67,-786.4 830.44,-786.4 830.44,-763.6 802.67,-763.6"/>
-<text xml:space="preserve" text-anchor="start" x="813.06" y="-770.8" font-family="Times,serif" font-size="14.00">4</text>
-<polygon fill="none" stroke="black" points="830.44,-763.6 830.44,-786.4 921.59,-786.4 921.59,-763.6 830.44,-763.6"/>
-<text xml:space="preserve" text-anchor="start" x="862.41" y="-770.8" font-family="Times,serif" font-size="14.00">u4be</text>
-<polygon fill="none" stroke="black" points="921.59,-763.6 921.59,-786.4 991.35,-786.4 991.35,-763.6 921.59,-763.6"/>
-<text xml:space="preserve" text-anchor="start" x="935.86" y="-770.8" font-family="Times,serif" font-size="14.00">version</text>
-<polygon fill="none" stroke="black" points="777.23,-740.8 777.23,-763.6 802.67,-763.6 802.67,-740.8 777.23,-740.8"/>
-<text xml:space="preserve" text-anchor="start" x="786.45" y="-748" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="802.67,-740.8 802.67,-763.6 830.44,-763.6 830.44,-740.8 802.67,-740.8"/>
-<text xml:space="preserve" text-anchor="start" x="813.06" y="-748" font-family="Times,serif" font-size="14.00">1</text>
-<polygon fill="none" stroke="black" points="830.44,-740.8 830.44,-763.6 921.59,-763.6 921.59,-740.8 830.44,-740.8"/>
-<text xml:space="preserve" text-anchor="start" x="833.44" y="-748" font-family="Times,serif" font-size="14.00">u1→NetworkId</text>
-<polygon fill="none" stroke="black" points="921.59,-740.8 921.59,-763.6 991.35,-763.6 991.35,-740.8 921.59,-740.8"/>
-<text xml:space="preserve" text-anchor="start" x="924.59" y="-748" font-family="Times,serif" font-size="14.00">network_id</text>
-<polygon fill="none" stroke="black" points="777.23,-718 777.23,-740.8 802.67,-740.8 802.67,-718 777.23,-718"/>
-<text xml:space="preserve" text-anchor="start" x="786.45" y="-725.2" font-family="Times,serif" font-size="14.00">9</text>
-<polygon fill="none" stroke="black" points="802.67,-718 802.67,-740.8 830.44,-740.8 830.44,-718 802.67,-718"/>
-<text xml:space="preserve" text-anchor="start" x="813.06" y="-725.2" font-family="Times,serif" font-size="14.00">8</text>
-<polygon fill="none" stroke="black" points="830.44,-718 830.44,-740.8 921.59,-740.8 921.59,-718 830.44,-718"/>
-<text xml:space="preserve" text-anchor="start" x="862.41" y="-725.2" font-family="Times,serif" font-size="14.00">u8be</text>
-<polygon fill="none" stroke="black" points="921.59,-718 921.59,-740.8 991.35,-740.8 991.35,-718 921.59,-718"/>
-<text xml:space="preserve" text-anchor="start" x="935.86" y="-725.2" font-family="Times,serif" font-size="14.00">slot_no</text>
+<polygon fill="#e0ffe0" stroke="none" points="1127.7,-855.2 1127.7,-878 1153.14,-878 1153.14,-855.2 1127.7,-855.2"/>
+<polygon fill="none" stroke="black" points="1127.7,-855.2 1127.7,-878 1153.14,-878 1153.14,-855.2 1127.7,-855.2"/>
+<text xml:space="preserve" text-anchor="start" x="1130.7" y="-862.4" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="1153.14,-855.2 1153.14,-878 1180.91,-878 1180.91,-855.2 1153.14,-855.2"/>
+<polygon fill="none" stroke="black" points="1153.14,-855.2 1153.14,-878 1180.91,-878 1180.91,-855.2 1153.14,-855.2"/>
+<text xml:space="preserve" text-anchor="start" x="1156.14" y="-862.4" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="1180.91,-855.2 1180.91,-878 1272.06,-878 1272.06,-855.2 1180.91,-855.2"/>
+<polygon fill="none" stroke="black" points="1180.91,-855.2 1180.91,-878 1272.06,-878 1272.06,-855.2 1180.91,-855.2"/>
+<text xml:space="preserve" text-anchor="start" x="1214.43" y="-862.4" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="1272.06,-855.2 1272.06,-878 1341.82,-878 1341.82,-855.2 1272.06,-855.2"/>
+<polygon fill="none" stroke="black" points="1272.06,-855.2 1272.06,-878 1341.82,-878 1341.82,-855.2 1272.06,-855.2"/>
+<text xml:space="preserve" text-anchor="start" x="1301.5" y="-862.4" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1127.7,-832.4 1127.7,-855.2 1153.14,-855.2 1153.14,-832.4 1127.7,-832.4"/>
+<text xml:space="preserve" text-anchor="start" x="1136.92" y="-839.6" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="1153.14,-832.4 1153.14,-855.2 1180.91,-855.2 1180.91,-832.4 1153.14,-832.4"/>
+<text xml:space="preserve" text-anchor="start" x="1163.53" y="-839.6" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="1180.91,-832.4 1180.91,-855.2 1272.06,-855.2 1272.06,-832.4 1180.91,-832.4"/>
+<polygon fill="none" stroke="black" points="1272.06,-832.4 1272.06,-855.2 1341.82,-855.2 1341.82,-832.4 1272.06,-832.4"/>
+<text xml:space="preserve" text-anchor="start" x="1289.84" y="-839.6" font-family="Times,serif" font-size="14.00">magic</text>
+<polygon fill="none" stroke="black" points="1127.7,-809.6 1127.7,-832.4 1153.14,-832.4 1153.14,-809.6 1127.7,-809.6"/>
+<text xml:space="preserve" text-anchor="start" x="1136.92" y="-816.8" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="1153.14,-809.6 1153.14,-832.4 1180.91,-832.4 1180.91,-809.6 1153.14,-809.6"/>
+<text xml:space="preserve" text-anchor="start" x="1163.53" y="-816.8" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="1180.91,-809.6 1180.91,-832.4 1272.06,-832.4 1272.06,-809.6 1180.91,-809.6"/>
+<text xml:space="preserve" text-anchor="start" x="1212.88" y="-816.8" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="1272.06,-809.6 1272.06,-832.4 1341.82,-832.4 1341.82,-809.6 1272.06,-809.6"/>
+<text xml:space="preserve" text-anchor="start" x="1286.33" y="-816.8" font-family="Times,serif" font-size="14.00">version</text>
+<polygon fill="none" stroke="black" points="1127.7,-786.8 1127.7,-809.6 1153.14,-809.6 1153.14,-786.8 1127.7,-786.8"/>
+<text xml:space="preserve" text-anchor="start" x="1136.92" y="-794" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1153.14,-786.8 1153.14,-809.6 1180.91,-809.6 1180.91,-786.8 1153.14,-786.8"/>
+<text xml:space="preserve" text-anchor="start" x="1163.53" y="-794" font-family="Times,serif" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="1180.91,-786.8 1180.91,-809.6 1272.06,-809.6 1272.06,-786.8 1180.91,-786.8"/>
+<text xml:space="preserve" text-anchor="start" x="1183.91" y="-794" font-family="Times,serif" font-size="14.00">u1→NetworkId</text>
+<polygon fill="none" stroke="black" points="1272.06,-786.8 1272.06,-809.6 1341.82,-809.6 1341.82,-786.8 1272.06,-786.8"/>
+<text xml:space="preserve" text-anchor="start" x="1275.06" y="-794" font-family="Times,serif" font-size="14.00">network_id</text>
+<polygon fill="none" stroke="black" points="1127.7,-764 1127.7,-786.8 1153.14,-786.8 1153.14,-764 1127.7,-764"/>
+<text xml:space="preserve" text-anchor="start" x="1136.92" y="-771.2" font-family="Times,serif" font-size="14.00">9</text>
+<polygon fill="none" stroke="black" points="1153.14,-764 1153.14,-786.8 1180.91,-786.8 1180.91,-764 1153.14,-764"/>
+<text xml:space="preserve" text-anchor="start" x="1163.53" y="-771.2" font-family="Times,serif" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="1180.91,-764 1180.91,-786.8 1272.06,-786.8 1272.06,-764 1180.91,-764"/>
+<text xml:space="preserve" text-anchor="start" x="1212.88" y="-771.2" font-family="Times,serif" font-size="14.00">u8be</text>
+<polygon fill="none" stroke="black" points="1272.06,-764 1272.06,-786.8 1341.82,-786.8 1341.82,-764 1272.06,-764"/>
+<text xml:space="preserve" text-anchor="start" x="1286.33" y="-771.2" font-family="Times,serif" font-size="14.00">slot_no</text>
+</g>
+<!-- scls_record__seq&#45;&gt;rec_chunk__inst__rec_payload_size -->
+<g id="edge15" class="edge">
+<title>scls_record__seq:len_payload_type-&gt;rec_chunk__inst__rec_payload_size</title>
+<path fill="none" stroke="#404040" d="M540.2,-783C557.9,-783 558.66,-795.7 575.2,-802 787.83,-883 847.58,-892.83 1073.6,-919 1215.9,-935.48 1262.89,-972.16 1395.92,-919 1496.78,-878.69 1579.99,-775.44 1619.03,-720.18"/>
+<polygon fill="#404040" stroke="#404040" points="1621.88,-722.22 1624.72,-712.02 1616.13,-718.22 1621.88,-722.22"/>
 </g>
 <!-- scls_record__seq&#45;&gt;scls_record__seq -->
-<g id="edge15" class="edge">
-<title>scls_record__seq:record_type_type-&gt;scls_record__seq:record_data_type</title>
-<path fill="none" stroke="#404040" d="M430.02,-585.87C391.54,-611.9 399.07,-653.6 452.6,-653.6 502.63,-653.6 512.49,-602.48 482.17,-570.68"/>
-<polygon fill="#404040" stroke="#404040" points="484.52,-568.09 474.72,-564.06 479.87,-573.32 484.52,-568.09"/>
+<g id="edge22" class="edge">
+<title>scls_record__seq:len_payload_type-&gt;scls_record__seq:payload_size</title>
+<path fill="none" stroke="#404040" d="M532.31,-794.31C567.85,-813.75 544.2,-839.2 409.69,-839.2 283.53,-839.2 254.89,-803.19 281.14,-778.18"/>
+<polygon fill="#404040" stroke="#404040" points="282.93,-781.22 288.76,-772.38 278.69,-775.66 282.93,-781.22"/>
 </g>
-<!-- scls_record__seq_record_data_switch -->
-<g id="node8" class="node">
-<title>scls_record__seq_record_data_switch</title>
-<polygon fill="#f0f2e4" stroke="none" points="560.27,-608.8 560.27,-631.6 590.36,-631.6 590.36,-608.8 560.27,-608.8"/>
-<polygon fill="none" stroke="black" points="560.27,-608.8 560.27,-631.6 590.36,-631.6 590.36,-608.8 560.27,-608.8"/>
-<text xml:space="preserve" text-anchor="start" x="563.27" y="-616" font-family="Times,serif" font-size="14.00">case</text>
-<polygon fill="#f0f2e4" stroke="none" points="590.36,-608.8 590.36,-631.6 667.89,-631.6 667.89,-608.8 590.36,-608.8"/>
-<polygon fill="none" stroke="black" points="590.36,-608.8 590.36,-631.6 667.89,-631.6 667.89,-608.8 590.36,-608.8"/>
-<text xml:space="preserve" text-anchor="start" x="617.07" y="-616" font-family="Times,serif" font-size="14.00">type</text>
-<polygon fill="none" stroke="black" points="560.27,-586 560.27,-608.8 590.36,-608.8 590.36,-586 560.27,-586"/>
-<text xml:space="preserve" text-anchor="start" x="571.81" y="-593.2" font-family="Times,serif" font-size="14.00">0</text>
-<polygon fill="none" stroke="black" points="590.36,-586 590.36,-608.8 667.89,-608.8 667.89,-586 590.36,-586"/>
-<text xml:space="preserve" text-anchor="start" x="598.04" y="-593.2" font-family="Times,serif" font-size="14.00">RecHeader</text>
-<polygon fill="none" stroke="black" points="560.27,-563.2 560.27,-586 590.36,-586 590.36,-563.2 560.27,-563.2"/>
-<text xml:space="preserve" text-anchor="start" x="571.81" y="-570.4" font-family="Times,serif" font-size="14.00">1</text>
-<polygon fill="none" stroke="black" points="590.36,-563.2 590.36,-586 667.89,-586 667.89,-563.2 590.36,-563.2"/>
-<text xml:space="preserve" text-anchor="start" x="593.36" y="-570.4" font-family="Times,serif" font-size="14.00">RecManifest</text>
-<polygon fill="none" stroke="black" points="560.27,-540.4 560.27,-563.2 590.36,-563.2 590.36,-540.4 560.27,-540.4"/>
-<text xml:space="preserve" text-anchor="start" x="568.31" y="-547.6" font-family="Times,serif" font-size="14.00">16</text>
-<polygon fill="none" stroke="black" points="590.36,-540.4 590.36,-563.2 667.89,-563.2 667.89,-540.4 590.36,-540.4"/>
-<text xml:space="preserve" text-anchor="start" x="599.57" y="-547.6" font-family="Times,serif" font-size="14.00">RecChunk</text>
+<!-- scls_record_data__seq -->
+<g id="node14" class="node">
+<title>scls_record_data__seq</title>
+<polygon fill="#e0ffe0" stroke="none" points="591.2,-720.4 591.2,-743.2 616.65,-743.2 616.65,-720.4 591.2,-720.4"/>
+<polygon fill="none" stroke="black" points="591.2,-720.4 591.2,-743.2 616.65,-743.2 616.65,-720.4 591.2,-720.4"/>
+<text xml:space="preserve" text-anchor="start" x="594.2" y="-727.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="616.65,-720.4 616.65,-743.2 644.42,-743.2 644.42,-720.4 616.65,-720.4"/>
+<polygon fill="none" stroke="black" points="616.65,-720.4 616.65,-743.2 644.42,-743.2 644.42,-720.4 616.65,-720.4"/>
+<text xml:space="preserve" text-anchor="start" x="619.65" y="-727.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="644.42,-720.4 644.42,-743.2 766.65,-743.2 766.65,-720.4 644.42,-720.4"/>
+<polygon fill="none" stroke="black" points="644.42,-720.4 644.42,-743.2 766.65,-743.2 766.65,-720.4 644.42,-720.4"/>
+<text xml:space="preserve" text-anchor="start" x="693.48" y="-727.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="766.65,-720.4 766.65,-743.2 839.5,-743.2 839.5,-720.4 766.65,-720.4"/>
+<polygon fill="none" stroke="black" points="766.65,-720.4 766.65,-743.2 839.5,-743.2 839.5,-720.4 766.65,-720.4"/>
+<text xml:space="preserve" text-anchor="start" x="797.63" y="-727.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="591.2,-697.6 591.2,-720.4 616.65,-720.4 616.65,-697.6 591.2,-697.6"/>
+<text xml:space="preserve" text-anchor="start" x="600.43" y="-704.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="616.65,-697.6 616.65,-720.4 644.42,-720.4 644.42,-697.6 616.65,-697.6"/>
+<text xml:space="preserve" text-anchor="start" x="627.03" y="-704.8" font-family="Times,serif" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="644.42,-697.6 644.42,-720.4 766.65,-720.4 766.65,-697.6 644.42,-697.6"/>
+<text xml:space="preserve" text-anchor="start" x="698.53" y="-704.8" font-family="Times,serif" font-size="14.00">u1</text>
+<polygon fill="none" stroke="black" points="766.65,-697.6 766.65,-720.4 839.5,-720.4 839.5,-697.6 766.65,-697.6"/>
+<text xml:space="preserve" text-anchor="start" x="769.65" y="-704.8" font-family="Times,serif" font-size="14.00">record_type</text>
+<polygon fill="none" stroke="black" points="591.2,-674.8 591.2,-697.6 616.65,-697.6 616.65,-674.8 591.2,-674.8"/>
+<text xml:space="preserve" text-anchor="start" x="600.43" y="-682" font-family="Times,serif" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="616.65,-674.8 616.65,-697.6 644.42,-697.6 644.42,-674.8 616.65,-674.8"/>
+<text xml:space="preserve" text-anchor="start" x="625.28" y="-682" font-family="Times,serif" font-size="14.00">...</text>
+<polygon fill="none" stroke="black" points="644.42,-674.8 644.42,-697.6 766.65,-697.6 766.65,-674.8 644.42,-674.8"/>
+<text xml:space="preserve" text-anchor="start" x="647.42" y="-682" font-family="Times,serif" font-size="14.00">switch (record_type)</text>
+<polygon fill="none" stroke="black" points="766.65,-674.8 766.65,-697.6 839.5,-697.6 839.5,-674.8 766.65,-674.8"/>
+<text xml:space="preserve" text-anchor="start" x="770.04" y="-682" font-family="Times,serif" font-size="14.00">record_data</text>
 </g>
-<!-- scls_record__seq&#45;&gt;scls_record__seq_record_data_switch -->
-<g id="edge11" class="edge">
-<title>scls_record__seq:record_data_type-&gt;scls_record__seq_record_data_switch</title>
-<path fill="none" stroke="black" stroke-width="2" d="M490.03,-551.8C507.04,-551.8 524.9,-554.87 541.58,-559.17"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="538.86,-562.05 549.43,-561.35 540.72,-555.3 538.86,-562.05"/>
+<!-- scls_record__seq&#45;&gt;scls_record_data__seq -->
+<g id="edge23" class="edge">
+<title>scls_record__seq:payload_type-&gt;scls_record_data__seq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M540.2,-760.2C563.09,-760.2 587,-756.08 609.52,-750.18"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="608.83,-754 617.53,-747.96 606.96,-747.25 608.83,-754"/>
 </g>
-<!-- scls_record__seq_record_data_switch&#45;&gt;rec_manifest__seq -->
-<g id="edge13" class="edge">
-<title>scls_record__seq_record_data_switch:case1-&gt;rec_manifest__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M668.89,-574.6C731.33,-574.6 686.89,-495.85 723.13,-445 730.32,-434.9 738.35,-425.02 746.88,-415.46"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="748.27,-419.12 752.44,-409.38 743.11,-414.39 748.27,-419.12"/>
+<!-- scls_record_data__seq&#45;&gt;scls_record_data__seq -->
+<g id="edge28" class="edge">
+<title>scls_record_data__seq:record_type_type-&gt;scls_record_data__seq:record_data_type</title>
+<path fill="none" stroke="#404040" d="M776,-720.31C742.7,-739.75 751.73,-765.2 803.07,-765.2 851.03,-765.2 862.07,-729.49 836.2,-704.51"/>
+<polygon fill="#404040" stroke="#404040" points="838.62,-701.96 828.64,-698.41 834.23,-707.41 838.62,-701.96"/>
 </g>
-<!-- scls_record__seq_record_data_switch&#45;&gt;rec_chunk__seq -->
-<g id="edge14" class="edge">
-<title>scls_record__seq_record_data_switch:case2-&gt;rec_chunk__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M668.89,-551.8C688.83,-551.8 709.82,-551.81 730.54,-551.82"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="728.99,-555.32 738.99,-551.83 728.99,-548.32 728.99,-555.32"/>
+<!-- scls_record_data__seq_record_data_switch -->
+<g id="node15" class="node">
+<title>scls_record_data__seq_record_data_switch</title>
+<polygon fill="#f0f2e4" stroke="none" points="910.74,-738.8 910.74,-761.6 940.83,-761.6 940.83,-738.8 910.74,-738.8"/>
+<polygon fill="none" stroke="black" points="910.74,-738.8 910.74,-761.6 940.83,-761.6 940.83,-738.8 910.74,-738.8"/>
+<text xml:space="preserve" text-anchor="start" x="913.74" y="-746" font-family="Times,serif" font-size="14.00">case</text>
+<polygon fill="#f0f2e4" stroke="none" points="940.83,-738.8 940.83,-761.6 1018.36,-761.6 1018.36,-738.8 940.83,-738.8"/>
+<polygon fill="none" stroke="black" points="940.83,-738.8 940.83,-761.6 1018.36,-761.6 1018.36,-738.8 940.83,-738.8"/>
+<text xml:space="preserve" text-anchor="start" x="967.54" y="-746" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="none" stroke="black" points="910.74,-716 910.74,-738.8 940.83,-738.8 940.83,-716 910.74,-716"/>
+<text xml:space="preserve" text-anchor="start" x="922.28" y="-723.2" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="940.83,-716 940.83,-738.8 1018.36,-738.8 1018.36,-716 940.83,-716"/>
+<text xml:space="preserve" text-anchor="start" x="948.51" y="-723.2" font-family="Times,serif" font-size="14.00">RecHeader</text>
+<polygon fill="none" stroke="black" points="910.74,-693.2 910.74,-716 940.83,-716 940.83,-693.2 910.74,-693.2"/>
+<text xml:space="preserve" text-anchor="start" x="922.28" y="-700.4" font-family="Times,serif" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="940.83,-693.2 940.83,-716 1018.36,-716 1018.36,-693.2 940.83,-693.2"/>
+<text xml:space="preserve" text-anchor="start" x="943.83" y="-700.4" font-family="Times,serif" font-size="14.00">RecManifest</text>
+<polygon fill="none" stroke="black" points="910.74,-670.4 910.74,-693.2 940.83,-693.2 940.83,-670.4 910.74,-670.4"/>
+<text xml:space="preserve" text-anchor="start" x="918.78" y="-677.6" font-family="Times,serif" font-size="14.00">16</text>
+<polygon fill="none" stroke="black" points="940.83,-670.4 940.83,-693.2 1018.36,-693.2 1018.36,-670.4 940.83,-670.4"/>
+<text xml:space="preserve" text-anchor="start" x="950.04" y="-677.6" font-family="Times,serif" font-size="14.00">RecChunk</text>
 </g>
-<!-- scls_record__seq_record_data_switch&#45;&gt;rec_header__seq -->
-<g id="edge12" class="edge">
-<title>scls_record__seq_record_data_switch:case0-&gt;rec_header__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M668.89,-597.4C721.26,-597.4 685.17,-665.92 723.13,-702 734,-712.33 746.59,-721.39 759.84,-729.28"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="756.54,-731.42 766.96,-733.32 759.99,-725.34 756.54,-731.42"/>
+<!-- scls_record_data__seq&#45;&gt;scls_record_data__seq_record_data_switch -->
+<g id="edge24" class="edge">
+<title>scls_record_data__seq:record_data_type-&gt;scls_record_data__seq_record_data_switch</title>
+<path fill="none" stroke="black" stroke-width="2" d="M840.5,-686.2C857.45,-686.2 875.35,-688.9 892.1,-692.68"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="889.43,-695.64 899.97,-694.59 891.07,-688.83 889.43,-695.64"/>
+</g>
+<!-- scls_record_data__seq_record_data_switch&#45;&gt;rec_manifest__seq -->
+<g id="edge26" class="edge">
+<title>scls_record_data__seq_record_data_switch:case1-&gt;rec_manifest__seq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M1019.36,-704.6C1121.62,-704.6 1021.03,-568.71 1073.6,-481 1080.55,-469.39 1088.76,-458.21 1097.71,-447.55"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1099.14,-451.24 1103.06,-441.4 1093.86,-446.65 1099.14,-451.24"/>
+</g>
+<!-- scls_record_data__seq_record_data_switch&#45;&gt;rec_chunk__seq -->
+<g id="edge27" class="edge">
+<title>scls_record_data__seq_record_data_switch:case2-&gt;rec_chunk__seq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M1019.36,-681.8C1040.2,-681.8 1061.29,-678.04 1081.7,-672.02"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1081.26,-675.82 1089.74,-669.47 1079.15,-669.15 1081.26,-675.82"/>
+</g>
+<!-- scls_record_data__seq_record_data_switch&#45;&gt;rec_header__seq -->
+<g id="edge25" class="edge">
+<title>scls_record_data__seq_record_data_switch:case0-&gt;rec_header__seq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M1019.36,-727.4C1024.94,-727.4 1065.27,-744.66 1109.47,-764.36"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1106.53,-766.88 1117.09,-767.76 1109.39,-760.49 1106.53,-766.88"/>
 </g>
 <!-- namespace_info__seq&#45;&gt;rec_manifest__seq -->
-<g id="edge4" class="edge">
+<g id="edge5" class="edge">
 <title>namespace_info__seq:len_ns_type-&gt;rec_manifest__seq:namespace_info__repeat</title>
-<path fill="none" stroke="#404040" d="M688.13,-193C734.06,-193 715.16,-265.02 749.95,-277.4"/>
-<polygon fill="#404040" stroke="#404040" points="749.36,-280.85 759.79,-278.96 750.46,-273.94 749.36,-280.85"/>
+<path fill="none" stroke="#404040" d="M1038.6,-229C1084.53,-229 1065.63,-301.02 1100.42,-313.4"/>
+<polygon fill="#404040" stroke="#404040" points="1099.83,-316.85 1110.26,-314.96 1100.93,-309.94 1099.83,-316.85"/>
 </g>
 <!-- namespace_info__seq&#45;&gt;ns_info__seq -->
-<g id="edge6" class="edge">
+<g id="edge9" class="edge">
 <title>namespace_info__seq:len_ns_type-&gt;ns_info__seq:namespaces_bytes_size</title>
-<path fill="none" stroke="#404040" d="M688.13,-193C717.65,-193 770.06,-119.46 794.44,-82.66"/>
-<polygon fill="#404040" stroke="#404040" points="797.16,-84.9 799.71,-74.62 791.3,-81.07 797.16,-84.9"/>
+<path fill="none" stroke="#404040" d="M1038.6,-229C1068.12,-229 1120.53,-155.46 1144.91,-118.66"/>
+<polygon fill="#404040" stroke="#404040" points="1147.63,-120.9 1150.18,-110.62 1141.77,-117.07 1147.63,-120.9"/>
 </g>
 <!-- namespace_info__seq&#45;&gt;ns_info__seq -->
-<g id="edge16" class="edge">
+<g id="edge29" class="edge">
 <title>namespace_info__seq:ns_info_type-&gt;ns_info__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M688.13,-170.2C717.71,-170.2 747.87,-161.87 775.36,-150.43"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="775.21,-154.31 782.98,-147.11 772.41,-147.89 775.21,-154.31"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1038.6,-206.2C1068.18,-206.2 1098.34,-197.87 1125.83,-186.43"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1125.68,-190.31 1133.45,-183.11 1122.88,-183.89 1125.68,-190.31"/>
+</g>
+<!-- tstr__seq -->
+<g id="node17" class="node">
+<title>tstr__seq</title>
+<polygon fill="#e0ffe0" stroke="none" points="1983.55,-256.4 1983.55,-279.2 2008.99,-279.2 2008.99,-256.4 1983.55,-256.4"/>
+<polygon fill="none" stroke="black" points="1983.55,-256.4 1983.55,-279.2 2008.99,-279.2 2008.99,-256.4 1983.55,-256.4"/>
+<text xml:space="preserve" text-anchor="start" x="1986.55" y="-263.6" font-family="Times,serif" font-size="14.00">pos</text>
+<polygon fill="#e0ffe0" stroke="none" points="2008.99,-256.4 2008.99,-279.2 2062.42,-279.2 2062.42,-256.4 2008.99,-256.4"/>
+<polygon fill="none" stroke="black" points="2008.99,-256.4 2008.99,-279.2 2062.42,-279.2 2062.42,-256.4 2008.99,-256.4"/>
+<text xml:space="preserve" text-anchor="start" x="2024.82" y="-263.6" font-family="Times,serif" font-size="14.00">size</text>
+<polygon fill="#e0ffe0" stroke="none" points="2062.42,-256.4 2062.42,-279.2 2129.85,-279.2 2129.85,-256.4 2062.42,-256.4"/>
+<polygon fill="none" stroke="black" points="2062.42,-256.4 2062.42,-279.2 2129.85,-279.2 2129.85,-256.4 2062.42,-256.4"/>
+<text xml:space="preserve" text-anchor="start" x="2084.08" y="-263.6" font-family="Times,serif" font-size="14.00">type</text>
+<polygon fill="#e0ffe0" stroke="none" points="2129.85,-256.4 2129.85,-279.2 2183.27,-279.2 2183.27,-256.4 2129.85,-256.4"/>
+<polygon fill="none" stroke="black" points="2129.85,-256.4 2129.85,-279.2 2183.27,-279.2 2183.27,-256.4 2129.85,-256.4"/>
+<text xml:space="preserve" text-anchor="start" x="2151.12" y="-263.6" font-family="Times,serif" font-size="14.00">id</text>
+<polygon fill="none" stroke="black" points="1983.55,-233.6 1983.55,-256.4 2008.99,-256.4 2008.99,-233.6 1983.55,-233.6"/>
+<text xml:space="preserve" text-anchor="start" x="1992.77" y="-240.8" font-family="Times,serif" font-size="14.00">0</text>
+<polygon fill="none" stroke="black" points="2008.99,-233.6 2008.99,-256.4 2062.42,-256.4 2062.42,-233.6 2008.99,-233.6"/>
+<text xml:space="preserve" text-anchor="start" x="2032.21" y="-240.8" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="2062.42,-233.6 2062.42,-256.4 2129.85,-256.4 2129.85,-233.6 2062.42,-233.6"/>
+<text xml:space="preserve" text-anchor="start" x="2082.53" y="-240.8" font-family="Times,serif" font-size="14.00">u4be</text>
+<polygon fill="none" stroke="black" points="2129.85,-233.6 2129.85,-256.4 2183.27,-256.4 2183.27,-233.6 2129.85,-233.6"/>
+<text xml:space="preserve" text-anchor="start" x="2132.85" y="-240.8" font-family="Times,serif" font-size="14.00">len_data</text>
+<polygon fill="none" stroke="black" points="1983.55,-210.8 1983.55,-233.6 2008.99,-233.6 2008.99,-210.8 1983.55,-210.8"/>
+<text xml:space="preserve" text-anchor="start" x="1992.77" y="-218" font-family="Times,serif" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="2008.99,-210.8 2008.99,-233.6 2062.42,-233.6 2062.42,-210.8 2008.99,-210.8"/>
+<text xml:space="preserve" text-anchor="start" x="2011.99" y="-218" font-family="Times,serif" font-size="14.00">len_data</text>
+<polygon fill="none" stroke="black" points="2062.42,-210.8 2062.42,-233.6 2129.85,-233.6 2129.85,-210.8 2062.42,-210.8"/>
+<text xml:space="preserve" text-anchor="start" x="2065.42" y="-218" font-family="Times,serif" font-size="14.00">str(UTF-8)</text>
+<polygon fill="none" stroke="black" points="2129.85,-210.8 2129.85,-233.6 2183.27,-233.6 2183.27,-210.8 2129.85,-210.8"/>
+<text xml:space="preserve" text-anchor="start" x="2144.9" y="-218" font-family="Times,serif" font-size="14.00">data</text>
 </g>
 <!-- tstr__seq&#45;&gt;tstr__seq -->
-<g id="edge17" class="edge">
+<g id="edge30" class="edge">
 <title>tstr__seq:len_data_type-&gt;tstr__seq:data_size</title>
-<path fill="none" stroke="#404040" d="M1478.31,-427.31C1506.92,-446.75 1489.99,-472.2 1393.69,-472.2 1304.31,-472.2 1283.3,-436.94 1303.6,-411.98"/>
-<polygon fill="#404040" stroke="#404040" points="1305.73,-414.79 1310.52,-405.34 1300.88,-409.74 1305.73,-414.79"/>
+<path fill="none" stroke="#404040" d="M2183.13,-253.72C2228.57,-273.4 2212.44,-301.2 2096.13,-301.2 1988.91,-301.2 1966.83,-263.2 1999.63,-238.17"/>
+<polygon fill="#404040" stroke="#404040" points="2001.3,-241.26 2007.86,-232.93 1997.54,-235.35 2001.3,-241.26"/>
 </g>
 <!-- summary__seq&#45;&gt;tstr__seq -->
-<g id="edge18" class="edge">
+<g id="edge32" class="edge">
 <title>summary__seq:created_at_type-&gt;tstr__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1230.1,-427.4C1240.46,-427.4 1251.21,-427.13 1261.98,-426.66"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1260.36,-430.25 1270.18,-426.26 1260.02,-423.25 1260.36,-430.25"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1718.82,-281.4C1801.17,-281.4 1893.49,-272.04 1964.49,-262.81"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1963.24,-266.51 1972.7,-261.73 1962.33,-259.57 1963.24,-266.51"/>
 </g>
 <!-- summary__seq&#45;&gt;tstr__seq -->
-<g id="edge19" class="edge">
+<g id="edge33" class="edge">
 <title>summary__seq:tool_bytes_type-&gt;tstr__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1230.1,-404.6C1240.46,-404.6 1251.21,-404.87 1261.98,-405.34"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1260.02,-408.75 1270.18,-405.74 1260.36,-401.75 1260.02,-408.75"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1718.82,-258.6C1800.96,-258.6 1893.48,-255.09 1964.62,-251.64"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1963.02,-255.22 1972.83,-251.23 1962.67,-248.23 1963.02,-255.22"/>
 </g>
 <!-- summary__seq&#45;&gt;tstr__seq -->
-<g id="edge20" class="edge">
+<g id="edge34" class="edge">
 <title>summary__seq:comment_type-&gt;tstr__seq</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1230.1,-381.8C1240.6,-381.8 1251.41,-382.61 1262.18,-383.97"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="1260,-387.19 1270.39,-385.16 1261,-380.27 1260,-387.19"/>
+<path fill="none" stroke="black" stroke-width="2" d="M1718.82,-235.8C1800.93,-235.8 1893.44,-238.17 1964.6,-240.51"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="1962.7,-243.95 1972.81,-240.78 1962.93,-236.95 1962.7,-243.95"/>
+</g>
+<!-- entry_body__params -->
+<g id="node20" class="node">
+<title>entry_body__params</title>
+<text xml:space="preserve" text-anchor="middle" x="2083.41" y="-13.8" font-family="Times,serif" font-size="14.00">entry_body__params</text>
+</g>
+<!-- entry_body__params&#45;&gt;entry_body__seq -->
+<g id="edge31" class="edge">
+<title>entry_body__params:len_key_type-&gt;entry_body__seq:key_size</title>
+<path fill="none" stroke="#404040" d="M2107.46,-35.88C2159.29,-76.07 2284.54,-173.21 2336.82,-213.75"/>
+<polygon fill="#404040" stroke="#404040" points="2334.45,-216.34 2344.5,-219.71 2338.74,-210.81 2334.45,-216.34"/>
 </g>
 </g>
 </svg>
