@@ -139,6 +139,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0149 | [Optional DRep Compensation](./CIP-0149) | Proposed |
 | 0150 | [Block Data Compression](./CIP-0150) | Proposed |
 | 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
+| 0152 | [Modules in UPLC](./CIP-0152) | Proposed |
 | 0153 | [Plutus Core Builtin Type - MaryEraValue](./CIP-0153) | Proposed |
 | 0155 | [SRV Registry](./CIP-0155) | Proposed |
 | 0156 | [Plutus Core Builtin Function - multiIndexArray](./CIP-0156) | Proposed |
