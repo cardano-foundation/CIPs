@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 166
 Title: Efficient scalars for BLS12-381
 Status: Proposed
 Category: Plutus
