@@ -63,7 +63,8 @@ We add the following builtin functions:
 As with all Plutus Core builtin types, arrays must have a fixed binary representation.
 
 For arrays, this representation will be based on the one currently implemented in the [flat][8] encoding
-for the [Haskell `Array` type][9].
+for the [Haskell `List` type][9].  Plutus Core arrays must be converted to lists before being serialised,
+and deserialisation is performed by using the flat decoder for lists and converting the result to an array.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -205,4 +206,4 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [6]: https://github.com/IntersectMBO/cardano-ledger "cardano-ledger"
 [7]: https://github.com/IntersectMBO/cardano-node "cardano-node"
 [8]: https://hackage.haskell.org/package/flat "flat"
-[9]: https://hackage.haskell.org/package/array-0.5.4.0/docs/Data-Array.html#t:Array "Haskell Array"
+[9]: https://hackage.haskell.org/package/base-4.21.0.0/docs/Data-List.html "Haskell List"
