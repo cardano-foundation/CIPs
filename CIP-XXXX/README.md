@@ -1,7 +1,6 @@
 ---
 CIP: XXXX
 Title: Remove `isValid` from transactions
-
 Category: Ledger
 Authors:
   - Teodora Danciu <teodora.danciu@iohk.io>
