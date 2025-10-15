@@ -9,6 +9,7 @@ Authors:
 Implementors:
 - Eternl <https://eternl.io/>
 - newm-chain <https://newm.io/>
+- Gero <https://gerowallet.io/>
 Discussions:
     - https://github.com/cardano-foundation/cips/pulls/588
 Created: 2023-09-03
