@@ -25,7 +25,7 @@ This applies to all types of governance metadata, including governance actions, 
 Without a standardized mechanism to bind metadata to specific on-chain effects,
 there is a security vulnerability: **metadata replay attacks**.
 
-This vulnerability has been discussed via [CIPs Issue #970](https://github.com/cardano-foundation/CIPs/issues/970) by [Adam Dean](https://github.com/Crypto2099).
+This vulnerability has been discussed via [CIPs Issue #970](https://github.com/cardano-foundation/CIPs/issues/970) by [Adam Dean](https://github.com/Crypto2099) and further within [CIPs Issue #978](http://github.com/cardano-foundation/CIPs/issues/978).
 
 ### Attack Scenario
 
