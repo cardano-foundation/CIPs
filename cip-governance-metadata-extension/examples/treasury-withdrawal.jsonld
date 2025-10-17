@@ -1,0 +1,28 @@
+{
+  "@context": "...",
+  "hashAlgorithm": "blake2b-256",
+  "body": {
+    "title": "Fund Development Team",
+    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
+    "motivation": "The team has delivered milestones and requires funding for continued work.",
+    "rationale": "Funding will enable completion of the remaining project deliverables.",
+    "onChain": {
+      "@type": "ProposalProcedure",
+      "deposit": 100000000000,
+      "returnAddr": {
+        "network": "mainnet",
+        "paymentCred": null,
+        "stakeCred": {
+          "keyHash": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+        }
+      },
+      "govAction": {
+        "@type": "TreasuryWithdrawals",
+        "withdrawals": {
+          "stake1u8xj29v6qhja7zl0yk5u9q8x7w6v5u4t3s2r1q0p9o8n7m6l5k4j3h2g1f0e9d": 100000000000
+        }
+      }
+    }
+  },
+  "authors": []
+}
