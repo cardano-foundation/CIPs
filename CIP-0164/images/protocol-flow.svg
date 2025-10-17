@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1000" height="580" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="timelinePattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#f8f8f8"/>
+      <line x1="0" y1="40" x2="40" y2="0" stroke="#e8e8e8" stroke-width="0.5"/>
+    </pattern>
+    
+    <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#595959"/>
+    </marker>
+    
+    <marker id="votearrowhead" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#f9a825"/>
+    </marker>
+    
+    <style>
+      .block-link, .vote-link, .param-link, .timing-link, .delta-link {
+        cursor: pointer;
+      }
+      .block-link:hover rect {
+        stroke-width: 3;
+        filter: brightness(1.1);
+      }
+      .block-link:hover polygon {
+        stroke-width: 3;
+        filter: brightness(1.1);
+      }
+      .block-link:hover text {
+        font-weight: bold;
+      }
+      .vote-link:hover rect {
+        transform: scale(2.0);
+        filter: brightness(1.5) saturate(1.3);
+        stroke: #ff6b35;
+        stroke-width: 1;
+      }
+      .param-link:hover line,
+      .param-link:hover path {
+        stroke-width: 4;
+        filter: brightness(1.1);
+      }
+      .param-link:hover text {
+        font-weight: bold;
+      }
+      .timing-link:hover line {
+        stroke-width: 4;
+        filter: brightness(1.1);
+      }
+      .timing-link:hover text {
+        font-weight: bold;
+      }
+      .delta-link:hover line {
+        stroke-width: 4;
+        filter: brightness(1.1);
+      }
+      .delta-link:hover text {
+        font-weight: bold;
+      }
+    </style>
+  </defs>
+  
+  <rect width="1000" height="580" fill="#ffffff"/>
+  
+  <g id="slot-grid">
+    <g stroke="#ddd" stroke-width="1">
+      <line x1="100" y1="80" x2="100" y2="560"/>
+      <line x1="250" y1="80" x2="250" y2="560"/>
+      <line x1="400" y1="80" x2="400" y2="560"/>
+      <line x1="550" y1="80" x2="550" y2="560"/>
+      <line x1="700" y1="80" x2="700" y2="560"/>
+      <line x1="850" y1="80" x2="850" y2="560"/>
+    </g>
+    
+    <g stroke="#f0f0f0" stroke-width="0.5">
+      <line x1="130" y1="80" x2="130" y2="560"/>
+      <line x1="160" y1="80" x2="160" y2="560"/>
+      <line x1="190" y1="80" x2="190" y2="560"/>
+      <line x1="220" y1="80" x2="220" y2="560"/>
+      <line x1="280" y1="80" x2="280" y2="560"/>
+      <line x1="310" y1="80" x2="310" y2="560"/>
+      <line x1="340" y1="80" x2="340" y2="560"/>
+      <line x1="370" y1="80" x2="370" y2="560"/>
+      <line x1="430" y1="80" x2="430" y2="560"/>
+      <line x1="460" y1="80" x2="460" y2="560"/>
+      <line x1="490" y1="80" x2="490" y2="560"/>
+      <line x1="520" y1="80" x2="520" y2="560"/>
+      <line x1="580" y1="80" x2="580" y2="560"/>
+      <line x1="610" y1="80" x2="610" y2="560"/>
+      <line x1="640" y1="80" x2="640" y2="560"/>
+      <line x1="670" y1="80" x2="670" y2="560"/>
+      <line x1="730" y1="80" x2="730" y2="560"/>
+      <line x1="760" y1="80" x2="760" y2="560"/>
+      <line x1="790" y1="80" x2="790" y2="560"/>
+      <line x1="820" y1="80" x2="820" y2="560"/>
+    </g>
+  </g>
+  
+  <g id="timeline">
+    <rect x="100" y="40" width="750" height="30" fill="url(#timelinePattern)" stroke="#ddd" stroke-width="0.5"/>
+    <text x="475" y="60" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#999">Time (slots) →</text>
+  </g>
+  
+  <g id="protocol-flow">
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="block-link">
+      <rect x="220" y="100" width="60" height="80" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="6"/>
+      <text x="250" y="135" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#783f04">RB</text>
+      <text x="250" y="160" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#783f04">[Txs]</text>
+    </a>
+    
+    <path d="M 250 180 L 250 216" stroke="#783f04" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>
+    <text x="255" y="200" font-family="Arial, sans-serif" font-size="11" text-anchor="start" fill="#783f04">announces</text>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="block-link">
+      <rect x="200" y="220" width="100" height="60" fill="#d9ead3" stroke="#274e13" stroke-width="2" rx="6"/>
+      <text x="250" y="250" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#274e13">EB</text>
+      <text x="250" y="268" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#274e13">[TxRefs]</text>
+    </a>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#l-hdr" class="param-link">
+      <line x1="250" y1="300" x2="340" y2="300" stroke="#f57c00" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M 250 300 L 250 305 Q 250 310 255 310 L 290 310 L 295 317 L 300 310 L 335 310 Q 340 310 340 305 L 340 300" 
+            stroke="#f57c00" stroke-width="2" fill="none"/>
+      <text x="295" y="335" font-size="18" text-anchor="middle" fill="#f57c00">
+        <tspan font-family="serif" font-size="24">3</tspan><tspan font-family="serif" font-style="italic" font-size="24">L</tspan><tspan font-family="Arial, sans-serif" font-size="16" baseline-shift="sub">hdr</tspan>
+      </text>
+    </a>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#l-vote" class="param-link">
+      <line x1="340" y1="320" x2="460" y2="320" stroke="#f9a825" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M 340 320 L 340 325 Q 340 330 345 330 L 395 330 L 400 337 L 405 330 L 455 330 Q 460 330 460 325 L 460 320" 
+            stroke="#f9a825" stroke-width="2" fill="none"/>
+      <text x="400" y="355" font-size="18" text-anchor="middle" fill="#f9a825">
+        <tspan font-family="serif" font-style="italic" font-size="24">L</tspan><tspan font-family="Arial, sans-serif" font-size="16" baseline-shift="sub">vote</tspan>
+      </text>
+    </a>
+
+    
+    <g id="votes">
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="vote-link">
+        <rect x="352" y="305" width="6" height="6" fill="#f9a825" transform="rotate(45 355 308)"/>
+      </a>
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="vote-link">
+        <rect x="372" y="310" width="6" height="6" fill="#f9a825" transform="rotate(45 375 313)"/>
+      </a>
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="vote-link">
+        <rect x="392" y="300" width="6" height="6" fill="#f9a825" transform="rotate(45 395 303)"/>
+      </a>
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="vote-link">
+        <rect x="412" y="311" width="6" height="6" fill="#f9a825" transform="rotate(45 415 318)"/>
+      </a>
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="vote-link">
+        <rect x="432" y="305" width="6" height="6" fill="#f9a825" transform="rotate(45 435 308)"/>
+      </a>
+    </g>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#l-diff" class="param-link">
+      <line x1="460" y1="340" x2="670" y2="340" stroke="#ffb74d" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M 460 340 L 460 345 Q 460 350 465 350 L 560 350 L 565 357 L 570 350 L 665 350 Q 670 350 670 345 L 670 340" 
+            stroke="#ffb74d" stroke-width="2" fill="none"/>
+      <text x="565" y="375" font-size="18" text-anchor="middle" fill="#ffb74d">
+        <tspan font-family="serif" font-style="italic" font-size="24">L</tspan><tspan font-family="Arial, sans-serif" font-size="16" baseline-shift="sub">diff</tspan>
+      </text>
+    </a>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#delta-rb" class="timing-link">
+      <g id="rb-diffusion">
+        <line x1="700" y1="385" x2="700" y2="395" stroke="#607d8b" stroke-width="2"/>
+        <line x1="700" y1="390" x2="850" y2="390" stroke="#607d8b" stroke-width="2" stroke-dasharray="4,2"/>
+        <line x1="850" y1="385" x2="850" y2="395" stroke="#607d8b" stroke-width="2"/>
+        <text x="777" y="375" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="#607d8b">Δ<tspan font-size="16" baseline-shift="sub">RB</tspan><tspan font-size="14" baseline-shift="super">W</tspan></text>
+      </g>
+    </a>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#delta-applytxs" class="timing-link">
+      <g id="tx-processing">
+        <line x1="775" y1="425" x2="775" y2="435" stroke="#607d8b" stroke-width="2"/>
+        <line x1="775" y1="430" x2="850" y2="430" stroke="#607d8b" stroke-width="2" stroke-dasharray="4,2"/>
+        <line x1="850" y1="425" x2="850" y2="435" stroke="#607d8b" stroke-width="2"/>
+        <text x="815" y="415" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#607d8b">Δ<tspan font-size="14" baseline-shift="sub">applyTxs</tspan><tspan font-size="12" baseline-shift="super">W</tspan></text>
+      </g>
+    </a>
+    
+    <g id="network-chars-vote">
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#delta-eb-H" class="delta-link">
+        <line x1="250" y1="425" x2="250" y2="435" stroke="#8bc34a" stroke-width="2"/>
+        <line x1="250" y1="430" x2="460" y2="430" stroke="#8bc34a" stroke-width="2" stroke-dasharray="4,2"/>
+        <line x1="460" y1="425" x2="460" y2="435" stroke="#8bc34a" stroke-width="2"/>
+        <text x="355" y="415" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#8bc34a">Δ<tspan font-size="14" baseline-shift="sub">EB</tspan><tspan font-size="12" baseline-shift="super">O</tspan></text>
+      </a>
+    </g>
+    
+    <g id="network-chars-after">
+      <!-- Delta EB wc (extends beyond RB' creation) -->
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#delta-eb-A" class="delta-link">
+        <line x1="250" y1="465" x2="250" y2="475" stroke="#607d8b" stroke-width="2"/>
+        <line x1="250" y1="470" x2="810" y2="470" stroke="#607d8b" stroke-width="2" stroke-dasharray="4,2"/>
+        <line x1="810" y1="465" x2="810" y2="475" stroke="#607d8b" stroke-width="2"/>
+        <text x="530" y="455" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#607d8b">Δ<tspan font-size="14" baseline-shift="sub">EB</tspan><tspan font-size="12" baseline-shift="super">W</tspan></text>
+      </a>
+      
+      <!-- Delta reapply (after EB wc with small gap, same y-position) -->
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#delta-reapply" class="delta-link">
+        <line x1="815" y1="465" x2="815" y2="475" stroke="#607d8b" stroke-width="2"/>
+        <line x1="815" y1="470" x2="850" y2="470" stroke="#607d8b" stroke-width="2" stroke-dasharray="4,2"/>
+        <line x1="850" y1="465" x2="850" y2="475" stroke="#607d8b" stroke-width="2"/>
+        <text x="835" y="455" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#607d8b">Δ<tspan font-size="14" baseline-shift="sub">reapply</tspan><tspan font-size="12" baseline-shift="super">W</tspan></text>
+      </a>
+    </g>
+    
+    <!-- RB' with certificate (at slot 20 - after L_diff ends) -->
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="block-link">
+      <rect x="670" y="100" width="60" height="80" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="6"/>
+      <text x="700" y="135" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#783f04">RB'</text>
+    </a>
+    
+    <!-- Certificate -->
+    <g transform="translate(700, 185)">
+      <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="block-link">
+        <polygon points="0,-20 20,-10 20,10 0,20 -20,10 -20,-10" fill="#fff2cc" stroke="#f9a825" stroke-width="2"/>
+        <text x="0" y="5" font-size="12" font-weight="bold" text-anchor="middle" fill="#7f6000">
+          <tspan font-family="serif" font-style="italic" font-size="14">C</tspan><tspan font-family="Arial, sans-serif" font-size="10" font-style="normal" baseline-shift="sub">EB</tspan>
+        </text>
+      </a>
+    </g>
+    
+    <path d="M 700 205 Q 475 250 300 250" stroke="#f9a825" stroke-width="2" stroke-dasharray="2,2" fill="none" marker-end="url(#votearrowhead)"/>
+    <path d="M 220 140 L 150 140" stroke="#595959" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>
+    <path d="M 670 140 L 280 140" stroke="#595959" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 900 140 L 730 140" stroke="#595959" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="20" y="420" width="220" height="118" fill="#f8f8f8" stroke="#ddd" stroke-width="1" rx="4"/>
+    <text x="30" y="440" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Legend</text>
+    
+    <!-- Certificate shape -->
+    <g transform="translate(45, 455)">
+      <polygon points="0,-8 8,-4 8,4 0,8 -8,4 -8,-4" fill="#fff2cc" stroke="#f9a825" stroke-width="1"/>
+    </g>
+    <text x="65" y="460" font-family="Arial, sans-serif" font-size="11" fill="#333">Certificate</text>
+    
+    <!-- Vote shape -->
+    <g transform="translate(45, 475)">
+      <rect x="-3" y="-3" width="6" height="6" fill="#f9a825" transform="rotate(45)"/>
+    </g>
+    <text x="65" y="480" font-family="Arial, sans-serif" font-size="11" fill="#333">Vote</text>
+    
+    <text x="30" y="500" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Superscripts</text>
+    <text x="30" y="515" font-family="Arial, sans-serif" font-size="11" fill="#333">O = Optimistic</text>
+    <text x="30" y="528" font-family="Arial, sans-serif" font-size="11" fill="#333">W = Worst-case</text>
+  </g>
+</svg>
