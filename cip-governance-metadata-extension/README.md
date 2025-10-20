@@ -80,7 +80,8 @@ The `onChain` property shall be defined in the JSON-LD `@context` as follows:
 The `onChain` property **MUST** conform to one of the [CIP-116][] Conway-era governance types.
 The specific type is indicated by the `@type` field within the `onChain` object.
 
-> ⚠️ Note: any entry of anchor properties within the CIP116 objects must be removed as they constitute a circular dependency
+> [!WARNING]
+> Any entry of anchor properties within the CIP116 objects must be removed as they constitute a circular dependency
 
 ##### Supported Types
 
