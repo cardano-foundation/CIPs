@@ -72,7 +72,8 @@ The `onChain` property shall be defined in the JSON-LD `@context` as follows:
 }
 ```
 
-> Note: `CIPXXX` represents this CIP's number once assigned.
+> [!NOTE]
+> `CIPXXX` represents this CIP's number once assigned.
 
 #### Structure
 
