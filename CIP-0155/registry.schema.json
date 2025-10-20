@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0155",    
+    "title": "SRV Registry",
+    "description": "JSON schema for the SRV registry",    
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "A unique identifier for the service name."
+        },
+        "prefix": {
+          "type": "string",
+          "description": "A unique SRV prefix.",
+          "maxLength": 255
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the entry. Can be one of: \"Active\", \"Revoked\""
+        }
+      },
+      "required": [
+        "service",
+        "prefix",
+        "status"
+      ],
+      "additionalProperties": false
+    }
+  }
+

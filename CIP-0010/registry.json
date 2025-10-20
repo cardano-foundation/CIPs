@@ -60,8 +60,12 @@
     "description": "on-chain certification metadata"
   },
   {
-    "transaction_metadatum_label": 1517,
+    "transaction_metadatum_label": 1447,
     "description": "Reeve - transparent and verifiable financial records on-chain"
+  },
+  {
+    "transaction_metadatum_label": 1517,
+    "description": "Reeve - obsolete - pre-launch metadata"
   },
   {
     "transaction_metadatum_label": 1564,
@@ -78,6 +82,10 @@
   {
     "transaction_metadatum_label": 1694,
     "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
+  },
+  {
+    "transaction_metadatum_label": 1854,
+    "description": "CIP-146 Multi-signatures wallet registration"
   },
   {
     "transaction_metadatum_label": 1870,

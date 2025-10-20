@@ -13,6 +13,7 @@ Implementors:
   - Intersect
 Solution-To:
   - CPS-0017
+  - CPS-0021
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/872
 Created: 2024-08-15
@@ -138,9 +139,10 @@ A [*fetching*](#fetching) operation occurs at the beginning of each slot:
 
 - Fetch new chains $\mathcal{C}\_\text{new}$ and votes $\mathcal{V}\_\text{new}$.
 - Add any new chains in $\mathcal{C}\_\text{new}$ to $\mathcal{C}$, add any new certificates contained in chains in $\mathcal{C}\_\text{new}$ to $\mathsf{Certs}$.
-    -  Discard any equivocated blocks or certificates: i.e., do not add them to $\mathcal{C}$ or $\mathsf{Certs}$.
 - Add $\mathcal{V}\_\text{new}$ to $\mathcal{V}$ and turn any new quorum in $\mathcal{V}$ into a certificate $\mathsf{cert}$ and add $\mathsf{cert}$ to $\mathsf{Certs}$.
-    -  Discard any equivocated votes: i.e., do not add them to $\mathcal{V}$.
+    -  Ignore all but the first equivocating vote: i.e., do not add them to $\mathcal{V}$.
+
+       This requires diffusing certificates in cases where different honest nodes received different equivocating votes.
 - Set $C_\text{pref}$ to the heaviest (w.r.t. $\mathsf{Wt}\_\mathsf{P}(\cdot)$ ) valid chain in $\mathcal{C}$.
     - Each party $\mathsf{P}$ assigns a certain weight to every chain $C$, based on $C$'s length and all certificates that vote for blocks in $C$ that $\mathsf{P}$ has seen so far (and thus stored in a local list $\mathsf{Certs}$).
     - Let $\mathsf{certCount}\_\mathsf{P}(C)$ denote the number of such certificates: i.e., $\mathsf{certCount}\_\mathsf{P}(C) := \left| \left\\{ \mathsf{cert} \in \mathsf{Certs} : \mathsf{cert} \text{ votes for a block on } C \right\\} \right|$.
@@ -252,7 +254,7 @@ The $L$ parameter is the minimum age of a candidate block for being voted upon, 
         L : ℕ
 ```
 
-<span id="#expiration"/>The $A$ parameter is the maximum age for a certificate to be included in a block, measured in slots.
+<span id="#expiration"/>The $A$ parameter is the maximum age for a certificate to be included in a block, measured in rounds.
 
 ```agda
         A : ℕ
@@ -1166,22 +1168,22 @@ This completes for formal specification of Peras. The repository [github:input-o
 
 The structure of the Peras protocol imposes the following constraints on its [parameters](#protocol-parameters). These arise from both theoretical and practical considerations.
 
-| Parameter               | Symbol          | Units   | Description                                                                               | Constraints                                              | Rationale                                                                                    |
-| ----------------------- | --------------- | ------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Round length            | $U$             | slots   | The duration of each voting round.                                                        | $U \geq \Delta$                                          | All of a round's votes must be received before the end of the round.                         |
-| Block selection offset  | $L$             | slots   | The minimum age of a candidate block for being voted upon.                                | $\Delta < L                                              | Blocks must propagate before they are voted upon.                                            |
-| Certificate expiration  | $A$             | slots   | The maximum age for a certificate to be included in a block.                              | $A = T_\text{heal}+T_\text{CQ}$                          | After a quorum failure, the chain must heal and achieve quality.                             |
-| Chain ignorance period  | $R$             | rounds  | The number of rounds for which to ignore certificates after entering a cool-down period.  | $R = \left\lceil A / U \right\rceil$                     | Ensure chain-ignorance period lasts long enough to include a certificate on the chain.       |
-| Cool-down period        | $K$             | rounds  | The minimum number of rounds to wait before voting again after a cool-down period starts. | $K = \left\lceil \frac{A + T_\text{CP}}{U} \right\rceil$ | After a quorum failure, the chain must heal, achieve quality, and attain a common prefix.    |
-| Certification boost     | $B$             | blocks  | The extra chain weight that a certificate gives to a block.                               | $B > 0$                                                  | Peras requires that some blocks be boosted.                                                  |
-| Quorum size             | $\tau$          | parties | The number of votes required to create a certificate.                                     | $\tau > 3 n / 4$                                         | Guard against a minority (< 50%) of adversarial voters.                                      |
-| Committee size          | $n$             | parties | The number of members on the voting committee.                                            | $n > 0$                                                  | Peras requires a voting committee.                                                           |
-| Network diffusion time  | $\Delta$        | slots   | Upper limit on the time needed to diffuse a message to all nodes.                         | $\Delta > 0$                                             | Messages have a finite delay.                                                                |
-| Active slot coefficient | $f$             | 1/slots | The probability that a party will be the slot leader for a particular slot.               | $0 < f \leq 1$                                           | Blocks must be produced.                                                                     |
-| Healing time            | $T_\text{heal}$ | slots   | Healing period to mitigate a strong (25-50%) adversary.                                   | $T_\text{heal} = \mathcal{O}\left( B / f \right)$        | Sufficient blocks must be produced to overcome an adversarially boosted block.               |
-| Chain-quality time      | $T_\text{CQ}$   | slots   | Ensure the presence of at least one honest block on the chain.                            | $T_\text{CQ} = \mathcal{O} (k/f)$                        | A least one honest block must be produced.                                                   |
-| Common-prefix time      | $T_\text{CP}$   | slots   | Achieve settlement.                                                                       | $T_\text{CP} = \mathcal{O} (k/f)$                        | The Ouroboros Praos security parameter defines the time for having a common prefix.          |
-| Security parameter      | $k$             | blocks  | The Ouroboros Praos security parameter.                                                   | n/a                                                      | Value for the Cardano mainnet.                                                               |
+| Parameter               | Symbol          | Units   | Description                                                                               | Constraints                                                      | Rationale                                                                                 |
+|-------------------------|-----------------|---------|-------------------------------------------------------------------------------------------|------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| Round length            | $U$             | slots   | The duration of each voting round.                                                        | $U \geq \Delta$                                                  | All of a round's votes must be received before the end of the round.                      |
+| Block selection offset  | $L$             | slots   | The minimum age of a candidate block for being voted upon.                                | $\Delta < L                                                      | Blocks must propagate before they are voted upon.                                         |
+| Certificate expiration  | $A$             | rounds  | The maximum age for a certificate to be included in a block.                              | $A = \left\lceil\frac{T_\text{heal}+T_\text{CQ}}{U}\right\rceil$ | After a quorum failure, the chain must heal and achieve quality.                          |
+| Chain ignorance period  | $R$             | rounds  | The number of rounds for which to ignore certificates after entering a cool-down period.  | $R = A$                                                          | Ensure chain-ignorance period lasts long enough to include a certificate on the chain.    |
+| Cool-down period        | $K$             | rounds  | The minimum number of rounds to wait before voting again after a cool-down period starts. | $K = \left\lceil \frac{A + T_\text{CP}}{U} \right\rceil$         | After a quorum failure, the chain must heal, achieve quality, and attain a common prefix. |
+| Certification boost     | $B$             | blocks  | The extra chain weight that a certificate gives to a block.                               | $B > 0$                                                          | Peras requires that some blocks be boosted.                                               |
+| Quorum size             | $\tau$          | parties | The number of votes required to create a certificate.                                     | $\tau > 3 n / 4$                                                 | Guard against a minority (< 50%) of adversarial voters.                                   |
+| Committee size          | $n$             | parties | The number of members on the voting committee.                                            | $n > 0$                                                          | Peras requires a voting committee.                                                        |
+| Network diffusion time  | $\Delta$        | slots   | Upper limit on the time needed to diffuse a message to all nodes.                         | $\Delta > 0$                                                     | Messages have a finite delay.                                                             |
+| Active slot coefficient | $f$             | 1/slots | The probability that a party will be the slot leader for a particular slot.               | $0 < f \leq 1$                                                   | Blocks must be produced.                                                                  |
+| Healing time            | $T_\text{heal}$ | slots   | Healing period to mitigate a strong (25-50%) adversary.                                   | $T_\text{heal} = \mathcal{O}\left( B / f \right)$                | Sufficient blocks must be produced to overcome an adversarially boosted block.            |
+| Chain-quality time      | $T_\text{CQ}$   | slots   | Ensure the presence of at least one honest block on the chain.                            | $T_\text{CQ} = \mathcal{O} (k/f)$                                | A least one honest block must be produced.                                                |
+| Common-prefix time      | $T_\text{CP}$   | slots   | Achieve settlement.                                                                       | $T_\text{CP} = \mathcal{O} (k/f)$                                | The Ouroboros Praos security parameter defines the time for having a common prefix.       |
+| Security parameter      | $k$             | blocks  | The Ouroboros Praos security parameter.                                                   | n/a                                                              | Value for the Cardano mainnet.                                                            |
 
 
 ### Specification of votes and certificates
@@ -1283,7 +1285,7 @@ The figure below shows the race between honest parties and a modestly powerful a
 
 ### Why Peras is practical to implement
 
-Peras is compatible with many stake-based voting schemes, which means it has synergies with protocol enhancements like Ouroboros Genesis and Leios. Because Peras only modifies Praos's chain-weight computation and adds voting, its effects are mostly orthogonal to other existing and proposed aspects of Ouroboros. Peras utilizes the node's existing cryptographic primitives and keys, so it does not require any new key exchanges.
+Peras is compatible with many stake-based voting schemes, which means it has synergies with protocol enhancements like Ouroboros Genesis and Leios. Because Peras only modifies Praos's chain-weight computation and adds voting, its effects are mostly orthogonal to other existing and proposed aspects of Ouroboros.
 
 Peras is straightforward to implement, as it requires the following additions to the node, which have minimal or modest impact on node resources[^6].
 - Chain selection that includes the boosting from certificates
@@ -1362,15 +1364,17 @@ Based on the analyses in the [Peras Technical Report #2](https://peras.cardano-s
 | Block-selection offset | $L$              | slots   |  > 30 | Several multiples of $\Delta$ to ensure block diffusion.             |
 | Certification boost    | $B$              | blocks  |    15 | Negligible probability to roll back boosted block.                   |
 | Security parameter     | $k_\text{peras}$ | blocks  |  3150 | Determined by the Praos security parameter and the boost.            |
-| Certificate expiration | $A$              | slots   | 27000 | Determined by the Praos security parameter and boost.                |
+| Certificate expiration | $A$              | rounds  |   300 | Determined by the Praos security parameter and boost.                |
 | Chain-ignorance period | $R$              | rounds  |   300 | Determined by the Praos security parameter, round length, and boost. |
 | Cool-down period       | $K$              | rounds  |   780 | Determined by the Praos security parameter, round length and boost.  |
 | Committee size         | $n$              | parties |   900 | 1 ppm probability of no honest quorum at 10% adversarial stake.      |
 | Quorum size            | $\tau$           | parties |   675 | Three-quarters of committee size.                                    |
 
-A *block-selection offset* of $L = 30 \text{\,slots}$ allows plenty of time for blocks to diffuse to voters before a vote occurs, but it may be desirable to make in larger in order to protect against relatively weak adversaries. Combining this with a *round length* of $U = 90 \text{\, slots}$ ensures that there is certainty in $U + L = 120 \text{\,slots}$ as to whether a block has been cemented onto the preferred chain by the presence of a certificate for a subsequent block. That certainty of not rolling back certified blocks is provided by a *certification boost* of $B = 15 \text{\,blocks}$ because of the infinitesimal probability of forging that many blocks on a non-preferred fork within the time $U$. Thus, anyone seeing a transaction appearing in a block need wait no more than two minutes to be certain whether the transaction is on the preferred chain (effectively permanently, less than a one in a trillion probability even at 45% adversarial stake) versus having been discarded because of a roll back. Unless the transaction has a stringent time-to-live (TTL) constraint, it can be resubmitted in the first $U - L = 60 \text{\,slots}$ of the current round, or in a subsequent round.
+In pre-alpha Peras, there is a fundamental trade-off between low latency until a block can receive a boost (favoring a small $L$), and resilience against weak adversaries (<25% stake) trying to disable Peras by forcing into into a cooldown (favoring a high $L$). A *block-selection offset* of $L = 30 \text{\,slots}$ allows plenty of time for blocks to diffuse to voters before a vote occurs, but it provides only little resilience against weak attackers. Future iterations of Peras (involving pre-agreement) allow to resolve this trade-off (at the cost of additional complexity and network bandwidth overhead).
 
-The Praos security parameter $k_\text{praos} = 2160 \text{\,blocks} \approx 43200 \text{\,slots} = 12 \text{\,hours}$ implies a ~17% probability of a longer private adversarial chain at 49% adversarial stake. At that same probability, having to overcome a $B = 15 \text{\,blocks}$ adversarial boost would require $k_\text{peras} \approx 70200 \text{\,slots} = 3510 \text{\,blocks} = 19.5 \text{\,hours}$. This determines the *certificate-expiration time* as $A = k_\text{peras} - k_\text{praos} = 27000 \text{\,slots}$, the *chain-ignorance period* as $R = \left\lceil A / U \right\rceil = 300 \text{\,rounds}$, and the *cool-down period* as $K = \left\lceil k_\text{peras} / U \right\rceil = 780 \text{\,rounds}$.
+Combining this with a *round length* of $U = 90 \text{\, slots}$ ensures that there is certainty in $U + L = 120 \text{\,slots}$ as to whether a block has been cemented onto the preferred chain by the presence of a certificate for a subsequent block. That certainty of not rolling back certified blocks is provided by a *certification boost* of $B = 15 \text{\,blocks}$ because of the infinitesimal probability of forging that many blocks on a non-preferred fork within the time $U$. Thus, anyone seeing a transaction appearing in a block need wait no more than two minutes to be certain whether the transaction is on the preferred chain (effectively permanently, less than a one in a trillion probability even at 45% adversarial stake) versus having been discarded because of a roll back. Unless the transaction has a stringent time-to-live (TTL) constraint, it can be resubmitted in the first $U - L = 60 \text{\,slots}$ of the current round, or in a subsequent round.
+
+The Praos security parameter $k_\text{praos} = 2160 \text{\,blocks} \approx 43200 \text{\,slots} = 12 \text{\,hours}$ implies a ~17% probability of a longer private adversarial chain at 49% adversarial stake. At that same probability, having to overcome a $B = 15 \text{\,blocks}$ adversarial boost would require $k_\text{peras} \approx 70200 \text{\,slots} = 3510 \text{\,blocks} = 19.5 \text{\,hours}$. This determines the *certificate-expiration time* as $A = \left\lceil (k_\text{peras} - k_\text{praos}) / U \right\rceil = 300 \text{\,rounds}$, the *chain-ignorance period* as $R = A = 300 \text{\,rounds}$, and the *cool-down period* as $K = \left\lceil k_\text{peras} / U \right\rceil = 780 \text{\,rounds}$.
 
 The *committee size* of $n = 900 \text{\,parties}$ corresponds to a one in a million chance of not reaching a quorum if 10% of the parties do not vote for the majority block (either because they are adversarial, offline, didn't receive the block, or chose to vote for a block on a non-preferred fork). This "no quorum" probability is equivalent to one missed quorum in every 1.2 years. The *quorum size* of $\tau = \left\lceil 3 n / 4 \right\rceil = 675 \text{\,parties}$ is computed from this.
 
@@ -1395,7 +1399,7 @@ The plot below illustrates how shorter rounds and stronger adversaries make such
 
 ![Plot of the probability of the dishonest boost as a function of the adversarial fraction of stake and the round length.](images/adversarial-chain-receives-boost-variant.plot.svg)
 
-Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version of a vote to some honest nodes and a different version to the other honest nodes will not affect the outcome of voting any more than if the adversary were not to vote at all. Equivocated votes burden the nodes slightly by creating extra network traffic.
+Decentralized, stake-based block production and voting systems may be subject to equivocations, where a slot leader or a voting-committee member creates more than one block or casts duplicate votes for different blocks. Protocols' no-equivocation rules ensure that only the first block or vote is acted upon by the node. In the case of Peras, an adversary does not gain power from equivocating votes unless they have near 50% or more of the stake. A scenario where an adversary sends one version of a vote to some honest nodes and a different version to the other honest nodes can be handled by diffusing certificates in this case, such that no permanent disagreements on whether a round was successful arise. Equivocated votes burden the nodes slightly by creating extra network traffic.
 
 Natural events or adversaries might interfere with the diffusion of votes over the network. Peras voting is not affected so long as the network diffuses at least the 75% threshold for reaching a quorum. One quarter of the votes could be lost, dishonest, or withheld. Furthermore, the Peras $L$ parameter ensures that there is plenty of time for honest blocks to diffuse and for them to be in a common prefix of the active forks before voting begins. The Peras $R$ parameter, the number of slots for which certificates (votes) are ignored once a cool-down period starts, guards against an adversary holding onto votes and then releasing them to try to revert an already-begun cool-down period.
 
@@ -1411,7 +1415,7 @@ The impact of Peras upon nodes falls into four categories: [network](#network), 
 For a fully synced nodes, the impact of Peras on network traffic is modest:
 
 * For votes, assuming $U \approx 100$, a committee size of 2000 SPOs, a single vote size of 700 bytes, means we will be adding an average of 14 kB/s to the expected traffic to each node,
-* For certificates, assuming an average of 50 kB size consistent with the size of current Mithril certificates, means an negligible increase of 0.5 kB/s on average. Note that a node will download either votes or certificate for a given round, but never both so these numbers are not cumulative.
+* For certificates, assuming an average of 50 kB size consistent with the size of current Mithril certificates, means an negligible increase of 0.5 kB/s on average. Note that a node will download either votes or certificate for a given round, but never both so these numbers are not cumulative. An exception to this is the needless adversarial inclusion of certificates into their blocks when Peras is *not* in a cooldown period.
 
 A fully non-synced node will have to catch-up with the _tip_ of the chain and therefore download all relevant blocks _and_ certificates. At 50% load (current monthly load is 34% as of this writing[^9]), the chain produces a 45 kB block every 20 s on average. Below are rough estimates of the amount of data a node would have to download (and store) for synchronizing, depending on how long it has been offline:
 
@@ -1442,6 +1446,8 @@ The next table compares the cost (in US\$/month) for different outgoing data tra
 | OVH          |    $70 |     $70 |      $70 |      $70 |
 | Hetzner      |    $32 |     $32 |      $32 |      $32 |
 
+At present, this CIP does not include a design for a Peras-specific rewards system to e.g. directly incentivize voting participation. Any such design (where rewards are distributed on-chain) would require including certificates on-chain, therefore itself increasing the resource impact of Peras.
+
 [^9]: https://cexplorer.io/usage
 
 [^10]: https://iohk.io/en/research/library/papers/mind-your-outcomes-the-dqsd-paradigm-for-quality-centric-systems-development-and-its-application-to-a-blockchain-case-study/
@@ -1455,6 +1461,8 @@ The next table compares the cost (in US\$/month) for different outgoing data tra
 #### Persistent storage
 
 Under similar assumptions, we can estimate the storage requirements entailed by Peras: ignoring the impact of cool-down periods, which last for a period at least as long as $k$ blocks, the requirement to store certificates for every round increases node's storage by about **20%**. Votes are expected to be kept in memory so their impact on storage will be null.
+
+Additionally, again ignoring cooldown periods, adversaries can include certificates in blocks they forge. Implementations could implement optimizations to avoid storing certificates twice in that case.
 
 #### CPU
 
