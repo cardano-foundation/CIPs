@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposes to create a more fair marketplace for stake pools by reducing the minimum fixed pool fee and adding a minimum variable pool fee.
+This CIP introduces a new protocol parameter, `minPoolMargin`, which specifies a lower bound on the variable fee (margin) a stake pool may set. The parameter is introduced initially set to `0` to avoid disrupting existing pool certificates.  This proposal does not change or reduce the existing minimum fixed pool fee (`minPoolCost`).
 
 ## Motivation: why is this CIP necessary?
 
