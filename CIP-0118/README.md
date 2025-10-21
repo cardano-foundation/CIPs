@@ -102,14 +102,12 @@ missing assets/currency `:= { aid ↦ v | aid ↦ v ∈ produced - consumed , v 
 
 ### Transaction structure changes
 
-We add the following new fields to `TxBody` :
+We add the following new field to `TxBody` :
 
-1. `requireTopLevelObservers : ScriptHash ⇀ Data`
-- set of scripts that must be run by the top-level transaction in the batch (where `TxInfo` includes info of all batch transactions),
-together with the associated data they are provided by the transaction author that is requiring them to be run
-
-2. `subTxs : ℙ TxId`
+1. `subTxs : ℙ TxId`
 -  sub-transactions in the batch
+
+2. We also need implementation of the [CIP-112 - Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) in order to allow sub-transactions to require scripts to be executed at the top level with all sub-transactions in their context.
 
 ### Plutus
 
@@ -118,9 +116,9 @@ together with the associated data they are provided by the transaction author th
 A new Plutus version, `PlutusV4`, will be required, since the constraints on what it means for
 a transaction to be valid, as well as the tx structure itself, are changed. Transactions
 that are top-level transactions with no sub-transactions are still able to interact
-with V3 scripts. Transactions that are partially valid and/or using any new features
+with prior versions of Plutus scripts. Transactions that are partially valid and/or using any new features
 introduced here are not. That is, transactions containing sub-transactions or top-level observers
-cannot run PlutusV3 scripts.
+cannot run scripts with `PlutusV3` or earlier version.
 
 #### New script purposes
 
