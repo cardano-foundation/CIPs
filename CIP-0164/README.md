@@ -36,10 +36,8 @@ secondary block referencing additional transactions. Secondary blocks undergo
 committee validation before ledger inclusion, enabling significantly higher
 throughput.
 
-This specification presents the first version of the Ouroboros Leios protocol
-family, designed to deliver substantial throughput improvements with economic
-sustainability and minimal added complexity through only few new protocol
-elements.
+For a quick 5-minute overview of Ouroboros Leios, see our
+[summary document](SUMMARY.md).
 
 For comprehensive research documentation, development history, and additional
 technical resources, visit the Leios Innovation R&D site at
@@ -502,6 +500,12 @@ There are three key parameters related to time, which are important for
 <a id="equivocation-detection"></a>
 
 **Equivocation Detection ($3 L_\text{hdr}$)**
+
+**Equivocation** is the malicious behavior where a block producer creates
+multiple conflicting blocks for the same slot and distributes different versions
+to different parts of the network. This attack aims to split the honest vote,
+potentially preventing certification of any block or allowing certification of
+an adversarial block if honest nodes vote on different versions.
 
 This period starts exactly when an RB announces an EB. During this time, the
 network detects any attempts by adversaries to create multiple conflicting
@@ -1214,8 +1218,9 @@ peers. Syncing peers will be discussed below.
 title: LeiosNotify
 ---
 graph LR
-   style StIdle color:green;
-   style StBusy color:blue;
+   style StIdle fill:PaleGreen,stroke:DarkGreen;
+   style StBusy fill:PowderBlue,stroke:DarkBlue;
+   style StDone fill:SeaShell,stroke:DimGray;
 
    StIdle -->|MsgLeiosNotificationRequestNext| StBusy
    StBusy -->|MsgLeiosBlockAnnouncement| StIdle
@@ -1238,11 +1243,12 @@ graph LR
 title: LeiosFetch
 ---
 graph LR
-   style StIdle color:green;
-   style StBlock color:blue;
-   style StBlockTxs color:blue;
-   style StVotes color:blue;
-   style StBlockRange color:blue;
+   style StIdle fill:PaleGreen,stroke:DarkGreen;
+   style StBlock fill:PowderBlue,stroke:DarkBlue;
+   style StBlockTxs fill:PowderBlue,stroke:DarkBlue;
+   style StDone fill:SeaShell,stroke:DimGray;
+   style StVotes fill:PowderBlue,stroke:DarkBlue;
+   style StBlockRange fill:PowderBlue,stroke:DarkBlue;
 
    StIdle -->|MsgLeiosBlockRequest| StBlock -->|MsgLeiosBlock| StIdle
    StIdle -->|MsgLeiosBlockTxsRequest| StBlockTxs -->|MsgLeiosBlockTxs| StIdle
@@ -1733,10 +1739,14 @@ study][topology-comparison] has demonstrated that analysis conclusions deriving
 from the `mini-mainnet` topology are also valid for the `pseudo-mainnet`
 topology; the advantage of using the former is that simulations run much more
 quickly. Simulated RB diffusion is consistent with the Praos performance
-model.[^praosp]
+model.[^praosp] For instructions on how to recreate these simulation results,
+see [^sim-recreation].
 
 [^mnrm]:
     [Mainnet-like topologies for Leios](https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/data/simulation/pseudo-mainnet/ReadMe.md)
+
+[^sim-recreation]:
+    [How to recreate simulation results](https://github.com/input-output-hk/ouroboros-leios/blob/main/analysis/sims/ReadMe.md)
 
 [^pseudo]:
     [Leios pseudo-mainnet topology](https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/data/simulation/pseudo-mainnet/topology-v1.md)
@@ -2732,6 +2742,7 @@ for network communication.
    , transaction_bodies       : [* transaction_body]
    , transaction_witness_sets : [* transaction_witness_set]
    , auxiliary_data_set       : {* transaction_index => auxiliary_data}
+   , invalid_transactions     : [* transaction_index]
 +  , ? eb_certificate         : leios_certificate
    ]
 
