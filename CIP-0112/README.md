@@ -172,7 +172,13 @@ Native scripts are typically represented in JSON syntax. We propose the followin
   "keyHash": "OBSERVATION_SCRIPT_HASH"
 }
 ```
+### Changes to signature checking 
 
+**Change :** Currently, the `txid`, i.e. the hash of the transaction body, is signed. We propose this is changed to all keys instead signing the hash of the concatenation `txid_and_obs = hash (txid ++ required_observers_hash)`. This would also require that the `TxBody` type contain the hash of the `required_observers` field *in addition* to the deserialized contents of the field, e.g. as a 
+separate field, or as a pair `(required_observers_hash , required_observers)`. Both `required_observers_hash` and `txid_and_obs` should be computed during transaction deserialization and included 
+in the deserialized `TxBody`.
+
+**Target Use Case :** The primary purpose of this change is to support super lightweight checking that a transaction with a given `txid` satisfies some intent specified in the form of an observer script. This would greatly simplify certain intent-based light client designs.
 
 ## Rationale: how does this CIP achieve its goals?
 
