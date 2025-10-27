@@ -172,7 +172,15 @@ Native scripts are typically represented in JSON syntax. We propose the followin
   "keyHash": "OBSERVATION_SCRIPT_HASH"
 }
 ```
+### Changes to signatures
 
+**Change :** Currently, the `txid`, i.e. the hash of the transaction body, is signed. We propose this is changed to all keys instead signing the concatenation `txid ++ hash (required_observers)`. 
+
+**Target Use Case :** The primary purpose of this change is to allow a special kind of *intent processing for super light clients*. In particular, consider a super light client that has access to their spending keys, but cannot run scripts, inspect the current ledger state,
+or, sometimes, even construct transactions. This client can use a pre-defined observer script (which we consider here to be their *intent*) to specify what transaction they require, e.g., pay 10 ada from key `K1` to key `K2`. A service provider can build it for them, usually including a service fee (included as an output to their key and also specified in the observer script). 
+Transaction validation done by nodes will guarantee that the light client's intent is fulfulled by the transaction, since the observer script is run and must pass. However, to prove to the LC that the script *will be run* without the LC inspecting the transaction, we require the above change. 
+
+Further details about why the LC must not be able to inspect the transaction built for them by the service provider will be found in an upcoming CIP, which will depend on this change. To summarize the reason, if the light client sees the full transaction constructed by SP for them, they may be able to remove the service provider's service fee included in the transaction (i.e. themselves construct and sign a new transaction without it). 
 
 ## Rationale: how does this CIP achieve its goals?
 
