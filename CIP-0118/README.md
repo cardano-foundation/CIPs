@@ -121,13 +121,13 @@ which this info is constructed is `Guard` from [CIP-112](https://github.com/card
 
 Key points about transaction validity are as follows :
 
-1. Sub-transactions are not allowed to contain sub-transactions themselves.
+1. Sub-transactions are not allowed to contain sub-transactions themselves (enforced during deserialization, see [CDDL section](#CDDL)).
 
-2. Sub-transactions are not allowed to contain collateral inputs or collateral return output. Only the top-level transaction is allowed to (furthermore, obligated to)
+2. Sub-transactions are not allowed to contain collateral inputs or collateral return output (enforced during deserialization, see [CDDL section](#CDDL)). Only the top-level transaction is allowed to (furthermore, obligated to)
 provide sufficient collateral for all scripts that are run as part of validating all sub-transactions in that batch. If any script in a
 batch fails, none of the transactions in the batch are applied, only the collateral is collected.
 
-3. Sub-transactions are not allowed to specify the fee, since the final fee will depend on the complete batch and the top-level transaction
+3. Sub-transactions are not allowed to specify the fee, since the final fee will depend on the complete batch and the top-level transaction (enforced during deserialization, see [CDDL section](#CDDL)).
 
 4. Transactions using new features are not allowed to run scripts of PlutusV3 or earlier.
 
