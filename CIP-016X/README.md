@@ -1,6 +1,6 @@
 ---
-CIP: XXXX
-Title: Hoarding Nodes for Network Behavior Analysis
+CIP: ?
+Title: Hoarding Nodes - Network Behavior Analysis
 Category: Tools
 Status: Proposed
 Authors:
@@ -8,7 +8,7 @@ Authors:
 Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pulls/XXXX
-Created: 2025-09-16
+Created: 2025-10-27
 License: CC-BY-4.0
 ---
 
@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This CIP proposes an architecture for "hoarding nodes" - specialized network participants that collect and preserve data about blocks, transactions, and network events that are typically discarded by normal Cardano nodes. Hoarding nodes aim to capture evidence of protocol violations, network anomalies, and consensus conflicts for research, security analysis, and network health monitoring purposes.
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 ### The Problem
 
@@ -480,44 +480,7 @@ To ensure the hoarding system doesn't negatively impact network health:
 3. **Graceful Degradation**: Reduce activity if peers start rejecting connections
 4. **Transparent Observation**: Hoarding processes behave like normal peers (request blocks, stay synchronized) but don't relay data
 
-## Out of Scope
-
-This section clarifies architectural choices, features, and deliverables that are explicitly **not** part of this proposal to prevent scope creep and manage expectations.
-
-### Infrastructure & Architecture
-
-- **Distributed database storage**: Implementation uses centralized PostgreSQL; distributed database architectures are not included
-- **Reimplementation or forking of cardano-node**: Validation leverages existing full node via Node-to-Client protocol; no custom validation logic or node modifications
-- **Integrated full node architecture**: Hoarding processes remain separate from the full node; forking cardano-node to add built-in logging is not pursued (except in the case of transactions via enhancements to the existing tracing code)
-- **Inbound connection handling**: Hoarding processes only make outbound connections; accepting inbound connections is not required
-- **Real-time validation in hoarding processes**: All validation is offloaded to background workers; hoarding processes do not perform validation
-- **Custom protocol modifications or extensions**: Standard Cardano protocols are used without modifications
-
-### Data Collection Limitations
-
-- **Guaranteed capture of all adversarial behavior**: Collection operates on best-effort basis due to fundamental network observability constraints (adversaries can selectively send different data to monitoring nodes)
-- **Direct observation of rejected transaction bodies**: Current Node-to-Node protocol does not support transaction body forwarding; only transaction IDs are observable until inclusion in blocks (mempool tracing enhancement is planned separately)
-- **Dedicated lightweight validation service**: High-fidelity validation timing measurements would require separate infrastructure; initial implementation measures timing through full node queries with known limitations
-
-### Features & Capabilities
-
-- **Historical connection tracking database**: Operational peer selection uses in-memory state; persistent connection history logging is not included (listed as potential future extension)
-- **Advanced peer reputation scoring**: Automated peer scoring and disconnection based on behavior patterns is not included
-- **Standardized network-wide opt-out registry**: Each hoarding node operator handles opt-out requests independently; no centralized registry or coordination mechanism
-- **End-user graphical interfaces**: Programmatic HTTP API and CLI tools only; GUI applications are not included
-
-### Rationale for Scope Boundaries
-
-Items listed above were considered during design but explicitly rejected or deferred due to:
-
-- **Implementation complexity**: Would significantly increase development time and maintenance burden
-- **Protocol constraints**: Not possible with current Cardano protocol capabilities
-- **Architectural clarity**: Better suited as separate systems or future enhancements
-- **Resource constraints**: Beyond the resources and timeline of the initial implementation
-
-These boundaries ensure the proposal remains focused on delivering core hoarding node functionality while maintaining clear expectations about what is and is not included.
-
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 ### Design Decisions
 
@@ -598,6 +561,43 @@ These boundaries ensure the proposal remains focused on delivering core hoarding
 - But transparent relay behavior maintains network citizenship
 - Mitigation: Rate limiting, graceful degradation, community coordination
 
+### Scope Boundaries
+
+This section clarifies architectural choices, features, and deliverables that are explicitly **not** part of this proposal to prevent scope creep and manage expectations.
+
+#### Infrastructure & Architecture
+
+- **Distributed database storage**: Implementation uses centralized PostgreSQL; distributed database architectures are not included
+- **Reimplementation or forking of cardano-node**: Validation leverages existing full node via Node-to-Client protocol; no custom validation logic or node modifications
+- **Integrated full node architecture**: Hoarding processes remain separate from the full node; forking cardano-node to add built-in logging is not pursued (except in the case of transactions via enhancements to the existing tracing code)
+- **Inbound connection handling**: Hoarding processes only make outbound connections; accepting inbound connections is not required
+- **Real-time validation in hoarding processes**: All validation is offloaded to background workers; hoarding processes do not perform validation
+- **Custom protocol modifications or extensions**: Standard Cardano protocols are used without modifications
+
+#### Data Collection Limitations
+
+- **Guaranteed capture of all adversarial behavior**: Collection operates on best-effort basis due to fundamental network observability constraints (adversaries can selectively send different data to monitoring nodes)
+- **Direct observation of rejected transaction bodies**: Current Node-to-Node protocol does not support transaction body forwarding; only transaction IDs are observable until inclusion in blocks (mempool tracing enhancement is planned separately)
+- **Dedicated lightweight validation service**: High-fidelity validation timing measurements would require separate infrastructure; initial implementation measures timing through full node queries with known limitations
+
+#### Features & Capabilities
+
+- **Historical connection tracking database**: Operational peer selection uses in-memory state; persistent connection history logging is not included (listed as potential future extension)
+- **Advanced peer reputation scoring**: Automated peer scoring and disconnection based on behavior patterns is not included
+- **Standardized network-wide opt-out registry**: Each hoarding node operator handles opt-out requests independently; no centralized registry or coordination mechanism
+- **End-user graphical interfaces**: Programmatic HTTP API and CLI tools only; GUI applications are not included
+
+#### Rationale for Scope Boundaries
+
+Items listed above were considered during design but explicitly rejected or deferred due to:
+
+- **Implementation complexity**: Would significantly increase development time and maintenance burden
+- **Protocol constraints**: Not possible with current Cardano protocol capabilities
+- **Architectural clarity**: Better suited as separate systems or future enhancements
+- **Resource constraints**: Beyond the resources and timeline of the initial implementation
+
+These boundaries ensure the proposal remains focused on delivering core hoarding node functionality while maintaining clear expectations about what is and is not included.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -607,6 +607,25 @@ These boundaries ensure the proposal remains focused on delivering core hoarding
 3. **Security Model**: Lean security model is implemented and documented (in-depth security audits are out of scope)
 4. **Community Review**: Community review process completed and feedback documented
 5. **Documentation**: Living documentation covering core setup and operation (comprehensive guides and training materials are out of scope)
+
+### Implementation Plan
+
+The following milestones outline the development path to meet the acceptance criteria:
+
+| Milestone | Deliverable | Timescale |
+|-----------|-------------|-----------|
+| Hoarding Node Design | Design for the Hoarding Node, written up as a CIP | 2 Months |
+| Block collector | Tool which collects to some nodes and stores all blocks received | 4 Months |
+| Transaction collector | Tool which collects to some nodes and stores all transactions seen | 4 Months |
+| Node connection logic | Logic for deciding which nodes to connect to in order to maximise the chances of seeing all entities in a network | 5 Months |
+| Hoarding node UI | Programmatic UI for accessing the hoarding node | 6 Months |
+| Proof against adversarial behaviour | Hoarding node hardening to cope with adversarial behaviour, as per the design | 6 Months |
+
+## References
+
+- **Xatu (Ethereum)**: Ethereum network monitoring and data collection infrastructure - https://github.com/ethpandaops/xatu
+- **CIP-1078 (Leios)**: Proposed protocol for transaction forwarding - https://github.com/cardano-foundation/CIPs/pull/1078
+- **Block Cost Investigation**: Analysis of validation cost factors and measurement approaches - https://docs.google.com/document/d/1mDA0NuD7rQYtNMmwY2zNz9wci7RCy2bMPFZrbolA-jA/edit?tab=t.0#heading=h.rkdqb0ttlsiu
 
 ## Copyright
 
