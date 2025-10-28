@@ -439,6 +439,8 @@ These changes require a new plutus and ledger version.
 
 ### Acceptance Criteria
 - [ ] These rules included within an official Plutus and Ledger version, and released via a major hard fork.
+- [ ] These changes have acknowledgement from infrastructure parties (e.g., wallets, indexers,
+off-chain library maintainers, smart contract language maintainers, L2 builders, etc.).
       
 ### Implementation Plan
 - [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve utility of
