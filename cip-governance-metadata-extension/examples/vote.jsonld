@@ -1,0 +1,25 @@
+{
+  "@context": "...",
+  "hashAlgorithm": "blake2b-256",
+  "body": {
+    "title": "Vote YES on Budget Proposal",
+    "abstract": "This metadata explains why I am voting YES on the 2025 budget proposal.",
+    "motivation": "The proposed budget aligns with community priorities and includes proper accountability measures.",
+    "rationale": "After reviewing the proposal details, the budget allocation is reasonable and the oversight mechanisms are sufficient.",
+    "onChain": {
+      "@type": "VotingProcedure",
+      "govActionId": {
+        "txId": "e14de8d9dc4f4ddf3fe9250a8a926e20f10e99b86bd0610b77d7a054981591ee",
+        "govActionIx": 0
+      },
+      "voter": {
+        "@type": "DRep",
+        "credential": {
+          "keyHash": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+        }
+      },
+      "vote": "yes"
+    }
+  },
+  "authors": []
+}
