@@ -325,12 +325,6 @@ Mathematical bounds exist on slot leader elections per time window (e.g., Cardan
 - **Validation Service**: Provides Node-to-Client queries for background workers to classify collected data
 - **Canonical Chain State**: Maintains full ledger state to identify which blocks are on the canonical chain
 
-**Configuration**:
-
-- Standard cardano-node with normal network connectivity
-- Maintains full ledger state for validation queries
-- Background workers connect via Node-to-Client protocol for classification tasks
-
 **Node-to-Client Protocol Extensions**:
 
 TBD - Specific query types and response formats for validation offloading will be defined based on cardano-node's Node-to-Client protocol capabilities.
