@@ -116,12 +116,15 @@ technical resources, visit the Leios Innovation R&D site at
 - [Figure 11: Number of TX references](#figure-11)
 - [Figure 12: Disposition of transactions in blocks](#figure-12)
 - [Figure 13: Size of transactions referenced by EBs](#figure-13)
-- [Figure 14: Arrival delays for transactions, ranking blocks, votes, and endorser blocks](#figure-14)
-- [Figure 15: Mean nodal ingress and Mean CPU load among all nodes](#figure-15)
-- [Figure 16: Mean CPU load among all nodes](#figure-16)
-- [Figure 17: Fate of Plutus-heavy transactions in Leios](#figure-17)
-- [Figure 18: CPU usage in Plutus-heavy workloads for Leios](#figure-18)
-- [Figure 19: Comparison: Praos, proposed Leios, and research Leios](#figure-19)
+- [Figure 14: Leios throughput vs load](#figure-14)
+- [Figure 15: Delivery time and Leios delay](#figure-15)
+- [Figure 16: Processing cost per TX: CPU and network](#figure-16)
+- [Figure 17: Arrival delays for TX, RB, VT, and EB](#figure-17)
+- [Figure 18: Mean network ingress and CPU load](#figure-18)
+- [Figure 19: Mean CPU load across nodes](#figure-19)
+- [Figure 20: Fate of Plutus-heavy transactions](#figure-20)
+- [Figure 21: CPU usage in Plutus-heavy workloads](#figure-21)
+- [Figure 22: Leios variants comparison](#figure-22)
 
 **Tables**
 
@@ -1924,20 +1927,100 @@ transactions, RBs, votes, and EBs do not interfere with one another: for
 example, delays in EBs and high throughput do not also delay RBs in those cases.
 
 <div align="center">
-<a name="figure-14" id="figure-14"></a>
+<a name="figure-17" id="figure-17"></a>
 
 |                                                 |                                                 |
 | ----------------------------------------------- | ----------------------------------------------- |
 | ![Arrival delay for TXs](images/elapsed-TX.svg) | ![Arrival delay for RBs](images/elapsed-RB.svg) |
 | ![Arrival delay for VTs](images/elapsed-VT.svg) | ![Arrival delay for EBs](images/elapsed-EB.svg) |
 
-<em>Figure 14: Arrival delays for transactions ("TX", upper left), ranking
+<em>Figure 17: Arrival delays for transactions ("TX", upper left), ranking
 blocks ("RB", upper right), votes ("VT", lower left), and endorser blocks ("EB",
 lower right)</em>
 
 </div>
 
-<a name="resource-requirements"></a>**Resource requirements**
+##### Behavior under varying load
+
+The simulation results also provide evidence that Leios operates as a
+well-behaved protocol, conforming to three specific desirable properties.
+
+1. _Throughput is proportional to load until it plateaus when capacity is
+   reached:_ Figure 14 illustrates the near equality of throughput to load up
+   until the approximately 300 TxkB/s capacity (determined by the protocol
+   parameters) is reached, beyond which throughput stays constant. (Note that
+   the randomness of sortition and the finite duration of the simulation results
+   in some jitter and uncertainty in the data points even though the trend is
+   clear.) It is particularly important that the throughput does not degrade at
+   very high demand: instead Leios provides backpressure on clients, via the
+   memory pool, so that the protocol operates at capacity even though demand is
+   higher.
+2. _Transaction delivery time and its variance remains constant up until the
+   protocol's capacity is reached:_ The left side of Figure 15 demonstrates that
+   the observed range of transaction delivery time, which is defined in these
+   plots as the time from being submitted to the time of reaching the ledger,
+   stays essentially constant nearly until capacity is reached. Because the
+   Leios simulator has an unbounded (unlimited) memory pool, one sees that times
+   increase beyond that due to the memory pool growing ever larger. Near
+   capacity, fluctuations from sortitition result in uncertainty. The right side
+   of Figure 15 shows the additional time imposed by Leios relative to Praos: at
+   very low demand, Leios does not often forge EBs and the delay is small, but
+   at moderate and high loads a nearly constant delay is associated with most
+   transactions appearing in EBs. This property is important in that Leios
+   performance does not degrate as demand approaches or exceeds capacity.
+3. _The processing cost per transaction decreases or levels off as load
+   increases:_ Figure 16 evidences that the CPU and network used per transaction
+   generally drops as load (i.e., demand) increases. (Once again there are
+   uncertainties in this plot due to the randomness or sortition and design
+   choices in the Leios simulator.) This property is important in that the
+   per-transaction consumption of resources should not lower efficiency, which
+   would lead to disproportional stress on resources as load increases.
+
+<div align="center">
+<a name="figure-14" id="figure-14"></a>
+
+![Leios throughput is proportional to load until it plateaus when capacity is reached.](images/load-throughput.svg)
+
+<em>Figure 14: Leios throughput (bytes reaching the ledger) as a function of
+load (i.e., demand). Points are uncertain due to the randomness of block
+production in these simulations of twenty minutes. Note that the simulator's
+unlimited memory pool starts empty.</em>
+
+</div>
+
+<div align="center">
+<a name="figure-15" id="figure-15"></a>
+
+|                                                                                                      |                                                                          |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ![The variability of delivery times plateaus until capacity is reached.](images/load-txvariance.svg) | ![Transaction delay to ledger for Leios vs Praos](images/load-delay.svg) |
+
+<em>Figure 15: (left) time from a transaction's being submitted to the memory
+pool to its reaching the ledger (10th, 50th, and 90th percentiles) as a function
+of load; (right) Additional time it takes a transaction to reach the ledger in
+Leios, relative to the time it would have taken in Praos, as a function of
+demand. Points are uncertain due to the randomness of block production in these
+simulations of twenty minutes. Note that the simulator's unlimited memory pool
+starts empty.</em>
+
+</div>
+
+<div align="center">
+<a name="figure-16" id="figure-16"></a>
+
+|                                                                                                                              |                                                                                                                                     |
+| ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| ![The CPU cost of processing per transaction either remains the same or goes down as the load goes up.](images/load-cpu.svg) | ![The network cost of processing per transaction either remains the same or goes down as the load goes up.](images/load-egress.svg) |
+
+<em>Figure 16: The resource cost of Leios processing per transaction as a
+function of load (i.e., demand): (left) CPU usage; (right) network egress.
+Points are uncertain due to the randomness of block production in these
+simulations of twenty minutes. Note that the simulator's unlimited memory pool
+starts empty.</em>
+
+</div>
+
+##### Resource requirements
 
 The resource requirements for operating Leios nodes have been estimated from
 benchmarking and simulation studies. The assumed values for various Leios
@@ -1960,23 +2043,23 @@ for lazy computations, caching, etc. that will spread out the occasional spikes
 in CPU usage over time.
 
 <div align="center">
-<a name="figure-15" id="figure-15"></a>
+<a name="figure-18" id="figure-18"></a>
 
 |                                                        |                                                                  |
 | ------------------------------------------------------ | ---------------------------------------------------------------- |
 | ![Mean nodal ingress](images/ingress-average-area.svg) | ![Mean CPU load among all nodes](images/cpu-mean-timeseries.svg) |
 
-<em>Figure 15: Mean nodal ingress (left) and Mean CPU load among all nodes
+<em>Figure 18: Mean nodal ingress (left) and Mean CPU load among all nodes
 (right)</em>
 
 </div>
 
 <div align="center">
-<a name="figure-16" id="figure-16"></a>
+<a name="figure-19" id="figure-19"></a>
 
 ![Mean CPU load among all nodes](images/cpu-mean-histogram.svg)
 
-<em>Figure 16: Mean CPU load among all nodes ("Gen" = generated, "Val" =
+<em>Figure 19: Mean CPU load among all nodes ("Gen" = generated, "Val" =
 validated, "RH" = ranking block header, "RB" = ranking block body, "EH" =
 endorser block header, "EB" = endorser block body", "TX" = transaction)</em>
 
@@ -2026,22 +2109,22 @@ upon the newly seen EB. Experiments with prototype Leios nodes will be necessary
 to more precisely quantify how much the Plutus budget could safely be increased.
 
 <div align="center">
-<a name="figure-17" id="figure-17"></a>
+<a name="figure-20" id="figure-20"></a>
 
 ![Fate of Plutus-heavy transactions in Leios](images/plutus-temporal-efficiency-bar.svg)
 
-<em>Figure 17: Fate of Plutus-heavy transactions in Leios</em>
+<em>Figure 20: Fate of Plutus-heavy transactions in Leios</em>
 
 </div>
 
 <div align="center">
-<a name="figure-18" id="figure-18"></a>
+<a name="figure-21" id="figure-21"></a>
 
 |                                                                                             |                                                                                             |
 | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | ![Mean CPU usage in Plutus-heavy workloads for Leios](images/plutus-cpu-mean-histogram.svg) | ![Peak CPU usage in Plutus-heavy workloads for Leios](images/plutus-cpu-peak-histogram.svg) |
 
-<em>Figure 18: CPU usage in Plutus-heavy workloads for Leios</em>
+<em>Figure 21: CPU usage in Plutus-heavy workloads for Leios</em>
 
 </div>
 
@@ -2216,7 +2299,7 @@ increase each month as the ledger becomes larger.
 | 200 TxkB/s |                  133 Tx/s |           667 Tx/s |      $127.60/month |            $37.64/month² |              526 GB/month |                            $17.6M |                       $241k/epoch |
 | 250 TxkB/s |                  167 Tx/s |           833 Tx/s |      $132.24/month |            $43.92/month² |              657 GB/month |                            $18.5M |                       $253k/epoch |
 | 300 TxkB/s |                  200 Tx/s |          1000 Tx/s |      $138.88/month |            $54.64/month² |              788 GB/month |                            $19.8M |                       $271k/epoch |
-| 350 TxkB/s |                  233 Tx/s |          1167 Tx/s |      $148.47/month |            $65.59/month² |              920 GB/month |                            $21.8M |                       $298k/epoch | 
+| 350 TxkB/s |                  233 Tx/s |          1167 Tx/s |      $148.47/month |            $65.59/month² |              920 GB/month |                            $21.8M |                       $298k/epoch |
 
 <em>Table 8: Operating Costs by Transaction Throughput</em>
 
@@ -2282,11 +2365,11 @@ balances these competing dimensions to achieve substantial throughput gains
 while preserving ecosystem compatibility.
 
 <div align="center">
-<a name="figure-19" id="figure-19"></a>
+<a name="figure-22" id="figure-22"></a>
 
 ![Leios Variants Comparison](images/leios-variants-comparison-radar.svg)
 
-<em>Figure 19: Comparison: Praos (red), proposed Leios (teal), and research
+<em>Figure 22: Comparison: Praos (red), proposed Leios (teal), and research
 Leios (orange)</em>
 
 </div>
