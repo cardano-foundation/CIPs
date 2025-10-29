@@ -98,6 +98,17 @@ For each pool, we'll set the new `defaultVote` parameter to:
   * `DefaultNoConfidence`, if the reward account is delegated to `AlwaysNoConfidence`
   * `NoDefault`, if the reward account is not delegated to a defaul DRep
 
+## Rationale: how does this CIP achieve its goals?
+
+This CIP replaces a temporary workaround with a simple, explicit field in the pool parameters.
+The new field makes each pool's default vote transparent and self-contained.
+
+Limiting the field to three fixed values: `DefaultNoConfidence`, `DefaultAbstain`, and `NoDefault` preserves current behaviours while keeping the change minimal, easy to implement, and compatible with existing ledger logic.
+
+The proposal also addresses the concern that large pools might unintentionally vote `No`, skewing governance results.
+
+Backward compatibility is maintained by migrating each pool’s current implicit default to the corresponding explicit value at the hard fork boundary.
+
 ## Path to Active
 
 ### Acceptance Criteria
