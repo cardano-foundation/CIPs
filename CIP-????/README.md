@@ -52,9 +52,9 @@ used to store the bytes of the CDDL field containing the guards of the transacti
 The `TxBody` type on the ledger will have two additional fields, both containing hashes : 
 
 - `guardsHash`, which will be computed by hashing the bytes of the guards, and 
-- `txidAndObs`, which will be computed by hashing the concatenation `(txid ++ guardsHash)`
+- `txidAndGuards`, which will be computed by hashing the concatenation `(txid ++ guardsHash)`
 
-Signature checking will now check that each key signed `txidAndObs`.
+Signature checking will now check that each key signed `txidAndGuards`.
 
 ### CDDL
 
@@ -68,7 +68,7 @@ all signatures will be checked on data constructed using the mechanism described
 ### Plutus 
 
 Plutus scripts are not able to see the signatures on a transaction, only the signing keys. Also, there is no 
-need to include in `TxInfo` the fields `txidAndObs` and `requiredObserversHash` as they are computed from the 
+need to include in `TxInfo` the fields `txidAndGuards` and `requiredObserversHash` as they are computed from the 
 data in other fields anyways. So, it appears that this change can be implemented without requiring a new version of Plutus.
 
 ### CLI
