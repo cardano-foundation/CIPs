@@ -5,6 +5,7 @@ Status: Proposed
 Category: Ledger
 Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
+    - Nicolas Henin <nicolas.henin@iohk.io>
 Implementors: []
 Discussions: 
 Created: 2025-10-29
