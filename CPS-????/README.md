@@ -32,6 +32,7 @@ Unstandardized CBOR serialization has hindered the progress for Cardano develope
 <!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
 
 - Developers can switch across libraries and tools and yield a predictable result
+- It is possible for serialization libraries to worry about only one way of serialization, deserialization would also become easier to maintain
 
 ## Goals
 
@@ -45,9 +46,9 @@ Solving this CPS means:
 
 1. There is a CIP specifying guidance on standardizing Cardano CBOR serialization.
 
-2. The community, naming serialization libraries and wallets are aware of the standard and comply accordingly.
+2. The community, namely serialization libraries and wallets are aware of the standard and comply accordingly.
 
-3. Optional: If we deemed the standard should be enforced, the standard is then implemented on the ledger.
+3. Optional: If the standard is deemed to be worth enforcing, the standard is then implemented on the ledger.
 
 A good solution should consist of both a well crafted standard with clear guiding principle, carrying our the comprehensive `Path to Active`.
 
@@ -56,6 +57,10 @@ A good solution should consist of both a well crafted standard with clear guidin
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 <!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
+
+## How should we allow this CIP to evolve with ledger changes?
+
+- When hardforks happen, should we gain consensus on precisely how the new fields should be encoded before serialization libraries begin implementation?
 
 ### Should we enforce it in ledger?
 
