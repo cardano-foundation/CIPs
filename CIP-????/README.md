@@ -78,7 +78,6 @@ This metadata is included in the transaction a voter submits to cast their vote.
   "674": {
     "msg": ["Response to poll: <Title of the poll>"],
     "voteFor": {
-        "actionTxId": "<The transaction ID of the Info Action that defined the poll>",
         "selection": [
             "<User's choice (matching option name)>"
         ]
