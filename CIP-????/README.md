@@ -15,7 +15,6 @@ License: CC-BY-4.0
 
 This proposal defines a standardized metadata structure for creating and responding to simple, generalized on-chain polls or surveys. It leverages the Conway-era **"Info Action"** and the existing **CIP-0068** metadata standard (using the **674** label) to allow any entity to publish a poll in a machine-readable format. It defines a minimal corresponding structure for voters to use when casting their votes, ensuring that poll data can be reliably created, displayed, and aggregated by any wallet, explorer, or dApp in the Cardano ecosystem. This standard focuses on a simple question, a set of options, and clear aggregation rules, providing a basic, yet powerful, tool for gauging community sentiment.
 
----
 
 ## Motivation: why is this CIP necessary?
 
