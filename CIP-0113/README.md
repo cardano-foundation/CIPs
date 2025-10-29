@@ -3,6 +3,7 @@ CIP: 113
 Title: Programmable token-like assets
 Category: Tokens
 Status: Proposed
+Version: 3.0
 Authors:
     - Michele Nuzzi <michele.nuzzi.2014@gmail.com>
     - Matteo Coppola <m.coppola.mazzetti@gmail.com>
@@ -21,6 +22,20 @@ This CIP proposes a standard for programmable tokens.
 
 We use the term "programmable tokens" to describe the family of tokens that require
 the successful execution of a script in order to change owner.
+
+## Specification Versions
+
+**Current Version: 3.0** (This document)
+
+This specification has evolved through community feedback:
+- **Version 0** (deprecated) - Initial proposal with Merkle tree account uniqueness, included Approve/TransferFrom patterns
+- **Version 1** (deprecated) - Removed Merkle trees, but had UTxO contention issues on receiver side
+- **Version 2** (deprecated) - Introduced stateManager/transferManager pattern with user registration requirement
+- **Version 3** (current) - Removed registration requirement, simplified to transferLogicScript pattern
+
+Previous specification versions are available in the [deprecated/](./deprecated/) directory.
+
+For detailed evolution history, see the [Rationale](#rationale-how-does-this-cip-achieve-its-goals) section.
 
 ## Motivation: why is this CIP necessary?
 
@@ -290,7 +305,7 @@ And many more state managements are possible, depending on the specific implemen
 For this reason, we make explicit the need for sub standards
 
 ## Rationale: how does this CIP achieve its goals?
-The current CIP version, informally called V3, is the result of several iterations to create the best standard for programmable tokens.
+The current specification (Version 3.0) is the result of several iterations to create the best standard for programmable tokens.
 This standard safely extends the functionality of tokens on Cardano, in a scalable way and without disruptions, leveraging CNTs that live
 forever in a single smart contract.
 
@@ -299,7 +314,7 @@ The proposal does not affect backward compatibilty being the first proposing a s
 Existing native tokens are not conflicting with the standard, instead, native tokes are used in this specification for various purposes.
 
 ### History of the proposed standard
-The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) (which we could informally refer as v0) was quite different by the one shown in this document
+The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) (Version 0) was quite different by the one shown in this document
 
 Main differences were:
 - [use of sorted merkle trees to prove uniqueness](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58#diff-370b6563a47be474523d4f4dbfdf120c567c3c0135752afb61dc16c9a2de8d74R72) of an account during creation;
@@ -313,20 +328,20 @@ which included definitions for `TransferFrom`, `Approve` and `RevokeApproval` re
 After [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), 
 it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
 
-After a first round of community feedback, a 
-[reviewed standard was proposed](https://github.com/cardano-foundation/CIPs/pull/444/commits/f45867d6651f94ba53503833098d550326913a0f) 
-(which we could informally refer to as v1).
-[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8), 
-but after further feedback from the community it was noted that the need to spend an UTxO on the receiving side could cause UTxO contention 
+After a first round of community feedback, a
+[reviewed standard was proposed](https://github.com/cardano-foundation/CIPs/pull/444/commits/f45867d6651f94ba53503833098d550326913a0f)
+(Version 1).
+[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8),
+but after further feedback from the community it was noted that the need to spend an UTxO on the receiving side could cause UTxO contention
 in the moment two or more parties would have wanted to send a programmable token to the same receiver at the same time.
 
-After "v1", another improved standard was proposed, informally referred to as "v2".
-v2 proposed a standard interface for programmable tokens, based on the exsistence of 2 contracts: the `stateManager` and the `transferManager`.
+After Version 1, another improved standard was proposed (Version 2).
+Version 2 proposed a standard interface for programmable tokens, based on the exsistence of 2 contracts: the `stateManager` and the `transferManager`.
 
-By the v2 standard, each user must "register" to the policy by creating an utxo on the `stateManager` so that they could
+By the Version 2 standard, each user must "register" to the policy by creating an utxo on the `stateManager` so that they could
 spend programmable tokens using the `transferManager`
 
-This soft requirement for registration was not well received from the community, and for this reason we are now at the "v3" version of the standard.
+This soft requirement for registration was not well received from the community, and for this reason we are now at Version 3.0 of the standard.
 
 The specification proposed in this file addresses all the previous concerns.
 
