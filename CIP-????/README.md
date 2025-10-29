@@ -45,11 +45,11 @@ they sign (in the case that the transaction is validated by the ledger and poste
 
 ## Specification
 
-### Ledger Rule and Transaction Changes 
+### Ledger Changes 
 
-During deserialization, the `MemoBytes` mechanism (an abstraction for a data type that encodes its own serialization) will be 
+During transaction deserialization, the `MemoBytes` mechanism (an abstraction for a data type that encodes its own serialization) will be 
 used to store the bytes of the CDDL field containing the guards of the transaction. 
-The `TxBody` type on the ledger will have two additional fields, both containing hashes : 
+The following values will be computed in the process of transaction processing : 
 
 - `guardsHash`, which will be computed by hashing the bytes of the guards, and 
 - `txidAndGuards`, which will be computed by hashing the concatenation `(txid ++ guardsHash)`
@@ -67,9 +67,8 @@ all signatures will be checked on data constructed using the mechanism described
 
 ### Plutus 
 
-Plutus scripts are not able to see the signatures on a transaction, only the signing keys. Also, there is no 
-need to include in `TxInfo` the fields `txidAndGuards` and `requiredObserversHash` as they are computed from the 
-data in other fields anyways. So, it appears that this change can be implemented without requiring a new version of Plutus.
+Plutus scripts are not able to see the signatures on a transaction, only the signing keys. 
+It appears that this change can be implemented without requiring a new version of Plutus.
 
 ### CLI
 
@@ -79,6 +78,25 @@ To support this change, the CLI will have to be modified to implement the new si
 
 This change will be best suited for a hard fork (e.g. alongside Nested Transactions) that already does not have backwards compatibility 
 since it will not itself be backwards compatible. 
+
+## Future Intent DSL Development
+
+The work described in this section is not part of the proposal being made here, but rather is a future outlook on 
+how intents could function using this feature. 
+
+A Plutus script is both hard to compose and hard to parse into instructions about what is required of a 
+transaction. To address this, we envision relying on very narrow-domain DSLs, each tailored to only a specific 
+usecase. The idea is to have as few as one or two expression constructors, such as for the case of sending funds 
+from wallet to wallet:
+
+`SendMoney : List KeyHash x Value x Address x Address -> Exp`
+
+Then, an expression `exp` in this DSL would be compiled to a Plutus script `scr` and the pair `(exp , scr)`
+would be sent to an intent solver. The solver would use `exp` to build a transaction with ID `txid` (which includes 
+`scr` as one of its guards). The solver would 
+then check that the resulting transaction satisfies the script `scr` by validating it against the current ledger state (except 
+for checking the clients's signature, which is not yet attached).
+The client will then get back `hash (txid ++ hash scr)` to sign. 
 
 ## Rationale: how does this CIP achieve its goals?
 
