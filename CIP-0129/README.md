@@ -170,6 +170,7 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
   - [x] Eternl
   - [x] Typhon Wallet
   - [ ] Lace
+  - [x] Gero
 
 ### Implementation Plan
 - This CIP uses some bech32 prefixes which are already defined by CIP105 and ref by CIP005, This PR includes updates to both the CIPs with updated vector spec. The suggested changes align with the design of the original CIP005.
