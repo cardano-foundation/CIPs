@@ -81,7 +81,7 @@ To support this change, the CLI will have to be modified to implement the new si
 This change will be best suited for a hard fork (e.g. alongside Nested Transactions) that already does not have backwards compatibility 
 since it will not itself be backwards compatible. 
 
-## Future Intent DSL Development
+### Future Intent DSL Development
 
 The work described in this section is not part of the proposal being made here, but rather is a future outlook on 
 how intents could function using this feature. 
