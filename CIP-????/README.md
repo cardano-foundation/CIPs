@@ -24,7 +24,6 @@ It is invaluable for the entire Cardano ecosystem to have a **single, standardiz
 
 By establishing a simple, common standard, we move away from fragmented, off-chain surveys and provide a transparent, reliable signal for the entire community without requiring complex, use-case-specific data structures.
 
----
 
 ## Specification
 
