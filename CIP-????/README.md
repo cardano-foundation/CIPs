@@ -7,7 +7,8 @@ Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
     - Nicolas Henin <nicolas.henin@iohk.io>
 Implementors: []
-Discussions: 
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/1110
 Created: 2025-10-29
 License: CC-BY-4.0
 ---
