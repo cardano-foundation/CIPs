@@ -34,7 +34,8 @@ specify using a smart contract script.
 The functionality of expressing an intent as a guard script (i.e. a Plutus script that 
 is required to be executed by a transaction) is already part of CIP-0118. This CIP merely introduces a conceptual separation of 
 intent and the transaction that satisfies it. That is, by signing an intent-transaction pair ,
-a user gets assurance that the transaction satisfies it (assuming it ends up being validated by the ledger) without ever 
+a user gets assurance that the transaction cannot be posted on-chain unless it both includes this guard 
+and also satisfies it, without ever 
 having to inspect the transaction.
 
 **Practically :** The practical need for this stems from an intent-based ultra-light client design that is currently in the progress.
@@ -92,12 +93,20 @@ from wallet to wallet:
 
 `SendMoney : List KeyHash x Value x Address x Address -> Exp`
 
-Then, an expression `exp` in this DSL would be compiled to a Plutus script `scr` and the pair `(exp , scr)`
-would be sent to an intent solver. The solver would use `exp` to build a transaction with ID `txid` (which includes 
-`scr` as one of its guards). The solver would 
-then check that the resulting transaction satisfies the script `scr` by validating it against the current ledger state (except 
+A client constructs some intent `exp = SendMoney lskeys v addr1 addr1`
+Then, an expression `exp` in this DSL is compiled to a (CBOR-encoded) guard `scr` and the client sends the pair `(exp , scr)`
+to an intent solver. The solver uses `exp` to build a transaction with ID `txid` (which includes 
+`scr` as one of its guards). The solver  
+then checks that the resulting transaction indeed satisfies the script `scr` by validating it against the current ledger state (except 
 for checking the clients's signature, which is not yet attached).
-The client will then get back `hash (txid ++ hash scr)` to sign. 
+The solver sends the client the `txid`, and the client can then sign `hash (txid ++ hash scr)`.
+
+We speculate that such narrow-domain DSLs may find use in the broader context of taking full advantage of the 
+Nested Transaction functionality. We would go so far as to say that this is what Cardano intents *are*, and sub-txs (as they 
+are also intents)
+will benefit from also being paired with concise DSL descriptions of this nature. This would facilitate the process of filtering sub-txs 
+top-level builders are interested in, as well as the process of intent fulfillment (i.e. top-level transaction construction). 
+This possibility has already come up in discussions about top-level observers in CIP-0118.
 
 ## Rationale: how does this CIP achieve its goals?
 
