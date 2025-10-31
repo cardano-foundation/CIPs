@@ -7,7 +7,8 @@ Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
     - Nicolas Henin <nicolas.henin@iohk.io>
 Implementors: []
-Discussions: 
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/1110
 Created: 2025-10-29
 License: CC-BY-4.0
 ---
@@ -81,7 +82,7 @@ To support this change, the CLI will have to be modified to implement the new si
 This change will be best suited for a hard fork (e.g. alongside Nested Transactions) that already does not have backwards compatibility 
 since it will not itself be backwards compatible. 
 
-## Future Intent DSL Development
+### Future Intent DSL Development
 
 The work described in this section is not part of the proposal being made here, but rather is a future outlook on 
 how intents could function using this feature. 
