@@ -118,6 +118,8 @@ Wallets, nodes, and off-chain tooling must be updated to:
 
 Node software, CLI, Plutus libraries, and serialization tooling (e.g., `cardano-api`, `cardano-ledger`, `plutus-ledger-api`) would require coordinated upgrades.
 
+## Path to Active
+
 ### Acceptance Criteria
 
 - Agreement from Cardano Ledger and Plutus teams
