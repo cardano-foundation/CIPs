@@ -64,11 +64,11 @@ The metadata is structured as follows:
 {
   "????":
   {
-    t: "AUTH_BEGIN",
-    s: <saidOfLeafCredentialSchema>,
-    i: <aidOfSigner>,
-    c: <byteStream>,
-    m: <optionalMetdataBlock>
+    "t": "AUTH_BEGIN",
+    "s": "{{saidOfLeafCredentialSchema}}",
+    "i": "{{aidOfSigner}}",
+    "c": "{{byteStream}}",
+    "m": "{{optionalMetadataBlock}}"
   }
 }
 ```
@@ -82,17 +82,17 @@ To create a persistent signature over data with KERI, signers can anchor a diges
 - **i** — The identifier of the signer in the CESR qb64 variant.
 - **d** — The digest of the data being signed in the CESR qb64 variant.
 - **s** — The sequence number of the KERI event, encoded as a hex string.
-If the KEL of identifier `i` contains an event at sequence number `s` which has a seal value of `{ d: <digest> }`, it serves as cryptographically verifiable proof that the data was effectively signed by the controller.
+If the KEL of identifier `i` contains an event at sequence number `s` which has a seal value of `{ d: "{{digest}}" }`, it serves as cryptographically verifiable proof that the data was effectively signed by the controller.
 A reference to this event in a metadata transaction is structured as follows:
 ```JSON
 {
     "????": {
-    "i": <aidOfSigner>, 
-    “d”: <digest>,
-    "s": <Hex encoded sequence number>,
-    “t”: “ATTEST”
+    "t": "ATTEST",
+    "i": "{{aidOfSigner}}", 
+    "d": "{{digest}}",
+    "s": "{{hexEncodedSequenceNumber}}"
     },
-    “YYYY”: {<some Application Metadata>} // Metadata i can sign 
+    "YYYY": "{{someApplicationMetadata}}"
 }
 ```
 Such transactions are only considered valid if the digest value is correct, and can be found anchored in the KEL of the controller at the given sequence number.
@@ -111,11 +111,11 @@ A reference to this event in a metadata transaction is structured as follows:
 {
   "????":
   {
-    t: "AUTH_END",
-    s: <saidOfLeafCredentialSchema>,
-    i: <aidOfSigner>,
-    c: <byteStream>,
-    m: <optionalMetadataBlock>
+    "t": "AUTH_END",
+    "s": "{{saidOfLeafCredentialSchema}}",
+    "i": "{{aidOfSigner}}",
+    "c": "{{byteStream}}",
+    "m": "{{optionalMetadataBlock}}"
   }
 }
 
@@ -148,18 +148,18 @@ The following is the expected transaction format to publish the credential chain
 {
   "????":
   {
-    t: "AUTH_BEGIN",
-    s: “ED_GbUPpS8ZJEY-u8OB3QVe9C_CAFBdSimS5KxclkgWT”,
-    i: “EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL”,
-    c: <credentialChainByteStream>,
-    m:
+    "t": "AUTH_BEGIN",
+    "s": "ED_GbUPpS8ZJEY-u8OB3QVe9C_CAFBdSimS5KxclkgWT",
+    "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL",
+    "c": "{{credentialChainByteStream}}",
+    "m":
     {
-      l: [1447],
-      LEI: “50670047U83746F70E20”
+      "l": [1447],
+      "LEI": "50670047U83746F70E20"
     }
   }
 }
-````
+```
 For ease of indexing, the metadata block is used to contain the LEI of the legal entity, as well as an array of all relevant metadata labels. As such, an indexer can filter based on interested metadata labels, or based on a particular set of legal entities.
 
 The credential chain `c` should be a qb2 CESR stream containing:
@@ -180,12 +180,12 @@ The following is an attestation transaction for metadata label `1447`.
 ```JSON
 {
     "XXXX": {
-    “t”: “ATTEST”,
-    "i": “EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL”, 
-    “d”: “ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux”,
-    "s": “1a”
+    "t": "ATTEST",
+    "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL", 
+    "d": "ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux",
+    "s": "1a"
     },
-    “1447”: {<some Application Metadata>} 
+    "1447": "{{someApplicationMetadata}}"
 }
 ```
 
