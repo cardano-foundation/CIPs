@@ -37,9 +37,9 @@ It should not be the responsibility of language authors or smart contract develo
 
 ## Specification
 
-### MaryEraValue 
+### MaryEraValue
 
-A _map_ is a collection of _values_ indexed by _keys_. We consider a map to be _well-defined_ when each key uniquely identifies each value, and when additional structural and semantic constraints are satisfied. The canonical representation of Mary-era multi-asset Values in Plutus Core is a nested map where the keys of the outer map are `AsData CurrencySymbol`s and the keys of the inner map are `AsData TokenName`s and the _values_ of the inner map are `AsData Integer` (representing the quantity of the asset). 
+A _map_ is a collection of _values_ indexed by _keys_. We consider a map to be _well-defined_ when each key uniquely identifies each value, and when additional structural and semantic constraints are satisfied. The canonical representation of Mary-era multi-asset Values in Plutus Core is a nested map where the keys of the outer map are `AsData CurrencySymbol`s and the keys of the inner map are `AsData TokenName`s and the _values_ of the inner map are `AsData Integer` (representing the quantity of the asset).
 
 Here are the important invariants of the PlutusCore representation of the Mary-era Value types from the Cardano ledger:
 1. All _keys_ in the outer map are unique (each `CurrencySymbol` appears only once)
@@ -83,31 +83,35 @@ These functions operate on the following types:
 type BuiltinValue -- A new primitive type
 type BuiltinCurrencySymbol = BuiltinByteString
 type BuiltinTokenName = BuiltinByteString
-type BuiltinQuantity = BuiltinInteger 
+type BuiltinQuantity = BuiltinInteger
 ```
 
 We propose the following set of builtin functions to accompany the new builtin type:
 1. `insertCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinInteger -> BuiltinValue -> BuiltinValue`
-    - it returns a Mary-era Value with the `Coin` inserted, silently discarding any previous value
-2. `deleteCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinValue -> BuiltinValue`
-    - it returns a Mary-era Value with the `Coin` removed, or unmodified if the `Coin` was not present. 
-3. `lookupCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinValue -> BuiltinQuantity`
-   - it returns the quantity of a given `Coin` in a Mary-era Value. 
-4. `unionValues :: BuiltinList BuiltinaValue -> BuiltinValue`
-    - it merges all the values in the provided list
-    - when there are collisions it adds the quantities, if the resulting sum is zero it removes the entry to maintain the Mary-era Value invariants (no zero-quantity entries, no empty inner maps) such that the result is a normalized value. 
-    - this is not strictly necessary, however, it becomes extremely useful if we get limited higher order builtins, or even a `fieldMap` builtin. 
-5. `unionValue :: BuiltinValue -> BuiltinValue -> BuiltinValue`
+    - it returns a Mary-era Value with the `Coin` inserted, silently discarding any previous value.
+      If the `BuiltinInteger` argument (the quantity) is zero, the `Coin` is removed.
+    - Both `BuiltinCurrencySymbol` and `BuiltinTokenName` must be no longer than 32 bytes (unless the amount is zero).
+    - The amount (`BuiltinInteger`) must satisfy -2<sup>127</sup> ≤ amount ≤ 2<sup>127</sup>-1.
+2. `lookupCoin :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinValue -> BuiltinQuantity`
+   - it returns the quantity of a given `Coin` in a Mary-era Value.
+3. `unionValue :: BuiltinValue -> BuiltinValue -> BuiltinValue`
     - it merges two provided values
-    - when there are collisions it adds the quantities, if the resulting sum is zero it removes the entry to maintain the Mary-era Value invariants (no zero-quantity entries, no empty inner maps) such that the result is a normalized value. 
-6. `valueContains :: BuiltinValue -> BuiltinValue -> Bool`
-    - it strictly compares the two Mary-era Values and determines if the first value is a superset of the second.
-    - returns true if Value `a` contains each and every `Coin` in Value `b` with greater or equal quantities.
-    - returns false if Value `b` contains any `Coin` that is not contained in Value `a`, or if Value `b` contains a greater quantity of any `Coin` than Value `a`.
-7. `mkValueData :: BuiltinValue -> BuiltinData`
-   - Constructs a 'BuiltinData' value with the `Value` constructor.
-8. `unsafeDataAsValue :: BuiltinData -> BuiltinValue`
-   - Deconstructs a 'BuiltinData' as an `Value`, or fails if it is not one.
+    - when there are collisions it adds the quantities, if the resulting sum is zero it removes the entry to maintain the Mary-era Value invariants (no zero-quantity entries, no empty inner maps) such that the result is a normalized value.
+    - This operation is commutative and associative, thus makes `BuiltinValue` a commutative semigroup.
+4. `valueContains :: BuiltinValue -> BuiltinValue -> Bool`
+    - it compares the two Mary-era Values and determines if the first value is a superset of the second.
+    - All amounts in both values must be positive.
+    - `valueContains a b == True` if and only if: for each `(currency, token, quantity)` in `b`, `lookupCoin currency token a >= quantity`.
+5. `valueData :: BuiltinValue -> BuiltinData`
+    - encodes a `BuiltinValue` as `BuiltinData`.
+6. `unValueData :: BuiltinData -> BuiltinValue`
+    - decodes a `BuiltinData` into a `BuiltinValue`, or fails if it is not one.
+    - All currency symbols and token names must be no longer than 32 bytes.
+    - All amounts must lie between -2<sup>127</sup> and 2<sup>127</sup>-1 (inclusive).
+
+A note on `valueData` and `unValueData`: in Plutus V1, V2 and V3, the encoding of `BuiltinValue` in `BuiltinData` is identical to that of the [existing `Value` type](https://plutus.cardano.intersectmbo.org/haddock/latest/plutus-ledger-api/PlutusLedgerApi-V1-Value.html#t:Value) in plutus-ledger-api.
+This ensures backwards compatibility.
+Beginning in the Dijkstra era, a new `Value` constructor will be added to `BuiltinData`, making `valueData` and `unValueData` constant time operations for Plutus V4 onwards.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -132,7 +136,7 @@ Instead, developers will have:
 - Simple, expressive, and performant builtins for common operations.
 - Fewer footguns and edge cases to reason about in critical onchain logic.
 
-By elevating `Value` to a first-class builtin type, this CIP ensures that the semantics of `Value` and its operations are uniform across all languages targeting Plutus Core. Currently, each language (e.g., Aiken, Plutarch, Helios, Plu-Ts, etc.) must independently define a `Value` type and implement its operations in their standard libraries. This fragmentation introduces the risk of divergent behaviors and subtle inconsistencies across Cardano’s smart contract ecosystem. 
+By elevating `Value` to a first-class builtin type, this CIP ensures that the semantics of `Value` and its operations are uniform across all languages targeting Plutus Core. Currently, each language (e.g., Aiken, Plutarch, Helios, Plu-Ts, etc.) must independently define a `Value` type and implement its operations in their standard libraries. This fragmentation introduces the risk of divergent behaviors and subtle inconsistencies across Cardano’s smart contract ecosystem.
 
 With `BuiltinValue`, all implementations inherit a single, authoritative definition of `Value` and its operations, removing this burden from language authors and guaranteeing consistency across the entire platform.
 

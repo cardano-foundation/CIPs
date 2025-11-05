@@ -3,6 +3,7 @@ CIP: 23
 Title: Fair Min Fees
 Authors:
   - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
+  - Ryan Wiley <rian222@gmail.com>
 Category: Ledger
 Status: Proposed
 Created: 2021-02-04
@@ -15,34 +16,41 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposes to create a more fair marketplace for stakepools by reducing the minimum fixed pool fee and adding a minimum variable pool fee.
+This CIP introduces a new protocol parameter, `minPoolMargin`, which specifies a lower bound on the variable fee (margin) a stake pool may set. The parameter is introduced initially set to `0` to avoid disrupting existing pool certificates.  This proposal does not change or reduce the existing minimum fixed pool fee (`minPoolCost`).
 
 ## Motivation: why is this CIP necessary?
 
 The current minimum fixed pool fee places a large and unfair burden on delegators to pools with smaller amounts of stake.
-This incentivizes people to delegate to pools with higher stake causing centralization and creating an unequal playing field for stakepool operators.
+This incentivizes people to delegate to pools with higher stake causing centralization and creating an unequal playing field for stake pool operators.
 
-Reducing the minimum fixed pool fee and adding a minimum variable pool fee reduces the imbalance between stakepools with less or more stake to a more reasonable range that allows for more fair competition between stakepools and more fair rewards for delegators to stakepools with less stake.
+Using a minimum variable pool fee reduces the imbalance between stake pools with less or more stake to a more reasonable range that allows for more fair competition between stake pools and more fair rewards for delegators to stake pools with less stake.
 
-This creates a more fair marketplace for all stakepool operators and increases decentralization, which is a goal of Cardano.
+This creates a more fair marketplace for all stake pool operators and increases decentralization, which is a goal of Cardano.
 
 ## Specification
 
-```
-| Name of the Parameter   | New Parameter (Y/N)  | Deleted Parameter (Y/N) | Proposed Value   | Summary Rationale for Change |
-|-----------------------  |--------------------  |------------------------ |---------------   | ---------------------------- |
-| minPoolCost             | N                    | N                       | 50000000         | See Rationale section.       |
-|-----------------------  |--------------------  |------------------------ |---------------   | ---------------------------- |
-| minPoolRate             | Y                    | N                       | .015             | See Rationale section.       |
-|-----------------------  |--------------------  |------------------------ |---------------   | ---------------------------- |
-```
+This CIP introduces a new protocol parameter, `minPoolMargin`, which represents the
+minimum variable fee (margin) that a stake pool can set. This parameter is
+distinct from the existing `minPoolCost`, which represents the minimum fixed
+fee a pool can set. Both limits are enforced independently by the ledger.
+
+- `minPoolMargin` defines the lower bound for the pool margin (variable fee), i.e.,
+  the minimum allowable percentage of rewards a pool can take. Pool
+  registration and update certificates MUST have `margin >= minPoolMargin`.
+- `minPoolCost` retains its current meaning and enforcement as the minimum
+  fixed fee a pool can set.
+
+This CIP does not prescribe specific values for either parameter. Concrete
+values for `minPoolMargin` and `minPoolCost` are to be chosen and enacted through
+the standard protocol parameter update process.
 
 ### Backward Compatibility
 
-There are 2 ways to handle the existing pool certificates with minimum variable pool fee less than the proposed value:
-1. These pool certificates would be treated as if they had the new mimimum variable pool fee.
-2. These pool certificates would be invaalid and pool operators would be required to create new certificates with valid values.
-If option 1 is possible, it would provide a better user experience for both stakepool operators and delegators and would cause less disruption to the network.
+To maintain compatibility for existing pool certificates whose current margin is below the new `minPoolMargin`, the ledger's rewards calculation should treat the protocol parameter `minPoolMargin` as the effective margin for those pools. In other words, if a pool's margin is less than `minPoolMargin`, the protocol-level `minPoolMargin` overrides the pool's registered `margin` during reward calculation. This minimizes disruption and lets legacy pool certificates remain valid while ensuring the ledger enforces the new minimum fee during reward distribution.
+
+It is also recommended to introducce the hard-fork with `minPoolMargin` initially set to `0`. Doing so minimizes migration friction for stake pool operators and gives governance time to raise the parameter to its target value through the normal paramater change governance action process.
+
+Should this clamping approach prove infeasible, pool certificates with a margin lower than `minPoolMargin` would need to be re-registered with compliant values, but the goal is to avoid disruption as much as possible.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -93,21 +101,21 @@ Definitions:
 Pool Stake - Total stake delegated to pool.
 Total Rewards - Total rewards generated by the pool in one epoch.
 Pool Cur Fee - The total amount of fees taken by the pool with current parameters.
-Staker Cur Fee - The amount of fees paid by a staker who delegates 100k ADA  with currarameters.
-Staker Cur Rew - The amount of rewards received by a staker who delegates 100k ADA  with currarameters.
-Current Fee % - The percentage of rewards taken by the pool as fees  with currarameters.
+Staker Cur Fee - The amount of fees paid by a staker who delegates 100k ADA  with current parameters.
+Staker Cur Rew - The amount of rewards received by a staker who delegates 100k ADA  with current parameters.
+Current Fee % - The percentage of rewards taken by the pool as fees  with current parameters.
 Pool New Fee - The total amount of fees taken by the pool with proposed parameters.
 Staker New Fee - The amount of fees paid by a staker who delegates 100k ADA with proposed parameters.
 Staker New Rew - The amount of rewards received by a staker who delegates 100k ADA with proposed parameters.
 New Fee % - The percentage of rewards taken by the pool as fees with proposed parameters.
 Note: All amounts other than %s are in ADA.
 
-The table above shows that currently a delegator staking 100k ADA to a stakepool with 2m ADA total delegation to the pool is paying an exorbitant 22.7% in fees while the same delegator staking with a fully saturated pool would only pay 0.7% in fees.
-This is a substantial and unfair advantage that large pools have in the stakepool marketplace.
+The table above shows that currently a delegator staking 100k ADA to a stake pool with 2m ADA total delegation to the pool is paying an exorbitant 22.7% in fees while the same delegator staking with a fully saturated pool would only pay 0.7% in fees.
+This is a substantial and unfair advantage that large pools have in the stake pool marketplace.
 This is a strong incentive to centralize stake to fewer larger pools which reduces the resiliency of the network.
 
 The proposed minimum fees bring this imbalance into a more reasonable range of 1.6% to 4.8%.
-It is much more likely that a small stakepool with other advantages or selling points would be able to convince a delegator to accept about 2 less ADA in rewards per epoch for their 100k delegation than about 17 ADA as in the current case.
+It is much more likely that a small stake pool with other advantages or selling points would be able to convince a delegator to accept about 2 less ADA in rewards per epoch for their 100k delegation than about 17 ADA as in the current case.
 This is particularly true as the price of ADA increases.
 At current price of $0.90 USD, a delegator staking 100k ADA is giving up over $1000 USD per year by delegating to a small pool!
 This does not even include the amount lost by comounding rewards being staked over the year.
@@ -120,21 +128,21 @@ With proposed parameters the same delegator would only be giving up about $150 U
 2.3 ADA/epoch * 73 epochs/year =  167.9 ADA/year
 167.9 ADA/year * $0.90 USD/ADA = $151.11 USD/year
 
-The calculations below show that given the price increase in ADA compared to when the protocol parameters were first set, we can maintain viable funding for stakepool operators with the proposed parameter changes.
+The calculations below show that given the price increase in ADA compared to when the protocol parameters were first set, we can maintain viable funding for stake pool operators with the proposed parameter changes.
 
 Annual pool operator funding given initial parameters:
 340 ADA/epoch * $0.08 USD/ADA = $27.20 USD/epoch
 $27.20 USD/epoch * 73 epochs/year = $1985.60 USD/year
 
-Annual pool operator funding given proposed parameters for stakepool with 2 million ADA delegation:
+Annual pool operator funding given proposed parameters for stake pool with 2 million ADA delegation:
 71.8 ADA/epoch * $0.90 USD/ADA = $64.62 USD/epoch
 $64.62 USD/epoch * 73 epochs/year = $4717.26 USD/year
 
-Annual pool operator funding given proposed parameters for fully saturated stakepool:
+Annual pool operator funding given proposed parameters for fully saturated stake pool:
 769.6 ADA/epoch * $0.90 USD/ADA = $692.64 USD/epoch
 $692.64 USD/epoch * 73 epochs/year = $50,562.72 USD/year
 
-In summary, the proposed parameter changes would create a more fair marketplace for stakepools, provide more fair rewards for delegators to smaller pools and would lower incentives for centralization providing a more resilient network.
+In summary, the proposed parameter changes would create a more fair marketplace for stake pools, provide more fair rewards for delegators to smaller pools and would lower incentives for centralization providing a more resilient network.
 
 ### Test Cases
 
@@ -144,14 +152,32 @@ See the minfees.php code to test different potential values of the parameters.
 
 ### Acceptance Criteria
 
-- [ ] The new parameter `minPoolRate` is implemented in the protocol and enacted through a hard fork.
-- [ ] The minimum value of the existing parameter `minPoolCost` is adjusted in the protocol parameters (not requiring a hard fork).
-- [ ] Code must be written in the cardano-node to check the provided variable rate when creating pool certificates to make sure it meets the new requirements.
-  - [ ] If backward compatibility option 1 is chosen it would require some new code in the cardano-node to treat the below minimum rate as the minimum rate.
+- Consensus on initial parameter value – An initial value for the new protocol parameter `minPoolMargin` must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses, and community feedback.
+- Endorsement by Technical Bodies – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap.
+- Stakeholder Concurrence – A majority of stake pool operators (SPOs), ecosystem tooling maintainers, dReps, and other infrastructure providers must signal readiness to upgrade.
+- Governance Ratification – The on-chain Hard-Fork Governance Action must pass the requisite dRep and Constitutional Committee thresholds, establishing legal-constitutional legitimacy and stakeholder support for the change.
 
 ### Implementation Plan
 
-- [ ] Agreement by the Ledger team as defined in [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) under _Expectations for ledger CIPs_ including "expert opinion" on changes to rewards & incentives.
+- Community Deliberation (Preparation Phase)
+  - Publish the finalized CIP revision and present it to the PCP committee, TSC, CIP Editors, and wider community channels (Discord, X, Cardano Forum, etc.).
+  - Collect structured feedback, particularly on candidate values for the new parameter values and iterate until broad technical consensus emerges.
+- Specification & Code Integration (Development Phase)
+  - Once initial parameter values are determined, integrate the new rewards calculation logic and governance features for the new parameter into cardano-node and related libraries (ledger, CLI, wallet APIs).
+  - Determine the best method to deal with existing pool registration certificates that currently have a variable fee lower than what the new `minPoolMargin` parameter allows.
+  - Submit pull requests to the canonical repositories; obtain code reviews from IOG, CF, and community contributors.
+  - Release a new protocol version that includes the changes made in this CIP.
+  - Use a dedicated pre-production testnet that mirrors main-net parameters but enforces the new changes, allowing SPOs and exchanges to test end-to-end flows.
+- Readiness Sign-off (Testing Phase)
+  - Require at least two weeks of uninterrupted testnet stability plus green results from regression and property-based tests.
+  - Monitor ecosystem dApps and tooling to confirm that major node implementations, explorers, wallets, and exchange integrations support the new rule set.
+- On-chain Governance (Ratification Phase)
+  - File the Hard-Fork Governance Action on-chain with the agreed initial parameter value tagged for the next hard fork event.
+  - Modify the existing Cardano Constitution to include definitions and guardrails for the new protocol parameters and have it ratified by the tripartite government of Cardano.
+  - Mobilize dRep outreach to ensure quorum and super-majority passage; concurrently, the Constitutional Committee validates procedural compliance.
+- Hard-Fork Activation (Deployment Phase)
+  - Upon successful vote, the hard fork event is automatically triggered upon epoch turnover.
+  - Monitor main-net metrics during the changeover epoch; provide real-time support for any late-upgrading SPOs.
 
 ## Copyright
 
