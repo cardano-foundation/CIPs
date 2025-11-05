@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: A Standard for On-chain Survey via Info Action
+Title: A Standard for On-Chain Surveys and Polls
 Category: Metadata
 Status: Proposed
 Authors:
@@ -13,35 +13,49 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines a standardized metadata structure for creating and responding to simple, generalized on-chain polls or surveys. It leverages the Conway-era **"Info Action"** and the existing **CIP-0068** metadata standard (using the **674** label) to allow any entity to publish a poll in a machine-readable format. It defines a minimal corresponding structure for voters to use when casting their votes, ensuring that poll data can be reliably created, displayed, and aggregated by any wallet, explorer, or dApp in the Cardano ecosystem. This standard focuses on a simple question, a set of options, and clear aggregation rules, providing a basic, yet powerful, tool for gauging community sentiment.
+This proposal defines a **generic, standardized metadata structure** for creating and responding to on-chain surveys and polls. It uses the **CIP-0068** metadata standard (via the **674** label) to allow any entity to publish a survey in a machine-readable format without requiring governance deposits or formal registration.  
 
+The specification provides a minimal, interoperable format for survey definition and response — enabling wallets, explorers, and dApps across the Cardano ecosystem to reliably create, display, and aggregate poll data.  
+
+Optionally, a survey may **reference a governance action** by transaction ID and action index, allowing it to be contextually linked to an on-chain proposal while remaining independent.
 
 ## Motivation: why is this CIP necessary?
 
-While the Cardano governance system is robust for formal decision-making, its tertiary voting mechanism (Yes/No/Abstain) is inherently limited for general community consultation and detailed opinion gathering. This standard allows entities—from foundations and development projects to individual community members—to submit a governance **Info Action** to anchor a structured, multi-option poll on-chain.
+Formal Cardano governance actions are intentionally restrictive and structured, but this rigidity limits the ability to gather **informal or exploratory community sentiment**. Off-chain tools (e.g., Google Forms, Typeform) have been used for this purpose, but they fragment data and trust.  
 
-It is invaluable for the entire Cardano ecosystem to have a **single, standardized method** for gauging sentiment. This proposal enables the creation of a decentralized, on-chain tool for consultation, ensuring that sentiment and relevant contextual data can be consistently linked to on-chain identity.
+This CIP proposes a **unified, lightweight survey metadata format** that can be used by:
+- Projects and community groups to collect feedback.  
+- Delegated representatives (DReps) or governance actors to gauge sentiment.  
+- Explorers and dashboards to display aggregated results.  
 
-By establishing a simple, common standard, we move away from fragmented, off-chain surveys and provide a transparent, reliable signal for the entire community without requiring complex, use-case-specific data structures.
+By allowing an **optional reference to a governance action**, this model supports both:
+- **Standalone surveys** (e.g., community temperature checks).  
+- **Governance-linked surveys** (e.g., feedback on a specific proposal or Info Action).  
 
+This separation of concerns provides:
+- **Clarity:** Surveys are not mistaken for governance actions.  
+- **Flexibility:** No deposits, time limits, or procedural constraints.  
+- **Discoverability:** Metadata is consistent, indexed, and linkable.  
 
 ## Specification
 
-This specification leverages the **674** message tag for community-defined structured metadata, as established in CIP-0068. It defines two distinct, minimal metadata payloads.
+This specification uses **CIP-0068** label **674** and defines two payload types:  
+`surveyDetails` (definition) and `surveyResponse` (vote).
 
-### 1. Poll Definition Payload
+### 1. Survey Definition Payload
 
-This metadata is included in the transaction that creates a governance "**Info Action**" to announce and define the poll. The **674** metadata entry **MUST** contain a `pollDetails` object.
+This metadata is included in any transaction that defines a survey.  
+It can be completely independent or optionally reference an existing governance action.
 
 ```json
 {
   "674": {
-    "msg": ["<Short, human-readable title of the poll>"],
-    "pollDetails": {
-      "specVersion": "1.0", 
+    "msg": ["<Short, human-readable title of the survey>"],
+    "surveyDetails": {
+      "specVersion": "1.0",
       "type": "single-choice",
-      "question": "<The full question to be displayed to voters>",
-      "description": "<A detailed explanation of the poll (supports markdown)>",
+      "question": "<The full question to be displayed to respondents>",
+      "description": "<A detailed explanation of the survey (supports markdown)>",
       "options": [
         "<Option 1 text>",
         "<Option 2 text>",
@@ -51,35 +65,11 @@ This metadata is included in the transaction that creates a governance "**Info A
       "eligibility": [
         "Stakeholder"
       ],
-      "voteWeighting": "StakeBased"
-    }
-  }
-}
-````
-
-| Key | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `specVersion` | String | Yes | The version of this polling specification. **MUST** be "1.0". |
-| `type` | String | Yes | The type of poll. Supported types are `"single-choice"` and `"multi-select"`. |
-| `question` | String | Yes | The primary poll question. Should be concise. |
-| `description` | String | Yes | A longer description providing context or rationale. Supports **markdown** for rich text rendering in client applications. |
-| `options` | Array of Strings | Yes | An ordered list of the choices available. Min 2 options. The order **MUST** be the order displayed in the UI. |
-| `maxSelections` | Positive Integer | Yes | The maximum number of options a user can select. For a `single-choice` poll, this **MUST** be 1. |
-| `eligibility` | Array of Strings | No | Defines who is eligible to vote. Valid options: `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"` (any address with a registered stake key). If omitted, the poll is open to all stakeholders. |
-| `voteWeighting` | String | No | Defines how votes are counted. Options: `"StakeBased"` or `"CredentialBased"`. If omitted, the default is `"StakeBased"`. |
-
-### 2\. Poll Response Payload
-
-This metadata is included in the transaction a voter submits to cast their vote. The **674** metadata entry **MUST** contain a `voteFor` object.
-
-```json
-{
-  "674": {
-    "msg": ["Response to poll: <Title of the poll>"],
-    "voteFor": {
-        "selection": [
-            "<User's choice (matching option name)>"
-        ]
+      "voteWeighting": "StakeBased",
+      "referenceAction": {
+        "transactionId": "<optional governance action TxId>",
+        "actionIndex": 0
+      }
     }
   }
 }
@@ -87,43 +77,74 @@ This metadata is included in the transaction a voter submits to cast their vote.
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `actionTxId` | String (hex) | Yes | The transaction hash of the "Info Action" that created the poll. This provides an immutable link. |
-| `selection` | Array of Strings | Yes | A list of the user's selected options. For `single-choice` polls, this array **MUST** contain exactly one element. Values **MUST** match entries in the `options` array from the `pollDetails`. |
+| `specVersion` | String | Yes | Version of this survey specification. **MUST** be `"1.0"`. |
+| `type` | String | Yes | `"single-choice"` or `"multi-select"`. |
+| `question` | String | Yes | The main survey question. |
+| `description` | String | Yes | A detailed description or rationale (supports markdown). |
+| `options` | Array of Strings | Yes | Ordered list of possible responses (min 2). |
+| `maxSelections` | Positive Integer | Yes | Max number of options selectable per respondent. |
+| `eligibility` | Array of Strings | No | Who can respond. Valid options: `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
+| `voteWeighting` | String | No | `"StakeBased"` (default) or `"CredentialBased"`. |
+| `referenceAction` | Object | No | Optional link to a governance action. Contains `transactionId` (hex string) and `actionIndex` (integer). |
 
-### 3\. Casting a Vote
+### 2. Survey Response Payload
 
-The method for submitting a poll response depends on the user's role:
+This metadata is included in the transaction a user submits to cast a response.
 
-  * **For Governance Bodies (DReps, SPOs, CC Members):** The poll response metadata, as defined above, should be included in the same transaction used to cast their formal governance vote (Yes/No/Abstain) on the Info Action.
+```json
+{
+  "674": {
+    "msg": ["Response to survey: <Title of the survey>"],
+    "surveyResponse": {
+      "surveyTxId": "<Transaction ID of the survey definition>",
+      "selection": [
+        "<User's selected option text>"
+      ]
+    }
+  }
+}
+```
 
-  * **For Stakeholders:** A stakeholder not casting a formal governance vote **MUST** create a new transaction (e.g., sending a minimal amount of ADA back to their own address) with the sole purpose of including the Poll Response Payload in the transaction's metadata.
+| Key | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `surveyTxId` | String (hex) | Yes | The transaction ID of the survey definition. |
+| `selection` | Array of Strings | Yes | List of selected option(s); must match survey definition. |
 
-### Block Explorer Implementation Guide
+### 3. Casting a Response
 
-Cardano block explorers and other data aggregators should follow these steps to discover, parse, and display poll results:
+- **Governance actors (DReps, SPOs, CCs):**  
+  May include a survey response in the same transaction as a governance vote if referencing a related action.  
+- **Stakeholders:**  
+  Submit a self-transaction including the survey response metadata.
 
-1.  **Poll Discovery:** Scan transactions for metadata entries with the top-level key **674** containing a `pollDetails` object. The transaction ID of this action is the poll's unique identifier.
+### 4. Block Explorer & dApp Implementation Guide
 
-2.  **Response Discovery & Linking:** Scan for metadata entries with **674** containing a `voteFor` object, linking them via the `actionTxId` field.
+1. **Survey Discovery:**  
+   Scan for transactions with label **674** containing `surveyDetails`.  
+   Each survey is uniquely identified by the transaction ID of that transaction.
 
-3.  **Voter Eligibility Verification:** If the `eligibility` field is present, verify the credentials of the address that submitted the voting transaction.
+2. **Response Linking:**  
+   Find transactions containing `surveyResponse` and link via `surveyTxId`.
 
-4.  **Aggregating Results:** Check the `voteWeighting` field.
+3. **Governance Context (Optional):**  
+   If `referenceAction` exists, display the survey as related to that governance action.
 
-      * **If `voteWeighting` is "StakeBased" (or omitted):** For each valid vote, query the on-chain state to determine the voting power (in ADA) associated with the voter's credential at the time of the vote. This ADA value is added to the total for the selected option(s).
+4. **Voter Eligibility Verification:**  
+   If `eligibility` is defined, validate that the respondent’s address matches the specified category.
 
-      * **If `voteWeighting` is "CredentialBased":** For every valid vote, a weight of **1** (one credential/voter) is added to the total for the selected option(s).
+5. **Aggregation:**  
+   - `"StakeBased"` → sum responses weighted by ADA stake.  
+   - `"CredentialBased"` → one vote per valid credential.
 
-5.  **Displaying Results:** Display the poll's question, description, options, and the total vote count for each option (either in ADA or by credential count).
+6. **Display:**  
+   Present the survey’s question, description, options, and weighted results.
 
-### CDDL Schema
-
-To ensure unambiguous, machine-readable validation, proposals that define on-chain data structures **MUST** include a CDDL schema.
+### 5. CDDL Schema
 
 ```cddl
-; CIP-00XX On-chain Polls (Version 1.0)
+; CIP-00XX On-chain Surveys (Version 1.0)
 
-pollDetails = {
+surveyDetails = {
   specVersion: "1.0",
   type: "single-choice" / "multi-select",
   question: tstr,
@@ -132,53 +153,57 @@ pollDetails = {
   maxSelections: uint,
   ? eligibility: [* "DRep" / "SPO" / "CC" / "Stakeholder" ],
   ? voteWeighting: "StakeBased" / "CredentialBased",
+  ? referenceAction: {
+      transactionId: tstr,  ; hex-encoded TxId of related governance action
+      actionIndex: uint
+  }
 }
 
-voteFor = {
-  actionTxId: tstr, ; hex-encoded transaction ID of the Info Action
-  selection: [+ tstr], ; List of user's selected options
+surveyResponse = {
+  surveyTxId: tstr,  ; hex-encoded TxId of survey definition
+  selection: [+ tstr]
 }
 
-; This structure is the content of the CIP-0068 `674` label
 cip_00XX_root = {
-    "pollDetails" => pollDetails,
-    ? "msg" => [ + tstr ],
+    "surveyDetails" => surveyDetails,
+    ? "msg" => [ + tstr ]
 } / {
-    "voteFor" => voteFor,
-    ? "msg" => [ + tstr ],
+    "surveyResponse" => surveyResponse,
+    ? "msg" => [ + tstr ]
 }
 ```
 
------
-
 ## Rationale: how does this CIP achieve its goals?
 
-  * **General Purpose:** By removing complex, nested data structures, the metadata payload remains small, cheap to submit, and applicable to any simple question or sentiment check.
-  * **Leveraging Existing Standards:** Using CIP-0068 and the Info Action minimizes the need for new on-chain logic, maximizing discoverability and adoption.
-  * **Flexible Vote Weighting:** The inclusion of both "StakeBased" and "CredentialBased" weighting makes the standard immediately useful for different contexts, from governance-adjacent questions to simple community temperature checks.
-
------
+- **General-purpose:**  
+  Works for any form of sentiment collection — governance-related or otherwise.  
+- **Lightweight & cheap:**  
+  Pure metadata, no deposits or complex data structures.  
+- **Discoverable & linkable:**  
+  Optional `referenceAction` preserves relational context.  
+- **Extensible:**  
+  Future versions can add optional fields (e.g., categorization or free-text support) without breaking compatibility.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-This CIP will be considered Active when the following criteria are met:
-
-  * **Initial Adoption:** At least one poll has been successfully created (via an Info Action) and its details and results are correctly discovered, parsed, and displayed by at least one major Cardano block explorer.
-  * **Explorer Support:** At least one major Cardano block explorer has implemented support for discovering, displaying, and correctly aggregating poll results according to the defined `voteWeighting` rules.
+- At least one survey is published using this structure and correctly parsed by an explorer or wallet.  
+- At least one explorer implements proper discovery, linking, and aggregation logic.  
 
 ### Implementation Plan
 
-  * Gather Community Feedback on this draft via the CIPs repository pull request and Cardano forums.
-  * Develop a minimal reference implementation to demonstrate the creation and aggregation of poll data.
-  * Encourage Adoption among wallet, explorer, and dApp development teams.
-
------
+- Gather feedback via CIP repository and governance forums.  
+- Build a reference implementation and indexer.  
+- Encourage integration into major wallets and governance dashboards.
 
 ## Copyright
 
 This CIP is licensed under CC-BY-4.0.
 
-```
-```
+## Revision History
+
+| Version | Date | Description |
+|----------|------|-------------|
+| 1.0 | 2025-10-28 | Initial version using Info Actions |
+| 1.1 | 2025-11-05 | Reworked as standalone metadata standard |
