@@ -59,7 +59,7 @@ data Address =
 
 Normal addresses and protected addresses are differentiated by the introduction of an `isProtected` bit in the address header bytes, if the bit is set then the address is a protected address, otherwise it is unprotected.  
 
-**Receiving validation rule:**
+### Receiving validation rule
 
 Any output to a protected address requires the witness for the payment credential of that address to be provided in the transaction. For outputs to protected addresses with public key payment credentials this means the transaction must be signed 
 by the owner of that public key. For outputs to protected addresses with plutus script payment credentials this means the associated plutus script must be executed in phase-2 validation. 
