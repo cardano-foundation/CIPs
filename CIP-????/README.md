@@ -18,20 +18,26 @@ License: CC-BY-4.0
 ## Abstract
 
 Accountability is essential for legal entities, organizations, and authorities operating in regulated environments. To establish accountability on the Cardano blockchain, it must be possible to prove the identity of entities responsible for on-chain actions in a verifiable and interoperable way.
+
 This CIP defines a standardized mechanism to embed KERI (Key Event Receipt Infrastructure) identifiers within Cardano transaction metadata. KERI provides self-certifying, portable, and decentralized identifiers known as Autonomic Identifiers (AIDs) that can be anchored to various roots of trust—such as verifiable Legal Entity Identifiers (vLEIs), organizational registries, or domain-specific trust frameworks.
+
 By including KERI identifiers in transaction metadata, Cardano enables a flexible, trust-agnostic approach to identity binding. This approach supports accountability, legal and regulatory compliance, and interoperability with existing and emerging global identity ecosystems, while remaining compatible with self-sovereign identity principles.
 
 ## Motivation: why is this CIP necessary?
 
 The need for auditable and verifiable identifiers is rising, as accountability, traceability, and transparency are essential pillars in regulated environments. Without a standardized mechanism, it is difficult to reliably link on-chain activity to persistent and legally recognized identities.
+
 KERI (Key Event Receipt Infrastructure) addresses this challenge by providing a decentralized, key-oriented identifier system for secure, portable, and self-certifying digital identities. Rather than relying on centralized registries, KERI establishes identifiers through cryptographic event logs, enabling secure key rotation, continuity of control, and tamper-evident audit trails. This ensures that an identifier can consistently represent the same entity over time, while also being interoperable with verifiable credentials and root of trusts such as vLEIs.
+
 By embedding KERI identifiers into Cardano transaction metadata, we create a standardized, verifiable connection between on-chain actions and off-chain accountability frameworks. This allows transactions to be cryptographically tied to a specific identifier and, through credential chains also published on-chain, to a legally recognized entity.
 
 
 ## Specification
 
 Below we define a generic solution to enable metadata signing where a particular ecosystem or use-case may leverage a root of trust of its choosing – each most likely with its own credential chain <todo_link_appendix> format.
+
 The credentials used in the KERI ecosystem are known as ACDCs, or [Authentic Chained Data Containers](https://www.rfc-editor.org/rfc/rfc8174). This CIP will not explain at depth how KERI and ACDCs work due to their technical complexity. The appendix will however include some expanded explanations to help provide clarity.
+
 Beyond the specification and as a useful reference, we will outline how credential chains for the vLEI ecosystem can be leveraged to provide high assurance to [Reeve](https://reeve.technology).
 
 > [!NOTE]
