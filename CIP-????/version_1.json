@@ -1,0 +1,106 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Cardano KERI Accountability Metadata",
+    "description": "Metadata schema for embedding KERI identifiers and authentication events (AUTH_BEGIN, ATTEST, AUTH_END) within Cardano transactions.",
+    "type": "object",
+    "patternProperties": {
+        "^[0-9]+$": {
+            "description": "Metadata label key (integer as string).",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "t": {
+                            "const": "AUTH_BEGIN"
+                        },
+                        "s": {
+                            "type": "string",
+                            "description": "Self-addressing identifier (SAID) of the leaf credential schema."
+                        },
+                        "i": {
+                            "type": "string",
+                            "description": "Autonomic Identifier (AID) of the signer."
+                        },
+                        "c": {
+                            "type": "string",
+                            "description": "Byte stream representing the credential or context."
+                        },
+                        "m": {
+                            "type": "object",
+                            "description": "Optional metadata block.",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": [
+                        "t",
+                        "s",
+                        "i",
+                        "c"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "t": {
+                            "const": "ATTEST"
+                        },
+                        "i": {
+                            "type": "string",
+                            "description": "Autonomic Identifier (AID) of the signer."
+                        },
+                        "d": {
+                            "type": "string",
+                            "description": "Digest referencing the authenticated data."
+                        },
+                        "s": {
+                            "type": "string",
+                            "pattern": "^[0-9A-Fa-f]+$",
+                            "description": "Hex-encoded sequence number."
+                        }
+                    },
+                    "required": [
+                        "t",
+                        "i",
+                        "d",
+                        "s"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "t": {
+                            "const": "AUTH_END"
+                        },
+                        "s": {
+                            "type": "string",
+                            "description": "Self-addressing identifier (SAID) of the leaf credential schema."
+                        },
+                        "i": {
+                            "type": "string",
+                            "description": "Autonomic Identifier (AID) of the signer."
+                        },
+                        "c": {
+                            "type": "string",
+                            "description": "Byte stream representing the credential or closing context."
+                        },
+                        "m": {
+                            "type": "object",
+                            "description": "Optional metadata block.",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": [
+                        "t",
+                        "s",
+                        "i",
+                        "c"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
+        }
+    },
+    "additionalProperties": false
+}
