@@ -187,9 +187,7 @@ cip_00XX_root = {
 
 ### Design Evolution
 
-Early drafts of this proposal used governance *Info Actions* as the carrier for survey metadata.  
-Through review discussions, this approach was replaced with a **standalone metadata model** to remove deposit and lifetime requirements, simplify tooling integration, and broaden applicability beyond governance-specific use cases.  
-The optional `referenceAction` field was introduced to maintain the ability to link surveys contextually to governance actions when relevant.
+Early drafts of this proposal used governance *Info Actions* as the carrier for survey metadata. Through review discussions, this approach was replaced with a **standalone metadata model** to remove deposit and lifetime requirements, simplify tooling integration, and broaden applicability beyond governance-specific use cases. The optional `referenceAction` field was introduced to maintain the ability to link surveys contextually to governance actions when relevant.
 
 ## Path to Active
 
