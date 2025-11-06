@@ -83,61 +83,76 @@ NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
 "OPTIONAL" in this document are to be interpreted as described in
 [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
+### General Terms
+
 The term "user" is used to indicate, interchangeably:
 - "public key hash" credentials
 - "script" credentials (smart contracts)
 
 The term "creator" is used to indicate a user that creates a new programmable token.
-The term "admin" is used to indicate a user that can execute priviledged actions on a certain programmable token without explicit permission of the users.
+The term "admin" is used to indicate a user that can execute privileged actions on a certain programmable token without explicit permission of the users.
 The term "issuer" is used to indicate a user that can mint and/or burn a certain programmable token.
 
-The term "policy" indicates a Cardano native token (CNT) policy, which is the hash of the script that can mint such token.
+The term "policy" indicates a Cardano Native Token (CNT) policy, which is the hash of the script that can mint such token.
 The term "unit" indicates the concatenation of a token policy and a token name to uniquely represent a certain CNT.
 
-The following terminology represents all the on-chain components of the standard:
-- `tokenRegistry`: on-chain registry where anyone can register new programmable tokens. It's a smart contract that implements the linked list pattern. The contract ensures the list is always sorted by the entry's policy. It is made of: 
-    - `registryNode`: a node (or entry) of the tokenRegistry is a UTxO representing a specific programmable token
-    - `registrySpendScript`: Spend script where all the registryNodes exist
-    - `registryMintingPolicy`: Minting script of NFTs that represent valid registryNodes
-- `programmableLogicBase`: the unique Spend script that always holds all existing programmable tokens 
-- `transferLogicScript`: a token-specific Withdraw script that implements the custom transfer logic for such programmable token
-- `thirdPartyTransferLogicScript`: a token-specific Withdraw script that defines admin actions on such programmable token
-- `issuancePolicy`: a Minting script that mints programmable token. While this script code is one for all possible programmable tokens, its deployment is token-specific because issuancePolicy is parametrized by the hash of an issuanceLogicScript
-- `issuanceLogicScript`: a token-specific Withdraw script that impelments the custom minting/burning logic for such programmable token
-- `globalState`: an optional token-specific unique UTxO whose datum contains global information regarding the token (if it's frozen, if transfers are paused, etc.)
+### Layer 1: Registry Components
 
-The term "substandard" indicates a specific implementation of all the on-chain components that guarantees a certain behaviour and a consistent way to build the transactions. Any programmable token must belong to a certain substandard, otherwise wallets and dApps don't know how to manage them.
+These components form the infrastructure layer shared by ALL programmable tokens. They are deployed once and used by all tokens:
 
-The term "smart wallet" indicates all the UTxOs living inside the programmableLogicBase script and belonging to a certain user.
-To know a user's smart wallet address check the dedicated following section.
+- `registry`: The on-chain registry where anyone can register new programmable tokens. It implements a sorted linked list pattern where entries are ordered by token policy. The registry ensures only properly configured programmable tokens can be registered.
+    - `RegistryNode`: A node (or entry) in the registry. Each RegistryNode is a UTxO representing a specific programmable token with an inline datum containing all the token's configuration.
+    - `registrySpendScript`: The Spend script that controls all RegistryNode UTxOs. It enforces the linked list invariants during insertions and modifications.
+    - `registryMintingPolicy`: The Minting script for NFTs that mark valid RegistryNodes. Each RegistryNode contains a unique NFT minted by this policy, using the token's policy as the NFT name.
+
+### Layer 2: Standard Components
+
+These components form the common validation infrastructure shared by ALL programmable tokens:
+
+- `programmableLogicBase`: The unique Spend script that holds all existing programmable tokens. All programmable tokens live at addresses with this script as the payment credential. This script acts as a gatekeeper, delegating actual validation to the programmableLogicGlobal stake validator.
+- `programmableLogicGlobal`: The Stake validator that performs the actual validation logic for transfers and third-party actions. It is invoked via the withdraw-zero pattern when programmable tokens are spent from the programmableLogicBase script.
+- `smart wallet`: The set of UTxOs living inside the programmableLogicBase script that belong to a specific user. Ownership is determined by the stake credential attached to the UTxOs, not the payment credential (which is always programmableLogicBase).
+
+### Layer 3: Substandard Components
+
+These components are token-specific and define the custom behavior of each programmable token. They are deployed per token and implement the "substandard":
+
+- `transferLogicScript`: A token-specific Withdraw-0 script that implements the custom transfer logic for user-initiated transfers. This script validates whether a transfer is allowed based on the token's rules (e.g., whitelist checks, transfer limits, compliance rules).
+- `thirdPartyTransferLogicScript`: A token-specific Withdraw-0 script that defines admin/third-party actions on the programmable token. This includes privileged operations like seizure, forced transfers, or emergency actions that can be executed without explicit user permission.
+- `issuanceLogicScript`: A token-specific Withdraw-0 script that implements the custom minting/burning logic for the programmable token. It defines who can mint new tokens, under what conditions, and the burning rules.
+- `issuanceMintingPolicy`: The Minting script that mints/burns programmable tokens. While the script code is shared across all programmable tokens, each deployment is token-specific because the policy is parameterized by the hash of the token's specific issuanceLogicScript.
+- `globalState`: An optional token-specific unique UTxO whose datum contains global information regarding the token (e.g., if it's frozen, if transfers are paused, total supply, etc.). Not all tokens require a global state.
+- `globalStateUnit`: The unit (policy + token name) of the NFT contained in the globalState UTxO. This NFT uniquely identifies the global state for a specific programmable token.
+
+The term "substandard" indicates a specific implementation of all the token-specific components (Layer 3) that guarantees a certain behaviour and a consistent way to build transactions. Any programmable token MUST belong to a certain substandard, otherwise wallets and dApps don't know how to properly interact with them.
+
+To know a user's smart wallet address, check the dedicated following section.
 
 ### High level flow
 
 The creator wants to release a new programmable token.
 
-The tokenRegistry and the programmableLogicBase are already deployed on-chain.
+The registry (along with registrySpendScript and registryMintingPolicy), programmableLogicBase, and programmableLogicGlobal are already deployed on-chain as the shared infrastructure (Layers 1 and 2).
 
-The creator writes a new transferLogicScript where he defines the rules to transfer the new token.
+The creator writes a new transferLogicScript where they define the rules to transfer the new token (e.g., whitelist checks, transfer limits).
 
-Then he writes a new thirdPartyTransferLogicScript where he defines who are the admins and what the actions they can do without permission of any other user.
+(Optional) Then they write a new thirdPartyTransferLogicScript where they define who are the admins and what actions they can do without permission of any other user (e.g., seizure, forced transfers).
 
-Then he writes a new issuanceLogicScript where he defines who can mint and burn the new token.
+Then they write a new issuanceLogicScript where they define who can mint and burn the new token.
 
-Then he deploys a new issuancePolicy instance parametrized by the new issuanceLogicScript.
+Then they deploy a new issuanceMintingPolicy instance parameterized by the hash of the new issuanceLogicScript.
 
-Finally, the creator adds a registryNode to the tokenRegistry with the hashes of all the above scripts and with additional required
-information. The registration cannot happen if the policy has been already registered or if the issuancePolicy is wrong.
+Finally, the creator adds a RegistryNode to the registry with the hashes of all the above scripts and with additional required information. The registration cannot happen if the policy has already been registered or if the issuanceMintingPolicy is wrong.
 
-During or after the registration process, the creator can mint the new programmable token.
-This new token is enforced to be sent in the programmableLogicBase script.
+During or after the registration process, the creator can mint the new programmable token. This new token is enforced to be sent to the programmableLogicBase script.
 
-Off-chain, any user can deterministically derive their smart wallet (as explained in the next section).
+Off-chain, any user can deterministically derive their smart wallet address (as explained in the next section).
 
-When an user wants to transfer some of his programmable tokens, for each token a proof of registration (or non registration) is required: if the policy is present in the tokenRegistry then the associated transferLogicScript MUST be running in the same transaction; if the policy is not present in the tokenRegistry, the token is treated as a normal, non programmable, CNT and can always leave the programmableLogicBase script.
+When a user wants to transfer some of their programmable tokens, the programmableLogicBase script delegates validation to the programmableLogicGlobal stake validator (via withdraw-zero pattern). For each token, a proof of registration (or non-registration) is required: if the policy is present in the registry then the associated transferLogicScript MUST be executed in the same transaction; if the policy is not present in the registry, the token is treated as a normal, non-programmable CNT and can always leave the programmableLogicBase script.
 
-In any moment for each token, admins can execute privileged actions as defined in thirdPartyTransferLogicScript.
+At any moment, for each token, admins can execute privileged actions as defined in the thirdPartyTransferLogicScript.
 
-In any moment for each token, issuers can mint more token or burn existing ones that are held by them.
+At any moment, for each token, issuers can mint more tokens or burn existing ones that are held by them.
 
 ### User's smart wallet address derivation
 
@@ -145,139 +160,226 @@ The smart wallet address has the following form:
 (fixedPaymentCredentials, userDefinedStakeCredentials)
 
 where:
-- fixedPaymentCredentials never change and they are the credentials obtained from the hash of programmableLogicBase
+- fixedPaymentCredentials never change, and they are the credentials obtained from the hash of programmableLogicBase
 - userDefinedStakeCredentials are different for each user.
-The smart wallet logic is the same for every user. If the user is a wallet, he MAY choose to user either their payment credentials or their stake credentials. We suggest to use his payment credentials to allow anyone to derive indipendently the address of the user.
+The smart wallet logic is the same for every user. If the user is a wallet, he MAY choose to user either their payment credentials or their stake credentials. We suggest to use his payment credentials to allow anyone to derive independently the address of the user.
 If the user is a smart contract, then it's the payment credentials of that contract.
 
 In other words, a smart wallet is the set of UTxOs that live in the programmableLogicBase script and that have a specific stake credential that identifies the owner.
 
-### TokenRegistry entry datum
+### RegistryNode datum
 
-Every entry in the tokenRegistry MUST have attached an inline datum following this standard type:
+Every entry in the registry MUST have attached an inline datum following this standard type:
 
 ```ts
 type RegistryNode {
-    tokenPolicy: ByteArray,
-    nextTokenPolicy: ByteArray, 
-    transferLogicScript: ByteArray,
-    userStateManagerHash: ByteArray,
-    globalStateUnit: ByteArray, 
-    thirdPartyTransferLogicScript: ByteArray
+    key: ByteArray,
+    next: ByteArray,
+    transfer_logic_script: Credential,
+    third_party_transfer_logic_script: Credential,
+    global_state_cs: ByteArray
 }
 ```
 
-This datum is enforced by the execution of the tokenRegistry at registration.
+This datum is enforced by the execution of the registrySpendScript at registration.
 
 The ordering of the fields MUST be respected.
 
-#### `tokenPolicy`
+#### `key`
 
-MUST be a bytestring of length 28. This field is also the key of the entry (registryNode) 
-and the token name of the NFT minted via registryMintingPolicy and that is included in the entry UTxO.
+MUST be a bytestring of length 28. This field is also the key of the RegistryNode
+and the token name of the NFT minted via registryMintingPolicy and that is included in the RegistryNode UTxO.
+This represents the currency symbol (policy) of the programmable token being registered.
 
-#### `nextTokenPolicy`
-
-MUST be a bytestring of length 28.
-
-As the tokenRegistry is a ordered linked list, it's the next key (a tokenPolicy) in the tokenRegistry in lexicographic order.
-
-#### `transferLogicScript`
+#### `next`
 
 MUST be a bytestring of length 28.
 
-Represents the hash of the "Withdraw 0" script to be included in a transfer transaction for validation.
+As the registry is an ordered linked list, this is the next key (a tokenPolicy) in the registry in lexicographic order.
 
-#### `userStateManagerHash`
+#### `transfer_logic_script`
+
+MUST be a Credential (either PubKeyCredential or ScriptCredential with a 28-byte hash).
+
+Represents the credential of the "Withdraw 0" script to be executed in a transfer transaction for validation.
+This script implements the custom logic for user-initiated transfers.
+
+#### `third_party_transfer_logic_script`
+
+MUST be a Credential (either PubKeyCredential or ScriptCredential with a 28-byte hash).
+
+Represents the credential of the "Withdraw 0" script that defines who is an admin (third party)
+and the admin actions on the programmable token.
+
+This script is used for privileged actions (such as seizure or forced transfers) that can be executed without user permission.
+
+#### `global_state_cs`
 
 MUST be a bytestring of either length 0 or length 28.
 
-It represents the optional hash of the "Withdraw 0" script that manages the state for each user.
-
-If the value has length 28, when creating a transfer transaction one or more reference inputs MUST be 
-included depending on the sub-standard (see below).
-
-If the value has length 0, when creating a transfer transaction no reference input representing the user state is expected.
-
-#### `globalStateUnit`
-
-MUST be a bytestring of either length 0 or length between 28 inclusive and 60 exclusive.
-
-It represents the optional unit of an NFT that is contained in a UTxO with the global state as inline datum.
+It represents the optional currency symbol (policy ID) of an NFT that marks a UTxO containing the global state as inline datum.
 
 If the value has length 0, it means there is no global state for this programmable token.
 For this reason, when creating a transfer transaction no reference input is expected to represent the global state.
 
-If the bytestring has length greater than or equal to 28,
-the value represents the concatenation of a token policy (of length 28)
-and a token name (of length between 0 and 32).
-In this case, when creating a transfer transaction a reference input having an NFT matching the unit MUST be included. 
-
-#### `thirdPartyTransferLogicScript`
-
-MUST be a bytestring of either length 0 or length 28.
-
-It represents the optional hash of the "Withdraw 0" script that defines who is admin (third party) 
-and the admin actions on the programmable token.
-
-If the value has length 0, the programmable token does NOT allow admins to transfer programmable tokens on the users' behalf.
-
-If the value has length 28, an admin can transfer users' tokens creating a transaction that executes this script.
+If the bytestring has length 28, it represents the policy ID of the NFT that uniquely identifies the global state UTxO.
+In this case, when creating a transfer transaction a reference input containing an NFT with this policy MUST be included.
 
 ### Programmable token registration
 
-To create a new programmable token, it must be properly registered in the tokenRegistry.
+To create a new programmable token, it must be properly registered in the registry.
 The on-chain validation won't allow the creator to cheat or deviate from the enforced rules.
 
-Recalling that the tokenRegistry is an ordered linked list sorted by the `tokenPolicy` field, the transaction to 
+Recalling that the registry is an ordered linked list sorted by the `key` field, the transaction to
 register the token has the following requirements:
-1) The registryNode preceding the policy of the new token, called here prev_node, MUST be spent
-2) The output of the transaction MUST include: 
-    - prev_node with the value and the datum unchanged except for the field `nextTokenPolicy` that is now set to the new token `tokenPolicy`
-    - a new registryNode representing the new token with the proper registryDatum fields, in particular `nextTokenPolicy` 
-    is set to the input value of prev_node `nextTokenPolicy`
-3) The transaction MUST include the registration certificate of `transferLogicScript`
-4) The new registryNode `globalStateUnit` MAY be an empty string if the logic of
+1) The RegistryNode preceding the policy of the new token, called here prev_node, MUST be spent
+2) The output of the transaction MUST include:
+    - prev_node with the value and the datum unchanged except for the field `next` that is now set to the new token `key`
+    - a new RegistryNode representing the new token with the proper RegistryNode datum fields, in particular `next`
+    is set to the input value of prev_node `next`
+3) The transaction MUST include the registration certificate of `transfer_logic_script`
+4) The new RegistryNode `global_state_cs` MAY be an empty bytestring if the logic of
 the programmable token does not require a global state;
-otherwhise it MUST be a bytestring of length between
-28 inclusive and 60 (28 + 32) exclusive.
-5) The new registryNode SHOULD have the minimum amount of lovelaces that the protocol allows,
+otherwise it MUST be a bytestring of length 28.
+5) The new RegistryNode SHOULD have the minimum amount of lovelaces that the protocol allows,
 and MUST include a newly minted NFT, under the `registryMintingPolicy`,
-and the programmable token policy as NFT name. 
+with the programmable token policy as NFT name.
 6) Both the outputs MUST NOT have any reference script.
 7) Both the outputs address MUST **only** have payment credentials.
-8) The new token `issuancePolicy` MUST be an instance of the official script parametrized by a custom `issuanceLogicScript`
+8) The new token `issuanceMintingPolicy` MUST be an instance of the official script parameterized by a custom `issuanceLogicScript`
 
 ### Transfer
-**TODO This section must be updated**
 
-In order to spend an utxo holding programmable tokens,
-a standard redeemer must be passed to the smart wallet:
+In order to spend a UTxO holding programmable tokens from the programmableLogicBase script,
+the programmableLogicGlobal stake validator MUST be invoked via the withdraw-zero pattern.
+The redeemer passed to the programmableLogicGlobal stake validator follows this standard type:
 
 ```ts
-type TransferRedeemer {
-    Transfer {
-        registryNodes: List<Int>
+type ProgrammableLogicGlobalRedeemer {
+    TransferAct {
+        registryProofs: List<RegistryProof>
     }
-    ThirdParty {
-        registryNodes: List<Int>
+    ThirdPartyAct {
+        seize_input_idx: Int,
+        seize_output_idx: Int,
+        registry_node_idx: Int
+    }
+}
+
+type RegistryProof {
+    TokenExists {
+        node_idx: Int
+    }
+    TokenDoesNotExist {
+        node_idx: Int
     }
 }
 ```
 
-Depending on the constructor used, for each programmable token, either the `transferManager` or the `thirdPartyActionRules` contract will be used respectively.
+#### Architecture: Delegation Pattern
 
-Independently of the constructor, the first field of the redeemer MUST include a list of indexes to be used on the reference inputs field.
+The programmableLogicBase script is a lightweight gatekeeper that:
+1. Accepts any redeemer (of type `Data`)
+2. Verifies that the programmableLogicGlobal stake validator is invoked in the transaction
+3. Delegates all validation logic to the programmableLogicGlobal stake validator
 
-The list MUST include one index for each non-lovelace token policy, programmable and not, present on the utxo's value.
+The programmableLogicGlobal stake validator performs the actual validation when invoked via withdraw-zero.
 
-The list order must match the lexicographic ordering of the value.
+#### TransferAct Constructor
 
-For example, the index at position 0 indicates the index of the reference input coming from the registry
-that indicates the presence (or the absence) of the first policy of the input value.
+The `TransferAct` constructor is used when the owner of the programmable tokens wants to transfer them.
+This represents the standard transfer flow initiated by the token owner.
 
-(for reference, a typescript implementation of the lexicographic ordering can be found
+When using this constructor:
+1. The `registryProofs` field MUST contain a list of proofs, one for each non-lovelace token policy present in any spent UTxO from programmableLogicBase
+2. For each proof of type `TokenExists`:
+   - The corresponding RegistryNode MUST be included as a reference input at the specified index (`node_idx`)
+   - The token's `transfer_logic_script` MUST be executed in the transaction (via withdraw-zero)
+3. For each proof of type `TokenDoesNotExist`:
+   - The covering RegistryNode MUST be included as a reference input at the specified index (`node_idx`)
+   - The token is treated as a normal CNT and can be transferred without additional validation
+
+#### ThirdPartyAct Constructor
+
+The `ThirdPartyAct` constructor is used when an admin (third party) wants to execute privileged actions on programmable tokens
+without the explicit permission of the token owner. This is specifically designed for **seizure operations** where tokens are removed from a user's smart wallet.
+
+When using this constructor:
+1. `seize_input_idx`: The index (in the transaction inputs) of the UTxO from programmableLogicBase being seized
+2. `seize_output_idx`: The index (in the transaction outputs) of the resulting UTxO after seizure
+3. `registry_node_idx`: The index (in reference inputs) of the RegistryNode for the token being seized
+
+**Validation Requirements:**
+- Only ONE input from programmableLogicBase is allowed (the seized input at `seize_input_idx`)
+- The RegistryNode at `registry_node_idx` MUST exist and contain the token's configuration
+- The token's `third_party_transfer_logic_script` MUST be executed in the transaction (via withdraw-zero)
+- The output at `seize_output_idx` MUST:
+  - Have the same address as the seized input
+  - Have the same datum as the seized input
+  - Contain the original value MINUS the seized tokens
+- At least some tokens MUST be removed (to prevent DoS attacks)
+- The authorization check for the stake credential is bypassed (admins don't need user permission)
+
+#### RegistryProof Requirements
+
+The `registryProofs` list MUST satisfy the following requirements:
+
+1. **Completeness**: The list MUST include one proof for each distinct non-lovelace token policy present in any UTxO being spent from programmableLogicBase
+2. **Ordering**: The list order MUST match the lexicographic ordering of the token policies.
+   For example, if spending UTxOs contains policies A, B, and C (in lexicographic order),
+   then `registryProofs[0]` is for policy A, `registryProofs[1]` for policy B, and `registryProofs[2]` for policy C
+3. **Correctness**: Each proof must accurately represent the registration status of the corresponding token
+
+(For reference, a TypeScript implementation of lexicographic ordering can be found
 [here](https://github.com/HarmonicLabs/uint8array-utils/blob/c1788bf351de24b961b84bfc849ee59bd3e9e720/src/utils/index.ts#L8-L27))
+
+#### Proving Registration Status
+
+**TokenExists Proof**: To prove a token policy IS registered in the registry, include the RegistryNode with that exact `key` matching the token policy as a reference input.
+
+**TokenDoesNotExist Proof**: To prove a token policy is NOT registered in the registry, include as a reference input the "covering node" - the RegistryNode whose `key` is the largest value that is still less than the token being proven absent, and whose `next` is greater than the token being proven absent.
+
+For example:
+- If the registry contains policies [A, C, E] and you want to prove policy D is not registered
+- You must include the RegistryNode for policy C as a reference input (at `node_idx`)
+- Because C < D < E (lexicographically), this proves D is not in the registry
+
+#### programmableLogicGlobal Validation
+
+The programmableLogicGlobal stake validator performs the following validation:
+
+1. **Authorization Check** (TransferAct only): For each spent UTxO from programmableLogicBase:
+   - If the stake credential is a public key hash, verify the transaction is signed by that key
+   - If the stake credential is a script hash, verify that script is executed in the transaction
+   - Exception: ThirdPartyAct bypasses this check (admins don't need user permission)
+
+2. **Proof Validation** (TransferAct only): For each RegistryProof:
+   - Verify the referenced RegistryNode exists at the specified index in reference inputs
+   - For TokenExists: verify the RegistryNode's `key` matches the policy being validated
+   - For TokenDoesNotExist: verify the covering node relationship (prev.key < unregistered < prev.next)
+
+3. **Logic Script Execution**: For each registered programmable token:
+   - TransferAct: verify the token's `transfer_logic_script` is executed (appears in withdrawals)
+   - ThirdPartyAct: verify the token's `third_party_transfer_logic_script` is executed
+
+4. **Output Validation**:
+   - TransferAct: Verify all programmable tokens in outputs remain at programmableLogicBase addresses with valid stake credentials
+   - ThirdPartyAct: Verify the output at `seize_output_idx` matches requirements (same address, datum, value minus seized tokens)
+
+#### Additional Reference Inputs
+
+Depending on the substandard and the specific programmable token implementation, additional reference inputs MAY be required:
+
+1. **Global State**: If the RegistryNode's `global_state_cs` field is non-empty, a reference input containing an NFT with that policy MUST be included
+2. **User State**: Depending on the substandard implementation, one or more reference inputs representing user state MAY be required. The exact requirements depend on the substandard (see "Existing substandards" section)
+
+#### Security Considerations for Transfers
+
+- The programmableLogicBase/programmableLogicGlobal split ensures all programmable tokens can only be spent if proper validation occurs
+- The RegistryProof mechanism prevents bypassing transfer restrictions by claiming a token is unregistered when it actually is registered
+- Third-party actions provide a mechanism for compliance (seizure, freezes) while maintaining clear on-chain definitions of admin powers
+- The authorization check ensures users maintain control over their tokens (except when third-party actions are explicitly defined)
+- ThirdPartyAct is limited to single-input operations to prevent DoS attacks and ensure predictable seizure behavior
 
 ### Implementing programmable tokens in DeFi protocols
 **TODO This section must be updated**
