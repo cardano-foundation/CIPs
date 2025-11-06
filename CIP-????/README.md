@@ -43,7 +43,7 @@ This separation of concerns provides:
 This specification uses **CIP-0068** label **674** and defines two payload types:  
 `surveyDetails` (definition) and `surveyResponse` (vote).
 
-### 1. Survey Definition Payload
+### Survey Definition Payload
 
 This metadata is included in any transaction that defines a survey.  
 It can be completely independent or optionally reference an existing governance action.
@@ -88,7 +88,7 @@ It can be completely independent or optionally reference an existing governance 
 | `voteWeighting` | String | No | `"StakeBased"` (default) or `"CredentialBased"`. |
 | `referenceAction` | Object | No | Optional link to a governance action. Contains `transactionId` (hex string) and `actionIndex` (integer). |
 
-### 2. Survey Response Payload
+### Survey Response Payload
 
 This metadata is included in the transaction a user submits to cast a response.
 
@@ -111,14 +111,14 @@ This metadata is included in the transaction a user submits to cast a response.
 | `surveyTxId` | String (hex) | Yes | The transaction ID of the survey definition. |
 | `selection` | Array of Strings | Yes | List of selected option(s); must match survey definition. |
 
-### 3. Casting a Response
+### Casting a Response
 
 - **Governance actors (DReps, SPOs, CCs):**  
   May include a survey response in the same transaction as a governance vote if referencing a related action.  
 - **Stakeholders:**  
   Submit a self-transaction including the survey response metadata.
 
-### 4. Block Explorer & dApp Implementation Guide
+### Block Explorer & dApp Implementation Guide
 
 1. **Survey Discovery:**  
    Scan for transactions with label **674** containing `surveyDetails`.  
@@ -140,7 +140,7 @@ This metadata is included in the transaction a user submits to cast a response.
 6. **Display:**  
    Present the survey’s question, description, options, and weighted results.
 
-### 5. CDDL Schema
+### CDDL Schema
 
 ```cddl
 ; CIP-00XX On-chain Surveys (Version 1.0)
