@@ -25,34 +25,59 @@ By including KERI identifiers in transaction metadata, Cardano enables a flexibl
 
 ## Motivation: why is this CIP necessary?
 
-The need for auditable and verifiable identifiers is rising, as accountability, traceability, and transparency are essential pillars in regulated environments. Without a standardized mechanism, it is difficult to reliably link on-chain activity to persistent and legally recognized identities.
+The demand for auditable and verifiable identifiers is increasing as accountability, traceability, and transparency become fundamental requirements for entities operating within regulated environments. Without a standardized mechanism, it is difficult to reliably associate on-chain activity with persistent and legally recognized identities.
 
-KERI (Key Event Receipt Infrastructure) addresses this challenge by providing a decentralized, key-oriented identifier system for secure, portable, and self-certifying digital identities. Rather than relying on centralized registries, KERI establishes identifiers through cryptographic event logs, enabling secure key rotation, continuity of control, and tamper-evident audit trails. This ensures that an identifier can consistently represent the same entity over time, while also being interoperable with verifiable credentials and root of trusts such as vLEIs.
+KERI (Key Event Receipt Infrastructure) addresses this challenge by introducing a decentralized, key-oriented identifier system that supports secure, portable, and self-certifying digital identities. Instead of relying on centralized registries, KERI establishes identifiers through cryptographically verifiable event logs, enabling secure key rotation, continuity of control, and tamper-evident auditability. This approach ensures that an identifier can consistently represent the same entity over time, while remaining interoperable with verifiable credentials and roots of trust such as verifiable Legal Entity Identifiers (vLEIs).
 
-By embedding KERI identifiers into Cardano transaction metadata, we create a standardized, verifiable connection between on-chain actions and off-chain accountability frameworks. This allows transactions to be cryptographically tied to a specific identifier and, through credential chains also published on-chain, to a legally recognized entity.
+By embedding KERI identifiers into Cardano transaction metadata, this proposal enables a standardized and verifiable linkage between on-chain actions and off-chain accountability frameworks. This allows transactions to be cryptographically bound to a specific identifier and, through verifiable credential chains, to a legally recognized entity, thereby enhancing trust and compliance across decentralized and regulated ecosystems.
 
 
 ## Specification
 
-Below we define a generic solution to enable metadata signing where a particular ecosystem or use-case may leverage a root of trust of its choosing – each most likely with its own credential chain <todo_link_appendix> format.
+Below a generic solution is defined to enable metadata signing where a particular ecosystem or use-case may leverage a root of trust of its choosing – each most likely with its own credential chain format.
 
-The credentials used in the KERI ecosystem are known as ACDCs, or [Authentic Chained Data Containers](https://www.rfc-editor.org/rfc/rfc8174). This CIP will not explain at depth how KERI and ACDCs work due to their technical complexity. The appendix will however include some expanded explanations to help provide clarity.
-
-Beyond the specification and as a useful reference, we will outline how credential chains for the vLEI ecosystem can be leveraged to provide high assurance to [Reeve](https://reeve.technology).
+The credentials used in the KERI ecosystem are known as ACDCs, or [Authentic Chained Data Containers](https://www.rfc-editor.org/rfc/rfc8174). This CIP will not explain at depth how KERI and ACDCs work due to their technical complexity. The [Appendix](#appendix) will however include some expanded explanations to help provide clarity.
 
 > [!NOTE]
 > The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [RFC2119](https://www.rfc-editor.org/rfc/rfc2119) [RFC8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals, as shown here.
 
 ### Key Event Log Discovery
-
 In order to verify the validity of credential chains and metadata transactions, Key Event Logs, or KELs, for all issuing and holding identifiers in the credential chain must be made available to a verifier. KELs may live off-chain for interoperability and scalability reasons, so this CIP does not make assumptions on which medium the KELs are published.
 
 A KERI watcher network SHOULD be used to discover up-to-date KELs for a given identifier for certain security reasons. Discovery of the watcher network relevant to a given ecosystem depends on the ecosystem itself.
 
-However, as KERI is a maturing technology, wide-spread deployment of watcher networks is not yet guaranteed. Until then, the interim solution is to publish an Out-of-Band-Introduction<link to appendix> to this <link_todo> Github repository for discovery, and this may be used by a verifier to discover and query for KEL events and updates.
+However, as KERI is a maturing technology, wide-spread deployment of watcher networks is not yet guaranteed. Until then, the interim solution is to publish an [Out-of-Band-Introduction](#discovery-via-out-of-band-introductions-oobis) via a known persistent channel for the specific project for discovery, and this may be used by a verifier to discover and query for KEL events and updates.
 
 In one way or another, chain indexers must query for Key Event Log updates to validate credential chains and metadata transactions during the process of verification.
 
+### Visualized Identity Lifecycle
+The following diagram illustrates the lifecycle of signing authority for a KERI identifier on Cardano. It demonstrates how [attestations](#creation-of-verifiable-records) are invalid before [authority is established](#establishment-of-signing-authority) (`AUTH_BEGIN`), become valid during the authenticated period, and become invalid again after [revocation](#removal-of-signing-authority) (`AUTH_END`). The indexer validates each transaction by checking the current state of the credential chain.
+
+```mermaid
+---
+config:
+  theme: redux
+---
+sequenceDiagram
+  participant Legal Entity as Legal Entity
+  participant Cardano as Cardano
+  participant Indexer as Indexer
+  Legal Entity ->> Cardano: ATTEST
+  Cardano ->> Indexer: Identity invalid
+  Note right of Indexer: ❌ No valid credential
+  Legal Entity ->> Cardano: AUTH_BEGIN
+  Cardano ->> Indexer: Credential known
+  Note right of Indexer: ✅ Identifier established
+  Legal Entity ->> Cardano: ATTEST
+  Cardano ->> Indexer: Identity verified
+  Note right of Indexer: ✅ Valid signature
+  Legal Entity ->> Cardano: AUTH_END
+  Cardano ->> Indexer: Credential revoked
+  Note right of Indexer: ⚠️ Identifier revoked
+  Legal Entity ->> Cardano: ATTEST
+  Cardano ->> Indexer: Identity invalid
+  Note right of Indexer: ❌ No valid credential
+```
 ### Establishment of signing authority
 Before attesting to any transactions, the relevant credential chain for the controller must be published on-chain with the following attributes – most of which are used to help simplify indexing:
 - **t** — A transaction type of `AUTH_BEGIN` is used to establish a signer’s authority using a credential chain.
@@ -103,7 +128,7 @@ A reference to this event in a metadata transaction is structured as follows:
 ```
 Such transactions are only considered valid if the digest value is correct, and can be found anchored in the KEL of the controller at the given sequence number.
 
-### Removal of signing authority
+### Revoking of signing authority
 Signing authority may be removed after a period of time by revoking the relevant credential and publishing this revocation on-chain. As such, the validity of transactions associated with that credential chain are for all valid `ATTEST` transactions between issuance (`AUTH_BEGIN`) and revocation (`AUTH_END`).
 
 The following attributes are used:
@@ -137,7 +162,25 @@ Legal entities holding valid vLEI credentials may issue other credentials chaine
 
 As a reference example, we define a `vLEICardanoMetadataSigner` credential. For a given use-case, the issuee of this credential is allowed to sign transaction metadata on Cardano on behalf of a particular legal entity. The LEI of this legal entity is embedded in their Legal Entity vLEI credential.
 
-// TODO Diagram
+```mermaid
+graph LR
+    GLEIF["GLEIF Root<br/>(Root of Trust)"]
+    QVI["Qualified vLEI Issuer<br/>Credential"]
+    LE["Legal Entity vLEI<br/>Credential<br/>(contains LEI)"]
+    SIGNER["Cardano Metadata Signer<br/>Credential<br/>(contains metadata labels)"]
+    
+    GLEIF -->|issues| QVI
+    QVI -->|issues| LE
+    LE -->|issues| SIGNER
+    
+    SIGNER -.->|signs metadata<br/>transactions on| CARDANO["Cardano Blockchain"]
+    
+    style GLEIF fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style QVI fill:#fff4e1,stroke:#cc8800,stroke-width:2px
+    style LE fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style SIGNER fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style CARDANO fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+```
 
 The above diagram contains 3 credentials which are cryptographically chained:
 - **Qualified vLEI Issuer**: Issued by GLEIF to QVI entities.
@@ -199,10 +242,6 @@ Validation steps:
 1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` currently has signing authority over label 1447.
 2. The CESR digest of the data at label 1447 is `ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux`.
 3. The event in the controller’s KEL at sequence number `1a` (26th event) is `{ d: “ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux” }`.
-
-## Rationale: how does this CIP achieve its goals?
-
-## Path to Active
 
 ## Appendix
 
