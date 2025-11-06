@@ -185,6 +185,12 @@ cip_00XX_root = {
 - **Extensible:**  
   Future versions can add optional fields (e.g., categorization or free-text support) without breaking compatibility.
 
+### Design Evolution
+
+Early drafts of this proposal used governance *Info Actions* as the carrier for survey metadata.  
+Through review discussions, this approach was replaced with a **standalone metadata model** to remove deposit and lifetime requirements, simplify tooling integration, and broaden applicability beyond governance-specific use cases.  
+The optional `referenceAction` field was introduced to maintain the ability to link surveys contextually to governance actions when relevant.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -201,10 +207,3 @@ cip_00XX_root = {
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
-
-## Revision History
-
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0 | 2025-10-28 | Initial version using Info Actions |
-| 1.1 | 2025-11-05 | Reworked as standalone metadata standard |
