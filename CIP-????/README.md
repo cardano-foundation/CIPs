@@ -51,7 +51,7 @@ However, as KERI is a maturing technology, wide-spread deployment of watcher net
 In one way or another, chain indexers must query for Key Event Log updates to validate credential chains and metadata transactions during the process of verification.
 
 ### Visualized Identity Lifecycle
-The following diagram illustrates the lifecycle of signing authority for a KERI identifier on Cardano. It demonstrates how [attestations](#creation-of-verifiable-records) are invalid before [authority is established](#establishment-of-signing-authority) (`AUTH_BEGIN`), become valid during the authenticated period, and become invalid again after [revocation](#removal-of-signing-authority) (`AUTH_END`). The indexer validates each transaction by checking the current state of the credential chain.
+The following diagram illustrates the lifecycle of signing authority for a KERI identifier on Cardano. It demonstrates how [attestations](#creation-of-verifiable-records) (`ATTEST`) are invalid before [authority is established](#establishment-of-signing-authority) (`AUTH_BEGIN`), become valid during the authenticated period, and become invalid again after [revocation](#removal-of-signing-authority) (`AUTH_END`). The indexer validates each transaction by checking the current state of the credential chain.
 
 ```mermaid
 ---
