@@ -23,10 +23,10 @@ Optionally, a survey may **reference a governance action** by transaction ID and
 
 Formal Cardano governance actions are intentionally restrictive and structured, but this rigidity limits the ability to gather **informal or exploratory community sentiment**. Off-chain tools (e.g., Google Forms, Typeform) have been used for this purpose, but they fragment data and trust.  
 
-This CIP proposes a **unified, lightweight survey metadata format** that can be used by:
-- Projects and community groups to collect feedback.  
-- Delegated representatives (DReps) or governance actors to gauge sentiment.  
-- Explorers and dashboards to display aggregated results.  
+This CIP proposes a **unified, lightweight survey metadata format** that can be used by anyone to:
+- Collect feedback.  
+- Gauge sentiment.  
+- Display aggregated results.  
 
 By allowing an **optional reference to a governance action**, this model supports both:
 - **Standalone surveys** (e.g., community temperature checks).  
