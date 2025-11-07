@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 Accountability is essential for legal entities, organizations, and authorities operating in regulated environments. To establish accountability on the Cardano blockchain, it must be possible to prove the identity of entities responsible for on-chain actions in a verifiable and interoperable way.
 
-This CIP defines a standardized mechanism to embed KERI (Key Event Receipt Infrastructure) identifiers within Cardano transaction metadata. KERI provides self-certifying, portable, and decentralized identifiers known as Autonomic Identifiers (AIDs) that can be anchored to various roots of trust—such as verifiable Legal Entity Identifiers (vLEIs), organizational registries, or domain-specific trust frameworks.
+This CIP defines a standardized mechanism to embed KERI ([Key Event Receipt Infrastructure](https://trustoverip.github.io/kswg-keri-specification/)) identifiers within Cardano transaction metadata. KERI provides self-certifying, portable, and decentralized identifiers known as Autonomic Identifiers (AIDs) that can be anchored to various roots of trust—such as verifiable Legal Entity Identifiers (vLEIs), organizational registries, or domain-specific trust frameworks.
 
 By including KERI identifiers in transaction metadata, Cardano enables a flexible, trust-agnostic approach to identity binding. This approach supports accountability, legal and regulatory compliance, and interoperability with existing and emerging global identity ecosystems, while remaining compatible with self-sovereign identity principles.
 
@@ -36,7 +36,7 @@ By embedding KERI identifiers into Cardano transaction metadata, this proposal e
 
 Below a generic solution is defined to enable metadata signing where a particular ecosystem or use-case may leverage a root of trust of its choosing – each most likely with its own credential chain format.
 
-The credentials used in the KERI ecosystem are known as ACDCs, or [Authentic Chained Data Containers](https://www.rfc-editor.org/rfc/rfc8174). This CIP will not explain at depth how KERI and ACDCs work due to their technical complexity. The [Appendix](#appendix) will however include some expanded explanations to help provide clarity.
+The credentials used in the KERI ecosystem are known as ACDCs, or [Authentic Chained Data Containers](https://trustoverip.github.io/kswg-acdc-specification/). This CIP will not explain at depth how KERI and ACDCs work due to their technical complexity. The [Appendix](#appendix) will however include some expanded explanations to help provide clarity.
 
 > [!NOTE]
 > The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [RFC2119](https://www.rfc-editor.org/rfc/rfc2119) [RFC8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals, as shown here.
@@ -51,7 +51,7 @@ However, as KERI is a maturing technology, wide-spread deployment of watcher net
 In one way or another, chain indexers must query for Key Event Log updates to validate credential chains and metadata transactions during the process of verification.
 
 ### Visualized Identity Lifecycle
-The following diagram illustrates the lifecycle of signing authority for a KERI identifier on Cardano. It demonstrates how [attestations](#creation-of-verifiable-records) (`ATTEST`) are invalid before [authority is established](#establishment-of-signing-authority) (`AUTH_BEGIN`), become valid during the authenticated period, and become invalid again after [revocation](#removal-of-signing-authority) (`AUTH_END`). The indexer validates each transaction by checking the current state of the credential chain.
+The following diagram illustrates the lifecycle of signing authority for a KERI identifier on Cardano. It demonstrates how [attestations](#creation-of-verifiable-records) (`ATTEST`) are invalid before [authority is established](#establishment-of-signing-authority) (`AUTH_BEGIN`), become valid during the authenticated period, and become invalid again after [revocation](#revoking-of-signing-authority) (`AUTH_END`). The indexer validates each transaction by checking the current state of the credential chain.
 
 ```mermaid
 ---
@@ -82,11 +82,11 @@ sequenceDiagram
 Before attesting to any transactions, the relevant credential chain for the controller must be published on-chain with the following attributes – most of which are used to help simplify indexing:
 - **t** — A transaction type of `AUTH_BEGIN` is used to establish a signer’s authority using a credential chain.
 - **i** — The identifier of the signer in the CESR qb64 variant. This MUST match the issuee of the leaf credential in the chain.
-- **s** — The schema identifier of the leaf credential in the chain in the CESR qb64 variant. This MUST match the schema of the leaf credential in the chain. Why include?<link_to_appendix>
+- **s** — The schema identifier of the leaf credential in the chain in the CESR qb64 variant. This MUST match the schema of the [leaf credential](#identifying-a-credential-chain-type) in the chain.
+- **c** — The byte-stream of the credential chain in the CESR qb2 or qb64b variant, for brevity.
 - **m** —  An optional metadata block used to simplify indexing for a particular use-case. For example, the LEI of a legal entity could be contained here.
-- **c** — The byte-stream of the credential chain in the CESR qb2 variant, for brevity.
 
-The credential chain should contain all credentials, relevant registry events and attachments. There are various types of ACDC registries, so for simplicity: the credential chain MUST validate with an ACDC 1.0 or 2.0 verifier, assuming that KEL events are already available.
+The credential chain should contain all credentials, relevant registry events and attachments. There are various types of ACDC registries, so for simplicity: the credential chain MUST validate with an ACDC v1 or v2 verifier, assuming that KEL events are already available.
 
 These attributes can be embedded in the metadata of a transaction using a fixed metadata label. Compact field labels are used for brevity.
 
@@ -114,6 +114,7 @@ To create a persistent signature over data with KERI, signers can anchor a diges
 - **d** — The digest of the data being signed in the CESR qb64 variant.
 - **s** — The sequence number of the KERI event, encoded as a hex string.
 If the KEL of identifier `i` contains an event at sequence number `s` which has a seal value of `{ d: "{{digest}}" }`, it serves as cryptographically verifiable proof that the data was effectively signed by the controller.
+
 A reference to this event in a metadata transaction is structured as follows:
 ```JSON
 {
@@ -135,8 +136,9 @@ The following attributes are used:
 - **t** — A transaction type of `AUTH_END` is used to remove a signer’s authority with revocation registry events.
 - **i** — The identifier of the signer in the CESR qb64 variant. This MUST match the issuee of the leaf credential in the chain.
 - **s** — The schema identifier of the leaf credential in the chain in the CESR qb64 variant. This MUST match the schema of the leaf credential in the chain.
-- **m** — A metadata block used to simplify indexing for a particular use-case. For example, the LEI of a legal entity could be contained here.
 - **c** — The byte-stream of the revocation registry events in the CESR qb2 variant, for brevity.
+- **m** — A metadata block used to simplify indexing for a particular use-case. For example, the LEI of a legal entity could be contained here.
+
 A reference to this event in a metadata transaction is structured as follows:
 ```JSON
 {
@@ -151,10 +153,10 @@ A reference to this event in a metadata transaction is structured as follows:
 }
 
 ```
-If the successful parsing of the revocation events results in a credential chain that no longer gives authority to the signer, any later ATTEST transactions for this credential chain should be ignored (unless there is another subsequent `AUTH_START`).
+If the successful parsing of the revocation events results in a credential chain that no longer gives authority to the signer, any later `ATTEST` transactions for this credential chain should be ignored (unless there is another subsequent `AUTH_START`).
 
 
-#### Reference Example - vLEI
+## Reference Example - vLEI
 
 The Global Legal Entity Identifier Foundation (GLEIF) serves as the root of trust for Legal Entity Identifiers (LEIs) worldwide. Their verifiable variant, the vLEI, is based on the KERI and ACDC standards, and are issued by Qualified vLEI Issuers (QVIs).
 
@@ -189,7 +191,7 @@ The above diagram contains 3 credentials which are cryptographically chained:
 
 The schema for the signer credential may be found here. It contains an attribute `labels` which is an array of metadata label numbers for which the signer has the authority to create verifiable records over.
 
-##### Establishment of signing authority
+### Establishment of signing authority
 For this example, a signer controlling the identifier `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` is holding a metadata signer credential valid for label `1447`.
 
 The following is the expected transaction format to publish the credential chain:
@@ -224,7 +226,7 @@ After verifying the validity of the credential chain with an ACDC verifier, ther
 3. The LEI attribute of the Legal Entity vLEI credential is `50670047U83746F70E20`.
 4. The Qualified vLEI Issuer credential is issued by GLEIF’s External identifier, as listed [here](https://gleif-it.github.io/.well-known/).
 
-##### Creation of verifiable records
+### Creation of verifiable records
 The following is an attestation transaction for metadata label `1447`.
 ```JSON
 {
