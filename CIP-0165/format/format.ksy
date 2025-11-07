@@ -127,7 +127,7 @@ types:
           # (ns == "pool")  ? 28 :
           0
   rec_metadata:
-    doc: Metadata - is a block with metadata
+    doc: Metadata block containing URI-indexed entries with CBOR-encoded values
     seq:
       - id: data
         type: entries_metadata_block
