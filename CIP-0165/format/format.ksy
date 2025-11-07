@@ -140,7 +140,7 @@ types:
       rec_payload_size:
         value: _parent._parent.len_payload - 1
       len_data:
-        value: rec_payload_size - (8 + 28)
+        value: rec_payload_size - sizeof<metadata_footer>
         doc: entries_count=8, digest=28.
   entries_block:
     params:
