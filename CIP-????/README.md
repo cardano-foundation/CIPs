@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: A Standard for On-Chain Surveys and Polls
+Title: On-Chain Surveys and Polls
 Category: Metadata
 Status: Proposed
 Authors:
