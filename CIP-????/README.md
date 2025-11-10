@@ -255,7 +255,7 @@ The following is an example revocation transaction:
   "????":
   {
     "t": "AUTH_END",
-    "s": "ED_GbUPpS8ZJEY-u8OB3QVe9C_CAFBdSimS5KxclkgWT",
+    "s": "EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL",
     "c": "{{revocationRegistryEventsByteStream}}",
     "m":
