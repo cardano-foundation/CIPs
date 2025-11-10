@@ -245,7 +245,7 @@ After verifying the validity of the credential chain with an ACDC verifier, ther
 1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` is the issuee of the metadata signer credential with a schema ID of `EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ`.
 2. The label attribute of the credential is `[1447]`.
 3. The LEI attribute of the Legal Entity vLEI credential is `50670047U83746F70E20`.
-4. The Qualified vLEI Issuer credential is issued by GLEIF’s External identifier, as listed [here](https://gleif-it.github.io/.well-known/).
+4. The Qualified vLEI Issuer credential is issued by GLEIF’s External identifier - [more information](#root-of-trust-discovery)
 
 ### Creation of verifiable records
 The following is an attestation transaction for metadata label `1447`.
