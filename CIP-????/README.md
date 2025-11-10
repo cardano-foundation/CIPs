@@ -200,7 +200,7 @@ The following is the expected transaction format to publish the credential chain
   "????":
   {
     "t": "AUTH_BEGIN",
-    "s": "ED_GbUPpS8ZJEY-u8OB3QVe9C_CAFBdSimS5KxclkgWT",
+    "s": "EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL",
     "c": "{{credentialChainByteStream}}",
     "m":
@@ -218,10 +218,10 @@ The credential chain `c` should be a qb2 CESR stream containing:
 - Registry events for each revocation registry (`vcp`)
 - All necessary CESR attachments
 
-A test example may be found here in qb64 format - this should be converted to qb2 before being pushed on-chain.
+A test example may be found [here](example-credential-chain.json) in qb64 format - this should be converted to qb2 before being pushed on-chain.
 
 After verifying the validity of the credential chain with an ACDC verifier, there are a number of extra validation steps to complete as business logic:
-1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` is the issuee of the metadata signer credential with a schema ID of `ED_GbUPpS8ZJEY-u8OB3QVe9C_CAFBdSimS5KxclkgWT`.
+1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` is the issuee of the metadata signer credential with a schema ID of `EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ`.
 2. The label attribute of the credential is `[1447]`.
 3. The LEI attribute of the Legal Entity vLEI credential is `50670047U83746F70E20`.
 4. The Qualified vLEI Issuer credential is issued by GLEIF’s External identifier, as listed [here](https://gleif-it.github.io/.well-known/).
