@@ -703,9 +703,9 @@ beyond what is permitted to be included directly in the RB.
 <a id="eb-structure" href="#eb-structure"></a>**EB Structure**: EBs have a
 simple structure:
 
-- `transaction_references`: Ordered list of transaction references, where each
-  reference includes the hash of the complete transaction bytes and the
-  transaction size in bytes
+- `transaction_references`: Ordered map from transaction hash to transaction
+  size, preserving insertion order while preventing duplicate entries and
+  ensuring deterministic serialization
 
 A [CDDL for endorser blocks](#endorser-block-cddl) is available in Appendix B.
 
@@ -2871,14 +2871,19 @@ block_header =
 
 ```cddl
 endorser_block =
-  [ transaction_references   : [* tx_reference]
+  [ transaction_references   : omap<hash32, uint16>
   ]
 
-; Reference structures
-tx_reference =
-  [ tx_hash                  : hash32     ; Hash of complete transaction bytes
-  , tx_size                  : uint16     ; Transaction size in bytes
-  ]
+; Ordered map type definition
+; An omap behaves like a map but preserves insertion order and prevents duplicate keys
+; This ensures deterministic serialization while maintaining transaction sequence
+omap<K, V> = {* K => V}  ; Order-preserving map with unique keys
+
+; Legacy reference structure (for documentation)
+; tx_reference =
+;   [ tx_hash                  : hash32     ; Hash of complete transaction bytes
+;   , tx_size                  : uint16     ; Transaction size in bytes
+;   ]
 ```
 
 <a id="votes-certificates-cddl" href="#votes-certificates-cddl">**Votes and
