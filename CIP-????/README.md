@@ -218,7 +218,7 @@ The credential chain `c` should be a qb2 CESR stream containing:
 - Registry events for each revocation registry (`vcp`)
 - All necessary CESR attachments
 
-A test example may be found [here](example-credential-chain.json) in qb64 format - this should be converted to qb2 before being pushed on-chain.
+A test example may be found [here](example-credential-chain.cesr) in qb64 format - this should be converted to qb2 before being pushed on-chain.
 
 After verifying the validity of the credential chain with an ACDC verifier, there are a number of extra validation steps to complete as business logic:
 1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` is the issuee of the metadata signer credential with a schema ID of `EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ`.
@@ -247,8 +247,7 @@ Validation steps:
 
 ### Revoking signing authority
 
-When a credential must be revoked (for example, due to employee termination, credential compromise, or policy changes) the legal entity publishes an `AUTH_END` transaction containing the revocation registry events.
-
+When a credential must be revoked (for example, due to employee termination, credential compromise, or policy changes) the legal entity publishes an `AUTH_END` transaction containing the revocation registry events. An example of how a revoking event can be found [here](example-revocation-event.cesr)
 The following is an example revocation transaction:
 ```JSON
 {
