@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: Keri Decentralized Identifiers
+Title: KERI-backed metadata attestations
 Category: Metadata
 Status: Proposed
 Authors:
@@ -84,6 +84,7 @@ Before attesting to any transactions, the relevant [credential chain](#credentia
 - **i** — The identifier of the signer in the CESR qb64 variant. This MUST match the issuee of the leaf credential in the chain.
 - **s** — The schema identifier of the leaf credential in the chain in the CESR qb64 variant. This MUST match the schema of the [leaf credential](#identifying-a-credential-chain-type) in the chain.
 - **c** — The byte-stream of the credential chain in the CESR qb2 or qb64b variant, for brevity.
+- **v** - Version of the CIP and minimum version of KERI and ACDC to ensure compatibility.
 - **m** —  An optional metadata block used to simplify indexing for a particular use-case. For example, the LEI of a legal entity could be contained here.
 
 The credential chain should contain all credentials, relevant registry events and attachments. There are various types of ACDC registries, so for simplicity: the credential chain MUST validate with an ACDC v1 or v2 verifier, assuming that KEL events are already available.
@@ -99,6 +100,11 @@ The metadata is structured as follows:
     "s": "{{saidOfLeafCredentialSchema}}",
     "i": "{{aidOfSigner}}",
     "c": "{{byteStream}}",
+    "v": {
+      "v": "{{CIP Version String}}",
+      "k": "{{KERI Version String}}",
+      "a": "{{ACDC Version String}}"
+    },
     "m": "{{optionalMetadataBlock}}"
   }
 }
@@ -113,6 +119,7 @@ To create a persistent signature over data with KERI, signers can anchor a diges
 - **i** — The identifier of the signer in the CESR qb64 variant.
 - **d** — The digest of the data being signed in the CESR qb64 variant.
 - **s** — The sequence number of the KERI event, encoded as a hex string.
+- **v** - Version of the CIP. KERI and ACDC version isn't needed here.
 If the KEL of identifier `i` contains an event at sequence number `s` which has a seal value of `{ d: "{{digest}}" }`, it serves as cryptographically verifiable proof that the data was effectively signed by the controller.
 
 A reference to this event in a metadata transaction is structured as follows:
@@ -122,7 +129,10 @@ A reference to this event in a metadata transaction is structured as follows:
     "t": "ATTEST",
     "i": "{{aidOfSigner}}", 
     "d": "{{digest}}",
-    "s": "{{hexEncodedSequenceNumber}}"
+    "s": "{{hexEncodedSequenceNumber}}",
+    "v": {
+      "v": "{{CIP Version String}}"
+    },
     },
     "YYYY": "{{someApplicationMetadata}}"
 }
@@ -136,7 +146,8 @@ The following attributes are used:
 - **t** — A transaction type of `AUTH_END` is used to remove a signer’s authority with revocation registry events.
 - **i** — The identifier of the signer in the CESR qb64 variant. This MUST match the issuee of the leaf credential in the chain.
 - **s** — The schema identifier of the leaf credential in the chain in the CESR qb64 variant. This MUST match the schema of the leaf credential in the chain.
-- **c** — The byte-stream of the revocation registry events in the CESR qb2 variant, for brevity.
+- **c** — The byte-stream of the revocation registry events in the CESR qb2 or qb64b variant, for brevity.
+- **v** - Version of the CIP and minimum version of KERI and ACDC to ensure compatibility.
 - **m** — An optional metadata block used to simplify indexing for a particular use-case. For example, the LEI of a legal entity could be contained here.
 
 A reference to this event in a metadata transaction is structured as follows:
@@ -147,7 +158,12 @@ A reference to this event in a metadata transaction is structured as follows:
     "t": "AUTH_END",
     "s": "{{saidOfLeafCredentialSchema}}",
     "i": "{{aidOfSigner}}",
-    "c": "{{byteStream}}",
+    "c": "{{byteStream}}",,
+    "v": {
+      "v": "{{CIP Version String}}",
+      "k": "{{KERI Version String}}",
+      "a": "{{ACDC Version String}}"
+    },
     "m": "{{optionalMetadataBlock}}"
   }
 }
@@ -203,6 +219,11 @@ The following is the expected transaction format to publish the credential chain
     "s": "EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL",
     "c": "{{credentialChainByteStream}}",
+    "v": {
+      "v": "1.0",
+      "k": "KERI10",
+      "a": "KERI10"
+    },
     "m":
     {
       "l": [1447],
@@ -234,7 +255,10 @@ The following is an attestation transaction for metadata label `1447`.
     "t": "ATTEST",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL", 
     "d": "ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux",
-    "s": "1a"
+    "s": "1a",
+    "v": {
+      "v": "1.0"
+    }
     },
     "1447": "{{someApplicationMetadata}}"
 }
@@ -247,7 +271,7 @@ Validation steps:
 
 ### Revoking signing authority
 
-When a credential must be revoked (for example, due to employee termination, credential compromise, or policy changes) the legal entity publishes an `AUTH_END` transaction containing the revocation registry events. An example of how a revoking event can be found [here](example-revocation-event.cesr)
+When a credential must be revoked (for example, due to employee termination, credential compromise, or policy changes) the legal entity publishes an `AUTH_END` transaction containing the revocation registry events. A sample revocation event stream can be found [here](example-revocation-event.cesr).
 The following is an example revocation transaction:
 ```JSON
 {
@@ -257,6 +281,11 @@ The following is an example revocation transaction:
     "s": "EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL",
     "c": "{{revocationRegistryEventsByteStream}}",
+    "v": {
+      "v": "1.0",
+      "k": "KERI10",
+      "a": "ACDC10"
+    },
     "m":
     {
       "l": [1447],
@@ -269,8 +298,8 @@ The following is an example revocation transaction:
 The revocation registry events in `c` should contain the necessary ACDC registry events that mark the credential as revoked. Once processed by the indexer, the following validation logic applies:
 
 1. The indexer parses the revocation events and validates them against the credential chain.
-2. If the revocation is valid, the identifier `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` loses signing authority for label `1447` from this transaction forward.
-3. Any subsequent `ATTEST` transactions using this identifier will be ignored and treated as unverified.
+
+If the revocation is valid, the identifier `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` loses signing authority for label `1447` from this transaction forward. Any subsequent `ATTEST` transactions using this identifier will be ignored and treated as unverified.
 
 For example, if the following transaction appears after revocation:
 ```JSON
@@ -279,7 +308,10 @@ For example, if the following transaction appears after revocation:
     "t": "ATTEST",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL", 
     "d": "ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux",
-    "s": "1b"
+    "s": "1b",
+    "v": {
+      "v": "1.0"
+    }
     },
     "1447": "{{someApplicationMetadata}}"
 }
