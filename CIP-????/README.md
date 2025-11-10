@@ -51,7 +51,7 @@ However, as KERI is a maturing technology, wide-spread deployment of watcher net
 In one way or another, chain indexers must query for Key Event Log updates to validate credential chains and metadata transactions during the process of verification.
 
 ### Visualized Identity Lifecycle
-The following diagram illustrates the lifecycle of signing authority for a KERI identifier on Cardano. It demonstrates how [attestations](#creation-of-verifiable-records) (`ATTEST`) are invalid before [authority is established](#establishment-of-signing-authority) (`AUTH_BEGIN`), become valid during the authenticated period, and become invalid again after [revocation](#revoking-of-signing-authority) (`AUTH_END`). The indexer validates each transaction by checking the current state of the credential chain.
+The following diagram illustrates the lifecycle of signing authority for a KERI identifier on Cardano. It demonstrates how [attestations](#creation-of-verifiable-records) (`ATTEST`) are invalid before [authority is established](#establishment-of-signing-authority) (`AUTH_BEGIN`), become valid during the authenticated period, and become invalid again after [revocation](#revoking-of-signing-authority) (`AUTH_END`).
 
 ```mermaid
 ---
@@ -79,7 +79,7 @@ sequenceDiagram
   Note right of Indexer: ❌ No valid credential
 ```
 ### Establishment of signing authority
-Before attesting to any transactions, the relevant credential chain for the controller must be published on-chain with the following attributes – most of which are used to help simplify indexing:
+Before attesting to any transactions, the relevant [credential chain](#credential-chains) for the controller must be published on-chain with the following attributes – most of which are used to help simplify indexing:
 - **t** — A transaction type of `AUTH_BEGIN` is used to establish a signer’s authority using a credential chain.
 - **i** — The identifier of the signer in the CESR qb64 variant. This MUST match the issuee of the leaf credential in the chain.
 - **s** — The schema identifier of the leaf credential in the chain in the CESR qb64 variant. This MUST match the schema of the [leaf credential](#identifying-a-credential-chain-type) in the chain.
@@ -137,7 +137,7 @@ The following attributes are used:
 - **i** — The identifier of the signer in the CESR qb64 variant. This MUST match the issuee of the leaf credential in the chain.
 - **s** — The schema identifier of the leaf credential in the chain in the CESR qb64 variant. This MUST match the schema of the leaf credential in the chain.
 - **c** — The byte-stream of the revocation registry events in the CESR qb2 variant, for brevity.
-- **m** — A metadata block used to simplify indexing for a particular use-case. For example, the LEI of a legal entity could be contained here.
+- **m** — An optional metadata block used to simplify indexing for a particular use-case. For example, the LEI of a legal entity could be contained here.
 
 A reference to this event in a metadata transaction is structured as follows:
 ```JSON
@@ -221,7 +221,7 @@ The credential chain `c` should be a qb2 CESR stream containing:
 A test example may be found here in qb64 format - this should be converted to qb2 before being pushed on-chain.
 
 After verifying the validity of the credential chain with an ACDC verifier, there are a number of extra validation steps to complete as business logic:
-1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` is the issuee of the metadata signer credential.
+1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` is the issuee of the metadata signer credential with a schema ID of `ED_GbUPpS8ZJEY-u8OB3QVe9C_CAFBdSimS5KxclkgWT`.
 2. The label attribute of the credential is `[1447]`.
 3. The LEI attribute of the Legal Entity vLEI credential is `50670047U83746F70E20`.
 4. The Qualified vLEI Issuer credential is issued by GLEIF’s External identifier, as listed [here](https://gleif-it.github.io/.well-known/).
@@ -244,6 +244,54 @@ Validation steps:
 1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` currently has signing authority over label 1447.
 2. The CESR digest of the data at label 1447 is `ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux`.
 3. The event in the controller’s KEL at sequence number `1a` (26th event) is `{ d: “ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux” }`.
+
+### Revoking signing authority
+
+When a credential must be revoked (for example, due to employee termination, credential compromise, or policy changes) the legal entity publishes an `AUTH_END` transaction containing the revocation registry events.
+
+The following is an example revocation transaction:
+```JSON
+{
+  "????":
+  {
+    "t": "AUTH_END",
+    "s": "ED_GbUPpS8ZJEY-u8OB3QVe9C_CAFBdSimS5KxclkgWT",
+    "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL",
+    "c": "{{revocationRegistryEventsByteStream}}",
+    "m":
+    {
+      "l": [1447],
+      "LEI": "50670047U83746F70E20"
+    }
+  }
+}
+```
+
+The revocation registry events in `c` should contain the necessary ACDC registry events that mark the credential as revoked. Once processed by the indexer, the following validation logic applies:
+
+1. The indexer parses the revocation events and validates them against the credential chain.
+2. If the revocation is valid, the identifier `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` loses signing authority for label `1447` from this transaction forward.
+3. Any subsequent `ATTEST` transactions using this identifier will be ignored and treated as unverified.
+
+For example, if the following transaction appears after revocation:
+```JSON
+{
+    "XXXX": {
+    "t": "ATTEST",
+    "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL", 
+    "d": "ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux",
+    "s": "1b"
+    },
+    "1447": "{{someApplicationMetadata}}"
+}
+```
+
+The indexer will reject this attestation because:
+1. The credential chain for `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` has been revoked.
+2. No valid signing authority exists for this identifier on label `1447`.
+3. The transaction is marked as **unverified** and should not be trusted by any application relying on the indexer.
+
+Only if a new `AUTH_BEGIN` transaction is published with a fresh, valid credential chain would the identifier regain signing authority.
 
 ## Appendix
 
