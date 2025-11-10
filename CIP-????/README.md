@@ -293,6 +293,44 @@ The indexer will reject this attestation because:
 
 Only if a new `AUTH_BEGIN` transaction is published with a fresh, valid credential chain would the identifier regain signing authority.
 
+
+## Rationale: how does this CIP achieve its goals?
+
+This CIP enables entities (including legal entities, organizations, DAOs, and individuals) to cryptographically prove their identity on Cardano by linking verifiable credential chains (such as vLEIs) to on-chain transactions. This connection establishes accountability and transparency, enabling blockchain adoption in highly regulated environments where transactions must be traceable to recognized entities, while also supporting flexible identity frameworks for various use cases beyond traditional corporate structures.
+
+### Achieving Accountability Through Verifiable Identity
+
+The core goal of establishing accountability is achieved through several key mechanisms:
+
+**Persistent Identity Binding**: By anchoring KERI identifiers in transaction metadata, this CIP creates an immutable, publicly auditable link between a transaction and a specific entity. Unlike traditional blockchain addresses which are pseudonymous, KERI identifiers can be verified against credential chains that ultimately connect to legally recognized entities (e.g., through LEIs issued by GLEIF). This transforms anonymous blockchain activity into accountable actions.
+
+**Temporal Authority Control**: The `AUTH_BEGIN` and `AUTH_END` lifecycle allows precise control over when an identifier has signing authority. This supports real-world scenarios like employee onboarding/offboarding or credential expiration, ensuring that only authorized representatives can act on behalf of an entity at any given time. Indexers can deterministically verify whether any attestation was made during a valid authority period.
+
+**Multi-Layer Verification**: The credential chain structure enables verification at multiple levels—from cryptographic signature validity, to credential issuance by authorized issuers, to the root of trust (e.g., GLEIF). This layered approach means that breaking accountability would require compromising multiple independent systems, not just a single private key.
+
+### Design Trade-offs
+
+The metadata-based approach was chosen for its simplicity and flexibility:
+
+**Advantages:**
+- Straightforward implementation for wallets and transaction builders
+- Flexible credential schemas without protocol changes
+- Full backward compatibility with existing infrastructure
+
+**Limitations:**
+- Validation must occur off-chain through indexers (smart contracts cannot enforce credential checks) - This limitation can be solved by writing another CIP or extending this
+- Requires additional infrastructure (indexers, KERI watcher networks)
+
+The metadata is immutably recorded on-chain, and anyone can independently verify the cryptographic proofs by validating the credential chains against published Key Event Logs.
+
+### Cryptographic Trust
+
+Unlike oracle networks that rely on consensus among multiple nodes, KERI-based verification relies purely on cryptographic signatures and tamper-evident event logs. Verifiers can independently validate credentials without trusting any third party—the only trust assumption is in the root of trust (e.g., GLEIF for vLEIs), which is already established in real-world legal frameworks.
+
+By adopting KERI, an existing standard from the Trust over IP Foundation, this CIP ensures interoperability across ecosystems, credential portability, and alignment with emerging regulatory requirements for digital identity. This standards-based approach means that implementations can leverage existing tooling, benefit from ongoing security research, and maintain compatibility as the KERI ecosystem evolves.
+
+## Path to Active
+
 ## Appendix
 
 ### Credential chains
