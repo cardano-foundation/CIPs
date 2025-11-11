@@ -126,46 +126,47 @@ stateDiagram-v2
 ##### CDDL encoding specification
 
 ```cddl
- 1
- 2  messageSubmissionMessage
- 3    = msgInit
- 4    / msgRequestMessageIds
- 5    / msgReplyMessageIds
- 6    / msgRequestMessages
- 7    / msgReplyMessages
- 8    / msgDone
- 9
-10  msgInit = [0]
-11  msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
-12  msgReplyMessageIds = [2, [ *messageIdAndSize ] ]
-13  msgRequestMessages = [3, messageIdList ]
-14  msgReplyMessages = [4, ]
-15  msgDone = [5, ]
-16
-17  isBlocking = false / true
-18  messageCount = word16
-19  messageId = bstr
-20  messageBody = bstr
-21  messageIdAndSize = [ messageId, messageSizeInBytes ]
-22  messageIdList = [ * messageId ]
-23  messageList = [ * message ]
-24  messageSizeInBytes = word32
-25  kesSignature = bstr
-26  operationalCertificate = bstr
-27  kesPeriod = word32
-28  blockNumber = word32
-29  ttl = word16
-30
-31  message = [
-32    messageId,
-33    messageBody,
-34    blockNumber,
-35    ttl,
-36    kesSignature,
-37    operationalCertificate,
-38    kesPeriod
-39  ]
-40
+messageSubmissionMessage
+  = msgInit
+  / msgRequestMessageIds
+  / msgReplyMessageIds
+  / msgRequestMessages
+  / msgReplyMessages
+  / msgDone
+
+msgInit              = [0]
+msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
+msgReplyMessageIds   = [2, [ *messageIdAndSize ] ]
+msgRequestMessages   = [3, messageIdList ]
+msgReplyMessages     = [4, ]
+msgDone              = [5, ]
+
+isBlocking = false / true
+messageCount = word16
+messageId = bstr
+messageBody = bstr
+messageIdAndSize = [ messageId, messageSizeInBytes ]
+messageIdList = [ * messageId ]
+messageList = [ * message ]
+messageSizeInBytes = word32
+kesSignature = bstr
+kesPeriod = word32
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
+coldVerificationKey = bstr .size 32
+expiresAt = word32
+
+messagePayload = [
+  messageId
+  , messageBody
+  , kesPeriod
+  , expiresAt
+]
+message = [
+  messagePayload
+  , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
+]
 ```
 
 #### Inbound side and outbound side implementation
@@ -210,7 +211,10 @@ The protocol supports blocking and non-blocking requests:
 
 ##### Message invalidation mechanism
 
-In order to bound the resource requirements needed to store the messages in a network node, their lifetime should be limited. A time to live can be set as a protocol parameter for each topic, and once the timespan has elapsed the message is discarded in the internal state of the network node. The time to live can be based on the timestamp of reception of the message on the network node or on the block number embedded in the message.
+In order to bound the resource requirements needed to store the messages in a network node, their lifetime should be limited. Thus, they carry an expiration date (formatted as a Unix timestamp) which must be checked before processing the message:
+
+- the message will be invalidated when the local clock of the processing node exceeds the expiration date
+- an expiration date which expires too far in the future will be considered a protocol violation (the maximum allowed time to live is a protocol parameter for each topic which may be negotiated).
 
 ##### Cost of valid message storage
 
@@ -241,7 +245,7 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 
 ##### Message authentication mechanism
 
-The message body is signed with the KES key of the SPO. This signature and the operational certificate of the SPO are appended to the message which is diffused.
+The payload part of the message (message id, message body, KES period and expiration timestamp fields) is signed with the KES key of the SPO (the message signed is the CBOR encoding of the payload: `bstr .cbor messagePayload`). The message is composed of the aforementioned payload (encoded as an array), the KES signature (raw bytes), the operational certificate (the KES public key, the issue number of the operational certificate, the KES period at the time of creation of the operational certificate and their cold signing key signature, encoded as an array) and the cold verification key (raw bytes) are appended to the message.
 
 Before being diffused to other peers, an incoming message must be verified by the receiving node. This is done with the following steps:
 
@@ -302,15 +306,15 @@ The following tables gather figures about expected network load in the case of *
 | ---------------------- | ----------- | ----------- |
 | messageId              | 32 B        | 32 B        |
 | messageBody            | 360 B       | 2,000 B     |
-| blockNumber            | 4 B         | 4 B         |
-| ttl                    | 2 B         | 2 B         |
 | kesSignature           | 448 B       | 448 B       |
+| kesPeriod              | 8 B         | 8 B         |
 | operationalCertificate | 304 B       | 304 B       |
-| kesPeriod              | 4 B         | 4 B         |
+| coldVerificationKey    | 4 B         | 4 B         |
+| expiresAt              | 4 B         | 4 B         |
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,154 B     | 2,794 B     |
+| total   | 1,160 B     | 2,800 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
@@ -463,28 +467,33 @@ msgDone          = [3]
 
 reason = invalid
        / alreadyReceived
-       / ttlTooLarge
+       / expired
        / other
 
 invalid         = [0, tstr]
 alreadyReceived = [1]
-ttlTooLarge     = [2]
+expired         = [2]
 other           = [3, tstr]
 
 messageId    = bstr
 messageBody  = bstr
-blockNumber  = word32
-ttl          = word16
 kesSignature = bstr
-operationalCertificate = bstr
+kesPeriod    = word64
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
+coldVerificationKey = bstr .size 32
+expiresAt = word32
 
+messagePayload = [
+  messageId
+  , messageBody
+  , kesPeriod
+  , expiresAt
+]
 message = [
-  messageId,
-  messageBody,
-  blockNumber,
-  ttl
-  kesSignature,
-  operationalCertificate
+  messagePayload
+  , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
 ]
 ```
 
@@ -520,7 +529,6 @@ stateDiagram-v2
   StBusyNonBlocking:::Green --> StIdle:::Blue : MsgReplyMessagesNonBlocking
   StIdle:::Blue --> StBusyBlocking:::Green : MsgRequestMessagesBlocking
   StBusyBlocking:::Green --> StIdle:::Blue : MsgReplyMessagesBlocking
-  StBusyBlocking:::Green --> StDone:::Black : MsgServerDone
   StIdle:::Blue --> StDone:::Black : MsgClientDone
 
 ```
@@ -532,7 +540,6 @@ stateDiagram-v2
 - **MsgRequestMessagesBlocking**: The client asks for available messages and acknowledges old message ids. The server will only reply once there are available messages.
 - **MsgReplyMessagesBlocking([message])**: The server has received new messages and indicates if further message are available. In the blocking case, the reply is guaranteed to contain at least one message.
 - **MsgClientDone**: The client terminates the mini-protocol.
-- **MsgServerDone**: The server terminates the mini-protocol.
 
 #### Transition table
 
@@ -542,7 +549,6 @@ stateDiagram-v2
 | StBusyNonBlocking | MsgReplyMessagesNonBlocking   | ([message], hasMore) | StIdle            |
 | StIdle            | MsgRequestMessagesBlocking    |                      | StBusyBlocking    |
 | StBusyBlocking    | MsgReplyMessagesBlocking      | [message]            | StIdle            |
-| StBusyBlocking    | MsgServerDone                 |                      | StDone            |
 | StIdle            | MsgClientDone                 |                      | StDone            |
 
 ##### CDDL Encoding Specification
@@ -556,32 +562,35 @@ localMessageNotificationMessage
   / MsgReplyMessagesNonBlocking
   / msgReplyMessagesBlocking
   / msgClientDone
-  / msgServerDone
 
 msgRequestMessages          = [0, isBlocking]
-msgReplyMessagesNonBlocking = [1, messages, hasMore]
-msgReplyMessagesBlocking    = [2, messages]
+msgReplyMessagesNonBlocking = [1, [* message], hasMore]
+msgReplyMessagesBlocking    = [2, [+ message]]
 msgClientDone               = [3]
-msgServerDone               = [4]
 
 messageId    = bstr
 messageBody  = bstr
-blockNumber  = word32
-ttl          = word16
 kesSignature = bstr
-operationalCertificate = bstr
+kesPeriod    = word64
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
+coldVerificationKey = bstr .size 32
+expiresAt = word32
 
+messagePayload = [
+  messageId
+  , messageBody
+  , kesPeriod
+  , expiresAt
+]
 message = [
-  messageId,
-  messageBody,
-  blockNumber,
-  kesSignature,
-  operationalCertificate
+  messagePayload
+  , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
 ]
 
 hasMore = false / true
 isBlocking = false / true
-messages = [* message]
 ```
 
 ## Rationale: how does this CIP achieve its goals?
@@ -692,15 +701,15 @@ the KES key.
 - [x] Validate protocol behaviour with all relevant parties (Network and Node teams).
 - [x] Make the current Cardano Network Diffusion Layer general and reusable so a new, separate Mithril Diffusion Layer can be instantiated.
   - See [here](https://github.com/IntersectMBO/ouroboros-network/wiki/Reusable-Diffusion-Investigation) and [here](https://github.com/IntersectMBO/ouroboros-network/pull/5016)
-- [ ] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
+- [x] Implement DMQ Node that is able to run general diffusion (i.e. without the mini-protocols).
   - See [here](https://github.com/IntersectMBO/ouroboros-network/pull/5109)
-- [ ] Implement the n2n and n2c mini-protocols:
-  - [ ] Haskell DMQ Node:
-    - [ ] n2c mini-protocols
-    - [ ] n2n mini-protocols
-  - [ ] Pallas Library (TxPipe):
+- [x] Implement the n2n and n2c mini-protocols:
+  - [x] Haskell DMQ Node:
     - [x] n2c mini-protocols
-    - [ ] n2n mini-protocols
+    - [x] n2n mini-protocols
+  - [x] Pallas Library (TxPipe):
+    - [x] n2c mini-protocols
+    - [x] ~~n2n mini-protocols~~ (will be done in a separate stream of work)
 - [x] Implement the n2c mini-protocols in Mithril nodes:
   - [x] Mithril signer
   - [x] Mithril aggregator
