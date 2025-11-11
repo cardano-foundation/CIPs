@@ -44,7 +44,7 @@
                 }
             }
         },
-        "Witness": {
+        "witness": {
             "title": "Witness",
             "description": "A witness proving that the author endorses the content of the metadata",
             "type": "object",
@@ -76,7 +76,7 @@
                     "title": "References",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/Reference"
+                        "$ref": "#/definitions/reference"
                     }
                 },
                 "summary": {

@@ -60,8 +60,12 @@
     "description": "on-chain certification metadata"
   },
   {
-    "transaction_metadatum_label": 1517,
+    "transaction_metadatum_label": 1447,
     "description": "Reeve - transparent and verifiable financial records on-chain"
+  },
+  {
+    "transaction_metadatum_label": 1517,
+    "description": "Reeve - obsolete - pre-launch metadata"
   },
   {
     "transaction_metadatum_label": 1564,
@@ -72,8 +76,16 @@
     "description": "CIP-72: dApp registration & Discovery"
   },
   {
+    "transaction_metadatum_label": 1668,
+    "description": "Begin Wallet: dApp rating record from dApp Store"
+  },
+  {
     "transaction_metadatum_label": 1694,
     "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
+  },
+  {
+    "transaction_metadatum_label": 1854,
+    "description": "CIP-146 Multi-signatures wallet registration"
   },
   {
     "transaction_metadatum_label": 1870,
@@ -108,6 +120,10 @@
     "description": "cardahub.io services metadata"
   },
   {
+    "transaction_metadatum_label": 3692,
+    "description": "CIP-0149 - Optional DRep compensation"
+  },
+  {
     "transaction_metadatum_label": 6770,
     "description": "fortunes.coconutpool.com fortune teller"
   },
@@ -138,5 +154,9 @@
   {
     "transaction_metadatum_label": 61286,
     "description": "CIP-0015 - Catalyst deregistration"
+  },
+  {
+    "transaction_metadatum_label": "????",
+    "description": "CIP-???? - KERI-backed metadata attestations"
   }
 ]

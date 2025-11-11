@@ -30,7 +30,8 @@
                     "constitutional": "CIP136:constitutional",
                     "unconstitutional": "CIP136:unconstitutional",
                     "abstain": "CIP136:abstain",
-                    "didNotVote": "CIP136:didNotVote"
+                    "didNotVote": "CIP136:didNotVote",
+                    "againstVote": "CIP136:againstVote"
                 }
             }
         }
@@ -84,7 +85,7 @@
       "witness": {
         "witnessAlgorithm": "ed25519",
         "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "ad071d5a032c6e0eb7ee0ad4422728d0991bc0865473b4e2b0694356448790b0c90a50827cd355fba89fe2c7095b46179a4d3990642cdced6af2cd1363e6af0d"
+        "signature": "af493e96363237bb9cd6d93ef40dd0ca00912fadefc8c8388ce3bdda1ae928a427f0801c9cc3f68cac4995ac7e137c2405b8c26acd001b55c1b7225d07e54405"
       }
     }
   ]

@@ -112,6 +112,8 @@ DApps are used by *DApp users*, and built by *DApp developers*. Audit is perform
 | Runtime Verification           | https://www.runtimeverification.com | contact@runtimeverification.com  | |
 | Tweag                | https://www.tweag.io                  | sales@tweag.io                  | |
 | Vacuumlabs      | https://vacuumlabs.com/smart-contract-auditing/   | audit@vacuumlabs.com  | 16541FD112978F3C6D49E79881E6B1F9C0BC6BF9 (PGP, ed25519) |
+| CertiK      | https://www.certik.com/products/smart-contract-audit/   | sales@certik.com  | |
+
 
 ### Tendering
 In order to provide a quote for audit, developers will need to supply
