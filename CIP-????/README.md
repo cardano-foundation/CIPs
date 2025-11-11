@@ -158,7 +158,7 @@ A reference to this event in a metadata transaction is structured as follows:
     "t": "AUTH_END",
     "s": "{{saidOfLeafCredentialSchema}}",
     "i": "{{aidOfSigner}}",
-    "c": "{{byteStream}}",,
+    "c": "{{byteStream}}",
     "v": {
       "v": "{{CIP Version String}}",
       "k": "{{KERI Version String}}",
@@ -222,7 +222,7 @@ The following is the expected transaction format to publish the credential chain
     "v": {
       "v": "1.0",
       "k": "KERI10",
-      "a": "KERI10"
+      "a": "ACDC10"
     },
     "m":
     {
