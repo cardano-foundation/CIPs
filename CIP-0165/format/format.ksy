@@ -32,7 +32,7 @@ types:
         doc: Type of the record
       - id: record_data
         doc: Record payload
-        # size: _parent.len_payload - 1
+        # size: _parent.len_payload - sizeof<record_type>
         size-eos: true
         type:
           switch-on: record_type
@@ -112,7 +112,7 @@ types:
     instances:
       # size of record_data for this scls_record (total - record_type:u1)
       rec_payload_size:
-        value: _parent._parent.len_payload - 1
+        value: _parent._parent.len_payload - sizeof<_parent.record_type>
       ns_size:
         value: 4 + len_ns
       len_data:
@@ -120,11 +120,11 @@ types:
         doc: seqno=8, format=1, entries_count=4, digest=28.
       len_key:
         value: |
-          (ns == "utxo")  ? 32 :
-          # TODO: uncomment when defined
-          # (ns == "stake") ? 28 :
-          # (ns == "pool")  ? 28 :
+          (ns == "utxo/v0")  ? 34 :
+          (ns == "stake") ? 28 :
+          (ns == "pool")  ? 28 :
           0
+
   entries_block:
     params:
       - id: len_key
@@ -214,3 +214,4 @@ enums:
     0: raw
     1: zstd
     2: zstde
+
