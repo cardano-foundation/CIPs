@@ -1,7 +1,7 @@
 ---
 CPS: ?
 Title: Canonical CBOR Serialization Standard
-Category: Tools, Wallets, Ledger
+Category: Tools
 Status: Open
 Authors:
     - Hinson Wong <hinson.wong@deltadefi.io>
