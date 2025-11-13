@@ -10,7 +10,7 @@ Implementors:
   - reeve.technology
   - veridian.id
 Discussions:
-    - 
+    - https://github.com/cardano-foundation/CIPs/pull/1113
 Created: 2025-11-05
 License: CC-BY-4.0
 ---
