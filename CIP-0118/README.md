@@ -447,26 +447,15 @@ sub-transactions.
 
 ## Path to Active
 
-### Software Readiness Level
-
-The kind of testing required to thoroughly analyze the
-changes we propose can only be done on testnet. We estimate that the SRL
-would remain between 3 and 6 until
-
-- an era is specified into which this feature is included
-- a testnet containing this feature is launched
-
 ### Acceptance Criteria
 
-- The use cases as described here can be implemented and verified on a testnet
+- [ ] Deployment to testnet/mainnet
 
 ### Implementation Plan
 
-- Implementation of the proposed ledger changes in the formal ledger spec
-- Updated CIP Specification with full detail
-- Community acceptance through Intersect
-- Implementation in the Cardano node in the context of a new era/hardfork
-- Deployment to testnet/mainnet
+- [ ] Update to the formal ledger specification with the changes proposed here
+- [ ] Implement the outlined changes in the Cardano node 
+- [ ] Complete a hard fork enabling support for the changes outlined here
 
 ## Links to implementations
 
