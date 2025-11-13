@@ -8,7 +8,7 @@ Authors:
     - Tsz Wai Wu <tszwai@deltadefi.io>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1109
 Created: 2025-10-29
 License: CC-BY-4.0
 ---
