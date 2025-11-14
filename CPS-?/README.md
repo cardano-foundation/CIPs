@@ -45,14 +45,21 @@ The good solution to this CPS consists of 3 components:
 
 1. Well articulated proposals considering below:
 
+   - Amend the Cardano Constitution:
+
+     - To address potential other CNTs in the constitutions
+     - Any guardrails in practice for inclusion of CNTs
+     - Do we define net change limits in CNTs also
+
    - A new CIP for multi asset treasury covering below areas:
 
      - Exact specification to describe the ledger change
      - Analysis to take network security into account
+     - Do we need new protocol parameters for CMAT
+     - What we use for threshold for listing & delisting if it introduces new governance actions
      - Other ledger rule's technical consideration such as min ADA
 
    - Update on existing CIPs such as [CIP-1694](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694).
-   - Amend the Cardano Constitution.
 
 2. Submit an Info Action of the CIP to gauge community sentiment if this is a requested change.
 
@@ -65,10 +72,6 @@ The good solution to this CPS consists of 3 components:
 
 ## Open Questions
 
-### Coordination with work-in-progress CIP159
-
-There is a work-in-progress CIP proposal [(CIP159)](https://github.com/cardano-foundation/CIPs/pull/1061), where part of the outcome could serves the CMAT purpose. What level of coordination with other community CIPs is desirable?
-
 ### Spam Prevention - Only Allow Whitelisted Tokens
 
 Spam prevention as if only whitelisted tokens can send into the treasury. Do we want to build in this feature into CMAT?
@@ -79,6 +82,11 @@ Spam prevention as if only whitelisted tokens can send into the treasury. Do we 
 Spam prevention options:
 
 - Introduce new governance action type with the function to add-new-asset to the treasuy, the gov action would be governed as other gov actions (CIP1694). Also comes with the usual 100k GA deposit.
+- Another alternative is simply coordinate offchain tool set to ignore non-whitelisted CNTs from indexer, but not enforcing onchain.
+
+### Should Onchain Treasury Participate in DeFi?
+
+In Polkadot ecosystem, a large part of treasury activities are denominated in stables rather than its native token DOT. In order to meet such demand, Polkadot treausry indeed directly interacting with DeFi project to conduct dollar cost averaging selling DOT into stables. Do we want Cardano treasury to be able to participate in DeFi like Polkadot? Or do we prefer to stay clean and only use CMAT as custody of multi-assets only while conducting most active management offchain?
 
 ### Technology Path in Implementation
 
@@ -100,6 +108,12 @@ There are several potential ways to implement CMATs:
    > Polkadot runs its Multi Asset Treasury address not on its relay chain, but on its partnerchain framework using [substrate](https://docs.rs/pallet-treasury/latest/pallet_treasury/), substrate also implemented at Cardano for its L1 architecture would allow a similar approach
 
 What technology path is more ideal in pursuing CMAT?
+
+#### Additional Note on Technology Pathway from Cardano Summit Day 0 Discussion'
+
+- There is historical reason / previous discussion in ledger team, and make it a deliberate decision to NOT implementing Cardano treasury as an address. Therefore, pathway number 1 is not suggested from there.
+- [CIP159](https://github.com/cardano-foundation/CIPs/pull/1061) is the crucial infrastructure to enable multi-assets treasury withdrawal from user's point of view
+- Prefer to implement the treasury in a simpler way of holding `Value` rather than `Coin`, with extra guardrails on whitelisting and de-whitelisting. From there, also not directly implementing CIP159 account as treasury due to first point above.`
 
 ### Other Technical Consideration
 
