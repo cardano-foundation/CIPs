@@ -41,8 +41,10 @@ having to inspect the transaction.
 
 **Practically :** The practical need for this stems from an intent-based ultra-light client design that is currently in the progress.
 Such a light client has the capacity to submit an intent in the form of a script, but includes a requirement that it 
-does not inspect the transaction 
-that is constructed to solve it. We require a way to guarantee to such a client that their intent is solved by the transaction 
+does not inspect the transaction that is constructed to solve it. 
+The reason for this requirement is to enable implementing a two-party computation protocol for construction of 
+intent-fulfilling transactions.
+We require a way to guarantee to such a client that their intent is solved by the transaction 
 they sign (in the case that the transaction is validated by the ledger and posted on-chain).
 
 
@@ -58,6 +60,14 @@ The following values will be computed in the process of transaction processing :
 - `txidAndGuards`, which will be computed by hashing the concatenation `(txid ++ guardsHash)`
 
 Signature checking will now check that each key signed `txidAndGuards`.
+
+** Note ** There are other options for how exactly to compute the final hash of the data that will be signed. E.g.
+we can exclude the `guards` field from the `txid` computation (e.g. move this field outside the body), then compute `guardsHash`
+and `txidAndGuards` as above, signing the latter. This would mean `guards` are hashed twice (to compute 
+`guardsHash` and also `txidAndGuards`) instead of three times,
+(i.e. as part of `txid` and then also `guardsHash` and also `txidAndGuards`).
+Moreover, this would represent the most complete separation of `guards` as intents from
+the rest of the transaction as "the thing that fulfills the intent".
 
 ### CDDL
 
@@ -129,7 +139,7 @@ hashing operations.
 ## Path to Active
 
 ### Acceptance Criteria
-- [ ] Rule and TxBody structure changes are implemented in the ledger repo and included in an upcoming major hard fork.
+- [ ] Ledger rule changes are implemented in the ledger spec and repo and included in an upcoming major hard fork.
       
 ### Implementation Plan
 - [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve Plutus script efficiency and usability.
