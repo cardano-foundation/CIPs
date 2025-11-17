@@ -406,7 +406,7 @@ guard scripts, `guardScript0`, `guardScript1`, which do get to see `txInfoSubTxs
 
 - Both sub-transactions require execution of the same `guardScript0` script, which is executed only once with all the arguments supplied to it, instead of executing it as many times as it appears in sub-transactions.
 
-## Comparison with Other Designs
+### Comparison with Other Designs
 
 ### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
 
