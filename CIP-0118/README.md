@@ -456,10 +456,7 @@ sub-transactions.
 - [ ] Update to the formal ledger specification with the changes proposed here
 - [ ] Implement the outlined changes in the Cardano node 
 - [ ] Complete a hard fork enabling support for the changes outlined here
-
-## Links to implementations
-
-- Top level ticket on the Ledger repository that tracks implementation of this CIP: [Nested Transactions](https://github.com/IntersectMBO/cardano-ledger/issues/5123)
+- [ ] Track implementation of this CIP via top level ticket on the Ledger repository, including links to implementations: [Nested Transactions](https://github.com/IntersectMBO/cardano-ledger/issues/5123)
 
 ## Copyright
 
