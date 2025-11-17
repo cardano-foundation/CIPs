@@ -435,7 +435,7 @@ This makes constructing (and determining whether it is even possible to construc
 a valid top-level transactions more straightforward.
 
 
-### CIP-0118 "Validation Zones-implicit"
+#### CIP-0118 "Validation Zones-implicit"
 
 The key difference between the Validation Zones-implicit design and this design is that
 this design does not require any changes to be made to the operation
