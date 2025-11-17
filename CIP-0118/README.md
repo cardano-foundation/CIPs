@@ -408,7 +408,7 @@ guard scripts, `guardScript0`, `guardScript1`, which do get to see `txInfoSubTxs
 
 ### Comparison with Other Designs
 
-### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
+#### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
 
 Transaction swaps achieve almost exactly the same goals as this CIP. The main differences
 are :
