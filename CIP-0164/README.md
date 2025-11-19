@@ -78,6 +78,7 @@ technical resources, visit the Leios Innovation R&D site at
   - [Incentives](#incentives)
     - [Adaptive EB production](#adaptive-eb-production)
     - [Hardware upgrade](#hardware-upgrade)
+  - [Clients](#clients)
 - [Rationale: how does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
   - [How Leios addresses CPS-18](#how-leios-addresses-cps-18)
   - [Evidence](#evidence)
@@ -1461,6 +1462,24 @@ demonstrated in the [operating costs analysis](#operating-costs), SPO
 profitability improves significantly once sustained throughput exceeds 30-50
 TPS, providing clear economic incentives for infrastructure upgrades.
 
+### Clients
+
+Changes proposed for Ouroboros Leios will require changes to the node-to-client
+(N2C) mini-protocols used by client applications throughout the ecosystem.
+Concrete decisions will likely naturally surface through various
+implementations, however some care should be taken to minimize ecosystem
+disruption.
+
+An [Impact Analysis][impact-analysis] has been done and continued discussion
+is necessary. One recommendation is to serve a modified block with "inline"
+EB transactions over LocalChainSync. Additional queries and ledger state may
+be extended to provide Leios specific information to applications. It is
+assumed nodes providing client interfaces will provide the modified block
+to clients.
+
+A [CDDL for merged blocks](#merged-block-cddl) is available in Appendix B.
+
+
 ## Rationale: how does this CIP achieve its goals?
 
 Ouroboros Leios introduces a committee-based voting layer over Nakamoto-style
@@ -2625,6 +2644,7 @@ usual mechanisms of governing a hard-fork will be employed.
 - **Threat model** — [Report #1][threat-model]
 - **Leios attack surface** — [Report #2][threat-model-report2]
 - **Node operating costs** — [Cost estimate][cost-estimate]
+- **Impact analysis** - [Impact][impact-analysis]
 
 **Related**
 
@@ -2706,6 +2726,9 @@ usual mechanisms of governing a hard-fork will be employed.
 [cost-estimate]:
   https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cost-estimate/README.md
   "Leios node operating costs"
+[impact-analysis]:
+  https://github.com/input-output-hk/ouroboros-leios/blob/4603cfd0b545cccf3d7c8fddc75e6e0f182f132a/docs/ImpactAnalysis.md
+  "Impact Analysis"
 
 <!-- Other protocol references -->
 
@@ -2884,6 +2907,45 @@ omap<K, V> = {* K => V}  ; Order-preserving map with unique keys
 ;   [ tx_hash                  : hash32     ; Hash of complete transaction bytes
 ;   , tx_size                  : uint16     ; Transaction size in bytes
 ;   ]
+```
+
+<a id="merged-block-cddl" href="#merged-block-cddl">**Merged Block**</a>
+
+```diff
++ merged_block =
++   [ header                   : block_header
++   , transaction_bodies       : [* transaction_body]
++   , transaction_witness_sets : [* transaction_witness_set]
++   , auxiliary_data_set       : {* transaction_index => auxiliary_data}
++   , ? eb_certificate         : leios_certificate
++   , ? eb_tx_references       : [* tx_reference]
++   ]
+
++ block_header =
++   [ header_body              : block_header_body
++   , body_signature           : kes_signature
++   ]
+
++ block_header_body =
++   [ block_number             : uint
++   , slot                     : slot_no
++   , prev_hash                : hash32
++   , issuer_vkey              : vkey
++   , vrf_vkey                 : vrf_vkey
++   , vrf_result               : vrf_cert
++   , block_body_size          : uint
++   , block_body_hash          : hash32
++   , ? ( announced_eb         : hash32
++       , announced_eb_size    : uint32
++       )
++   , ? certified_eb           : bool
++   ]
+
++ ; Reference structures
++ tx_reference =
++  [ tx_hash                  : hash32     ; Hash of complete transaction bytes
++  , tx_size                  : uint16     ; Transaction size in bytes
++  ]
 ```
 
 <a id="votes-certificates-cddl" href="#votes-certificates-cddl">**Votes and
