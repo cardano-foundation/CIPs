@@ -385,34 +385,40 @@ aggregating the collected votes.
 
 #### Step 5: Chain Inclusion
 
-Block producers creating subsequent RBs (`RB'`) may include a certificate for
-the EB announced by a preceding block (`RB`) if sufficient time has elapsed for
-the complete certification process. As shown in Figure 4, this occurs only after
-the complete timing sequence has elapsed. The inclusion rules for valid chain
-inclusion are:
+Block producers creating subsequent RBs (`RB'`) may only include valid
+certificates for the EB announced by a preceding block (`RB`) if sufficient time
+has elapsed. See also Figure 4. Concretely, the inclusion rules are:
 
-1. `RB'` **may** include a certificate for the EB announced in `RB` if and only
-   if `RB'` is at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$
-   slots after `RB`.
+1. `RB'` contains **either**
 
-2. Any included certificate must be valid as defined in
-   [Certificate Validation](#certificate-validation).
+   a. a certificate for the EB announced in `RB`, **or**
 
-3. If `RB'` cannot include a certificate due to timing constraints (i.e., fewer
-   than $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots have
-   elapsed since `RB`), then `RB'` operates as a standard Praos block containing
-   its own transactions, and the EB announced by `RB` is discarded.
+   b. a list of transactions forming a valid extension of `RB`.
+
+2. Any included certificate must be valid as defined in [Certificate
+   Validation](#certificate-validation).
+
+3. A certificate may only be included if `RB'` is at least $3 \times
+   L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after `RB`.
 
 4. Regardless of whether `RB'` includes a certificate, it may optionally
-   announce its own EB for future certification by subsequent blocks.
+   announce its own EB for future certification.
 
 where $L_\text{hdr}$, $L_\text{vote}$ and $L_\text{diff}$ are
 <a href="#protocol-parameters">protocol parameters</a> represented by a number
 of slots.
 
-This **certificate inclusion delay** ensures certified EBs have sufficient time
-to diffuse throughout the network before their transactions are included in the
-ledger. If the next RB is produced before this minimum delay has elapsed, the EB
+The certificate inclusion delay ensures certified EBs have sufficient time to
+diffuse throughout the network and do not impact [protocol
+security](#protocol-security). When a certificate is included, no further
+transactions are allowed in the RB for the same reason.
+
+If transactions next to the certificate would be allowed, a validating node
+would need to build the ledger state from all endorsed transactions before it
+can validate the transactions in the same block, resulting in much stricter
+timing constraints to ensure [protocol security](#protocol-security).
+
+If the next RB is produced before this minimum delay has elapsed, the EB
 certificate cannot be included and the EB is discarded.
 
 ### Protocol Parameters
