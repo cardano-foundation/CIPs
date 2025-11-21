@@ -56,7 +56,7 @@ with smart contracts.
 The ledger changes we describe have been developed as a result of the discussions and
 proposals in previous CIPs, including previous versions of validation zones proposals,
 and Transaction Swaps. The following
-new use cases and functionality are supported by the changes :
+new functionality are supported by the changes :
 
 1. transactions can be batched
 - batch contains one top-level transaction, with multiple possible sub-transactions ;
@@ -69,9 +69,8 @@ new use cases and functionality are supported by the changes :
 - enables script deduplication ;
 
 4. guarding scripts enable sub-transactions to specify properties required of batches in which they may be included
-- allows all transaction authors to impose constraints
-on the batches into which their transactions are added, despite the fact that they do no get to approve
-the final batches (i.e. counterparty irrelevance) ;
+- allows transaction authors to impose constraints
+on the batches into which their transactions are added without knowing the exact contents of the batch ;
 
 5. the top-level transaction must provide collateral for all scripts in its sub-transactions
 - sub-transactions will not be required to cover the collateral for scripts that they will include ;
@@ -84,6 +83,33 @@ must satisfy without violating existing ledger rules. Adding support for intents
 the ones in (2, 3, 5) above, must be done
 more carefully to ensure secure operation of the ledger program.
 
+As a result of introducing this new functionality, many new use cases will be supported, 
+among which are the following : 
+
+**Open (atomic) swaps.** A user wants to swap 10 Ada for 5 tokens `myT`. He creates an unbalanced transaction `tx` that
+has extra 10 Ada, but is short 5 `myT`.
+Any counterparty that sees this transaction can create a top-level
+transaction `tx'` that includes `tx` as a sub-transaction. The transaction
+`tx'` would have extra 5 `myT`, and be short (missing) 10 Ada. Implementing nested transactions 
+will allow users to build sub- and top-level-transactions that achieve this swap without 
+the need for interacting with a smart contract.
+
+**DEX aggregators.** A DEX aggregator aggregates multi-party swaps, often using its 
+own liquidity to complete favourable trades. The mechanism for achieving this using nested transactions 
+is the same as it is for atomic swaps, but a single may include many more transactions in a  
+top-level transaction.
+
+**Babel fees.** A Babel fee-type transaction is a specific instance of the first use case. A user creates a sub-transaction `tx`
+where the missing assets are necessarily a
+quantity of Ada. In particular, it does not pay its own fees, collateral, or cover any new `minUTxOValue`s. 
+The counterparty creates a top-level transaction which includes `tx` as a sub-transaction and includes 
+extra Ada which goes towards paying transaction fees, collateral, etc.
+
+**DApp fee and min-UTxO sponsorship.** A DApp may choose to subsidize the cost of its use 
+(e.g. by paying the cost of ExUnits, paying fees/minUTxO, and providing collateral) for the 
+purposes of encouraging users to interact with it. Implementing nested transactions 
+will allow building transaction batches that subsidize 
+DApp-using sub-transactions in this way.
 
 ## Specification
 
@@ -288,66 +314,18 @@ actually require of the batch, as Plutus script constraints may be difficult to 
 
 ## Rationale: how does this CIP achieve its goals?
 
-The primary purpose of this CIP is to enable Babel Fees. Our design allows users to perform arbitrary
-swaps without two-way off-chain communication, and with counterparty irrelevance. This simulates
-fee payment in arbitrary currency whenever another use is willing
-to accept the non-primary asset offer in exchange for paying the transaction fee. This is the core
-requirement of Babel fees. In addition, the goal of this design is to lay the groundwork for
-supporting more general intents and the possibility of extending to additional ones.
-We have done so by adding the following set of features :
+The primary purpose of this CIP is to enable Cardano node support for a specific kind of transaction 
+batching which we call *nested transactions*. The specification we presented includes the features 
+discussed in the [Motivation section](#Motivation). In particular, it allows the individual 
+sub-transactions inside batches (top-level transactions) to be unbalanced, and to not
+be obligated to pay fees or provide collateral, while still ensuring the preservation of 
+value property and a functioning collateral mechanism at the batch level. 
+This is the main property required to securely support the use cases 
+discussed in the [Motivation section](#Motivation).
 
-1. transactions can be batched
-- batch contains one top-level transaction, with multiple possible sub-transactions ;
-
-2. the batch must be balanced, but individual transactions in it do not have to be, so
-- transactions in a single batch may be used to pay parts of the fee and satisfy `minUTxOValue` requirement for other sub-transactions;
-- unbalanced transactions can be interpreted as swap offers, getting resolved within a complete batch ;
-
-3. script data is shared across all transactions in a single batch
-- enables script deduplication ;
-
-4. batch script guards enable sub-transactions to specify properties required of batches in which they may be included
-- represents all possible intents that do not require ledger rule relaxation ;
-
-5. the top-level transaction must provide collateral for all scripts in its sub-transactions
-- sub-transactions are neither required nor allowed to cover their own collateral ;
-
-
-## Use cases
-
-### Open (atomic) swaps
-
-A user wants to swap 10 Ada for 5 tokens `myT`. He creates an unbalanced transaction `tx` that
-has extra 10 Ada, but is short 5 `myT`.
-Any counterparty that sees this transaction can create a top-level
-transaction `tx'` that includes `tx` as a sub-transaction. The transaction
-`tx'` would have extra 5 `myT`, and be short 10 Ada.
-
-### DEX aggregators
-
-A DEX aggregator running a Babel service would set its filter to only accept transactions
-trading tokens it is interested in, and are being traded at a favourable price.
-It may or may not require incoming transactions to cover their own fees and/or collateral.
-In the case a set of sub-transactions is not fully balanced, and the aggregator is interested
-in participating in the exchange offers within the batch, it would have to include its own
-liquidity pool as one of the inputs
-in the top-level transaction, and output any extra tokens to its updated liquidity pool UTxO.
-
-### Babel fees
-
-Babel fees is a specific subtype of the first usecase where the missing assets are necessarily a
-quantity of Ada. Usually, it also implies that no Ada is contained in the inputs of such a
-transaction, aside from the minimal amount enforced by `minUTxOValue` requirement, and the missing
-Ada goes towards paying transaction fees.
-
-### DApp fee and min-UTxO sponsorship
-
-DApp may run a Babel service which only cares only about transactions interacting with a
-certain DApp, discarding all other incoming transactions immediately. This service
-may include calculating ExUnits, paying fees/minUTxO for, and providing collateral for such
-partially valid transactions.
-
-## Pseudo-code Example
+**Pseudo-code example**. To give a more detailed illustration of how the specification changes presented 
+in this CIP support use cases and features discussed in the [Motivation section](#Motivation), we present the following 
+pseudocode example :
 
 ```
 tx =
@@ -390,7 +368,7 @@ tx =
   }
 ```
 
-This example captures couple of different uses cases:
+This example showcases the following use cases and features :
 
 - performing a swap of 95 `FOO` for 200 `ADA` (this amount includes the counterparty paying for the transaction fee of the swap-offer transaction)
 
