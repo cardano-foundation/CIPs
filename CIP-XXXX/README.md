@@ -68,7 +68,7 @@ A dedicated `delegate` authority isolates app navigation from other authorities 
 
 ### Implementation Plan
 
-Leveraging existing connections within the ecosystem; we will find willing partners to integrate this new standard and deploy a proof of concept integration.
+Leveraging existing connections within the ecosystem; the author(s) will find willing partners to integrate this proposal and deploy a proof of concept integration.
 
 ## Copyright
 
