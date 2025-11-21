@@ -83,6 +83,8 @@ must satisfy without violating existing ledger rules. Adding support for intents
 the ones in (2, 3, 5) above, must be done
 more carefully to ensure secure operation of the ledger program.
 
+### New use cases
+
 As a result of introducing this new functionality, many new use cases will be supported, 
 among which are the following : 
 
