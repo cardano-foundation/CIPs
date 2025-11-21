@@ -94,9 +94,9 @@ transaction `tx'` that includes `tx` as a sub-transaction. The transaction
 will allow users to build sub- and top-level-transactions that achieve this swap without 
 the need for interacting with a smart contract.
 
-**DEX aggregators.** A DEX aggregator aggregates multi-party swaps, often using its 
-own liquidity to complete favourable trades. The mechanism for achieving this using nested transactions 
-is the same as it is for atomic swaps, but a single may include many more transactions in a  
+**DEX aggregators.** A DEX aggregator aggregates multi-party swaps, often using its
+own liquidity to complete favourable trades. The mechanism for achieving this using nested transactions
+is the same as it is for atomic swaps, but a single may include many more transactions in a
 top-level transaction.
 
 **Babel fees.** A Babel fee-type transaction is a specific instance of the first use case. A user creates a sub-transaction `tx`
