@@ -1,6 +1,6 @@
 ---
 CIP: 162
-Title: Cardano URIs - DRrep Delegation
+Title: Cardano URIs - DRep Links
 Category: Wallets
 Status: Proposed
 Authors:
