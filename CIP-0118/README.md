@@ -53,6 +53,8 @@ to solve this problem at the ledger level, in a way that is cheaper, more conven
 maintains formal guarantees, requires less off-chain communication, and does not require deposits or interaction
 with smart contracts.
 
+### New functionality
+
 The ledger changes we describe have been developed as a result of the discussions and
 proposals in previous CIPs, including previous versions of validation zones proposals,
 and Transaction Swaps. The following
