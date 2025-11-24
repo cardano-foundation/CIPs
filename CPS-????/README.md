@@ -3,7 +3,8 @@ CPS: TBD
 Title: Digital Product Passports on Cardano
 Status: Open
 Category: Tools
-Authors: David Clark <david.clark@cardanofoundation.org>
+Authors:
+- David Clark <david.clark@cardanofoundation.org>
 
 Implementors: []
 Proposed Solutions: []
