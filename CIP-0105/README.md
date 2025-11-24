@@ -15,6 +15,7 @@ Implementors:
   - Typhon <https://typhonwallet.io/>
   - Vespr <https://vespr.xyz/>
   - Yoroi <https://yoroi-wallet.com/>
+  - Gero <https://gerowallet.io/>
 Discussions:
   - https://github.com/cardano-foundation/cips/pulls/597
 Created: 2023-09-22
