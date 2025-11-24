@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 169
 Title: Governance Metadata - On-Chain Effects
 Category: Metadata
 Status: Proposed
@@ -64,7 +64,7 @@ The `onChain` property shall be defined in the JSON-LD `@context` as follows:
       "@id": "CIP100:body",
       "@context": {
         "onChain": {
-          "@id": "CIPXXX:onChain"
+          "@id": "CIP169:onChain"
         }
       }
     }
@@ -73,7 +73,7 @@ The `onChain` property shall be defined in the JSON-LD `@context` as follows:
 ```
 
 > [!NOTE]
-> `CIPXXX` represents this CIP's number once assigned.
+> This CIP uses `CIP169` as the namespace identifier.
 
 #### Structure
 
