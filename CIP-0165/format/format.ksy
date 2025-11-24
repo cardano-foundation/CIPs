@@ -40,6 +40,7 @@ types:
             0x00: rec_header
             0x01: rec_manifest
             0x10: rec_chunk
+            0x31: rec_metadata
   rec_header:
     doc: Header block
     seq:
@@ -124,7 +125,22 @@ types:
           (ns == "stake") ? 28 :
           (ns == "pool")  ? 28 :
           0
-
+  rec_metadata:
+    doc: Metadata block containing URI-indexed entries with CBOR-encoded values
+    seq:
+      - id: data
+        type: entries_metadata_block
+        doc: payload parsed as entries
+        size: len_data
+      - id: footer
+        type: metadata_footer
+    instances:
+      # size of record_data for this scls_record (total - record_type:u1)
+      rec_payload_size:
+        value: _parent._parent.len_payload - 1
+      len_data:
+        value: rec_payload_size - sizeof<metadata_footer>
+        doc: entries_count=8, digest=28.
   entries_block:
     params:
       - id: len_key
@@ -206,6 +222,32 @@ types:
       - id: data
         doc: blake28 hash of data
         size: 28
+  entries_metadata_block:
+    seq:
+      - id: entries
+        type: entry_metadata
+        repeat: eos
+  entry_metadata:
+    seq:
+      - id: len_subject
+        type: u4
+      - id: subject
+        size: len_subject
+        doc: subject of entry (URI)
+      - id: len_value
+        type: u4
+      - id: value
+        size: len_value
+        doc: cbor encoded value
+  metadata_footer:
+    doc: Metadata footer with entry count and digest
+    seq:
+      - id: entries_count
+        type: u8
+        doc: Number of entries in the record
+      - id: digest
+        type: digest
+        doc: blake28 hash of the entries in the record
 enums:
   network_id:
     0: mainnet
