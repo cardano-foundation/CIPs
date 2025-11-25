@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano’s on-chain treasury (part of the Voltaire governance era) currently holds funds in ada (lovelace) only. However, there is growing interest in allowing the treasury to support multiple assets. This CPS serves as an initial documents to outline the motivation of Cardano multi asset treasury.
+Cardano’s on-chain treasury currently holds funds in ada (lovelace) only. However, there is growing interest in allowing the treasury to support multiple assets. This CPS serves as an initial documents to outline the motivation of Cardano multi asset treasury.
 
 ## Problem
 
