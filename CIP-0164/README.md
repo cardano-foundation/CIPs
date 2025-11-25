@@ -2807,7 +2807,7 @@ usual mechanisms of governing a hard-fork will be employed.
 
 ## Appendix
 
-<h3 id="appendix-a-requirements">Appendix A: Requirements for votes and certificates</h2>
+<h3 id="appendix-a-requirements">Appendix A: Requirements for votes and certificates</h3>
 
 The voting and certificate scheme for Leios must satisfy the following
 requirements to ensure security, efficiency, and practical deployability:
@@ -2857,11 +2857,13 @@ BLS as an example) satisfies all these requirements, as evidenced by the
 performance characteristics and certificate sizes documented in the
 [Votes and Certificates](#votes-and-certificates) section.
 
-<h3 id="appendix-b-cddl">Appendix B: Wire Format Specifications (CDDL)</h2>
+<h3 id="appendix-b-cddl">Appendix B: Wire Format Specifications (CDDL)</h3>
 
 This appendix contains the complete CDDL specifications for all Leios protocol
 messages and data structures. These definitions specify the exact wire format
-for network communication.
+for network communication. This appendix also defines the CDDL encodings for 
+the BLS cryptographic objects (verification keys, signatures, and 
+proofs-of-possession) used by Leios voting and certification.
 
 <a id="ranking-block-cddl" href="#ranking-block-cddl">**Ranking Block**</a>
 
@@ -2962,9 +2964,9 @@ leios_certificate =
   [ election_id              : election_id
   , endorser_block_hash      : hash32
   , persistent_voters        : [* persistent_voter_id]
-  , nonpersistent_voters     : {* pool_id => bls_signature}
-  , ? aggregate_elig_sig     : bls_signature
-  , aggregate_vote_sig       : bls_signature
+  , nonpersistent_voters     : {* pool_id => leios_bls_signature}
+  , elig_sig                 : [signature]
+  , aggregated_vote_sig      : leios_bls_signature
   ]
 
 leios_vote = persistent_vote / non_persistent_vote
@@ -2974,7 +2976,7 @@ persistent_vote =
   , election_id
   , persistent_voter_id
   , endorser_block_hash
-  , vote_signature
+  , vote_signature : leios_bls_signature
   ]
 
 non_persistent_vote =
@@ -2983,8 +2985,41 @@ non_persistent_vote =
   , pool_id
   , eligibility_signature
   , endorser_block_hash
-  , vote_signature
+  , vote_signature : leios_bls_signature
   ]
+```
+
+Leios votes and certificates use BLS12-381 signatures.
+
+This CIP defines two encoding variants, **MinPk** and **MinSig**:
+- **MinPk**: public keys in G1 (48 bytes), signatures in G2 (96 bytes),
+  proofs-of-possession in 2×G2 (192 bytes).
+- **MinSig**: public keys in G2 (96 bytes), signatures in G1 (48 bytes),
+  proofs-of-possession in G2 (96 bytes).
+
+The CDDL always treats these as fixed-size `bytes`.  
+The choice of variant can be made by the consensus implementation without
+changing the CDDL syntax, only the specified sizes.
+
+The current Leios deployment is expected to use **MinPk**.
+
+```cddl
+; BLS12-381 encodings for MinPk (default for Leios)
+bls_minpk_verification_key = bytes .size 48
+bls_minpk_signature        = bytes .size 96
+bls_minpk_pop              = bytes .size 192
+
+; BLS12-381 encodings for MinSig (optional alternative)
+bls_minsig_verification_key = bytes .size 96
+bls_minsig_signature        = bytes .size 48
+bls_minsig_pop              = bytes .size 96
+
+; Leios currently uses the MinPk encodings.
+; Consensus may switch to MinSig in future deployments
+; by updating only these aliases.
+leios_bls_verification_key = bls_minpk_verification_key
+leios_bls_signature        = bls_minpk_signature
+leios_bls_pop              = bls_minpk_pop
 ```
 
 ## Copyright
