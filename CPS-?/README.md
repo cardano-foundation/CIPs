@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 23
 Title: Cardano Multi Asset Treasury (CMAT)
 Category: Ledger
 Status: Open
