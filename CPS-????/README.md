@@ -1,11 +1,10 @@
 ---
 CPS: TBD 
-Title: Digital Product Passports on Cardano
+Title: Digital Product Passports
 Status: Open
 Category: Tools
 Authors:
 - David Clark <david.clark@cardanofoundation.org>
-
 Implementors: []
 Proposed Solutions: []
 Discussions: []
@@ -77,7 +76,7 @@ This creates a "build from scratch" situation where businesses face:
 - Businesses may choose competing platforms with clearer standards
 - Missed opportunity to establish Cardano as supply chain infrastructure
 
-## Stakeholders
+### Stakeholders
 
 ### Manufacturers (SMEs and Enterprises)
 
@@ -109,7 +108,7 @@ This creates a "build from scratch" situation where businesses face:
 - Currently reinventing standards for each project
 - Face incompatibility risks across implementations
 
-## Sample Use Cases
+## Use Cases
 
 ### Static Product Registration
 
@@ -204,7 +203,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 - ESPR will expand to additional sectors beyond batteries and textiles
 - How to design extensible standards that accommodate unknown future requirements?
 
-## Adoption Indicators
+### Adoption Indicators
 
 ### Adoption Indicators
 
@@ -230,4 +229,4 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 
 ## Copyright
 
-This CPS is licensed under CC-BY-4.0.
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
