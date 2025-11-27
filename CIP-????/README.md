@@ -14,7 +14,9 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines a **generic, standardized metadata structure** for creating and responding to on-chain surveys and polls. It uses the **CIP-0068** metadata standard (via the **674** label) to allow any entity to publish a survey in a machine-readable format without requiring governance deposits or formal registration.  
+This proposal defines a generic, standardized transaction metadata structure for creating and responding to on-chain surveys and polls.
+
+All survey-related metadata is encoded under label 0017, chosen as a reference to the Roman census of 17 BC — one of the earliest organized systems for structured population data collection.  
 
 The specification provides a minimal, interoperable format for survey definition and response — enabling wallets, explorers, and dApps across the Cardano ecosystem to reliably create, display, and aggregate poll data.  
 
@@ -40,7 +42,7 @@ This separation of concerns provides:
 
 ## Specification
 
-This specification uses **CIP-0068** label **674** and defines two payload types:  
+This specification uses metadata label 0017 and defines two payload types:
 `surveyDetails` (definition) and `surveyResponse` (vote).
 
 ### Survey Definition Payload
@@ -50,7 +52,7 @@ It can be completely independent or optionally reference an existing governance 
 
 ```json
 {
-  "674": {
+  "0017": {
     "msg": ["<Short, human-readable title of the survey>"],
     "surveyDetails": {
       "specVersion": "1.0",
@@ -94,7 +96,7 @@ This metadata is included in the transaction a user submits to cast a response.
 
 ```json
 {
-  "674": {
+  "0017": {
     "msg": ["Response to survey: <Title of the survey>"],
     "surveyResponse": {
       "surveyTxId": "<Transaction ID of the survey definition>",
@@ -121,7 +123,7 @@ This metadata is included in the transaction a user submits to cast a response.
 ### Block Explorer & dApp Implementation Guide
 
 1. **Survey Discovery:**  
-   Scan for transactions with label **674** containing `surveyDetails`.  
+   Scan for transactions with label **0017** containing `surveyDetails`.  
    Each survey is uniquely identified by the transaction ID of that transaction.
 
 2. **Response Linking:**  
