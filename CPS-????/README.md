@@ -78,31 +78,31 @@ This creates a "build from scratch" situation where businesses face:
 
 ### Stakeholders
 
-### Manufacturers (SMEs and Enterprises)
+#### Manufacturers (SMEs and Enterprises)
 
 - Need cost-effective ESPR compliance
 - Face uncertainty about implementation approaches
 - Risk market access restrictions if non-compliant
 
-### Supply Chain Partners
+#### Supply Chain Partners
 
 - Need ability to contribute lifecycle events (logistics, installers, recyclers)
 - Lack standards for multi-party coordination
 - Cannot provide verifiable documentation for circular economy initiatives
 
-### Retailers and Brands
+#### Retailers and Brands
 
 - Need to display verified product information to consumers
 - Face integration challenges with multiple supplier formats
 - Competitive pressure for product transparency
 
-### Consumers and Regulators
+#### Consumers and Regulators
 
 - Need independent verification of product claims
 - Lack trusted verification mechanisms
 - Cannot effectively enforce compliance or make informed decisions
 
-### Cardano Developers and Integrators
+#### Cardano Developers and Integrators
 
 - Need clear specifications for building DPP solutions
 - Currently reinventing standards for each project
@@ -202,8 +202,6 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 
 - ESPR will expand to additional sectors beyond batteries and textiles
 - How to design extensible standards that accommodate unknown future requirements?
-
-### Adoption Indicators
 
 ### Adoption Indicators
 
