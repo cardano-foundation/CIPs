@@ -221,22 +221,21 @@ By providing guaranteed compensation:
 
 This CIP becomes **Active** when:
 
-1. All new protocol parameters are implemented in the ledger.  
-2. Distribution logic executes correctly on testnet.  
-3. A governance action on mainnet distributes compensation correctly.  
-4. Ledger events expose compensation in a standardized, wallet-readable format.  
-5. Sufficient community and technical review confirms correctness and consensus.
+* All new protocol parameters are implemented in the ledger.  
+* Distribution logic executes correctly on testnet.  
+* A governance action on mainnet distributes compensation correctly.  
+* Sufficient community and technical review confirms correctness and consensus.
 
 ---
 
 ### Implementation Plan
 
-1. **Community Discussion & Review**  
-2. **Ledger Engineering Review**  
-3. **Implementation**  
-4. **Testnet Deployment**  
-5. **Hard Fork Activation**  
-6. **Post-Deployment Monitoring**
+* **Community Discussion & Review**  
+* **Ledger Engineering Review**  
+* **Implementation**  
+* **Testnet Deployment**  
+* **Hard Fork Activation**  
+* **Post-Deployment Monitoring**
 
 ---
 
