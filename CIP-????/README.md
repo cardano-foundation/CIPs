@@ -6,8 +6,8 @@ Status: Proposed
 Authors:
     - Thomas Lindseth <thomas.lindseth@intersectmbo.org>
 Implementors: []
-Discussions:
-    - 
+Discussions: 
+    - https://github.com/cardano-foundation/CIPs/pull/1117
 Created: 2025-11-29
 License: CC-BY-4.0
 ---
