@@ -221,10 +221,10 @@ By providing guaranteed compensation:
 
 This CIP becomes **Active** when:
 
-* All new protocol parameters are implemented in the ledger.  
-* Distribution logic executes correctly on testnet.  
-* A governance action on mainnet distributes compensation correctly.  
-* Sufficient community and technical review confirms correctness and consensus.
+* [ ] All new protocol parameters are implemented in the ledger.  
+* [ ] Distribution logic executes correctly on testnet.  
+* [ ] A governance action on mainnet distributes compensation correctly.  
+* [ ] Sufficient community and technical review confirms correctness and consensus.
 
 ---
 
