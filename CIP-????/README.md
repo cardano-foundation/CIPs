@@ -1,7 +1,7 @@
 ---
 CIP: XXXX
 Title: Compensatory Ledger Mechanism (CLM)
-Category: Metadata
+Category: Ledger
 Status: Proposed
 Authors:
     - Thomas Lindseth <thomas.lindseth@intersectmbo.org>
