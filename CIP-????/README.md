@@ -24,19 +24,19 @@ This mechanism requires **no smart contracts**, **no Treasury withdrawals**, and
 
 Cardano’s decentralized governance framework requires persistent engagement from CC members, DReps, and SPOs. These actors must analyze governance actions, evaluate technical and economic implications, and cast informed votes. This work incurs ongoing time, expertise, and operational costs. Without a reliable compensation model, several risks emerge:
 
-### **1. Governance Fatigue**
+### Governance Fatigue
 Uncompensated governance labor leads to declining participation over time.
 
-### **2. Centralization Risks**
+### Centralization Risks
 Only large, well-funded entities can consistently afford to participate, reducing diversity and representation.
 
-### **3. Low Governance Participation / Quorum Instability**
+### Low Governance Participation / Quorum Instability
 Without compensation, new and smaller actors lack incentives to engage, harming governance quality.
 
-### **4. Misaligned Incentives**
+### Misaligned Incentives
 Proposers incur no cost commensurate with the burden placed on reviewers and voters.
 
-### **5. Need for a Deterministic, Automated Mechanism**
+### Need for a Deterministic, Automated Mechanism
 Any off-chain or trust-based compensation scheme introduces friction and reduces security.
 
 The CLM addresses these issues by:
