@@ -49,7 +49,7 @@ The CLM addresses these issues by:
 
 ## Specification
 
-### 1. New Protocol Parameters
+### New Protocol Parameters
 
 The following fields are added to `PParams`:
 
@@ -67,7 +67,7 @@ where `MAX_COMP_RATE` is hard-coded (e.g., 0.25).
 
 ---
 
-### 2. Compensation Trigger
+### Compensation Trigger
 
 Upon finalization of any governance action requiring a deposit—whether it **passes**, **fails**, or **expires**—the ledger automatically:
 
@@ -79,7 +79,7 @@ This occurs atomically during governance-action completion.
 
 ---
 
-### 3. Compensation Pot Creation
+### Compensation Pot Creation
 
 Let `govDeposit` be the required deposit for the governance action.
 
@@ -100,9 +100,9 @@ The remainder is refund-eligible for the proposer if the action passes.
 
 ---
 
-### 4. Distribution Rules
+### Distribution Rules
 
-#### **4.1 Compensation to Constitutional Committee (Equal Share)**
+#### Compensation to Constitutional Committee (Equal Share)**
 
 Only voting CC members are compensated.
 
@@ -114,7 +114,7 @@ Non-voting CC members receive 0.
 
 ---
 
-#### **4.2 DRep Compensation (Hybrid Model)**
+#### DRep Compensation (Hybrid Model)**
 
 ##### Equal-Share Portion
 ```
@@ -162,7 +162,7 @@ Payout_SPO = Payout_Equal_SPO + Payout_Weighted_SPO
 
 ---
 
-### 5. Deposit Finality
+### Deposit Finality
 
 The compensation portion of the deposit:
 
@@ -175,7 +175,7 @@ This internalizes governance processing costs.
 
 ## Rationale: how does this CIP achieve its goals?
 
-### **1. Ledger-Native Implementation Ensures Maximum Reliability**
+### Ledger-Native Implementation Ensures Maximum Reliability**
 All compensation logic is implemented inside ledger rules.  
 This guarantees:
 
@@ -186,7 +186,7 @@ This guarantees:
 
 ---
 
-### **2. Incentive Alignment Through Hybrid Distribution**
+### Incentive Alignment Through Hybrid Distribution**
 The hybrid model balances:
 
 - **Equal-share rewards** → compensate time, labor, and research  
@@ -196,7 +196,7 @@ This prevents domination by large actors while recognizing the security contribu
 
 ---
 
-### **3. Fair Cost Attribution via Proposer Deposits**
+### Fair Cost Attribution via Proposer Deposits**
 Because proposer deposits fund compensation:
 
 - Governance costs are paid by those creating that cost  
@@ -206,7 +206,7 @@ Because proposer deposits fund compensation:
 
 ---
 
-### **4. Promotes Broad Participation and Decentralization**
+### Promotes Broad Participation and Decentralization**
 By providing guaranteed compensation:
 
 - Smaller actors can sustainably participate  
