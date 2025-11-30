@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: Compensatory Ledger Mechanism (CLM)
+Title: Compensatory Ledger Mechanism
 Category: Ledger
 Status: Proposed
 Authors:
