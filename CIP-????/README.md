@@ -102,7 +102,7 @@ The remainder is refund-eligible for the proposer if the action passes.
 
 ### Distribution Rules
 
-#### Compensation to Constitutional Committee (Equal Share)**
+#### Compensation to Constitutional Committee (Equal Share)
 
 Only voting CC members are compensated.
 
@@ -114,7 +114,7 @@ Non-voting CC members receive 0.
 
 ---
 
-#### DRep Compensation (Hybrid Model)**
+#### DRep Compensation (Hybrid Model)
 
 ##### Equal-Share Portion
 ```
@@ -138,7 +138,7 @@ Payout_DRep = Payout_Equal_DRep + Payout_Weighted_DRep
 
 ---
 
-#### **4.3 SPO Compensation (Hybrid Model)**
+#### SPO Compensation (Hybrid Model)
 
 ##### Equal-Share Portion
 ```
@@ -147,7 +147,7 @@ Payout_Equal_SPO = EqualShareAmount / numberOfVotingSPOs
 ```
 
 ##### Stake-Weighted Portion  
-Weighted by **block-producing active stake**.
+Weighted by **block-producing active stake.
 
 ```
 WeightedAmount = SPO_Pool × spoWeightFactor
@@ -175,7 +175,7 @@ This internalizes governance processing costs.
 
 ## Rationale: how does this CIP achieve its goals?
 
-### Ledger-Native Implementation Ensures Maximum Reliability**
+### Ledger-Native Implementation Ensures Maximum Reliability
 All compensation logic is implemented inside ledger rules.  
 This guarantees:
 
@@ -186,7 +186,7 @@ This guarantees:
 
 ---
 
-### Incentive Alignment Through Hybrid Distribution**
+### Incentive Alignment Through Hybrid Distribution
 The hybrid model balances:
 
 - **Equal-share rewards** → compensate time, labor, and research  
@@ -196,7 +196,7 @@ This prevents domination by large actors while recognizing the security contribu
 
 ---
 
-### Fair Cost Attribution via Proposer Deposits**
+### Fair Cost Attribution via Proposer Deposits
 Because proposer deposits fund compensation:
 
 - Governance costs are paid by those creating that cost  
@@ -206,7 +206,7 @@ Because proposer deposits fund compensation:
 
 ---
 
-### Promotes Broad Participation and Decentralization**
+### Promotes Broad Participation and Decentralization
 By providing guaranteed compensation:
 
 - Smaller actors can sustainably participate  
