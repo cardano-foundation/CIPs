@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP introduces the **Compensatory Ledger Mechanism (CLM)**—a deterministic, protocol-level compensation system for governance actors participating in Cardano governance actions. A portion of each governance action’s deposit is automatically distributed to Constitutional Committee (CC) members, Delegated Representatives (DReps), and Stake Pool Operators (SPOs) who cast a valid vote. 
+This CIP introduces the **Compensatory Ledger Mechanism (CLM)**—a deterministic, protocol-level compensation system for governance actors participating in Cardano governance actions. A portion of each governance action’s deposit is automatically distributed to Constitutional Committee (CC) members, Delegated Representatives (DReps), and Stake Pool Operators (SPOs) who cast a valid vote.
 
 This mechanism requires **no smart contracts**, **no Treasury withdrawals**, and **no manual triggers**, operating fully within Cardano’s ledger rules in a manner analogous to staking rewards. It creates an incentive-aligned, sustainable, and decentralized compensation model that reflects the real cost of governance participation.
 
@@ -67,7 +67,36 @@ where `MAX_COMP_RATE` is hard-coded (e.g., 0.25).
 
 ---
 
+### Ledger Additions
+The ledger maintains two new optional mappings:
+
+- `drepRewardAccounts : Map DRepID (Maybe RewardAddress)`
+- `ccRewardAccounts   : Map CCHotCredential (Maybe RewardAddress)`
+
+### DRep Registration Extension
+DRep registration certificates now include:
+- a DRep ID
+- a deposit
+- an optional anchor
+- **an optional reward address**
+
+Processing rule:
+- If present → `drepRewardAccounts[drepID] = Just rewardAddress`
+- If absent → `drepRewardAccounts[drepID] = Nothing`
+
+### CC Hot Key Registration Extension
+A CC hot key registration certificate now includes:
+- the cold credential
+- the hot credential
+- **an optional reward address**
+
+Processing rule:
+- If present → `ccRewardAccounts[hotCred] = Just rewardAddress`
+- If absent → `ccRewardAccounts[hotCred] = Nothing`
+
 ### Compensation Trigger
+
+
 
 Upon finalization of any governance action requiring a deposit—whether it **passes**, **fails**, or **expires**—the ledger automatically:
 
@@ -156,13 +185,23 @@ Payout_Weighted_SPO =
 ```
 
 ##### Total SPO Payout
-```
+
 Payout_SPO = Payout_Equal_SPO + Payout_Weighted_SPO
-```
+
+### Eligibility
+To receive CLM compensation, a governance actor must:
+- cast a valid vote on the governance action, and
+- have a registered reward address:
+  - DReps: `drepRewardAccounts[drepID] = Just addr`
+  - CC members: `ccRewardAccounts[hotCred] = Just addr`
+  - SPOs: existing staking reward account
+
+Actors without a reward address remain part of vote weighting but receive no payout.
 
 ---
 
 ### Deposit Finality
+
 
 The compensation portion of the deposit:
 
