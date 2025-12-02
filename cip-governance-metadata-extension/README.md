@@ -81,22 +81,19 @@ The `onChain` property **MUST** conform to one of the [CIP-116][] Conway-era gov
 The specific type is indicated by the `@type` field within the `onChain` object.
 
 > [!WARNING]
-> Any entry of anchor properties within the CIP116 objects must be removed as they constitute a circular dependency
+> The `anchor` property **MUST** be omitted from all CIP-116 objects within the `onChain` property.
+> The `anchor` property contains a URL and hash that points to the metadata document itself, creating a circular dependency.
+> Since the `anchor` is not part of the actual on-chain effect (it's only a pointer to metadata), it is excluded from the `onChain` encoding.
+> This applies to all CIP-116 types that include an `anchor` property, including:
+> - `ProposalProcedure.anchor`
+> - `VotingProcedure.anchor` (when present)
+> - `Constitution.anchor` (when present in `NewConstitution` actions)
 
 ##### Supported Types
 
 **For Governance Actions:**
 
-The `onChain` property conforms to the [CIP-116][] `ProposalProcedure` type:
-
-```typescript
-type OnChain = {
-  "@type": "ProposalProcedure";
-  deposit: number;           // Lovelace
-  returnAddr: Address;       // CIP-116 Address type
-  govAction: GovAction;      // CIP-116 GovAction type
-}
-```
+The `onChain` property conforms to the [CIP-116][] `ProposalProcedure` type.
 
 Where `GovAction` is one of the [CIP-116][] Conway-era governance action types:
 
@@ -112,53 +109,19 @@ See [CIP-116 cardano-conway.json](https://github.com/cardano-foundation/CIPs/blo
 
 **For Votes:**
 
-The `onChain` property conforms to the [CIP-116][] `VotingProcedure` type:
-
-```typescript
-type OnChain = {
-  "@type": "VotingProcedure";
-  govActionId: {
-    txId: string;        // Transaction ID (hex)
-    govActionIx: number; // Governance action index
-  };
-  voter: Voter;          // CIP-116 Voter type (DRep, SPO, or CC)
-  vote: Vote;            // "yes" | "no" | "abstain"
-}
-```
+The `onChain` property conforms to the [CIP-116][] `VotingProcedure` type.
 
 **For DRep Registration:**
 
-The `onChain` property conforms to the [CIP-116][] DRep registration certificate structure:
-
-```typescript
-type OnChain = {
-  "@type": "RegDRepCert";
-  drepCredential: Credential;  // CIP-116 Credential type
-  deposit: number;             // Lovelace amount
-}
-```
+The `onChain` property conforms to the [CIP-116][] DRep registration certificate structure.
 
 **For DRep Update:**
 
-The `onChain` property conforms to the [CIP-116][] DRep update certificate structure:
-
-```typescript
-type OnChain = {
-  "@type": "UpdateDRepCert";
-  drepCredential: Credential;  // CIP-116 Credential type
-}
-```
+The `onChain` property conforms to the [CIP-116][] DRep update certificate structure.
 
 **For Committee Cold Credential Resignation:**
 
-The `onChain` property conforms to the [CIP-116][] committee resignation certificate structure:
-
-```typescript
-type OnChain = {
-  "@type": "ResignCommitteeColdCert";
-  committeeColdCredential: Credential;  // CIP-116 Credential type
-}
-```
+The `onChain` property conforms to the [CIP-116][] committee resignation certificate structure.
 
 ### Verification Process
 
@@ -190,6 +153,17 @@ This extension adds security-critical information while maintaining backward com
 ### Why Use CIP-116 Encoding?
 
 [CIP-116][] provides standardized JSON encoding for Cardano domain types.
+
+### Why Exclude the Anchor Property?
+
+The `anchor` property in CIP-116 governance types contains a URL and hash that points to the metadata document itself.
+Including it in the `onChain` property would create a circular dependency: the metadata would contain an anchor pointing to itself.
+
+More importantly, the `anchor` is not part of the actual on-chain effect being verified.
+The purpose of the `onChain` property is to encode the substantive on-chain effects (deposits, addresses, governance action parameters, etc.) that determine what the action actually does.
+The `anchor` is merely a pointer to where metadata can be found, and is not relevant for verifying that the metadata matches the on-chain action.
+
+Therefore, the `anchor` property is explicitly excluded from the `onChain` encoding, while all other CIP-116 properties that represent actual on-chain effects are included.
 
 ### Why Optional?
 
