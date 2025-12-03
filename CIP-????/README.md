@@ -108,24 +108,58 @@ This occurs atomically during governance-action completion.
 
 ---
 
+## Compensation Eligibility Based on Relevant Governance Actor Groups
+
+For each governance action type, the protocol specifies which governance actor groups are **relevant** to the ratification of that action. Only these *relevant* groups contribute to the tally for that action, and only these groups may generate compensation under the CLM.
+
+Governance actor groups that are **non-relevant** for a given governance action type may cast votes, but their votes do **not** affect the tally and they do **not** receive compensation. Their associated portion of the compensation rate is **not consumed**.
+
+Let `RelevantActors` be the set of governance actor groups relevant for the governance action type. Define:
+
+```
+EffectiveRate(group) =
+    compensationRate(group), if group ∈ RelevantActors
+    0, otherwise
+```
+
+Only these `EffectiveRate` values are used for compensation pot creation.
+
+### Refund Behavior
+
+Any portion of the governance deposit corresponding to compensation rates for **non-relevant** governance actor groups:
+
+* is **not added** to any compensation pool,
+* is **not consumed**, and
+* remains part of the **refundable deposit** that may be returned to the proposer when the governance action finalizes.
+
+Thus:
+
+```
+TotalCompensation = govDeposit × Σ(EffectiveRate(group))
+
+RefundableDeposit = govDeposit − TotalCompensation
+```
+
+---
+
 ### Compensation Pot Creation
 
 Let `govDeposit` be the required deposit for the governance action.
 
 ```
 TotalCompensation =
-  govDeposit × (ccCompensationRate + drepCompensationRate + spoCompensationRate)
+  govDeposit × Σ(EffectiveRate(group))
 ```
 
 Split into:
 
 ```
-CC_Pool   = govDeposit × ccCompensationRate
-DRep_Pool = govDeposit × drepCompensationRate
-SPO_Pool  = govDeposit × spoCompensationRate
+CC_Pool   = govDeposit × EffectiveRate(CC)
+DRep_Pool = govDeposit × EffectiveRate(DRep)
+SPO_Pool  = govDeposit × EffectiveRate(SPO)
 ```
 
-The remainder is refund-eligible for the proposer if the action passes.
+The remainder is refund-eligible for the proposer when the action expires.
 
 ---
 
@@ -202,13 +236,7 @@ Actors without a reward address remain part of vote weighting but receive no pay
 
 ### Deposit Finality
 
-
-The compensation portion of the deposit:
-
-- **is always consumed**, regardless of proposal outcome  
-- **is never refundable to the proposer**  
-
-This internalizes governance processing costs.
+The compensation portion of the deposit corresponding to EffectiveRate(group) values greater than zero is consumed. Any portion corresponding to groups with EffectiveRate(group) = 0 (i.e., non-relevant governance actor groups) is not consumed and remains refundable.
 
 ---
 
