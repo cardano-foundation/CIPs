@@ -68,13 +68,13 @@ where `MAX_COMP_RATE` is hard-coded (e.g., 0.25).
 ---
 
 ### Ledger Additions
-The ledger maintains two new optional mappings:
+The ledger should maintain two new optional mappings:
 
 - `drepRewardAccounts : Map DRepID (Maybe RewardAddress)`
 - `ccRewardAccounts   : Map CCHotCredential (Maybe RewardAddress)`
 
 ### DRep Registration Extension
-DRep registration certificates now include:
+DRep registration certificates should include:
 - a DRep ID
 - a deposit
 - an optional anchor
@@ -85,7 +85,7 @@ Processing rule:
 - If absent → `drepRewardAccounts[drepID] = Nothing`
 
 ### CC Hot Key Registration Extension
-A CC hot key registration certificate now includes:
+A CC hot key registration certificate should include:
 - the cold credential
 - the hot credential
 - **an optional reward address**
