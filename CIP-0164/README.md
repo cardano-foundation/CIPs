@@ -2965,7 +2965,6 @@ leios_certificate =
   , endorser_block_hash      : hash32
   , persistent_voters        : [* persistent_voter_id]
   , nonpersistent_voters     : {* pool_id => leios_bls_signature}
-  , elig_sig                 : [leios_bls_signature]
   , aggregated_vote_sig      : leios_bls_signature
   ]
 
