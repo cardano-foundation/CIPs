@@ -2965,7 +2965,7 @@ leios_certificate =
   , endorser_block_hash      : hash32
   , persistent_voters        : [* persistent_voter_id]
   , nonpersistent_voters     : {* pool_id => leios_bls_signature}
-  , elig_sig                 : [signature]
+  , elig_sig                 : [leios_bls_signature]
   , aggregated_vote_sig      : leios_bls_signature
   ]
 
@@ -2983,43 +2983,29 @@ non_persistent_vote =
   [ 1
   , election_id
   , pool_id
-  , eligibility_signature
+  , eligibility_signature : leios_bls_signature 
   , endorser_block_hash
   , vote_signature : leios_bls_signature
   ]
 ```
 
-Leios votes and certificates use BLS12-381 signatures.
+**BLS variant for Leios**
+Leios uses **BLS12-381 MinSig** (small signature, large verification key).
+– Verification key = compressed G2 = 96 bytes
+– Signature = compressed G1 = 48 bytes
+– Proof-of-Possession = 48 bytes
 
-This CIP defines two encoding variants, **MinPk** and **MinSig**:
-- **MinPk**: public keys in G1 (48 bytes), signatures in G2 (96 bytes),
-  proofs-of-possession in 2×G2 (192 bytes).
-- **MinSig**: public keys in G2 (96 bytes), signatures in G1 (48 bytes),
-  proofs-of-possession in G2 (96 bytes).
+MinSig is chosen because:
+– certificate size is ~8 kB vs >12 kB for MinPk
+– network propagation and storage are significantly improved
 
-The CDDL always treats these as fixed-size `bytes`.  
-The choice of variant can be made by the consensus implementation without
-changing the CDDL syntax, only the specified sizes.
-
-The current Leios deployment is expected to use **MinPk**.
+Alternative variants (e.g., MinPk) are intentionally not defined in the CIP to avoid ambiguity.
 
 ```cddl
-; BLS12-381 encodings for MinPk (default for Leios)
-bls_minpk_verification_key = bytes .size 48
-bls_minpk_signature        = bytes .size 96
-bls_minpk_pop              = bytes .size 192
-
-; BLS12-381 encodings for MinSig (optional alternative)
-bls_minsig_verification_key = bytes .size 96
-bls_minsig_signature        = bytes .size 48
-bls_minsig_pop              = bytes .size 96
-
-; Leios currently uses the MinPk encodings.
-; Consensus may switch to MinSig in future deployments
-; by updating only these aliases.
-leios_bls_verification_key = bls_minpk_verification_key
-leios_bls_signature        = bls_minpk_signature
-leios_bls_pop              = bls_minpk_pop
+; BLS12-381 MinSig encodings for Leios
+leios_bls_verification_key = bytes .size 96
+leios_bls_signature        = bytes .size 48
+leios_bls_pop              = bytes .size 48
 ```
 
 ## Copyright
