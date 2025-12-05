@@ -395,10 +395,11 @@ has elapsed. See also Figure 4. Concretely, the inclusion rules are:
 
    b. a list of transactions forming a valid extension of `RB`.
 
-2. Any included certificate must be valid as defined in [Certificate
-   Validation](#certificate-validation).
+2. Any included certificate must be valid as defined in
+   [Certificate Validation](#certificate-validation).
 
-3. A certificate may only be included if `RB'` is at least $3 \times
+3. A certificate may only be included if `RB'` is at least
+   $3 \times
    L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after `RB`.
 
 4. Regardless of whether `RB'` includes a certificate, it may optionally
@@ -409,9 +410,9 @@ where $L_\text{hdr}$, $L_\text{vote}$ and $L_\text{diff}$ are
 of slots.
 
 The certificate inclusion delay ensures certified EBs have sufficient time to
-diffuse throughout the network and do not impact [protocol
-security](#protocol-security). When a certificate is included, no further
-transactions are allowed in the RB for the same reason.
+diffuse throughout the network and do not impact
+[protocol security](#protocol-security). When a certificate is included, no
+further transactions are allowed in the RB for the same reason.
 
 If transactions next to the certificate would be allowed, a validating node
 would need to build the ledger state from all endorsed transactions before it
@@ -1476,15 +1477,13 @@ Concrete decisions will likely naturally surface through various
 implementations, however some care should be taken to minimize ecosystem
 disruption.
 
-An [Impact Analysis][impact-analysis] has been done and continued discussion
-is necessary. One recommendation is to serve a modified block with "inline"
-EB transactions over LocalChainSync. Additional queries and ledger state may
-be extended to provide Leios specific information to applications. It is
-assumed nodes providing client interfaces will provide the modified block
-to clients.
+An [Impact Analysis][impact-analysis] has been done and continued discussion is
+necessary. One recommendation is to serve a modified block with "inline" EB
+transactions over LocalChainSync. Additional queries and ledger state may be
+extended to provide Leios specific information to applications. It is assumed
+nodes providing client interfaces will provide the modified block to clients.
 
 A [CDDL for merged blocks](#merged-block-cddl) is available in Appendix B.
-
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -2861,8 +2860,8 @@ performance characteristics and certificate sizes documented in the
 
 This appendix contains the complete CDDL specifications for all Leios protocol
 messages and data structures. These definitions specify the exact wire format
-for network communication. This appendix also defines the CDDL encodings for 
-the BLS cryptographic objects (verification keys, signatures, and 
+for network communication. This appendix also defines the CDDL encodings for the
+BLS cryptographic objects (verification keys, signatures, and
 proofs-of-possession) used by Leios voting and certification.
 
 <a id="ranking-block-cddl" href="#ranking-block-cddl">**Ranking Block**</a>
@@ -2982,23 +2981,22 @@ non_persistent_vote =
   [ 1
   , election_id
   , pool_id
-  , eligibility_signature : leios_bls_signature 
+  , eligibility_signature : leios_bls_signature
   , endorser_block_hash
   , vote_signature : leios_bls_signature
   ]
 ```
 
-**BLS variant for Leios**
-Leios uses **BLS12-381 MinSig** (small signature, large verification key).
-– Verification key = compressed G2 = 96 bytes
-– Signature = compressed G1 = 48 bytes
-– Proof-of-Possession = 48 bytes
+Leios uses **BLS12-381 MinSig** (small signature, large verification key):
+
+- Verification key: compressed G2 = 96 bytes
+- Signature: compressed G1 = 48 bytes
+- Proof-of-possession: compressed G1 = 48 bytes
 
 MinSig is chosen because:
-– certificate size is ~8 kB vs >12 kB for MinPk
-– network propagation and storage are significantly improved
 
-Alternative variants (e.g., MinPk) are intentionally not defined in the CIP to avoid ambiguity.
+- Certificate size is ~8 kB vs >12 kB for MinPk
+- Network propagation and storage are significantly improved
 
 ```cddl
 ; BLS12-381 MinSig encodings for Leios
