@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 170
 Title: KERI-backed metadata attestations
 Category: Metadata
 Status: Proposed
