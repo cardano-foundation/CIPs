@@ -20,6 +20,10 @@
     "description": "shareslake.com - Bridge routing information"
   },
   {
+    "transaction_metadatum_label": 170,
+    "description": "CIP-0170 - KERI-backed metadata attestations"
+  },
+  {
     "transaction_metadatum_label": 309,
     "description": "Proof of Existence record"
   },
@@ -154,9 +158,5 @@
   {
     "transaction_metadatum_label": 61286,
     "description": "CIP-0015 - Catalyst deregistration"
-  },
-  {
-    "transaction_metadatum_label": "170",
-    "description": "CIP-0170 - KERI-backed metadata attestations"
   },
 ]
