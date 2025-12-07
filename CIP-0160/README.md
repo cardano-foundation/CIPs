@@ -45,8 +45,10 @@ We propose:
         , addressStakingCredential  :: Maybe StakingCredential 
         }
     ```
+
 2. **A new `ScriptPurpose`:**
-   ```haskell
+
+    ```haskell
     data ScriptPurpose =
         Spending TxOutRef
     | Minting CurrencySymbol
@@ -55,7 +57,7 @@ We propose:
     | Voting Vote
     | Proposing Proposal
     | Receiving ScriptHash         -- NEW: only output(s) to script
-   ```
+    ```
 
 Normal addresses and protected addresses are differentiated by the introduction of an `isProtected` bit in the address header bytes, if the bit is set then the address is a protected address, otherwise it is unprotected.  
 
