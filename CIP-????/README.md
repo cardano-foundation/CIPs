@@ -360,7 +360,21 @@ Unlike oracle networks that rely on consensus among multiple nodes, KERI-based v
 
 By adopting KERI, an existing standard from the Trust over IP Foundation, this CIP ensures interoperability across ecosystems, credential portability, and alignment with emerging regulatory requirements for digital identity. This standards-based approach means that implementations can leverage existing tooling, benefit from ongoing security research, and maintain compatibility as the KERI ecosystem evolves.
 
-## Path to Active
+### Acceptance Criteria
+
+In order for this standard to be considered Active, the following MUST be true:
+
+- [ ] At least one production-grade implementation of KERI-backed metadata attestations is available on mainnet (e.g. in a wallet, identity service, or infrastructure component).
+- [ ] At least one independent Cardano dApp or off-chain service is using these KERI-backed attestations in its business logic (e.g. access control, compliance/audit trail, or identity-bound actions).
+- [ ] At least one independent identity verifier operated by the Cardano Foundation (or another recognized governance/standards body) is publishing and maintaining KERI identifiers and corresponding ACDC credential chains for Cardano-related entities.
+- [ ] The specification is stable and implementers report no blocking ambiguities in representing KERI identifiers or ACDC chains within Cardano metadata.
+
+### Implementation Plan
+
+- [ ] Coordinate with at least infrastructure provider (e.g. **reeve.technology**, **veridian.id**) to ship a reference mainnet implementation of this CIP.
+- [ ] Deploy and operate an identity verifier instance under the Cardano Foundation (or equivalent) that issues and maintains KERI identifiers and ACDC credential chains for Cardano ecosystem entities.
+- [ ] Engage with at least one entity to integrate KERI-backed metadata attestations for a real use case (e.g. vLEI-backed authorization, regulated workflow, or enterprise audit logging).
+- [ ] Collect feedback from implementers and, if needed, submit minor, backwards-compatible clarifications to this CIP before requesting status transition to Active.
 
 ## Appendix
 
