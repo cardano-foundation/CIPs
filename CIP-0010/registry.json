@@ -156,7 +156,7 @@
     "description": "CIP-0015 - Catalyst deregistration"
   },
   {
-    "transaction_metadatum_label": "????",
-    "description": "CIP-???? - KERI-backed metadata attestations"
+    "transaction_metadatum_label": "170",
+    "description": "CIP-0170 - KERI-backed metadata attestations"
   },
 ]
