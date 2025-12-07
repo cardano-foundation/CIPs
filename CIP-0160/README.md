@@ -31,20 +31,20 @@ These workarounds add significant complexity, on-chain cost, and surface area fo
 We propose:
 
 1. **A new address type**:
-   ```haskell
-data Address = 
-  Address
-    { addressCredential        :: Credential
-    -- ^ the payment credential
-    , addressStakingCredential :: Maybe StakingCredential
-    -- ^ the staking credential
-    }
-  ProtectedAddress -- new 
-    { address :: Credential 
-    , addressStakingCredential :: Maybe StakingCredential 
-    }
 
-   ```
+    ```haskell
+    data Address = 
+      Address
+        { addressCredential         :: Credential
+        -- ^ the payment credential
+        , addressStakingCredential  :: Maybe StakingCredential
+        -- ^ the staking credential
+        }
+      ProtectedAddress -- new 
+        { address :: Credential 
+        , addressStakingCredential  :: Maybe StakingCredential 
+        }
+    ```
 2. **A new `ScriptPurpose`:**
    ```haskell
     data ScriptPurpose =
