@@ -4,7 +4,7 @@ Title: Cardano Multi Asset Treasury (CMAT)
 Category: Ledger
 Status: Open
 Authors:
-  - Hinson Wong - SIDAN Lab <hinson.wong@deltadefi.io>
+  - Hinson Wong - SIDAN Lab <wongkahinhinson@gmail.com>
   - Felix Weber - Mesh <felix@meshjs.dev>
   - Nicolas Cerny - Cardano Foundation <nicolas.cerny@cardanofoundation.org>
 Proposed Solutions: []
