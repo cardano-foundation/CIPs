@@ -94,7 +94,7 @@ These attributes can be embedded in the metadata of a transaction using a fixed 
 The metadata is structured as follows:
 ```JSON
 {
-  "????":
+  "170":
   {
     "t": "AUTH_BEGIN",
     "s": "{{saidOfLeafCredentialSchema}}",
@@ -125,7 +125,7 @@ If the KEL of identifier `i` contains an event at sequence number `s` which has 
 A reference to this event in a metadata transaction is structured as follows:
 ```JSON
 {
-    "????": {
+    "170": {
     "t": "ATTEST",
     "i": "{{aidOfSigner}}", 
     "d": "{{digest}}",
@@ -153,7 +153,7 @@ The following attributes are used:
 A reference to this event in a metadata transaction is structured as follows:
 ```JSON
 {
-  "????":
+  "170":
   {
     "t": "AUTH_END",
     "s": "{{saidOfLeafCredentialSchema}}",
@@ -213,7 +213,7 @@ For this example, a signer controlling the identifier `EKtQ1lymrnrh3qv5S18PBzQ7u
 The following is the expected transaction format to publish the credential chain:
 ```JSON
 {
-  "????":
+  "170":
   {
     "t": "AUTH_BEGIN",
     "s": "EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ",
@@ -251,7 +251,7 @@ After verifying the validity of the credential chain with an ACDC verifier, ther
 The following is an attestation transaction for metadata label `1447`.
 ```JSON
 {
-    "XXXX": {
+    "170": {
     "t": "ATTEST",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL", 
     "d": "ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux",
@@ -275,7 +275,7 @@ When a credential must be revoked (for example, due to employee termination, cre
 The following is an example revocation transaction:
 ```JSON
 {
-  "????":
+  "170":
   {
     "t": "AUTH_END",
     "s": "EJVgEQO8BEhGGM7GcAjlqoKG1upeuBZj9WjvjZo353sQ",
@@ -304,7 +304,7 @@ If the revocation is valid, the identifier `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7
 For example, if the following transaction appears after revocation:
 ```JSON
 {
-    "XXXX": {
+    "170": {
     "t": "ATTEST",
     "i": "EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL", 
     "d": "ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux",
