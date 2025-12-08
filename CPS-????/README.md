@@ -4,8 +4,8 @@ Title: Canonical CBOR Serialization Standard
 Category: Tools
 Status: Open
 Authors:
-    - Hinson Wong <hinson.wong@deltadefi.io>
-    - Tsz Wai Wu <tszwai@deltadefi.io>
+    - Hinson Wong <wongkahinhinson@gmail.com>
+    - Tsz Wai Wu <tszwaiwu.96@gmail.com>
 Proposed Solutions: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/1109
