@@ -360,6 +360,8 @@ Unlike oracle networks that rely on consensus among multiple nodes, KERI-based v
 
 By adopting KERI, an existing standard from the Trust over IP Foundation, this CIP ensures interoperability across ecosystems, credential portability, and alignment with emerging regulatory requirements for digital identity. This standards-based approach means that implementations can leverage existing tooling, benefit from ongoing security research, and maintain compatibility as the KERI ecosystem evolves.
 
+## Path to Active 
+
 ### Acceptance Criteria
 
 In order for this standard to be considered Active, the following MUST be true:
