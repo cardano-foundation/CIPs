@@ -52,7 +52,7 @@ It can be completely independent or optionally reference an existing governance 
 
 ```json
 {
-  "0017": {
+  "17": {
     "msg": ["<Short, human-readable title of the survey>"],
     "surveyDetails": {
       "specVersion": "1.0",
@@ -96,7 +96,7 @@ This metadata is included in the transaction a user submits to cast a response.
 
 ```json
 {
-  "0017": {
+  "17": {
     "msg": ["Response to survey: <Title of the survey>"],
     "surveyResponse": {
       "surveyTxId": "<Transaction ID of the survey definition>",
@@ -123,7 +123,7 @@ This metadata is included in the transaction a user submits to cast a response.
 ### Block Explorer & dApp Implementation Guide
 
 1. **Survey Discovery:**  
-   Scan for transactions with label **0017** containing `surveyDetails`.  
+   Scan for transactions with label **17** containing `surveyDetails`.  
    Each survey is uniquely identified by the transaction ID of that transaction.
 
 2. **Response Linking:**  
