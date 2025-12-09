@@ -42,7 +42,7 @@ This separation of concerns provides:
 
 ## Specification
 
-This specification uses metadata label 0017 and defines two payload types:
+This specification uses metadata label `17` and defines two payload types:
 `surveyDetails` (definition) and `surveyResponse` (vote).
 
 ### Survey Definition Payload
