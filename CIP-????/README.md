@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This proposal defines a generic, standardized transaction metadata structure for creating and responding to on-chain surveys and polls.
 
-All survey-related metadata is encoded under label 0017, chosen as a reference to the Roman census of 17 BC — one of the earliest organized systems for structured population data collection.  
+All survey-related metadata is encoded under label `17`, chosen as a reference to the Roman census of 17 BC — one of the earliest organized systems for structured population data collection.  
 
 The specification provides a minimal, interoperable format for survey definition and response — enabling wallets, explorers, and dApps across the Cardano ecosystem to reliably create, display, and aggregate poll data.  
 
