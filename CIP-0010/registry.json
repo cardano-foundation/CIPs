@@ -1,5 +1,9 @@
 [
   {
+    "transaction_metadatum_label": 17,
+    "description": "On-chain surveys and polls metadata"
+  },
+  {
     "transaction_metadatum_label": 22,
     "description": "Clarity - DAO creation metadata"
   },
