@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: Compensatory Ledger Mechanism
+Title: Governance Participant Compensation
 Category: Ledger
 Status: Proposed
 Authors:
