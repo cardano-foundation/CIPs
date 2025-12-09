@@ -108,7 +108,7 @@ This occurs atomically during governance-action completion.
 
 ---
 
-## Compensation Eligibility Based on Relevant Governance Actor Groups
+### Compensation Eligibility Based on Relevant Governance Actor Groups
 
 For each governance action type, the protocol specifies which governance actor groups are **relevant** to the ratification of that action. Only these *relevant* groups contribute to the tally for that action, and only these groups may generate compensation under the CLM.
 
