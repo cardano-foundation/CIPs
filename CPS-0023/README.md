@@ -10,8 +10,9 @@ Authors:
 Proposed Solutions: []
 Discussions:
   - https://forum.cardano.org/t/cardano-multi-asset-treasury-cmat/149984
-  - https://github.com/cardano-foundation/CIPs/pull/1061
+  - https://github.com/cardano-foundation/CIPs/pull/1061#issuecomment-3109728207
   - https://github.com/cardano-foundation/CIPs/pull/1103
+  - [Cardano Summit Day 0 Governance Workshop & Roundtable](./CPS-0023/community-discussion.md)
 Created: 2025-10-26
 License: CC-BY-4.0
 ---
