@@ -77,7 +77,7 @@ The good solution to this CPS consists of 3 components:
 
 Spam prevention as if only whitelisted tokens can send into the treasury. Do we want to build in this feature into CMAT?
 
-- For: Discussion in [(CIP159)](https://github.com/cardano-foundation/CIPs/pull/1061) thread acknowledges the need for spam prevention
+- For: Discussion in [(CIP-0159)](https://github.com/cardano-foundation/CIPs/pull/1061) thread acknowledges the need for spam prevention
 - Against: Polkadot community mentioned whitelist is not needed as people just do not care
 
 Spam prevention options:
