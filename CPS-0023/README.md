@@ -97,7 +97,7 @@ There are several potential ways to implement CMATs:
 
    > Implementing CMAT through ledger updates which transform the current Cardano Treasury files into an actuall address which can receive, hold and distribute multi assets
 
-2. Multi Asset Stake Address as Treasury ([CIP159](https://github.com/cardano-foundation/CIPs/pull/1061))
+2. Multi Asset Stake Address as Treasury ([CIP-0159](https://github.com/cardano-foundation/CIPs/pull/1061))
 
    > A CIP that adds support for depositing assets into account addresses (a.k.a. reward/staking addresses) which helps alleviate some of the pain-points from the minUTxOValue requirement. The CIP also provides a mechanism for plutus smart contracts to get a sense of the account's current balance using account balance intervals similarly to how time is specified
 
