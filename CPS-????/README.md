@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 24
 Title: Canonical CBOR Serialization Standard
 Category: Tools
 Status: Open
