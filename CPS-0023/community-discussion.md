@@ -16,6 +16,8 @@ In the afternoon session, a roundtable amongst the moderators has been conducted
 
 ### Short Summary
 
+Overall no strong opposition at general to the CMAT itself, seems that very much each stakeholder group sees indeed strong benefit from the CMAT.
+
 ## 1. Economics
 
 - **Hedging & stability** – Use multi-asset treasury to shift some ADA into stablecoins for predictable funding.
