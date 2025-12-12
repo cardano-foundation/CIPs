@@ -1,6 +1,6 @@
 ---
 CPS: 24
-Title: Canonical CBOR Serialization Standard
+Title: Canonical CBOR Serialization
 Category: Tools
 Status: Open
 Authors:
