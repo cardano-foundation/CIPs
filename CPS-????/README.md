@@ -52,12 +52,6 @@ This problem has become urgent as sophisticated DApps require cross-tool interop
 
 ## Goals
 
-<!-- A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve.
-
-Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns.
-
-Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
-
 ### Primary Goals
 
 1. **Establish a canonical CBOR standard**: A CIP that specifies deterministic encoding rules for all Cardano transaction and on-chain data structures, with clear guiding principles for choosing between encoding alternatives.
