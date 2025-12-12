@@ -19,8 +19,6 @@ There is no canonical CBOR serialization standard in Cardano. While this is a de
 
 ## Problem
 
-<!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
-
 The Cardano ledger accepts any valid CBOR encoding for transactions and on-chain data. While this flexibility was intentional to encourage ecosystem diversity, it has created significant interoperability challenges as the tooling landscape has matured. The same logical data can be encoded in multiple ways (map key ordering, integer encoding, definite vs. indefinite length, etc.), leading to different byte representations and transaction hashes.
 
 ### Core Issues
