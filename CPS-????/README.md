@@ -44,8 +44,6 @@ This problem has become urgent as sophisticated DApps require cross-tool interop
 
 ## Use cases
 
-<!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
-
 **Cross-Library DApp Development**: A DApp developer builds transactions with Lucid in their frontend, but users sign with various wallets built on cardano-serialization-lib or pycardano. Canonical serialization ensures the transaction built equals the transaction signed.
 
 **Script Hash Consistency**: A developer publishes a reference script on-chain, then references it from their off-chain code. Currently, locally computed script hashes may not match the on-chain version due to encoding differences. Canonical serialization guarantees hash consistency across compilation and deployment pipelines.
