@@ -77,6 +77,12 @@ on the batches into which their transactions are added without knowing the exact
 5. the top-level transaction must provide collateral for all scripts in its sub-transactions
 - sub-transactions will not be required to cover the collateral for scripts that they will include ;
 
+6. isolation of script context for plutus script execution. Plutus scripts in one sub-transactions do not see other sub-transactions or the top level transaction in their context.
+
+7. ability to mix new features in the same transaction that are incompatible with older Plutus scripts. Historically usage of new features together with older Plutus scripts in a transaction would lead to phase1 validation failure. Isolation of context breaks this incompatibility for newer Plutus versions and partially for the old ones as well.
+
+8. finer control of the order of processing parts of the transaction. For example, today it is not possible to delegate to a DRep and withdraw rewards in the same transaction, since withdrawals are processed before certificates by the ledger. Having ability to break up parts of the transaction into separate sub-transactions gives the user ultimate control of which part of the transaction should be processed first.
+
 We note that the functionality added by (4) makes it possible to view each sub-transaction as an *intent*
 to perform a specific action (whose fulfillment within the batch is ensured by the validation of the guard script).
 The types of intents supported by this are ones that *do not require
@@ -87,15 +93,15 @@ more carefully to ensure secure operation of the ledger program.
 
 ### New use cases
 
-As a result of introducing this new functionality, many new use cases will be supported, 
-among which are the following : 
+As a result of introducing this new functionality, many new use cases will be supported,
+among which are the following :
 
 **Open (atomic) swaps.** A user wants to swap 10 Ada for 5 tokens `myT`. He creates an unbalanced transaction `tx` that
 has extra 10 Ada, but is short 5 `myT`.
 Any counterparty that sees this transaction can create a top-level
 transaction `tx'` that includes `tx` as a sub-transaction. The transaction
-`tx'` would have extra 5 `myT`, and be short (missing) 10 Ada. Implementing nested transactions 
-will allow users to build sub- and top-level-transactions that achieve this swap without 
+`tx'` would have extra 5 `myT`, and be short (missing) 10 Ada. Implementing nested transactions
+will allow users to build sub- and top-level-transactions that achieve this swap without
 the need for interacting with a smart contract.
 
 **DEX aggregators.** A DEX aggregator aggregates multi-party swaps, often using its
@@ -105,14 +111,14 @@ top-level transaction.
 
 **Babel fees.** A Babel fee-type transaction is a specific instance of the first use case. A user creates a sub-transaction `tx`
 where the missing assets are necessarily a
-quantity of Ada. In particular, it does not pay its own fees, collateral, or cover any new `minUTxOValue`s. 
-The counterparty creates a top-level transaction which includes `tx` as a sub-transaction and includes 
+quantity of Ada. In particular, it does not pay its own fees, collateral, or cover any new `minUTxOValue`s.
+The counterparty creates a top-level transaction which includes `tx` as a sub-transaction and includes
 extra Ada which goes towards paying transaction fees, collateral, etc.
 
-**DApp fee and min-UTxO sponsorship.** A DApp may choose to subsidize the cost of its use 
-(e.g. by paying the cost of ExUnits, paying fees/minUTxO, and providing collateral) for the 
-purposes of encouraging users to interact with it. Implementing nested transactions 
-will allow building transaction batches that subsidize 
+**DApp fee and min-UTxO sponsorship.** A DApp may choose to subsidize the cost of its use
+(e.g. by paying the cost of ExUnits, paying fees/minUTxO, and providing collateral) for the
+purposes of encouraging users to interact with it. Implementing nested transactions
+will allow building transaction batches that subsidize
 DApp-using sub-transactions in this way.
 
 ## Specification
@@ -178,6 +184,19 @@ quantities not for individual transactions, but for the entire batch, including 
 
 8. The total size of the top-level transaction (including all its sub-transactions) must be less than the `maxTxSize`.
 This constraint is necessary to ensure efficient network operation since batches will be transmitted wholesale across the Cardano network.
+
+### Using older PlutusV1 - PlutusV3 scripts
+
+It is usually not possible to make new features that are added to a transaction available to older scripts. That is because new changes could affect the invariants that older scripts might rely on and because it is impossible to retroactively change the structure of plutus script context of a script that has been deployed on mainnet. However, it would be very useful if we could provide the property of isolation to existing scripts that are used on-chain today. If we did, this would allow PlutusV1 - PlutusV3 scripts to co-exist in the same transaction with any new feature that would be added in the future.
+
+In order to make this a reality we propose a special mode for the top level transaction validation. This mode will be enabled automatically when a top level transaction uses any of the older PlutusV1, PlutusV2 or PlutusV3 scripts. This special mode will validate the top level transaction in isolation from all of the sub-transactions that were included in it. In particular:
+* top level transaction will have to balance out by itself and all of the sub-transactions will have to balance each other, without relying on the top level transaction.
+* top level transaction cannot use any of the sub-transactions as the source of actual scripts or datums. They will have to be supplied at the top level through the usual means of reference inputs or through the witness set.
+* top level transaction itself cannot use any of the new features. Eg. guards list cannot contain any script hashes at the top level.
+
+With this slight modification to the rules we will be able to guarantee backwards compatibility for PlutusV1 - PlutusV3 scripts. The only change visible to the older scripts in the script context would be potentially slightly higher than usual transaction fee, which is not disallowed today.
+
+An example of this use case came up in the context of [CIP-159 - Account Address Enhancement](https://github.com/cardano-foundation/CIPs/pull/1061). Aforementioned CIP adds a new field called `direct_deposit` to the transaction body, which would normally be unusable together in the same transaction that executes any script older than PlutusV4. As it turns out, however, it is critical for DeFi to be able to mix existing scripts and `direct_deposit` in the same transaction. With addition of this feature it will be possible to add a sub-transaction that uses this new field, while any script that is older than PlutusV4 would be just fine in the top level transaction.
 
 ### Collateral and Phase-2 Invalid Transactions
 
@@ -318,17 +337,17 @@ actually require of the batch, as Plutus script constraints may be difficult to 
 
 ## Rationale: how does this CIP achieve its goals?
 
-The primary purpose of this CIP is to enable Cardano node support for a specific kind of transaction 
-batching which we call *nested transactions*. The specification we presented includes the features 
-discussed in the [Motivation section](#Motivation). In particular, it allows the individual 
+The primary purpose of this CIP is to enable Cardano node support for a specific kind of transaction
+batching which we call *nested transactions*. The specification we presented includes the features
+discussed in the [Motivation section](#Motivation). In particular, it allows the individual
 sub-transactions inside batches (top-level transactions) to be unbalanced, and to not
-be obligated to pay fees or provide collateral, while still ensuring the preservation of 
-value property and a functioning collateral mechanism at the batch level. 
-This is the main property required to securely support the use cases 
+be obligated to pay fees or provide collateral, while still ensuring the preservation of
+value property and a functioning collateral mechanism at the batch level.
+This is the main property required to securely support the use cases
 discussed in the [Motivation section](#Motivation).
 
-**Pseudo-code example**. To give a more detailed illustration of how the specification changes presented 
-in this CIP support use cases and features discussed in the [Motivation section](#Motivation), we present the following 
+**Pseudo-code example**. To give a more detailed illustration of how the specification changes presented
+in this CIP support use cases and features discussed in the [Motivation section](#Motivation), we present the following
 pseudocode example :
 
 ```
@@ -436,7 +455,7 @@ sub-transactions.
 ### Implementation Plan
 
 - [ ] Update to the formal ledger specification with the changes proposed here
-- [ ] Implement the outlined changes in the Cardano node 
+- [ ] Implement the outlined changes in the Cardano node
 - [ ] Complete a hard fork enabling support for the changes outlined here
 - [ ] Track implementation of this CIP via top level ticket on the Ledger repository, including links to implementations: [Nested Transactions](https://github.com/IntersectMBO/cardano-ledger/issues/5123)
 
