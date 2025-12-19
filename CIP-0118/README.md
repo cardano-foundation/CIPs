@@ -77,6 +77,12 @@ on the batches into which their transactions are added without knowing the exact
 5. the top-level transaction must provide collateral for all scripts in its sub-transactions
 - sub-transactions will not be required to cover the collateral for scripts that they will include ;
 
+6. isolation of script context for plutus script execution. Plutus scripts in one sub-transactions do not see other sub-transactions or the top level transaction in their context.
+
+7. ability to mix new features in the same transaction that are incompatible with older Plutus scripts. Historically usage of new features together with older Plutus scripts in a transaction would lead to phase1 validation failure. Isolation of context breaks this incompatibility for newer Plutus versions and partially for the old ones as well.
+
+8. finer control of the order of processing parts of the transaction. For example, today it is not possible to delegate to a DRep and withdraw rewards in the same transaction, since withdrawals are processed before certificates by the ledger. Having ability to break up parts of the transaction into separate sub-transactions gives the user ultimate control of which part of the transaction should be processed first.
+
 We note that the functionality added by (4) makes it possible to view each sub-transaction as an *intent*
 to perform a specific action (whose fulfillment within the batch is ensured by the validation of the guard script).
 The types of intents supported by this are ones that *do not require
