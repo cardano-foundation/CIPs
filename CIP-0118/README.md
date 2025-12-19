@@ -87,15 +87,15 @@ more carefully to ensure secure operation of the ledger program.
 
 ### New use cases
 
-As a result of introducing this new functionality, many new use cases will be supported, 
-among which are the following : 
+As a result of introducing this new functionality, many new use cases will be supported,
+among which are the following :
 
 **Open (atomic) swaps.** A user wants to swap 10 Ada for 5 tokens `myT`. He creates an unbalanced transaction `tx` that
 has extra 10 Ada, but is short 5 `myT`.
 Any counterparty that sees this transaction can create a top-level
 transaction `tx'` that includes `tx` as a sub-transaction. The transaction
-`tx'` would have extra 5 `myT`, and be short (missing) 10 Ada. Implementing nested transactions 
-will allow users to build sub- and top-level-transactions that achieve this swap without 
+`tx'` would have extra 5 `myT`, and be short (missing) 10 Ada. Implementing nested transactions
+will allow users to build sub- and top-level-transactions that achieve this swap without
 the need for interacting with a smart contract.
 
 **DEX aggregators.** A DEX aggregator aggregates multi-party swaps, often using its
@@ -105,14 +105,14 @@ top-level transaction.
 
 **Babel fees.** A Babel fee-type transaction is a specific instance of the first use case. A user creates a sub-transaction `tx`
 where the missing assets are necessarily a
-quantity of Ada. In particular, it does not pay its own fees, collateral, or cover any new `minUTxOValue`s. 
-The counterparty creates a top-level transaction which includes `tx` as a sub-transaction and includes 
+quantity of Ada. In particular, it does not pay its own fees, collateral, or cover any new `minUTxOValue`s.
+The counterparty creates a top-level transaction which includes `tx` as a sub-transaction and includes
 extra Ada which goes towards paying transaction fees, collateral, etc.
 
-**DApp fee and min-UTxO sponsorship.** A DApp may choose to subsidize the cost of its use 
-(e.g. by paying the cost of ExUnits, paying fees/minUTxO, and providing collateral) for the 
-purposes of encouraging users to interact with it. Implementing nested transactions 
-will allow building transaction batches that subsidize 
+**DApp fee and min-UTxO sponsorship.** A DApp may choose to subsidize the cost of its use
+(e.g. by paying the cost of ExUnits, paying fees/minUTxO, and providing collateral) for the
+purposes of encouraging users to interact with it. Implementing nested transactions
+will allow building transaction batches that subsidize
 DApp-using sub-transactions in this way.
 
 ## Specification
@@ -318,17 +318,17 @@ actually require of the batch, as Plutus script constraints may be difficult to 
 
 ## Rationale: how does this CIP achieve its goals?
 
-The primary purpose of this CIP is to enable Cardano node support for a specific kind of transaction 
-batching which we call *nested transactions*. The specification we presented includes the features 
-discussed in the [Motivation section](#Motivation). In particular, it allows the individual 
+The primary purpose of this CIP is to enable Cardano node support for a specific kind of transaction
+batching which we call *nested transactions*. The specification we presented includes the features
+discussed in the [Motivation section](#Motivation). In particular, it allows the individual
 sub-transactions inside batches (top-level transactions) to be unbalanced, and to not
-be obligated to pay fees or provide collateral, while still ensuring the preservation of 
-value property and a functioning collateral mechanism at the batch level. 
-This is the main property required to securely support the use cases 
+be obligated to pay fees or provide collateral, while still ensuring the preservation of
+value property and a functioning collateral mechanism at the batch level.
+This is the main property required to securely support the use cases
 discussed in the [Motivation section](#Motivation).
 
-**Pseudo-code example**. To give a more detailed illustration of how the specification changes presented 
-in this CIP support use cases and features discussed in the [Motivation section](#Motivation), we present the following 
+**Pseudo-code example**. To give a more detailed illustration of how the specification changes presented
+in this CIP support use cases and features discussed in the [Motivation section](#Motivation), we present the following
 pseudocode example :
 
 ```
@@ -436,7 +436,7 @@ sub-transactions.
 ### Implementation Plan
 
 - [ ] Update to the formal ledger specification with the changes proposed here
-- [ ] Implement the outlined changes in the Cardano node 
+- [ ] Implement the outlined changes in the Cardano node
 - [ ] Complete a hard fork enabling support for the changes outlined here
 - [ ] Track implementation of this CIP via top level ticket on the Ledger repository, including links to implementations: [Nested Transactions](https://github.com/IntersectMBO/cardano-ledger/issues/5123)
 
