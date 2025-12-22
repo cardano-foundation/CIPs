@@ -1,0 +1,36 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/PoolStake.hs
+
+;  The key for the entry is one of the following:
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: pool_stake
+;
+;  types:
+;    pool_stake:
+;      seq:
+;        - id: keyhash
+;          doc: stake pool keyhash
+;          size: 28
+;  ```
+;
+record_entry = individual_pool_stake
+
+; Individual pool stake information
+;
+; Fields:
+;   - vrf: VRF verification key hash for the pool
+;   - total: Total stake delegated to the pool
+individual_pool_stake = {vrf : vrf_keyhash, total : coin}
+
+vrf_keyhash = hash32
+
+hash32 = bytes .size 32
+
+coin = uint
+

@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines the Simple Canonical Ledger State (SCLS), a stable, versioned, and verifiable file format for representing the Cardano ledger state. It specifies a segmented binary container with deterministic CBOR encodings, per-chunk commitments, and a manifest that enables identical snapshots across implementations, supports external tools (e.g., Mithril), and future-proofs distribution and verification of state.
+This proposal defines the Standard Canonical Ledger State (SCLS), a stable, versioned, and verifiable file format for representing the Cardano ledger state. It specifies a segmented binary container with deterministic CBOR encodings, per-chunk commitments, and a manifest that enables identical snapshots across implementations, supports external tools (e.g., Mithril), and future-proofs distribution and verification of state.
 
 This CIP specifies a canonical interchange format for the ledger state. It does not define, prescribe, or constrain the internal storage or representation of the ledger state within any node implementation. Internal formats remain an implementation detail; the canonical format applies only to export, interchange, and verification of the ledger state consistency.
 
@@ -44,7 +44,7 @@ The concrete use-case scenarios for this CIP are:
 
 ## Specification
 
-The Simple Canonical Ledger State (SCLS) is a segmented file format for Cardano ledger states, designed to support streaming and verifiability. Records are sequential, each tagged by type and independently verifiable by hash. Multi-byte values use network byte order (big-endian).
+The Standard Canonical Ledger State (SCLS) is a segmented file format for Cardano ledger states, designed to support streaming and verifiability. Records are sequential, each tagged by type and independently verifiable by hash. Multi-byte values use network byte order (big-endian).
 
 ### File Structure
 
@@ -55,16 +55,16 @@ Unsupported record types are skipped; core data remains accessible.
 
 ### Record Types
 
-| Code | Name     | Purpose                                                 |
-| ---- | -------- | ------------------------------------------------------- |
-| 0x00 | HDR      | File header: magic, version, network, namespaces        |
-| 0x01 | MANIFEST | Global commitments, chunk table, summary                |
-| 0x10 | CHUNK    | Ordered entries with per-chunk footer + hash            |
-| 0x11 | DELTA    | Incremental updates (overlay; last-writer-wins)         |
-| 0x20 | BLOOM    | Per-chunk Bloom filter                                  |
-| 0x21 | INDEX    | Optional key→offset or value-hash indexes               |
-| 0x30 | DIR      | Directory footer with offsets to metadata/index regions |
-| 0x31 | META     | Opaque metadata entries (e.g., signatures, notes)       |
+| Code | Name     | Purpose                                                                       |
+| ---- | -------- | ----------------------------------------------------------------------------- |
+| 0x00 | HDR      | File header: magic, version, network, namespaces                              |
+| 0x01 | MANIFEST | Global commitments, chunk table, summary                                      |
+| 0x10 | CHUNK    | Ordered entries with per-chunk footer + hash                                  |
+| 0x11 | DELTA    | Incremental updates overlay (reserved for future)                             |
+| 0x20 | BLOOM    | Per-chunk Bloom filter (reserved for future)                                  |
+| 0x21 | INDEX    | Optional key→offset or value-hash indexes (reserved for future)               |
+| 0x30 | DIR      | Directory footer with offsets to metadata/index regions (reserved for future) |
+| 0x31 | META     | Opaque metadata entries (e.g., signatures, notes)                             |
 
 Proposed file layout:
 
@@ -169,10 +169,7 @@ When calculating and verifying hashes, it's build over the uncompressed data.
 
 #### DELTA Record
 
-```text
-TODO: exact contents of the DELTA record will be defined later, currently we describe
-a high-level proposal.
-```
+Delta records are reserved for future use, where the node wishes to incrementally update an existing CLS file rather than writing a new one.
 
 **Purpose:** Delta records are used to build iterative updates, when base format is created and we want to store additional transactions in a fast way. Delta records are designed to be compatible with UTxO-HD, LSM-Tree or other storage types where it's possible to stream list of updates.
 
@@ -199,7 +196,7 @@ All updates are written in the following way:
 
 #### BLOOM Record
 
-TODO: define details or move to future work, (we propose to define exact format and properties, after the first milestone, when basic data will be implemented and tested. Then based on the benchmarks we could define exact properties we want to see)
+Bloom record is reserved for the future use, in case if search in the file will be required by the downstream.
 
 **Purpose:** additional information for allowing fast search and negative search.
 
@@ -212,9 +209,7 @@ TODO: define details or move to future work, (we propose to define exact format 
 
 #### INDEX Record
 
-```text
-TODO: define structure, (we propose to define exact format and properties, after the first milestone, when basic data will be implemented and tested. Then based on the benchmarks we could define exact properties we want to see)
-```
+Index record is reserved for the future use, in case if search in the file will be required by the downstream.
 
 **Purpose:** allows fast search based on the value of the entries.
 
@@ -226,7 +221,7 @@ The general idea is that we may want to write a query to the raw data using comm
 
 ### Directory Record
 
-TODO: define structure, (we propose to define exact format and properties, after the first milestone, when basic data will be implemented and tested. Then based on the benchmarks we could define exact properties we want to see)
+Directory record is reserved for the future use, in case if index records or delta records will be implemented.
 
 **Purpose**: If a file has index records then they will be stored after the records with actual data, and directory record allow a fast way to find them. Directory record is intended to be the last record of the file and has a fixed size footer.
 
@@ -262,21 +257,20 @@ In order to provide types of the values and be able to store and verify only par
 
 Each logical table/type is a namespace identified by a canonical string (e.g., `"utxo"`, `"gov"`).
 
-| Shortname    | Content                         |
-| ------------ | ------------------------------- |
-| utxo/v0      | UTxOs                           |
-| stake/v0     | Stake delegation                |
-| rewards/v0   | Reward accounts                 |
-| params/v0    | Protocol parameters             |
-| pots/v0      | Accounting pots (reserves etc.) |
-| spo/v0       | SPO state                       |
-| drep/v0      | DRep state                      |
-| gov/v0       | Governance action state         |
-| hdr/v0       | Header state (e.g. nonces)      |
+| Shortname            | Content                         |
+| -------------------- | ------------------------------- |
+| blocks/v0            | Blocks created                  |
+| gov/committee/v0     | Governance action state         |
+| gov/constitution/v0  | Constitution                    |
+| gov/pparams/v0       | Protocol parameters             |
+| gov/proposals/v0     | Update proposals                |
+| pool_stake/v0        | Stake delegation                |
+| nonce/v0             | Nonces                          |
+| pots/v0              | Accounting pots (reserves etc.) |
+| snapshots/v0         | snapshots                       |
+| utxo/v0              | UTXOs                           |
 
 New namespaces may and will be introduced in the future. With new eras and features, new types of the data will be introduced and stored. In order to define what data is stored in the SCLS file, tools fill the `HDR` record and define namespaces. The order of the namespaces does not change the signatures and other integrity data.
-
-For future compatibility support we added version tag to the name, but it may be a subject of discussion
 
 #### Entries
 
@@ -357,7 +351,6 @@ By contrast, CBOR has a defined deterministic encoding (see [RFC 8949](https://d
 
 Importantly, RFC 8949 also defines a mapping between CBOR and JSON. This allows us to specify a JSON view of the format so that downstream applications can consume the data using standard JSON tooling, while the canonical form remains CBOR.
 
-
 ##### Multi-file or single file?
 
 We considered using single file because it's more friendly to the producer, because it's possible to ensure required atomicity and durability properties, together with footers-in records, it's possible to validate that the data was actually written and is correct. In case of failure it's possible to find out exactly the place where the failure happened.
@@ -391,13 +384,11 @@ We are proposing adding additional records types:
 
 Both changes will not change the structure of the file.
 
-**Do we want to support entries without natural keys? If so how can we do that?**
+**Do we want use human readable names or tags in the structures?**
 
-There are three options that we see:
+In the various part of the CDDL definitions we have big structures (e.g. parameters update). Such structures has on-wire format that is fixed in the chain data. In these cases we always have a choice either to keep on-wire tags or use human readable tags defined in CDDLs.
 
-- In chunks records make key optional, that will support such values. That will change the spec, as we must allow many of such values in the chunks records.
-- Keep value in key, and zero value.
-- Create a separate record type for values without keys.
+Using on-wire tags is less readable in code is generated from CDDL it may be less readable comparing to the names. It would be nice to deletage this question to the downstreams that may use SCLS type.
 
 ## Path to Active
 

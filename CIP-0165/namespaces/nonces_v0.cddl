@@ -1,0 +1,52 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/Nonces.hs
+
+;  Key is just zero
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: nonce
+;
+;  types:
+;    nonce:
+;      doc: Nonce value
+;      size: 1
+;      type: u1
+;      const: 0
+;  ```
+;
+record_entry = nonces
+
+;  List of nonces used in the protocol state
+;
+nonces =
+  { last_slot              : with_origin<slot_no>
+  , cert_counters          : {* keyhash32 => word64}
+  , evolving_nonce         : nonce
+  , candidate_nonce        : nonce
+  , epoch_nonce            : nonce
+  , lab_nonce              : nonce
+  , last_epoch_block_nonce : nonce
+  }
+
+
+with_origin<a0> = [0// 1, a0]
+
+slot_no = uint .size 8
+
+keyhash32 = hash32
+
+hash32 = bytes .size 32
+
+word64 = uint .size 8
+
+nonce = neutral_nonce/ just_nonce
+
+neutral_nonce = [0]
+
+just_nonce = [1, hash32]
+
