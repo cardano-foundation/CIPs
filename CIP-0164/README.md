@@ -3002,7 +3002,7 @@ MinSig is chosen because:
 ; BLS12-381 MinSig encodings for Leios
 leios_bls_verification_key = bytes .size 96
 leios_bls_signature        = bytes .size 48
-leios_bls_pop              = bytes .size 48
+leios_bls_pop              = bytes .size 96
 ```
 
 ## Copyright
