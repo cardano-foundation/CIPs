@@ -22,7 +22,8 @@ Blake2b-256 hash of the file (to go on-chain): `7b7d4a28a599bbb8c08b239be2645fa8
 
 ### Intermediate files
 
-Files produced to articulate process, these are not necessary in implementations.
+Files produced to articulate process of author witnessing,
+these are not necessary in implementations.
 
 Body files, used to correctly generate author's witness:
 - [example.body.json](./example.body.json)
@@ -30,13 +31,10 @@ Body files, used to correctly generate author's witness:
 
 Blake2b-256 hash digest of canonicalized body: `6d17e71c5793ed5945f58bf48e13bb1b3543187ab9c2afbd280a21afb4a90d35`
 
-Whole document canonical representation, used to generate final hash:
-
-- [example.nq](./example.nq)
-
 ### How-to Recreate
 
-This tutorial creates additional intermediate files, these are not required in implementations but are shown here to articulate the process.
+This tutorial creates additional intermediate files ([example.body.json](./example.body.json), [example.body.nq](./example.body.nq)),
+these are not required in implementations but are shown here to articulate the process.
 
 #### Author
 
@@ -48,25 +46,27 @@ Public verification key (hex):
 
 #### 1. Create the example.json's `body`
 
-Create the `example.json` file adding in all available values.
-Then remove from this document any top-level field that is not `@context` or `body`.
+Create the `example.json` file adding in all available values i.e. `comment`, `references`.
 
+Then remove any top-level field that are not `@context` or `body`.
 This creates a intermediate file of [example.body.json](./example.body.json).
 
 #### 2. Canonicalize the `body`
 
-Using a tool which complies with the [RDF Dataset Canonicalization](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/), create a canonicalized representation of [example.body.json](./example.body.json).
+Using a tool which complies with the [RDF Dataset Canonicalization](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/),
+create a canonicalized representation of [example.body.json](./example.body.json).
+
 One such tool is the [JSON-LD Playground](https://json-ld.org/playground/).
-Ensure the result ends in a newline.
+Ensure the result ends in an empty line.
 
 This creates a intermediate file of [example.body.nq](./example.body.nq).
 
 #### 3. Hash the canonicalized `body`
 
-Using a tool create a Blake2b-256 hash of the canonicalized [example.body.nq](./example.body.nq).
+Use a tool to create a Blake2b-256 hash digest of the canonicalized [example.body.nq](./example.body.nq).
 One such tool is the [ToolKit Bay](https://toolkitbay.com/tkb/tool/BLAKE2b_256).
 
-For our example this will result in: `6d17e71c5793ed5945f58bf48e13bb1b3543187ab9c2afbd280a21afb4a90d35`.
+For our example ([example.body.nq](./example.body.nq)) this will result in: `6d17e71c5793ed5945f58bf48e13bb1b3543187ab9c2afbd280a21afb4a90d35`.
 
 #### 4. Authors witness over the hash of canonicalized `body`
 
@@ -78,7 +78,7 @@ For the provided [example.json](./example.json), we use the keys described in [A
 
 #### 5. Add `authors` and `hashAlgorithm` to example.json
 
-We can go back to our [example.body.json](./example.body.json) and now add in properties from outside of `body`.
+We can go back to our [example.json](./example.json) and now add in properties from outside of `body`.
 - Adding the `hashAlgorithm` of `blake2b-256`.
 - Adding the `authors`, including information of our `witness` produced via [4.](#4-authors-witness-over-the-hash-of-canonicalized-body).
 
@@ -86,7 +86,7 @@ By adding this information we create our [example.json](example.json).
 
 #### 6. Hash example.json
 
-To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [example.json](example.json) as is
+To be able to create a final metadata hash which can be attached on-chain we simply hash the content of the file [example.json](example.json) as is.
 
 This results in: `7b7d4a28a599bbb8c08b239be2645fa82d63a848320bf4760b07d86fcf1aabdc`.
 
