@@ -250,6 +250,7 @@ In order for this standard to be active, the following should be true:
 Below you can find a growing list of community tools which let you sign / verify / canonize / manipulate governance metadata JSON-LD data:
 - [cardano-signer](https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-100--cip-108--cip-119-mode) : A tool to sign with author secret keys, verify signatures, canonize the body content (Linux/Arm/Win/Mac)
 - [cardano-governance-metadata-lib](https://github.com/SundaeSwap-finance/cardano-governance-metadata) : A rust library for interacting with Cardano Governance Metadata conforming to CIP-100 (rust)
+- [verifycardanomessage.cardanofoundation.org](https://verifycardanomessage.cardanofoundation.org/method=cip100) : A tool to verify CIP-100 compliance of metadata.
 
 ### Implementation Plan
 
