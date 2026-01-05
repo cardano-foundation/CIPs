@@ -22,7 +22,7 @@ Blake2b-256 hash of the file (to go on-chain): `7b7d4a28a599bbb8c08b239be2645fa8
 
 ### Intermediate files
 
-Files produced to articulate process of author witnessing,
+Files produced to articulate the process of author witnessing,
 these are not necessary in implementations.
 
 Body files, used to correctly generate author's witness:
