@@ -10,7 +10,7 @@ Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/444
     - https://github.com/cardano-foundation/CIPs/pull/944
 Solution-To: CPS-0003
-Created: 2024-12-3
+Created: 2024-12-03
 License: Apache-2.0
 ---
 
