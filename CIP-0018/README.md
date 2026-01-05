@@ -91,7 +91,7 @@ We deem this to be an acceptable and fairly minor consequence but encourage exis
 - [ ] Develop the proposed Reference Implementation as suggested when this CIP was originally published (see Discussion link in header for history).
 - [ ] Contact wallet and dApp representatives in the community to develop and maintain interest in their support for this specification.
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 

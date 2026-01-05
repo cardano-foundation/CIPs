@@ -148,7 +148,7 @@ One of the questions raised by the community was, will the lower limit stop the 
 1. The value is a percentage of k, such as 10%. This percentage could increase as needed, such as to 15% of k.
 2. The value could be calculated based on the average of active stake compared to active pools. E.g, active stake = 23837 M / 3000 = saturation point of 7.94 M ADA
 
-## Path To Active
+## Path to Active
 
 ### Acceptance Criteria
 

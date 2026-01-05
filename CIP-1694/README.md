@@ -10,6 +10,7 @@ Authors:
     - Kevin Hammond <kevin.hammond@iohk.io>
     - Charles Hoskinson <charles.hoskinson@iohk.io>
     - Samuel Leathers <samuel.leathers@iohk.io>
+Implementors: []
 Discussions:
     - <https://github.com/cardano-foundation/CIPs/pull/380>
     - <https://forum.cardano.org/t/swarm-session-cip-1694/114453>
@@ -764,7 +765,7 @@ We define a number of new terms related to voting stake:
   that vote `Yes` to a governance action
   is at least `P`.
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 + [Role of the constitutional committee](#role-of-the-constitutional-committee)
 + [Intentional omission of identity verification](#intentional-omission-of-identity-verification)

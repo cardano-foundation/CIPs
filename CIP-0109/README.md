@@ -11,6 +11,8 @@ Authors:
 Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/641
 Created: 2023-10-05
 License: CC-BY-4.0
 ---
