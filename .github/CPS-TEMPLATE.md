@@ -32,7 +32,7 @@ License: CC-BY-4.0
 ## Problem
 <!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
 
-## Use cases
+## Use Cases
 <!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
 
 ## Goals
