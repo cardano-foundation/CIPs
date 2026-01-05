@@ -48,7 +48,7 @@ Public verification key (hex):
 
 Create the `example.json` file adding in all available values i.e. `comment`, `references`.
 
-Then remove any top-level field that are not `@context` or `body`.
+Then remove any top-level fields that are not `@context` or `body`.
 This creates a intermediate file of [example.body.json](./example.body.json).
 
 #### 2. Canonicalize the `body`
