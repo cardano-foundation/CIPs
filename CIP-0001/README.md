@@ -104,7 +104,7 @@ Field          | Description
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
 `Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. `N/A` when not applicable and `[]` when there's currently no implementor.
 `Discussions`  | A list of links where major technical discussions regarding this CIP happened. Links should include any discussion before submission, and _must_ include a link to the pull request that created the CIP and any pull request that modifies it.
-`Solution-To`  | A list of [CPS][] that this CIP addresses, if any. Omitted when not applicable.
+`Solution To`  | A list of [CPS][] that this CIP addresses, if any. Omitted when not applicable.
 `Created`      | Date created on, in ISO 8601 (YYYY-MM-DD) format
 `License`      | Abbreviation of an approved license(s)
 

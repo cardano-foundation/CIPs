@@ -7,7 +7,9 @@ Authors:
     - John Doe <john.doe@email.domain>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/?
+# Solution To:
+#     - CPS-XXXX
 Created: YYYY-MM-DD
 License: CC-BY-4.0
 ---
