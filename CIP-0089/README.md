@@ -237,6 +237,8 @@ CIP-68 can offer.
 
 ## Path to Active
 
+### Acceptance Criteria
+
 This CIP is already active.
 
 - [Cardano-Swaps](https://github.com/fallen-icarus/cardano-swaps) is a distributed order book DEX.
@@ -249,6 +251,10 @@ market for financial assets.
 Finally, the above four protocols were built into a prototype desktop light wallet called
 [p2p-wallet](https://github.com/fallen-icarus/p2p-wallet) which showcase how easy it is to integrate
 dDApps directly into wallets *without* using a DApp connector.
+
+### Implementation Plan
+
+N/A
 
 ## Copyright
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)

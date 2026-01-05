@@ -221,7 +221,7 @@ It is common – but not universal – practice for disclosure/publication of au
 
 These guidelines are the result of a process of discussion between IOG staff and members of the audit and academic communities over a series of online meetings in February and March 2022. Audit organisations involved include Tweag, WellTyped, Certik, Runtime Verification, BT Block, MLabs, Quviq and Hachi/Meld, all of which supported the guidelines outlined here.
 
-## Path to active
+## Path to Active
 
 ### Acceptance Criteria
 

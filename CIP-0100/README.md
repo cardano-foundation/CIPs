@@ -18,7 +18,7 @@ This Cardano Improvement Proposal (CIP) introduces a standardized and flexible m
 
 For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
-## Motivation
+## Motivation: why is this CIP necessary?
 
 With the advent of the Voltaire era, Cardano is moving towards a decentralized governance model. CIP-1694 addresses a potential technical implementation of ledger rules for creating, voting on, and ratifying proposed changes to the ledger. The ledger has no mechanism or desire to validate this metadata, and as a result, the official specification leaves the format of this metadata unspecified.
 

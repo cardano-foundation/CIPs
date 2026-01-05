@@ -74,7 +74,7 @@ We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that 
         - [Persistent storage](#persistent-storage)
         - [CPU](#cpu)
         - [Memory](memory)
-- [Path to active](#path-to-active)
+- [Path to Active](#path-to-active)
     - [Acceptance criteria](#acceptance-criteria)
     - [Implementation plan](#implementation-plan)
 - [Versioning](#versioning)
@@ -1478,7 +1478,7 @@ A node is expected to need to keep the following data in memory:
 Thus, Peras should not have any significant impact on the memory requirements of a node.
 
 
-## Path to active
+## Path to Active
 
 - [ ] Clear evidence of stakeholder use cases that require the fast *ex post facto* settlement that Peras provides.
 

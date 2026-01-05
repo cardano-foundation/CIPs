@@ -93,6 +93,6 @@ The only point of incompatibility regards the `pool_id` field (in Adafolio) vs t
 
 - [ ] Provide a reference implementation and/or parsing library to read and/or write files in this schema.
 
-# Copyright
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

@@ -65,7 +65,7 @@ Even with a simple encryption of such messages - and publicly known passphrase -
 
 This addition to the original CIP-0020 should not be seen as the end-all-be-all security solution for privacy on the blockchain. There's better options and upcoming Midnight for that. The transaction messages are also not intended to act like chat messages on the chain.
 
-# Specification - Encrypted message
+## Specification
 
 The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown instead of an maybe autodecrypted one. But even the encrypted base64 strings fit into the max. 64char long string restriction. So it does not break any tools. More on the autodecryption later. 
 
@@ -202,7 +202,7 @@ Which results in the original content of the **msg** key:
   
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
 
-## Rationale
+## Rationale: how does this CIP achieve its goals?
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
 The original CIP-0020 design allowed the addition of new entries like the `"enc":` key for encrypted messages in this CIP. Therefore the encoding format of the encrypted message was choosen to be UTF-8 instead of bytearrays, because it would break the backwards compatibility to CIP-0020. But maybe more important, it gives the user a simple text-format to handle such messages. Users can copy and paste the base64 encoded string(s) using there own tools for creation and verification. For example, a user can simply copy the encrypted format from an explorer and verify it with an external own local tool. Such messages are usally pretty short. Yes, the benefit of using bytearrays is to have less data (around -33% over base64), but the decision was made to sacrifice this benefit in favor of the base64 format for the reasons pointed out before.

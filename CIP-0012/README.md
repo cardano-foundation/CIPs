@@ -7,6 +7,7 @@ Authors:
   - Marek Mahut <marek.mahut@fivebinaries.com>
   - Sebastien Guillemot <sebastien@emurgo.io>
   - Ján Hrnko <jan.hrnko@fivebinaries.com>
+Implementors: []
 Discussions:
   - https://forum.cardano.org/t/on-chain-stake-pool-operator-to-delegates-communication/42229
   - https://github.com/cardano-foundation/CIPs/pull/44

@@ -120,7 +120,7 @@ Benchmarking and costing `serialiseData` was done in [this PR](https://github.co
 
 * Additional built-in: so can be added to PlutusV1 and PlutusV2 without breaking any existing script validators. A hard-fork is however required as it would makes more blocks validate.
 
-## Path To Active
+## Path to Active
 
 ### Acceptance Criteria
 

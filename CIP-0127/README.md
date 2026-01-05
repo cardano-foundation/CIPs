@@ -49,6 +49,8 @@ The library, cryptonite, is not implemented by and under control of the Plutus t
 * It is a library already used in the Plutus stack to expose KECCAK-256, and can be considered as a trustworthy implementation.
 * Its behaviour is predictable and computationally efficient. The cost of the function is linear with respect to the size of the message provided as input. This is the same behaviour that other hash functions exposed in plutus (blake, sha3, keccak-256) have.
 
+## Path to Active
+
 ### Acceptance Criteria
 - [X] A `cardano-base` binding is created for the `ripemd-160` function and included in a new version of the library.
 - [X] A Plutus binding is created for the `ripemd_160` function and included in a new version of Plutus.

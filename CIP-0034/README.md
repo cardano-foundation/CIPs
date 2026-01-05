@@ -55,7 +55,7 @@ When representing these networks in a human-readable string, the following forma
 cip34:NetworkId-NetworkMagic
 ```
 
-# Rationale: how does this CIP achieve its goals?
+## Rationale: how does this CIP achieve its goals?
 
 We pick this format for the following reason:
 - The network ID is too small to be used by itself. You can see from [chainlist](https://chainlist.org/) that 16 possibilities is too few

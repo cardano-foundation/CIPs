@@ -6,6 +6,7 @@ Status: Proposed
 Authors:
   - Nicolas Henin <nicolas.henin@iohk.io>
   - Raphael Toledo <raphael.toledo@iohk.io>
+Implementors: []
 Solution-To:
   - CPS-0017
   - CPS-0021
@@ -1128,7 +1129,7 @@ The current **maximum block header size** in Cardano is **1100 bytes**, although
 
 This would **exceed the 1500-bytes limit**, risking fragmentation and violating guidance from the Cardano networking team. We could safely decrease the group element size by decreasing the security parameters if we were to generate new class groups at each epoch. Doing so would however render the protocol more complex and potentially weaken the security of the protocol as we may have more chances to generate a weak class group.
 
-## Rationale: How does this CIP achieve its goals?
+## Rationale: how does this CIP achieve its goals?
 
 ### 1. How Phalanx Addresses CPS-21 - Ouroboros Randomness Manipulation?
 
