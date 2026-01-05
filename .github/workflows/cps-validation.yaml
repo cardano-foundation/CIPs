@@ -1,0 +1,56 @@
+name: CPS Validation
+
+on:
+  pull_request:
+    paths:
+      - 'CPS-*/README.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Get changed CPS files
+        id: changed-files
+        run: |
+          # Get list of changed README.md files in CPS-* directories
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.sha }}"
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA"..."$HEAD_SHA" | grep -E '^CPS-[^/]+/README\.md$' || true)
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No CPS README.md files changed"
+            echo "has_files=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Convert newlines to spaces for passing as arguments
+          FILES_SPACE=$(echo "$CHANGED_FILES" | tr '\n' ' ')
+          echo "has_files=true" >> $GITHUB_OUTPUT
+          echo "files=$FILES_SPACE" >> $GITHUB_OUTPUT
+
+      - name: Validate CPS files
+        if: steps.changed-files.outputs.has_files == 'true'
+        run: |
+          FILES="${{ steps.changed-files.outputs.files }}"
+
+          if [ -z "$FILES" ]; then
+            echo "No files to validate"
+            exit 0
+          fi
+
+          echo "Validating CPS files: $FILES"
+          python3 .github/scripts/validate-cps.py $FILES
