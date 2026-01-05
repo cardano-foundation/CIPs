@@ -17,13 +17,15 @@ Discussions:
   - https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
   - https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
   - https://github.com/cardano-foundation/CIPs/pull/1042
-Created: 4 April 2022 (original), 20 May 2025 (updated)
+Created: 2022-04-04
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
 Improving decentralization is critical for Cardano’s long-term health and growth. The current reward-sharing scheme (RSS) has yielded a stable but suboptimal level of decentralization. In hindsight, the original parameters *k* (the desired number of pools) and *a₀* (pledge influence factor) have not achieved their intended goals. Many stake pools with zero or minimal pledge manage to attract large delegations, undermining the Sybil-resistance that pledge was meant to provide (Liesenfelt, 2022). This proposal introduces a new pledge leverage parameter, *L*, into the RSS to more directly and fairly constrain such under-pledged pools. By capping rewards for pools with excessive stake relative to pledge, *L* penalizes severely under-pledged pools while having minimal effect on well-pledged or small pools. The adjusted scheme aligns economic incentives with decentralization: it redistributes stake toward well-pledged pools (increasing their rewards) and makes it more difficult for single entities to dominate via multiple pools. We present the motivation, specification, and rationale for this change, including simulations illustrating its impact. The goal is to significantly improve effective decentralization (approaching the theoretical *k* target) without unfairly harming small pool operators.
+
+> [Note!] This CIP was originally authored on 2022-04-04, but was subsequently updated on 2025-05-20
 
 ## Motivation: why is this CIP necessary?
 
