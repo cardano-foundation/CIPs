@@ -9,6 +9,7 @@ Authors:
 Implementors: N/A
 Discussions: 
     - https://github.com/cardano-foundation/CIPs/pull/1061
+    - https://github.com/IntersectMBO/cardano-ledger/issues/5474
 Created: 2025-07-16
 License: CC-BY-4.0
 ---
@@ -80,6 +81,9 @@ responsible for the Treasury to hold a basket of assets. The basket would divers
 price fluctuations and ensure that important protocol developments can continue despite price shocks
 in any particular asset class.
 
+> [!NOTE]
+> This CIP only lays *some* of the groundwork for a Cardano Multi-Asset Treasury.
+
 ### Decentralized Fixed-Supply Token Minting
 
 Imagine you only wanted to have 1 million units of a token minted. How can you keep a global count
@@ -126,6 +130,8 @@ be updated to consider these direct deposits.
 **Direct depositing into an account address does not require a witness from the receiving account.**
 In other words, the receiving staking script does *not* need to be executed. This behavior mirrors
 how UTxOs can be created at script addresses without having to execute the spending script.
+[CIP-160](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0160) could enable requiring a
+witness for direct deposits as an opt-in feature.
 
 > [!IMPORTANT]
 > In order to support direct deposits, the account address must be registered.
@@ -134,7 +140,7 @@ By default, only direct deposits of ADA are supported. Pre-existing registered a
 will be automatically upgraded to support direct deposits of ADA through a hardfork-combinator
 event. 
 
-Users will be able to submit a new certificate event (`reg_account_value_cert`), which will
+Users will be able to submit a new certificate event (`stake_credential_adjust_whitelist`), which will
 initialize the balances of certain native assets (listed in the certificate) at an account address,
 starting all of the balances at zero. After these balances are initialized, users will be able to
 direct-deposit those native assets into that account.
@@ -150,55 +156,68 @@ the ledger rules, except for ADA, which can always be deposited into any Cardano
 > will fail phase 1 validation.
 
 The only way to alter which native assets are found in the `AccountValue` is through another
-dedicated certificate event. The new certificates are outlined below:
+dedicated certificate event. The new certificate is outlined below:
 
-```cbor
-; Certificate to initialize the `AccountValue` and requires an extra protocol deposit.
-; The protocol deposit will be proportional to the `multiasset` in the certificate.
-reg_account_value_cert = (19, stake_credential, coin, multiasset)
+```cddl
+add_to_whitelist = multiasset
+remove_from_whitelist = multiasset
 
-; Certificate to disable native asset direct deposits and reclaim the associated
-; protocol deposit.
-unreg_account_value_cert = (20, stake_credential, coin)
+; stake_credential - account that will have the whitelist adjusted
+; delta_coin - change in deposit from what the current deposit is in the system
+;              it can be negative (in case whitelist shrinks in size) or
+;              positive (in case when the size is increased)
+; add_to_whitelist - multiassets to be added to the whitelist
+; remove_from_whitelist - multiassets to be removed from the whitelist
+stake_credential_adjust_whitelist = 
+  (19, stake_credential, delta_coin, add_to_whitelist, remove_from_whitelist)
 
 certificate = 
   [  stake_registration
   // stake_deregistration
   // stake_delegation
   ...
-  // reg_account_value_cert
-  // unreg_account_value_cert
+  // stake_credential_adjust_whitelist
   ]
 ```
 
+The `stake_credential_adjust_whitelist` certificate is an *idempotent* insert/remove operation on
+the `AccountValue` whitelist. Note a few important points:
+
+1. Removing an asset from the whitelist requires withdrawing all of that asset from the account in
+   the same transaction.
+2. When an asset is added to the whitelist, it is not possible to direct deposit that asset in the
+   same transaction ([CIP-118](https://github.com/cardano-foundation/CIPs/pull/862) can be used to
+   get around this restriction: one sub-tx updates the whitelist while a subsequent sub-tx makes the
+   direct deposit.)
+3. You cannot add and remove the same asset in one transaction (i.e., the `add_to_whitelist` and
+   `remove_from_whitelist` fields cannot intersect).
+
+The benefits of this idempotent diffing approach are four-fold:
+
+1. **Proof of Inclusion/Exclusion:** The `stake_credential_adjust_whitelist` can be used to assert
+   that an asset is or is not present in the whitelist.
+2. **Large Whitelists:** A large whitelist can be built up over several transactions which enables
+   whitelists that are larger than the transaction's size limit.
+3. **Efficiency:** Updating only part of a whitelist is significantly cheaper than having to
+   re-certify the entire whitelist every time.
+4. **Improved Decentralized Governance:** It enables breaking up the approval process of a
+   whitelist into digestible pieces. If a community could only vote on the *full* whitelist, it
+   could be rejected just because one asset in the whitelist is contentious. This approach enables
+   voting on each asset independently.
+
 Crucially, since the `AccountValue` will take up space in memory, it must be accompanied with an
 extra protocol deposit that is proportional to the size of the `AccountValue`. This extra protocol
-deposit must be paid in the transaction using the `reg_account_value_cert`. A new parameter
-`whitelistCostPerByte` will be needed.
+deposit must be paid in the transaction using the `stake_credential_adjust_whitelist`. A new
+parameter `accountWhitelistCostPerByte` will be needed.
 
 > [!NOTE]
 > With UTxOs, the minUTxO protocol deposit is paid by the creator of the UTxO. With account
 > addresses, the `AccountValue` protocol deposit will be paid upfront by the address owner. This is
 > what enables the micropayments discussed in the [Motivation section](#motivation-why-is-this-cip-necessary).
 
-There are a few important behaviors to be aware of with these new certificates:
-
-- The `unreg_account_value_cert` forces the user to withdraw all native assets currently in the
-account address.
-- Updating the registered `AccountValue` can be done by submitting the `unreg_account_value_cert`
-and the `reg_account_value_cert` in the same transaction. To carry over the balances from the old
-`AccountValue` to the new `AccountValue`, the transaction must specify direct deposits for those
-assets in the same transaction. The assets must effectively be re-deposited.
-- If you are only using the `unreg_account_value_cert`, you will be able to recover the part of the
-  protocol deposit that was for the `AccountValue`. **The account address itself remains
-registered for delegation.**
-- Transactions involving these certificates must be witnessed by the associated staking credentials.
-  These certificates must be approved by the community to be used on the Cardano Treasury account
-address.
-
 For this to work, the transaction representation needs a new direct deposit field:
 
-```cbor
+```cddl
 direct_deposits = {+ reward_account => value}
 
 transaction_body = 
@@ -218,7 +237,7 @@ transaction_body =
 >
 > 1. It would cut in half the maximum supported number.
 > 2. Withdrawals require witnesses while direct deposits do not. This means we need to be able to
->    distinguish between direct deposits and withdrawals with for the `ScriptPurpose`.
+>    distinguish between direct deposits and withdrawals for the `ScriptPurpose`.
 >
 > Adding a separate field is the better approach.
 
@@ -241,7 +260,7 @@ balance.
 To enable support for withdrawing native assets from account addresses, the representation of
 withdrawals inside transactions needs to be updated:
 
-```cbor
+```cddl
 ; Old representation.
 withdrawals = {+ reward_account => coin}
 
@@ -249,16 +268,20 @@ withdrawals = {+ reward_account => coin}
 withdrawals = {+ reward_account => value} ; replaced `coin` with `value`
 ```
 
-Likewise, since the Cardano Treasury is also able to hold whitelisted native assets, the
-`treasury_withdrawals_action` must be updated:
+> [!IMPORTANT]
+> Partial withdrawals will only be possible in transactions *without* plutus v1-v3 scripts. However,
+> [CIP-118](https://github.com/cardano-foundation/CIPs/pull/862) can help here by isolating the
+> partial withdrawal in a sub-tx.
 
-```cbor
-; Old representation.
-treasury_withdrawals_action = (2, {* reward_account => coin}, policy_hash/ nil)
-
-; New representation.
-treasury_withdrawals_action = (2, {* reward_account => value}, policy_hash/ nil) ; replaced `coin` with `value`
-```
+> [!IMPORTANT]
+> When CIP-118 is implemented, sub-txs can deposit/withdraw from the same account. If this is
+> naively supported, it can *look* like native assets are minted out of thin air. For example, if
+> the first sub-tx withdraws 1 million ADA and the second sub-tx deposits 1 million ADA, the overall
+> transaction is properly balanced and no ADA is actually minted (the value cancels out), but plutus
+> scripts inside the sub-txs can possibly be tricked. To prevent these *Phantom Asset* attacks,
+> transactions can only withdraw funds that exist in the account *before* the overall transaction
+> is run. This means later sub-txs cannot withdraw assets that were deposited by prior sub-txs in
+> the same overall transaction. This restriction will be enforced as part of Phase 1 Validation.
 
 ### Account Balance Intervals
 
@@ -266,13 +289,17 @@ Transactions can specify account balance intervals similarly to how time interva
 for the transaction to be phase 1 valid, the actual balance for the associated asset in the account
 *must* fall within the specified interval. The transaction representation is shown below:
 
-```cbor
+```cddl
+; We don't want to allow arbitrary precision intervals because it would make
+; costing difficult so we constrain them to be 8-byte integers. 
+balance_bound = uint .size 8
+
 account_balance_intervals = 
   {+ reward_account => 
       {+ policy_id => 
           {+ asset_name => 
-               [ inclusive_lower_bound: uint, exclusive_upper_bound: uint / null ]  /
-               [ inclusive_lower_bound: uint / null , exclusive_upper_bound: uint ]
+               [ inclusive_lower_bound: balance_bound, exclusive_upper_bound: balance_bound / null ]  /
+               [ inclusive_lower_bound: balance_bound / null, exclusive_upper_bound: balance_bound ]
           }
       }
   }
@@ -286,11 +313,14 @@ transaction_body =
 ```
 
 As the representation shows, the transaction submitter can specify intervals for different assets
-inside a given account address. In addition to this, there are two important behaviors that need to
+inside a given account address. In addition to this, there are a few important behaviors that need to
 be mentioned:
 
 1. Using the account balance interval does *not* require a witness from the associated credential.
-2. To declare that a certain asset in the `AccountValue` has a `0` balance, the asset's balance interval must be set to `[0,0)`.
+2. To declare that a certain asset in the `AccountValue` has a specific balance of `n`, the asset's
+   balance interval must be set to `[n, n+1)`.
+3. If the account balance interval is used for an asset not supported in the current whitelist, the
+   transaction will fail *Phase 1 Validation*.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
 `ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
@@ -318,13 +348,10 @@ This CIP proposes changing this ledger state to:
 ```haskell
 data AccountState era
   = AccountState
-  { balance :: !(CompactForm Coin)
-  -- ^ Current ADA balance of the account.
+  { balance :: !(CompactForm (AccountValue era))
+  -- ^ Current multi-asset balance of the account.
   , deposit :: !(CompactForm Coin)
-  -- ^ Total protocol deposit amount that was left when staking credential
-  -- was registered and when multi-asset whitelist was created.
-  , multiAssetBalance :: MultiAsset (Map PolicyID (Map AssetName Integer))
-  -- ^ Current balance of the native assets in the account address.
+  -- ^ Total deposit amount from the staking credential registration *and* the account whitelist.
   , stakePoolDelegation :: !(StrictMaybe (KeyHash 'StakePool))
   , dRepDelegation :: !(StrictMaybe DRep)
   }
@@ -332,18 +359,18 @@ data AccountState era
 
 There are a few important points to notice:
 
-1. The ADA balance is kept separate from the multi-asset balance.
-2. The `deposit` field holds *both* the stake credential registration deposit *and* the whitelist
+1. The `deposit` field holds *both* the stake credential registration deposit *and* the whitelist
    registration deposit.
-3. The `multiAssetBalance` map *is the whitelist*. It can only increase/decrease the `Integer`; it
-   cannot add/remove new `PolicyID`s or `AssetName`s to the map. If the asset has no balance, the
+2. The `balance` map *is the whitelist*. Therefore, direct deposits/withdrawals can only
+   increase/decrease the `Integer`; only the `stake_credential_adjust_whitelist` can add/remove
+`PolicyID`s or `AssetName`s from the map. If an asset in the whitelist has no balance, the
 `Integer` should be set to `0`.
 
 > [!IMPORTANT]
-> The required protocol deposit for the whitelist registration will be proportional to the size of
-> the `multiAssetBalance` map. The calculation can be similar to the `minUTxOValue` calculation, but
-> it should get separate protocol parameters so that the `multiAssetBalance` costing can be changed
-> independently to the `minUTxOValue` costing.
+> The required protocol deposit for the whitelist registration will be proportional to the in-memory
+> representation of the multi-assets in the whitelist. The calculation can be similar to the
+> `minUTxOValue` calculation, but it should get separate protocol parameters so that the
+> whitelist costing can be changed independently to the `minUTxOValue` costing.
 
 ### New Plutus Script Context
 
@@ -374,6 +401,135 @@ data TxInfo = TxInfo
 > ([CIP-118](https://github.com/cardano-foundation/CIPs/pull/862)). Then these new transaction
 > fields can be isolated inside a sub-transaction.
 
+### Phased Delivery
+
+In order to expedite delivery of this CIP, development will be broken over two phases/eras. 
+
+#### Phase 1: ADA Support
+
+This phase only adds support for ADA because it will be very quick to implement. ADA support is
+enough to enable wallets, DEX aggregators, and DePIN infrastructure to offer lower fees since they
+are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
+
+**Ledger Rule Changes**
+1. Deposit ADA into account addresses.
+2. Partial withdrawals from account addresses in sub-transactions, or in a top-level transaction
+   but only when plutus v1-v3 scripts are not used in it.
+3. Account balance intervals validated as part of *Phase 1 Validation*.
+
+**CDDL Changes**
+```cddl
+; The withdrawals field is left unchanged.
+
+; Same definition as current withdrawals.
+direct_deposits = {+ reward_account => coin}
+
+account_balance_intervals = 
+  { + reward_account => 
+        [ inclusive_lower_bound: coin, exclusive_upper_bound: coin / null ]  /
+        [ inclusive_lower_bound: coin / null, exclusive_upper_bound: coin ] 
+  }
+
+transaction_body = 
+  {   0  : set<transaction_input>         
+  ,   1  : [* transaction_output]      
+  ...
+  , ? 23 : direct_deposits ; new field
+  , ? 24 : account_balance_intervals ; new field
+  }
+```
+
+**Plutus Script Context**
+
+The plutus script context will be pre-emptively upgraded to support the fields needed in the second
+delivery phase. This way the features can be turned on with a hardfork and plutus scripts written
+for the first delivery phase can immediately take advantage of the new features without having to be
+recompiled.
+
+```haskell
+data TxInfo = TxInfo
+  { txInfoInputs                :: [TxInInfo]
+  , txInfoReferenceInputs       :: [TxInInfo]
+  , txInfoOutputs               :: [TxOut]
+  , txInfoFee                   :: Value
+  , txInfoMint                  :: Value
+  , txInfoTxCerts               :: [TxCert]
+  , txInfoWdrl                  :: Map Credential AccountValue -- ^ Upgraded field.
+  , txInfoValidRange            :: POSIXTimeRange
+  ... 
+  , txInfoDirectDeposits        :: Map Credential AccountValue -- ^ New field.
+  , txInfoBalanceIntervals      :: Map Credential (Map PolicyID (Map AssetName BalanceInterval)) -- ^ New field. 
+  }
+```
+
+> [!IMPORTANT]
+> In order for the community to get the benefits from this CIP, plutus v1-v3 scripts must be
+> allowed in transactions that contain the new `direct_deposits` field. To accomplish this,
+> plutus v1-v3 scripts will be allowed to run inside the top-level of a nested transaction
+> ([CIP-118](https://github.com/cardano-foundation/CIPs/pull/862)). Then the `direct_deposits`
+> field can be safely isolated inside a sub transaction.
+
+#### Phase 2: Multi-Asset Support
+
+This phase will add support for native asset deposits and whitelist certificates which will pave the
+way for a Cardano Multi-Asset Treasury, simplify L2 reserve management, and enable more
+decentralized voting mechanisms.
+
+**Ledger Rule Changes**
+1. Deposit native assets into account addresses.
+2. Withdraw native assets from account addresses.
+3. Whitelist certificates (and extra protocol deposits) for account addresses.
+
+**New Protocol Parameter**
+- `accountWhitelistCostPerByte` which is similar to the current `utxoCostPerByte`.
+
+**CDDL Changes**
+```cddl
+add_to_whitelist = multiasset
+remove_from_whitelist = multiasset
+
+; stake_credential - account that will have the whitelist adjusted
+; delta_coin - change in deposit from what the current deposit is in the system
+;              it can be negative (in case whitelist shrinks in size) or
+;              positive (in case when the size is increased)
+; add_to_whitelist - multiassets to be added to the whitelist
+; remove_from_whitelist - multiassets to be removed from the whitelist
+stake_credential_adjust_whitelist = 
+  (19, stake_credential, delta_coin, add_to_whitelist, remove_from_whitelist)
+
+; New representation: replaced `coin` with `value`.
+withdrawals = {+ reward_account => value}
+
+; New representation: replaced `coin` with `value`.
+direct_deposits = {+ reward_account => value}
+
+; New representation: replaced `coin` with `balance_bound` and enables individual
+; intervals for each asset.
+balance_bound = uint .size 8
+account_balance_intervals = 
+  {+ reward_account => 
+      {+ policy_id => 
+          {+ asset_name => 
+               [ inclusive_lower_bound: balance_bound, exclusive_upper_bound: balance_bound / null ]  /
+               [ inclusive_lower_bound: balance_bound / null, exclusive_upper_bound: balance_bound ]
+          }
+      }
+  }
+```
+
+**New `AccountState`**
+```haskell
+data AccountState era
+  = AccountState
+  { balance :: !(CompactForm (AccountValue era))
+  -- ^ Current multi-asset balance of the account.
+  , deposit :: !(CompactForm Coin)
+  -- ^ Total deposit amount from the staking credential registration *and* the account whitelist.
+  , stakePoolDelegation :: !(StrictMaybe (KeyHash 'StakePool))
+  , dRepDelegation :: !(StrictMaybe DRep)
+  }
+```
+
 ## Rationale: how does this CIP achieve its goals?
 
 This CIP is able to upgrade Cardano's account addresses to full accounts *without* sacrificing local
@@ -383,9 +539,11 @@ important things are:
 
 - This CIP *does not* enable submitting transactions without UTxO inputs.
 - This CIP *does not* enable attaching datums to account addresses.
-- This CIP *does not* enable phase-2 scripts to view the **exact** account balance.
+- This CIP *does not* enable phase-2 scripts to view the **exact** account balance, except when the
+balance interval is set to the exact value (making this feature *opt-in*).
 - This CIP *does not* enable directly depositing arbitrary native assets into account addresses.
-Only whitelisted native assets are allowed (i.e. native assets with balances initialized at the account).
+Only whitelisted native assets are allowed (i.e. native assets with balances initialized at the
+account).
 
 ### Still Require UTxO Inputs
 
@@ -416,7 +574,7 @@ is much more efficient.
 
 ### No Exact Balance View
 
-Enabling plutus scripts to view the account's exact balance would require sacrificing Cardano's
+Enforcing plutus scripts to view the account's exact balance would require sacrificing Cardano's
 local determinism. If Alice submits a transaction at time `t0` where the account's balance is 100
 ADA and then the transaction gets processed at time `t1` when the account balance is 1000 ADA, the
 smart contracts in the transaction use different numbers in there executions. This can result in
@@ -431,13 +589,14 @@ therefore, the same fees. Cardano's local determinism is preserved.
 ### Whitelisted Native Assets Only
 
 The reason Cardano has a `minUTxOValue` requirement is to prevent native asset dusting attacks - a
-malicious person can create worthless tokens and create UTxOs with *only* these assets. When block
-producers try to validate transactions, they need to load the UTxOs into memory. If the size of
-these UTxOs are not somehow tied to real world resource constraints, the malicious actors can cause
-block producer memory usages to explode with these worthless native assets taking up space. This is
-effectively a ddos attack. By requiring every UTxO to contain ADA, a malicious actor is only able to
-cause this attack if they actually have the required amount of ADA to back the memory usage required
-to process the native asset values.
+malicious person can create worthless tokens and create UTxOs with *only* these assets or create
+UTxOs with no assets at all. When block producers try to validate transactions, they need to load
+the UTxOs into memory. If the size of these UTxOs are not somehow tied to real world resource
+constraints, the malicious actors can cause block producer memory usages to explode with these
+worthless/valueless UTxOs taking up space. This is effectively a DDoS attack. By requiring every
+UTxO to contain a minimum of ADA, a malicious actor is only able to cause this attack if they
+actually have the required amount of ADA to back the memory usage required to process the native
+asset values.
 
 If account addresses could accept arbitrary native assets like UTxOs, they would be susceptible to
 the same dusting attacks. A first thought might be to have a `minUTxOValue`-like protocol deposit
@@ -449,128 +608,13 @@ payment instead. The protocol deposit could be more than 1 ADA which is 10x the 
 wanted to charge! Users will not pay the fees in stablecoins if using ADA instead is 10x cheaper!
 
 So the goal is to prevent dusting attacks while still allowing micropayments using non-ADA assets.
-That is why the whitelist is used. The account address owner covers the protocol deposit for the native
-assets they are interested in and now users can just deposit those native assets without having to
-also cover a protocol deposit. The account address owner would not be able to cover the protocol
-deposit if they did not know which native assets would be deposited ahead of time, so this approach
-only works with a whitelist.
+That is why the whitelist is used. The account address owner covers the protocol deposit for the
+native assets they are interested in and now users can direct deposit those native assets into the
+account without having to also cover a protocol deposit. The account address owner would not be able
+to cover the protocol deposit if they did not know which native assets would be deposited ahead of
+time, so this approach only works with a whitelist.
 
 ## Path to Active
-
-### Phased Delivery
-
-In order to expedite delivery of this CIP, development will be broken over two phases/eras. *Each
-phase will require a new plutus and ledger version.*
-
-#### Phase 1: ADA Support
-
-This phase only adds support for ADA because it will be very quick to implement. ADA support is
-enough to enable wallets, DEX aggregators, and DePIN infrastructure to offer lower fees since they
-are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
-
-**Ledger Rule Changes**
-1. Deposit ADA into account addresses.
-2. Partial withdrawals from account addresses.
-3. Account balance intervals validated as part of *Phase 1 Validation*.
-
-**CBOR Changes**
-```cbor
-; Same definition as current withdrawals
-direct_deposits = {+ reward_account => coin}
-
-account_balance_intervals = 
-  { + reward_account => 
-        [ inclusive_lower_bound: coin, exclusive_upper_bound: coin / null ]  /
-        [ inclusive_lower_bound: coin / null, exclusive_upper_bound: coin ] 
-  }
-
-transaction_body = 
-  {   0  : set<transaction_input>         
-  ,   1  : [* transaction_output]      
-  ...
-  , ? 23 : direct_deposits ; new field
-  , ? 24 : account_balance_intervals ; new field
-  }
-```
-
-**Plutus Script Context Translations**
-
-> [!IMPORTANT]
-> In order for the community to get the benefits from this CIP, plutus v1-v3 scripts must be
-> allowed in transactions that contain the new `direct_deposits` field. To accomplish this,
-> plutus v1-v3 scripts will be allowed to run inside the top-level of a nested transaction
-> ([CIP-118](https://github.com/cardano-foundation/CIPs/pull/862)). Then the `direct_deposits`
-> field can be safely isolated inside a sub transaction.
-
-#### Phase 2: Multi-Asset Support
-
-This phase will add support for native asset deposits and whitelist certificates. It will enable a
-Cardano Multi-Asset Treasury, simplified L2 reserves, and better decentralized voting mechanisms.
-
-**Ledger Rule Changes**
-- Deposit native assets into account addresses.
-- Withdraw native assets from account addresses.
-- Whitelist certificates (and extra protocol deposits) for account addresses.
-
-**New Protocol Parameter**
-- `whitelistCostPerByte` which is similar to the current `utxoCostPerByte`.
-
-**CBOR Changes**
-```cbor
-; Certificate to initialize the `AccountValue` and requires an extra protocol deposit.
-; The protocol deposit will be proportional to the `multiasset` in the certificate.
-reg_account_value_cert = (19, stake_credential, coin, multiasset)
-
-; Certificate to disable native asset direct deposits and reclaim the associated
-; protocol deposit.
-unreg_account_value_cert = (20, stake_credential, coin)
-
-certificate = 
-  [  stake_registration
-  // stake_deregistration
-  // stake_delegation
-  ...
-  // reg_account_value_cert ; New certificate
-  // unreg_account_value_cert ; New certificate
-  ]
-
-; New representation: replaced `coin` with `value`.
-withdrawals = {+ reward_account => value}
-
-; New representation: replaced `coin` with `value`.
-treasury_withdrawals_action = (2, {* reward_account => value}, policy_hash/ nil)
-
-; New representation: replaced `coin` with `value`.
-direct_deposits = {+ reward_account => value}
-
-; New representation: replaced `coin` with `uint` and enables individual 
-; intervals for each asset.
-account_balance_intervals = 
-  {+ reward_account => 
-      {+ policy_id => 
-          {+ asset_name => 
-               [ inclusive_lower_bound: uint, exclusive_upper_bound: uint / null ]  /
-               [ inclusive_lower_bound: uint / null , exclusive_upper_bound: uint ]
-          }
-      }
-  }
-```
-
-**New `AccountState`**
-```haskell
-data AccountState era
-  = AccountState
-  { balance :: !(CompactForm Coin)
-  , deposit :: !(CompactForm Coin)
-  -- ^ Total protocol deposit amount that was left: staking credential
-  -- deposit + multi-asset whitelist deposit.
-  , multiAssetBalance :: MultiAsset (Map PolicyID (Map AssetName Integer))
-  -- ^ Current balance of the native assets in the account address.
-  -- IT MUST BE FIXED SIZE: adding/removing `Map` keys requires a new whitelist cert.
-  , stakePoolDelegation :: !(StrictMaybe (KeyHash 'StakePool))
-  , dRepDelegation :: !(StrictMaybe DRep)
-  }
-```
 
 ### Acceptance Criteria
 - [ ] These rules included within an official Plutus and Ledger version, and released via a major hard fork.
@@ -580,7 +624,9 @@ off-chain library maintainers, smart contract language maintainers, L2 builders,
 ### Implementation Plan
 - [ ] Passes all requirements of both Plutus and Ledger teams as agreed to improve utility of
 account addresses.
-- [ ] Each phase is implemented either together or in separate Cardano eras.
+- [ ] Each phase is implemented either together or in separate Cardano eras:
+    - [ ] Delivery Phase 1: ADA Support
+    - [ ] Delivery Phase 2: Multi-Asset Support
 
 ## Copyright
 
