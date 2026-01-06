@@ -165,10 +165,10 @@ Example:\
 
 This is either:
 
-1. A low-level direct representation of the metadata, following closely the structure of CIP-0025
-2. A 721-ERC-style token mapping exactly matching the structure of CIP-0025
+1. A low-level direct representation of the metadata, following closely the structure of CIP-0025 for individual asset metadata (name, image, files, etc.)
+2. A nested map structure following CIP-0025's organization with policy_id and asset_name as keys, where the outer map contains a "721" key whose value maps policy_id to asset_name to metadata
 
-All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
+All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain. In the nested map format (option 2), the "721" key, policy_id keys, and asset_name keys must be encoded as bounded_bytes (following CIP-0025 version 2 conventions).
 
 ```
 files_details =
@@ -194,23 +194,18 @@ metadata =
 
 metadata_map = 
   {
-    __RESERVE_KEYWORD_721_V4__ : bool, ; Long name to avoid conflict
-
-    "721":
+    "721" : bounded_bytes => ; The "721" key encoded as UTF-8 bytes (0x373231)
     {
-      ; As many of the below as needed based on which reference tokens are added
-      "<policy_id>":
+      * policy_id : bounded_bytes => ; Policy ID encoded as bytes
       {
-        "<asset_name_1>" : metadata,
-        ; ...
-        "<asset_name_n>" : metadata,
+        * asset_name : bounded_bytes => metadata ; Asset name encoded as bytes (without label prefix)
       }
     }
   }
 
 metadata_field = 
-  metadata          ; For backwards-compatibility in v4 onward, a map itself is valid metadata
-  / metadata_map    ; Multi-metadata is now supported as in CIP-0025
+  metadata          ; Direct metadata format (versions 1-3)
+  / metadata_map    ; Nested map format with "721" key (version 4)
 
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
@@ -260,7 +255,7 @@ Example datum as JSON (direct metadata):
 }
 ```
 
-Example datum as JSON (721-style):
+Example datum as JSON (nested map format):
 
 ```json
 {
@@ -307,9 +302,9 @@ to lookup. The steps are
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
-4. Determine whether this is a direct metadata or the CIP-0025 map style using the `__RESERVE_KEYWORD_721_V4__` map value (if present, default false)
+4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
 5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
-6. For multi-map style metadata, return only the JSON values inside the matching path: `721`->>`policy_id`->>`asset_name`
+6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
 
@@ -350,9 +345,9 @@ Example:\
 This is either:
 
 1. A low-level direct representation of the metadata, following closely the structure of the Cardano foundation off-chain metadata registry
-2. A 721-ERC-style token mapping exactly matching the structure of CIP-0025
+2. A nested map structure following CIP-0025's organization with policy_id and asset_name as keys, where the outer map contains a "721" key whose value maps policy_id to asset_name to metadata
 
-All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
+All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain. In the nested map format (option 2), the "721" key, policy_id keys, and asset_name keys must be encoded as bounded_bytes (following CIP-0025 version 2 conventions).
 
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
@@ -374,23 +369,18 @@ metadata =
 
 metadata_map = 
   {
-    __RESERVE_KEYWORD_721_V4__ : bool, ; Long name to avoid conflict
-
-    "721":
+    "721" : bounded_bytes => ; The "721" key encoded as UTF-8 bytes (0x373231)
     {
-      ; As many of the below as needed based on which reference tokens are added
-      "<policy_id>":
+      * policy_id : bounded_bytes => ; Policy ID encoded as bytes
       {
-        "<asset_name_1>" : metadata,
-        ; ...
-        "<asset_name_n>" : metadata,
+        * asset_name : bounded_bytes => metadata ; Asset name encoded as bytes (without label prefix)
       }
     }
   }
 
 metadata_field = 
-  metadata          ; For backwards-compatibility in v4 onward, a map itself is valid metadata
-  / metadata_map    ; Multi-metadata is now supported as in CIP-0025
+  metadata          ; Direct metadata format (versions 1-3)
+  / metadata_map    ; Nested map format with "721" key (version 4)
 
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
@@ -448,9 +438,9 @@ to lookup. The steps are
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
-4. Determine whether this is a direct metadata or the CIP-0025 map style using the `__RESERVE_KEYWORD_721_V4__` map value (if present, default false)
+4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
 5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
-6. For multi-map style metadata, return only the JSON values inside the matching path: `721`->>`policy_id`->>`asset_name`
+6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
 
@@ -495,10 +485,10 @@ Example:\
 
 This is either:
 
-1. A low-level direct representation of the metadata, following closely the structure of CIP-0025 with the optional decimals field added
-2. A 721-ERC-style token mapping exactly matching the structure of CIP-0025
+1. A low-level direct representation of the metadata, following closely the structure of CIP-0025 for individual asset metadata (name, image, files, etc.) with the optional decimals field added
+2. A nested map structure following CIP-0025's organization with policy_id and asset_name as keys, where the outer map contains a "721" key whose value maps policy_id to asset_name to metadata
 
-All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain.
+All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain. In the nested map format (option 2), the "721" key, policy_id keys, and asset_name keys must be encoded as bounded_bytes (following CIP-0025 version 2 conventions).
 
 ```
 files_details =
@@ -525,23 +515,18 @@ metadata =
 
 metadata_map = 
   {
-    __RESERVE_KEYWORD_721_V4__ : bool, ; Long name to avoid conflict
-
-    "721":
+    "721" : bounded_bytes => ; The "721" key encoded as UTF-8 bytes (0x373231)
     {
-      ; As many of the below as needed based on which reference tokens are added
-      "<policy_id>":
+      * policy_id : bounded_bytes => ; Policy ID encoded as bytes
       {
-        "<asset_name_1>" : metadata,
-        ; ...
-        "<asset_name_n>" : metadata,
+        * asset_name : bounded_bytes => metadata ; Asset name encoded as bytes (without label prefix)
       }
     }
   }
 
 metadata_field = 
-  metadata          ; For backwards-compatibility in v4 onward, a map itself is valid metadata
-  / metadata_map    ; Multi-metadata is now supported as in CIP-0025
+  metadata          ; Direct metadata format (versions 1-3)
+  / metadata_map    ; Nested map format with "721" key (version 4)
 
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
@@ -615,9 +600,9 @@ to lookup. The steps are
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
-4. Determine whether this is a direct metadata or the CIP-0025 map style using the `__RESERVE_KEYWORD_721_V4__` map value (if present, default false)
+4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
 5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
-6. For multi-map style metadata, return only the JSON values inside the matching path: `721`->>`policy_id`->>`asset_name`
+6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
 
@@ -696,7 +681,7 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 
 #### version 4
 
-- Add backwards-compatible support for multi-asset 721-ERC-style metadata mappings
+- Add support for nested map format following CIP-0025's policy_id -> asset_name structure, allowing multiple assets' metadata in a single datum. This format is backwards-compatible with versions 1-3, which only support direct metadata format.
 
 ## Rationale: how does this CIP achieve its goals?
 
