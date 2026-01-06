@@ -23,7 +23,7 @@ This standard was intentionally limited in scope, so that it can be expanded upo
 
 This proposal aims to provide a specification for the off-chain metadata vocabulary that can be used to give context to Constitutional Committee (CC) votes.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The high-level motivation for this proposal is to provide a standard which improves legitimacy of Cardano's governance system.
 
@@ -174,7 +174,7 @@ See [test-vector.md](./test-vector.md) for examples.
 This proposal should not be versioned, to update this standard a new CIP should be proposed.
 Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By providing a peer reviewed structure for CC vote rationale, we encourage detailed voting rationales increasing the legitimacy of CC votes within the governance system.
 

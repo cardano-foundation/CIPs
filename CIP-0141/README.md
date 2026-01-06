@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This document describes a CIP-30 extension allowing webpages (i.e., DApps) to interface with Cardano Plutus wallets. This interface is a work in progress, and new versions are expected to be included as the ecosystem evolves. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
   
 Plutus wallets is a class of wallets where the holding address does not correspond to a public key, but to a script. This enables more complex validation logic to be implemented in the wallet, allowing for more complex spending conditions to be enforced.
   
@@ -195,7 +195,7 @@ This endpoint will now optionally return an error if the smart Wallet is a multi
 
 Plutus contracts cannot sign data, only validate transactions. This endpoint will be disabled when connecting to a wallet using this extension.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By altering the API endpoints and adding new ones, we can provide the necessary information for DApps to interact with Plutus wallets. This will allow any developer to integrate smart-wallets into their DApps, while providing a consistent interface for all wallets.
 

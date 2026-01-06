@@ -24,7 +24,7 @@ This standard both extend on and add restrictions to
 [CIP-1854 | Multi-signature HD Wallets](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1854/README.md)
 to provide the structure of transaction auxiliary data.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Term     | Definition
 ---      | ---
@@ -190,7 +190,7 @@ Example structure:
 }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The structure to handle registration of native scripts ahead of time has been available from the Allegra era and 
 beyond by including script pre-image in transaction auxiliary data. The principal aim for this specification is to 

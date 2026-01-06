@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 The proposed Cardano Improvement Proposal (CIP) outlines a conventional structure for data payloads that are signed by wallets, which can be used by decentralized application (dApp) servers to authenticate user requests. By leveraging the Cardano blockchain as an identity provider, dApp servers can securely and trustlessly verify user identities without relying on centralized servers or third-party services. This CIP aims to provide a standard approach for implementing wallet signature authentication in dApps, improving the security and reliability of user interactions with decentralized systems.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The cardano wallets have the ability to sign arbitrary piece of data as we can see in the [Message signing CIP-0008](./CIP-0008/README.md). All wallets implement the method ```api.signData(addr: Address, payload: Bytes): Promise<DataSignature>``` defined in [Cardano dApp-Wallet Web Bridge CIP-0030](./CIP-0030/README.md).
 
@@ -172,7 +172,7 @@ The server has ultimate responsibility of processing correctly the requests. We 
 
 Additionally the server COULD extract the payload content and pass it through the server logic.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 CIP-0008 enhances authentication by enabling individuals to prove ownership of addresses, identities, and off-chain data through message signing. It provides a reliable means of authentication by allowing individuals to attach a public key to their data and sign messages associated with that data, thereby establishing ownership and ensuring the integrity of the authentication process.
 

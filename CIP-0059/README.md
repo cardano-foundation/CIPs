@@ -17,7 +17,7 @@ License: CC-BY-4.0
 This CIP seeks to clarify the language around groups of features.
 At the very least, it provides some history.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 When @CharlesHoskinson conceived of Cardano, he had a vision for what features the network would support.
 This vision is still present on the [Cardano roadmap website](https://roadmap.cardano.org).
@@ -104,7 +104,7 @@ Let us use the following language:
 * **Ledger Protocol** - A ledger protocol in Cardano is a collection of ledger features sitting between the consensus layer and the ledger layer, roughly characterized by block header validation.
 * **Release Dates** - When we are confident about the release of a new features, we can chose to honor Cardano community members by naming a date after them.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 If we can agree to common language, it will greatly improve communication among ourselves and also with new community members.
 

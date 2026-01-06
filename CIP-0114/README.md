@@ -22,7 +22,7 @@ This CIP defines a set of policies for the creation and maintenance of new CBOR 
 It also collates a list of all currently defined Tags for easy reference.
 Finally, it recommends best practice for registering those Tags with IANA.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This CIP is motivated by the problems outlined in [CPS-0014].
 
@@ -107,7 +107,7 @@ If a Tag is not yet registered then any implementor must be aware that its possi
 Unregistered tags MUST not be used in any main net on-chain metadata or data structures.
 They should only be used for testing purposes until registration is complete.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Creating a [registry][CIP Tag Registry] for `CIP Tag` values has the following benefit:
 

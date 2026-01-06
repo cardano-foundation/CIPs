@@ -19,7 +19,7 @@ License: Apache-2.0
 
 This CIP proposes a robust framework for the issuance of interoperable programmable tokens on Cardano. Unlike all its predecessors, this framework allows these tokens to be used in existing dApps, and does not require dApps to be developed specifically for these tokens. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This CIP proposes a solution to [CPS-0003 (Smart Tokens)](../CPS-0003).
 
@@ -151,7 +151,7 @@ The system guarantees that each programmable token must have a transfer logic sc
 
 This framework doesn't require custom indexers to find user / script UTxOs, instead they can be easily queried by all existing indexers / wallets. For example, to obtain all the smart tokens in a user's wallet you can construct a franken-address where the payment credential is the `mkProgrammableLogicBase` credential and the staking credential is the user's public key credential and then query this address (in the same way you would query any normal address). 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The existing proposed frameworks for programmable tokens are:
 1. Ethereum Account Abstraction (emulate Ethereum accounts via Plutus contract data)

@@ -18,7 +18,7 @@ This Cardano Improvement Proposal (CIP) introduces a standardized and flexible m
 
 For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 With the advent of the Voltaire era, Cardano is moving towards a decentralized governance model. CIP-1694 addresses a potential technical implementation of ledger rules for creating, voting on, and ratifying proposed changes to the ledger. The ledger has no mechanism or desire to validate this metadata, and as a result, the official specification leaves the format of this metadata unspecified.
 
@@ -184,7 +184,7 @@ This section outlines a number of other best practices for tools and user experi
  - If the content is self-hosted, you SHOULD take care to warn the user about changing the content
    - For example, you CAN detect well-known content-addressable file storage platforms such as IPFS or Arweave, and display an extra warning if the content is not hosted on one of those
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Here are the goals this CIP seeks to achieve, and the rationale for how this specific solution accomplishes them:
 

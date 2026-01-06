@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 We propose adding a new builtin function, `multiIndexArray`, to Plutus Core. This function takes a list of integer indices and an array, returning a list of the array elements at those positions in the specified order.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Plutus Core arrays (CIP-0138) support O(1) individual lookup via `indexArray`. However, extracting multiple elements requires repeated calls to `indexArray`, which:
 
@@ -42,7 +42,7 @@ multiIndexArray :: forall a. List Integer -> Array a -> List a
 - **Error handling**: If any index is out of bounds (< 0 or ≥ lengthOfArray), the entire call fails with the same error semantics as `indexArray`.
 - **Cost**: Time and memory usage are linear in the length of the index list.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By batching multiple lookups into one builtin, `multiIndexArray`:
 

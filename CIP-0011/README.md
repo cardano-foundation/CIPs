@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 Starting with the Shelley hardfork, Cardano makes use of both the *UTXO model* and the *account model*. To support both transaction models from the same master key, we allocate a new chain for [CIP-1852].
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Generally it's best to only use a cryptographic key for a single purpose, and so it's best to make the staking key be separate from any key used for UTXO addresses.
 
@@ -60,7 +60,7 @@ reward address (with `network_id=1`)
 stake1uy8ykk8dzmeqxm05znz65nhr80m0k3gxnjvdngf8azh6sjc6hyh36
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Meaning of *account*
 

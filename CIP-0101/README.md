@@ -18,7 +18,7 @@ License: Apache-2.0
 This CIP proposes an extension of the current Plutus functions to provide support for the [`keccak256`](https://keccak.team/files/Keccak-submission-3.pdf) hashing algorithm,
 primarily to ensure compatibility with Ethereum's cryptographic infrastructure.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The [integration](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0049/README.md) of the ECDSA and Schnorr signatures over the secp256k1 curve into Plutus was a significant 
 step towards interoperability with Ethereum and Bitcoin ecosystems. However, full compatibility is still impossible 
@@ -52,7 +52,7 @@ More specifically, Plutus will gain the following primitive operation:
 The input to this function can be a `ByteString` of arbitrary size, and the output will be a `ByteString` of 32 bytes. 
 Note that this function aligns with the format of existing hash functions in Plutus, such as [blake2b_256](https://github.com/input-output-hk/plutus/blob/75267027f157f1312964e7126280920d1245c52d/plutus-core/plutus-core/src/Data/ByteString/Hash.hs#L25)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 While the `keccak256` function might be implemented in on-chain scripts, doing so would be computationally unfeasible. 
 
 The library, cryptonite, is not implemented by and under control of the Plutus team. However, 

@@ -26,7 +26,7 @@ A Cardano Improvement Proposal (CIP) is a formalised design document for the Car
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIPs aim to address two challenges mainly:
 1. The need for various parties to agree on a common approach to ease the interoperability of tools or interfaces.
@@ -441,7 +441,7 @@ Emeritus editors:
 - Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
 - Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Key changes from CIP-0001 (version 1)
 

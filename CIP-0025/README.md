@@ -23,7 +23,7 @@ License: CC-BY-4.0
 
 This proposal defines an Media Token Metadata Standard for Native Tokens.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Tokens on Cardano are a part of the ledger. Unlike on Ethereum, where metadata can be attached to a token through a smart contract, this isn't possible on Cardano because tokens are native and Cardano uses a UTxO ledger, which makes it hard to directly attach metadata to a token.
 So the link to the metadata needs to be established differently.
@@ -150,7 +150,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
 - [EIP-721](https://eips.ethereum.org/EIPS/eip-721)
 - URI/URL standards: [RFC3986](https://tools.ietf.org/html/rfc3986), [RFC2397](https://tools.ietf.org/html/rfc2397)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Retrieve valid metadata for a specific token
 

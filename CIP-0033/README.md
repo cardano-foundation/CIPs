@@ -20,7 +20,7 @@ License: CC-BY-4.0
 We propose to allow scripts ("reference scripts") to be attached to outputs, and to allow reference scripts to be used to satisfy script requirements during validation, rather than requiring the spending transaction to do so.
 This will allow transactions using common scripts to be much smaller.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Script sizes pose a significant problem. This manifests itself in two ways:
 1. Every time a script is used, the transaction which caused the usage must supply the whole script as part of the transaction. This bloats the chain, and passes on the cost of that bloat to users in the form of transaction size fees.
@@ -64,7 +64,7 @@ transaction_output =
 ```
 TODO: can we use a more generic type that allows _any_ script in a forwards-compatible way?
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The key idea of this proposal is stop sending frequently-used scripts to the chain every time they are used, but rather make them available in a persistent way on-chain.
 

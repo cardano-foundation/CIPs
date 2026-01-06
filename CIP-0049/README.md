@@ -21,7 +21,7 @@ Support ECDSA and Schnorr signatures over the SECP256k1 curve in Plutus Core;
 specifically, allow validation of such signatures as builtins.
 These builtins work over ``BuiltinByteString``s.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Signature schemes based on the SECP256k1 curve are common in the blockchain
 industry; a notable user of these is Bitcoin. Supporting signature schemes which
@@ -146,7 +146,7 @@ The builtin operations will error with a descriptive message if given inputs
 that don't correspond to the constraints above, return `False` if the signature
 fails to verify the input given the key, and `True` otherwise.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 We consider the implementation trustworthy: `secp256k1` is the reference
 implementation for both signature schemes, and is already being used in

@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 Cardano transaction metadata forces metadata entries to namespace their content using an unsigned integer key. This specification is a registry of which use cases has allocated which number to avoid collisions.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The top level of the transaction metadata CBOR object is a mapping of `transaction_metadatum_label` to the actual metadata where the `transaction_metadatum_label` represents an (ideally unique) key for a metadata use case. This allows enables the following:
 
@@ -58,7 +58,7 @@ this file.
 
 \* It's best to avoid using `0` or any a similar number like `1` that other people are very likely to use. Prefer instead to generate a random number
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Creating a registry for `transaction_metadatum_label` values has the following benefit:
 

@@ -26,7 +26,7 @@ This document specifies a language for documenting Plutus contracts in a machine
 
 This document is therefore a meta-specification defining the vocabulary and validation rules with which one can specify a Plutus contract interface, a.k.a **Plutus contract blueprint**.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 While publicly accessible, on-chain contracts are currently inscrutable. Ideally, one would want to get an understanding of transactions revolving around script executions. This is both useful to visualize and to control the evolution of a contract life-cycle; but also, as a user interacting with a contract, to ensure that one is authorizing a transaction to do what it's intended to. Having a machine-readable specification in the form of a JSON-schema makes it easier (or even, possible) to enable a wide variety of use cases from a single concise document, such as:
 
@@ -351,7 +351,7 @@ This keyword's value must be an array of valid _Plutus Data Schema_; possibly em
 ```
 </details>
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Documenting binary interfaces
 

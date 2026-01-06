@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 This proposal defines an additional property to the metadata standard for tokens (NFTs and FTs) to support text localization.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Current token metadata only supports a single hardcoded language (mostly English), which limits the accessibility to a certain culture. To get closer to mass adoption, we need to bring down language barriers by extending the current standard to support translations. This is especially relevant for games, metaverse solutions, and RealFi use cases of NFTs.
 
@@ -98,7 +98,7 @@ Extended versions of CIP-25
 - The new `strings` properties are optional, but if included, they must be valid JSON objects.
   - The JSON object's keys and structure should match the same keys defined on the `policy_id` level for collection-specific information, or on the `asset_name` level for asset-specific properties, depending which attributes have translations. By doing so, the developer experience to access the localized strings significantly improves.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Access valid localized properties of a token's metadata
 

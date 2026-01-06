@@ -17,7 +17,7 @@ License: CC-BY-4.0
 This CIP specifies a policy for the backwards compatibility of the serialization scheme of
 Cardano transactions.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Transactions on Cardano are sent on the wire using CBOR and are specified with CDDL.
 The first scheme was introduced with the Byron phase.
@@ -126,7 +126,7 @@ Notice that block validators will not notice this change, though block producers
   must be supported for at least six months with support ending at the next hard fork event after
   the six months have passed.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 It seems clear that security issues merit breaking backwards compatibility and should be fixed
 as soon as possible.

@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This document details a common format for sharing Cardano delegation portfolio across various tools and wallets. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Stakeholders have indicated the desire to split their stake in various sizes and delegate to n pools from a single wallet/mnemonic. Albeit there are no monetary incentive for users to do this, the desire to drive decentralisation is sufficiently prevalent to justify it. Furthermore, stakeholders want to introduce a certain social element to this activity by sharing their delegation portfolio with other stakeholders. This specification should help to standardize the representation of portfolios across tools for more interoperability. 
 
@@ -61,7 +61,7 @@ Portfolios which treat all stake pools equally should use the same weight (e.g. 
 }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 1. JSON is widely used, widely supported and quite lightweight. Makes for a reasonable choice of data format.
 

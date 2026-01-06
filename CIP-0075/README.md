@@ -17,7 +17,7 @@ The current reward sharing scheme of Cardano is unfair and anticompetitive. As a
 
 This proposal retains most of the original reward sharing scheme, but makes changes to ensure fairness, increase decentralization, and reduce the viability of Goldfinger attacks. By removing the minimum fixed fee, adjusting the pledge benefit, increasing k, and reducing a0, a more egalitarian network can be achieved.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Definitions
 
@@ -124,7 +124,7 @@ The proposed parameter values are the following:
 | stakePoolTargetNum    | N                   | N                       | 1000           | See Rationale Section.       |
 | poolPledgeInfluence   | N                   | N                       | 0.2            | See Rationale Section.       |
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Principles
 

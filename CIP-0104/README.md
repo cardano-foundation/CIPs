@@ -19,7 +19,7 @@ License: CC-BY-4.0
 ## Abstract
 This CIP extends [CIP-30 (Cardano dApp-Wallet Web Bridge)](https://cips.cardano.org/cips/cip30/) to provide an additional endpoint for dApp to get the extended account public key from a connected wallet.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 Normally it's up to the wallet to handle the logic for utxo selection, derived addresses etc through the established CIP-30 api. Sometimes however, dApp needs greater control due to subpar utxo selection or other specific needs that can only be handled by chain lookup from derived address(es). This moves the control and complexity from wallet to dApp for those dApps that prefer this setup. A dApp has better control and can make a more uniform user experience. By exporting only the account public key, this gives read-only access to the dApp.
 
 ## Specification
@@ -33,7 +33,7 @@ Returns hex-encoded string representing cbor of extended account public key. Thr
 
 Wallets implementing this CIP should, but not enforced, request additional access from the user to access this endpoint as it allows for complete read access to account history and derivation paths.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 Raw cbor is returned instead of bech32 encoding to follow specification of other CIP30 endpoints.
 
 ## Path to Active

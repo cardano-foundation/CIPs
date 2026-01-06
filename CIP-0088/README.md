@@ -526,7 +526,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
 }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 For this specification, I have drawn inspiration from
 [CIP-36: Catalyst/Voltaire Registration Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036)

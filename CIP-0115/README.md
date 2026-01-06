@@ -18,7 +18,7 @@ License: CC-BY-4.0
 This CIP defines CBOR Tags and formalizes the Canonical encoding of data structures for [CIP-0003].
 The intention is to have these tags registered in the [IANA CBOR Tag Registry].
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Project Catalyst is in the process of defining new CBOR data structures.
 We needed a way to reliably disambiguate different 32 byte strings.
@@ -105,7 +105,7 @@ ed25519_bip32_signature = #6.32774(bstr .size 64)
 
 Data for the signature inside the byte string is encoded in [network byte order].
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By defining concrete CBOR tags, it is possible for metadata to unambiguously mark the kind of data encoded.
 This is conformant with the intent of Tags in [CBOR], and aligns with [CIP-CBOR-TAGS].

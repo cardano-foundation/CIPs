@@ -29,7 +29,7 @@ This CIP is an addendum to the original [CIP-0020](https://github.com/cardano-fo
 It describes the JSON schema to add encrypted messages/comments/memos as transaction metadata. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets. 
 Tools/Wallets that do not have an implementation to decrypt this format will just show the encrypted base64 as the message, but it will not break any existing processes.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Current state of transaction messages
 
@@ -202,7 +202,7 @@ Which results in the original content of the **msg** key:
   
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
 The original CIP-0020 design allowed the addition of new entries like the `"enc":` key for encrypted messages in this CIP. Therefore the encoding format of the encrypted message was choosen to be UTF-8 instead of bytearrays, because it would break the backwards compatibility to CIP-0020. But maybe more important, it gives the user a simple text-format to handle such messages. Users can copy and paste the base64 encoded string(s) using there own tools for creation and verification. For example, a user can simply copy the encrypted format from an explorer and verify it with an external own local tool. Such messages are usally pretty short. Yes, the benefit of using bytearrays is to have less data (around -33% over base64), but the decision was made to sacrifice this benefit in favor of the base64 format for the reasons pointed out before.

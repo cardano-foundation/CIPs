@@ -17,7 +17,7 @@ We propose to introduce a new Plutus scripts type `Observe` in addition to those
 Since observe validators are decoupled from actions, you can run them in a transaction without needing to perform any associated action (ie you don't need to consume a script input, or mint a token, or withdraw from a staking script just to execute this validator). 
 Additionally, we propose to introduce a new assertion to native scripts that they can use to check that a particular script hash is in `required_observers` (which in turn enforces that the script must be executed successfully in the transaction). This addresses a number of technical issues discussed in other CIPs and CPS such as the redundant execution of spending scripts, and the inability to effectively use native scripts in conjunction with Plutus scripts. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 Often in a plutus validator you want to check "a particular (different) Plutus script checked this transaction", but it's annoying (and wasteful) to have to have to lock an output in a script and then check if that output is consumed, or mint a token, or whatever else just to trigger script validation. 
 
 Currently the main design pattern used to achieve this is a very obscure trick involving staking validators and the fact that you can withdraw 0 from a staking validator to trigger the script validation. A summary of the trick is:
@@ -174,7 +174,7 @@ Native scripts are typically represented in JSON syntax. We propose the followin
 ```
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Currently Plutus scripts (and native scripts) in a transaction will only execute when the transaction performs the associated ledger action (ie. a Plutus minting policy will only execute if the transaction mints or burns tokens with matching currency symbol). The only exception is the withdraw zero trick which relies on an obscure mechanic where zero amount withdrawals are not filtered by the ledger. Now using `required_observers` we can specify a list of scripts (supports both native and Plutus scripts) to be executed in the transaction independent of any ledger actions. The newly introduced `txInfoObservations` field in the script context provides a straightforward way for scripts to check that "a particular script validated this transaction".
 
