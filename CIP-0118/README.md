@@ -282,7 +282,7 @@ sub_transaction_body =
   , ? 24 : [+ required_top_level_guard] ;; new field
   }
 
-required_top_level_guard = [credential, plutus_data / null]
+required_top_level_guard = [credential, plutus_data / nil]
 ```
 
 ### Network and Consensus Changes
