@@ -258,7 +258,7 @@ transaction_body =
   }
 
 sub_transaction =
-  [sub_transaction_body, transaction_witnesses, auxiliary_data / nil]
+  [sub_transaction_body, transaction_witness_set, auxiliary_data / nil]
 
 ;; Missing `fee`, `collateral` and `collateral return output`, when comparing to `transaction_body`
 sub_transaction_body =
