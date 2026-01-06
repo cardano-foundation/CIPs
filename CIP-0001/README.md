@@ -240,8 +240,6 @@ This must be subdivided into two sub-sections:
 
     This sub-section must define a list of criteria by which the proposal can become active. Criteria must relate to observable metrics or deliverables and be reviewed by editors and project maintainers when applicable. For example: "The changes to the ledger rules are implemented and deployed on Cardano mainnet by a majority of the network", or "The following key projects have implemented support for this standard".
 
-    For proposals under core categories (Ledger, Plutus, Network, Consensus), _'Acceptance Criteria'_ must include reference to multiple node implementations.
-
   - _'Implementation Plan'_
 
     This sub-section should define the plan by which a proposal will meet its acceptance criteria, when applicable. More, proposals that require implementation work in a specific project may indicate one or more implementors. Implementors must sign off on the plan and be referenced in the document's preamble.
