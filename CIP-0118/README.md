@@ -133,7 +133,7 @@ We add the following new field to `TxBody` :
 1. `subTxs :: [SubTx]`
 -  sub-transactions in the batch
 
-2. We also need implementation of the [CIP-112 - Observe script type](https://github.com/cardano-foundation/CIPs/pull/749) in order to allow sub-transactions to require scripts to be executed at the top level with all sub-transactions in their context. "Observe script type" is called "Guard script type in the Ledger implementation, therefore going forward we will use term "gurads", instead of "observers", while refering to the same concept.
+2. We also need implementation of the [CIP-112 | Observe Script Type](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0112/README.md) in order to allow sub-transactions to require scripts to be executed at the top level with all sub-transactions in their context. "Observe script type" is called "Guard script type in the Ledger implementation, therefore going forward we will use term "guards", instead of "observers", while referring to the same concept.
 
 ### Plutus
 
