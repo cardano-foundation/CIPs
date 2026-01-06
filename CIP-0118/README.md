@@ -450,7 +450,9 @@ sub-transactions.
 
 ### Acceptance Criteria
 
-- [ ] Deployment to testnet/mainnet
+- [ ] Formal specification of the ledger changes is available.
+- [ ] Hard fork enabling Nested Transactions is successfully executed across Cardano testnets.
+- [ ] Hard fork enabling Nested Transactions is successfully executed on Cardano mainnet.
 
 ### Implementation Plan
 
