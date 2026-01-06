@@ -151,7 +151,7 @@ The `TxInfo` shown to a PlutusV4 script has an added field :
 
 - `txInfoSubTxs :: [SubTxInfo]`, which is populated with the `SubTxInfo` data for all sub-transactions in the batch
 whenever both hold : (1) the transaction for which info is being constructed is top-level, and (2) the script purpose for
-which this info is constructed is `Guard` from [CIP-112](https://github.com/cardano-foundation/CIPs/pull/749).
+which this info is constructed is `Guard` from [CIP-112 | Observe Script Type](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0112/README.md).
 
 ### Changes to Transaction Validity
 
