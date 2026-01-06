@@ -22,7 +22,7 @@ Blake2b-256 hash of the file (to go on-chain): `7b7d4a28a599bbb8c08b239be2645fa8
 
 ### Intermediate files
 
-Files produced to articulate the process of author witnessing,
+Files produced to articulate the process of author witnessing;
 these are not necessary in implementations.
 
 Body files, used to correctly generate author's witness:
@@ -33,7 +33,7 @@ Blake2b-256 hash digest of canonicalized body: `6d17e71c5793ed5945f58bf48e13bb1b
 
 ### How-to Recreate
 
-This tutorial creates additional intermediate files ([example.body.json](./example.body.json), [example.body.nq](./example.body.nq)),
+This tutorial creates additional intermediate files ([example.body.json](./example.body.json), [example.body.nq](./example.body.nq));
 these are not required in implementations but are shown here to articulate the process.
 
 #### Author
@@ -48,7 +48,7 @@ Public verification key (hex):
 
 Create the `example.json` file adding in all available values i.e. `comment`, `references`.
 
-Then remove any top-level fields that are not `@context` or `body`.
+Then remove any top-level fields that are not `@context` or `body`:
 This creates a intermediate file of [example.body.json](./example.body.json).
 
 #### 2. Canonicalize the `body`
