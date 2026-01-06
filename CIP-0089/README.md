@@ -22,7 +22,7 @@ CIP describes how to design DeFi so that it does *not* centralize Proof-of-Stake
 Cardano. And by using beacon tokens, users are able to interact fully peer-to-peer - no third-party
 indexing system is required. As a result, dDApps are essentially just extensions to a cardano node.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 To date, there are very few DeFi Dapps in which users maintain full delegation control of their
 assets. In fact, sacrificing delegation control is so common in the blockchain space that many
@@ -149,7 +149,7 @@ and create equivalent v2 limit orders. No one can force her to upgrade if she do
 > possible to construct the full order book even if some users are using v1 while others are now
 > using v2.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By giving all users their own personal DApp addresses, DeFi no longer undermines Cardano's
 Ouroboros. And by using beacon tokens to enable easy filtering of the current UTxO set, users can

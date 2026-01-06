@@ -38,7 +38,7 @@ License: CC-BY-4.0
 
 This documents describes a webpage-based communication bridge allowing webpages (i.e. dApps) to interface with Cardano wallets. This is done via injected javascript code into webpages. This specification defines the manner that such code is to be accessed by the webpage/dApp, as well as defining the API for dApps to communicate with the user's wallet. This document currently concerns the Shelley-Mary era but will have a second version once Plutus is supported. This specification is intended to cover similar use cases as web3 for Ethereum or [EIP-0012](https://github.com/ergoplatform/eips/pull/23) for Ergo. The design of this spec was based on the latter.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 In order to facilitate future dApp development, we will need a way for dApps to communicate with the user's wallet. While Cardano does not yet support smart contracts, there are still various use cases for this, such as NFT management. This will also lay the groundwork for an updated version of the spec once the Alonzo hardfork is released which can extend it to allow for Plutus support.
 
@@ -384,7 +384,7 @@ The benefits of this are:
 1. New features can be added to CIP30 as experimental features and only moved to non-experimental once multiple wallets implement it
 1. It provides a clear path to updating the CIP version number (when functions move from experimental -> stable)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 See justification and explanations provided with each API endpoint.
 

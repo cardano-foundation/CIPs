@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 [CIP-1852] establishes how Shelley-era hierarchical deterministic (HD) wallets should derive their keys. This document is a follow-up of this CIP specifying how stake pool cold keys should be derived.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 (Hierarchical) deterministic derivation of stake pool cold keys enables their restorability from a seed and most importantly, their management on hardware wallet devices. This in turn mitigates man-in-the middle attacks to which pool operators would otherwise be vulnerable if they managed their stake pool cold keys on a device not specifically hardened against alteration of the data to be signed/serialized without operator's explicit consent.
 
@@ -36,7 +36,7 @@ Here the `usecase` is currently fixed to `0'`.
 
 Given that stake pool cold keys are cryptographically the same as wallet keys already covered in CIP-1852, the master node and subsequent child keys derivation **MUST** be implemented in the same way as specified for wallets in CIP-1852.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Why introducing a new purpose?
 

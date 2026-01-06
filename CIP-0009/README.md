@@ -18,7 +18,7 @@ License: Apache-2.0
 This CIP is an informational CIP that describes the initial protocol parameter settings for the Shelley era of the Cardano blockchain, plus the changes that have been made.
 It is intended to serve as a historic record, allowing protocol parameter changes to be tracked back to the original settings.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 We need to provide a concise description of the initial protocol parameter choices, that can be used by the community as the base for future proposed protocol changes,
 and that document the chain of changes to the parameters.
@@ -309,7 +309,7 @@ The Mary Hard Fork Event will introduce multi-asset token capability.  It is not
 See [CIP-0028: Protocol Parameters (Alonzo Era)](../CIP-0028).
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The initial parameter settings were chosen based on information from the Incentivised Testnet, the Haskell Testnet, Stake Pool Operators plus benchmarking and security concerns.  This parameter choice was deliberately conservative,
 in order to avoid throttling rewards in the initial stages of the Cardano mainnet, and to support a wide range of possible stake pool operator (professional, amateur, self, etc.).

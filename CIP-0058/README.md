@@ -21,7 +21,7 @@ License: Apache-2.0
 Add primitives for bitwise operations, based on `BuiltinByteString`, without 
 requiring new data types.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Bitwise operations are one of the most fundamental building blocks of algorithms
 and data structures. They can be used for a wide variety of applications,
@@ -709,7 +709,7 @@ Primitive | Linear in
 `countLeadingZeroesByteString` | Argument (only one)
 `countTrailingZeroesByteString` | Argument (only one)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Why these operations?
 

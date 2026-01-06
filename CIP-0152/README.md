@@ -34,7 +34,7 @@ Higher performance variations will be more expensive to implement; the
 final choice of variations should take implementation cost into
 account, and (in some cases) may require extensive benchmarking.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano scripts are currently subject to a fairly tight size limit,
 deriving from the overall limit on transaction size; even when a
@@ -768,7 +768,7 @@ The value type of the `Map` could instead be `ScriptForLinking` (i.e., deseriali
 
 This function is to be called by the code building transactions (e.g., `Cardano.Api.Fees.makeTransactionBodyAutoBalance`) to determine which modules are necessary to include in a transaction.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP provides a minimal mechanism to split scripts across several
 transactions. 'Imported' modules are provided in the calling

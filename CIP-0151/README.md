@@ -29,7 +29,7 @@ a specific initial focus on Cardano's _Native Scripts_ specifically related to
 NFT and FT minting policies. This extension to the standard aims to provide
 support for stake pools to register verifiable information on-chain.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 By extending the existing [CIP-0088] specification, we can provide an extensible
 framework for stake pool operators (SPOs) to provide verifiable, on-chain
@@ -383,7 +383,7 @@ a simple hex-encoded CBOR witness signature.
 > entry 2 of the COSE Sign1 Payload array back to object notation before
 > validating.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP was born out of a desire to allow SPOs to routinely identify themselves
 to third-party services such as: voting platforms, social media, governance

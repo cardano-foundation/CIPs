@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This document describes how to evolve sequential wallets from Cardano to support multiple stake keys. This proposal is an extension of [CIP-1852] and [CIP-0011].
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano wallets originally approached stake delegation by considering a single stake key per wallet. While this was beneficial in terms of ease of implementation and simplicity of reasoning, this is unsuitable for many users with large stakes. Indeed, the inability to split out the stake into multiple pools often leads to over-saturation of existing pools in case of delegation. The only workaround so far requires users to split their funds into multiple accounts and manage them independently. This can be quite cumbersome for a sufficiently large number of accounts. 
 
@@ -68,7 +68,7 @@ As a result, this extension would not incapacitate existing wallets since the pa
 We deem this to be an acceptable and fairly minor consequence but encourage existing software to raise awareness about this behaviour.
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - Carrying an extra UTxO pointer makes it possible to not worry (too much) about concurrency issues and problems coming with either, multiple instances of the wallet (like many users do between a mobile and desktop wallet) or the usual rollbacks which may otherwise create gaps in the indexes. By forcing all registration (resp. deregistration) transactions to be chained together, we also enforce that any rollbacks do maintain consistency of the index state: if any intermediate transaction is rolled back, then transactions they depend on are also rolled back. 
 

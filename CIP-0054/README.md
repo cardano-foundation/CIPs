@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 This CIP specifies a standard for an API which should be provided to Javascript NFTs, it also defines some additions to the 721 metadata standard defined in [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025) which allow an NFT to specify it would like to receive certain current information from the blockchain. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Currently if an NFT creator wishes to change or otherwise “evolve” their NFT after minting, they must burn the token and re-mint. It would be very nice if the user were able to modify their NFT simply by sending it to themselves with some extra data contained in the new transaction metadata. This would allow implementation of something like a ROM+RAM concept, where you have the original immutable part of the NFT (in Cardano’s case represented by the original 721 key from the mint transaction), and you also have a mutable part – represented by any subsequent transaction metadata.
 
@@ -226,7 +226,7 @@ The second argument allows you to specify which token's files to search - it sho
 
 The URL returned by this function should be in a format that is accessible from within the `<iframe>` sandbox - perhaps using `window.URL.createObjectURL()` to generate a static URL from raw data if necessary. 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Currently the NFT sites which support on-chain Javascript NFTs do so by creating a sandboxed `<iframe>` into which they inject the HTML from the NFT’s metadata. From within this sandbox it is not possible to bring-in arbitrary data from external sources – everything must be contained within the NFT, or explicitly bought into the sandbox via an API.
 

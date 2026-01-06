@@ -27,7 +27,7 @@ Improving decentralization is critical for Cardano’s long-term health and grow
 
 > [Note!] This CIP was originally authored on 2022-04-04, but was subsequently updated on 2025-05-20
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Stagnating Decentralization and Sybil Concerns
 
@@ -113,7 +113,7 @@ We propose adding a new protocol parameter L (maximum pledge leverage) to the st
 
   * Crucially, a pool with **zero pledge will earn zero rewards** if it has any delegated stake. This is a clear break from the current scheme, where a pool with 0 pledge can still generate rewards for delegators (just slightly less). Under the new formula, some amount of pledge becomes absolutely mandatory.  This eliminates the “free rider” problem of profit-seeking pool operators undermining the network’s security.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Penalizing Under-Pledged Pools (Sybil Deterrence)
 

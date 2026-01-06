@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 This CIP describes all the restrictions applicable to Cardano transactions which need to be signed by hardware wallets.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Due to certain limitations of hardware (abbrev. HW) wallets, especially very small memory and a limited set of data types supported by Ledger, HW wallets are not able to process all valid transactions which are supported by Cardano nodes.
 
@@ -146,7 +146,7 @@ In this exceptional case, auxiliary data must be encoded in their "tuple" format
 
 The `auxiliary_scripts` must be an array of length 0.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Canonical CBOR serialization format
 

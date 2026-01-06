@@ -19,7 +19,7 @@ This CIP extends CIP-0028 to introduce a change to one of the Alonzo protocol pa
 We propose to have this updateable parameter be based on bytes instead of words (eight bytes).
 Additionally, two Alonzo era protocol parameters were removed, namely the decentralization parameter and the extra entropy parameter.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Lovelace Per UTxO Byte
 
@@ -81,7 +81,7 @@ In the Babbage era, unspent transaction outputs will be required to contain _at 
 many lovelace. The constant overhead of 160 bytes accounts for the transaction input
 and the entry in the UTxO map data structure (20 words * 8 bytes).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 We would like the formula for the minimum lovelace in a unspent transaction output
 be simpler and easier to reason about by all users of the Cardano network, while at

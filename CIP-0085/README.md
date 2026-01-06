@@ -19,7 +19,7 @@ Plutus Core does not contain any native support for datatypes.
 Instead, users who want to use structured data must _encode_ it; a typical approach is to use [Scott encoding][].
 This CIP proposes to add native support for datatypes to Plutus Core using sums-of-products (SOPs), and to use that support more efficient scripts, and better code-generation for compilers targeting Plutus Core.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Background
 
@@ -159,7 +159,7 @@ However:
 - `constr`s arguments are all evaluated in turn, so we are sure to pay a linear price.
 - `case`'s branches are _not_ all evaluated, but the only place we could do a linear amount work is in selecting the chosen branch. But this can be avoided in the implementation by storing the cases in a datastructure with constant-time indexing.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Benefits
 

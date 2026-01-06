@@ -20,7 +20,7 @@ License: CC-BY-4.0
 
 This proposal makes use of the onchain metadata pattern established in [CIP-0068][] to provide a way to store royalties with greater assurance and customizability.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The inability to create trustless onchain royalty validation with [CIP-0027][] is a major drawback to Cardano NFTs. The pattern defined in CIP-68 represents an opportunity to upgrade the standard to support onchain validation. This CIP aims to eliminate that drawback and demonstrate better support for developers, NFT creators, and NFT collectors, ultimately attracting dapps & NFT projects that would otherwise have taken their talents to another blockchain.
 
@@ -196,7 +196,7 @@ Because the computational complexity of Plutus primitives scales with size, this
 
 To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the script address of a validator that ensures the specified fees are not arbitrarily changed, such as an always-fails validator.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The specification here is made to be as minimal as possible. This is done with expediency in mind and the expectation that additional changes to the specification may be made in the future. The sooner we have a standard established, the sooner we can make use of it. Rather than attempting to anticipate all use cases, we specify with forward-compatibility in mind.
 

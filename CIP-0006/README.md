@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 This CIP defines the concept of extended metadata for pools that is referenced from the pool registration data stored on chain.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 As the ecosystem around Cardano stake pools proliferate so will the desire to slice, organize and search pool information dynamically.  Currently the metadata referenced on chain provides 512 bytes that can be allocated across the four information categories ([delegation-design-specification Section 4.2)](https://github.com/IntersectMBO/cardano-ledger/releases/latest/download/shelley-delegation.pdf):
 
@@ -87,7 +87,7 @@ The operator now:
 
 This re-registration of the main metadata file with the `extData.vkey` and the two URLs is only necessary once. Afterwards, the operator can update his extended metadata at any time, compute the new signature with the `cardano-cli stake-pool rawdata-sign` command, and publish both files at the existing `extDataUrl` and `extSigUrl`.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 In the following we describe a first minimal version of the extended JSON file format.
 

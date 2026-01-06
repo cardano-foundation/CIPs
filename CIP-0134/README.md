@@ -17,7 +17,7 @@ License: CC-BY-4.0
 This CIP proposes an extension to [CIP-0013] to allow easy and unambiguous encoding of
 [CIP-0019]/[CIP-0105] Addresses into URL's.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 [CIP-0013] defines encoding for payment addresses and stake pool, however [CIP-0019]
 and [CIP-0105] define numerous other address types.
@@ -87,7 +87,7 @@ web+cardano://addr/cc_hot17mffcrm3vnfhvyxt7ea3y65e804jfgrk6pjn78aqd9vg7xpq8dv
 web+cardano://addr/cc_hot_script16fayy2wf9myfvxmtl5e2suuqmnhy5zx80vxkezen7xqwskncf40
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By extending [CIP-0013] to allow a [CIP-0019] encoded address to be simply embedded in the URI scheme,
 we enable existing certificate creation tools and public key infrastructure to be used to easily

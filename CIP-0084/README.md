@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This CIP provides guidance for future CIPs concerning the Cardano ledger.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The ledger is responsible for processing transactions and updating the shared state of the network.
 It also processes block headers and handles the state transformation from one epoch to the next
@@ -180,7 +180,7 @@ The following table gives the current set of reviewers for Ledger CIPs.
 | Andre Knispel      | andre.knispel@iohk.io      | @WhatisRT       |
 | Alexey Kuleshevich | alexey.kuleshevich@iohk.io | @lehins         |
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### There is only one implementation, why limit the scope of ledger CIPs in this way?
 

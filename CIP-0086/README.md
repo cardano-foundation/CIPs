@@ -27,7 +27,7 @@ while maintaining full backward compatibility with CIP-25.
 The new mechanism is capable of expressing metadata updates
 more efficiently than CIP-25 updates.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 On Cardano’s eUTxO ledger, native tokens exist
 without any inherently attached metadata.
@@ -584,7 +584,7 @@ the current CIP-86 token metadata
 in the same way that they have been for CIP-25 metadata.
 The indexer indicates that it is following the CIP-86 standard.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 We pursued the following design goals in our solution:
 

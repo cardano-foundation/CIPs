@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This extends CIP-13, which describes a Cardano URI scheme, with several more objects that would be useful to be able to assign addresses to, in particular blocks, transactions, transaction metadata, and transaction outputs.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIP-13 defined two initial URL authorities, for payment links and delegating to a stakepool.
 
@@ -84,7 +84,7 @@ For grammar reference, see:
   - [RFC 2234: Augmented BNF for Syntax Specifications: ABNF](https://datatracker.ietf.org/doc/html/rfc2234)
   - [Unicode in ABNF](https://tools.ietf.org/html/draft-seantek-unicode-in-abnf-00)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP defines a canonical format for URIs referencing four new Cardano objects: blocks, transactions, transaction metadata, and specific tags within the transaction metadata. It utilizes existing cardano standards (CIP-0013) and industry standards (URIs), minimizing the number of new concepts that a developer needs to learn. By utilizing URIs, it creates a natural path to integration with existing tools, such as browsers. And finally, it allows a canonical URI for these objects, such as storing CIP-100 metadata on-chain, and referring to it in the anchor field.
 ## Path to Active

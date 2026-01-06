@@ -27,7 +27,7 @@ License: CC-BY-4.0
 This proposal defines a metadata standard for native assets making use of output datums not only for NFTs but any asset
 class.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This proposal addresses a few shortcomings
 of [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025):
@@ -683,7 +683,7 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 
 - Add support for nested map format following CIP-0025's policy_id -> asset_name structure, allowing multiple assets' metadata in a single datum. This format is backwards-compatible with versions 1-3, which only support direct metadata format.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Without separation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be
 quite cumbersome as you would need to add the metadata everytime to the new output where the `user token` is sent to.

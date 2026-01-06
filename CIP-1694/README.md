@@ -58,7 +58,7 @@ Voting rights will be based on the total Ada that is delegated, as a whole numbe
 The most crucial aspect of this proposal is therefore the notion of **"one Lovelace = one vote"**.
 
 For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 + [Goal](#goal)
 + [Current design](#current-governance-mechanism-design)
@@ -765,7 +765,7 @@ We define a number of new terms related to voting stake:
   that vote `Yes` to a governance action
   is at least `P`.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 + [Role of the constitutional committee](#role-of-the-constitutional-committee)
 + [Intentional omission of identity verification](#intentional-omission-of-identity-verification)

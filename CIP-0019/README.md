@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This specification describes the structure of addresses in Cardano, covering both addresses introduced in the Shelley era and the legacy format from the Byron era.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Document design choices for posterity. Most applications interacting with the Cardano blockchain will likely not have any need for this level of details, however, some might. This CIP is meant to capture this knowledge. 
 
@@ -217,7 +217,7 @@ testnet:
     type-14: stake_test1uqehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gssrtvn
     type-15: stake_test17rphkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcljw6kf
 ```
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 As stated in [Motivation](#motivation-why-is-this-cip-necessary) this CIP is provided for informational purposes regarding a single deliberate design. Further rationale and motivation for this design are available in the [Design Specification for Delegation and Incentives in Cardano - Section 3.2 :: Addresses & Credentials ](https://github.com/intersectmbo/cardano-ledger/releases/latest/download/shelley-delegation.pdf).
 

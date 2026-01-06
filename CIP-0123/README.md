@@ -26,7 +26,7 @@ We base our work on similar operations described in [CIP-58][cip-58], but use
 the bit indexing scheme from [the logical operations cip][logic-cip] for the
 semantics. This is intended as follow-on work from both of these.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Bitwise operations, both over fixed-width and variable-width blocks of bits, 
 have a range of uses. Indeed, we have already proposed [CIP-122][logic-cip],
@@ -388,7 +388,7 @@ readBit bs (findFirstSetBit bs) = True
 readBit bs i = False
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Our four operations, along with their semantics, fulfil the requirements of both
 our cases, and are law-abiding, familiar, consistent and straightforward to

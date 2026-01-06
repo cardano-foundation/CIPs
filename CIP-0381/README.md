@@ -20,7 +20,7 @@ curve to the plutus language. We expose a candidate implementation, and describe
 would bring. In a nutshell, pairing friendly curves will enable a large number of cryptographic primitives that will 
 be essential for the scalability of Cardano. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 Pairing Friendly Curves are a type of curves that provide the functionality of computing pairings. A pairing is a 
 binary function that maps two points from two groups to a third element in a third target group. For a more in-depth 
 introduction to pairings, we recommend reading [Pairings for Beginners](https://www.craigcostello.com.au/tutorials) or 
@@ -397,7 +397,7 @@ x is negative = true
 ```
 One should note that base field modulus is equal to 3 mod 4 that allows an efficient square root extraction.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 The reason for choosing the BLS12-381 over the BN256 curve is that the former is claimed to provide 128 bits of security,
 while the latter was reduced to 100 bits of security after the extended number field sieve (a new algorithm to compute
 the discrete logarithm) was [shown to reduce the security](https://eprint.iacr.org/2016/1102.pdf) of these curves.

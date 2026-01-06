@@ -15,7 +15,7 @@ License: CC-BY-4.0
 ## Abstract
 This document describes the addition of a new Plutus builtin `dropList` with the signature `Integer -> List a -> List a` that drops a given number of elements the list. This drastically increases the efficiency of `elemAt` which is currently a huge throughput bottleneck for many DApps. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 The deterministic script evaluation property of the ledger (also stated as "script interpreter arguments are fixed") is a unique characteristic of the Cardano ledger that allows us to perform powerful optimizations that are not possible in systems with indeterminstic script evaluation. For instance, searching for elements in a data structure can 
 be done entirely off-chain, and then we simply provide the onchain code with the index (via redeemer) to where the element we want to find is supposed to be, and then check (onchain) that it is indeed the element we were expecting. This design pattern of passing the indices of elements required for validation logic in the redeemer is commonly referred to as redeemer-indexing. 
 Even though it is still a very powerful optimization in its current state, it is currently bottlenecked by the lack of a builtin that applies tail a given number of times to a list. Currently, any implementation of `elemAt :: Integer -> List a -> a` or `drop` requires the use of the fixed point combinator (Y combinator) which has a significant cost in onchain code.
@@ -91,7 +91,7 @@ Although the `BuiltinList` type is a recursive data-type, costing should be rela
 We propose to define a cost model linear in the size of `n`, the number of elements to drop. What remains is to find a proper coefficient and offset for that linear model, which should be quite easy. 
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 * Easy to implement as it reuses existing code of the Plutus codebase;
 * The built-in is generic enough to cover a wider set of use-cases;
 * The built-in is still relevant even if we get constant lookup index data-structures since there are occasions where BuiltinList would be preferred;

@@ -122,7 +122,7 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
 
 </details>
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This proposal strengthens Cardano’s consensus protocol (Ouroboros Praos) against a class of attacks known as *grinding attacks*. These attacks allow adversaries to bias the randomness used in block leader elections in their favor, statistically slowing down settlement times and thys weakening the effectivness of Praos.
 
@@ -1129,7 +1129,7 @@ The current **maximum block header size** in Cardano is **1100 bytes**, although
 
 This would **exceed the 1500-bytes limit**, risking fragmentation and violating guidance from the Cardano networking team. We could safely decrease the group element size by decreasing the security parameters if we were to generate new class groups at each epoch. Doing so would however render the protocol more complex and potentially weaken the security of the protocol as we may have more chances to generate a weak class group.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### 1. How Phalanx Addresses CPS-21 - Ouroboros Randomness Manipulation?
 

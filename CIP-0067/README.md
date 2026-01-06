@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 This proposal defines a standard to identify Cardano native assets by the asset name to put them in an asset class, as intended by their issuer.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 As more assets are minted and different standards emerge to query data for these assets, it's getting harder for 3rd parties to determine the asset class and associated extra assumptions that may arise from this identification. For example, if an asset is identified as a non-fungible token, a third party is interested in its onchain associated metadata. This standard is similar to [CIP-0010](../CIP-0010), but focuses on the asset name of a native asset.
 
@@ -117,7 +117,7 @@ Keys represent labels in `decimal` numbers. Values represent the entire label, i
 65535 : 0ffff240
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Asset name labels make it easy to identify native assets and classify them in their asset class intended by the issuer. Since the identification of these native assets is done by third parties, the design is focused on the usability for them.
 

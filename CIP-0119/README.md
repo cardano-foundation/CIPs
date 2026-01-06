@@ -24,7 +24,7 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 #### Thank you
 Thank you to [everyone who participated in the CIP workshops](#Acknowledgements), and to @ryun1 for creating the JSON-LD schemas for this CIP and for his excellent technical support and invaluble advice. Thank you also to the other CIP editors and attendees of the CIP Editors' Meetings where this CIP was refined, most notably @rphair and @Crypto2099. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 CIP-1694 has set forth a model of a blockchain controlled by its community, and in doing so has challenged providers to build apps and tools that will allow users easy access to the governance features currently being built into Cardano.  Minimum viable tools must be ready at the time these governance features are launched.
 
 The motivation for this CIP therefore is to provide these toolmakers with a simple and easy to accommodate standard which, once adopted, will allow them to read and display the metadata created by anyone who follows this standard when creating their DRep registration or update metadata. Tooling designed for DReps so that they can easily create metadata will also be made possible, because toolmakers will not need to individually innovate over the contents or structure of the metadata that their tool creates.  
@@ -155,7 +155,7 @@ See [test-vector.md](./test-vector.md) for examples.
 ### Versioning
 This proposal should not be versioned, to update this standard a new CIP should be proposed. Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 We intentionally have kept this proposal brief and uncomplicated. This was to reduce the time to develop and deploy this standard. This way we enable tooling which depends on this standard to start development. 
 
 ### Rationale for insisting on a compulsory name

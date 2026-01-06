@@ -23,7 +23,7 @@ This CIP specifies a process for proposing changes to Plutus Core, its builtins,
 It gives a taxonomy of typical changes, and explains how these changes may be made, which in some cases requires a CIP.
 It introduces the 'Plutus' CIP category for tracking these.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The Plutus Core language, its builtins, and its interface to the ledger are all likely to evolve significantly over time. There are many reasons for this:
 - We may be able to increase performance, improve safety, or reduce script sizes by changing the language.
@@ -263,7 +263,7 @@ For example, if a bug fix changes behaviour, it will have to wait for a new Plut
 
 Proposals for other additions, removals, or changes to behaviour of any part of Plutus Core or its builtins SHOULD be proposed in a CIP.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Do removals and changes really need a new ledger language?
 

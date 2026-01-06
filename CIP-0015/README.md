@@ -26,7 +26,7 @@ License: CC-BY-4.0
 
 This CIP details a transaction metadata format, used by Cardano's [Project Catalyst](https://projectcatalyst.io) for voter registrations.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Project Catalyst uses a sidechain for it's voting system.
 One of the desirable properties of this sidechain is that even if its' safety is compromised, it doesn't cause a loss of funds on Cardano mainnet. 
@@ -106,7 +106,7 @@ Catalyst Fund 4:
 It was planned that since Fund 4, `registration_signature` and the `staking_pub_key` entry inside the `key_registration` field will be deprecated.
 This has been deferred to a future revision of the protocol.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The described metadata format allows for the association of a voting key with a stake credential on a Cardano network.
 

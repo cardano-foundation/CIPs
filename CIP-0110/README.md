@@ -20,7 +20,7 @@ License: CC-BY-4.0
 
 Despite making up less than half the transactions on Cardano, Plutus v1 scripts occupy around 40% of the total block space since chain inception, and sometimes higher during periods of peak activity. Increasing the space available to blocks is risky, as it impacts the block propagation time. This proposal puts forth a simple way to reduce this strain.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Plutus v2 introduced a way to publish scripts on-chain, and *reference* those scripts to satisfy the witness requirement. However, because this was done via a new field on the transaction (i.e. "Reference Inputs"), which shows up in the script context, this feature is not backwards compatible with Plutus v1.
 
@@ -44,7 +44,7 @@ We propose relaxing the ledger rule that fails Plutus v1 scripts in transactions
 
 The ledger rule shouldn't change in other ways: for example, Plutus v1 scripts should still fail in the presence of inline datums or reference scripts on spent transaction inputs.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The main concern with this relates to backwards compatibility. The ledger makes very strong commitments regarding the behavior of scripts: any observable change represents a risk that there is some script out there that will either be unspendable when it should be, or spendable when it should not be.
 

@@ -36,7 +36,7 @@ Here we define some accompanying tooling standards.
 > and
 > [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 In the Conway ledger era, DRep credentials allow registered DReps to be identified on-chain, in DRep registrations, retirements, votes, and in vote delegations from ada holders.
 Whilst constitutional committee members can be recognized by their cold credentials within update committee governance actions, authorize hot credential certificate and resign cold key certificates.
@@ -244,7 +244,7 @@ This CIP previously also lacked `_vkh` key definitions, which are now added abov
 This CIP is not to be versioned using a traditional scheme, rather if any large technical changes are required then a new proposal must replace this one.
 Small changes can be made if they are completely backwards compatible with implementations, but this should be avoided.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Derivation
 

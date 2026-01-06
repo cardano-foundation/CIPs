@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 This document describes adding a new output type to transactions called Collateral Outputs.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 As of Alonzo, transactions that call Plutus smart contracts are required to put up collateral to cover the potential cost of smart contract execution failure. Inputs used as collateral have the following properties:
 
@@ -61,7 +61,7 @@ However, if collateral output is specified, then
 2. Collateral output needs to be balanced according to `sum(collateral_input) = sum(collateral_output) + collateral_consumed`
 Where `collateral_consumed` is equal to the old formula (`quot (txfee txb * (collateralPercent pp)) 100`). Note that when collateral is consumed, any certificate, etc. in the transaction is ignored so they have no impact on the change calculation.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Self-contained balancing
 

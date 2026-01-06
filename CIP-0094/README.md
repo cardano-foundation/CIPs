@@ -25,7 +25,7 @@ License: CC-BY-4.0
 
 The Cardano Foundation proposes a mechanism for polling Cardano stake pool operators on specific topics. Polls are done on-chain through transaction metadata and authenticated through stake pool credentials (Ed25519 cold key). The goal is to gather opinions on governance matters such as protocol parameter updates. This standard is an inclusive interim solution while the work on a larger governance framework such as [CIP-1694][] continues.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 <!-- A clear explanation that introduces the reason for a proposal, its use cases and stakeholders. If the CIP changes an established design, then it must outline design issues that motivate a rework. For complex proposals, authors must write a Cardano Problem Statement (CPS) as defined in CIP-9999 and link to it as the `Motivation`. -->
 
 Governance is difficult. Discussions on CIP-1694 can attest to that quite clearly. There are constant debates within the Cardano community about changing protocol parameters, and the decision ultimately falls -- at this stage still -- onto the three genesis entities: Input Output, The Cardano Foundation and Emurgo. Yet, at this stage, few governance tools are at their disposal to make educated decisions. Besides Twitter polls, newsletter surveys, and SPO town halls on Discord, we have identified a gap and an opportunity to engage with the Cardano community through means currently at our disposal.
@@ -200,7 +200,7 @@ The outcome of a poll will depend on its level of participation (in **terms of s
 
 This proposal does not introduce a change in the current governance scheme: it is still up to the three genesis entities to make a final call based on the poll results. Poll results will provide new data points to feed into the conversation. But, regardless of the outcome, any decision will be explained and motivated by other auditable sources of information. And on-chain polls will provide such an auditable source.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Recording question & answers
 
