@@ -699,6 +699,45 @@ make use of this off-chain and on-chain.
 The security for the link is derived from the minting policy itself, so it's important to write the validator with the
 right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
 
+### Rationale: Version 4 Nested Map Format
+
+The current design of CIP-0068 inadvertently creates a significant cost barrier for large NFT collections due to minimum-ADA requirements. As ADA approaches parity with USD, artists and platforms minting 5,000–10,000+ on-chain assets are increasingly impacted by the **minUTxO amplification effect**: the metadata-bearing reference scripts and datums mandated by CIP-0068 can cause **10–20% of project budgets** to be consumed purely by ADA locked in outputs, rather than by art production or ecosystem growth.
+
+This cost profile wasn't as visible when ADA was significantly cheaper, but it has now become an operational friction point across multiple creator workflows.
+
+The proposal aims to **reduce the minUTxO footprint** for CIP-0068 assets by allowing an **optional alternate metadata shape** that mirrors CIP-0025 (721-style metadata) while preserving CIP-0068's semantics. Concretely:
+
+#### 1. Dual-format Metadata Reduces Unnecessary ADA Locking
+
+Allowing a CIP-0025-shaped metadata payload means:
+
+* The on-chain metadata can consolidate across multiple reference tokens.
+* The minUTxO requirement is correspondingly reduced.
+* Large-scale mints return to economically sensible territory, especially for low-cost or promotional collections where the metadata weight provides no additional value to creators.
+
+This addresses a real-world pain point reported by multiple production-level minting pipelines, not just isolated cases.
+
+#### 2. Improved Migration Path from CIP-0025 to CIP-0068
+
+A sizeable portion of the ecosystem still lives on CIP-0025, particularly older marketplaces and archived collections. When artists revisit or reissue older collections, the transition path to CIP-0068 is currently friction-heavy, requiring metadata restructuring and toolchain updates.
+
+Supporting a CIP-0025-compatible metadata envelope inside CIP-0068:
+
+* Enables forward migration without metadata rewrites.
+* Preserves backward recognizability.
+* Reduces engineering cost for wallets, indexers, and minting tools.
+
+#### 3. Strict Optionality Preserves Backward Compatibility
+
+This proposal does **not** modify or deprecate existing CIP-0068 patterns.
+Instead, it introduces an explicitly flagged alternate metadata payload, using a reserved binary key or indicator to avoid collisions with existing fields.
+
+This allows:
+
+* Full backward compatibility.
+* No disruptive changes for current indexers or marketplaces.
+* Opt-in use where economic relief is necessary.
+
 ### Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
