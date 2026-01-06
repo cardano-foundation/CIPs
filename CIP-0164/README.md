@@ -321,9 +321,7 @@ Due to the voting overhead per EB, EBs should only be announced if a transaction
 cannot be included in the base RB. Empty EBs should not be announced in the
 network as they induce a non-zero cost. Note that whether an RB is full is not
 solely determined by its byte size; in particular, the per-block Plutus limits
-could be the reason an RB cannot contain additional transactions. Additionally,
-transactions requiring higher size or Plutus execution limits available through
-proposed Leios may necessitate placement in EBs rather than RBs. The lower
+could be the reason an RB cannot contain additional transactions. The lower
 latency provided by RBs naturally incentivizes their use first, enabling gradual
 adoption of Leios capabilities.
 
@@ -495,12 +493,27 @@ availability:
 | Quorum size                                                    |      $\tau$      |   fraction   | Minimum fraction of committee votes required for certification                              | High threshold ensures certified EBs are known to >25% of honest nodes even with 50% adversarial stake. This widespread initial knowledge enables the network assumption that certified EBs will reach all honest parties within $L_\text{diff}$ |
 | Maximum Plutus steps per endorser block                        |        -         |  step units  | Maximum computational steps allowed for Plutus scripts in a single endorser block           | Limits computational resources per EB to ensure timely validation                                                                                                                                                                                |
 | Maximum Plutus memory per endorser block                       |        -         | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                        | Limits memory resources per EB to ensure timely validation                                                                                                                                                                                       |
-| Maximum Plutus steps per transaction                           |        -         |  step units  | Maximum computational steps allowed for Plutus scripts in a single transaction within an EB | Limits computational resources per transaction to enable higher throughput                                                                                                                                                                       |
-| Maximum Plutus memory per transaction                          |        -         | memory units | Maximum memory allowed for Plutus scripts in a single transaction within an EB              | Limits memory resources per transaction to enable higher throughput                                                                                                                                                                              |
 
 <em>Table 3: Protocol Parameters</em>
 
 </div>
+
+> [!NOTE]
+>
+> While per-transaction limits _could_ be increased based on the
+> [evidence](#resource-requirements), the choice was made to deliberately **only
+> introduce per-endorser-block limits** to avoid escalation of a threat:
+> throughput-lowering attacks on certification would violate liveness of high
+> plutus budget transactions.
+>
+> For example, a 26% stake attacker can trivially attack leios throughput with a
+> 75% certification threshold. If an application would rely on higher (than what
+> is available in praos) plutus demand transactions, those would not get
+> included at all during such an attack.
+>
+> Despite, an application can work around this by splitting intense plutus work
+> into multiple transactions and chaining them into, potentially, the same
+> endorser block.
 
 #### Timing parameters
 
@@ -2095,11 +2108,13 @@ time-averaged CPU usage in the simulations (i.e., less than 15% of a vCPU)
 suggests that the per-transaction and/or per-block Plutus budget could be
 significantly increased under Leios: either every transaction could have a
 modestly higher budget, or some transactions could use an order of magnitude
-more Plutus execution units. Statistical analysis of [CPU usage in ledger
-operations][timings] using the [db-analyser tool][dbanalyser] on Cardano mainnet
-from epoch 350 through 573 yields the following simple models of the CPU cost of
-validating signatures and executing Plutus in the transactions of a block.
-Because of the noisiness in the raw mainnet data, these estimates are uncertain.
+more Plutus execution units.
+
+Statistical analysis of [CPU usage in ledger operations][timings] using the
+[db-analyser tool][dbanalyser] on Cardano mainnet from epoch 350 through 573
+yields the following simple models of the CPU cost of validating signatures and
+executing Plutus in the transactions of a block. Because of the noisiness in the
+raw mainnet data, these estimates are uncertain.
 
 - Ledger "apply" operation, consisting of phase 1 & 2 validation along with
   updating the current ledger state:
@@ -2228,8 +2243,6 @@ consideration of tradeoffs.
 | Endorser block max size                       |  $S_\text{EB}$   |       512 kB       | Endorser blocks must be small enough to diffuse and be validated within the voting period $L_\text{vote}$.                                                                             |
 | Maximum Plutus steps per endorser block       |        -         |  2000G step units  | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                        |
 | Maximum Plutus memory per endorser block      |        -         | 7000M memory units | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                        |
-| Maximum Plutus steps per transaction          |        -         |  100G step units   | Raise per-transaction limit by a factor of twenty relative to Praos.                                                                                                                   |
-| Maximum Plutus memory per transaction         |        -         | 350M memory units  | Raise per-transaction limit by a factor of twenty relative to Praos.                                                                                                                   |
 | Ranking block max size                        |  $S_\text{RB}$   |    90,112 bytes    | This is the current value on the Cardano mainnet.                                                                                                                                      |
 | Mean committee size                           |       $n$        |  600 stake pools   | Modeling of the proposed certificate scheme indicates that certificates reach their minimum size of ~8 kB at this committee size, given a realistic distribution of stake among pools. |
 | Quorum size                                   |      $\tau$      |        75%         | High threshold ensures certified EBs are known to >25% of honest nodes even with 50% adversarial stake. This enables the network assumption for safe diffusion within L_diff.          |
@@ -2272,18 +2285,12 @@ on Cardano mainnet.
 Estimating the feasible limits for Plutus execution requires a more solid
 grounding, than currently exists, of the Plutus cost model in terms of actual
 CPU resources required to execute Plutus steps and memory. The empirical
-analysis and simulations presented above suggest the the per-block Plutus budget
-could be substantially increased. Results indicate that 2000 billion Plutus
-steps would consume less than two CPU-seconds of computation on typical node
-hardware. On a four-core machine there would be sufficient resources to evaluate
-the Plutus rapidly enough so as not to interfere with voting for endorser
-blocks. As in Praos, that block-level budget could be allocated to transactions
-in such a manner that several Plutus-heavy transaction fit in a single endorser
-block. Limiting a transaction to 100 billion steps, for instance, would allow 20
-such transactions in each endorser block. For reference, this is ten times the
-recent Praos limit on transaction execution steps. The per-transaction limit can
-be adjusted to suit the needs of the community: i.e., it could be tuned to favor
-many light Plutus transactions vs a few heavy Plutus transactions.
+analysis and simulations presented above suggest that the per-block Plutus
+budget could be substantially increased. Results indicate that 2000 billion
+Plutus steps would consume less than two CPU-seconds of computation on typical
+node hardware. On a four-core machine there would be sufficient resources to
+evaluate the Plutus rapidly enough so as not to interfere with voting for
+endorser blocks.
 
 Although the Praos maximum block size could be modestly raised in Leios and the
 active-slot coefficient adjusted slightly, there is no compelling reason to
