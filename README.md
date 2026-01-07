@@ -114,6 +114,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
 | 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
 | 0117 | [Explicit script return values](./CIP-0117) | Active |
+| 0118 | [Nested Transactions](./CIP-0118) | Proposed |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
 | 0120 | [Constitution specification](./CIP-0120) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
@@ -146,6 +147,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0160 | [Receiving Script Purpose and Addresses](./CIP-0160) | Proposed |
 | 0161 | [Ouroboros Phalanx - Breaking Grinding Incentives](./CIP-0161) | Proposed |
 | 0163 | [Time-Bound Delegation with Dynamic Rewards](./CIP-0163) | Proposed |
+| 0164 | [Ouroboros Linear Leios - Greater transaction throughput](./CIP-0164) | Proposed |
 | 0167 | [Remove isValid from transactions](./CIP-0167) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
@@ -155,7 +157,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-12-13</i></p>
+<p align="right"><i>Last updated on 2026-01-06</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
