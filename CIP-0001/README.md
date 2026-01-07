@@ -218,7 +218,7 @@ A _'Proposed'_ CIP is any CIP that meets the essential CIP criteria but is not y
 An _'Active'_ CIP has taken effect according to the criteria defined in its _'Path to Active'_ section. Said differently, each CIP defines by which criteria it can become _'Active'_ and those criteria are included in the review process. Exact criteria thereby depends on the nature of the CIP, typically:
 
 - For CIPs that relate to particular projects or pieces of technology, it becomes _'Active'_ by being implemented and released;
-- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet;
+- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet within one or more implementations;
 - For ecosystem standards, it means gaining sufficient and visible adoption in the community.
 - It must have a valid [Path to Active](#path-to-active) as defined below: even the CIP is already acknowledged as `Active` or being documented retroactively (after acceptance and implementation).
 
@@ -265,17 +265,17 @@ Tools    | A broad category for ecosystem features not falling into any other ca
 
 Additionally, representatives of ecosystem categories may explicitly _enlist_ their categories (see next section) to suggest a closer relationship with the CIP process. The following categories are confirmed as enlisted according to CIPs which define that relationship:
 
-Category | Description
----      | ---
-Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
+Core Category | Description
+---           | ---
+Plutus        | Changes or additions to Plutus, following the process described in [CIP-0035][]
+Ledger        | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
 
 These tentatively enlisted categories await CIPs to describe any enlistment relationship:
 
-Category  | Description
----       | ---
-Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
-Network   | Specifications and implementations of Cardano's network protocols and applications
+Core Category  | Description
+---            | ---
+Consensus      | For proposals affecting implementations of the Cardano Consensus layer and algorithms
+Network        | Specifications and implementations of Cardano's network protocols and applications
 
 #### Project Enlisting
 

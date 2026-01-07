@@ -46,6 +46,10 @@ It must also explain how the proposal affects the backward compatibility of exis
 ### Acceptance Criteria
 <!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 
+<!-- For core categories (Ledger, Plutus, Network, Consensus) the following SHOULD be included:
+- [ ] Implementation present within block producing nodes used by 80%+ of stake
+-->
+
 ### Implementation Plan
 <!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
 
