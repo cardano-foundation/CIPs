@@ -130,7 +130,7 @@ be updated to consider these direct deposits.
 **Direct depositing into an account address does not require a witness from the receiving account.**
 In other words, the receiving staking script does *not* need to be executed. This behavior mirrors
 how UTxOs can be created at script addresses without having to execute the spending script.
-[CIP-160](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0160) could enable requiring a
+[CIP-0160](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0160) could enable requiring a
 witness for direct deposits as an opt-in feature.
 
 > [!IMPORTANT]
@@ -186,7 +186,7 @@ the `AccountValue` whitelist. Note a few important points:
 1. Removing an asset from the whitelist requires withdrawing all of that asset from the account in
    the same transaction.
 2. When an asset is added to the whitelist, it is not possible to direct deposit that asset in the
-   same transaction ([CIP-118](https://github.com/cardano-foundation/CIPs/pull/862) can be used to
+   same transaction ([CIP-0118](https://github.com/cardano-foundation/CIPs/pull/862) can be used to
    get around this restriction: one sub-tx updates the whitelist while a subsequent sub-tx makes the
    direct deposit.)
 3. You cannot add and remove the same asset in one transaction (i.e., the `add_to_whitelist` and
@@ -270,11 +270,11 @@ withdrawals = {+ reward_account => value} ; replaced `coin` with `value`
 
 > [!IMPORTANT]
 > Partial withdrawals will only be possible in transactions *without* plutus v1-v3 scripts. However,
-> [CIP-118](https://github.com/cardano-foundation/CIPs/pull/862) can help here by isolating the
+> [CIP-0118](https://github.com/cardano-foundation/CIPs/pull/862) can help here by isolating the
 > partial withdrawal in a sub-tx.
 
 > [!IMPORTANT]
-> When CIP-118 is implemented, sub-txs can deposit/withdraw from the same account. If this is
+> When CIP-0118 is implemented, sub-txs can deposit/withdraw from the same account. If this is
 > naively supported, it can *look* like native assets are minted out of thin air. For example, if
 > the first sub-tx withdraws 1 million ADA and the second sub-tx deposits 1 million ADA, the overall
 > transaction is properly balanced and no ADA is actually minted (the value cancels out), but plutus
@@ -398,7 +398,7 @@ data TxInfo = TxInfo
 > must be supported in transactions using smart contracts from prior plutus versions.** To enable
 > this backporting without introducing security vulnerabilities in older smart contracts, older
 > plutus scripts will be supported in the top-level of a nested transaction
-> ([CIP-118](https://github.com/cardano-foundation/CIPs/pull/862)). Then these new transaction
+> ([CIP-0118](https://github.com/cardano-foundation/CIPs/pull/862)). Then these new transaction
 > fields can be isolated inside a sub-transaction.
 
 ### Phased Delivery
@@ -466,7 +466,7 @@ data TxInfo = TxInfo
 > In order for the community to get the benefits from this CIP, plutus v1-v3 scripts must be
 > allowed in transactions that contain the new `direct_deposits` field. To accomplish this,
 > plutus v1-v3 scripts will be allowed to run inside the top-level of a nested transaction
-> ([CIP-118](https://github.com/cardano-foundation/CIPs/pull/862)). Then the `direct_deposits`
+> ([CIP-0118](https://github.com/cardano-foundation/CIPs/pull/862)). Then the `direct_deposits`
 > field can be safely isolated inside a sub transaction.
 
 #### Phase 2: Multi-Asset Support
