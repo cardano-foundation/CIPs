@@ -593,6 +593,16 @@ hasMore = false / true
 isBlocking = false / true
 ```
 
+### Network magic
+
+In order to identify messages belonging to a specific protocol, each DMQ network is identified by a unique network magic number:
+
+| Protocol | Cardano network | DMQ network magic number |
+| -------- | --------------- | ------------------------ |
+| Mithril  | `preview`       | `2147483650`             |
+| Mithril  | `preprod`       | `2147483649`             |
+| Mithril  | `mainnet`       | `2912307721`             |
+
 ## Rationale: how does this CIP achieve its goals?
 
 ### Why are we proposing this CIP?
