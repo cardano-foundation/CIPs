@@ -203,7 +203,7 @@ We think that votes and DRep certificates are rare and substantially distinguish
   - [x] [`cardano-hw-interop-library`](https://github.com/vacuumlabs/cardano-hw-interop-lib)
   - [x] [`cardano-hw-cli`](https://github.com/vacuumlabs/cardano-hw-cli) (which uses the interop library)
 
-## Restrictions for specific hardware devices
+### Restrictions for specific hardware devices
 
 The following list of features with missing support on particular hardware devices is subject to occasional changes. Some features might be added, but some could also be removed (e.g. if they take too much space needed for other features).
 
