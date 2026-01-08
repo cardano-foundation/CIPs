@@ -11,7 +11,7 @@ Discussions:
   - https://forum.cardano.org/t/protocol-parameters-pledge-and-sybil-resistance/35100
   - https://github.com/input-output-hk/cardano-node/issues/1518
 Implementors: []
-License: Apache 2.0
+License: Apache-2.0
 ---
 
 ## Abstract
@@ -19,7 +19,7 @@ License: Apache 2.0
 Modifying the current rewards calculation equation by substituting a n-root curved relationship between pledge and pledge benefit rewards for the current linear relationship will better achieve the original design goal of incentivizing pledge to help prevent Sybil attacks.
 This also reduces the unfortunate side effect in the current equation that over rewards private pools which provide no additional security benefit.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 There are two main reasons for changing the current linear a0 pledge benefit factor in the rewards equation.
 
@@ -108,7 +108,7 @@ Pledge	Rewards	Benefit	Alt Rwd	Alt Bnft
 
 As you can see this gives meaningful pledge benefit rewards to pools pledging less than 1m ADA.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Using the n-root curve pledge benefit shows a much more reasonable distribution of pledge related rewards which will encourage meaningful pledges from more pool operators thus making the network more secure against Sybil attacks.
 It also provides higher rewards for higher pledge without disproportionately rewarding a very few private pool operators who provide no additional security value to the network.

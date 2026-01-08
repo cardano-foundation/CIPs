@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 We want to introduce a decentralized communication method between dApps and wallets based on WebTorrent trackers and WebRTC. This CIP also contains a proof of concept implementation injecting the wallet rpc methods into the dApps global window object similar to [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030).
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 In a decentralized ecosystem a communication between wallet-apps and dApps is still challanging. The inter-app communication on mobile devices does not directly allow remote procedure calls and is mostly restricted to Universal Links (iOS) or Deeplinks (Android). State-of-the-art solutions like WalletConnect tackle these problems using WebRTC communication which also works across devices, but requires a central signaling server to estalblish a WebRTC connection. In this CIP we want to introduce an architecture which uses WebTorrent trackers for the peer discovery to remove the need of this central component. 
 
@@ -225,7 +225,7 @@ We decided to spawn the server within the dApp to force the user to manually sca
 - The wallet app needs to verifiy the origin (address) of the RPC call
 - dApps should ask the user for permission to inject the wallet names into the window.cardano object to prevent XSS attack (Maybe using a graphical representation of the wallet app address e.g. blockies)
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 The purpose of this CIP mainly consists of two parts. It addresses the current lack of dApp mobile support, but at the same time provides an even more decentralized alternative to state-of-the-art communication methods. To achieve this goal we have introduced a WebTorrent and WebRTC based architecture. To demonstrate a viable implementation, we have implemented a proof of concept which also shows how a rpc method injection like CIP-0030 might look like.
 

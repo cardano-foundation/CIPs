@@ -7,6 +7,7 @@ Authors:
   - Marek Mahut <marek.mahut@fivebinaries.com>
   - Sebastien Guillemot <sebastien@emurgo.io>
   - Ján Hrnko <jan.hrnko@fivebinaries.com>
+Implementors: []
 Discussions:
   - https://forum.cardano.org/t/on-chain-stake-pool-operator-to-delegates-communication/42229
   - https://github.com/cardano-foundation/CIPs/pull/44
@@ -18,7 +19,7 @@ License: CC-BY-4.0
 
 Standard format for metadata used in an on-chain communication of stake pool owner towards their delegates.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Stake pool owners and their delegates lack an on-chain communication standard between them.
 
@@ -98,7 +99,7 @@ The [schema.json](./schema.json) file defines the metadata.
 }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The format of the `content` field is required to be an array of 64 bytes chunks, as this is the maximum size of a JSON field in the Cardano ledger. Tools, such as wallets, are required to recompose the content of the message.
 

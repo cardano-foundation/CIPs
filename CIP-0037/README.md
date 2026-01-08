@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 The pledge should be used to calculate the saturation point of a pool: setting a maximum delegation proportional to pledge.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Currently Cardano has been plagued with an ever increasing amount of single entity Stake Pool Operators (SPO) creating multiple pools. The pools that are known to be operated by single entity SPOs account for just 18.72% of the total stake and 50% of the total stake can be attributed to at least 23 single entities (as of 3rd Dec 2021).
 
@@ -137,7 +137,7 @@ Results:
 [Log] pledge: 2000000, sat: 67438565.126
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Since a single entity SPO only has a certain amount of ADA they can pledge, they will eventually hit their saturation point no matter how many pools they create. The only way they can add more delegators is to increase their pledge. Once they run out of pledge and reach their saturation point, the delegators will have no choice but to move to another SPO and increase decentralisation.
 
@@ -148,7 +148,7 @@ One of the questions raised by the community was, will the lower limit stop the 
 1. The value is a percentage of k, such as 10%. This percentage could increase as needed, such as to 15% of k.
 2. The value could be calculated based on the average of active stake compared to active pools. E.g, active stake = 23837 M / 3000 = saturation point of 7.94 M ADA
 
-## Path To Active
+## Path to Active
 
 ### Acceptance Criteria
 

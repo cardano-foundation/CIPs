@@ -20,7 +20,7 @@ A Cardano Problem Statement (CPS) is a formalized document for the Cardano ecosy
 > [!NOTE]
 > Read this CIP's number as "CIP minus 1" (in [tens' complement](https://en.wikipedia.org/wiki/Method_of_complements#Decimal_example))
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 A common friction point regarding complex CIPs is how their main problems are stated. For example, the _'Motivation'_ section in CIPs is sometimes not sufficient -- or simply underused -- to describe the various aspects of a problem, its scope, and its constraints in the necessary detail. This lack of clarity leads, in the end, to poorly defined issues and unfruitful debates amongst participants who understand problems differently.
 
@@ -161,7 +161,7 @@ Of course, a solution may only partially address a problem. In this case, one ca
 
 As defined in [CIP-0001][].
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Goals
 

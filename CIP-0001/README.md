@@ -26,7 +26,7 @@ A Cardano Improvement Proposal (CIP) is a formalised design document for the Car
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIPs aim to address two challenges mainly:
 1. The need for various parties to agree on a common approach to ease the interoperability of tools or interfaces.
@@ -81,9 +81,9 @@ Name                                            | Description
 ---                                             | ---
 Preamble                                        | Headers containing metadata about the CIP ([see below](#header-preamble)).
 Abstract                                        | A short (\~200 word) description of the proposed solution and the technical issue being addressed.
-Motivation: why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
+Motivation: Why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
 Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations. <br/><br/>This section must address the [Versioning](#versioning) requirement unless this is addressed in an optional Versioning section.<br/><br/> If a proposal defines structure of on-chain data it must include a CDDL schema.
-Rationale: how does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
+Rationale: How does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
 Path to Active                                  | Organised in two sub-sections (see [Path to Active](#path-to-active) for detail):<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>Either a plan to meet those criteria or `N/A` if not applicable.
 _optional sections_                             | May appear in any order, or with custom titles, at author and editor discretion:<br/>**Versioning**: if [Versioning](#versioning) is not addressed in Specification<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**
 Copyright                                       | The CIP must be explicitly licensed under acceptable copyright terms ([see below](#licensing)).
@@ -441,7 +441,7 @@ Emeritus editors:
 - Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
 - Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Key changes from CIP-0001 (version 1)
 

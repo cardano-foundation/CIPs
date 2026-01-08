@@ -41,7 +41,7 @@ holders and DReps in the Conway Ledger era, this specification is based on the
 
 For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIP-1694 introduces many new concepts, entities and actors to Cardano;
 describing their implementation at the ledger level. This creates the need for
@@ -595,7 +595,7 @@ the user is not a registered DRep.
    the app can use this to track the status of the transaction on-chain and
    provide feedback to the user.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The principle aim for this design is to reduce the complexity for wallet
 implementors whilst maintaining backwards compatibility with CIP-30

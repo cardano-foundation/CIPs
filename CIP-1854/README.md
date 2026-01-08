@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 This document describes how to realize multi-parties transactions in Cardano. It is defined as an alternative to [CIP-1852] for Cardano HD wallets. This specification does not cover the transport and sharing of partially signed transactions which is / will be covered in another document.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Overview 
 
@@ -195,7 +195,7 @@ After exchanging their corresponding public keys, both wallets should be initial
 
 When Alice initiates a transaction from this wallet, she'll construct the transaction body, sign it with her corresponding private key, include an instance of the script as witness and broadcast the transaction to Bob via Telegram. Upon reception, Bob is able to verify that the transaction was indeed signed by Alice using her private key at index #0 (Bob has indeed Alice's parent public key in its possession and is therefore able to derive a child key at index #0 to verify the signature on the transaction). Bob proceeds with the payment by signing the transaction in return and submitting it. 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - Multisig keys are scoped to accounts, which allows wallet's owners to separate their activity easily.
 

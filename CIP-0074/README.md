@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 A minPoolCost of 340 ADA/epoch makes popularity the basis for pool desirability, causing preferred traits like pledge and performance to be overshadowed. This has promoted stake to centralize with operators who are effective at campaigning, but do not necessarily have any stake in the system of their own. We want to create a fair marketplace for stake pools that allows the network to decentralize with time; minPoolCost is averse to that goal.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Popularity is currently the basis for desirability and defines which pools will receive high rewards and which won't. A pool with high popularity, low pledge, and low performance will offer significantly higher rewards than a pool with low popularity, high pledge, and high performance. With equal fee structures, a pool with 19.5MM pledge that is just starting out will be less desirable than a saturated pool with no pledge; a pool with 6MM pledge and perfect performance will be less desirable than a pool with 0 pledge and 90% performance. This makes it apparent we are not incentivizing a secure stable network and the network cannot self-correct if stake ends up in the wrong place.
 
@@ -39,7 +39,7 @@ SPOs define their cost as an absolute value when submitting their registration.c
 
 "minPoolCost": 0
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 98% of all pools have their cost at 340 ADA/epoch or within + 10. As the price of ADA went from $0.3 to $3, almost no operators modified their cost. As the price of ADA dropped from $3 to $0.3, almost no operators modified their cost. This shows that the minPoolCost is not related to the real cost of operating a pool and the cost of a pool is no longer related to its utility.
 

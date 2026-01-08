@@ -19,7 +19,7 @@ License: CC-BY-4.0
 We introduce a new kind of input, a _reference_ input, which allows looking at an output without spending it.
 This will facilitate access to information stored on the blockchain without the churn associated with spending and recreating UTXOs.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Datums in transaction outputs provide a way to store and access information on the blockchain.
 However, they are quite constrained in a number of ways.
@@ -100,7 +100,7 @@ transaction_body =
  }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The key idea of this proposal is to use UTXOs to carry information.
 But UTXOs are currently a bad fit for distributing information.

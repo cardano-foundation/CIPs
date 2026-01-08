@@ -7,7 +7,8 @@ Authors:
     - fallen-icarus <modern.daidalos@gmail.com>
     - zhekson1 <zhekson@nomadpool.io>
 Implementors: []
-Discussions: []
+Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/466
 Created: 2023-02-21
 License: CC-BY-4.0
 ---
@@ -22,7 +23,7 @@ CIP describes how to design DeFi so that it does *not* centralize Proof-of-Stake
 Cardano. And by using beacon tokens, users are able to interact fully peer-to-peer - no third-party
 indexing system is required. As a result, dDApps are essentially just extensions to a cardano node.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 To date, there are very few DeFi Dapps in which users maintain full delegation control of their
 assets. In fact, sacrificing delegation control is so common in the blockchain space that many
@@ -149,7 +150,7 @@ and create equivalent v2 limit orders. No one can force her to upgrade if she do
 > possible to construct the full order book even if some users are using v1 while others are now
 > using v2.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By giving all users their own personal DApp addresses, DeFi no longer undermines Cardano's
 Ouroboros. And by using beacon tokens to enable easy filtering of the current UTxO set, users can
@@ -237,6 +238,8 @@ CIP-68 can offer.
 
 ## Path to Active
 
+### Acceptance Criteria
+
 This CIP is already active.
 
 - [Cardano-Swaps](https://github.com/fallen-icarus/cardano-swaps) is a distributed order book DEX.
@@ -249,6 +252,10 @@ market for financial assets.
 Finally, the above four protocols were built into a prototype desktop light wallet called
 [p2p-wallet](https://github.com/fallen-icarus/p2p-wallet) which showcase how easy it is to integrate
 dDApps directly into wallets *without* using a DApp connector.
+
+### Implementation Plan
+
+N/A
 
 ## Copyright
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode)

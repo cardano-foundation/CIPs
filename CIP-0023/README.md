@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 This CIP introduces a new protocol parameter, `minPoolMargin`, which specifies a lower bound on the variable fee (margin) a stake pool may set. The parameter is introduced initially set to `0` to avoid disrupting existing pool certificates.  This proposal does not change or reduce the existing minimum fixed pool fee (`minPoolCost`).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The current minimum fixed pool fee places a large and unfair burden on delegators to pools with smaller amounts of stake.
 This incentivizes people to delegate to pools with higher stake causing centralization and creating an unequal playing field for stake pool operators.
@@ -52,7 +52,7 @@ It is also recommended to introducce the hard-fork with `minPoolMargin` initiall
 
 Should this clamping approach prove infeasible, pool certificates with a margin lower than `minPoolMargin` would need to be re-registered with compliant values, but the goal is to avoid disruption as much as possible.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The PHP code in minfees.php in the pull request allows exploration of the effects of choosing different values for the minimum fixed and variable fees.
 Running minfees without any arguments gives the usage message as below.

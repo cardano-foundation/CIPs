@@ -23,7 +23,7 @@ conversion allows different endianness for the encoding (most-significant-first
 and most-significant-last), as well as padding with zeroes based on a requested
 length if required.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Plutus Core creates a strong abstraction boundary between the concepts of
 'number' (represented by `BuiltinInteger`) and 'blob of bytes' (represented by
@@ -443,7 +443,7 @@ must have. Throughout, `q` is not negative and `0 <= w8 <= 255`.
 3. `builtinIntegerToByteString b (lengthOfByteString bs) (builtinByteStringToInteger b bs) =
    bs`
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 We believe that these operations address both of the described cases well, while
 also meeting the goals stated at the start of this CIP. Our specified primitives

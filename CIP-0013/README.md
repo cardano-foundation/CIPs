@@ -26,7 +26,7 @@ License: CC-BY-4.0
 
 This describes a general standard URI scheme with two specific protocols to handle Ada transfers and links to weighted lists of stake pools.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### In general:
 
@@ -149,7 +149,7 @@ An ABNF grammar should be specified and explained similarly for each CIP that de
 2. For either payment or staking links, we should be wary of people who disguise links as actually opening up a phishing website that LOOKS like that corresponding part of the wallet UI.
 3. If wallets *create* stake pool links, the actual ada or lovelace balance should not be used literally as the `proportion` figure, to avoid revealing the identity of the wallet owner who is creating the portfolio (e.g. the proportions could be scaled to normalise the largest to `1`).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Rationale for general URI scheme
 

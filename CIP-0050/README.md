@@ -17,13 +17,15 @@ Discussions:
   - https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
   - https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
   - https://github.com/cardano-foundation/CIPs/pull/1042
-Created: 4 April 2022 (original), 20 May 2025 (updated)
+Created: 2022-04-04
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
 Improving decentralization is critical for Cardano’s long-term health and growth. The current reward-sharing scheme (RSS) has yielded a stable but suboptimal level of decentralization. In hindsight, the original parameters *k* (the desired number of pools) and *a₀* (pledge influence factor) have not achieved their intended goals. Many stake pools with zero or minimal pledge manage to attract large delegations, undermining the Sybil-resistance that pledge was meant to provide (Liesenfelt, 2022). This proposal introduces a new pledge leverage parameter, *L*, into the RSS to more directly and fairly constrain such under-pledged pools. By capping rewards for pools with excessive stake relative to pledge, *L* penalizes severely under-pledged pools while having minimal effect on well-pledged or small pools. The adjusted scheme aligns economic incentives with decentralization: it redistributes stake toward well-pledged pools (increasing their rewards) and makes it more difficult for single entities to dominate via multiple pools. We present the motivation, specification, and rationale for this change, including simulations illustrating its impact. The goal is to significantly improve effective decentralization (approaching the theoretical *k* target) without unfairly harming small pool operators.
+
+> [Note!] This CIP was originally authored on 2022-04-04, but was subsequently updated on 2025-05-20
 
 ## Motivation: Why is this CIP necessary?
 
@@ -111,7 +113,7 @@ We propose adding a new protocol parameter L (maximum pledge leverage) to the st
 
   * Crucially, a pool with **zero pledge will earn zero rewards** if it has any delegated stake. This is a clear break from the current scheme, where a pool with 0 pledge can still generate rewards for delegators (just slightly less). Under the new formula, some amount of pledge becomes absolutely mandatory.  This eliminates the “free rider” problem of profit-seeking pool operators undermining the network’s security.
 
-## Rationale: How Does This CIP Achieve Its Goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Penalizing Under-Pledged Pools (Sybil Deterrence)
 

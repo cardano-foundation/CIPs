@@ -17,7 +17,7 @@ License: CC-BY-4.0
 ## Abstract
 The CIP proposes an extension of the current Plutus functions to provide support for the efficient computation of the multi-scalar multiplication over the BLS12-381 curve. This operation is crucial in a number of cryptographic protocols that can enhance the capabilities of the Cardano blockchain.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 Multi-scalar multiplication (MSM) is an algebraic group operation of the following form. Let $G$ be a group of prime order $p$. Let $g_0, g_1, ..., g_{N-1}$ be elements of $G$ and let $e_0, e_1, ..., e_{N-1}$ be elements of $Z_p$. Then, the multi-scalar multiplication $M$ is calculated as $M=\sum_{i=0}^{N-1} e_i \cdot g_i$.
 
 This operation appears in many cryptographic protocols. Its naive implementation requires $N$ scalar multiplications and $N$ group additions. However, the performance can be significantly improved by employing advanced algorithms, such as the [Pippenger Approach](https://hackmd.io/@tazAymRSQCGXTUKkbh1BAg/Sk27liTW9). Moreover, it can be further optimized for a particular group type (e.g., for elliptic curve groups [[BH22](https://eprint.iacr.org/2022/1400.pdf), [L23](https://dspacemainprd01.lib.uwaterloo.ca/server/api/core/bitstreams/3b15ca4c-9125-4e45-9378-c5474eec6a07/content)]).
@@ -90,7 +90,7 @@ It should also be taken into account that the efficiency of the MSM algorithm ma
 
 There may be an extra complication in the costing procedure because all scalars have to be reduced modulo the order of the group before being passed to the blst functions (this happens [here](https://github.com/IntersectMBO/cardano-base/blob/6f9c20abdd3010e5a25356580cc968ba430101ad/cardano-crypto-class/src/Cardano/Crypto/EllipticCurve/BLS12_381/Internal.hs#L521) for the existing BLS12-381 scalar multiplication function in `cardano-crypto-class`). Presumably this is almost zero-cost for scalars already in the correct range, but if we pass in a very long list of very large scalars, the aggregated reduction time might be quite significant, and this must be taken into account in the costing function to guard against the possibility of a large amount of computation being done too cheaply.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 Integrating these functions directly into Plutus will streamline cryptographic operations, reduce transaction costs, and uphold the integrity of existing cryptographic interfaces. It addresses current inefficiencies and enhances the cryptographic capabilities of the Plutus platform.
 
 It will allow the implementation of complex cryptographic protocols on-chain in Plutus smart contracts, significantly expanding the capabilities of the Cardano blockchain.

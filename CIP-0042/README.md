@@ -19,7 +19,7 @@ License: Apache-2.0
 
 This document describes the addition of a new Plutus builtin for serialising `BuiltinData` to `BuiltinByteString`.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 As part of developing on-chain script validators for [the Hydra Head protocol](https://eprint.iacr.org/2020/299), we stumble across a peculiar need for on-chain scripts: we need to verify and compare digests obtained from hashing elements of the script's surrounding transaction.
 
@@ -97,7 +97,7 @@ We propose to re-use this instance to define a cost model linear in the size of 
 
 Benchmarking and costing `serialiseData` was done in [this PR](https://github.com/input-output-hk/plutus/pull/4480) according to this strategy. As the benchmark is not very uniform, because some cases of `Data` "structures" differ in CPU time taken to process, the linear model is used as an **upper bound** and thus conservatively overestimating actual costs.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 * Easy to implement as it reuses existing code of the Plutus codebase;
 * Such built-in is generic enough to also cover a wider set of use-cases, while nicely fitting ours;
@@ -120,7 +120,7 @@ Benchmarking and costing `serialiseData` was done in [this PR](https://github.co
 
 * Additional built-in: so can be added to PlutusV1 and PlutusV2 without breaking any existing script validators. A hard-fork is however required as it would makes more blocks validate.
 
-## Path To Active
+## Path to Active
 
 ### Acceptance Criteria
 

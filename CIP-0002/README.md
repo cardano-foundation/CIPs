@@ -24,7 +24,7 @@ In the context of this article, **coin selection** refers to the process of
 choosing _unspent coins_ from a wallet (or [UTxO set](#utxo-set)) in order to
 pay money to one or more recipients.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This document was written to help people gain an understanding of the coin
 selection algorithms used in Cardano _without_ having to read through and
@@ -953,7 +953,7 @@ to the caller as the [coin selection](#coin-selection) result.
 The [available UTxO set](#available-utxo-set) is returned to the caller as the
 [remaining UTxO set](#remaining-utxo-set) result.
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 ### Largest-First
 

@@ -6,6 +6,7 @@ Status: Proposed
 Authors:
   - Nicolas Henin <nicolas.henin@iohk.io>
   - Raphael Toledo <raphael.toledo@iohk.io>
+Implementors: []
 Solution-To:
   - CPS-0017
   - CPS-0021
@@ -121,7 +122,7 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
 
 </details>
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This proposal strengthens Cardano’s consensus protocol (Ouroboros Praos) against a class of attacks known as *grinding attacks*. These attacks allow adversaries to bias the randomness used in block leader elections in their favor, statistically slowing down settlement times and thys weakening the effectivness of Praos.
 

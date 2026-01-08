@@ -15,7 +15,7 @@ License: Apache-2.0
 ## Abstract
 This CIP follows closely the (CIP-0101)[^1] and proposes an extension of the current Plutus functions with another hashing primitive [`RIPEMD-160`](https://en.bitcoin.it/wiki/RIPEMD-160). Primary goal is to introduce compatibility with Bitcoin's cryptographic infrastructure.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The [integration](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0049/README.md) of the ECDSA and Schnorr signatures over the secp256k1 curve into Plutus was a significant step towards interoperability with Ethereum and Bitcoin ecosystems. However, full compatibility is still impossible due to the absence of the `RIPEMD-160` hashing algorithm in Plutus interpreter, which is a fundamental component of Bitcoin's cryptographic framework.
 Most of common addresses in Bitcoin are derived from double [hashing procedure](https://learnmeabitcoin.com/technical/cryptography/hash-function/#hash160) involving `SHA-256` followed by `RIPEMD-160` function:
@@ -42,12 +42,14 @@ More specifically, Plutus will gain the following primitive operation:
 The input to this function can be a `ByteString` of arbitrary size, and the output will be a `ByteString` of 20 bytes. 
 Note that this function aligns with the format of existing hash functions in Plutus, such as [blake2b_256](https://github.com/input-output-hk/plutus/blob/75267027f157f1312964e7126280920d1245c52d/plutus-core/plutus-core/src/Data/ByteString/Hash.hs#L25)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 While the `RIPEMD-160` function might be implemented in on-chain scripts, doing so would be computationally unfeasible.
 
 The library, cryptonite, is not implemented by and under control of the Plutus team. However,
 * It is a library already used in the Plutus stack to expose KECCAK-256, and can be considered as a trustworthy implementation.
 * Its behaviour is predictable and computationally efficient. The cost of the function is linear with respect to the size of the message provided as input. This is the same behaviour that other hash functions exposed in plutus (blake, sha3, keccak-256) have.
+
+## Path to Active
 
 ### Acceptance Criteria
 - [X] A `cardano-base` binding is created for the `ripemd-160` function and included in a new version of the library.

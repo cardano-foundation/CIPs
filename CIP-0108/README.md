@@ -27,7 +27,7 @@ Furthermore a lack of such standards risks preventing interoperability between t
 
 For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 Blockchains are poor choices to act as content databases.
 This is why governance metadata anchors were chosen to provide a way to attach long form metadata content to on-chain events.
 By only supplying an onchain hash of the off-chain we ensure correctness of data whilst minimizing the amount of data posted to the chain.
@@ -107,7 +107,7 @@ See [test-vector.md](./test-vector.md) for examples.
 This proposal should not be versioned, to update this standard a new CIP should be proposed.
 Although through the JSON-LD mechanism further CIPs can add to the common governance metadata vocabulary,
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 We intentionally have kept this proposal brief and uncomplicated.
 This was to reduce the time to develop and deploy this standard.
 We think it is better to have a base standard which can be improved, rather than meticulously craft a perfect single standard.

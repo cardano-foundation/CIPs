@@ -20,7 +20,7 @@ License: CC-BY-4.0
 ## Abstract
 This CIP extends [CIP-30 (Cardano dApp-Wallet Web Bridge)](https://cips.cardano.org/cips/cip30/) to provide an additional endpoint for dApp to sign multiple transactions in bulk.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 Currently, there is no way to sign multiple transactions in bulk, and the experience of signing a chain of transactions is suboptimal. We propose the addition of a signTxs endpoint that enable wallets to create an array of interconnected transactions and sign them all at once.
 
 ## Specification
@@ -67,7 +67,7 @@ Extends [CIP-30 (Cardano dApp-Wallet Web Bridge) submitTx](https://cips.cardano.
 ### Versioning
 Once approved and final, the proposal must be superseded by another if changes break the specification. Minor adjustments are allowed if needed to improve readability and resolve uncertainties. 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 Allowing for bulk signing and submission of transactions can greatly improve the user experience by reducing the amount of steps needed to sign more than one transaction. Allowing multiple transactions to be provided in the same API call also reduces the burden for transaction chaining that was previously mainly possible by keeping track of node mempool to know if input utxo's are available to be spent. Submitting multiple transactions would still be possible without `submitTxs` addition using the already defined [CIP-30 (Cardano dApp-Wallet Web Bridge) submitTx](https://cips.cardano.org/cips/cip30/#apisubmittxtxcbortransactionpromisehash32) endpoint by calling it multiple times. However, allowing a bulk submit endpoint speeds up submission when many transactions are to be submitted at once as you wouldn't have to await each individual submission. 
 
 ## Path to Active

@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This document describes a CIP-30 extension allowing webpages (i.e. dApps) to interface with Cardano Multisig-wallets. This document is a work in progress and is not yet finalized. It is expected to be updated as the ecosystem evolves. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 In order to facilitate future dApp development, we will need a way for dApps to communicate with multisig wallets, given the unique complexities of native script based addresses. Special provisions need to be made to make the connector compatible with them.  
 
@@ -124,7 +124,7 @@ When connecting to a wallet using this extension the following endpoints will be
 
 These endpoints should return an error if called when using this extension. 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 See justification and explanations provided with each API endpoint.
 

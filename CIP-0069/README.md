@@ -20,7 +20,7 @@ For a while now every builder, myself included have struggled with the mutual de
 
 The exact change would be to have every validator take as argument the redeemer and then the script context. Datums, only relevant to locking validators would be able to be provided by either looking them up in the ScriptContext or by extending the `Spending` constructor of `TxInfo` to carry `(TxOutRef, Datum)`.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Multi-purpose Scripts
 
@@ -98,7 +98,7 @@ The ScriptPurpose type used in the Redeemers Map is left the same.
 It is used to uniquely identify a Plutus script within a transaction.
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Unifying of the script signature is a very elegant solution to the problem, streamlining the experience of developing on cardano.
 It begs the question if it should be added as an argument to all validators, to further emphasize that fact.
@@ -106,9 +106,9 @@ It begs the question if it should be added as an argument to all validators, to 
 
 This CIP turns all scripts into 1 arg scripts with a Script Context union type for each purpose.
 
-## Backwards compatibility
+### Backward compatibility
 
-This change is not backwards compatible; it must be introduced in a new Plutus language version.
+This change is not backward compatible; it must be introduced in a new Plutus language version.
 Node code must be modified.
 
 ## Path to Active

@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 These guidelines describe the audit process in general before setting out for DApp developers what information they will need to supply to auditors as part of the process. These are guidelines rather than requirements, and different auditors may engage differently, providing complementary services. The guidelines aim to establish a common baseline, including alternative ways of satisfying high-level requirements. Appendices provide (1) a glossary, (2) an audit FAQ, (3) a list of auditors for Cardano, and (4) a sample audit report.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This CIP aims to promote the process of audit for DApps on Cardano, to improve the overall standard of assurance of DApps built for Cardano, and thus to contribute the improvement of the wider Cardano ecosystem.  
 
@@ -217,11 +217,11 @@ Auditors shall provide credentials for the following competencies:
 Disclosure
 It is common – but not universal – practice for disclosure/publication of audit report, for example as a part of a responsible disclosure policy. A typical policy would be to publish a report after a certain period (e.g. 30-90 day) or at the point that a DApp goes live, whichever is earlier.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 These guidelines are the result of a process of discussion between IOG staff and members of the audit and academic communities over a series of online meetings in February and March 2022. Audit organisations involved include Tweag, WellTyped, Certik, Runtime Verification, BT Block, MLabs, Quviq and Hachi/Meld, all of which supported the guidelines outlined here.
 
-## Path to active
+## Path to Active
 
 ### Acceptance Criteria
 

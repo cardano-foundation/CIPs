@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This proposal uses plutus minting policies to create valid "ballots" that are sent alongside datum "votes" to a centralized smart contract "ballot box" in order to perform verifiable on-chain voting in NFT projects that do not have a governance token.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This proposal is intended to provide a standard mechanism for non-fungible token (NFT) projects to perform on-chain verifiable votes using only their NFT assets. There are several proposed solutions for governance that involve using either a service provider (e.g., Summon) with native assets or the issuance of proprietary native assets.  However, there are several issues with these approaches:
 - Airdrops of governance tokens require minUTxO ada attached, costing the NFT project ada out of pocket
@@ -200,7 +200,7 @@ func main(redeemer: Redeemer, ctx: ScriptContext) -> Bool {
 
 The Helios code above simply checks that during a burn (as indicated by the Plutus minting policy's `redeemer`), the user is not attempting to mint a positive number of any assets.  With this code, *any Cardano wallet* can burn *any ballot* minted as part of this protocol.  Why so permissive? We want to ensure that each vote is bringing the minimal costs possible to the user.  In providing this native burning mechanism we can free up the minUTxO that had been locked with the ballot, and enable the user to potentially participate in more votes they might not have otherwise.  In addition, users who really do not like the specific commemorative NFTs or projects that choose to skip the "commemorative" aspect of ballot creation now have an easy way to dispose of "junk" assets.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Using Inline Datums (On-Chain) Instead of Metadata (Off-Chain)
 

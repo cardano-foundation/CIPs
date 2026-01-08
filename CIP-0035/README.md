@@ -15,15 +15,13 @@ Created: 2022-02-09
 License: CC-BY-4.0
 ---
 
-# Changes to Plutus Core
-
 ## Abstract
 
 This CIP specifies a process for proposing changes to Plutus Core, its builtins, and its interface to the Cardano ledger.
 It gives a taxonomy of typical changes, and explains how these changes may be made, which in some cases requires a CIP.
 It introduces the 'Plutus' CIP category for tracking these.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The Plutus Core language, its builtins, and its interface to the ledger are all likely to evolve significantly over time. There are many reasons for this:
 - We may be able to increase performance, improve safety, or reduce script sizes by changing the language.
@@ -35,10 +33,7 @@ The Plutus Core language, its builtins, and its interface to the ledger are all 
 - … and more
 
 This CIP gives a taxonomy of changes, explains how such changes might be implemented in Cardano, and prescribes processes for proposing such changes.
-
-## Background
-
-This CIP assumes general familiarity with Plutus Core and the Cardano ledger, but we give some brief background here.
+It assumes general familiarity with Plutus Core and the Cardano ledger, though we begin with some brief background:
 
 ### Plutus Core
 
@@ -263,7 +258,7 @@ For example, if a bug fix changes behaviour, it will have to wait for a new Plut
 
 Proposals for other additions, removals, or changes to behaviour of any part of Plutus Core or its builtins SHOULD be proposed in a CIP.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Do removals and changes really need a new ledger language?
 

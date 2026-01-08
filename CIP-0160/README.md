@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This CIP proposes the introduction of a new Address type, `ProtectedAddress`, and a corresponding `Receiving` script purpose. This enhancement allows a smart contract to validate not only UTxO spends from its address, but also UTxO creations to its address. The lack of such a mechanism today forces developers to implement complex workarounds involving authentication tokens, threaded NFTs, and registry UTxOs to guard against unauthorized or malformed deposits. This CIP aims to provide a native mechanism to guard script addresses against incoming UTxOs, thereby improving protocol safety, reducing engineering overhead, and eliminating a wide class of vulnerabilities in the Cardano smart contract ecosystem.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 In Cardano’s current eUTxO model, smart contracts can enforce logic only when their locked UTxOs are being spent. They have no ability to reject or validate UTxOs being sent to them. This leads to a fundamental weakness: anyone can send arbitrary tokens and datum to a script address, potentially polluting its state or spoofing valid contract UTxOs. To mitigate this, developers today must:
 
@@ -86,7 +86,7 @@ redeemer_tag =
   / 6 ; receiving   ; NEW: script validates output creation to a ProtectedAddress
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The proposed `ProtectedAddress` and `Receiving` script purpose solve the long-standing problem of uncontrolled UTxO injection at script addresses. By giving smart contracts the ability to validate outputs being sent to them during phase-2 validation, developers can:
 

@@ -22,7 +22,7 @@ License: CC-BY-4.0
 
 This proposal describes a method allowing a stakepool operator to provide credentials to verify that they are the rightful manager for their stakepool.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Many websites such pooltool.io, adapools.org, and others need to allow pool operators special access to modify the way their pool appears on the website. SPOCRA and other organizations also have a need to allow voting on proposals and ensure that each vote cast is from a valid pool operator. Today, these sites and organizations all use different techniques for validating pool operators.
 
@@ -126,7 +126,7 @@ verification: 9ca4c7e63ba976dfbe06c7a0e6ec4aec5a5ef04b721ffc505222606dfc3d01572d
 Verification SUCCESS!
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Implementing this simplifies and commonizes the process for verifying that a pool operator is who they say they are in 3rd party systems. Having a common way of verify pool operators also allows simple integration into pool management tools.
 

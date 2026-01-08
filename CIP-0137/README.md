@@ -26,7 +26,7 @@ The messages can be sent and received by nodes running in a non intrusive way si
 
 In this way, we can significantly reduce the cost and effort required to build a decentralised network for message diffusion by using Cardano's established infrastructure, with limited impact on the performance and no impact on the security of the Cardano network.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Many protocols in the Cardano ecosystem need the capability to diffuse messages in a decentralized manner. However, it is not possible to diffuse any type of message from Cardano block producers to a limited subset of subscribed peers. Nonetheless, the Cardano network has a proven efficient, reliable and secure infrastructure which is used to diffuse a transaction from one peer to all the other peers in the network. This infrastructure can be leveraged to achieve the goal of diffusing other types of messages with the guarantees offered by the Cardano network and a reduced development overhead.
 
@@ -593,7 +593,7 @@ hasMore = false / true
 isBlocking = false / true
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Why are we proposing this CIP?
 

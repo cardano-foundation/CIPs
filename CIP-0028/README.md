@@ -17,7 +17,7 @@ License: Apache-2.0
 
 This CIP extends CIP-0009 to include the new protocol parameters that have been introduced for Alonzo, specifically those relating to the costing of Plutus scripts.  It describes the initial settings for those parameters.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 We need to document the chain of changes to the protocol parameters.  This document describes precisely the changes that have been made from CIP-0009, allowing the differences to be determined.  It thus supplements rather than replaces CIP-0009.
 
@@ -254,7 +254,7 @@ For simplicity, the details of the parameter settings is omitted here.
 
 There are no changes to the non-updatable protocol parameters.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The majority of the parameters are needed to enable the use of Plutus scripts on-chain.  They relate to the fees calculations for
 transactions that include Plutus scripts.

@@ -1,6 +1,6 @@
 ---
 CIP: 138
-Title: Plutus Core Builtin Type - `Array`
+Title: Plutus Core Builtin Type - Array
 Category: Plutus
 Status: Proposed
 Authors:
@@ -18,7 +18,7 @@ License: CC-BY-4.0
 We propose an array builtin type for Plutus Core. This type will have constant-time lookup,
 which is a useful feature that is otherwise not possible to achieve. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The first part of [CPS-0013][1] outlines in great detail the motivation for introducing this
 new builtin type.
@@ -66,7 +66,7 @@ For arrays, this representation will be based on the one currently implemented i
 for the [Haskell `List` type][9].  Plutus Core arrays must be converted to lists before being serialised,
 and deserialisation is performed by using the flat decoder for lists and converting the result to an array.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Choice of builtin functions and their specification
 

@@ -4,7 +4,7 @@ Title: Time-Bound Delegation with Dynamic Rewards
 Category: Ledger
 Status: Proposed
 Authors:
-  - Ryan Wiley rian222@gmail.com
+  - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/1077
@@ -18,7 +18,7 @@ Cardano’s staking and on‑chain voting have drifted toward passivity. As desc
 
 If the network’s total staking ratio remains roughly unchanged, these changes are expected to increase rewards for all delegators and stake pool operators by a small annual percent. Together, these changes encourage ongoing engagement, reduce sticky/lost‑stake externalities, and keep realized emissions consistent with monetary policy while respecting user property rights.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Many users interpret staking rewards as akin to bank interest. If that were the intent, the ledger would not need operator selection, delegation, or performance‑based rewards. Yield could simply accrue automatically. In Cardano, **staking is voluntary and active**. It is how the protocol decides who gets to make blocks, and rewards compensate the combination of (a) **committing stake** to secure the network and (b) **selecting and monitoring** a competent, honest operator. "On a high level, the goal of the incentives mechanism is to incentivize stakeholders to follow the protocol and thereby to guarantee the secure and efficient operation of Cardano" (SL‑D5 §5.1)
 
@@ -53,7 +53,7 @@ This CIP intentionally limits itself to two changes to the ledger rules. All oth
 
 **Note:** The initial numeric value for `delegatorInactivity` is intentionally **left undefined** here and will be chosen through community governance and deliberation. Potential jittering or lottery mechanisms to stagger per-epoch expiries are not mentioned in this proposal, but may be considered separately if operational data warrants it.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - **Active security & correct economics.** Periodic renewal makes delegation an affirmative act of securing the network. Engaged holders are compensated for informed operator selection, not mere passage of time.
 - **Mitigate sticky stake.** Long‑dormant delegations can prop up legacy control of block production. Expirations reduce that inertia by requiring a simple, periodic affirmation from real, reachable owners.

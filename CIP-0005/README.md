@@ -21,7 +21,7 @@ License: Apache-2.0
 
 This CIP defines a set of common prefixes (or so-called human-readable part in the [bech32](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki)) encoding format) for various bech32-encoded binary data across the Cardano eco-system.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Many tools used within the Cardano eco-system are manipulating binary data. Binary data are typically encoded as hexadecimal text strings when shown in a user interface (might it be a console, a url or a structured document from a server). From the user perspective, it can be difficult to distinguish between various encoded data. From the tools developer perspective, it can also be difficult to validate inputs based only on raw bytes (in particular when encoded data often have the same length).
 
@@ -151,7 +151,16 @@ The [CIP-0129] definitions are included within the tables above.
 | `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a constitutional committee hot verification key   |
 | `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
 
-## Rationale: how does this CIP achieve its goals?
+### Changelog
+
+In order to make it easy to keep up with updates to this specification, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
+
+| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
+| --- | ---         | ---                                                             | ---                                                           |
+| 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#1036](https://github.com/cardano-foundation/CIPs/pull/1036) |
+| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
+
+## Rationale: How does this CIP achieve its goals?
 
 ### About the `_test` suffix
 
@@ -208,15 +217,6 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 ### Implementation Plan
 
 - Available JavaScript library: [cip5-js](https://www.npmjs.com/package/@dcspark/cip5-js)
-
-## Changelog
-
-In order to make it easy to keep up with updates to this CIP, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
-
-| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
-| --- | ---         | ---                                                             | ---                                                           |
-| 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#1036](https://github.com/cardano-foundation/CIPs/pull/1036) |
-| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
 
 ## Copyright
 

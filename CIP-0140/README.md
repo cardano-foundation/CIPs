@@ -74,7 +74,7 @@ We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that 
         - [Persistent storage](#persistent-storage)
         - [CPU](#cpu)
         - [Memory](memory)
-- [Path to active](#path-to-active)
+- [Path to Active](#path-to-active)
     - [Acceptance criteria](#acceptance-criteria)
     - [Implementation plan](#implementation-plan)
 - [Versioning](#versioning)
@@ -85,7 +85,7 @@ We propose Ouroboros Peras, an enhancement to the Ouroboros Praos protocol that 
 
 </details>
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Under Ouroboros Praos, settlement occurs probabilistically on the Cardano blockchain, where the probability that a block will be rolled back from the preferred chain decreases exponentially as the chain grows beyond the block and where that rate of decrease is slower when adversarial activity is stronger[^1]. Some use cases require high assurance that a block (and the transactions within it) will not be rolled back, necessitating a potentially lengthy wait before a transaction is considered "settled" or "finalize". Some major centralized exchanges, for example, require fifteen confirmations (i.e., blocks) before a transaction is considered settled[^2]: this amounts to waiting ten minutes before a consumer has their transacted funds or tokens available for subsequent use. This situation is not unique to Cardano: centralized exchanges generally require at least five minutes wait for most of the common blockchains[^2]. Partner chains and bridges may have stringent requirements for fast and highly certain settlement.
 
@@ -1253,7 +1253,7 @@ As already mentioned, the vote serialization mimics the block header's structure
 The CDDL for the [certificates](#certificates) that aggregate votes is specified in the proposed CIP [*Votes & Certificates on Cardano*](https://github.com/cardano-foundation/CIPs/pull/870).
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The Ouroboros Peras protocol achieves the goal of fast *ex post facto* settlement by periodically voting upon blocks of the preferred chain and giving such blocks a boost in weight if a quorum of voters vote for them in the same round. With overwhelming probability, the boost effectively "cements" the block forever unto the preferred chain, thus guarding it and prior blocks from rollbacks. The protocol operates under conditions of up to 25% adversarial stake, but reverts to the familiar Praos protocol under stronger adversarial conditions; after adversarial conditions abate, it remains safely in "Praos mode" for long enough to achieve chain healing, chain quality, and a common prefix. Thus, it does not weaken the worst-case security guarantees provided by Praos, though it does significantly speed settlement under "normal" non-adversarial conditions and under weakly adversarial conditions.
 
@@ -1478,7 +1478,7 @@ A node is expected to need to keep the following data in memory:
 Thus, Peras should not have any significant impact on the memory requirements of a node.
 
 
-## Path to active
+## Path to Active
 
 - [ ] Clear evidence of stakeholder use cases that require the fast *ex post facto* settlement that Peras provides.
 

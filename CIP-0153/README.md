@@ -18,7 +18,7 @@ We propose to extend the `Data` type in Plutus Core with a new constructor `Valu
 
 This addition enables on-chain scripts to operate on multi-asset values directly and efficiently, without resorting to nested map encodings. It eliminates the need for costly emulation of value operations, reduces validator script size, enables faster execution, and significantly lowers the ex-unit budgets required to process multi-asset logic. By elevating multi-asset values to a primitive type, this change aligns Plutus Core more closely with its primary domain—expressing constraints over the transfer of value—and unlocks substantial improvements in performance, safety, and consistency across the smart contract ecosystem.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 UPLC is not a general-purpose programming language. It is a language specifically designed to write validation logic to set constraints for the creation and transfer of Value and Data across the Cardano blockchain. **Given that half of the entire purpose of this language is to express constraints over the creation and transfer of** `Value`, why is Value treated as a standard library concept rather than a first-class language primitive?
 
@@ -113,7 +113,7 @@ A note on `valueData` and `unValueData`: in Plutus V1, V2 and V3, the encoding o
 This ensures backwards compatibility.
 Beginning in the Dijkstra era, a new `Value` constructor will be added to `BuiltinData`, making `valueData` and `unValueData` constant time operations for Plutus V4 onwards.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Efficiency
 

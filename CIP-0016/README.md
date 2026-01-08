@@ -11,7 +11,6 @@ Implementors:
   - cardano-serialization-lib <https://github.com/Emurgo/cardano-serialization-lib>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/57
-Type: Standards
 Created: 2020-12-21
 License: Apache-2.0
 ---
@@ -26,7 +25,7 @@ cryptographic keys across the Cardano eco-system:
 - [BIP32-Ed25519](https://ieeexplore.ieee.org/document/7966967) extended keys
   (Ed25519 extended keys with BIP32-style derivation)
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 Throughout the Cardano eco-system, different projects have used different
 serialisation formats for cryptographic keys.
@@ -108,7 +107,7 @@ code.
 This structure should be Bech32 encoded, using one of the appropriate `*_xsk`
 prefixes defined in CIP-0005.
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 ### Extended Signing Key Format
 

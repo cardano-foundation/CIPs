@@ -16,12 +16,12 @@ Created: 2022-05-27
 License: Apache-2.0
 ---
 
-# Abstract
+## Abstract
 
 Add primitives for bitwise operations, based on `BuiltinByteString`, without 
 requiring new data types.
 
-# Motivation
+## Motivation: Why is this CIP necessary?
 
 Bitwise operations are one of the most fundamental building blocks of algorithms
 and data structures. They can be used for a wide variety of applications,
@@ -40,13 +40,13 @@ effort.
 We describe a list of bitwise operations, as well as their intended semantics,
 designed to address this problem.
 
-## Example applications
+### Example applications
 
 We provide a range of applications that could be useful or beneficial on-chain,
 but are difficult or impossible to implement without some, or all, of the
 primitives we propose.
 
-### Finite field arithmetic
+#### Finite field arithmetic
 
 [Finite field arithmetic](https://en.wikipedia.org/wiki/Finite_field_arithmetic)
 is an area with many applications, ranging from [linear block
@@ -79,7 +79,7 @@ form amenable to this kind of work, would allow efficient finite field
 arithmetic on-chain. This could enable a range of new uses without being
 inefficient or difficult to port.
 
-### Succinct data structures
+#### Succinct data structures
 
 Due to the on-chain size limit, many data structures become impractical or
 impossible, as they require too much space either for their elements, or their
@@ -153,7 +153,7 @@ In order to make such techniques viable, bitwise primitives are mandatory.
 Furthermore, succinct data structures are not limited to sets of integers, but
 *all* require bitwise operations to be implementable.
 
-### Binary representations and encodings
+#### Binary representations and encodings
 
 On-chain, space comes at a premium. One way that space can be saved is with binary
 representations, which can potentially represent something much closer to the
@@ -169,7 +169,7 @@ where complex structures or values are represented using fixed-size
 implemented more efficiently than currently possible, as there exist numerous
 bitwise techniques for this.
 
-### On-chain vectors
+#### On-chain vectors
 
 For linear structures on-chain, we are currently limited to `BuiltinList`
 and `BuiltinMap`, which don't allow constant-time indexing. This is a
@@ -199,18 +199,18 @@ piece is the ability to convert indices (which would have to be
 possible to use these techniques to implement something like an array or vector
 without new primitive data types.
 
-## Goals
+### Goals
 
 To ensure a focused and meaningful proposal, we specify our goals below.
 
-### Useful primitives
+#### Useful primitives
 
 The primitives provided should enable implementations of algorithms and data
 structures that are currently impossible or impractical. Furthermore, the
 primitives provided should have a high power-to-weight ratio: having them should
 enable as much as possible to be implemented.
 
-### Maintaining as many algebraic laws as possible
+#### Maintaining as many algebraic laws as possible
 
 Bitwise operations, via [Boolean
 algebras](https://en.wikipedia.org/wiki/Boolean_algebra_(structure)), have a 
@@ -222,7 +222,7 @@ implementations. To some extent, they also formalize our intuition about how
 these operations 'should work'. Thus, maintaining as many of these laws in our 
 implementation as possible, and being clear about them, is important.
 
-### Allowing efficient, portable implementations
+#### Allowing efficient, portable implementations
 
 Providing primitives alone is not enough: they should also be efficient. This is
 not least of all because many would associate 'primitive operation' with a
@@ -230,7 +230,7 @@ notion of being 'close to the machine', and therefore fast. Thus, it is on us to
 ensure that the implementations of the primitives we provide have to be
 implementable in an efficient way, across a range of hardware.
 
-### Clear indication of failure
+#### Clear indication of failure
 
 While totality is desirable, in some cases, there isn't a sensible answer for us
 to give. A good example is a division-by-zero: if we are asked to do such a
@@ -238,11 +238,11 @@ thing, the only choice we have is to reject it. However, we need to make it as
 easy as possible for someone to realize why their program is failing, by
 emitting a sensible message which can later be inspected.
 
-## Non-goals
+### Non-goals
 
 We also specify some specific non-goals of this proposal.
 
-### No metaphor-mixing between numbers and bits
+#### No metaphor-mixing between numbers and bits
 
 A widespread legacy of C is the mixing of treatment of numbers and blobs of
 bits: specifically, the allowing of logical operations on representations of
@@ -303,9 +303,9 @@ round-tripping. Arguably, it is also desirable to provide built-in support for
 treatment as blobs of bytes (for example, hexadecimal or binary notation), but
 this is outside the scope of this proposal.
 
-# Specification
+## Specification
 
-## Proposed operations
+### Proposed operations
 
 We propose several classes of operations. Firstly, we propose two operations for
 inter-conversion between  `BuiltinByteString` and `BuiltinInteger`:
@@ -412,9 +412,9 @@ countTrailingZeroesByteString :: BuiltinByteString -> BuiltinInteger
 Counts the final sequence of 0 bits in the argument (that is, starting from the
 1 bit with the highest index). If the argument is empty, this returns 0.
 
-## Semantics
+### Semantics
 
-### Preliminaries
+#### Preliminaries
 
 We define $\mathbb{N}^{+} = \\{ x \in \mathbb{N} \mid x \neq 0 \\}$. We assume
 that `BuiltinInteger` is a faithful representation of $\mathbb{Z}$, and will
@@ -463,7 +463,7 @@ equivalent to $T[\mathtt{i}]$; we extend this notion to `sliceByteString`
 analogously. Throughout, we will refer to `BuiltinByteString`s and their 'views'
 as bit or byte sequences interchangeably.
 
-### Representation of `BuiltinInteger` as `BuiltinByteString` and conversions
+#### Representation of `BuiltinInteger` as `BuiltinByteString` and conversions
 
 We describe the translation of `BuiltinInteger` into `BuiltinByteString`, which
 is implemented as the `integerToByteString` primitive. Let $i$ be the argument
@@ -555,7 +555,7 @@ complementByteString (andByteString b b') = iorByteString (complementByteString 
 complementByteString (iorByteString b b') = andByteString (complementByteString b) (complementByteString b')
 ```
 
-### Mixed operations
+#### Mixed operations
 
 Throughout, let $S = s_0 s_1 \ldots s_n$ be a byte sequence, and let 
 $S^{\prime}$ be its corresponding bit sequence with bit length $n^{\prime} + 1$.
@@ -688,7 +688,7 @@ countTrailingZeroesByteString (iorByteString bs bs') =
 
 where `min` is the minimum value function.
 
-### Costing
+#### Costing
 
 All of the primitives we describe are linear in one of their arguments. For a
 more precise description, see the table below.
@@ -709,9 +709,9 @@ Primitive | Linear in
 `countLeadingZeroesByteString` | Argument (only one)
 `countTrailingZeroesByteString` | Argument (only one)
 
-# Rationale
+## Rationale: How does this CIP achieve its goals?
 
-## Why these operations?
+### Why these operations?
 
 For work in finite field arithmetic (and the areas it enables), we frequently
 need to move between the 'worlds' of `BuiltinInteger` and `BuiltinByteString`.
@@ -815,7 +815,7 @@ languages: for example, GHC's `FiniteBits` type class has `countTrailingZeros`
 and `countLeadingZeros`. Lastly, while they can be emulated by
 `testBitByteString`, this is tedious, error-prone and extremely slow.
 
-# Backwards compatibility 
+### Backwards compatibility 
 
 At the Plutus Core level, implementing this proposal introduces no
 backwards-incompatibility: the proposed new primitives do not break any existing
@@ -824,12 +824,20 @@ Core (such as `PlutusTx`), no existing functionality should be affected.
 
 On-chain, this requires a hard fork, as this introduces new primitives.
 
-# Path to Active
+## Path to Active
 
 MLabs will implement these primitives, as well as tests for these. Costing will
 have to be done after this is complete, but must be done by the Plutus Core
 team, due to limitations in how costing is performed.
 
-# Copyright
+### Acceptance Criteria
+
+N/A
+
+### Implementation Plan
+
+N/A
+
+## Copyright
 
 This CIP is licensed under Apache-2.0.

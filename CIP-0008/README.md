@@ -22,7 +22,7 @@ License: CC-BY-4.0
 
 Private keys can be used to sign arbitrary data. If you have the public key, you can verify the data was signed by the owner of the private key. This is how transaction signing works internally but its utility is not limited to transactions. This document tries to set a standard for how to represent and verify signed messages for Cardano.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Most common use cases:
 
@@ -289,7 +289,7 @@ We recommend usage of unprotected headers vs protected headers when possible. Th
 
 The public key SHOULD NOT contain any chaincode information, as it could compromise child non-hardened keys. It is both a privacy and a security risk (see [here](https://bitcoin.org/en/wallets-guide#hierarchical-deterministic-key-creation) for more detail).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Requirements
 

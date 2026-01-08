@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 Currently Cardano has two easily-usable networks: "mainnet" and "testnet". However, in the future, we expect more networks to exist and so we need some way to refer to these networks to be able to write better multi-network applications and systems.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano currently has three ways to refer to a network:
 - The "network ID" included in every address and also optionally present in the transaction body. This only stores 16 possibilities (4 bits)
@@ -55,7 +55,7 @@ When representing these networks in a human-readable string, the following forma
 cip34:NetworkId-NetworkMagic
 ```
 
-# Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 We pick this format for the following reason:
 - The network ID is too small to be used by itself. You can see from [chainlist](https://chainlist.org/) that 16 possibilities is too few

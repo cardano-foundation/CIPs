@@ -44,7 +44,7 @@ networks, including SanchoNet, Preview, PreProd or private networks.
 Appropriate adjustments may need to be made to reflect differences in timing or other concerns.
 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This CIP is needed to familiarize stakeholders with the processes and procedures that should be 
 followed in the unlikely event that the Cardano mainnet, or another Cardano network, encounters
@@ -306,8 +306,15 @@ One of the key requirements for successful disaster recovery will be proper enga
 3. Identify and establish the right communications channels with the community, including Intersect
 4. Set up regular disaster recovery practice sessions
 
+### Change Log
 
-## Rationale: how does this CIP achieve its goals?
+| Version | Date | Description |
+| -------- | -------- | ------- |
+| 0.1 | 2024-08-30 | Initial submitted version |
+| 0.2 | 2024-09-10 | Revised version to emphasize genericity of recovery techniques |
+| 0.3 | 2024-09-18 | Revised version following CIP editors meeting |
+
+## Rationale: How does this CIP achieve its goals?
 
 This CIP outlines key disaster recovery scenarios that the Cardano community should understand to mitigate
 potential network outages. As a living document, it will be regularly reviewed and updated to inform 
@@ -329,14 +336,6 @@ and validation of recovery actions in the event of an outage.
 ### Implementation Plan
 
 N/A
-
-## Change Log
-
-| Version | Date | Description |
-| -------- | -------- | ------- |
-| 0.1 | 2024-08-30 | Initial submitted version |
-| 0.2 | 2024-09-10 | Revised version to emphasize genericity of recovery techniques |
-| 0.3 | 2024-09-18 | Revised version following CIP editors meeting |
 
 ## References
 

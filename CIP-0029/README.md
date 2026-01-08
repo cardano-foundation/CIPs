@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This specification describes how to serialize Phase-1 monetary scripts (a.k.a. _"native scripts"_) to various formats (JSON, CBOR) to facilitate inter-operability between applications.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 While the existence of scripts is well-known, and have an unambiguous on-chain representation. There's no agreed upon format for off-chain or higher-level interfaces for which a binary string is a poor fit. This CIP regroups both the on-chain binary format and other, more verbose, formats like JSON.
 
@@ -88,7 +88,7 @@ The JSON format is given as a [JSON schema in annexe](./phase-1-monetary-scripts
     "00830302838200581c000000000000000000000000000000000000000000000000000000008200581c000000000000000000000000000000000000000000000000000000018200581c00000000000000000000000000000000000000000000000000000002"
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - The preimage for computing script hashes is prefixed with `\x00` to distinguish them from phase-2 monetary scripts (a.k.a Plutus Script) which are then prefixed with `\x01`. This is merely a discriminator tag.
 

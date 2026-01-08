@@ -18,7 +18,7 @@ License: CC-BY-4.0
 
 Cardano extends the [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) by adding new chains used for different purposes. This document outlines how key derivation is done and acts as a registry for different chains used by Cardano wallets.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 For Cardano, we use a new purpose field `1852'` instead of `44'` like in BIP44. There are three main reasons for this:
 
@@ -51,7 +51,7 @@ Here, `role` can be the following
 
 Wallets **MUST** implement this new scheme using the master node derivation algorithm from Icarus with sequential addressing (see [CIP3](https://cips.cardano.org/cips/cip3) for more information)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Derivation style
 
