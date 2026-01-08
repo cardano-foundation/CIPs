@@ -278,7 +278,7 @@ This keyword's value must be a non-negative integer. An instance is valid agains
 
 This keyword's value must be an array of valid _Plutus Data Schema_; possibly empty. An instance is valid against this keyword if it represents a Plutus constructor for which each field is valid under each subschema given by this keyword's value. Fields are compared positionally. This keyword is mandatory.
 
-## Example(s)
+### Example(s)
 
 <details>
   <summary>Aiken's Hello World</summary>
