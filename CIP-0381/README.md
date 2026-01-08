@@ -1,5 +1,5 @@
 ---
-CIP: 0381
+CIP: 381
 Title: Plutus support for Pairings over BLS12-381
 Status: Active
 Category: Plutus
