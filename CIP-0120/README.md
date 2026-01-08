@@ -439,7 +439,7 @@ Secondly, some features of markdown may not want to be used in a formal
 constitution document.
 Embedded HTML or videos are likely things to be avoided.
 
-## Open Questions
+### Open Questions
 
 - [x] How can we support multi-languages?
   - The Cardano constitution will be in English, but we will add best practice guidelines via [Best Practices](#best-practices).
