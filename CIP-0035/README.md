@@ -33,10 +33,7 @@ The Plutus Core language, its builtins, and its interface to the ledger are all 
 - … and more
 
 This CIP gives a taxonomy of changes, explains how such changes might be implemented in Cardano, and prescribes processes for proposing such changes.
-
-## Background
-
-This CIP assumes general familiarity with Plutus Core and the Cardano ledger, but we give some brief background here.
+It assumes general familiarity with Plutus Core and the Cardano ledger, though we begin with some brief background:
 
 ### Plutus Core
 
