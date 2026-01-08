@@ -4,7 +4,7 @@ Title: Time-Bound Delegation with Dynamic Rewards
 Category: Ledger
 Status: Proposed
 Authors:
-  - Ryan Wiley rian222@gmail.com
+  - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/1077
