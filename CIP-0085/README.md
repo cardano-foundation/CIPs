@@ -652,7 +652,7 @@ This is not terribly surprising: pattern-matching on a datatype encoded using `D
 
 On the other hand, for SOPs this is a single machine step.
 
-## Copyright 
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0][].
 
