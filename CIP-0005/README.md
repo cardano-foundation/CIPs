@@ -151,6 +151,15 @@ The [CIP-0129] definitions are included within the tables above.
 | `cc_hot`           | Constitutional committee hot verification key hash (hot credential)   | blake2b\_224 digest of a constitutional committee hot verification key   |
 | `cc_hot_script`    | Constitutional committee hot script hash (hot credential)             | blake2b\_224 digest of a serialized constitutional committee hot script  |
 
+### Changelog
+
+In order to make it easy to keep up with updates to this specification, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
+
+| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
+| --- | ---         | ---                                                             | ---                                                           |
+| 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#1036](https://github.com/cardano-foundation/CIPs/pull/1036) |
+| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
+
 ## Rationale: How does this CIP achieve its goals?
 
 ### About the `_test` suffix
@@ -208,15 +217,6 @@ The only prior work done towards that direction has been [jcli](https://input-ou
 ### Implementation Plan
 
 - Available JavaScript library: [cip5-js](https://www.npmjs.com/package/@dcspark/cip5-js)
-
-## Changelog
-
-In order to make it easy to keep up with updates to this CIP, we include the following table as a log of the changes sorted in decreasing order of date. Changes to the CIP should include an entry at the top of the table that includes a unique sequential identifier of the change, the date of the changes (in the format YYYY-MM-DD), a summary of the changes, and a link to the pull request that introduces the changes.
-
-| ID  | Date        | Summary of changes                                              | Pull Request                                                  |
-| --- | ---         | ---                                                             | ---                                                           |
-| 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#1036](https://github.com/cardano-foundation/CIPs/pull/1036) |
-| 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
 
 ## Copyright
 
