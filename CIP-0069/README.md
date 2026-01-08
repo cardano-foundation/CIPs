@@ -106,9 +106,9 @@ It begs the question if it should be added as an argument to all validators, to 
 
 This CIP turns all scripts into 1 arg scripts with a Script Context union type for each purpose.
 
-## Backwards compatibility
+### Backward compatibility
 
-This change is not backwards compatible; it must be introduced in a new Plutus language version.
+This change is not backward compatible; it must be introduced in a new Plutus language version.
 Node code must be modified.
 
 ## Path to Active
