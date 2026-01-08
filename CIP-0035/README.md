@@ -15,8 +15,6 @@ Created: 2022-02-09
 License: CC-BY-4.0
 ---
 
-# Changes to Plutus Core
-
 ## Abstract
 
 This CIP specifies a process for proposing changes to Plutus Core, its builtins, and its interface to the Cardano ledger.
