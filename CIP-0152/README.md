@@ -11,6 +11,7 @@ Discussions:
 Created: 2024-11-12
 License: CC-BY-4.0
 ---
+
 ## Abstract
 
 Cardano scripts are limited in complexity by the fact that each script
