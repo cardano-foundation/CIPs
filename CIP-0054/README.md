@@ -234,7 +234,7 @@ This proposal suggests an addition to the 721 metadata key from [CIP-0025](https
 
 In tandem with the additional metadata, we also define a standard for the Javascript API which is provided to the NFT within the sandbox.
 
-## The Smart NFT toolchain
+### The Smart NFT toolchain
 
 This CIP now has a [reference implementation](https://clg.wtf/policy/smart-life) which consists of a [front-end React control](https://github.com/kieransimkin/SmartNFTPortal) which takes care of rendering an NFT - it creates the sandbox and exposes the CIP54 Javascript API to it. This works in tandem with a [backend library](https://github.com/kieransimkin/libcip54) which takes care of reading the necessary data from a dbsync instance and making it available for the front end control to render. 
 
