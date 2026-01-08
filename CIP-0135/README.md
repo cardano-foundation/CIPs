@@ -306,6 +306,13 @@ One of the key requirements for successful disaster recovery will be proper enga
 3. Identify and establish the right communications channels with the community, including Intersect
 4. Set up regular disaster recovery practice sessions
 
+### Change Log
+
+| Version | Date | Description |
+| -------- | -------- | ------- |
+| 0.1 | 2024-08-30 | Initial submitted version |
+| 0.2 | 2024-09-10 | Revised version to emphasize genericity of recovery techniques |
+| 0.3 | 2024-09-18 | Revised version following CIP editors meeting |
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -329,14 +336,6 @@ and validation of recovery actions in the event of an outage.
 ### Implementation Plan
 
 N/A
-
-## Change Log
-
-| Version | Date | Description |
-| -------- | -------- | ------- |
-| 0.1 | 2024-08-30 | Initial submitted version |
-| 0.2 | 2024-09-10 | Revised version to emphasize genericity of recovery techniques |
-| 0.3 | 2024-09-18 | Revised version following CIP editors meeting |
 
 ## References
 
