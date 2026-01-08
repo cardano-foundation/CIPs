@@ -8,7 +8,7 @@ Authors:
     - zhekson1 <zhekson@nomadpool.io>
 Implementors: []
 Discussions:
-    - 
+    - https://github.com/cardano-foundation/CIPs/pull/466
 Created: 2023-02-21
 License: CC-BY-4.0
 ---
