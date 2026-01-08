@@ -4,8 +4,8 @@ Title: Registration Transaction Metadata Format
 Category: Metadata
 Status: Active
 Authors:
-    - Sebastien Guillemot <sebastien@dcspark.io>, 
-    - Rinor Hoxha <rinor.hoxha@iohk.io>, 
+    - Sebastien Guillemot <sebastien@dcspark.io>
+    - Rinor Hoxha <rinor.hoxha@iohk.io>
     - Mikhail Zabaluev <mikhail.zabaluev@iohk.io>
 Implementors:
     - Daedalus <https://daedaluswallet.io/>,
