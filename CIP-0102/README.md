@@ -158,8 +158,11 @@ In addition to providing a way to create guaranteed royalties, this has several 
 ### Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
-## Extending & Modifying this CIP
+
+### Extending & Modifying this CIP
+
 See the [CIP-0068 Extension Boilerplate](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068/extension_boilerplate.md)
+
 ## Path to Active
 
 ### Acceptance Criteria
