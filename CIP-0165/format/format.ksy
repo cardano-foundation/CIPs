@@ -113,7 +113,7 @@ types:
     instances:
       # size of record_data for this scls_record (total - record_type:u1)
       rec_payload_size:
-        value: _parent._parent.len_payload - sizeof<_parent.record_type>
+        value: _parent._parent.len_payload - 1
       ns_size:
         value: 4 + len_ns
       len_data:
