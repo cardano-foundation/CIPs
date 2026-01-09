@@ -4,7 +4,7 @@ Title: Net Change Limit Parameter
 Category: Ledger
 Status: Proposed
 Authors:
-  - Ryan Wiley rian222@gmail.com
+  - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions: []
 Created: 2026-01-08
