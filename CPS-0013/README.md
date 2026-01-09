@@ -1,13 +1,15 @@
 ---
 CPS: 13
 Title: Better builtin data structures in Plutus
-Status: Proposed
+Status: Open
 Category: Plutus
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Philip DiSarro <philip.disarro@iohk.io>
     - Pi Lanningham <pi@sundaeswap.finance>
+Proposed Solutions: []
 Discussions:
+    - https://github.com/cardano-foundation/CIPs/pull/638
 Created: 2023-12-14
 License: CC-BY-4.0
 ---
