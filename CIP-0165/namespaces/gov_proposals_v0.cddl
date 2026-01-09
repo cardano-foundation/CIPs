@@ -1,0 +1,245 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/GovProposals.hs
+
+;  Size of the key
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: gov_proposals
+;
+;  gov_proposals:
+;    seq:
+;      - id: tx_addr
+;        doc: transaction
+;        type: bytes
+;        size: 28
+;      - id: tx_idx
+;        doc: index inside transaction
+;        type: u4
+;      - id: gov_action_idx
+;        doc: governance action index
+;        type: u2
+;  ```
+;
+record_entry = proposal
+
+proposal =
+  { proposed_in        : epoch_no
+  , expires_after      : epoch_no
+  , drep_votes         : {* credential => coin}
+  , stake_pool_votes   : {* pool_keyhash => coin}
+  , committee_votes    : {* committee_cold_credential => coin}
+  , proposal_procedure : proposal_procedure
+  }
+
+
+epoch_no = uint .size 8
+
+credential = [0, addr_keyhash// 1, script_hash]
+
+addr_keyhash = hash28
+
+hash28 = bytes .size 28
+
+;  To compute a script hash, note that you must prepend
+;  a tag to the bytes of the script before hashing.
+;  The tag is determined by the language.
+;  The tags in the Conway era are:
+;   - "\x00" for multisig scripts
+;   - "\x01" for Plutus V1 scripts
+;   - "\x02" for Plutus V2 scripts
+;   - "\x03" for Plutus V3 scripts
+script_hash = hash28
+
+coin = uint
+
+pool_keyhash = hash28
+
+committee_cold_credential = credential
+
+proposal_procedure =
+  { anchor         : anchor
+  , deposit        : coin
+  , return_address : reward_account
+  , gov_action     : gov_action
+  }
+
+
+;
+;  Signed url
+anchor = [anchor_url : url, anchor_data_hash : bytes]
+
+url = text .size (0 .. 128)
+
+;  28 bytes hash and one byte for the network type
+reward_account = bytes .size 29
+
+gov_action =
+  [  0
+  , purpose : gov_action_id/ nil
+  , update  : gov_params_update
+  , hash    : script_hash/ nil
+  // 1
+  , gov_action_id/ nil
+  , protocol_version
+  // 2
+  , withdrawls        : {* reward_account => coin}
+  , script_hash/ nil
+  // 3
+  , purpose : gov_action_id/ nil
+  // 4
+  , purpose   : gov_action_id/ nil
+  , removed   : set<credential>
+  , added     : {* credential => epoch_no}
+  , threshold : unit_interval
+  // 5
+  , purpose      : gov_action_id/ nil
+  , constitution : constitution
+  // 6
+  , nil
+  ]
+
+
+gov_action_id = [transaction_id : hash32, gov_action_index : uint .size 2]
+
+hash32 = bytes .size 32
+
+;  Governance protocol parameters
+;    - min_fee_a: the linear factor for the minimum fee calculation
+;    - min_fee_b: the constant factor for the minimum fee calculation
+;    - max_block_size: maximal block body size in bytes
+;    - max_block_header_size: maximal block header size in bytes
+;    - max_tx_size: maximal transaction size in bytes
+;    - key_deposit: The amount of a key registration deposit
+;    - pool_deposit: The amount of a pool registration deposit
+;    - epoch_max: epoch bound on pool retirement
+;    - n_opt: desired number of pools
+;    - a0: pool influence factor
+;    - rho: monetary expansion
+;    - tau: treasury expansion
+;    - d: decentralisation parameter
+;    - min_pool_cost: minimum pool cost
+;    - min_utxo_value: Minimum Lovelace in a UTxO deprecated by AdaPerUTxOWord
+;    - ada_per_utxo_byte: Cost in ada per 1 byte of UTxO storage instead of _coinsPerUTxOWord
+;    - cost_models: Cost models for non-native script languages
+;    - prices: Prices of execution units for non-native script languages
+;    - max_tx_ex_units: Max total script execution resources units allowed per tx
+;    - max_block_ex_units: Max total script execution resources units allowed per block
+;    - max_value_size: Max size of a Value in an output
+;    - collateral_percentage: The scaling percentage of the collateral relative to the fee
+;    - max_collateral_inputs: Maximum number of collateral inputs allowed in a transaction
+;    - min_fee_ref_script_cost_per_byte : reference scripts fee for the minimum fee calculation
+gov_params_update =
+  { a0                               : nonnegative_interval/ nil
+  , rho                              : unit_interval/ nil
+  , tau                              : unit_interval/ nil
+  , n_opt                            : uint .size 2/ nil
+  , prices                           : ex_unit_prices/ nil
+  , epoch_max                        : epoch_interval/ nil
+  , min_fee_a                        : coin/ nil
+  , min_fee_b                        : coin/ nil
+  , cost_models                      : cost_models/ nil
+  , key_deposit                      : coin/ nil
+  , max_tx_size                      : uint .size 4/ nil
+  , drep_deposit                     : coin/ nil
+  , pool_deposit                     : coin/ nil
+  , max_val_size                     : uint .size 4/ nil
+  , drep_activity                    : epoch_interval/ nil
+  , min_pool_cost                    : coin/ nil
+  , max_block_size                   : uint .size 4/ nil
+  , max_tx_ex_units                  : ex_units/ nil
+  , coin_per_utxo_byte               : coin/ nil
+  , gov_action_deposit               : coin/ nil
+  , max_block_ex_units               : ex_units/ nil
+  , min_committee_size               : uint .size 2/ nil
+  , committee_term_limit             : epoch_interval/ nil
+  , collateral_percentage            : uint .size 2/ nil
+  , drep_voting_thresholds           : drep_voting_thresholds/ nil
+  , gov_action_lifetime              : epoch_interval/ nil
+  , max_block_header_size            : uint .size 2/ nil
+  , max_collateral_inputs            : uint .size 2/ nil
+  , pool_voting_thresholds           : pool_voting_thresholds/ nil
+  , min_fee_ref_script_cost_per_byte : nonnegative_interval/ nil
+  }
+
+
+nonnegative_interval = #6.30([uint, positive_int])
+
+positive_int = 1 .. 18446744073709551615
+
+; NOTE: The real unit_interval is: #6.30([uint, uint])
+;
+;  A unit interval is a number in the range between 0 and 1, which
+;  means there are two extra constraints:
+;     1. numerator <= denominator
+;     2. denominator > 0
+unit_interval =
+  #6.30([uint .le 18446744073709551615, uint .le 18446744073709551615])
+
+ex_unit_prices =
+  [mem_price : nonnegative_interval, step_price : nonnegative_interval]
+
+epoch_interval = uint .size 4
+
+; The format for cost_models is flexible enough to allow adding
+; Plutus built-ins and language versions in the future.
+;
+; Plutus v1: only 166 integers are used, but more are accepted (and ignored)
+; Plutus v2: only 175 integers are used, but more are accepted (and ignored)
+; Plutus v3: only 223 integers are used, but more are accepted (and ignored)
+;
+; Any 8-bit unsigned number can be used as a key.
+cost_models =
+  {? 0 : [* int64], ? 1 : [* int64], ? 2 : [* int64], * 3 .. 255 => [* int64]}
+
+int64 = -9223372036854775808 .. 9223372036854775807
+
+ex_units = [mem : uint, steps : uint]
+
+;
+;  0 - motion no confidence
+;  1 - committee normal
+;  2 - committee no confidence
+;  3 - update constitution
+;  4 - hard fork initiation
+;  5 - PP network group
+;  6 - PP economic group
+;  7 - PP technical group
+;  8 - PP governance group
+;  9 - treasury withdrawal
+drep_voting_thresholds =
+  [ unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  ]
+
+
+;
+;  0 - motion no confidence
+;  1 - committee normal
+;  2 - committee no confidence
+;  3 - hard fork initiation
+;  4 - security relevant parameter voting threshold
+pool_voting_thresholds =
+  [unit_interval, unit_interval, unit_interval, unit_interval, unit_interval]
+
+protocol_version = [major_protocol_version, uint]
+
+major_protocol_version = uint
+
+set<a0> = #6.258([* a0])
+
+;  address of the constition
+constitution = [anchor, script_hash/ nil]
+

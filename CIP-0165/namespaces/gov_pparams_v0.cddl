@@ -1,0 +1,175 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/GovPParams.hs
+
+;  Specification for parameters
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: gov_pparams
+;
+;  types:
+;    gov_pparams:
+;      seq:
+;        - id: value
+;          type: strz
+;          size: 4
+;          encoding: ASCII
+;        - id: valiant
+;          size: 0
+;          type:
+;            switch-on: value
+;            cases:
+;              '"prev"': kprev
+;              '"curr"': kcurr
+;              '"fut0"': kfut0
+;              '"fut1"': kfut1
+;    kprev:
+;      doc: previous values
+;    kcurr:
+;      doc: current values
+;    kfut0:
+;      doc: possible future
+;    kfut1:
+;      doc: definitive future
+;  ```
+;
+;  fut0 with missig parameters should be omitted.
+record_entry = gov_pparams_out
+
+;  Governance protocol parameters
+;    - min_fee_a: the linear factor for the minimum fee calculation
+;    - min_fee_b: the constant factor for the minimum fee calculation
+;    - max_block_size: maximal block body size in bytes
+;    - max_block_header_size: maximal block header size in bytes
+;    - max_tx_size: maximal transaction size in bytes
+;    - key_deposit: The amount of a key registration deposit
+;    - pool_deposit: The amount of a pool registration deposit
+;    - epoch_max: epoch bound on pool retirement
+;    - n_opt: desired number of pools
+;    - a0: pool influence factor
+;    - rho: monetary expansion
+;    - tau: treasury expansion
+;    - d: decentralisation parameter
+;    - min_pool_cost: minimum pool cost
+;    - min_utxo_value: Minimum Lovelace in a UTxO deprecated by AdaPerUTxOWord
+;    - ada_per_utxo_byte: Cost in ada per 1 byte of UTxO storage instead of _coinsPerUTxOWord
+;    - cost_models: Cost models for non-native script languages
+;    - prices: Prices of execution units for non-native script languages
+;    - max_tx_ex_units: Max total script execution resources units allowed per tx
+;    - max_block_ex_units: Max total script execution resources units allowed per block
+;    - max_value_size: Max size of a Value in an output
+;    - collateral_percentage: The scaling percentage of the collateral relative to the fee
+;    - max_collateral_inputs: Maximum number of collateral inputs allowed in a transaction
+;    - min_fee_ref_script_cost_per_byte: Reference scripts fee for the minimum fee calculation
+gov_pparams_out =
+  { a0                               : nonnegative_interval
+  , rho                              : unit_interval
+  , tau                              : unit_interval
+  , n_opt                            : uint .size 2
+  , prices                           : ex_unit_prices
+  , epoch_max                        : epoch_interval
+  , min_fee_a                        : coin
+  , min_fee_b                        : coin
+  , cost_models                      : cost_models
+  , key_deposit                      : coin
+  , max_tx_size                      : uint .size 4
+  , drep_deposit                     : coin
+  , pool_deposit                     : coin
+  , min_pool_cost                    : coin
+  , max_block_size                   : uint .size 4
+  , max_val_size                     : uint .size 4
+  , max_tx_ex_units                  : ex_units
+  , protocol_version                 : protocol_version
+  , coin_per_utxo_byte               : coin
+  , gov_action_deposit               : coin
+  , max_block_ex_units               : ex_units
+  , min_committee_size               : uint .size 2
+  , committee_term_limit             : epoch_interval
+  , collateral_percentage            : uint .size 2
+  , drep_voting_thresholds           : drep_voting_thresholds
+  , gov_action_lifetime              : epoch_interval
+  , max_block_header_size            : uint .size 2
+  , max_collateral_inputs            : uint .size 2
+  , pool_voting_thresholds           : pool_voting_thresholds
+  , drep_activity                    : epoch_interval
+  , min_fee_ref_script_cost_per_byte : nonnegative_interval/ nil
+  }
+
+
+nonnegative_interval = #6.30([uint, positive_int])
+
+positive_int = 1 .. 18446744073709551615
+
+; NOTE: The real unit_interval is: #6.30([uint, uint])
+;
+;  A unit interval is a number in the range between 0 and 1, which
+;  means there are two extra constraints:
+;     1. numerator <= denominator
+;     2. denominator > 0
+unit_interval =
+  #6.30([uint .le 18446744073709551615, uint .le 18446744073709551615])
+
+ex_unit_prices =
+  [mem_price : nonnegative_interval, step_price : nonnegative_interval]
+
+epoch_interval = uint .size 4
+
+coin = uint
+
+; The format for cost_models is flexible enough to allow adding
+; Plutus built-ins and language versions in the future.
+;
+; Plutus v1: only 166 integers are used, but more are accepted (and ignored)
+; Plutus v2: only 175 integers are used, but more are accepted (and ignored)
+; Plutus v3: only 223 integers are used, but more are accepted (and ignored)
+;
+; Any 8-bit unsigned number can be used as a key.
+cost_models =
+  {? 0 : [* int64], ? 1 : [* int64], ? 2 : [* int64], * 3 .. 255 => [* int64]}
+
+int64 = -9223372036854775808 .. 9223372036854775807
+
+ex_units = [mem : uint, steps : uint]
+
+protocol_version = [major_protocol_version, uint]
+
+major_protocol_version = uint
+
+;
+;  0 - motion no confidence
+;  1 - committee normal
+;  2 - committee no confidence
+;  3 - update constitution
+;  4 - hard fork initiation
+;  5 - PP network group
+;  6 - PP economic group
+;  7 - PP technical group
+;  8 - PP governance group
+;  9 - treasury withdrawal
+drep_voting_thresholds =
+  [ unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  ]
+
+
+;
+;  0 - motion no confidence
+;  1 - committee normal
+;  2 - committee no confidence
+;  3 - hard fork initiation
+;  4 - security relevant parameter voting threshold
+pool_voting_thresholds =
+  [unit_interval, unit_interval, unit_interval, unit_interval, unit_interval]
+
