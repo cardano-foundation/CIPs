@@ -5,7 +5,7 @@ Status: Open
 Category: Tools
 Authors:
   - Hinson Wong <hinson@cns.space>
-Proposed Solution: []
+Proposed Solutions: []
 Discussions: 
 - https://github.com/cns-space/CIPs
 - https://github.com/cardano-foundation/CIPs/pull/605
