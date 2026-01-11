@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Tiebreakers disproportionately affect small pools
+Title: Small pool disadvantage in VRF tiebreakers
 Category: Consensus
 Status: Open
 Authors:
