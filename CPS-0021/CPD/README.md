@@ -66,12 +66,12 @@ This document deliberately avoids advocating specific countermeasures, instead p
 - [**1. Preliminaries**](#1-preliminaries)
   - [1.1 Fundamental Properties](#11-fundamental-properties)
     + [1.1.1 Transaction Ledger Properties](#111-transaction-ledger-properties)
-      * [1.1.1.1 Persistence with the security parameter k](#1111-persistence-with-the-security-parameter--textk-in-mathbbn-)
-      * [1.1.1.2 Liveness with the transaction confirmation time parameter u](#1112-liveness-with-the-transaction-confirmation-time-parameter--textu-in-mathbbn-)
+      * [1.1.1.1 Persistence with the security parameter k in N](#1111-persistence-with-the-security-parameter-k-in-n)
+      * [1.1.1.2 Liveness with the transaction confirmation time parameter u in N](#1112-liveness-with-the-transaction-confirmation-time-parameter-u-in-n)
     + [1.1.2 Chain Properties](#112-chain-properties)
-      * [1.1.2.1 Common Prefix (CP)](#1121-common-prefix-cp)
-      * [1.1.2.2 Existential Chain Quality (∃CQ)](#1122-existential-chain-quality-cq)
-      * [1.1.2.3 Chain Growth (CG)](#1123-chain-growth-cg)
+      * [1.1.2.1 Common Prefix (CP)](#1121-common-prefix-cp-with-the-security-parameter-k-in-n)
+      * [1.1.2.2 Existential Chain Quality (∃CQ)](#1122-existential-chain-quality-cq-with-parameter-s-in-n-minimum-honest-block-inclusion-interval)
+      * [1.1.2.3 Chain Growth (CG)](#1123-chain-growth-cg-with-parameters-tau-in-0-1-speed-coefficient-and-s-in-n-minimum-honest-block-inclusion-interval)
   - [1.2 The Coin-Flipping Problem](#12-the-coin-flipping-problem)
     + [1.2.1 Defining the Problem](#121-defining-the-problem)
     + [1.2.2 Strategies for Randomness Generation](#122-strategies-for-randomness-generation)
@@ -96,7 +96,7 @@ This document deliberately avoids advocating specific countermeasures, instead p
     + [2.2.3 Forking Strategies](#223-forking-strategies)
 - [**3. The Cost of Grinding: Adversarial Effort and Feasibility**](#3-the-cost-of-grinding-adversarial-effort-and-feasibility)
   - [3.1 Definitions](#31-definitions)
-    + [3.1.1 α-heavy and Heaviness](#311-α-heavy-and-heaviness)
+    + [3.1.1 Alpha-Heavy and Heaviness](#311-alpha-heavy-and-heaviness)
     + [3.1.2 Grinding Power g](#312-grinding-power-g)
     + [3.1.3 Grinding Windows](#314-grinding-windows)
       * [3.1.3.1 Opportunity Windows](#3141-opportunity-windows-wo)
@@ -120,7 +120,7 @@ This document deliberately avoids advocating specific countermeasures, instead p
 
 This section introduces the pertinent parts of the Cardano proof-of-stake consensus protocol. We focus on the randomness generation and leader selection processes and omit irrelevant protocol details.
 
-## 1.1 Fundamental Properties
+### 1.1 Fundamental Properties
 
 A consensus protocol implements a robust transaction ledger if it maintains the ledger as a sequence of blocks, where each block is associated with a specific slot. Each slot can contain at most one ledger block, and this strict association ensures a well-defined and immutable ordering of transactions within the ledger. 
 
@@ -132,20 +132,20 @@ The protocol must satisfy the two critical properties of _**Persistence**_ and _
 | **Existential Chain Quality (∃CQ)**     | Guarantees that at least one honestly-generated block appears in a portion of a sufficient length of the chain, ensuring honest contributions. |
 | **Chain Growth (CG)**                   | Ensures that the blockchain extends at a minimum rate over time, preventing indefinite stalling by adversaries while maintaining progress based on the fraction of honest stakeholders producing blocks. |
 
-### 1.1.1 Transaction Ledger Properties 
-#### 1.1.1.1 Persistence with the **security parameter $` \text{k} \in \mathbb{N} `$**
+#### 1.1.1 Transaction Ledger Properties 
+##### 1.1.1.1 Persistence with the **security parameter k in N**
  
-Once a node of the system proclaims a certain transaction *tx* in the stable part of its ledger, all nodes, if queried, will either report *tx* in the same position of that ledger or report a stable ledger which is a prefix of that ledger. Here the notion of stability is a predicate that is parameterized by a **security parameter $` \text{k} `$**. Specifically, a transaction is declared **stable** if and only if it is in a block that is more than $` \text{k} `$ blocks deep in the ledger.
+Once a node of the system proclaims a certain transaction *tx* in the stable part of its ledger, all nodes, if queried, will either report *tx* in the same position of that ledger or report a stable ledger which is a prefix of that ledger. Here the notion of stability is a predicate that is parameterized by a **security parameter k**. Specifically, a transaction is declared **stable** if and only if it is in a block that is more than k blocks deep in the ledger.
 
-#### 1.1.1.2 Liveness with the **transaction confirmation time parameter $` u \in \mathbb{N} `$** 
+##### 1.1.1.2 Liveness with the **transaction confirmation time parameter u in N**
 
-If all honest nodes in the system attempt to include a certain transaction then, after the passing of time corresponding to $`\text{u}`$ slots (called the **transaction confirmation time**), all nodes, if queried and responding honestly, will report the transaction as stable.
+If all honest nodes in the system attempt to include a certain transaction then, after the passing of time corresponding to u slots (called the **transaction confirmation time**), all nodes, if queried and responding honestly, will report the transaction as stable.
 
-### 1.1.2 Chain properties 
+#### 1.1.2 Chain properties 
 
 **Persistence** and **liveness** can be derived from basic **chain properties**, provided that the protocol structures the ledger as a **blockchain**—a sequential data structure. The following key chain properties ensure that the blockchain behaves securely and efficiently:
 
-#### 1.1.2.1 **Common Prefix (CP)**: With the **security parameter $`k \in \mathbb{N}`$**. 
+##### 1.1.2.1 **Common Prefix (CP)**: With the **security parameter k in N** 
 
 Consider 2 chains $C_1$ and $C_2$ adopted by 2 honest parties at the onset of slots $sl_1$ and $sl_2$, respectively, where $sl_1 \leq sl_2$. The chains must satisfy the condition:
 
@@ -158,11 +158,11 @@ Consider 2 chains $C_1$ and $C_2$ adopted by 2 honest parties at the onset of sl
 
   This ensures that the shorter chain is a prefix of the longer one, ensuring consistency across honest parties.
 
-#### 1.1.2.2 **Existential Chain Quality (∃CQ)**: With parameter $s \in \mathbb{N}$ (Minimum Honest Block Inclusion Interval). 
+##### 1.1.2.2 **Existential Chain Quality (∃CQ)**: With parameter s in N (Minimum Honest Block Inclusion Interval) 
 
 Consider a chain $C$ adopted by an honest party at the onset of a slot. For any portion of $C$ spanning $s$ prior slots, there must be at least one honestly-generated block within this portion. This ensures that the chain includes contributions from honest participants. In practical terms, $s$ defines the length of a "safety window" where honest contributions are guaranteed.
 
-#### 1.1.2.3 **Chain Growth (CG)**: With parameters $\tau \in (0, 1]$ (speed coefficient) and $s \in \mathbb{N}$ (Minimum Honest Block Inclusion Interval).
+##### 1.1.2.3 **Chain Growth (CG)**: With parameters tau in (0, 1] (speed coefficient) and s in N (Minimum Honest Block Inclusion Interval)
 
 The Chain Growth (CG) property is a more general concept that combines both the **speed of block production** and the **frequency of honest contributions**. It uses two parameters: $\tau$, the **speed coefficient**, which governs how fast the chain grows, and $s$, the **Minimum Honest Block Inclusion Interval**, which ensures that honest blocks are consistently produced within a given interval of slots.
 
@@ -172,11 +172,11 @@ The parameter $\tau$ determines the fraction of slots in which blocks are produc
   
 For example, if $\tau = 0.5$ and $s = 10$, then at least $\tau s = 0.5 \cdot 10 = 5$ honest blocks must be produced over the span of those 10 slots. 
 
-## 1.2 The Coin-Flipping Problem  
+### 1.2 The Coin-Flipping Problem  
 
 The **Coin-Flipping Problem** is a fundamental challenge in distributed systems that require a **fair, unbiased, and unpredictable** source of randomness—without allowing any single participant to manipulate the outcome.  
 
-### **1.2.1 Defining the Problem**  
+#### **1.2.1 Defining the Problem**  
 Consider a scenario where multiple untrusted parties must **flip a coin** and use the outcome, the concatenation of heads or tails, to reach a decision. The challenge is ensuring that:  
 
 1. 🎲 The outcome remains **random and unpredictable**.  
@@ -185,7 +185,7 @@ Consider a scenario where multiple untrusted parties must **flip a coin** and us
 
 In **blockchain consensus protocols**, randomness is crucial for **leader election, committee selection, and cryptographic lotteries**. If an adversary can bias the randomness, they can **increase their influence over block production**, **delay settlements**, or **disrupt network security**.  
 
-### **1.2.2 Strategies for Randomness Generation**  
+#### **1.2.2 Strategies for Randomness Generation**  
 Various cryptographic techniques exist to address the **coin-flipping problem** in decentralized settings. These methods differ in **security, efficiency, and resistance to adversarial manipulation**.  
 
 | **Approach**              | **Pros** | **Cons** |
@@ -195,7 +195,7 @@ Various cryptographic techniques exist to address the **coin-flipping problem** 
 | **Byzantine Agreement-Based Beacons** <br> _(Algorand)_ | ✔ Finality guarantees — randomness is confirmed before the next epoch.<br> ✔ Less entropy loss than Praos. | ❌ Requires multi-round communication — higher latency.<br> ❌ Not designed for eventual consensus — better suited for BA-based protocols. |
 | **"VRF"-Based Beacons** <br> _(Ethereum’s RANDAO Post-Merge, Ouroboros Praos, Genesis, Snow White)_ | ✔ Simple and efficient — low computational overhead.<br> ✔ Fully decentralized — any participant can contribute randomness. | ❌ Vulnerable to last-revealer bias — the last participant can manipulate the final output. |
 
-### **1.2.3 The Historical Evolution of Ouroboros Randomness Generation**
+#### **1.2.3 The Historical Evolution of Ouroboros Randomness Generation**
 
 The **Ouroboros family of protocols** has evolved over time to optimize **randomness generation** while balancing **security, efficiency, and decentralization**. Initially, **Ouroboros Classic** used a **secure multi-party computation (MPC) protocol** with **Publicly Verifiable Secret Sharing (PVSS)** to ensure **unbiased randomness**. While providing **strong security guarantees**, PVSS required **quadratic message exchanges** between committee members, introducing **significant communication overhead**. This **scalability bottleneck** limited participation and hindered the decentralization of Cardano's consensus process.
 
@@ -216,7 +216,7 @@ A BLS signature is indistinguishable from random without knowledge of the secret
 
 </details>
 
-### **1.2.4 Comparing Ouroboros Randomness Generation with Ethereum**  
+#### **1.2.4 Comparing Ouroboros Randomness Generation with Ethereum**  
 
 Ethereum RANDAO protocol was first based on a **commit and reveal** approach where each block producer would commit to random values in a first period, i.e. publish the hash of a locally generated random value during block proposal, before revealing them afterwards. As the latter period finished, all revealed values were combined, more specifically XORed, together to finally get the random nonce.
 
@@ -235,15 +235,15 @@ This makes them **resistant to grinding attacks** since adversaries cannot effic
 
 </details>
 
-### **1.2.5 Conclusion: The reasons behind Ouroboros Praos**
+#### **1.2.5 Conclusion: The reasons behind Ouroboros Praos**
 
 Despite some **security trade-offs**, non-interactively combining **VRFs** was selected for Ouroboros Praos due to its **balance between efficiency, scalability, and security**. Unlike **PVSS**, we do not require a **multi-party commit-reveal process** or have **quadratic communication overhead**.
 
 However, ongoing research continues to explore potential enhancements to **mitigate grinding risks**, including **hybrid randomness beacons** that combine **VRFs with cryptographic delay mechanisms**.
 
-## 1.3 Leader Election in Praos
+### 1.3 Leader Election in Praos
 
-### 1.3.1 Oblivious Leader Selection
+#### 1.3.1 Oblivious Leader Selection
 
 As Explained into [DGKR18 -  Ouroboros Praos_ An adaptively-secure, semi-synchronous proof-of-stake blockchain](https://eprint.iacr.org/2017/573.pdf), Praos protocol presents the following basic characteristics : 
 - **Slot Leader Privacy**: Only the selected leader knows they have been chosen as slot leader until they reveal themselves, often by publishing a proof. This minimizes the risk of targeted attacks against the leader since other network participants are unaware of the leader's identity during the selection process.
@@ -258,7 +258,7 @@ Based on their local view, a party is capable of deciding, in a publicly verifia
 3. a priori, only a slot leader is aware that it is indeed a leader for a given slot; this assignment is unknown to all the other stakeholders—including other slot leaders of the same slot—until the other stakeholders receive a valid block from this slot leader.
 
 
-### 1.3.2 Application of Verifiable Random Function (VRF)
+#### 1.3.2 Application of Verifiable Random Function (VRF)
 
 The VRF is used to generate randomness locally in the protocol, making the leader election process unpredictable. It ensures that:
 - A participant is privately and verifiably selected to create a block for a given slot.
@@ -494,7 +494,7 @@ blake2b_libsodium size input =
   ```
 </details>
 
-### 1.3.3 Epoch Structure 
+#### 1.3.3 Epoch Structure 
 
 In Praos and Genesis, an epoch consists of 3 logical phases to compute these 2 key variables—**active stake distribution** and **randomness beacon**—by going through the following phases:
 
@@ -510,7 +510,7 @@ The sequential flow of these 3 phases is deliberately structured by designed :
 | **2.**| Honest Randomness in $\eta_\text{e}$     | **Existential Chain Quality (∃CQ)** | After the Active Stake Distribution being stabilized to prevent adversaries from adjusting their stake in their favor, this phase must be sufficiently long to satisfy the Existential Chain Quality (∃CQ) property, which is parameterized by $s \in \mathbb{N}$, ensuring that at least one honestly-generated block is included within any span of $s$ slots. The presence of such a block guarantees that honest contributions to the randomness used in the leader election process are incorporated. This phase directly improves the quality of the randomness $\eta_\text{e}$ by ensuring that adversarial attempts to manipulate the randomness beacon are mitigated. The honest block serves as a critical input, strengthening the unpredictability and fairness of the leader election mechanism.   | 
 | **3.**| $\eta_\text{e}$ Stabilization   | **Chain Growth (CG for CP)**          | This phase must again be long enough to satisfy the **Chain Growth (CG)** property, ensuring that each honest party's chain grows by at least $k$ blocks, allowing all honest parties to agree on the randomness contributions from the second phase. | 
 
-### 1.3.4 Epoch & Phases Length 
+#### 1.3.4 Epoch & Phases Length 
 
 While there is no theoretical upper bound on the epoch size—since it is defined by social and practical considerations (e.g., $10 \, \text{k}/f$ slots, 5 days)—the epoch does have a defined lower bound. Phases 1 and 3 have fixed sizes of $3 \, \text{k}/f$ and $4 \, \text{k}/f$, respectively. The size of Phase 2, "Honest Randomness in $\eta_\text{e}$," is adjustable with a minimum size of $1 \, \text{k}/f$. 
 
@@ -522,11 +522,11 @@ The structure of an epoch is often described by the ratio `3:3:4`:
 Note that the third phase is only longer than the first one to complete the epoch duration. Consequently, we can assume that the CG property is already reached at the ninth part of an epoch. 
 
 
-### 1.3.5 The Randomness Generation Sub-Protocol 
+#### 1.3.5 The Randomness Generation Sub-Protocol 
 
 To select the slots leaders, which stake pool is eligible to produce and propose a slot's block, we need to rely on random numbers. As economic reward and transaction inclusion depends on these numbers, the generation of these number is of critical importance to the protocol and its security. We show in this section how these random numbers, or _random nonces_ are defined.
 
-#### **The $\eta^\text{evolving}$ Stream Definition**  
+<span style="display:block; font-size:1.05em; font-weight:bold">The eta-evolving Stream Definition</span>
 
 Contrary to [Section 1.2.3](#123-the-historical-evolution-of-ouroboros-randomness-generation), where we first defined the random nonce as the hash of all VRF outputs, we adopt an iterative approach for the randomness generation in practice.
 More particularly, the random nonces $\eta$ are defined iteratively from a genesis value, as the hash of the previous epoch's nonce and the VRF outputs published between the Phase 2 of consecutive epochs. We thus talk about _evolving nonces_ $\eta^\text{evolving}$ as their value can be updated with the VRF output comprised in each block.
@@ -554,7 +554,7 @@ false & \text{otherwise.}
 | $\mathsf{VRF}^\text{Output}_\text{i}$ | The **VRF output** generated by the $\text{slot}_\text{i}$ Leader and included in the block header |
 | $a\ ⭒\ b$    | The concatenation of $a$ and $b$ , followed by a BLAKE2b-256 hash computation.
 
-#### **The $`\eta^\text{candidates}`$**  
+<span style="display:block; font-size:1.05em; font-weight:bold">The eta candidates</span>
 
 - As multiple competing forks can exist at any given time, we also encounter multiple **nonce candidates**, denoted as $`\eta^\text{candidates}`$. More precisely, the **nonce candidate** of a specific fork for epoch $`e`$ is derived from the **previous epoch’s nonce** $`\eta_{e-1}`$, the **Verifiable Random Function (VRF) outputs** from the **candidate chain** starting from epoch $`e-2`$, and the **VRF outputs of the fork** itself up to the **end of Phase 2** of epoch $`e-1`$. 
 
@@ -565,7 +565,7 @@ false & \text{otherwise.}
 \eta_\text{e}^\text{candidate} = \eta^\text{evolving}_{t}, \quad \text{when } t = T_{\text{phase2}_\text{end}}^{\text{epoch}_{e-1}}  
 ```
 
-#### **The $`\eta`$** Generations
+<span style="display:block; font-size:1.05em; font-weight:bold">The eta Generations</span>
    - This is the final nonce used to determine participant eligibility during epoch $`e`$. 
    - The value of $`\eta_\text{e}`$ is derived from the $`\eta_e^\text{candidate}`$ contained within the fork that is ultimately selected as the **canonical chain** at the conclusion of $`\text{epoch}_{e-1}`$.  
    - It originates from $`\eta_e^\text{candidate}`$ concatenated with $`\eta^\text{evolving}`$ of the last block of the previous epoch followed by a BLAKE2b-256 hash computation , which becomes stabilized at the conclusion of $`\text{epoch}_{e-1}`$ and transitions into $`\text{epoch}_e`$.  
@@ -653,7 +653,7 @@ blake2b_libsodium size input =
   ```
 </details>
 
-## **1.4 Forks, Rollbacks, Finality, and Settlement Times**
+### **1.4 Forks, Rollbacks, Finality, and Settlement Times**
 
 With **Ouroboros Praos**, as with [**Nakamoto consensus**](https://coinmarketcap.com/academy/article/what-is-the-nakamoto-consensus) in general, transaction **finality** is **probabilistic** rather than immediate. This means a transaction isn't **guaranteed** to be permanently stored in the **ledger** when it's first included in a **block**. Instead, each additional **block** added on top **strengthens its permanence**, gradually decreasing the likelihood of a **rollback**.
 
@@ -665,7 +665,7 @@ The **consensus layer** operates with a structure that resembles a branching **"
 <img src="./image/high-level-ledger-structure.png" alt="" />
 </div>
 
-#### **Why Do Blockchain Forks Occur?**
+<span style="display:block; font-size:1.05em; font-weight:bold">Why Do Blockchain Forks Occur?</span>
 
 Blockchain **forks** can happen for several reasons:
 
@@ -674,7 +674,7 @@ Blockchain **forks** can happen for several reasons:
 - **Nodes** can dynamically **join** or **leave** the **network**, which is a fundamental challenge in decentralized systems, affecting synchronization and consensus stability.
 - An **adversarial node** is not obligated to agree with the most **recent block** (or **series of blocks**); it can instead choose to append its **block** to an **earlier block** in the **chain**.
 
-#### **Short Forks vs. Long Forks**
+<span style="display:block; font-size:1.05em; font-weight:bold">Short Forks vs. Long Forks</span>
 
 **Short forks**, typically just a **few blocks long**, occur **frequently** and are usually **non-problematic**. The **rolled-back blocks** are often nearly identical, containing the **same transactions**, though they might be distributed **differently** among the **blocks** or have **minor differences**.
 
@@ -684,10 +684,10 @@ However, **longer forks** can have **harmful consequences**. For example, if an 
 
 This section describes the grinding attack, detailing its objectives, mechanics, and the adversary’s strategy to maximize its effectiveness.
 
-## 2.1 Randomness Manipulation
+### 2.1 Randomness Manipulation
 We describe here the grinding attack Cardano's randomness generation protocol suffers from, from passively waiting for its chance or actively maximizing its attack surface, to choosing the best attack vector - stake distribution - to achieve its goal, be it maximizing rewards to controlling target blocks.
 
-### 2.1.1 Exposure 
+#### 2.1.1 Exposure 
 
 In its current version, Praos has a vulnerability where an adversary can manipulate the nonce $\eta_\text{e}$, the random value used for selecting block producers. This allows the adversary to incrementally and iteratively undermine the uniform distribution of slot leaders, threatening the fairness and unpredictability of the leader selection process.
 
@@ -701,7 +701,7 @@ For example, if the adversary acts as the slot leader immediately before this ph
 
 This marks the beginning of a grinding attack, where the adversary's initial goal is to maximize the number of adversarial blocks at this critical juncture, either passively by waiting, or actively by reaching a snowball effect. By doing so, they expand the range of potential slot leader distributions they can choose from, significantly enhancing their influence over the protocol. We use the term "exposure" here because the adversary is first setting the stage for its attack. 
 
-### 2.1.2 Slot Leader Distribution Selection
+#### 2.1.2 Slot Leader Distribution Selection
 
 This is the pivotal moment where the adversary's prior efforts pay off. They are now in a position with *x* blocks at the critical juncture. At this stage, the adversary can generate up to $2^x$ possible $η$ nonces, compute the next epoch's slot leader distribution for each of them, and strategically select the nonce and distribution that best aligns with their goal. This positioning enables them to deploy the attack effectively in the subsequent epoch.
 
@@ -713,37 +713,37 @@ As the adversary accumulates blocks, the attack's bottleneck swiftly shifts from
 
 Accumulating a significant number of leader slots at this position necessitates, except when owning a significant portion of the total stake, an underlying intent to exploit or destabilize the protocol. Achieving such a level of control requires significant coordination, making it highly unlikely to occur without deliberate adversarial motives. Once an attacker reaches this threshold, their objectives extend beyond a single exploit and diversify into various strategic threats. 
 
-### 2.1.3 Potential Outcomes of Grinding Attacks
+#### 2.1.3 Potential Outcomes of Grinding Attacks
 
 Below is a non-exhaustive list of potential attack vectors, ranging from minor disruptions in system throughput to severe breaches that compromise the protocol’s integrity and structure.
 
-### Economic Exploitation
+<span style="display:block; font-size:1.1em; font-weight:bold">Economic Exploitation</span>
 Manipulating slot leader distributions to prioritize transactions that benefit the adversary or to extract higher fees.
 
-### Censorship Attacks
+<span style="display:block; font-size:1.1em; font-weight:bold">Censorship Attacks</span>
 Selectively excluding transactions from specific stakeholders to suppress competition or dissent.
 
-### Minority Stake Exploitation
+<span style="display:block; font-size:1.1em; font-weight:bold">Minority Stake Exploitation</span>
 Amplifying the influence of a small adversarial stake by targeting specific epoch transitions.
 
-### Fork Manipulation
+<span style="display:block; font-size:1.1em; font-weight:bold">Fork Manipulation</span>
 Creating and maintaining malicious forks to destabilize consensus or execute double-spend attacks.
 
-### Settlement Delays
+<span style="display:block; font-size:1.1em; font-weight:bold">Settlement Delays</span>
 Strategically delaying block confirmation to undermine trust in the protocol's settlement guarantees.
 
-### Double-Spend Attacks
+<span style="display:block; font-size:1.1em; font-weight:bold">Double-Spend Attacks</span>
 Exploiting control over slot leader distributions to reverse confirmed transactions and execute double-spends.
 
-### Chain-Freezing Attacks
+<span style="display:block; font-size:1.1em; font-weight:bold">Chain-Freezing Attacks</span>
 Using nonce selection to stall block production entirely, halting the protocol and causing network paralysis.
 
-## 2.2. Non-Exhaustive Manipulation Stategy List
+### 2.2. Non-Exhaustive Manipulation Stategy List
 
 The Ethereum community recently published an insightful paper titled [*Forking the RANDAO: Manipulating Ethereum's Distributed Randomness Beacon*](https://eprint.iacr.org/2025/037). Since the system model used to analyze randomness manipulation in Ethereum is also applicable to Cardano, we will extensively reference their work to explore various manipulation strategies within the Cardano ecosystem. 
 
 
-### 2.2.1 System Model
+#### 2.2.1 System Model
 
 A block can exist in one of four states:  
 
@@ -762,7 +762,7 @@ A block can exist in one of four states:
 Block statuses are denoted as $H^e_i, R^e_i, M^e_i, P^e_i$ indicating that the 
 block in the $i$ th slot in epoch $e$ was proposed, reorged, missed, or built privately, respectively. Reorged and missed blocks do not contribute to the generation of $\eta_e$ since they are not part of the canonical chain. 
 
-### 2.2.2 Self Mixing Strategy
+#### 2.2.2 Self Mixing Strategy
 
 The adversary can selectively propose or miss blocks to manipulate $\eta_e$. Assume that $\mathcal{A}$ is assigned with $t$ consecutive tail blocks, formally $\mathcal{A}^{t}$ of epoch $e$, then $\mathcal{A}$ can choose arbitrarily between $2^t$ $\eta_e$ by missing or proposing each tail block. Thus, it is trivial that $\mathcal{A}^{t} \in AS_{\alpha}(m,n)$ for $0 \leq t \leq m$, as $\mathcal{A}$ can compute $\eta_e$ corresponding to $C^t$.  
 
@@ -774,7 +774,7 @@ The manipulative power for $t = 2$ is the following decision tree
 
 e.g : The adversary chooses option $\{H^e_{30}, M^e_{31}\}$ if the calculated $\eta_e$ eventually leads to the highest number of blocks. In this case, sacrificing Slot 30 and 31 is worthwhile, as it results in a significantly higher number of blocks in epoch $e + 2$.  
 
-### 2.2.3 Forking Strategies
+#### 2.2.3 Forking Strategies
 
 
 To achieve the goal of maximizing $x$ trailing blocks at this critical juncture, the adversary leverages the forking nature of the consensus protocol by introducing a private chain. By strategically applying the Longest-Chain rule to their advantage, the adversary ensures that the last honest trailing blocks are excluded at this pivotal moment. With this added dimension, gaining access to $2^x$ possible combinations of slot leader distributions becomes equivalent to $x = |A| - |H|$, where $|A|$ and $|H|$ represent the number of adversarial and honest blocks, respectively, within this specific interval of the protocol : 
@@ -795,7 +795,7 @@ Both strategies undermine fairness in leader election, with **Preemptive Forking
 
 ### 3.1 Definitions
 
-#### 3.1.1 $\alpha$-Heavy and Heaviness
+#### 3.1.1 Alpha-Heavy and Heaviness
 We define the heaviness of an interval as the percentage of blocks an adversary controls.
 Let $X_A(w)$ be the **number of adversarial blocks** and similarly $X_H(w)$ the **number of honest blocks** in the an interval of $w$ blocks.
 The **heaviness** of an interval of size $w$ is thus the ratio $\frac{X_A(w)}{w}$. Heaviness thus vary between 0, where the interval only comprises honest blocks, and 1, where the adversary control them all. 
@@ -848,7 +848,7 @@ In **Cardano mainnet**, the nonce size used in the randomness beacon is **256 bi
 
 #### 3.1.3 Grinding Windows
 
-#### 3.1.3.1 Opportunity Windows $w_O$
+##### 3.1.3.1 Opportunity Windows wO
 
 The **grinding opportunity window** $w_O$ is the time interval at the end of Phase 2 during which an adversary, dominating a suffix of size $w$, can compute and reveal one of $g$ possible $\eta_e^\text{candidate}$ nonces before the honest chain outpaces their chosen chain.
 
@@ -932,7 +932,7 @@ The position $P$ then becomes $\mathbb{E}[P] = {S2} + 1 - \mathbb{E}[T] \approx 
 </details>
 
 
-##### 3.1.3.2 Target Window $w_T$
+##### 3.1.3.2 Target Window wT
 
 Once the adversary obtains a potential **candidate nonce** ($\eta_e^{\text{candidate}}$) for epoch $e$, they can compute their private **slot leader distribution** for the entire epoch, spanning:  
 
@@ -980,10 +980,10 @@ To estimate the cost of these **entry tickets**, we address the following questi
 > - **Observing historical adversarial behaviors**, particularly in decentralized networks with shifting governance dynamics.  
 > - **Giving the Cardano community sufficient time** to introduce fundamental **protocol-level improvements** to Ouroboros that could **completely mitigate or transform this issue**.  
 
-#### The Data
+<span style="display:block; font-size:1.05em; font-weight:bold">The Data</span>
 We are computing here the expected number of grinding attempts for both the self-mixing and forking strategies.
 
-##### Self-Mixing
+<span style="display:block; font-size:1.0em; font-weight:bold">Self-Mixing</span>
 
 We present here the average number of years required for an adversary with a stake of $\text{stake}_A$ to control N blocks. We chose to emphasize frequencies below 10 years, as it is reasonable to assume the protocol will have evolved after such a period.
 
@@ -1020,7 +1020,7 @@ We present the expected number (i.e., moment) of grinding attempts during self-m
 
 We conclude that the self-mixing attack is neither highly probable nor particularly critical.
 
-##### Forking
+<span style="display:block; font-size:1.0em; font-weight:bold">Forking</span>
 
 We extend here the self-mixing strategy with forking and show how this renders the attack viable. 
 
@@ -1089,7 +1089,7 @@ The details of the calculations underlying this table can be found in the follow
 
 For example, with **5% adversarial stake**, it would take about **1800 years** in average for an adversary to obtain an advantage of of exactly 4 blocks at the critical juncture.
 
-####  The Results
+<span style="display:block; font-size:1.05em; font-weight:bold">The Results</span>
 
 <div align="center">
 <img src="./image/grinding_depth_comparison.png" alt="" />
@@ -1118,7 +1118,7 @@ As previously explained, each attempt consists of three key steps:
 
 Let's analyze each of these steps.  
 
-### 3.3.1 Nonce Generation  
+#### 3.3.1 Nonce Generation  
 
 We will denote this step as $T_{\text{nonce}}^\rho$ moving forward. 
 
@@ -1138,7 +1138,7 @@ T_{\text{nonce}}^\rho =  T_{\text{BLAKE2b}} \cdot \frac{\sum_i i  \cdot \binom{\
 
 **N.B.** This represents the average time to compute a nonce. While each nonce can be computed in parallel, we cannot easily parallelize the generation of one nonce as the computation is sequential. 
 
-### 3.3.2 Slot Leader Distribution Evaluation  
+#### 3.3.2 Slot Leader Distribution Evaluation  
 
 We will denote this step as $T_{\text{distribution}}$ moving forward. 
 
@@ -1164,7 +1164,7 @@ This represents the total time of the leader distribution evaluation. Once a non
 
 
 
-### 3.3.3 Strategic Benefit Evaluation  
+#### 3.3.3 Strategic Benefit Evaluation  
 
 We denote this step as $T_{\text{eval}}$ moving forward.
 
@@ -1174,7 +1174,7 @@ After simulating the leader election distribution, the adversary must determine 
 2. **Estimating adversarial control over leader election.**  
 3. **Comparing multiple nonces** to select the most effective one.  
 
-#### **Nature of the Computational Workload**  
+<span style="display:block; font-size:1.05em; font-weight:bold">Nature of the Computational Workload</span>
 
 Unlike previous steps, this phase does not perform a single deterministic computation but operates as an **evaluation loop over a dataset of adversarial leader election scenarios**. The attacker’s dataset includes:  
 
@@ -1185,7 +1185,7 @@ Unlike previous steps, this phase does not perform a single deterministic comput
 
 Since this **"database" of possible leader elections** depends on **adversarial strategies**, the cost is too diverse to define precisely. While the **exact cost varies**, this step is **compulsory** and must be factored into the total grinding time. 
 
-### 3.3.4 Total Estimated Time per Grinding Attempt  
+#### 3.3.4 Total Estimated Time per Grinding Attempt  
 
 The total grinding time is the sum of:  
 
@@ -1193,7 +1193,7 @@ The total grinding time is the sum of:
 2. **Slot Leader Simulation ($T_{\text{distribution}}$)** → Eligibility checks over $w_T$.  
 3. **Strategic Evaluation ($T_{\text{eval}}$)** → Nonce selection analysis.  
 
-#### **Total Grinding Time Formula**  
+<span style="display:block; font-size:1.05em; font-weight:bold">Total Grinding Time Formula</span>
 
 ```math
 T_{\text{grinding}} = T_{\text{nonce}} + T_{\text{distribution}} + T_{\text{eval}}
@@ -1221,7 +1221,7 @@ Where:
 
 ### 3.4 Cost of a Grinding Attack
 
-### 3.4.1 Formula
+#### 3.4.1 Formula
 
 A **grinding attack** consists of multiple grinding attempts executed within the **grinding opportunity window** $w_O$. Since each grinding attempt takes time to compute, the feasibility of the attack depends on whether the total computation can be completed within this window.
 
@@ -1247,7 +1247,7 @@ which leads to the lower bound on computational power ($N_CPU$) :
 N_{\text{CPU}} \geq \left \lceil \frac{2^{\rho} \cdot T_{\text{grinding}}}{w_O}\right \rceil
 ```
 
-#### Expanding $T_{\text{grinding}}$
+<span style="display:block; font-size:1.05em; font-weight:bold">Expanding Tgrinding</span>
 From **Section 3.3**, the per-attempt grinding time is:
 
 ```math
@@ -1261,7 +1261,7 @@ N_{\text{CPU}} \geq \left \lceil \frac{2^{\rho} \cdot \left( \frac{\rho}{2} \cdo
 ```
 
 
-#### Expanding $w_O$ in Terms of $\rho$ and $f$
+<span style="display:block; font-size:1.05em; font-weight:bold">Expanding wO in Terms of rho and f</span>
 From previous sections, the **grinding opportunity window** is:
 
 ```math
@@ -1279,7 +1279,7 @@ N_{\text{CPU}} &\geq  \left \lceil \frac{f \cdot 2^{\rho}}{w} \cdot \left( \frac
 \end{align*}
 ```
 
-### 3.4.2 Estimated Formula Using Mainnet Cardano Parameters
+#### 3.4.2 Estimated Formula Using Mainnet Cardano Parameters
 
 Starting from the final expression at the end of the last section:
 
@@ -1287,7 +1287,7 @@ Starting from the final expression at the end of the last section:
 N_{\text{CPU}}  \geq  \left \lceil f \cdot 2^{\rho-2} \cdot \left ( T_{\text{BLAKE2b}} + 2 \rho^{-1} \cdot \left [ w_T \cdot ( T_{\mathsf{VRF}} + T_{\text{eligibility}} ) + T_{\text{eval}} \right ] \right ) \right \rceil
 ```
 
-#### Applying Cardano Mainnet Parameters
+<span style="display:block; font-size:1.05em; font-weight:bold">Applying Cardano Mainnet Parameters</span>
 Using Cardano’s mainnet values:
 - $T_{\mathsf{VRF}} = 10^{-6}$ seconds (1 microsecond) – Time to evaluate a Verifiable Random Function.
 - $T_{\text{BLAKE2b}} = 10^{-8}$ seconds (0.01 microseconds) – Time for a BLAKE2b-256 hash operation.
@@ -1306,7 +1306,7 @@ where each step contributes as follows,
 - **Strategic Evaluation** : $5 \cdot 10^{-2} \cdot T_{\text{eval}} \cdot \rho^{-1} \cdot 2^{\rho-1}$
 
 
-#### Final Expression
+<span style="display:block; font-size:1.05em; font-weight:bold">Final Expression</span>
 The estimated number of CPUs required is:
 
 ```math
@@ -1320,7 +1320,7 @@ N_{\text{CPU}}  \geq  \left \lceil 5 \cdot 10^{-10} \cdot 2^{\rho-2} + 5 \cdot 1
 This expression transitions the theoretical cost model into a practical estimate, with specific values for $w_T$ and $T_{\text{eval}}$ evaluated in [Section 3.5 - Scenarios](#35-scenarios) to assess feasibility across different attack strategies.
 
 
-## 3.5 Scenarios
+### 3.5 Scenarios
 
 Following the computational model from [Section 3.4.2 - Estimated Formula Using Mainnet Cardano Parameters](#342-estimated-formula-using-mainnet-cardano-parameters), we explore four scenarios to observe how randomness manipulation behaves across varying grinding depths $\rho$. These scenarios are framed with an animal-inspired metaphor reflecting evaluation complexity ($T_{\text{eval}}$) and observation scope ($w_T $), providing a basis for graphical analysis to be developed later.
 
@@ -1402,7 +1402,7 @@ The table below summarizes the feasibility for `Owl Survey` ($T_{\text{eval}} = 
 
 Let’s walk through the calculation for the Owl Survey scenario at $\rho=50$ to demonstrate how the values in the table are derived. The Owl Survey scenario has $T_{\text{eval}}=1$ (high complexity) and $w_T=432,000\,\text{s}$ (5 days), making it the most resource-intensive scenario.
 
-### Step 1: Compute $N_{\text{CPU}}$
+<span style="display:block; font-size:1.1em; font-weight:bold">Step 1: Compute NCPU</span>
 
 The formula for $N_{\text{CPU}}$ in the Owl Survey scenario, as given in [Section 3.5 - Scenarios](#35-scenarios), is:
 
@@ -1425,7 +1425,7 @@ In $\log_{10}$ scale:
 \log_{10}(5 \cdot 10^{-10} \cdot 2^{48} + 7.16 \cdot 10^{-2} \cdot \frac{2^{49}}{50}) \approx 11.906
 ```
 
-### Step 2: Compute the Estimated Cost in USD
+<span style="display:block; font-size:1.1em; font-weight:bold">Step 2: Compute the Estimated Cost in USD</span>
 
 The cost is calculated as:
 
@@ -1444,7 +1444,7 @@ w_O = 20 \times (2 \cdot 50 - 1) = 1,980 \, \text{seconds}, \quad \text{runtime}
 \text{Cost (USD)} = 8.06 \times 10^{11} \times 0.01 \times 0.55 \approx 4.43 \times 10^9 \approx 4.43 \, \text{billion}
 ```
 
-### Step 3: Determine Feasibility
+<span style="display:block; font-size:1.1em; font-weight:bold">Step 3: Determine Feasibility</span>
 
 The feasibility thresholds are:
 
