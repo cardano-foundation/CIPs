@@ -6,9 +6,10 @@ Category: Ledger
 Authors: 
   - Pi Lanningham <pi@sundaeswap.finance>
 Proposed Solutions:
-  - CIP-1694
+  - CIP-1694: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694
 Discussions:
-  - https://discord.gg/hdqHwSgWvG
+  - Discussions on CIPs discord: https://discord.gg/hdqHwSgWvG
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/481
 Created: 2023-03-14
 License: CC-BY-4.0
 ---
