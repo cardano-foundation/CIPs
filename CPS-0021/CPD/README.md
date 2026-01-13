@@ -1247,7 +1247,7 @@ which leads to the lower bound on computational power ($N_CPU$) :
 N_{\text{CPU}} \geq \left \lceil \frac{2^{\rho} \cdot T_{\text{grinding}}}{w_O}\right \rceil
 ```
 
-**Expanding $\T_{\text{grinding}}$**
+**Expanding $T_{\text{grinding}}$**
 
 From **Section 3.3**, the per-attempt grinding time is:
 
@@ -1262,7 +1262,7 @@ N_{\text{CPU}} \geq \left \lceil \frac{2^{\rho} \cdot \left( \frac{\rho}{2} \cdo
 ```
 
 
-**Expanding $\w_{\text{O}}$ in Terms of $\rho$ and f**
+**Expanding $w_{\text{O}}$ in Terms of $\rho$ and $f$**
 
 From previous sections, the **grinding opportunity window** is:
 
@@ -1406,7 +1406,7 @@ The table below summarizes the feasibility for `Owl Survey` ($T_{\text{eval}} = 
 
 Let’s walk through the calculation for the Owl Survey scenario at $\rho=50$ to demonstrate how the values in the table are derived. The Owl Survey scenario has $T_{\text{eval}}=1$ (high complexity) and $w_T=432,000\,\text{s}$ (5 days), making it the most resource-intensive scenario.
 
-<span style="display:block; font-size:1.1em; font-weight:bold">Step 1: Compute NCPU</span>
+**Step 1: Compute $N_{\text{CPU}}$**
 
 The formula for $N_{\text{CPU}}$ in the Owl Survey scenario, as given in [Section 3.5 - Scenarios](#35-scenarios), is:
 
@@ -1429,7 +1429,7 @@ In $\log_{10}$ scale:
 \log_{10}(5 \cdot 10^{-10} \cdot 2^{48} + 7.16 \cdot 10^{-2} \cdot \frac{2^{49}}{50}) \approx 11.906
 ```
 
-<span style="display:block; font-size:1.1em; font-weight:bold">Step 2: Compute the Estimated Cost in USD</span>
+**Step 2: Compute the Estimated Cost in USD**
 
 The cost is calculated as:
 
