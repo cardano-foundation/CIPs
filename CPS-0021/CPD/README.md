@@ -526,7 +526,7 @@ Note that the third phase is only longer than the first one to complete the epoc
 
 To select the slots leaders, which stake pool is eligible to produce and propose a slot's block, we need to rely on random numbers. As economic reward and transaction inclusion depends on these numbers, the generation of these number is of critical importance to the protocol and its security. We show in this section how these random numbers, or _random nonces_ are defined.
 
-<span style="display:block; font-size:1.05em; font-weight:bold">The eta-evolving Stream Definition</span>
+**The eta-evolving Stream Definition**
 
 Contrary to [Section 1.2.3](#123-the-historical-evolution-of-ouroboros-randomness-generation), where we first defined the random nonce as the hash of all VRF outputs, we adopt an iterative approach for the randomness generation in practice.
 More particularly, the random nonces $\eta$ are defined iteratively from a genesis value, as the hash of the previous epoch's nonce and the VRF outputs published between the Phase 2 of consecutive epochs. We thus talk about _evolving nonces_ $\eta^\text{evolving}$ as their value can be updated with the VRF output comprised in each block.
@@ -1247,7 +1247,8 @@ which leads to the lower bound on computational power ($N_CPU$) :
 N_{\text{CPU}} \geq \left \lceil \frac{2^{\rho} \cdot T_{\text{grinding}}}{w_O}\right \rceil
 ```
 
-<span style="display:block; font-size:1.05em; font-weight:bold">Expanding Tgrinding</span>
+**Expanding $\T_{\text{grinding}}$**
+
 From **Section 3.3**, the per-attempt grinding time is:
 
 ```math
@@ -1261,7 +1262,8 @@ N_{\text{CPU}} \geq \left \lceil \frac{2^{\rho} \cdot \left( \frac{\rho}{2} \cdo
 ```
 
 
-<span style="display:block; font-size:1.05em; font-weight:bold">Expanding wO in Terms of rho and f</span>
+**Expanding $\w_{\text{O}}$ in Terms of $\rho$ and f**
+
 From previous sections, the **grinding opportunity window** is:
 
 ```math
@@ -1287,7 +1289,8 @@ Starting from the final expression at the end of the last section:
 N_{\text{CPU}}  \geq  \left \lceil f \cdot 2^{\rho-2} \cdot \left ( T_{\text{BLAKE2b}} + 2 \rho^{-1} \cdot \left [ w_T \cdot ( T_{\mathsf{VRF}} + T_{\text{eligibility}} ) + T_{\text{eval}} \right ] \right ) \right \rceil
 ```
 
-<span style="display:block; font-size:1.05em; font-weight:bold">Applying Cardano Mainnet Parameters</span>
+**Applying Cardano Mainnet Parameters**
+
 Using Cardano’s mainnet values:
 - $T_{\mathsf{VRF}} = 10^{-6}$ seconds (1 microsecond) – Time to evaluate a Verifiable Random Function.
 - $T_{\text{BLAKE2b}} = 10^{-8}$ seconds (0.01 microseconds) – Time for a BLAKE2b-256 hash operation.
@@ -1306,7 +1309,8 @@ where each step contributes as follows,
 - **Strategic Evaluation** : $5 \cdot 10^{-2} \cdot T_{\text{eval}} \cdot \rho^{-1} \cdot 2^{\rho-1}$
 
 
-<span style="display:block; font-size:1.05em; font-weight:bold">Final Expression</span>
+**Final Expression** 
+
 The estimated number of CPUs required is:
 
 ```math
@@ -1498,4 +1502,3 @@ The table below shows the $\rho$ values where each scenario transitions across f
 ## 5. Copyright
 
 This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
-READ

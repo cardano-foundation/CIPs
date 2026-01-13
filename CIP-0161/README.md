@@ -7,10 +7,11 @@ Authors:
   - Nicolas Henin <nicolas.henin@iohk.io>
   - Raphael Toledo <raphael.toledo@iohk.io>
 Solution-To:
-  - CPS-0017
-  - CPS-0021
+  - CPS-0017: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0017
+  - CPS-0021: https://github.com/cardano-foundation/CIPs/blob/master/CPS-0021
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/1065
+  - https://github.com/cardano-foundation/CIPs/pull/1131
 Created: 2025-07-25
 License: Apache-2.0
 ---
@@ -28,11 +29,16 @@ By addressing both [CPS-0021: Randomness Manipulation](https://github.com/cardan
 Ouroboros Phalanx therefore represents a **complementary advancement**: reinforcing Cardano’s consensus security while improving performance, and ensuring the network remains robust against future adversarial strategies.
 
 <details>
-<summary><h2>🔍 Table of Contents</h2></summary>
+<summary><h2>Table of Contents</h2></summary>
 
 - [Abstract](#abstract)
 - [Motivation: why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
-- [Specification / The Phalanx Sub-Protocol](#specification--the-phalanx-sub-protocol)
+  - [Recommended Configuration](#recommended-configuration)
+  - [Security Improvements](#security-improvements)
+  - [Consensus Performance](#consensus-performance)
+  - [Relationship to Peras](#relationship-to-peras)
+  - [Technical Depth](#technical-depth)
+- [Specification](#specification)
   - [1. High-Level Overview ](#1-high-level-overview)
     - [1.1 Changes Relative to Praos](#11-changes-relative-to-praos)
     - [1.2 Inputs & Outputs ](#12-inputs--outputs)
@@ -65,20 +71,20 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
         - [3.2.5.2 ProvideMissingAttestedOutput & Tick Commands](#3252-providemissingattestedoutput--tick-commands)
       - [3.2.6 Closure Phase](#326-closure-phase)
         - [3.2.6.1. The States](#3261-the-states)
-            - [3.2.6.2. The Successful Scenario: The `Close` Command](#3262-the-successful-scenario-the-close-command)
-            - [3.2.6.3. `tick` Command](#3263-tick-command)
-            - [3.2.6.4. The Failure Scenario: Ungraceful Closure](#3264-the-failure-scenario-ungraceful-closure)
+        - [3.2.6.2. The Successful Scenario: The `Close` Command](#3262-the-successful-scenario-the-close-command)
+        - [3.2.6.3. `tick` Command](#3263-tick-command)
+        - [3.2.6.4. The Failure Scenario: Ungraceful Closure](#3264-the-failure-scenario-ungraceful-closure)
   - [4. Recommended Parameter Values](#4-recommended-parameter-values)
     - [4.1. VDF Security Parameters λ and ρ](#41-vdf-security-parameters-λ-and-ρ)
     - [4.2. Time Budget Tᵩ and Derived T](#42-time-budget-tᵩ-and-derived-t)
       - [4.2.1. Specialized ASIC vs CPU-Based Chips](#421-specialized-asic-vs-cpu-based-chips)
-      - [4.2.2. Deriving from Tᵩ to T](#421-deriving-from-tᵩ-to-t)
+      - [4.2.2. Deriving from Tᵩ to T](#422-deriving-from-tᵩ-to-t)
   - [5. Efficiency Analysis](#5-efficiency-analysis)
     - [5.1. Phalanx Initialization](#51-phalanx-initialization)
     - [5.2. Block Publication](#52-block-publication)
     - [5.3. Block Verification](#53-block-verification)
       - [5.3.1. When Not Syncing](#531-when-not-syncing)
-      - [5.3.2. When Syncing](#532-when-syncing)
+      - [5.3.2. When Syncing with aggregation](#532-when-syncing-with-aggregation)
   - [6. CDDL Schema for the Ledger](#6-cddl-schema-for-the-ledger)
   - [7. Formal specification in Agda](#7-formal-specification-in-agda)
 
@@ -187,7 +193,7 @@ The remainder of this document provides the full technical specification for nod
 Please refer to the CPD "[Ouroboros Randomness Generation Sub-Protocol – The Coin-Flipping Problem](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0021/CPD/README.md)" for a detailed understanding of **randomness generation, leader election in Praos, and the coin-flipping dilemma in consensus protocols**. Moving forward, we will **dive into the core details**, assuming you have the **relevant background** to understand the proposal.
 
 
-## Specification / The Phalanx Sub-Protocol
+## Specification
 
 The core principle of the proposed protocol change is to **substantially escalate the computational cost of each grinding attempt for an adversary**. To achieve this, every honest participant is required to perform a designated computation for each block they produce over an epoch (**432,000 slots - 5 days**). Consequently, an adversary attempting a grinding attack must **recompute these operations for every single attempt**, while being **constrained by the grinding window**, which dramatically increases the resource expenditure. By enforcing this computational burden, we **drastically reduce the feasible number of grinding attempts** an adversary with a fixed resource budget can execute, making randomness manipulation **more expensive and significantly less practical**.
  
@@ -978,7 +984,7 @@ Critically, scaling this kind of grinding capability is expensive. For an advers
 
 In summary, while ASIC-equipped adversaries could, in theory, gain a computational advantage during the grinding window, the cost and scale required to pose a real threat remains high. Our mitigation strategy is to raise the honest baseline to neutralize this advantage and prepare for possible hardware evolution over time.
 
-##### 4.2.1 Deriving from Tᵩ to T
+##### 4.2.2 Deriving from Tᵩ to T
 
 We recommend a **12-hour computation budget** on standard **CPU-based machines**, which we estimate to be **10× slower** than specialized ASICs available to adversaries. This configuration corresponds to **Phalanx<sub>1/10</sub>** in terms of **time budget**, while achieving **Phalanx<sub>1/100</sub>** in terms of **security guarantees** against grinding attacks.
 
