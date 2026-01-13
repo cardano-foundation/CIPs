@@ -150,10 +150,13 @@ allowed at the account. Direct deposits of other native assets into the account 
 the ledger rules, except for ADA, which can always be deposited into any Cardano account.
 
 > [!IMPORTANT]
-> We implement this by using the new `AccountValue` type, which is similar to `Value` but prevents adding or
-> removing assets in the `AccountValue`. You can only increase or decrease the asset quantities. If a
-> transaction tries directly depositing a native asset that is not found in the `AccountValue`, it
-> will fail phase 1 validation.
+> For clarity, this CIP will introduce a new ledger type called `AccountValue`, which is similar to
+> `Value` but prevents adding or removing assets in the `AccountValue`. You can only increase or
+> decrease the asset quantities. If a transaction tries directly depositing a native asset that is
+> not found in the `AccountValue`, it will fail phase 1 validation.
+>
+> **This type is only to help explain the invariants!** It is up to the ledger team to decide how to
+> actually implement this functionality.
 
 The only way to alter which native assets are found in the `AccountValue` is through another
 dedicated certificate event. The new certificate is outlined below:
@@ -294,15 +297,20 @@ for the transaction to be phase 1 valid, the actual balance for the associated a
 ; costing difficult so we constrain them to be 8-byte integers. 
 balance_bound = uint .size 8
 
+required_balance_interval<b> =
+  [ inclusive_lower_bound: b, exclusive_upper_bound: b / nil ] /
+  [ inclusive_lower_bound: b / nil, exclusive_upper_bound: b ]
+
+; Note that when multi-asset interval is supplied, interval for ADA is optional
+account_balance_interval =
+  required_balance_interval<coin> /
+  [ inclusive_lower_bound: coin / nil
+  , exclusive_upper_bound: coin / nil
+  , {+ policy_id => {+ asset_name => required_balance_interval<balance_bound> } }
+  ] 
+
 account_balance_intervals = 
-  {+ reward_account => 
-      {+ policy_id => 
-          {+ asset_name => 
-               [ inclusive_lower_bound: balance_bound, exclusive_upper_bound: balance_bound / null ]  /
-               [ inclusive_lower_bound: balance_bound / null, exclusive_upper_bound: balance_bound ]
-          }
-      }
-  }
+  { + reward_account => account_balance_interval }
 
 transaction_body = 
   {   0  : set<transaction_input>         
@@ -378,6 +386,11 @@ This CIP does not introduce any new `ScriptPurpose`s, but the `TxInfo` field nee
 new sub-fields:
 
 ```haskell
+data BalanceInterval
+  = InclusiveLowerBoundOnly Integer
+  | ExclusiveUpperBoundOnly Integer
+  | InclusiveLowerExclusiveUpperBounds Integer Integer
+
 data TxInfo = TxInfo
   { txInfoInputs                :: [TxInInfo]
   , txInfoReferenceInputs       :: [TxInInfo]
@@ -385,13 +398,17 @@ data TxInfo = TxInfo
   , txInfoFee                   :: Value
   , txInfoMint                  :: Value
   , txInfoTxCerts               :: [TxCert]
-  , txInfoWdrl                  :: Map Credential AccountValue -- ^ Upgraded field.
+  , txInfoWdrl                  :: Map Credential Value -- ^ Upgraded field.
   , txInfoValidRange            :: POSIXTimeRange
   ... 
-  , txInfoDirectDeposits        :: Map Credential AccountValue -- ^ New field.
+  , txInfoDirectDeposits        :: Map Credential Value -- ^ New field.
   , txInfoBalanceIntervals      :: Map Credential (Map PolicyID (Map AssetName BalanceInterval)) -- ^ New field. 
   }
 ```
+
+The `TxInfo` uses `Value` instead of `AccountValue` because the invariants are checked at the ledger
+level. By using `Value` in smart contracts, this CIP can take advantage of the new `BuiltinValue`
+type introduced in [CIP-153](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0153).
 
 > [!IMPORTANT]
 > In order for contemporary DeFi to be able to charge lower fees with this CIP, **direct deposits
@@ -426,8 +443,8 @@ direct_deposits = {+ reward_account => coin}
 
 account_balance_intervals = 
   { + reward_account => 
-        [ inclusive_lower_bound: coin, exclusive_upper_bound: coin / null ]  /
-        [ inclusive_lower_bound: coin / null, exclusive_upper_bound: coin ] 
+        [ inclusive_lower_bound: coin, exclusive_upper_bound: coin / nil ]  /
+        [ inclusive_lower_bound: coin / nil, exclusive_upper_bound: coin ] 
   }
 
 transaction_body = 
@@ -447,6 +464,11 @@ for the first delivery phase can immediately take advantage of the new features 
 recompiled.
 
 ```haskell
+data BalanceInterval
+  = InclusiveLowerBoundOnly Integer
+  | ExclusiveUpperBoundOnly Integer
+  | InclusiveLowerExclusiveUpperBounds Integer Integer
+
 data TxInfo = TxInfo
   { txInfoInputs                :: [TxInInfo]
   , txInfoReferenceInputs       :: [TxInInfo]
@@ -454,10 +476,10 @@ data TxInfo = TxInfo
   , txInfoFee                   :: Value
   , txInfoMint                  :: Value
   , txInfoTxCerts               :: [TxCert]
-  , txInfoWdrl                  :: Map Credential AccountValue -- ^ Upgraded field.
+  , txInfoWdrl                  :: Map Credential Value -- ^ Upgraded field.
   , txInfoValidRange            :: POSIXTimeRange
   ... 
-  , txInfoDirectDeposits        :: Map Credential AccountValue -- ^ New field.
+  , txInfoDirectDeposits        :: Map Credential Value -- ^ New field.
   , txInfoBalanceIntervals      :: Map Credential (Map PolicyID (Map AssetName BalanceInterval)) -- ^ New field. 
   }
 ```
@@ -506,15 +528,21 @@ direct_deposits = {+ reward_account => value}
 ; New representation: replaced `coin` with `balance_bound` and enables individual
 ; intervals for each asset.
 balance_bound = uint .size 8
+
+required_balance_interval<b> =
+  [ inclusive_lower_bound: b, exclusive_upper_bound: b / nil ] /
+  [ inclusive_lower_bound: b / nil, exclusive_upper_bound: b ]
+
+; Note that when multi-asset interval is supplied, interval for ADA is optional
+account_balance_interval =
+  required_balance_interval<coin> /
+  [ inclusive_lower_bound: coin / nil
+  , exclusive_upper_bound: coin / nil
+  , {+ policy_id => {+ asset_name => required_balance_interval<balance_bound> } }
+  ] 
+
 account_balance_intervals = 
-  {+ reward_account => 
-      {+ policy_id => 
-          {+ asset_name => 
-               [ inclusive_lower_bound: balance_bound, exclusive_upper_bound: balance_bound / null ]  /
-               [ inclusive_lower_bound: balance_bound / null, exclusive_upper_bound: balance_bound ]
-          }
-      }
-  }
+  { + reward_account => account_balance_interval }
 ```
 
 **New `AccountState`**
