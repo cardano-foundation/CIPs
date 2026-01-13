@@ -130,7 +130,6 @@ query = "?" *( unreserved / pct-encoded / sub-delims / "=" / "&" )
 * Parse and validate version, scheme, and domain.
 * Forward the entire app-specific path and query string to the app.
 * Apply allowlist/blocklist and security policies:
-
     * Warn on `http` and `localhost`.
     * Allow `https` by default.
     * Resolve `ipfs` via trusted gateway or native resolver.
