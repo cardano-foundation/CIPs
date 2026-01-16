@@ -106,8 +106,17 @@ We propose the following set of builtin functions to accompany the new builtin t
     - encodes a `BuiltinValue` as `BuiltinData`.
 6. `unValueData :: BuiltinData -> BuiltinValue`
     - decodes a `BuiltinData` into a `BuiltinValue`, or fails if it is not one.
+    - This builtin MUST reject non-canonical `Data`-encoded values.
+    - The outer `Map` must be strictly ascending by `CurrencySymbol` key and contain no duplicate keys; otherwise, the builtin fails.
+    - Each inner `Map` must be strictly ascending by `TokenName` key and contain no duplicate keys; otherwise, the builtin fails.
+    - It fails on empty inner maps.
+    - It fails on zero-amount entries in inner maps.
     - All currency symbols and token names must be no longer than 32 bytes.
-    - All amounts must lie between -2<sup>127</sup> and 2<sup>127</sup>-1 (inclusive).
+    - All amounts must lie between -2<sup>127</sup> and 2<sup>127</sup>-1 (inclusive), and be non-zero.
+7. `scaleValue :: BuiltinInteger -> BuiltinValue -> BuiltinValue`
+    - it multiplies all token quantities in the provided value by the provided integer scale factor.
+    - Any entries whose resulting quantity is zero are removed, and any currency symbols whose inner maps become empty are removed, preserving the Mary-era Value invariants.
+    - It fails if any resulting quantity lies outside -2<sup>127</sup> ≤ amount ≤ 2<sup>127</sup>-1.
 
 A note on `valueData` and `unValueData`: in Plutus V1, V2 and V3, the encoding of `BuiltinValue` in `BuiltinData` is identical to that of the [existing `Value` type](https://plutus.cardano.intersectmbo.org/haddock/latest/plutus-ledger-api/PlutusLedgerApi-V1-Value.html#t:Value) in plutus-ledger-api.
 This ensures backwards compatibility.
