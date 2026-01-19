@@ -12,7 +12,7 @@ Implementors:
   - Aleksandr Vershilov <alexander.vershilov@moduscreate.com>
   - João Santos Reis <joao.reis@moduscreate.com>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1083
+  - https://github.com/cardano-foundation/CIPs/pull/1083
 Created: 2025-08-18
 License: CC-BY-4.0
 ---
@@ -21,7 +21,7 @@ License: CC-BY-4.0
 
 This proposal defines the Standard Canonical Ledger State (SCLS), a stable, versioned, and verifiable file format for representing the Cardano ledger state. It specifies a segmented binary container with deterministic CBOR encodings, per-chunk commitments, and a manifest that enables identical snapshots across implementations, supports external tools (e.g., Mithril), and future-proofs distribution and verification of state.
 
-This CIP specifies a canonical interchange format for the ledger state. It does not define, prescribe, or constrain the internal storage or representation of the ledger state within any node implementation. Internal formats remain an implementation detail; the canonical format applies only to export, interchange, and verification of the ledger state consistency.
+This CIP specifies a canonical interchange format for the ledger state. It does not define, prescribe, or constrain the internal storage or representation of the ledger state within any node implementation. Internal formats remain an implementation detail; the canonical format applies only to the export, interchange, and verification of the ledger state consistency.
 
 ## Motivation: why is this CIP necessary?
 
@@ -40,7 +40,7 @@ The concrete use-case scenarios for this CIP are:
 
 - allow building dump of the Cardano Ledger node state in a canonical format, so any two nodes would generate the same file. This would allow persistence, faster bootstrap and verification.
 - such state can be verified by the other node against its own state and signed. It would allow us to fully utilize Mithril, when each node can sign the state independently.
-- full conformance testing. Any implementation would be able to reuse test-suite of the Haskell node by importing data applying the test transaction and exporting data back.
+- full conformance testing. Any implementation would be able to reuse the test-suite of the Haskell node by importing data applying the test transaction and exporting data back.
 
 ## Specification
 
@@ -86,7 +86,7 @@ HDR,
 MANIFEST
 ```
 
-All the other record types allow to introduce additional features, like delta-states, querying data and may be omitted in case if the user does not want those functionality.
+All the other record types allow the introduction of additional features, like delta-states, querying data and may be omitted in case the user does not want those functionalities.
 
 For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possible to keep such records outside of the file and build them iteratively, outside of the main dump process. This is especially useful for indices.
 
@@ -209,7 +209,7 @@ Bloom record is reserved for the future use, in case if search in the file will 
 
 #### INDEX Record
 
-Index record is reserved for the future use, in case if search in the file will be required by the downstream.
+Index record is reserved for future use, in case a search in the file will be required by downstream.
 
 **Purpose:** allows fast search based on the value of the entries.
 
@@ -232,7 +232,7 @@ Directory record is reserved for the future use, in case if index records or del
 
 ### META Record
 
-**Purpose:** record with extra metadata that can be used to store 3rd party data, like signatures for Mithril, metadata information. This is an additional record that may be required for in the additional scenarios.
+**Purpose:** record with extra metadata that can be used to store 3rd party data, like signatures for Mithril, metadata information. This is an additional record that may be required for additional scenarios.
 
 **Structure:**
 
@@ -246,7 +246,7 @@ Entry:
 
 **Policy:**
 
-- Meta chunks are completely optional and does not change hash of the entries in data.
+- Meta chunks are completely optional and do not change the hash of the entries in data.
 - `entries_hash = H(concat (digest e for e in entries))`
 
 ### Namespaces and Entries
@@ -282,26 +282,26 @@ Data is stored in the list of `Entries`, each entry consist of the namespace and
 
 `size` is used in a fast search scenario, this way its possible to skip values without interpretation.
 
-Exact definition of the domain data is left out in this CIP. We propose that ledger team would propose canonical representation for the types in each new era. For the types they must be in a canonical [CBOR format](https://datatracker.ietf.org/doc/html/rfc8949) with restrictions from [deterministic cbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor). Values must not be derivable, that is, if some part of the state can be computed based on another part, then only the base one should be in the state."
+The exact definition of the domain data is left out in this CIP. We propose that the ledger team would propose a canonical representation for the types in each new era. For the types they must be in a canonical [CBOR format](https://datatracker.ietf.org/doc/html/rfc8949) with restrictions from [deterministic cbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor). Values must not be derivable, that is, if some part of the state can be computed based on another part, then only the base one should be in the state."
 
-All concrete formats should be stored in attachment to this CIP and stored in `namespaces/namespaces.cddl`. All the changes should be introduced using current CIP update process.
+All concrete formats should be stored in an attachment to this CIP and stored in `namespaces/namespaces.cddl`. All the changes should be introduced using current CIP update process.
 
 #### Canonicalization Rules
 
 - CBOR maps must be deterministic with sorted keys and no duplicates.
 - Numbers use minimal encoding.
-- Arrays follow fixed order.
+- Arrays follow a fixed order.
 
 #### Verification
 
 - Entry digest: `digest(e) = H(0x01 || ns_str || key || value)`,
 - Manifest stores overall root and per-namespace commitments.
 
-Merkle root is computed as a root value of the Merkle trees over all the live entry digests in canonical order; tombstones excluded, last-writer-wins for overlays.
+The Merkle root is computed as a root value of the Merkle trees over all the live entry digests in canonical order; tombstones excluded, last-writer-wins for overlays.
 
-To describe in detail, basic chunks store all the values in the canonically ordered based in the key order. After having all values in the order we build a full Merkle tree of those values.
+To describe in detail, basic chunks store all the values in the canonically ordered based on the key order. After having all values in the order we build a full Merkle tree of those values.
 
-The rule of the thumb is that when we calculate a hash of the data we take into account only the live (non deleted) values in canonical order. In the case when there is a single dump without delta records, this is exactly the order of how values are stored. But when delta—records appear we need to take into account that in the following records there may be values that are smaller than the ones in the base and some values may be deleted or updated. As a result writer should calculate a live-set of values, which can be done by running a streaming multi-merge algorithm (when we search a minimal value from a multiple records). In the case a value exists in multiple records we use a last—writer—wins rule. If there is a tombstone, we consider a value deleted and do not include it in a live-set.
+The rule of thumb is that when we calculate a hash of the data we take into account only the live (non deleted) values in canonical order. In the case when there is a single dump without delta records, this is exactly the order of how values are stored. But when delta—records appear we need to take into account that in the following records there may be values that are smaller than the ones in the base and some values may be deleted or updated. As a result writer should calculate a live-set of values, which can be done by running a streaming multi-merge algorithm (when we search for a minimal value from multiple records). In the case a value exists in multiple records we use a last—writer—wins rule. If there is a tombstone, we consider a value deleted and do not include it in a live-set.
 
 ### Extensibility
 
