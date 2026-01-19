@@ -112,6 +112,10 @@
     "description": "cardanohosts.com hosting metadata"
   },
   {
+    "transaction_metadatum_label": 1984,
+    "description": "CIP-???? - On-chain Smart Contract Bytecode Verification"
+  },
+  {
     "transaction_metadatum_label": 1988,
     "description": "cardahub.io marketplace metadata"
   },
