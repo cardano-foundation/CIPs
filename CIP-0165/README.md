@@ -308,15 +308,15 @@ The rule of thumb is that when we calculate a hash of the data we take into acco
 - Unknown fields in `HDR` or unknown chunk types can be skipped by readers.
 - Allows future extension (e.g., index chunks, metadata) without breaking compatibility.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP achieves its goals by:
 
-1. Define a canonical format that has the following properties: the format is very simple, it would be easy to write that an implementation in any languages.
-2. The format is extensible and agnostic, it provides versioned format that simplified ledger evolution.
+1. Define a canonical format that has the following properties: the format is very simple, it would be easy to write an implementation in any language.
+2. The format is extensible and agnostic, it provides a versioned format that simplifies ledger evolution.
 3. Removes ambiguity, allows signed checkpoints, and improves auditability
 
-Format defines canonical format and ordering for the stored data, thus allows reproducible and verifiable hashing of the data. It supports Mithril and fast node bootstrap use cases.
+Format defines canonical format and ordering for the stored data, thus allowing reproducible and verifiable hashing of the data. It supports Mithril and fast node bootstrap use cases.
 
 ### Prior Work and Alternatives
 
@@ -326,7 +326,7 @@ Format defines canonical format and ordering for the stored data, thus allows re
 the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the [work](https://github.com/cardano-scaling/CIPs/pull/9) and related work with our own and use the best of two words.
 
 - **CIP draft by Paul Clark**:
-this was an early work of the CIP of the canonical ledger state. The work was more targeted towards what is stored in the files. Proposal also uses deterministic CBOR (canonical CBOR in this CIP). Proposal opens a discussion and rules about how and when snapshots should be created by the nodes, that is deliberately not discussed in the current CIP, as we do not want to impose restrictions on the nodes, and the format allow the nodes not to have any agreement on those rules. As a solution for extensibility and partiality the CIP proposes using a file per "namespace" (in the terminology of the current CIP), in our work we proposed to have a single chunked file that is more friendly for the producer. Currently we are considering at least to have an option for extracting multi-files version. See discussion in open questions.
+this was an early work of the CIP of the canonical ledger state. The work was more targeted towards what is stored in the files. Proposal also uses deterministic CBOR (canonical CBOR in this CIP). The proposal opens a discussion and rules about how and when snapshots should be created by the nodes, that is deliberately not discussed in the current CIP, as we do not want to impose restrictions on the nodes, and the format allow the nodes not to have any agreement on those rules. As a solution for extensibility and partiality the CIP proposes using a file per "namespace" (in the terminology of the current CIP), in our work we proposed to have a single chunked file that is more friendly for the producer. Currently we are considering at least to have an option for extracting multi-files version. See discussion in open questions.
 
 - **Do Nothing**: rejected due to interoperability and Mithril requirements.
 
