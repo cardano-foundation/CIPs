@@ -8,11 +8,11 @@ Authors:
   - Brian W. Bush <brian.bush@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
 Proposed Solutions: 
-	["CIP-0140 : Ouroboros Peras - Faster Settlement"
-	,"CIP-0161 : Ouroboros Phalanx - Breaking Grinding Incentives"
-	]
+  - CIP-0140 | Ouroboros Peras - Faster Settlement: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0140
+  - CIP-0161 | Ouroboros Phalanx - Breaking Grinding Incentives: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0161
 Implementors: N/A
-Discussions: 
+Discussions:
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1065
 Created: 2024-09-30
 License: Apache-2.0
 ---

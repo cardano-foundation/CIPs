@@ -14,13 +14,11 @@ Proposed Solutions:
   - CIP-0158: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0158
   - CIP-0162: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0162
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/issues/836
-  - https://github.com/cardano-foundation/CIPs/pull/559
-  - https://github.com/cardano-foundation/CIPs/pull/635
-  - https://github.com/cardano-foundation/CIPs/pull/841
-  - https://github.com/cardano-foundation/CIPs/pull/888
-  - https://github.com/cardano-foundation/CIPs/pull/843
-  - https://github.com/cardano-foundation/CIPs/pull/1069
+  - Issue - CIP-0013 Current state of integration and further advancements: https://github.com/cardano-foundation/CIPs/issues/836
+  - CIP-0013 pull request: https://github.com/cardano-foundation/CIPs/pull/559
+  - CIP-0107 pull request: https://github.com/cardano-foundation/CIPs/pull/635
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/841
+  - CIP-0134 pull request: https://github.com/cardano-foundation/CIPs/pull/888
 Created: 2024-06-15
 License: CC-BY-4.0
 ---
