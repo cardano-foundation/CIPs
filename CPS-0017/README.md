@@ -7,7 +7,7 @@ Authors:
   - Arnaud Bailly <arnaud.bailly@iohk.io>
   - Brian W. Bush <brian.bush@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
-Proposed Solutions: 
+Proposed Solutions:
   - CIP-0140 | Ouroboros Peras - Faster Settlement: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0140
   - CIP-0161 | Ouroboros Phalanx - Breaking Grinding Incentives: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0161
 Discussions:
