@@ -68,8 +68,8 @@ hash28 = bytes .size 28
 
 pool_params =
   { cost           : coin
-  , pledge         : coin
   , margin         : unit_interval
+  , pledge         : coin
   , relays         : [* relay]
   , operator       : pool_keyhash
   , pool_owners    : set<addr_keyhash>

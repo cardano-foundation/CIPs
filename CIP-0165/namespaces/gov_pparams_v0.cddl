@@ -78,24 +78,24 @@ gov_pparams_out =
   , key_deposit                      : coin
   , max_tx_size                      : uint .size 4
   , drep_deposit                     : coin
+  , max_val_size                     : uint .size 4
   , pool_deposit                     : coin
+  , drep_activity                    : epoch_interval
   , min_pool_cost                    : coin
   , max_block_size                   : uint .size 4
-  , max_val_size                     : uint .size 4
   , max_tx_ex_units                  : ex_units
   , protocol_version                 : protocol_version
   , coin_per_utxo_byte               : coin
   , gov_action_deposit               : coin
   , max_block_ex_units               : ex_units
   , min_committee_size               : uint .size 2
+  , gov_action_lifetime              : epoch_interval
   , committee_term_limit             : epoch_interval
   , collateral_percentage            : uint .size 2
-  , drep_voting_thresholds           : drep_voting_thresholds
-  , gov_action_lifetime              : epoch_interval
   , max_block_header_size            : uint .size 2
   , max_collateral_inputs            : uint .size 2
+  , drep_voting_thresholds           : drep_voting_thresholds
   , pool_voting_thresholds           : pool_voting_thresholds
-  , drep_activity                    : epoch_interval
   , min_fee_ref_script_cost_per_byte : nonnegative_interval/ nil
   }
 

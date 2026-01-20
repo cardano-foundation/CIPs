@@ -24,29 +24,31 @@ record_entry = nonces
 ;  List of nonces used in the protocol state
 ;
 nonces =
-  { last_slot              : with_origin<slot_no>
-  , cert_counters          : {* keyhash32 => word64}
+  { lab_nonce              : nonce
+  , last_slot              : with_origin<slot_no>
+  , epoch_nonce            : nonce
+  , cert_counters          : {* keyhash28 => word64}
   , evolving_nonce         : nonce
   , candidate_nonce        : nonce
-  , epoch_nonce            : nonce
-  , lab_nonce              : nonce
   , last_epoch_block_nonce : nonce
   }
 
-
-with_origin<a0> = [0// 1, a0]
-
-slot_no = uint .size 8
-
-keyhash32 = hash32
-
-hash32 = bytes .size 32
-
-word64 = uint .size 8
 
 nonce = neutral_nonce/ just_nonce
 
 neutral_nonce = [0]
 
 just_nonce = [1, hash32]
+
+hash32 = bytes .size 32
+
+with_origin<a0> = [0// 1, a0]
+
+slot_no = uint .size 8
+
+keyhash28 = hash28
+
+hash28 = bytes .size 28
+
+word64 = uint .size 8
 

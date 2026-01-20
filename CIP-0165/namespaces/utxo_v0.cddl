@@ -64,6 +64,8 @@ plutus_data =
   / big_int
   / bytes
 
+; NEW
+;   #6.102([uint, [* a]]): For tag range 6.1280 .. 6.1400 inclusive
 constr<a0
 > =
   #6.122([* a0])

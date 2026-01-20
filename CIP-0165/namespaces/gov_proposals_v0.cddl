@@ -28,16 +28,14 @@
 record_entry = proposal
 
 proposal =
-  { proposed_in        : epoch_no
+  { drep_votes         : {* credential => vote}
+  , proposed_in        : epoch_no
   , expires_after      : epoch_no
-  , drep_votes         : {* credential => coin}
-  , stake_pool_votes   : {* pool_keyhash => coin}
-  , committee_votes    : {* committee_cold_credential => coin}
+  , committee_votes    : {* committee_cold_credential => vote}
+  , stake_pool_votes   : {* pool_keyhash => vote}
   , proposal_procedure : proposal_procedure
   }
 
-
-epoch_no = uint .size 8
 
 credential = [0, addr_keyhash// 1, script_hash]
 
@@ -55,17 +53,19 @@ hash28 = bytes .size 28
 ;   - "\x03" for Plutus V3 scripts
 script_hash = hash28
 
-coin = uint
+vote = 0 .. 2
 
-pool_keyhash = hash28
+epoch_no = uint .size 8
 
 committee_cold_credential = credential
+
+pool_keyhash = hash28
 
 proposal_procedure =
   { anchor         : anchor
   , deposit        : coin
-  , return_address : reward_account
   , gov_action     : gov_action
+  , return_address : reward_account
   }
 
 
@@ -75,8 +75,7 @@ anchor = [anchor_url : url, anchor_data_hash : bytes]
 
 url = text .size (0 .. 128)
 
-;  28 bytes hash and one byte for the network type
-reward_account = bytes .size 29
+coin = uint
 
 gov_action =
   [  0
@@ -146,8 +145,8 @@ gov_params_update =
   , key_deposit                      : coin/ nil
   , max_tx_size                      : uint .size 4/ nil
   , drep_deposit                     : coin/ nil
-  , pool_deposit                     : coin/ nil
   , max_val_size                     : uint .size 4/ nil
+  , pool_deposit                     : coin/ nil
   , drep_activity                    : epoch_interval/ nil
   , min_pool_cost                    : coin/ nil
   , max_block_size                   : uint .size 4/ nil
@@ -156,12 +155,12 @@ gov_params_update =
   , gov_action_deposit               : coin/ nil
   , max_block_ex_units               : ex_units/ nil
   , min_committee_size               : uint .size 2/ nil
+  , gov_action_lifetime              : epoch_interval/ nil
   , committee_term_limit             : epoch_interval/ nil
   , collateral_percentage            : uint .size 2/ nil
-  , drep_voting_thresholds           : drep_voting_thresholds/ nil
-  , gov_action_lifetime              : epoch_interval/ nil
   , max_block_header_size            : uint .size 2/ nil
   , max_collateral_inputs            : uint .size 2/ nil
+  , drep_voting_thresholds           : drep_voting_thresholds/ nil
   , pool_voting_thresholds           : pool_voting_thresholds/ nil
   , min_fee_ref_script_cost_per_byte : nonnegative_interval/ nil
   }
@@ -237,6 +236,9 @@ pool_voting_thresholds =
 protocol_version = [major_protocol_version, uint]
 
 major_protocol_version = uint
+
+;  28 bytes hash and one byte for the network type
+reward_account = bytes .size 29
 
 set<a0> = #6.258([* a0])
 
