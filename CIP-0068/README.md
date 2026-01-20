@@ -155,7 +155,7 @@ The `user token` represents an NFT (non-fungible token).
 
 ##### Pattern
 
-The `user token` and `reference NFT` MUST have an identical name, preceded by the `asset_name_label` prefix.
+The `user token` and `reference NFT` MUST have an identical name (heretofore entitled `asset_name`), preceded by the `asset_name_label` prefix.
 
 Example:\
 `user token`: `(222)Test123`\
@@ -163,8 +163,12 @@ Example:\
 
 ##### Metadata
 
-This is a low-level representation of the metadata, following closely the structure of CIP-0025. All UTF-8 encoded keys
-and values need to be converted into their respective byte's representation when creating the datum on-chain.
+This is either:
+
+1. A low-level direct representation of the metadata, following closely the structure of CIP-0025 for individual asset metadata (name, image, files, etc.)
+2. A nested map structure following CIP-0025's organization with policy_id and asset_name as keys, where the outer map contains a "721" key whose value maps policy_id to asset_name to metadata
+
+All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain. In the nested map format (option 2), the "721" key, policy_id keys, and asset_name keys must be encoded as bounded_bytes (following CIP-0025 version 2 conventions).
 
 ```
 files_details =
@@ -188,6 +192,21 @@ metadata =
     ; ... Additional properties are allowed
   }
 
+metadata_map = 
+  {
+    "721" : bounded_bytes => ; The "721" key encoded as UTF-8 bytes (0x373231)
+    {
+      * policy_id : bounded_bytes => ; Policy ID encoded as bytes
+      {
+        * asset_name : bounded_bytes => metadata ; Asset name encoded as bytes (without label prefix)
+      }
+    }
+  }
+
+metadata_field = 
+  metadata          ; Direct metadata format (versions 1-3)
+  / metadata_map    ; Nested map format with "721" key (version 4)
+
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
@@ -198,12 +217,12 @@ uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
 
-datum = #6.121([metadata, version, extra])
+datum = #6.121([metadata_field, version, extra])
 
-version = 1 / 2 / 3
+version = 1 / 2 / 3 / 4
 ```
 
-Example datum as JSON:
+Example datum as JSON (direct metadata):
 
 ```json
 {
@@ -236,6 +255,45 @@ Example datum as JSON:
 }
 ```
 
+Example datum as JSON (nested map format):
+
+```json
+{
+  "constructor": 0,
+  "fields": [
+    {
+      "map": [
+        {
+          "k": { "bytes": "373231" },
+          "v": {
+            "map": [
+              {
+                "k": { "bytes": "5370616365427564204131" },
+                "v": {
+                  "map": [
+                    {
+                      "k": { "bytes": "6E616D65" },
+                      "v": { "bytes": "5370616365427564" }
+                    },
+                    {
+                      "k": { "bytes": "696D616765" },
+                      "v": { "bytes": "697066733A2F2F74657374" }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "int": 4
+    }
+  ]
+}
+```
+
 ##### Retrieve metadata as 3rd party
 
 A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` they want
@@ -244,7 +302,9 @@ to lookup. The steps are
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
-4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
+5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
 
@@ -274,7 +334,7 @@ The `user token` is an FT (fungible token).
 
 ##### Pattern
 
-The `user token` and `reference NFT` MUST have an identical name, preceded by the `asset_name_label` prefix.
+The `user token` and `reference NFT` MUST have an identical name (heretofore called `asset_name`), preceded by the `asset_name_label` prefix.
 
 Example:\
 `user token`: `(333)Test123`\
@@ -282,9 +342,12 @@ Example:\
 
 ##### Metadata
 
-This is a low-level representation of the metadata, following closely the structure of the Cardano foundation off-chain
-metadata registry. All UTF-8 encoded keys and values need to be converted into their respective byte's representation
-when creating the datum on-chain.
+This is either:
+
+1. A low-level direct representation of the metadata, following closely the structure of the Cardano foundation off-chain metadata registry
+2. A nested map structure following CIP-0025's organization with policy_id and asset_name as keys, where the outer map contains a "721" key whose value maps policy_id to asset_name to metadata
+
+All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain. In the nested map format (option 2), the "721" key, policy_id keys, and asset_name keys must be encoded as bounded_bytes (following CIP-0025 version 2 conventions).
 
 ```
 ; Explanation here: https://developers.cardano.org/docs/native-tokens/token-registry/cardano-token-registry/
@@ -304,6 +367,21 @@ metadata =
     ; ... Additional properties are allowed
   }
 
+metadata_map = 
+  {
+    "721" : bounded_bytes => ; The "721" key encoded as UTF-8 bytes (0x373231)
+    {
+      * policy_id : bounded_bytes => ; Policy ID encoded as bytes
+      {
+        * asset_name : bounded_bytes => metadata ; Asset name encoded as bytes (without label prefix)
+      }
+    }
+  }
+
+metadata_field = 
+  metadata          ; Direct metadata format (versions 1-3)
+  / metadata_map    ; Nested map format with "721" key (version 4)
+
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
@@ -314,9 +392,9 @@ uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
 
-datum = #6.121([metadata, version, extra])
+datum = #6.121([metadata_field, version, extra])
 
-version = 1 / 2 / 3
+version = 1 / 2 / 3 / 4
 ```
 
 Example datum as JSON:
@@ -360,7 +438,9 @@ to lookup. The steps are
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
-4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
+5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
 
@@ -403,9 +483,12 @@ Example:\
 
 ##### Metadata
 
-This is a low-level representation of the metadata, following closely the structure of CIP-0025 with the optional
-decimals field added. All UTF-8 encoded keys and values need to be converted into their respective byte's representation
-when creating the datum on-chain.
+This is either:
+
+1. A low-level direct representation of the metadata, following closely the structure of CIP-0025 for individual asset metadata (name, image, files, etc.) with the optional decimals field added
+2. A nested map structure following CIP-0025's organization with policy_id and asset_name as keys, where the outer map contains a "721" key whose value maps policy_id to asset_name to metadata
+
+All UTF-8 encoded keys and values need to be converted into their respective byte's representation when creating the datum on-chain. In the nested map format (option 2), the "721" key, policy_id keys, and asset_name keys must be encoded as bounded_bytes (following CIP-0025 version 2 conventions).
 
 ```
 files_details =
@@ -430,19 +513,34 @@ metadata =
     ; ... Additional properties are allowed
   }
 
+metadata_map = 
+  {
+    "721" : bounded_bytes => ; The "721" key encoded as UTF-8 bytes (0x373231)
+    {
+      * policy_id : bounded_bytes => ; Policy ID encoded as bytes
+      {
+        * asset_name : bounded_bytes => metadata ; Asset name encoded as bytes (without label prefix)
+      }
+    }
+  }
+
+metadata_field = 
+  metadata          ; Direct metadata format (versions 1-3)
+  / metadata_map    ; Nested map format with "721" key (version 4)
+
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
 ; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
-uri = bounded_bytes ; UTF-8
+uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
 
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
 ; and needs to be at least Unit/Void: #6.121([])
 extra = plutus_data
 
-datum = #6.121([metadata, version, extra])
+datum = #6.121([metadata_field, version, extra])
 
-version = 3
+version = 3 / 4
 ```
 
 Example datum as JSON:
@@ -502,7 +600,9 @@ to lookup. The steps are
 1. Construct `reference NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
-4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
+5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
 
@@ -551,7 +651,8 @@ version of these tokens from any point in time with the following format:
 1. [6d897eb](https://github.com/cardano-foundation/CIPs/tree/6d897eb60805a58a3e54821fe61284d5c5903764/CIP-XXXX)
 2. [45fa23b](https://github.com/cardano-foundation/CIPs/tree/45fa23b60806367a3e52231e552c4d7654237678/CIP-XXXX)
 3. [bfc6fde](https://github.com/cardano-foundation/CIPs/tree/bfc6fde340280d8b51f5a7131b57f4cc6cc5f260/CIP-XXXX)
-4. **Current**
+4. [YYYYYYY](https://github.com/cardano-foundation/CIPs/tree/abcdefabcdefabcdefabcdefabcdefabcdefabcd/CIP-XXXX)
+5. **Next Editor**
 ```
 
 Each time a new version is introduced the previous version's link MUST be updated to match the last commit corresponding
@@ -578,6 +679,10 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 
 - Added [* bounded_bytes] support to the image and src tags on the metadata 
 
+#### version 4
+
+- Add support for nested map format following CIP-0025's policy_id -> asset_name structure, allowing multiple assets' metadata in a single datum. This format is backwards-compatible with versions 1-3, which only support direct metadata format.
+
 ## Rationale: how does this CIP achieve its goals?
 
 Without separation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be
@@ -593,6 +698,45 @@ make use of this off-chain and on-chain.
 
 The security for the link is derived from the minting policy itself, so it's important to write the validator with the
 right constraints and rules since this CIP solely defines the interface to keep flexibility as high as possible.
+
+### Rationale: Version 4 Nested Map Format
+
+The current design of CIP-0068 inadvertently creates a significant cost barrier for large NFT collections due to minimum-ADA requirements. As ADA approaches parity with USD, artists and platforms minting 5,000–10,000+ on-chain assets are increasingly impacted by the **minUTxO amplification effect**: the metadata-bearing reference scripts and datums mandated by CIP-0068 can cause **10–20% of project budgets** to be consumed purely by ADA locked in outputs, rather than by art production or ecosystem growth.
+
+This cost profile wasn't as visible when ADA was significantly cheaper, but it has now become an operational friction point across multiple creator workflows.
+
+The proposal aims to **reduce the minUTxO footprint** for CIP-0068 assets by allowing an **optional alternate metadata shape** that mirrors CIP-0025 (721-style metadata) while preserving CIP-0068's semantics. Concretely:
+
+#### 1. Dual-format Metadata Reduces Unnecessary ADA Locking
+
+Allowing a CIP-0025-shaped metadata payload means:
+
+* The on-chain metadata can consolidate across multiple reference tokens.
+* The minUTxO requirement is correspondingly reduced.
+* Large-scale mints return to economically sensible territory, especially for low-cost or promotional collections where the metadata weight provides no additional value to creators.
+
+This addresses a real-world pain point reported by multiple production-level minting pipelines, not just isolated cases.
+
+#### 2. Improved Migration Path from CIP-0025 to CIP-0068
+
+A sizeable portion of the ecosystem still lives on CIP-0025, particularly older marketplaces and archived collections. When artists revisit or reissue older collections, the transition path to CIP-0068 is currently friction-heavy, requiring metadata restructuring and toolchain updates.
+
+Supporting a CIP-0025-compatible metadata envelope inside CIP-0068:
+
+* Enables forward migration without metadata rewrites.
+* Preserves backward recognizability.
+* Reduces engineering cost for wallets, indexers, and minting tools.
+
+#### 3. Strict Optionality Preserves Backward Compatibility
+
+This proposal does **not** modify or deprecate existing CIP-0068 patterns.
+Instead, it introduces an explicitly flagged alternate metadata payload, using a reserved binary key or indicator to avoid collisions with existing fields.
+
+This allows:
+
+* Full backward compatibility.
+* No disruptive changes for current indexers or marketplaces.
+* Opt-in use where economic relief is necessary.
 
 ### Backward Compatibility
 
