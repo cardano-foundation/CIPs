@@ -5,10 +5,10 @@ Status: Open
 Category: Tools
 Authors:
   - Hinson Wong <hinson@cns.space>
-Proposed Solution: []
+Proposed Solutions: []
 Discussions: 
-- https://github.com/cns-space/CIPs
-- https://github.com/cardano-foundation/CIPs/pull/605
+  - Cardano Name Service CIPs fork: https://github.com/cns-space/CIPs
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/605
 Created: 2023-10-14
 License: CC-BY-4.0
 ---
