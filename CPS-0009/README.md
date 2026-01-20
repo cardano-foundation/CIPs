@@ -8,8 +8,8 @@ Authors:
   - Tsz Wai Wu <wu.tszwai@outlook.com>
 Proposed Solutions: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/issues/232
-  - https://github.com/cardano-foundation/CIPs/pull/611
+  - Motivating issue: https://github.com/cardano-foundation/CIPs/issues/232
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/611
 Created: 2023-10-20
 License: CC-BY-4.0
 ---
