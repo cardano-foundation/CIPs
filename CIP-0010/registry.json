@@ -113,7 +113,7 @@
   },
   {
     "transaction_metadatum_label": 1984,
-    "description": "CIP-???? - On-chain Smart Contract Bytecode Verification"
+    "description": "CIP-0171 - On-chain Smart Contract Bytecode Verification"
   },
   {
     "transaction_metadatum_label": 1988,

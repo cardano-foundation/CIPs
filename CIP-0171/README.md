@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 171
 Title: On-chain Smart Contract Bytecode Verification
 Category: Metadata
 Status: Proposed
@@ -267,6 +267,22 @@ This ensures the standard remains useful regardless of where developers choose t
 This CIP introduces a new metadata label and does not modify any existing standards. Scripts deployed before this standard's adoption can still have their source linked by submitting metadata referencing their original source repositories and commits.
 
 The standard is purely additive and has no impact on existing scripts, wallets, or infrastructure that do not implement it.
+
+### Related Work
+
+#### CIP-0072: Cardano dApp Registration & Discovery
+
+[CIP-0072](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0072) defines a standard for dApp developers to register application-level metadata (name, logo, company, categories) and list the script hashes their dApp uses.
+
+This CIP complements CIP-0072 by operating at a different level:
+
+| | CIP-0072 | CIP-0171 |
+|--|----------|----------|
+| **Scope** | dApp (application) | Script (code) |
+| **Purpose** | Discovery & metadata | Source verification |
+| **Trust model** | Requires trusting the claimant | Trustless - cryptographic verification |
+
+CIP-0072 lists script hashes but does not verify their origin. This CIP provides the missing link: a cryptographic proof that a script hash was produced from specific source code. The two standards can work together - a dApp registers via CIP-0072, and its scripts are independently verified via CIP-0171, giving users confidence in both the application metadata and the code provenance.
 
 ## Path to Active
 
