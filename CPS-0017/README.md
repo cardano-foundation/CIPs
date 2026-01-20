@@ -10,7 +10,6 @@ Authors:
 Proposed Solutions: 
   - CIP-0140 | Ouroboros Peras - Faster Settlement: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0140
   - CIP-0161 | Ouroboros Phalanx - Breaking Grinding Incentives: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0161
-Implementors: N/A
 Discussions:
   - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1065
 Created: 2024-09-30
