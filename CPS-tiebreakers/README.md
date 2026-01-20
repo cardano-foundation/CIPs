@@ -8,6 +8,7 @@ Authors:
 Proposed Solutions: []
 Discussions:
     - https://github.com/IntersectMBO/ouroboros-consensus/pull/1548
+    - https://github.com/cardano-foundation/CIPs/pull/1130
 Created: 2026-01-09
 License: CC-BY-4.0
 ---
