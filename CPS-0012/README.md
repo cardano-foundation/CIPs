@@ -8,7 +8,7 @@ Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/625
+    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/625
 Created: 2023-11-27
 License: CC-BY-4.0
 ---
