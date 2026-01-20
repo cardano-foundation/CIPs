@@ -7,7 +7,7 @@ Authors:
     - Ryan Wiley <rian222@gmail.com>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1060
+    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1060
 Created: 2025-07-22
 License: CC-BY-4.0
 ---
