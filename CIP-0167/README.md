@@ -20,7 +20,7 @@ This would not affect the serialization of the transactions within blocks, since
 
 ## Motivation: why is this CIP necessary?
 
-The `isValid` flag in standalone transaction CBOR is not intrinsic to the protocol or to the lendger-consensus boundary:
+The `isValid` flag in standalone transaction CBOR is not intrinsic to the protocol or to the ledger-consensus boundary:
   * it is not signed by the transaction creator, so anyone can set it to any value they like.
   * for block validation: the value that is used is the one that was set by the consensus protocol
   * for remote submissions from untrusted nodes: the node ignores the incoming flag, evaluates the transaction as if `isValid = True`, if phase-2 fails for that reason alone - admits it to the mempool with `isValid = False` so collateral can be collected.
