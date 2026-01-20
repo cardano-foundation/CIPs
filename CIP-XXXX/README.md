@@ -63,7 +63,7 @@ transaction = [transaction_body, transaction_witness_set, bool, auxiliary_data/ 
 ```
 
 Note that we propose keeping invalid transaction indices separately, because:
-  * the `isValid` flag - which determins validity -  is controlled by the block producing node, not by the the transaction creator;
+  * the `isValid` flag - which determines validity -  is controlled by the block producing node, not by the the transaction creator;
   * it's more efficient: we serialize indices only for invalid transactions, which are a small minority.
 
 ## Rationale: how does this CIP achieve its goals?
