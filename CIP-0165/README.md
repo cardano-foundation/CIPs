@@ -162,7 +162,7 @@ When calculating and verifying hashes, its built over the uncompressed data.
 - `total_chunks`: `u64` — number of chunks in the file (integrity purpose only)
 - `root_hash`: **Merkle root** of all `entry_e` in the chosen order, see verification for details
 - `namespace_hashes`: CBOR table of Merkle roots for each namespace, mapping namespace name to the hash in a blake28
-- `prev_manifest_offset`: `u64` — offset of the previous manifest (used with delta files), zero if there is no previous manifest entry
+- `prev_manifest`: `u64` — offset of the previous manifest (used with delta files), zero if there is no previous manifest entry
 - `summary`: `{ created_at, tool, comment? }`
 
 **Policy:** used to verify all the chunks.
