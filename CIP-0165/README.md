@@ -183,14 +183,16 @@ When calculating and verifying hashes, its built over the uncompressed data.
 
 - `total_entries`: `u64` — number of data entries in the file (integrity purpose only)
 - `total_chunks`: `u64` — number of chunks in the file (integrity purpose only)
-- `root_hash`: **Merkle root** of all `entry_e` in the file (see [Verification](#verification) section for details)
+- `root_hash`: `Digest` - **Merkle root** of all `entry_e` in the file (see [Verification](#verification) section for details)
 - `namespace_info`: a list of `{ entries_count, chunks_count, name, digest }` for each namespace in the file, where:
   - `entries_count`: `u64` — number of entries in the namespace
   - `chunks_count`: `u64` — number of chunks for the namespace
   - `name`: `bstr` — namespace name
-  - `digest`: Merkle root of all `entry_e` in the namespace
+  - `digest`: `Digest` - Merkle root of all `entry_e` in the namespace
 - `prev_manifest`: `u64` — offset of the previous manifest (used with delta files), zero if there is no previous manifest entry
 - `summary`: `{ created_at, tool, comment? }`
+
+`Digest` is defined as a fixed-size 224-bit (28-byte) Blake2b hash.
 
 **Policy:** used to verify all the chunks.
 
