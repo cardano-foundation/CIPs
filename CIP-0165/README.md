@@ -290,13 +290,13 @@ The exact definition of the domain data is left out in this CIP. We propose that
 
 All concrete formats should be stored in an attachment to this CIP and stored in `namespaces/namespaces.cddl`. All the changes should be introduced using current CIP update process.
 
-#### Canonicalization Rules
+### Canonicalization Rules
 
 - CBOR maps must be deterministic with sorted keys and no duplicates.
 - Numbers use minimal encoding.
 - Arrays follow a fixed order.
 
-#### Verification
+### Verification
 
 - Entry digest: `digest(e) = H(0x01 || ns_str || key || value)`,
 - Manifest stores overall root and per-namespace commitments.
