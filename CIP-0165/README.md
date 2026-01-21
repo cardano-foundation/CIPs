@@ -116,7 +116,7 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 **Structure:**
 
 - `chunk_seq` : `u64` — sequence number of the record
-- `chunk_format` : `u8` - format of the chunks
+- `chunk_format` : `u8` - format of the chunks, see data compression table below
 - `namespace` : `bstr` — namespace of the values stored in the CHUNK
 - `entries` : `DataEntry` — list of length-prefixed data entries
 - `footer {entries_count: u64, chunk_hash: blake28}` — hash value of the chunk of data, is used to keep integrity of the file.
