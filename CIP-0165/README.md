@@ -98,7 +98,7 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 
 `REC_HDR` (once at start of file)
 
-- `magic` : `b"SCLS\0"`
+- `magic` : `b"SCLS"`
 - `version` : `u16` (start with `1`)
 - `network_id` : `u8`  (`0` — mainnet, `1` — testnet)
 - `slot_no` : `u64` identifier of the blockchain point (hash/slot).
