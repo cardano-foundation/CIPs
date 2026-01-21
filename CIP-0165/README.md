@@ -38,7 +38,7 @@ Versioning and Upgrade Complexity: the proposed format defines a solution that w
 
 The concrete use-case scenarios for this CIP are:
 
-- allow building dump of the Cardano Ledger node state in a canonical format, so any two nodes would generate the same file. This would allow persistence, faster bootstrap and verification.
+- allow building a dump of the Cardano Ledger node state in a canonical format, so any two nodes would generate the same file. This would allow persistence, faster bootstrap and verification.
 - such state can be verified by the other node against its own state and signed. It would allow us to fully utilize Mithril, when each node can sign the state independently.
 - full conformance testing. Any implementation would be able to reuse the test-suite of the Haskell node by importing data applying the test transaction and exporting data back.
 
@@ -150,7 +150,7 @@ The format proposes support of data compression. For future-compatibility the fo
 | 0x01 | ZSTD  | All entries are compressed with seekable zstd |
 | 0x02 | ZSTDE | Compress each value independently             |
 
-When calculating and verifying hashes, it's build over the uncompressed data.
+When calculating and verifying hashes, its built over the uncompressed data.
 
 #### MANIFEST Record
 
@@ -299,7 +299,7 @@ All concrete formats should be stored in an attachment to this CIP and stored in
 
 The Merkle root is computed as a root value of the Merkle trees over all the live entry digests in canonical order; tombstones excluded, last-writer-wins for overlays.
 
-To describe in detail, basic chunks store all the values in the canonically ordered based on the key order. After having all values in the order we build a full Merkle tree of those values.
+To describe in detail, basic chunks store all the values in canonical key order. After having all values in the order we build a full Merkle tree of those values.
 
 The rule of thumb is that when we calculate a hash of the data we take into account only the live (non deleted) values in canonical order. In the case when there is a single dump without delta records, this is exactly the order of how values are stored. But when delta—records appear we need to take into account that in the following records there may be values that are smaller than the ones in the base and some values may be deleted or updated. As a result writer should calculate a live-set of values, which can be done by running a streaming multi-merge algorithm (when we search for a minimal value from multiple records). In the case a value exists in multiple records we use a last—writer—wins rule. If there is a tombstone, we consider a value deleted and do not include it in a live-set.
 
@@ -323,7 +323,7 @@ Format defines canonical format and ordering for the stored data, thus allowing 
 #### Global alternatives:
 
 - **CIP PR #9 by Jean-Philippe Raynaud**:
-the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the [work](https://github.com/cardano-scaling/CIPs/pull/9) and related work with our own and use the best of two words.
+the CIP that discusses the state and integration with Mithril a lot. Without much details CIP discusses immutable db and indices. Current CIP discussing adding indices as well, we believe that we can combine the approaches from the [work](https://github.com/cardano-scaling/CIPs/pull/9) and related work with our own and use the best of both words.
 
 - **CIP draft by Paul Clark**:
 this was an early work of the CIP of the canonical ledger state. The work was more targeted towards what is stored in the files. Proposal also uses deterministic CBOR (canonical CBOR in this CIP). The proposal opens a discussion and rules about how and when snapshots should be created by the nodes, that is deliberately not discussed in the current CIP, as we do not want to impose restrictions on the nodes, and the format allow the nodes not to have any agreement on those rules. As a solution for extensibility and partiality the CIP proposes using a file per "namespace" (in the terminology of the current CIP), in our work we proposed to have a single chunked file that is more friendly for the producer. Currently we are considering at least to have an option for extracting multi-files version. See discussion in open questions.
