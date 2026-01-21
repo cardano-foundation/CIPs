@@ -175,7 +175,7 @@ types:
     doc: Summary
     seq:
        - id: created_at
-         doc: absolute timestamp when file was generated in ISO8061 format
+         doc: absolute timestamp when file was generated in ISO8601 format
          type: tstr
        - id: tool_bytes
          doc: name of the tool that has generated the file
