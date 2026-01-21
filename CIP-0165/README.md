@@ -219,7 +219,7 @@ The general idea is that we may want to write a query to the raw data using comm
 
 - Indices are completely optional and do not change the hash of the entries in data.
 
-### Directory Record
+#### DIR Record
 
 Directory record is reserved for the future use, in case if index records or delta records will be implemented.
 
