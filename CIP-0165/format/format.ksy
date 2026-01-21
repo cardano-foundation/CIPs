@@ -198,10 +198,10 @@ types:
       - id: chunks_count
         type: u8
         doc: number of chunks in the namespace
-      - id: namespaces_bytes
+      - id: name
         type: str
         size: _parent.len_ns
-        doc: contents of the namespace name
+        doc: namespace name
         encoding: UTF-8
       - id: digest
         doc: merkle-tree hash of the alive entries in the namespace
