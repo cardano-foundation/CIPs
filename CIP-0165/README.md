@@ -109,7 +109,7 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 - must be read and verified first;
 - supports magic bytes for file recognition.
 
-#### CHUNK Records
+#### CHUNK Record
 
 **Purpose:** group entries for streaming and integrity; maintain global canonical order, see namespace and entries for more details.
 
@@ -234,7 +234,7 @@ Directory record is reserved for the future use, in case if index records or del
 - `metadata_offset:` `u64` offset of the previous metadata record, zero if there is no record
 - `index_offset:` `u64` offset of the last index record, zero if there is no record
 
-### META Record
+#### META Record
 
 **Purpose:** record with extra metadata that can be used to store 3rd party data, like signatures for Mithril, metadata information. This is an additional record that may be required for additional scenarios.
 
