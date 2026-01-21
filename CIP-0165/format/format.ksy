@@ -42,7 +42,7 @@ types:
             0x10: rec_chunk
             0x31: rec_metadata
   rec_header:
-    doc: Header block
+    doc: Header record
     seq:
       - id: magic
         contents: SCLS
@@ -82,9 +82,9 @@ types:
         doc: merkle tree root of the live entries
       - id: offset
         type: u4
-        doc: relative offset to the beginning of the block
+        doc: relative offset to the beginning of the record
   rec_chunk:
-    doc: Chunk - is a block with data
+    doc: Chunk - is a record with data
     seq:
       - id: seqno
         type: u8
@@ -101,7 +101,7 @@ types:
         doc: namespace name
         size: len_ns
       - id: data
-        type: entries_block(len_key)
+        type: entries_record(len_key)
         size: len_data                # substream; entries parse to EOS here
         doc: payload parsed as entries
       - id: entries_count
@@ -109,7 +109,7 @@ types:
         doc: Number of entries in the chunk
       - id: digest
         type: digest
-        doc: blake28 hash of the entries in the block
+        doc: blake28 hash of the entries in the record
     instances:
       # size of record_data for this scls_record (total - record_type:u1)
       rec_payload_size:
@@ -126,10 +126,10 @@ types:
           (ns == "pool")  ? 28 :
           0
   rec_metadata:
-    doc: Metadata block containing URI-indexed entries with CBOR-encoded values
+    doc: Metadata record containing URI-indexed entries with CBOR-encoded values
     seq:
       - id: data
-        type: entries_metadata_block
+        type: entries_metadata_record
         doc: payload parsed as entries
         size: len_data
       - id: footer
@@ -141,7 +141,7 @@ types:
       len_data:
         value: rec_payload_size - sizeof<metadata_footer>
         doc: entries_count=8, digest=28.
-  entries_block:
+  entries_record:
     params:
       - id: len_key
         type: u2
@@ -222,7 +222,7 @@ types:
       - id: data
         doc: blake28 hash of data
         size: 28
-  entries_metadata_block:
+  entries_metadata_record:
     seq:
       - id: entries
         type: entry_metadata
