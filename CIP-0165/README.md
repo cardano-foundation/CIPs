@@ -300,10 +300,7 @@ All concrete formats should be stored in an attachment to this CIP and stored in
 
 ### Verification
 
-- Entry digest: `digest(e) = H(0x01 || ns_str || key || value)`,
-- Manifest stores overall root and per-namespace commitments.
-
-The Merkle root is computed as a root value of the Merkle trees over all the live entry digests in canonical order; tombstones excluded, last-writer-wins for overlays.
+Manifest stores overall root and per-namespace commitments. The Merkle root is computed as a root value of the Merkle trees over all the live entry digests in canonical order; tombstones excluded, last-writer-wins for overlays. The digest of each entry (defined as a `(key,value)` pair) for a namespace `ns_str` is computed as `H(0x01 || ns_str || key || value)`, where `H` is Blake2b-224.
 
 To describe in detail, basic chunks store all the values in canonical key order. After having all values in the order we build a full Merkle tree of those values.
 
