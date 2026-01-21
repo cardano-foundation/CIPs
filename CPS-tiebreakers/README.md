@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 25
 Title: Small pool disadvantage in VRF tiebreakers
 Category: Consensus
 Status: Open
