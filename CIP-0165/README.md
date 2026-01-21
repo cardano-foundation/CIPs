@@ -53,6 +53,29 @@ The Standard Canonical Ledger State (SCLS) is a segmented file format for Cardan
 
 Unsupported record types are skipped; core data remains accessible.
 
+### Namespaces and Entries
+
+In order to provide types of the values and be able to store and verify only partial state, a notion of namespaces is introduced. Each SCLS file may store values from one or more namespaces.
+
+#### Supported Namespaces
+
+Each logical table/type is a namespace identified by a canonical string (e.g., `"utxo"`, `"gov"`).
+
+| Shortname           | Content                         |
+| ------------------- | ------------------------------- |
+| blocks/v0           | Blocks created                  |
+| gov/committee/v0    | Governance action state         |
+| gov/constitution/v0 | Constitution                    |
+| gov/pparams/v0      | Protocol parameters             |
+| gov/proposals/v0    | Update proposals                |
+| pool_stake/v0       | Stake delegation                |
+| nonce/v0            | Nonces                          |
+| pots/v0             | Accounting pots (reserves etc.) |
+| snapshots/v0        | snapshots                       |
+| utxo/v0             | UTXOs                           |
+
+New namespaces may and will be introduced in the future. With new eras and features, new types of the data will be introduced and stored. In order to define what data is stored in the SCLS file, tools fill the `MANIFEST` record and define namespaces. The order of the namespaces does not change the signatures and other integrity data.
+
 ### Record Types
 
 | Code | Name     | Purpose                                                                       |
@@ -253,30 +276,7 @@ Entry:
 - Meta chunks are completely optional and do not change the hash of the entries in data.
 - `entries_hash = H(concat (digest e for e in entries))`
 
-### Namespaces and Entries
-
-In order to provide types of the values and be able to store and verify only partial state, a notion of namespaces is introduced. Each SCLS file may store values from one or more namespaces.
-
-#### Supported Namespaces
-
-Each logical table/type is a namespace identified by a canonical string (e.g., `"utxo"`, `"gov"`).
-
-| Shortname            | Content                         |
-| -------------------- | ------------------------------- |
-| blocks/v0            | Blocks created                  |
-| gov/committee/v0     | Governance action state         |
-| gov/constitution/v0  | Constitution                    |
-| gov/pparams/v0       | Protocol parameters             |
-| gov/proposals/v0     | Update proposals                |
-| pool_stake/v0        | Stake delegation                |
-| nonce/v0             | Nonces                          |
-| pots/v0              | Accounting pots (reserves etc.) |
-| snapshots/v0         | snapshots                       |
-| utxo/v0              | UTXOs                           |
-
-New namespaces may and will be introduced in the future. With new eras and features, new types of the data will be introduced and stored. In order to define what data is stored in the SCLS file, tools fill the `HDR` record and define namespaces. The order of the namespaces does not change the signatures and other integrity data.
-
-#### Entries
+### Entries
 
 Data is stored in the list of `Entries`, each entry consist of the namespace and its data:
 
