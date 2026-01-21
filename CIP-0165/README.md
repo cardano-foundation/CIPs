@@ -171,14 +171,14 @@ When calculating and verifying hashes, it's build over the uncompressed data.
 
 Delta records are reserved for future use, where the node wishes to incrementally update an existing CLS file rather than writing a new one.
 
-**Purpose:** Delta records are used to build iterative updates, when base format is created and we want to store additional transactions in a fast way. Delta records are designed to be compatible with UTxO-HD, LSM-Tree or other storage types where it's possible to stream list of updates.
+**Purpose:** Delta records are used to build iterative updates when a base format has been created and we want to store additional transactions efficiently. Delta records are designed to be compatible with UTxO-HD, LSM-Tree, or other storage types where it is possible to stream a list of updates. This means that instead of serializing the entire ledger state, a node may only need to store a list of entry changes.
 
-Updating of the file in-place is unsafe so instead we store list of updated.
+Updating the file in place is unsafe, so instead we store a list of updates, i.e. removed and inserted items.
 
 All updates are written in the following way:
 
-- to update value a new entry with the same key should be stored;
-- to remove value a special tombstone entry for the key should be stored.
+- to update a value, a new entry with the same key should be stored;
+- to remove a value, a special tombstone entry for the key should be stored.
 
 **Structure:**
 
