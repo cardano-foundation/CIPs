@@ -35,7 +35,9 @@ directly inflating the costs incurred by users.
 The key idea of this CIP is to remove this restriction, allowing transactions
 to reference their own outputs for validation purposes.
 
-### Use cases: Nested transactions
+### Use cases
+
+#### Nested transactions: order-agnostic script sharing across a batch
 
 The nested transactions CIP specifies that scripts are to be shared among all
 sub- and top-level transactions within a batch (see [CIP, Changes to
