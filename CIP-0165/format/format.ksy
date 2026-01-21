@@ -82,7 +82,7 @@ types:
         doc: merkle tree root of the live entries
       - id: offset
         type: u4
-        doc: relative offset to the beginning of the record
+        doc: relative offset to the beginning of this record (this can be used to find the manifest by reading the last 4 bytes of the file)
   rec_chunk:
     doc: Chunk - is a record with data
     seq:
