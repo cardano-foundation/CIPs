@@ -32,7 +32,7 @@ SCLS addresses these problems by:
 - specifying a canonical, language-agnostic container and encoding rules;
 - enabling streaming builds and data consistency validation (per-namespace roots);
 - being extensible (e.g., optional indexes/Bloom filters) without breaking compatibility;
-- remaining compatible with UTxO-HD/LSM on-disk structures and incremental (delta) updates.
+- supporting solutions that store updates in incremental (delta) formats (e.g. UTxO-HD/LSM).
 
 Versioning and Upgrade Complexity: the proposed format defines a solution that will be able to support future protocol extensions with new eras without changing this CIP. The chosen approach allows implementers to define a client that will be interested only in particular parts of the state, but will not prevent it from storing, loading and verifying the interesting parts of the state.
 
