@@ -1,6 +1,6 @@
 ---
 CIP: ?
-Title: Enable SPO Governance Voting with Calidus Keys
+Title: SPO Governance Voting with Calidus Keys
 Category: Ledger
 Status: Proposed
 Authors:
