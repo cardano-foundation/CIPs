@@ -7,8 +7,8 @@ Authors:
     - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/999
-    - https://github.com/cardano-foundation/CIPs/pull/1115
+    - CIP-0151 original pull request: https://github.com/cardano-foundation/CIPs/pull/999
+    - add SPO governance voting: https://github.com/cardano-foundation/CIPs/pull/1140
 Created: 2026-01-22
 License: CC-BY-4.0
 ---
