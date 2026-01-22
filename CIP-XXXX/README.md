@@ -83,6 +83,8 @@ This change only impacts tools that work directly with block (de)serialization, 
 
 No transaction construction, serialization, or submission tooling is affected by this CIP.
 
+This change slightly simplifies the implementation of [Merkle Root of Transactions in Block Header](https://github.com/cardano-foundation/CIPs/pull/964).
+
 ## Path to Active
 
 ### Acceptance Criteria
