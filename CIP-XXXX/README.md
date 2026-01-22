@@ -63,7 +63,10 @@ block_body =
   , invalid_transactions : [* transaction_index]
   ]
 
-transaction = [transaction_body, transaction_witness_set, bool, auxiliary_data/ nil]
+transaction =
+  [  transaction_body, transaction_witness_set, true, auxiliary_data/ nil
+  // transaction_body, transaction_witness_set, auxiliary_data/ nil
+  ]
 ```
 
 Note that we propose keeping invalid transaction indices separately, because:
