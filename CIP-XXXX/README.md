@@ -55,7 +55,11 @@ The proposal is to change it to:
 ```cddl
 block =
   [ header
-  , transactions : [* transaction]
+  , block_body
+  ]
+
+block_body =
+  [ transactions : [* transaction]
   , invalid_transactions : [* transaction_index]
   ]
 
