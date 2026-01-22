@@ -50,16 +50,12 @@ types:
       - id: version
         type: u4
         doc: Version of the file format
-      - id: network_id
-        type: u1
-        enum: network_id
-        doc: Description of the network
-      - id: slot_no
-        type: u8
-        doc: Description of slot.
   rec_manifest:
     doc: Manifest — is a trailer in the file that describes information of about the file contents
     seq:
+      - id: slot_no
+        type: u8
+        doc: Slot number that this manifest refers to
       - id: total_entries
         type: u8
         doc: total amount of entries in the file
