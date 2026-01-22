@@ -77,6 +77,12 @@ Note that we propose keeping invalid transaction indices separately, because:
 
 Serializing transactions in sequence directly supports more complex constructs - such as nested transactions - by eliminating the need to coordinate disjointed segments across different levels of structure.
 
+### Ecosystem Impact
+
+This change only impacts tools that work directly with block (de)serialization, such as alternative nodes and indexers. These tools make up a relatively small part of the Cardano tooling ecosystem. For them, the change is beneficial: without it, nested transactions would lead to a much more complex and error-prone block serialization format.
+
+No transaction construction, serialization, or submission tooling is affected by this CIP.
+
 ## Path to Active
 
 ### Acceptance Criteria
