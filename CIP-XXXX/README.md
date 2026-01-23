@@ -87,6 +87,13 @@ No transaction construction, serialization, or submission tooling is affected by
 
 This change slightly simplifies the implementation of [Merkle Root of Transactions in Block Header](https://github.com/cardano-foundation/CIPs/pull/964).
 
+This change also simplifies the computation of the block body hash. <br/>
+Currently, the block body hash is derived indirectly by hashing and combining several separately serialized components (transaction bodies, witnesses, auxiliary data, and validity flags).<br/> With the proposed layout, the block body hash becomes a single hash over the serialized block_body as a whole:
+```code
+blockBodyHash = hash(block_body)
+```
+The simplification is particularly relevant for Peras and Leios, where additional certificates will be added to the block body, and can be naturally incorporated without further changes to the hashing scheme.
+
 ## Path to Active
 
 ### Acceptance Criteria
