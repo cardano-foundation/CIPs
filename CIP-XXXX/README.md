@@ -59,8 +59,8 @@ block =
   ]
 
 block_body =
-  [ transactions : [* transaction]
-  , invalid_transactions : [* transaction_index]
+  [ invalid_transactions : [* transaction_index]
+  , transactions : [* transaction]
   ]
 
 transaction =
@@ -72,6 +72,8 @@ transaction =
 Note that we propose keeping invalid transaction indices separately, because:
   * the `isValid` flag - which determines validity -  is controlled by the block producing node, not by the transaction creator;
   * it's more efficient: we serialize indices only for invalid transactions, which are a small minority.
+
+Also, note that `invalid_transactions` indices precede `transactions` in the proposed layout, so that consumers can determine the validity of transactions without having to scan through the entire transaction list.
 
 ## Rationale: how does this CIP achieve its goals?
 
