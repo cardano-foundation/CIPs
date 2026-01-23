@@ -33,8 +33,10 @@ Digital Product Passports are becoming mandatory under EU regulation to support:
 
 The ESPR affects industries including textiles, electronics, batteries, construction materials, furniture, and more, impacting millions of businesses globally. First implementations begin in 2026 for batteries, followed by textiles in 2027, with other sectors phasing in through 2030.
 
-DPP implementations must integrate with existing global product identification systems, particularly GS1 standards (GTINs for product identification, Digital Link for web-based resolution, and EPCIS for event tracking). This integration is essential for interoperability with existing supply chain infrastructure. 
-DPP implementations must support the EU DPP Central Registry. This involves the mandatory submission of unique identifiers (UIDs) and data carrier identifiers to a centralized EU portal
+DPP implementations must integrate with existing global product identification systems, particularly GS1 standards (GTINs for product identification, Digital Link for web-based resolution, and EPCIS for event tracking). This integration is essential for interoperability with existing supply chain infrastructure.
+DPP implementations must support the EU DPP Central Registry. This involves the mandatory submission of unique identifiers (UIDs) and data carrier identifiers to a centralized EU portal.
+
+Additionally, the European standardization body CEN-CENELEC Joint Technical Committee 24 (JTC 24) is developing technical standards for DPP data models and interoperability. While these standards are still in development, DPP implementations on Cardano must be designed for compatibility with emerging EU-wide technical specifications.
 
 ### Current State
 
@@ -185,7 +187,17 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 **Physical-Digital Linking:**
 
 - Should product identifiers (GTINs) be plaintext or hashed on-chain?
-- Map GS1 Digital Links to Decentralized Identifiers for holding verifiable credentials
+- Map GS1 Digital Links to Decentralized Identifiers for holding verifiable credentials																					   
+
+**Scalability and Transaction Cost Management:**
+
+- How to balance transaction costs with scalability requirements across different use cases?
+- Item-level tracking (individual instances) vs. product-level registration (SKU templates): Do different granularity levels require different technical approaches?
+- For high-frequency, item-level scenarios (e.g., millions of individual items with lifecycle events), what strategies ensure cost-effectiveness?
+  - Batching mechanisms for bulk registration
+  - Layer 2 solutions for high-throughput scenarios
+  - Hybrid architectures (critical data on Layer 1, high-volume operational data off-chain or Layer 2)
+- How to provide clear guidance on cost/performance trade-offs for different implementation patterns?
 
 **Update Mechanisms:**
 
@@ -204,6 +216,23 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 
 - ESPR will expand to additional sectors beyond batteries and textiles
 - How to design extensible standards that accommodate unknown future requirements?
+
+**European Technical Standards Alignment:**
+
+*Standardization Timeline Challenges:*
+- CEN-CENELEC JTC 24 is developing DPP technical standards (data models, APIs, interoperability) but specifications are not yet finalized
+- Industry-specific data requirements have not been defined for most product categories (e.g., what specific attributes are mandatory for textiles vs. electronics vs. batteries)
+- Even once defined, data requirements are expected to evolve as regulations are refined and new sustainability metrics emerge
+
+*Design Challenges:*
+- How to design Cardano standards that remain compatible with evolving JTC 24 requirements?
+- How to support industry-specific data schemas while maintaining cross-industry interoperability?
+- What versioning and extensibility mechanisms are needed to accommodate future data requirement changes without breaking existing implementations?
+
+*Strategic Options:*
+- Wait for JTC 24 and industry specifications to finalize (risk: delayed market entry)
+- Design flexible schema framework with extension points (risk: potential rework if assumptions wrong)
+- Implement core infrastructure now, add industry-specific schemas iteratively (risk: fragmentation)
 
 ### Adoption Indicators
 
