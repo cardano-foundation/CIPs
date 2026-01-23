@@ -96,6 +96,9 @@ types:
         encoding: UTF-8
         doc: namespace name
         size: len_ns
+      - id: len_key
+        type: u4
+        doc: key size for this namespace
       - id: data
         type: entries_record(len_key)
         size: len_data                # substream; entries parse to EOS here
@@ -113,14 +116,8 @@ types:
       ns_size:
         value: 4 + len_ns
       len_data:
-        value: rec_payload_size - (8 + 1 + ns_size + 4 + 28)
-        doc: seqno=8, format=1, entries_count=4, digest=28.
-      len_key:
-        value: |
-          (ns == "utxo/v0")  ? 34 :
-          (ns == "stake") ? 28 :
-          (ns == "pool")  ? 28 :
-          0
+        value: rec_payload_size - (8 + 1 + ns_size + 4 + 28 + 4)
+        doc: seqno=8, format=1, entries_count=4, digest=28, 4=len_key.
   rec_metadata:
     doc: Metadata record containing URI-indexed entries with CBOR-encoded values
     seq:
@@ -252,4 +249,3 @@ enums:
     0: raw
     1: zstd
     2: zstde
-
