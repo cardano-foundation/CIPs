@@ -65,7 +65,7 @@ prototype of the proposed changes (for Conway).
 - The function `txscripts` needs to be modified to include scripts from `txouts`.
 - The function `getDatum` needs to be modified to include data from `txouts`.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The current ledger logic prohibits transactions from accessing their own
 outputs during validation. However, this restriction comes at the cost of
