@@ -16,7 +16,7 @@ License: CC-BY-4.0
 We propose to allow transactions to reference scripts and data present on their
 own outputs during validation.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Transaction outputs carry scripts (via reference scripts) and/or data (via
 inline datum). However, the Cardano ledger currently enforces a restriction
