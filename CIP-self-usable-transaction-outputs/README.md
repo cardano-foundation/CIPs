@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 172
 Title: Self-Usable Transaction Outputs
 Status: Proposed
 Category: Ledger
