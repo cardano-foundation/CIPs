@@ -45,7 +45,8 @@ The proposed solution is described in detail below.
 This specification proposes to create `3` new mini-protocols in the Cardano network layer:
 
 - `node-2-node`:
-  - [**Message Submission mini-protocol**](#Message-Submission-mini-protocol): Diffusion of the messages on the Cardano network.
+  - [**Message Submission V2 mini-protocol**](#Message-Submission-v2-mini-protocol): Diffusion of messages on the Cardano network (version 2).
+  - [**Message Submission V1 mini-protocol**](#Message-Submission-v1-mini-protocol): Diffusion of messages on the Cardano network (version 1).
 - `node-2-client`:
   - [**Local Message Submission mini-protocol**](#Local-Message-Submission-mini-protocol): Local submission of a message to be diffused by the Cardano network.
   - [**Local Message Notification mini-protocol**](#Local-Message-Notification-mini-protocol): Local notification of a message received from the Cardano network.
@@ -70,7 +71,114 @@ The node to node message submission protocol is used to transfer messages betwee
 > [!NOTE]
 > There exists a local message submission protocol which is used when the server trusts a local client as described in the [following section](#Local-Message-Submission-mini-protocol).
 
-#### State machine
+#### Version differences
+
+The Message Submission V2 mini-protocol introduces the following improvements over V1:
+
+- **Simplified State Machine**: V2 eliminates the `StInit` state present in V1, reducing protocol complexity. This is possible because V2 reverses the agency model compared to V1.
+
+- **Reversed Agency Model**: In V1, the outbound side has agency in the `StInit` state and initiates the protocol with `MsgInit`. In V2, the inbound side has agency in the `StIdle` state and can immediately start requesting messages without requiring an initialization message.
+
+- **Reduced Message Types**: V2 eliminates the `MsgInit` message.
+
+- **Termination Agency**: In V1, the outbound side terminates the protocol with `MsgDone`. In V2, the inbound side has the agency to terminate the protocol with `MsgDone`.
+
+#### Message Submission V2 mini-protocol
+
+##### State machine
+
+| Agency                   |                                                           |
+| ------------------------ | --------------------------------------------------------- |
+| Outbound side has Agency | StMessageIdsNonBlocking, StMessageIdsBlocking, StMessages |
+| Inbound side has Agency  | StIdle                                                    |
+
+```mermaid
+stateDiagram-v2
+
+  classDef White fill:white,stroke:white
+  classDef Black fill:white,stroke:black
+  classDef Blue fill:white,stroke:blue
+  classDef Green fill:white,stroke:green
+
+  start:::White --> StIdle:::Green
+  StIdle:::Green --> StMessageIdsBlocking:::Blue : MsgRequestMessageIdsBlocking
+  StMessageIdsBlocking:::Blue --> StIdle:::Green : MsgReplyMessageIds
+  StIdle:::Green --> StMessageIdsNonBlocking:::Blue : MsgRequestMessageIdsNonBlocking
+  StMessageIdsNonBlocking:::Blue --> StIdle:::Green : MsgReplyMessageIds
+  StIdle:::Green --> StMessages:::Blue : MsgRequestMessages
+  StMessages:::Blue --> StIdle:::Green : MsgReplyMessages
+  StIdle:::Green --> StDone:::Black : MsgDone
+
+```
+
+##### Protocol messages
+
+- **MsgRequestMessageIdsNonBlocking(ack,req)**: The inbound side asks for new message ids and acknowledges old ids. The outbound side immediately replies (possible with an empty list).
+- **MsgRequestMessageIdsBlocking(ack,req)**: The inbound side asks for new messages ids and acknowledges old ids. The outbound side will block until new messages are available.
+- **MsgReplyMessageIds([(id,size)])**: The outbound side replies with a list of available messages. The list contains pairs of message ids and the corresponding size of the message in bytes. In the blocking case the reply is guaranteed to contain at least one message. In the non-blocking case, the reply may contain an empty list.
+- **MsgRequestMessages([id])**: The inbound side requests messages by sending a list of message-ids.
+- **MsgReplyMessages([messages])**: The outbound side replies with a list messages.
+- **MsgDone**: The inbound side terminates the mini-protocol.
+
+##### Transition table
+
+| From state              | Message                         | Parameters  | To State                |
+| ----------------------- | ------------------------------- | ----------- | ----------------------- |
+| StIdle                  | MsgRequestMessageIdsBlocking    | ack,req     | StMessageIdsBlocking    |
+| StMessageIdsBlocking    | MsgReplyMessageIds              | [(id,size)] | StIdle                  |
+| StIdle                  | MsgRequestMessageIdsNonBlocking | ack,req     | StMessageIdsNonBlocking |
+| StMessageIdsNonBlocking | MsgReplyMessageIds              | [(id,size)] | StIdle                  |
+| StIdle                  | MsgRequestMessages              | [id]        | StMessages              |
+| StMessages              | MsgReplyMessages                | [messages]  | StIdle                  |
+| StIdle                  | MsgDone                         |             | StDone                  |
+
+##### CDDL encoding specification
+
+```cddl
+messageSubmissionMessage
+  = msgRequestMessageIds
+  / msgReplyMessageIds
+  / msgRequestMessages
+  / msgReplyMessages
+  / msgDone
+
+msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
+msgReplyMessageIds   = [2, [ *messageIdAndSize ] ]
+msgRequestMessages   = [3, messageIdList ]
+msgReplyMessages     = [4, messageList ]
+msgDone              = [5, ]
+
+isBlocking = false / true
+messageCount = word16
+messageId = bstr
+messageBody = bstr
+messageIdAndSize = [ messageId, messageSizeInBytes ]
+messageIdList = [ * messageId ]
+messageList = [ * message ]
+messageSizeInBytes = word32
+kesSignature = bstr
+kesPeriod = word32
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
+coldVerificationKey = bstr .size 32
+expiresAt = word32
+
+messagePayload = [
+  messageId
+  , messageBody
+  , kesPeriod
+  , expiresAt
+]
+message = [
+  messagePayload
+  , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
+]
+```
+
+#### Message Submission V1 mini-protocol
+
+##### State machine
 
 | Agency                   |                                                                   |
 | ------------------------ | ----------------------------------------------------------------- |
@@ -181,7 +289,7 @@ The mini-protocol is based on two pull-based operations:
 - the message consumer asks for message ids,
 - and uses these ids to request a batch of messages (which it has not received yet)
 
-The outbound side is responsible for initiating the mini-protocol with a peer node, but the inbound side (i.e. the other node) is the one who asks for information.
+In version 1, the outbound side is responsible for initiating the mini-protocol with a peer node, but the inbound side (i.e. the other node) is the one who asks for information.
 
 The outbound side maintains a limited size FIFO queue of outstanding messages for each of the inbound sides it is connected to, so does the inbound side with a mirror FIFO queue of message ids:
 
@@ -384,9 +492,12 @@ In this attack, a malicious SPO would try to flood the network by sending many m
 
 #### Network node handshaking
 
-A standalone network node will use its own `handshake`. It can introduce its own protocol parameters, but quite likely it will start with `NodeToNodeVersionData`:
+A standalone network node will use its own `handshake`. It can introduce its own protocol parameters, but quite likely it will start with `NodeToNodeVersionData` tied to `NodeToNodeVersion`:
 
 ```hs
+data NodeToNodeVersion = NodeToNodeV_1 | NodeToNodeV_2
+  deriving (Eq, Ord, Show)
+  
 data NodeToNodeVersionData = NodeToNodeVersionData
   { networkMagic  :: !NetworkMagic
   , diffusionMode :: !DiffusionMode
