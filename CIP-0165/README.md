@@ -387,12 +387,6 @@ We are proposing adding additional records types:
 
 Both changes will not change the structure of the file.
 
-**Do we want use human readable names or tags in the structures?**
-
-In the various part of the CDDL definitions we have big structures (e.g. parameters update). Such structures has on-wire format that is fixed in the chain data. In these cases we always have a choice either to keep on-wire tags or use human readable tags defined in CDDLs.
-
-Using on-wire tags is less readable in code is generated from CDDL it may be less readable comparing to the names. It would be nice to delegate this question to the downstreams that may use SCLS type.
-
 ## Path to Active
 
 ### Acceptance Criteria

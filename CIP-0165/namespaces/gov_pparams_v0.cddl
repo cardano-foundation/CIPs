@@ -41,64 +41,53 @@
 record_entry = gov_pparams_out
 
 ;  Governance protocol parameters
-;    - min_fee_a: the linear factor for the minimum fee calculation
-;    - min_fee_b: the constant factor for the minimum fee calculation
-;    - max_block_size: maximal block body size in bytes
-;    - max_block_header_size: maximal block header size in bytes
-;    - max_tx_size: maximal transaction size in bytes
-;    - key_deposit: The amount of a key registration deposit
-;    - pool_deposit: The amount of a pool registration deposit
-;    - epoch_max: epoch bound on pool retirement
-;    - n_opt: desired number of pools
-;    - a0: pool influence factor
-;    - rho: monetary expansion
-;    - tau: treasury expansion
-;    - d: decentralisation parameter
-;    - min_pool_cost: minimum pool cost
-;    - min_utxo_value: Minimum Lovelace in a UTxO deprecated by AdaPerUTxOWord
-;    - ada_per_utxo_byte: Cost in ada per 1 byte of UTxO storage instead of _coinsPerUTxOWord
-;    - cost_models: Cost models for non-native script languages
-;    - prices: Prices of execution units for non-native script languages
-;    - max_tx_ex_units: Max total script execution resources units allowed per tx
-;    - max_block_ex_units: Max total script execution resources units allowed per block
-;    - max_value_size: Max size of a Value in an output
-;    - collateral_percentage: The scaling percentage of the collateral relative to the fee
-;    - max_collateral_inputs: Maximum number of collateral inputs allowed in a transaction
-;    - min_fee_ref_script_cost_per_byte: Reference scripts fee for the minimum fee calculation
 gov_pparams_out =
-  { a0                               : nonnegative_interval
-  , rho                              : unit_interval
-  , tau                              : unit_interval
-  , n_opt                            : uint .size 2
-  , prices                           : ex_unit_prices
-  , epoch_max                        : epoch_interval
-  , min_fee_a                        : coin
-  , min_fee_b                        : coin
-  , cost_models                      : cost_models
-  , key_deposit                      : coin
-  , max_tx_size                      : uint .size 4
-  , drep_deposit                     : coin
-  , max_val_size                     : uint .size 4
-  , pool_deposit                     : coin
-  , drep_activity                    : epoch_interval
-  , min_pool_cost                    : coin
-  , max_block_size                   : uint .size 4
-  , max_tx_ex_units                  : ex_units
-  , protocol_version                 : protocol_version
-  , coin_per_utxo_byte               : coin
-  , gov_action_deposit               : coin
-  , max_block_ex_units               : ex_units
-  , min_committee_size               : uint .size 2
-  , gov_action_lifetime              : epoch_interval
-  , committee_term_limit             : epoch_interval
-  , collateral_percentage            : uint .size 2
-  , max_block_header_size            : uint .size 2
-  , max_collateral_inputs            : uint .size 2
-  , drep_voting_thresholds           : drep_voting_thresholds
-  , pool_voting_thresholds           : pool_voting_thresholds
-  , min_fee_ref_script_cost_per_byte : nonnegative_interval/ nil
+  { 0  : coin
+                            ; min_fee_a: the linear factor for the minimum fee calculation
+  , 1  : coin
+                            ; min_fee_b: the constant factor for the minimum fee calculation
+  , 2  : uint .size 4
+                    ; max_block_size: maximal block body size in bytes
+  , 3  : uint .size 4           ; max_tx_size: maximal transaction size in bytes
+  , 4  : uint .size 2
+                    ; max_block_header_size: maximal block header size in bytes
+  , 5  : coin
+                            ; key_deposit: The amount of a key registration deposit
+  , 6  : coin
+                            ; pool_deposit: The amount of a pool registration deposit
+  , 7  : epoch_interval         ; maximum_epoch: maximum epoch
+  , 8  : uint .size 2           ; n_opt: desired number of pools
+  , 9  : nonnegative_interval   ; a0: pool pledge influence factor
+  , 10 : unit_interval          ; rho: monetary expansion rate
+  , 11 : unit_interval          ; tau: treasury expansion
+  , 16 : coin                   ; min_pool_cost: minimum pool cost
+  , 17 : coin
+                            ; ada_per_utxo_byte: Cost in ada per 1 byte of UTxO storage instead of _coinsPerUTxOWord
+  , 18 : cost_models
+                     ; cost_models: Cost models for non-native script languages
+  , 19 : ex_unit_prices
+                  ; prices: Prices of execution units for non-native script languages
+  , 20 : ex_units
+                        ; max_tx_ex_units: Max total script execution resources units allowed per tx
+  , 21 : ex_units
+                        ; max_block_ex_units: Max total script execution resources units allowed per block
+  , 22 : uint .size 4
+                    ; max_value_size: Max size of a Value in an output
+  , 23 : uint .size 2
+                    ; collateral_percentage: The scaling percentage of the collateral relative to the fee
+  , 24 : uint .size 2
+                    ; max_collateral_inputs: Maximum number of collateral inputs allowed in a transaction
+  , 25 : pool_voting_thresholds ; pool voting thresholds
+  , 26 : drep_voting_thresholds ; drep voting thresholds
+  , 27 : uint .size 2           ; min committee size
+  , 28 : epoch_interval         ; committee term limit
+  , 29 : epoch_interval         ; goveranance action validity period
+  , 30 : coin                   ; governance action deposit
+  , 31 : coin                   ; drep deposit
+  , 32 : epoch_interval         ; drep inactivity period
+  , 33 : nonnegative_interval
+            ; min_fee_ref_script_cost_per_byte: Reference scripts fee for the minimum fee calculation
   }
-
 
 nonnegative_interval = #6.30([uint, positive_int])
 
@@ -135,9 +124,14 @@ int64 = -9223372036854775808 .. 9223372036854775807
 
 ex_units = [mem : uint, steps : uint]
 
-protocol_version = [major_protocol_version, uint]
-
-major_protocol_version = uint
+;
+;  0 - motion no confidence
+;  1 - committee normal
+;  2 - committee no confidence
+;  3 - hard fork initiation
+;  4 - security relevant parameter voting threshold
+pool_voting_thresholds =
+  [unit_interval, unit_interval, unit_interval, unit_interval, unit_interval]
 
 ;
 ;  0 - motion no confidence
@@ -163,13 +157,4 @@ drep_voting_thresholds =
   , unit_interval
   ]
 
-
-;
-;  0 - motion no confidence
-;  1 - committee normal
-;  2 - committee no confidence
-;  3 - hard fork initiation
-;  4 - security relevant parameter voting threshold
-pool_voting_thresholds =
-  [unit_interval, unit_interval, unit_interval, unit_interval, unit_interval]
 

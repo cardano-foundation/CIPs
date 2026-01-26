@@ -80,7 +80,7 @@ coin = uint
 gov_action =
   [  0
   , purpose : gov_action_id/ nil
-  , update  : gov_params_update
+  , update  : gov_pparams_update
   , hash    : script_hash/ nil
   // 1
   , gov_action_id/ nil
@@ -108,63 +108,57 @@ gov_action_id = [transaction_id : hash32, gov_action_index : uint .size 2]
 hash32 = bytes .size 32
 
 ;  Governance protocol parameters
-;    - min_fee_a: the linear factor for the minimum fee calculation
-;    - min_fee_b: the constant factor for the minimum fee calculation
-;    - max_block_size: maximal block body size in bytes
-;    - max_block_header_size: maximal block header size in bytes
-;    - max_tx_size: maximal transaction size in bytes
-;    - key_deposit: The amount of a key registration deposit
-;    - pool_deposit: The amount of a pool registration deposit
-;    - epoch_max: epoch bound on pool retirement
-;    - n_opt: desired number of pools
-;    - a0: pool influence factor
-;    - rho: monetary expansion
-;    - tau: treasury expansion
-;    - d: decentralisation parameter
-;    - min_pool_cost: minimum pool cost
-;    - min_utxo_value: Minimum Lovelace in a UTxO deprecated by AdaPerUTxOWord
-;    - ada_per_utxo_byte: Cost in ada per 1 byte of UTxO storage instead of _coinsPerUTxOWord
-;    - cost_models: Cost models for non-native script languages
-;    - prices: Prices of execution units for non-native script languages
-;    - max_tx_ex_units: Max total script execution resources units allowed per tx
-;    - max_block_ex_units: Max total script execution resources units allowed per block
-;    - max_value_size: Max size of a Value in an output
-;    - collateral_percentage: The scaling percentage of the collateral relative to the fee
-;    - max_collateral_inputs: Maximum number of collateral inputs allowed in a transaction
-;    - min_fee_ref_script_cost_per_byte : reference scripts fee for the minimum fee calculation
-gov_params_update =
-  { a0                               : nonnegative_interval/ nil
-  , rho                              : unit_interval/ nil
-  , tau                              : unit_interval/ nil
-  , n_opt                            : uint .size 2/ nil
-  , prices                           : ex_unit_prices/ nil
-  , epoch_max                        : epoch_interval/ nil
-  , min_fee_a                        : coin/ nil
-  , min_fee_b                        : coin/ nil
-  , cost_models                      : cost_models/ nil
-  , key_deposit                      : coin/ nil
-  , max_tx_size                      : uint .size 4/ nil
-  , drep_deposit                     : coin/ nil
-  , max_val_size                     : uint .size 4/ nil
-  , pool_deposit                     : coin/ nil
-  , drep_activity                    : epoch_interval/ nil
-  , min_pool_cost                    : coin/ nil
-  , max_block_size                   : uint .size 4/ nil
-  , max_tx_ex_units                  : ex_units/ nil
-  , coin_per_utxo_byte               : coin/ nil
-  , gov_action_deposit               : coin/ nil
-  , max_block_ex_units               : ex_units/ nil
-  , min_committee_size               : uint .size 2/ nil
-  , gov_action_lifetime              : epoch_interval/ nil
-  , committee_term_limit             : epoch_interval/ nil
-  , collateral_percentage            : uint .size 2/ nil
-  , max_block_header_size            : uint .size 2/ nil
-  , max_collateral_inputs            : uint .size 2/ nil
-  , drep_voting_thresholds           : drep_voting_thresholds/ nil
-  , pool_voting_thresholds           : pool_voting_thresholds/ nil
-  , min_fee_ref_script_cost_per_byte : nonnegative_interval/ nil
+gov_pparams_update =
+  { ? 0  : coin
+                              ; min_fee_a: the linear factor for the minimum fee calculation
+  , ? 1  : coin
+                              ; min_fee_b: the constant factor for the minimum fee calculation
+  , ? 2  : uint .size 4
+                      ; max_block_size: maximal block body size in bytes
+  , ? 3  : uint .size 4
+                      ; max_tx_size: maximal transaction size in bytes
+  , ? 4  : uint .size 2
+                      ; max_block_header_size: maximal block header size in bytes
+  , ? 5  : coin
+                              ; key_deposit: The amount of a key registration deposit
+  , ? 6  : coin
+                              ; pool_deposit: The amount of a pool registration deposit
+  , ? 7  : epoch_interval         ; maximum_epoch: maximum epoch
+  , ? 8  : uint .size 2           ; n_opt: desired number of pools
+  , ? 9  : nonnegative_interval   ; a0: pool pledge influence factor
+  , ? 10 : unit_interval          ; rho: monetary expansion rate
+  , ? 11 : unit_interval          ; tau: treasury expansion
+  , ? 16 : coin                   ; min_pool_cost: minimum pool cost
+  , ? 17 : coin
+                              ; ada_per_utxo_byte: Cost in ada per 1 byte of UTxO storage instead of _coinsPerUTxOWord
+  , ? 18 : cost_models
+                       ; cost_models: Cost models for non-native script languages
+  , ? 19 : ex_unit_prices
+                    ; prices: Prices of execution units for non-native script languages
+  , ? 20 : ex_units
+                          ; max_tx_ex_units: Max total script execution resources units allowed per tx
+  , ? 21 : ex_units
+                          ; max_block_ex_units: Max total script execution resources units allowed per block
+  , ? 22 : uint .size 4
+                      ; max_value_size: Max size of a Value in an output
+  , ? 23 : uint .size 2
+                      ; collateral_percentage: The scaling percentage of the collateral relative to the fee
+  , ? 24 : uint .size 2
+                      ; max_collateral_inputs: Maximum number of collateral inputs allowed in a transaction
+  , ? 25 : pool_voting_thresholds ; pool voting thresholds
+  , ? 26 : drep_voting_thresholds ; drep voting thresholds
+  , ? 27 : uint .size 2           ; min committee size
+  , ? 28 : epoch_interval         ; committee term limit
+  , ? 29 : epoch_interval         ; goveranance action validity period
+  , ? 30 : coin                   ; governance action deposit
+  , ? 31 : coin                   ; drep deposit
+  , ? 32 : epoch_interval         ; drep inactivity period
+  , ? 33 : nonnegative_interval
+              ; min_fee_ref_script_cost_per_byte: Reference scripts fee for the minimum fee calculation
   }
 
+
+epoch_interval = uint .size 4
 
 nonnegative_interval = #6.30([uint, positive_int])
 
@@ -222,7 +216,6 @@ drep_voting_thresholds =
   , unit_interval
   , unit_interval
   ]
-
 
 ;
 ;  0 - motion no confidence
