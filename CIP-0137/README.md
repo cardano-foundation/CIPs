@@ -138,7 +138,7 @@ msgInit              = [0]
 msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
 msgReplyMessageIds   = [2, [ *messageIdAndSize ] ]
 msgRequestMessages   = [3, messageIdList ]
-msgReplyMessages     = [4, ]
+msgReplyMessages     = [4, messageList ]
 msgDone              = [5, ]
 
 isBlocking = false / true
