@@ -27,10 +27,18 @@ This restriction creates a specific inefficiency: if a transaction produces an
 output containing a script or datum that is also required to validate that same
 transaction, the transaction cannot utilize the copy present in the output.
 Instead, the transaction must provide a redundant copy of the same script or
-data (e.g., in the transaction witnesses).
+data (e.g., in the transaction witnesses). This forced redundancy increases
+transaction size, and thus transaction fees, directly inflating the costs
+incurred by users.
 
-This forced redundancy increases transaction size, and thus transaction fees,
-directly inflating the costs incurred by users.
+In combination with the upcoming feature of Nested transactions, in the
+Dijkstra era, the current restriction imposes a strict constraint in how
+scripts and/or data can be shared within a batch. Specifically, without this
+proposal, scripts and/or data produced in transaction outputs are only
+accessible to subsequent sub-transactions (via reference inputs). This forces
+transaction builders to artificially order transactions or to provide redundant
+copies of the same script or data (e.g., if two sub-transactions mutually
+depend on each other's script and/or data).
 
 The key idea of this CIP is to remove this restriction, allowing transactions
 to reference their own outputs for validation purposes.
