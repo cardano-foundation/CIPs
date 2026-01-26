@@ -75,7 +75,7 @@ The node to node message submission protocol is used to transfer messages betwee
 | Agency                   |                                                                   |
 | ------------------------ | ----------------------------------------------------------------- |
 | Outbound side has Agency | StInit, StMessageIdsNonBlocking, StMessageIdsBlocking, StMessages |
-| Inbound side has Agency  | StIdle, StDone                                                    |
+| Inbound side has Agency  | StIdle                                                            |
 
 ```mermaid
 stateDiagram-v2
@@ -414,10 +414,10 @@ The protocol follows a simple request-response pattern:
 
 #### State machine
 
-| Agency            |                |
-| ----------------- | -------------- |
-| Client has Agency | StIdle         |
-| Server has Agency | StBusy, StDone |
+| Agency            |        |
+| ----------------- | ------ |
+| Client has Agency | StIdle |
+| Server has Agency | StBusy |
 
 ```mermaid
 stateDiagram-v2
@@ -511,10 +511,10 @@ The protocol follows a simple request-response pattern:
 
 #### State machine
 
-| Agency            |                                          |
-| ----------------- | ---------------------------------------- |
-| Client has Agency | StIdle                                   |
-| Server has Agency | StBusyNonBlocking,StBusyBlocking, StDone |
+| Agency            |                                   |
+| ----------------- | --------------------------------- |
+| Client has Agency | StIdle                            |
+| Server has Agency | StBusyNonBlocking, StBusyBlocking |
 
 ```mermaid
 stateDiagram-v2
