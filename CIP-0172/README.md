@@ -77,6 +77,12 @@ reference scripts and data committed in the transaction body’s outputs, which
 removes the need to carry duplicate copies in witnesses and reduces transaction
 size and fees.
 
+### Backward compatibility
+
+The changes proposed in this CIP break backward compatibility of Plutus scripts
+whose logic depends on the script being part of the outputs of the transaction
+being validated.
+
 ## Path to Active
 
 ### Acceptance Criteria
