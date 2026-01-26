@@ -45,6 +45,20 @@ to reference their own outputs for validation purposes.
 
 ### Use cases
 
+#### Stateful dApps
+
+Even for simple dApps consisting of a single script, currently deploying these
+dApps on Cardano requires multiple transactions. The minimal workflow for such
+a stateful dApp requires (1) deploying the dApp's script in the UTxO and (2)
+referencing this script (via reference inputs) to mint the relevant state
+tokens.
+
+With the proposed changes, such applications could be deployed in a single
+transaction, which simultaneously produces the reference script UTxO's and
+mints the state token. This eliminates the need for submitting multiple
+transactions, thereby reducing costs, while at the same time improving the
+developer's experience.
+
 #### Nested transactions: order-agnostic script sharing across a batch
 
 The nested transactions CIP specifies that scripts are to be shared among all
