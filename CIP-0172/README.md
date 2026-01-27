@@ -19,7 +19,7 @@ own outputs during validation.
 ## Motivation: Why is this CIP necessary?
 
 Transaction outputs carry scripts (via reference scripts) and/or data (via
-inline datum). However, the Cardano ledger currently enforces a restriction
+inline datum). However, the Cardano Ledger currently enforces a restriction
 that prevents a transaction from satisfying its validation requirements using
 scripts and data contained within its own outputs.
 
@@ -31,7 +31,7 @@ data (e.g., in the transaction witnesses). This forced redundancy increases
 transaction size, and thus transaction fees, directly inflating the costs
 incurred by users.
 
-In combination with the upcoming feature of Nested transactions, in the
+In combination with the upcoming feature of [nested transactions](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0118/README.md), in the
 Dijkstra era, the current restriction imposes a strict constraint in how
 scripts and/or data can be shared within a batch. Specifically, without this
 proposal, scripts and/or data produced in transaction outputs are only
@@ -62,8 +62,7 @@ developer's experience.
 #### Nested transactions: order-agnostic script sharing across a batch
 
 The nested transactions CIP specifies that scripts are to be shared among all
-sub- and top-level transactions within a batch (see [CIP, Changes to
-Transaction
+sub- and top-level transactions within a batch (see [CIP-0118 > Changes to Transaction
 Validity](https://github.com/carlostome/CIPs/tree/master/CIP-0118#changes-to-transaction-validity)).
 
 With the current restriction, this requirement can only be partially achieved
@@ -82,7 +81,7 @@ There is an [Agda
 specification](https://github.com/IntersectMBO/formal-ledger-specifications/tree/carlos/usable-outputs)
 prototype of the proposed changes (for Conway).
 
-### Changes to the ledger logic
+### Changes to the Ledger logic
 
 - The function `txscripts` needs to be modified to include scripts from `txouts`.
 - The function `getDatum` needs to be modified to include data from `txouts`.
