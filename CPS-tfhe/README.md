@@ -127,53 +127,92 @@ a research step would be needed before any decision is made either way.
 
 ## Open Questions
 
-The most significant question to consider is whether the native or non-native
-approach is a better choice for this capability on Cardano. Both have advantages
-and drawbacks. The non-native approach has the benefit that TFHE functionality
-itself won't need to be implemented, as the Zama protocol itself handles this
-issue. However, it is not clear whether Cardano support for the Zama protocol
-could be done unilaterally (that is, without Zama's involvement), as this could
-potentially complicate any implementation. Additionally, the non-native approach
-may require changes far beyond Plutus Core or UPLC, possibly at the level of the
-Cardano node implementation or the other Cardano libraries, which would simply
-transfer the engineering problems elsewhere. Lastly, it is not clear whether the
-interface that we could get from the Zama protocol would be suitable for Cardano
-scripts and dApps even if the other two issues did not arise in practice.
+Two major open questions exist with regard to providing TFHE capabilities to
+onchain scripts: whether the native or non-native approach should be used, and
+how to address the interaction of costing and programmable bootstrapping.
+Answers to these questions are related, but ultimately independent: whatever
+choice is made for the first will impact, but not eliminate, the second. We
+discuss these questions further below, and describe some of the implications of
+possible solutions.
 
-The native approach's biggest advantage is that it can be done without the
-involvement of any organization outside of the Cardano space (specifically,
-without Zama). Furthermore, by having full control over the implementation, we
-can ensure that only Plutus Core would require changing, and that this
-implementation could potentially be used for the benefit of the Cardano and
-Haskell communities in ways unrelated to onchain. However, the downside is that
-such an implementation would constitute a highly non-trivial effort. Although
-two reference implementations of TFHE exist, neither are suitable for direct use
-in the context of Plutus Core: the C implementation is not of production
-quality, and `tfhe-rs` is written in Rust, which is difficult to FFI into from
-Haskell. Thus, the native approach would require a 'ground-up' implementation,
-which would also have to be audited for security. 
+### Native versus non-native approach
 
-Which of these approaches is better is impossible to say without further
-investigation, and determining the answer is a significant task in itself.
-Additionally, a cross-cutting concern between either approach is the problem of
-costing such a builtin. Given that programmable bootstrapping allows
-representing _any_ Boolean circuit, and that TFHE is designed to hide
-information about both the encoded circuit and the data it is to be applied to,
-it is hard to see how costing could be performed sensibly. As costing is an
-important mechanism to ensure that nodes are not accidentally (or maliciously)
-overloaded, some resolution to this problem would also have to be found. One
-possibility would be to restrict script developers to a fixed set of Boolean
-circuits whose costs we can predict, and then require them to implement all
-functionality as combinations of these circuits. While this would resolve the
-costing issue, it comes with significant downsides. It will significantly
-increase the work required to implement this functionality, and will also limit
-what script and dApp developers could do with TFHE. Worse still, this 'solution'
-directly attacks the biggest benefit of TFHE - namely, the ability to 'hide' the
-computation you want to perform on the data, as any set of composable circuit
-primitives would reveal the operation, if not the input and result. This is also
-a complex issue, that could potentially require costing to be re-worked, which
-would have impacts far beyond TFHE functionality, and no solution is apparent at
-this stage.
+Both the native and non-native approaches to making TFHE capabilities available
+have advantages and drawbacks, making the choice between them non-obvious. Which
+to choose depends on many factors, some of which will require further research
+to properly assess. We present the factors we are currently aware of below.
+
+The main benefit of the non-native approach is that the Zama protocol itself
+provides the TFHE functionality, and the Cardano ecosystem would not have to
+implement it at any level. Setting aside the resulting simplicity at the level
+of Plutus Core and UPLC, this solution also reduces the maintenance burden on
+Cardano, as improvements in Zama or their implementation of TFHE would not have
+to be 'transferred over' before script and dApp developers could benefit.
+However, the largest downside is that it is not clear whether Cardano support
+for the Zama protocol could be done unilaterally: that is, without Zama's
+involvement. If Zama would need to be involved somehow, this could complicate
+matters significantly, including in ways not directly related to code.
+Additionally, just because TFHE functionality would not have to be implemented
+for the non-native approach, the necessary 'glue' to use the Zama protocol (and
+its infrastructure) as part of Cardano scripts may require changes at the level
+of the Cardano node implementation or other Cardano libraries, which may end up
+being as much, or even more, work than implementing TFHE. Lastly, it is not
+clear whether the interface (at the UPLC level, usable by scripts) we could get
+by way of the Zama protocol would be suitable for Cardano scripts and dApps.
+
+The native approach, by contrast, is almost the direct opposite: its largest
+advantage is that it could be done entirely without the involvement of any
+organization outside of the Cardano space, and Zama in particular. Furthermore,
+having full control over the implementation would mean two additional benefits:
+
+* Only Plutus Core would require changing; and
+* The implementation of TFHE could potentially be used elsewhere, in ways not
+  related to the chain, by other Haskell developers.
+
+At the same time, such an implementation would require highly non-trivial
+amounts of work. Although two reference implementations of TFHE exist, neither
+are suitable for direct use: the C implementation is not of production quality,
+and `tfhe-rs` is written in Rust, which is difficult to use in Haskell via FFI.
+Thus, the native approach would require a 'ground-up' implementation, with the
+attendant review for security, performance tuning and similar engineering work.
+
+### Programmable bootstrapping and costing onchain
+
+As programmable bootstrapping has the potential of representing _any_ Boolean
+circuit, it effectively forms a sub-language of its own, outside of UPLC.
+Furthermore, because TFHE allows for (representations of) such circuits to be
+encrypted, we cannot even know what the circuit we have to compute with is, or
+gain much insight into its size or complexity. However, all Cardano scripts have
+a cost, determined by a costing function assigning numerical values to the
+execution time and memory use of every builtin. Thus, any builtin that
+evaluates TFHE-represented circuits must be given a cost too.
+
+This poses a huge problem: how can we assign a cost to something we cannot
+inspect? Even if the circuit itself were 'in the clear', this creates the same
+problem as costing most higher-order builtins (builtins that take function
+arguments). Although Boolean circuits are a more 'well-behaved' model than an
+untyped lambda calculus like UPLC, it can still potentially 'hide' a lot of
+computation and memory use. As costing is an important mechanism to ensure that
+nodes are not accidentally (or maliciously) overloaded, some solution would have
+to be found to solve this problem before TFHE capabilities could be added to the
+chain.
+
+One possible solution would involve restricting script developers to a fixed set
+of 'primitive' circuits whose costs are predictable, and then require all other
+circuits to be implemented in terms of them. While this would resolve the
+costing issue, it is not without its downsides. One large downside is that the
+amount of work to implement TFHE support would magnify, as this would now
+require much more than a single builtin, while limiting the possibilities
+available to developers. Worse still, this 'solution' directly attacks one of
+the biggest benefits of TFHE and programmable bootstrapping, namely the ability
+to 'hide' the computation you want to perform on the data. Thus, this solution
+appears unviable.
+
+As mentioned previously, this concern arises regardless of whether we choose the
+native or the non-native approach. Even if Cardano nodes themselves would not
+perform the TFHE computations, we must still somehow assess a cost to sending
+the computation via the Zama protocol (and awaiting the result), which runs into
+the same issue as doing the computation 'ourselves'.
 
 ## Copyright
 
