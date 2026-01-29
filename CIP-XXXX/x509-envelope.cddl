@@ -1,0 +1,96 @@
+; An envelope for Cardano metadata, which holds the x509 metadata.
+; The purpose of the Envelope is to ensure that metadata is not transportable between
+; transactions.
+; It ensures that it can be unambiguously validated that the auxiliary data attached to a transaction 
+; was intended for that transaction.
+; By including the transaction's input hash, the metadata is locked to the transaction as that set of
+; transaction inputs are guaranteed to be unique under the UTXO model.
+; It cannot be moved to another transaction without being reconstructed, as the transaction inputs would
+; have changed.
+
+; This envelope is general in structure, it can be used to secure any auxiliary data, provided the 
+; Role 0 signing key is defined.  
+; As a dApp controls its metadata, this ensures the data can be authenticated independently by the 
+; dApp as belonging to a particular user.
+; Once a Role 0 signing key is defined for a dApp purpose, then it is not necessary to redefine the x509 data.
+; This allows the envelope to be used to secure the auxiliary data of a transaction itself.
+
+; The x509 envelope must be valid cardano metadata.
+x509_envelope = $x509_envelope .within transaction_metadatum
+
+; Structure of the x509 envelope itself.
+$x509_envelope /= {
+	0: purpose, ; What purpose does this metadata serve.
+	1: tx_inputs_hash, ; A hash using BLAKE2b of the `transaction inputs` field from the transaction the metadata is posted with.
+	? 2: previous_transaction_id ; Previous transaction ID in the chain of registration updates for this user.
+	chunk_type => [ + x509_chunk ] ; Chunked x509 role registration data.
+	99: validation_signature ; The signature of the x509 envelope plus all other auxiliary data.
+}
+
+; When a Role 0 certificate is replaced, the transaction SHOULD be signed by the previous certificate being revoked
+; As well as the new certificate that is replacing it.
+certificate_replacement_signature = [ old: validation_signature, new: validation_signature ]
+
+; hash of the previous transaction in the registration chain.
+; There can only be one registration for a user for a purpose that does not have a previous transaction id.
+; This would be the first.
+; Once that is posted, all updates must properly maintain the chain.
+; Dangling registrations for the same purpose are ignored.
+previous_transaction_id = $hash32
+$hash32 /= bytes .size 32
+
+; x509 Role Registration data is chunked and optionally (preferably) compressed.
+; This enables the x509 registration data to have a structure not supported by the
+; underlying limitations of the on-chain metadatum implementation.
+; As the x509 registration data may be large, compression is used to minimize on-chain space consumed.
+; Best practice would be to compress the data with both brotli and zstd, and only store the 
+; smallest data set. `raw` storage would only be used if compression did not yield any benefits.
+; However an application could choose to implement no compression or only one of either brotli/zstd.
+
+; Chunk Types - Allows to identify how the chunk data is compressed to save on-chain space.
+
+chunk_types = (
+	raw: 10 ; Data is just chunked, not compressed (raw)
+	brotli: 11 ; Data is compressed with BROTLI and then chunked.
+	zstd: 12 ; Data is compressed with ZSTD and then chunked.
+	reserved_3: 13 ; Reserved
+	reserved_4: 14 ; Reserved
+	reserved_5: 15 ; Reserved
+	reserved_6: 16 ; Reserved
+	reserved_7: 17 ; Reserved
+)
+
+chunk_type = &chunk_types ; All valid chunk encodings, only one of these can be used at a time.
+
+; An individual purpose or set or purposes
+purpose = uuid-v4
+
+; A V4 UUID encoded as per https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.2
+uuid-v4 = bytes .size 16
+
+; Hash of the transaction inputs this registration is attached, using BLAKE2b.
+tx_inputs_hash = bytes .size 16
+
+; A single x509 chunk
+; All chunks but the last must be 64 bytes in length (not enforced by the CDDL)
+x509_min_chunk_size = 1 ; Can't have an empty chunk
+x509_max_chunk_size = 64 ; Can't have a chunk bigger than 64 bytes
+x509_chunk = bytes .size (x509_min_chunk_size .. x509_max_chunk_size); 
+
+; A list of x509 chunks
+x509_chunks = [ + x509_full_chunk ]
+
+; A Validation Signature
+validation_signature = (bytes .size (1..64))
+
+; This envelope can only be used if the current registration or a prior registration is valid
+; AND they have defined for the purpose a Role 0 signing key.
+; The `validation_signature` uses the Role 0 signing key .
+
+
+; Definition of general Cardano metadata, constrains what we can implement here:
+transaction_metadatum = { * transaction_metadatum => transaction_metadatum }
+	/ [ * transaction_metadatum ]
+	/ int
+	/ bytes .size (0..64)
+	/ text .size (0..64)
