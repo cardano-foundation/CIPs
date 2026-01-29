@@ -67,6 +67,39 @@ not only computation _hiding_, but potentially a lot of implementation power, as
 any Boolean circuit could be used as the operation. This means that applications
 would not be limited by the primitives provided by UPLC.
 
+Several examples follow. Worth noting here is that all of these are already
+possible on other chains by way of the Zama protocol.
+
+### Onchain identity
+
+The idea of sending identifying information to a service is typical for
+'standard' cloud applications, such as when buying products online and booking
+flights. However, doing so onchain is risky, as it makes a lot of sensitive
+information public. TFHE would allow 'hiding' this data while still allowing it
+to be processed onchain. In particular, the public-key variant of TFHE could
+allow a 'double security' measure: a particular service could use your public
+key to encrypt the Boolean circuit to be applied to your data, allowing you, but
+nobody else, to inspect what it should do. 
+
+### Confidential governance
+
+Governance on Cardano is a significant and important feature, but currently,
+voting is done 'in the clear', which makes it susceptible to bribery, blackmail
+and biases. With TFHE, specific votes could be hidden, but their total still
+determined as the result of a specific Boolean circuit applied to accumulate the
+results.
+
+### Onchain corporations
+
+Managing a company, or entire organization, onchain is not currently thinkable,
+as it would require revealing confidential information such as customer and
+employee registers, financial information, trade secrets and other similar
+information. Using TFHE, all of this could be kept confidential, while still
+benefitting from decentralization and automation by way of (also encrypted)
+Boolean circuits. Use of multiple keys could also ensure compartmentalization of
+information: a given member of the organization would have access to a given
+key, allowing them to know specific operations and data, but not others.
+
 ## Goals
 
 The primary goal is to provide a builtin operation which, when given an
