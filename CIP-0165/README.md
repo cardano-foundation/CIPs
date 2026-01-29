@@ -290,7 +290,7 @@ Data is stored in the list of `Entries`, each entry consist of the namespace and
 
 The exact definition of the domain data is left out in this CIP. We propose that the ledger team would propose a canonical representation for the types in each new era. For the types they must be in a canonical [CBOR format](https://datatracker.ietf.org/doc/html/rfc8949) with restrictions from [deterministic cbor](https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor). Values must not be derivable, that is, if some part of the state can be computed based on another part, then only the base one should be in the state."
 
-All concrete formats should be stored in an attachment to this CIP and stored in `namespaces/namespaces.cddl`. All the changes should be introduced using current CIP update process.
+All concrete formats should be stored in an attachment to this CIP and stored in `namespaces/{namespace}.cddl` for each namespace. All the changes should be introduced using current CIP update process.
 
 ### Canonicalization Rules
 

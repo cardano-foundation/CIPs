@@ -25,7 +25,9 @@
 ;
 record_entry = tx_out
 
-tx_out = [0, shelley_tx_out// 1, babbage_tx_out]
+tx_out = bytes .cbor rule
+
+rule = shelley_tx_out/ babbage_tx_out
 
 shelley_tx_out = [address, amount : value, ? datum_hash : hash32]
 
@@ -57,8 +59,7 @@ datum_option = [0, hash32// 1, data]
 data = #6.24(bytes .cbor plutus_data)
 
 plutus_data =
-  constr<plutus_data
-  >
+  constr<plutus_data>
   / {* plutus_data => plutus_data}
   / [* plutus_data]
   / big_int
@@ -66,8 +67,7 @@ plutus_data =
 
 ; NEW
 ;   #6.102([uint, [* a]]): For tag range 6.1280 .. 6.1400 inclusive
-constr<a0
-> =
+constr<a0> =
   #6.122([* a0])
   / #6.123([* a0])
   / #6.124([* a0])
@@ -216,7 +216,7 @@ bounded_bytes = bytes .size (0 .. 64)
 
 big_nint = #6.3(bounded_bytes)
 
-script_ref = script
+script_ref = #6.24(bytes .cbor script)
 
 script =
   [  0, native_script
