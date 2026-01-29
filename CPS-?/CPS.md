@@ -115,6 +115,14 @@ signature scheme verification as part of their script, it would be much less
 efficient than a single builtin call, to say nothing of the security
 implications.
 
+Another important use case is that, in the event of a quantum breakthrough,
+post-quantum smart-contract-driven wallets can secure Cardano without having to
+modify the ledger directly. While this is very much a worst-case scenario,
+having this possibility available would be an additional layer of defence
+against quantum computing compromising the chain. Post-quantum digital
+signatures would be required to make this possible, and having such builtins
+would allow it to be implemented easily if the need ever arose.
+
 ## Goals
 
 Ultimately, the goal would be to make one (or possibly several) post-quantum
