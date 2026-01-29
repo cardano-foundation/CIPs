@@ -5,7 +5,7 @@ Category: Plutus
 Status: Open
 Authors: Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
-Discussions: https://github.com/cardano-foundation/CIPs/pull/?
+Discussions: https://github.com/cardano-foundation/CIPs/pull/1143
 Created: 2026-01-29
 License: Apache-2.0
 ---
