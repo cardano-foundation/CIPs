@@ -182,3 +182,4 @@ This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [grumplestiltskin]: https://github.com/mlabs-haskell/grumplestiltskin/tree/milestone-2
 [plutus-sha512]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/SHA512.hs
 [plutus-ed25519]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/Ed25519.hs
+[2030-strategic-framework]: https://product.cardano.intersectmbo.org/vision/strategy-2030 
