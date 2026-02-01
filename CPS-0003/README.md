@@ -11,7 +11,7 @@ Proposed Solutions:
 Discussions:
     - Original abandoned pull request (closed): https://github.com/cardano-foundation/CIPs/pull/382
     - Resuscitate pull request (merged): https://github.com/cardano-foundation/CIPs/pull/947
-    - CPS-0003 | Removed potential implementation (issue): https://github.com/cardano-foundation/CIPs/issues/969
+    - Removed potential implementation (issue): https://github.com/cardano-foundation/CIPs/issues/969
 Created: 2022-11-20
 License: CC-BY-4.0
 ---
