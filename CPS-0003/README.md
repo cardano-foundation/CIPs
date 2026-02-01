@@ -7,11 +7,11 @@ Authors:
     - Istvan Szentandrasi <szist@zoeldev.com>
     - Robert Phair <rphair@cosd.com>
 Proposed Solutions:
-    - CIP-0113: https://github.com/cardano-foundation/CIPs/pull/444
+    - CIP-0113?: https://github.com/cardano-foundation/CIPs/pull/444
 Discussions:
     - Original abandoned pull request (closed): https://github.com/cardano-foundation/CIPs/pull/382
     - Resuscitate pull request (merged): https://github.com/cardano-foundation/CIPs/pull/947
-    - Removed potential implementation (issue): https://github.com/cardano-foundation/CIPs/issues/969
+    - CIP-0113 | Removed potential implementation (issue): https://github.com/cardano-foundation/CIPs/issues/969
 Created: 2022-11-20
 License: CC-BY-4.0
 ---
