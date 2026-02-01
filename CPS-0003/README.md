@@ -33,7 +33,7 @@ Even in the Babbage era, after the token is minted, there is no way to control t
 
 Similar to how UTxO addresses can be optionally fully controlled by smart-contracts, there could be potential also to optionally control other lifecycle points of a token than just forging on Cardano.
 
-## Use cases
+## Use Cases
 
 There are multiple use-cases that would benefit from having the ability to validate token interactions.
 

@@ -36,7 +36,7 @@ data. Well-defined URI schemes can provide a plethora of easy access and
 interaction methods, particularly to mobile users, since they can leverage
 deep-linking and QR technologies to pass data between applications.
 
-## Use cases
+## Use Cases
 
 The Cardano URI Scheme(s) that exist already present several fantastic use cases
 for URI schemes. We welcome additional or expanded definitions to be added to

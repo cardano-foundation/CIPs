@@ -50,7 +50,7 @@ Defining a CBOR tag for a Cardano data structure will also define a canonical re
 This will help with interoperability and consistency of specification.
 CIPs can simply refer to the Tag, and the CIP in which it is defined, rather than define how that data will be represented.
 
-## Use cases
+## Use Cases
 
 In Project Catalyst CIP-36 a Voting key is defined as:
 

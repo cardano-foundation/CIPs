@@ -94,7 +94,7 @@ This will allow providers to voice concerns over potentially expensive or awkwar
 To address loss of avenue for differentiation, via data shape standard authors should seek to ensure there are other ways in which providers can differentiate.
 These could be built into the standard such as optional batching, allowing providers to offer tiers of batching support for their endpoints.
 
-## Use cases
+## Use Cases
 
 ### Multi-Provider Wallets
 
