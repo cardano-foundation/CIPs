@@ -117,7 +117,7 @@ In addition to the goals above, it is advisable to avoid the following:
 3. Minimize changes that increase the resource usages of Cardano nodes or the cost of operating them.
 4. Guard against protocol alterations that adversely impact other scaling metrics such as settlement time.
 
-## Open questions
+## Open Questions
 
 - How much larger can existing Ouroboros Praos blocks be made without affecting Cardano mainnet safety or performance?
 - How much can the block-production rate (the active-slot coefficient) be increased without affecting Cardano mainnet safety or performance?

@@ -173,7 +173,7 @@ Goals make it easier to assess whether a solution solves a problem. Goals also g
 
 Use cases are essential to understanding a problem and showing that a problem addresses a need. Without use cases, there is, in fact, no problem, and merely disliking a design doesn't make it problematic. A use case is also generally user-driven, which encourages the ecosystem to open a dialogue with users to build a system that is useful to others and not only well-designed for the mere satisfaction of engineers.
 
-### Open questions
+### Open Questions
 
 This section is meant to _save time_, especially for problem statement authors who will likely be the ones who end up reviewing proposed solutions. Open questions allow authors to state upfront elements they have already thought of and that any solution should consider in its design. Moreso, it is an opportunity to mention, for example, security considerations or common pitfalls that solutions should avoid.
 

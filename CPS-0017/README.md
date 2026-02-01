@@ -118,7 +118,7 @@ Three approaches are under active consideration or development to address the se
 - *The protocol-parameter approach* simply lowers the active slot coefficient (currently set to 5% of the slots on `mainnet`) to a somewhat lower value, so that the block production rate and settlement are faster. This approach can only moderately shorten settlement times and does not mitigate against the aforementioned attacks.
 
 
-## Open questions
+## Open Questions
 
 - Is finality on the order of a couple of minutes feasible on Cardano? What is the theoretically fastest finality possible for a Praos-like consensus algorithm?
 - What definitions of settlement and finality are most relevant to Cardano stakeholder use cases? Is a single definition common to all use cases?

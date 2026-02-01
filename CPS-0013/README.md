@@ -87,7 +87,7 @@ Since map operations currently have much worse complexity than a good map data s
 1. Reduce the cost of operations on `Value` by a factor of 2-10
 2. Reduce the cost of a matching algorithm such that we can handle hundreds of matches for the same cost it currently takes to do 30.
 
-## Open questions
+## Open Questions
 
 - Can we implement a set/map data structure in Plutus Core code that has acceptable performance and doesn’t require too much size overhead?
 - Do we need generic maps or is a map-from-bytestring sufficient? What about map-from-integer?
