@@ -61,7 +61,7 @@ Cardano Dapps and DEXes vary quite a bit regarding how many confirmations they r
 
 When Cardano becomes used by large institutions or nation states, attacks on settlement may become more attractive and lucrative. Hence, it is not safe to assume that stake-based and grinding attacks will not occur in the future.
 
-## Use cases
+## Use Cases
 
 Fast settlement primarily benefits use cases where a party needs certainty, after a fixed amount of time, about the settlement status of a transaction. The generic use case follows.
 

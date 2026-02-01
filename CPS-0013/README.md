@@ -34,7 +34,7 @@ Both of these are difficult to implement in Plutus Core:
 1. Arrays are (we believe) impossible without some kind of primitive with constant-time lookup
 2. Maps are possible but are typically moderately complex data structures which require a lot of code, and this has not been done in practice
 
-## Use cases
+## Use Cases
 
 ### Arrays
 

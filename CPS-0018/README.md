@@ -89,7 +89,7 @@ More concerning are the situations shown below where consecutive blocks are near
 
 ![Runs of nearly-full blocks](images/block-ex-run.svg)
 
-## Use cases
+## Use Cases
 
 Even with the existing rate of transactions on the Cardano mainnet, there are periods where throughput-limits delay the inclusion of transactions in blocks and hamper settlement. Growing and emerging use cases will exacerbate the situation.
 

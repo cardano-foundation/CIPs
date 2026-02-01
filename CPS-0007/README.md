@@ -52,7 +52,7 @@ IOG in particular has continued to provide skill and resources for years longer 
 
 However, diluting that power to the community comes with substantial risks and challenges, not the least of which is ensuring that the will of the community is captured *accurately*. For example, one barrier to that accuracy is the possibility of "sybil attacks", wherein the anonymity of the blockchain allows someone to cast their vote many times.
 
-## Use cases
+## Use Cases
 <!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
 
 ## Goals
