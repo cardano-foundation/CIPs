@@ -1,0 +1,339 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cip-169.common.schema.json",
+  "title": "CIP-169 Common",
+  "description": "Metadata document for Cardano governance with on-chain effects verification, extending CIP-100",
+  "type": "object",
+  "required": ["hashAlgorithm", "authors", "body"],
+  "properties": {
+    "hashAlgorithm": {
+      "$ref": "#/definitions/hashAlgorithm"
+    },
+    "authors": {
+      "$ref": "#/definitions/authors"
+    },
+    "body": {
+      "$ref": "#/definitions/body"
+    }
+  },
+  "definitions": {
+    "hashAlgorithm": {
+      "type": "string",
+      "enum": ["blake2b-256"],
+      "title": "Hash Algorithm",
+      "description": "The algorithm used to authenticate this document externally (CIP-100)"
+    },
+    "authors": {
+      "title": "Authors",
+      "description": "The authors of this governance metadata (CIP-100)",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/author"
+      }
+    },
+    "author": {
+      "title": "Author",
+      "description": "An author endorsing the content of a metadata document (CIP-100)",
+      "type": "object",
+      "required": ["name", "witness"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "witness": {
+          "$ref": "#/definitions/witness"
+        }
+      }
+    },
+    "witness": {
+      "title": "Witness",
+      "description": "A witness proving that the author endorses the content of the metadata",
+      "type": "object",
+      "properties": {
+        "witnessAlgorithm": {
+          "title": "WitnessAlgorithm",
+          "type": "string",
+          "enum": ["ed25519", "CIP-0008"]
+        },
+        "publicKey": {
+          "title": "PublicKey",
+          "type": "string"
+        },
+        "signature": {
+          "title": "Signature",
+          "type": "string"
+        }
+      }
+    },
+    "body": {
+      "title": "Body",
+      "description": "The body of the metadata document that is hashed to produce a signature (CIP-100), extended with optional onChain property (CIP-169)",
+      "type": "object",
+      "required": ["title", "abstract", "motivation", "rationale"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "Title",
+          "description": "A brief introduction to the motivation for the governance action"
+        },
+        "abstract": {
+          "type": "string",
+          "title": "Abstract",
+          "description": "A concise summary of the motivation and rationale for the governance action"
+        },
+        "motivation": {
+          "type": "string",
+          "title": "Motivation",
+          "description": "Context around the problem being addressed by the on-chain action"
+        },
+        "rationale": {
+          "type": "string",
+          "title": "Rationale",
+          "description": "Explanation of how the governance action addresses the problem outlined in 'motivation'"
+        },
+        "references": {
+          "type": "array",
+          "title": "References",
+          "items": {
+            "$ref": "#/definitions/reference"
+          }
+        },
+        "onChain": {
+          "$ref": "#/definitions/onChain",
+          "title": "OnChain",
+          "description": "Optional CIP-169 on-chain effects encoding (CIP-116 standard). This property encapsulates the on-chain effects and enables verification that metadata matches the on-chain action."
+        }
+      }
+    },
+    "onChain": {
+      "title": "OnChain Effects",
+      "description": "The on-chain effects encoded in CIP-116 standard format. This property is optional but when present binds metadata to specific on-chain effects.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ProposalProcedure"
+        },
+        {
+          "$ref": "#/definitions/VotingProcedure"
+        },
+        {
+          "$ref": "#/definitions/DRepRegistration"
+        },
+        {
+          "$ref": "#/definitions/DRepUpdate"
+        },
+        {
+          "$ref": "#/definitions/CommitteeResignation"
+        }
+      ]
+    },
+    "ProposalProcedure": {
+      "type": "object",
+      "title": "ProposalProcedure",
+      "description": "On-chain governance action proposal (CIP-116). Note: anchor property is omitted per CIP-169 specification.",
+      "required": ["deposit", "reward_account", "gov_action"],
+      "properties": {
+        "deposit": {
+          "$ref": "#/definitions/UInt64",
+          "title": "Deposit",
+          "description": "The deposit amount in lovelace required for the proposal"
+        },
+        "reward_account": {
+          "$ref": "#/definitions/RewardAddress",
+          "title": "Reward Account",
+          "description": "The reward account where the proposal deposit is returned after finalization"
+        },
+        "gov_action": {
+          "$ref": "#/definitions/GovAction",
+          "title": "Governance Action",
+          "description": "The specific governance action (CIP-116)"
+        }
+      }
+    },
+    "GovAction": {
+      "title": "GovAction",
+      "type": "object",
+      "description": "The type of governance action (CIP-116)",
+      "discriminator": {
+        "propertyName": "tag"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "Parameter Change Action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": ["parameter_change_action"]
+            },
+            "gov_action_id": {
+              "$ref": "#/definitions/GovActionId"
+            },
+            "protocol_param_update": {
+              "type": "object",
+              "title": "Protocol Parameter Update",
+              "description": "The protocol parameters being updated (ProtocolParamUpdate)"
+            }
+          },
+          "required": ["tag", "protocol_param_update"]
+        },
+        {
+          "type": "object",
+          "title": "Hard fork initiation action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": ["hard_fork_initiation_action"]
+            },
+            "gov_action_id": {
+              "$ref": "#/definitions/GovActionId"
+            },
+            "protocol_version": {
+              "$ref": "#/definitions/ProtocolVersion"
+            }
+          },
+          "required": ["tag", "protocol_version"]
+        },
+        {
+          "type": "object",
+          "title": "Treasury withdrawals action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": ["treasury_withdrawals_action"]
+            },
+            "rewards": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "#/definitions/RewardAddress"
+                  },
+                  "value": {
+                    "$ref": "#/definitions/UInt64"
+                  }
+                },
+                "unevaluatedProperties": false
+              }
+            }
+          },
+          "required": ["tag"]
+        },
+        {
+          "type": "object",
+          "title": "No confidence governance action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": ["no_confidence"]
+            },
+            "gov_action_id": {
+              "$ref": "#/definitions/GovActionId"
+            }
+          },
+          "required": ["tag"]
+        },
+        {
+          "type": "object",
+          "title": "Update committee",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": ["update_committee"]
+            },
+            "gov_action_id": {
+              "$ref": "#/definitions/GovActionId"
+            },
+            "members_to_remove": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Credential"
+              }
+            },
+            "committee": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "$ref": "#/definitions/Credential"
+                  },
+                  "value": {
+                    "$ref": "#/definitions/UInt64"
+                  }
+                },
+                "unevaluatedProperties": false
+              }
+            },
+            "signature_threshold": {
+              "$ref": "#/definitions/UnitInterval"
+            }
+          },
+          "required": ["tag", "signature_threshold", "committee"]
+        },
+        {
+          "type": "object",
+          "title": "New constitution",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": ["new_constitution"]
+            },
+            "gov_action_id": {
+              "$ref": "#/definitions/GovActionId"
+            },
+            "constitution": {
+              "$ref": "#/definitions/Constitution"
+            }
+          },
+          "required": ["tag", "constitution"]
+        },
+        {
+          "type": "object",
+          "title": "Info action",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "enum": ["info_action"]
+            }
+          },
+          "required": ["tag"]
+        }
+      ]
+    },
+    "GovActionId": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/GovActionId"
+    },
+    "UInt64": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/UInt64"
+    },    
+    "RewardAddress": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/RewardAddress"
+    },
+    "UnitInterval": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/UnitInterval"
+    },
+    "Credential": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Credential"
+    },
+    "Constitution": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Constitution"
+    },
+    "ProtocolVersion": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/ProtocolVersion"
+    },
+    "TransactionHash": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/TransactionHash"
+    },
+    "Ed25519KeyHash": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Ed25519KeyHash"
+    },
+    "ScriptHash": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/ScriptHash"
+    },
+    "Anchor": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Anchor"
+    }
+  }
+}
