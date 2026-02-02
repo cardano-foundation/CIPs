@@ -1,8 +1,8 @@
 ---
 CPS: 12
 Title: Query Layer Standardization
-Status: Open
 Category: Tools
+Status: Open
 Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
     - Ryan Williams <ryan.williams@intersectmbo.org>

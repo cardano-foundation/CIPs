@@ -1,8 +1,8 @@
 ---
 CPS: 3
 Title: Smart Tokens
-Status: Open
 Category: Tokens
+Status: Open
 Authors:
     - Istvan Szentandrasi <szist@zoeldev.com>
     - Robert Phair <rphair@cosd.com>

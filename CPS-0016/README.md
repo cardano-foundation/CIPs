@@ -1,8 +1,8 @@
 ---
 CPS: 16
 Title: Cardano URIs
-Status: Open
 Category: Tools
+Status: Open
 Authors:
   - Adam Dean <adam@crypto2099.io>
 Proposed Solutions:

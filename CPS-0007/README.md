@@ -1,8 +1,8 @@
 ---
 CPS: 7
 Title: Voltaire era Governance
-Status: Open
 Category: Ledger
+Status: Open
 Authors: 
   - Pi Lanningham <pi@sundaeswap.finance>
 Proposed Solutions:

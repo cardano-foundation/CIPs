@@ -1,8 +1,8 @@
 ---
 CPS: 9
 Title: Coin Selection Including Native Tokens
-Status: Open
 Category: Wallets
+Status: Open
 Authors:
   - Hinson Wong <wongkahinhinson@gmail.com>
   - Tsz Wai Wu <wu.tszwai@outlook.com>

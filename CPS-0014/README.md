@@ -1,8 +1,8 @@
 ---
 CPS: 14
 Title: Register of CBOR Tags for Cardano Data structures
-Status: Open
 Category: Tools
+Status: Open
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
 Proposed Solutions:
