@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "cip-169.common.schema.json",
   "title": "CIP-169 Common",
-  "description": "Metadata document for Cardano governance with on-chain effects verification, extending CIP-100 and CIP-108",
+  "description": "Metadata document for Cardano governance with on-chain effects verification, extending CIP-100",
   "type": "object",
   "required": ["hashAlgorithm", "authors", "body"],
   "properties": {
