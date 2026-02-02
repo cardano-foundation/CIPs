@@ -1,8 +1,8 @@
 ---
 CPS: 13
 Title: Better builtin data structures in Plutus
-Status: Open
 Category: Plutus
+Status: Open
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Philip DiSarro <philip.disarro@iohk.io>

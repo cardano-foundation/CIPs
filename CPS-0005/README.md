@@ -1,8 +1,8 @@
 ---
 CPS: 5
 Title: Plutus Script Usability
-Status: Open
 Category: Plutus
+Status: Open
 Authors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Proposed Solutions:

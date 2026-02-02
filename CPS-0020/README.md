@@ -1,16 +1,16 @@
 ---
 CPS: 20
-Title: Governance Stakeholder Incentivization  
-Status: Open  
-Category: Tools  
-Authors:  
-- Seomon (Cardano After Dark) <Seomonregister@gmail.com>  
-- Martin Marinov <martin.marinov@cardano.marketing>  
-- Sebastián Pereira Gutiérrez <sebpereira33@gmail.com> 
+Title: Governance Stakeholder Incentivization
+Category: Tools
+Status: Open
+Authors:
+- Seomon (Cardano After Dark) <Seomonregister@gmail.com>
+- Martin Marinov <martin.marinov@cardano.marketing>
+- Sebastián Pereira Gutiérrez <sebpereira33@gmail.com>
 Proposed Solutions: []
-Discussions:  
+Discussions:
 - Original pull request: https://github.com/cardano-foundation/CIPs/pull/997
-Created: 2025-02-13  
+Created: 2025-02-13
 License: CC-BY-4.0
 ---
 

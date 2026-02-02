@@ -1,8 +1,8 @@
 ---
 CPS: 10
 Title: Wallet Connectors
-Status: Open
 Category: Wallets
+Status: Open
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
     - Vladimir Kalnitsky <vladimir@mlabs.city>
