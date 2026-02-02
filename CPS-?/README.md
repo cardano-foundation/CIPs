@@ -190,6 +190,36 @@ dApp and script developers about the benefits, and drawbacks, of each scheme in
 such a case, as these are not likely to be clear to someone who isn't a
 cryptography expert.
 
+[Earlier efforts][prior-attempt] at a CIP around this problem highlighted three
+promising candidate algorithms:
+
+* [ML-DSA][ml-dsa], also known as CRYSTALS-Dilithium
+* [Falcon][falcon]
+* [SLH-DSA][slh-dsa], also known as SPHINCS+
+
+The primary reason for these specific algorithms being highlighted is NIST
+standardization. ML-DSA and SLH-DSA have both been standardized as [FIPS
+204][fips-204] and [FIPS 205][fips-205] respectively. Falcon is still in the
+process of review, to potentially become [FIPS 206][fips-206]. This means that
+these algorithms, and their reference implementations, have received significant
+scrutiny, and are specified as a public document and a standard. One concern
+raised by earlier efforts was that of signature sizes, with a described minimum
+of [666 bytes for a signature][signature-sizes]. Furthermore, [early
+benchmarks][early-benchmarks] demonstrated tension between verification key size
+and performance. These may have changed in the interim.
+
+Another recent possibility is [SQIsign][sqisign]. While still in the process of NIST
+standardization, and still being worked on, SQIsign promises very small
+signatures and keys by comparison to the three previous approaches. This could
+be very advantageous onchain, where space limitations are significant. The
+research step of any solution to this problem should at least consider the
+possibility of using it. Its main downside (other than its lack of
+standardization or 'stability') is that verification is relatively slow:
+however, current work may change this.
+
+This shows that these open questions aren't straightforward, and will require at
+minimum a well-researched justification for the choice of any of them.
+
 ## Copyright
 
 This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
@@ -207,3 +237,12 @@ This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [plutus-ed25519]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/Ed25519.hs
 [2030-strategic-framework]: https://product.cardano.intersectmbo.org/vision/strategy-2030 
 [prior-attempt]: https://github.com/cardano-foundation/CIPs/issues/413
+[ml-dsa]: https://www.pq-crystals.org/dilithium/index.shtml
+[falcon]: https://falcon-sign.info/
+[slh-dsa]: https://sphincs.org/
+[fips-205]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.205.pdf
+[fips-204]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf
+[fips-206]: https://www.digicert.com/blog/quantum-ready-fndsa-nears-draft-approval-from-nist
+[signature-sizes]: https://sofiaceli.com/2022/07/05/pq-signatures.html
+[early-benchmarks]: https://github.com/mgajda/CIPs/blob/michal/post-quantum-plutus/CIP-%3F%3F%3F%3F/README.md#plutus-api
+[sqi-sign]: https://sqisign.org/
