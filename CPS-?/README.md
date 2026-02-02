@@ -39,7 +39,25 @@ describes 'post-quantum readiness' as a focus area for security and resilience.
 The number of problems posed by the looming arrival of quantum computing is
 large, and covers many areas relating to the operation of a blockchain: a single
 CPS could not possibly cover them all. Thus, we examine a specific problem, in a
-specific context, which can be scoped precisely. One particular area affected
+specific context, which can be scoped precisely. This stems from several
+considerations:
+
+* Avoiding scope creep and death by detail. The multifaceted nature, and sheer
+  size, of the issue of getting Cardano post-quantum-ready has already [caused
+  problems with previous attempts][prior-attempt] leading to their abandonment.
+* The authors are more familiar with the specifics of some problems that would
+  need addressing with regard to post-quantum security in the context of
+  Cardano. Thus, we chose to focus the CPS around such a problem.
+* Any solutions, or discussions, pertaining to a more specific problem in the
+  context of making Cardano post-quantum secure will generalize at least
+  somewhat to other problems in that space as well.
+
+Thus, this CPS will form part of a larger, long-term effort toward making
+Cardano ready for the post-quantum security landscape. Any discussions, or work,
+in a more narrow space or problem will contribute towards future work in other
+areas of Cardano.
+
+One particular area affected
 strongly by quantum computing breaking several previously-hard problems are
 _digital signatures_, for which specific primitive operations exist on Cardano.
 Currently, script developers have access to builtin operations verifying
@@ -183,3 +201,4 @@ This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [plutus-sha512]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/SHA512.hs
 [plutus-ed25519]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/Ed25519.hs
 [2030-strategic-framework]: https://product.cardano.intersectmbo.org/vision/strategy-2030 
+[prior-attempt]: https://github.com/cardano-foundation/CIPs/issues/413
