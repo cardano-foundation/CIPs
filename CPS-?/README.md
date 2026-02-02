@@ -131,7 +131,12 @@ this short of implementing it themselves, with all the downsides previously
 talked about. Even if they had the skills and time to implement a different
 signature scheme verification as part of their script, it would be much less
 efficient than a single builtin call, to say nothing of the security
-implications.
+implications. The authors have non-trivial experience with regard to all of
+these problems: they are evidenced well by the [Grumplestiltskin
+project][grumplestiltskin], as well as the [SHA512][plutus-sha512] and [Ed25519
+signature verification][plutus-ed25519] benchmark implementations submitted as
+part of work on CIPs 121, 122 and 123, which exhibit _all_ of the above problems
+in spades.
 
 Another important use case is that, in the event of a quantum breakthrough,
 post-quantum smart-contract-driven wallets can secure Cardano without having to
