@@ -303,130 +303,37 @@
       ]
     },
     "GovActionId": {
-      "title": "GovActionId",
-      "type": "object",
-      "properties": {
-        "transaction_id": {
-          "$ref": "/definitions/TransactionHash"
-        },
-        "gov_action_index": {
-          "$ref": "cardano-conway.json#/definitions/UInt16"
-        }
-      },
-      "required": ["transaction_id", "gov_action_index"],
-      "unevaluatedProperties": false
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/GovActionId"
     },
     "UInt64": {
-      "type": "string",
-      "pattern": "^(0|[1-9][0-9]*)$",
-      "title": "UInt64",
-      "description": "64-bit unsigned integer as string (CIP-116)"
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/UInt64"
     },    
     "RewardAddress": {
-      "title": "RewardAddress",
-      "type": "string",
-      "format": "bech32",
-      "pattern": "^(stake1[02-9ac-hj-np-z]{53}|stake_test1[02-9ac-hj-np-z]{53})$",
-      "examples": [
-        "stake1u9u5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5egnuvsnm"
-      ]
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/RewardAddress"
     },
     "UnitInterval": {
-      "type": "object",
-      "title": "UnitInterval",
-      "description": "A unit interval represented as numerator/denominator (CIP-116)",
-      "required": ["numerator", "denominator"],
-      "properties": {
-        "numerator": {
-          "$ref": "#/definitions/UInt64",
-          "title": "Numerator"
-        },
-        "denominator": {
-          "$ref": "#/definitions/UInt64",
-          "title": "Denominator"
-        }
-      },
-      "unevaluatedProperties": false
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/UnitInterval"
     },
     "Credential": {
-      "type": "object",
-      "title": "Credential",
-      "description": "A credential with discriminator tag (CIP-116)",
-      "discriminator": {
-        "propertyName": "tag"
-      },
-      "oneOf": [
-        {
-          "type": "object",
-          "title": "PublicKey Hash Credential",
-          "required": ["tag", "value"],
-          "properties": {
-            "tag": {
-              "type": "string",
-              "const": "pubkey_hash"
-            },
-            "value": {
-              "$ref": "#/definitions/Ed25519KeyHash"
-            }
-          }
-        },
-        {
-          "type": "object",
-          "title": "Script Hash Credential",
-          "required": ["tag", "value"],
-          "properties": {
-            "tag": {
-              "type": "string",
-              "const": "script_hash"
-            },
-            "value": {
-              "$ref": "#/definitions/ScriptHash"
-            }
-          }
-        }
-      ]
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Credential"
     },
     "Constitution": {
-      "type": "object",
-      "title": "Constitution",
-      "description": "Constitution with optional script hash (CIP-116)",
-      "required": ["anchor"],
-      "properties": {
-        "anchor": {
-          "$ref": "#/definitions/Anchor",
-          "title": "Anchor"
-        },
-        "script_hash": {
-          "$ref": "#/definitions/ScriptHash",
-          "title": "Script Hash"
-        }
-      },
-      "unevaluatedProperties": false
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Constitution"
     },
     "ProtocolVersion": {
-      "title": "ProtocolVersion",
-      "type": "object",
-      "properties": {
-        "major": {
-          "$ref": "cardano-conway.json#/definitions/UInt32"
-        },
-        "minor": {
-          "$ref": "cardano-conway.json#/definitions/UInt32"
-        }
-      },
-      "required": [
-        "major",
-        "minor"
-      ],
-      "unevaluatedProperties": false
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/ProtocolVersion"
     },
-        "TransactionHash": {
-      "title": "TransactionHash",
-      "type": "string",
-      "format": "hex",
-      "pattern": "^[0-9a-f]{64}$",
-      "maxLength": 64,
-      "minLength": 64
+    "TransactionHash": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/TransactionHash"
+    },
+    "Ed25519KeyHash": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Ed25519KeyHash"
+    },
+    "ScriptHash": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/ScriptHash"
+    },
+    "Anchor": {
+      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Anchor"
     }
   }
 }
