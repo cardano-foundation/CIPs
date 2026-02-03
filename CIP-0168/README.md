@@ -58,12 +58,6 @@ This CIP proposes adding the following new builtins functions:
 ```haskell
 type BuiltinCurrencySymbol = BuiltinByteString
 
--- | A constant used for an empty value.
-emptyValue :: BuiltinValue
-
--- | Convert a `BuiltinValue` to a `BuiltinList`. This is useful for pattern-matching.
-valueToList :: BuiltinValue -> [(BuiltinCurrencySymbol, (BuiltinTokenName, BuiltinInteger)]
-
 -- | Returns all policy ids found in the value.
 policies :: BuiltinValue -> [BuiltinCurrencySymbol]
 
@@ -76,19 +70,11 @@ restrictValueTo :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
 -- | Filters out the policies from the `BuiltinValue`.
 filterOutPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
 
--- | The number of policies present. If `BuiltinValue` is tracking its size, this should be a very
--- simple and efficient builtin.
-policyCount :: BuiltinValue -> BuiltinInteger
-
 -- | The number of asset names present across all of the policy ids. This could be useful after 
 -- first restricting the `BuiltinValue` with `restrictValueTo`. If `BuiltinValue` is tracking 
 -- its size, this should be a very simple and efficient builtin. Is this more efficient than
 -- pattern-matching on the result of `restrictValueTo`???
 assetCount :: BuiltinValue -> BuiltinInteger
-
--- | Value equality. I'm assuming this is `==`, but just in case it isn't actually supported on
--- `BuiltinValue` I'm adding it here.
-valueEquals :: BuiltinValue -> BuiltinValue -> BuiltinBool
 ```
 
 ## Rationale: how does this CIP achieve its goals?
@@ -106,14 +92,10 @@ unValueData :: BuiltinData -> BuiltinValue
 scaleValue :: BuiltinInteger -> BuiltinValue -> BuiltinValue
 
 -- New functions
-emptyValue :: BuiltinValue
-valueToList :: BuiltinValue -> BuiltinList
 policies :: BuiltinValue -> [BuiltinCurrencySymbol]
 restrictValueTo :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
 filterOutPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
-policyCount :: BuiltinValue -> BuiltinInteger
 assetCount :: BuiltinValue -> BuiltinInteger
-valueEquals :: BuiltinValue -> BuiltinValue -> BuiltinBool
 ```
 
 From these builtin functions, most of Aiken's stdlib `Value` functions can now make use of the
@@ -124,6 +106,16 @@ improved efficiency of CIP-0153's `BuiltinValue`.
 These are all taken from the [aiken `Value` functions][2].
 
 ```haskell
+-- | The emtpy value can be constructed using constants:
+--  (Constant () (Some (ValueOf DefaultUniValue Value.empty)))
+emptyValue :: BuiltinValue
+
+-- | `BuiltinValue` equality check.
+equalsValue = equalsData
+
+valueToList :: BuiltinValue -> BuiltinList (BuiltinPair BuiltinData BuiltinData)
+valueToList =  unsafeDataAsMap . valueData
+
 fromAsset :: BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinInteger -> BuiltinValue
 fromAsset pol name quantity = insertCoin pol name quantity emptyValue
 
@@ -200,7 +192,7 @@ withoutLovelace = filterOutPolicies [""]
 subtractValue :: BuiltinValue -> BuiltinValue -> BuiltinValue
 subtractValue val1 val2 = unionValue val1 $ negate val2
 
-flatten :: BuiltinValue -> [(BuiltinCurrencySymbol , (BuiltinTokenName, BuiltinInteger))]
+flatten :: BuiltinValue -> BuiltinList (BuiltinPair BuiltinData BuiltinData)
 flatten = valueToList
 
 flattenWith 
