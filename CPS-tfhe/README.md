@@ -112,35 +112,39 @@ is feasible. While it would be beneficial to provide support for the offchain
 TFHE operations in some capacity as well, how this should be done is beyond the
 scope of this CPS.
 
-The specific implementation of this builtin could be approached in one of two
+The specific implementation of this builtin could be approached in one of three
 ways:
 
 * Making the Zama protocol available on Cardano (the _non-native_ approach); or
-* Implementing TFHE ourselves and integrating it into Plutus Core (the _native_)
-  approach.
+* Binding to `tfhe-rs` inside of Plutus Core (or some other Cardano dependency)
+  and using it as a backend (the _FFI_ approach); or
+* Implementing TFHE ourselves and integrating it into Plutus Core (the _native_
+  approach).
 
-From a developer experience perspective, this choice wouldn't affect much, as
-the interface that would be provided would be very similar in either case.
-However, other considerations make these two choices quite different in
-practice, as discussed in the 'Open Questions' section. Thus, it is likely that
-a research step would be needed before any decision is made either way.
+From a developer experience perspective (that is, for those using TFHE in
+scripts or dApps), which of these approaches gets chosen wouldn't matter much,
+as the interface provided will be very similar in any of these cases. However,
+other considerations make these three choices quite different in practice. We
+discuss this further in the 'Open Questions' section. It is likely that a
+research step would be neede before any decision on this can be made.
 
 ## Open Questions
 
 Two major open questions exist with regard to providing TFHE capabilities to
-onchain scripts: whether the native or non-native approach should be used, and
+onchain scripts: which approach to making TFHE available onchain should be used, and
 how to address the interaction of costing and programmable bootstrapping.
 Answers to these questions are related, but ultimately independent: whatever
 choice is made for the first will impact, but not eliminate, the second. We
 discuss these questions further below, and describe some of the implications of
 possible solutions.
 
-### Native versus non-native approach
+### Choice of approach
 
-Both the native and non-native approaches to making TFHE capabilities available
-have advantages and drawbacks, making the choice between them non-obvious. Which
-to choose depends on many factors, some of which will require further research
-to properly assess. We present the factors we are currently aware of below.
+Each of the three previously-described approaches to making TFHE capabilities
+available have advantages and drawbacks, which makes the choice between then
+non-obvious. Which approach is the correct choice depends on many factors, some
+of which will require further research to properly assess. We present the
+factors we are currently aware of below.
 
 The main benefit of the non-native approach is that the Zama protocol itself
 provides the TFHE functionality, and the Cardano ecosystem would not have to
@@ -160,21 +164,24 @@ being as much, or even more, work than implementing TFHE. Lastly, it is not
 clear whether the interface (at the UPLC level, usable by scripts) we could get
 by way of the Zama protocol would be suitable for Cardano scripts and dApps.
 
-The native approach, by contrast, is almost the direct opposite: its largest
-advantage is that it could be done entirely without the involvement of any
-organization outside of the Cardano space, and Zama in particular. Furthermore,
-having full control over the implementation would mean two additional benefits:
+The FFI and native approaches, by contrast, are almost the direct opposite:
+their largest advantage is that either of them could be done without the
+involvement of any organization outside of the Cardano space, and Zama in
+particular. Furthermore, having full control over the implementation would mean
+two additional benefits:
 
-* Only Plutus Core would require changing; and
-* The implementation of TFHE could potentially be used elsewhere, in ways not
-  related to the chain, by other Haskell developers.
+* In the Cardano ecosystem, only Plutus Core would require changing; and
+* The TFHE capabilities could potentially be used elsewhere, in ways not related
+  to the chain, by other developers.
 
-At the same time, such an implementation would require highly non-trivial
-amounts of work. Although two reference implementations of TFHE exist, neither
-are suitable for direct use: the C implementation is not of production quality,
-and `tfhe-rs` is written in Rust, which is difficult to use in Haskell via FFI.
-Thus, the native approach would require a 'ground-up' implementation, with the
-attendant review for security, performance tuning and similar engineering work.
+At the same time, both the FFI and native approaches pose non-trivial amounts of
+work. While the FFI approach would be much easier (and Haskell bindings to Rust
+code are [already in use][rust-binds] on Cardano), there are still
+considerations that may make the native approach more attractive, as it would
+reduce dependency on `tfhe-rs`, and may even perform better. However, to truly
+answer this question requires further research and performance measurements, as
+well as considerations around how such things would be integrated into Plutus
+Core.
 
 ### Programmable bootstrapping and costing onchain
 
@@ -208,11 +215,11 @@ the biggest benefits of TFHE and programmable bootstrapping, namely the ability
 to 'hide' the computation you want to perform on the data. Thus, this solution
 appears unviable.
 
-As mentioned previously, this concern arises regardless of whether we choose the
-native or the non-native approach. Even if Cardano nodes themselves would not
-perform the TFHE computations, we must still somehow assess a cost to sending
-the computation via the Zama protocol (and awaiting the result), which runs into
-the same issue as doing the computation 'ourselves'.
+As mentioned previously, this concern arises regardless of what approach we
+choose. Even if the Cardano nodes would not perform TFHE computations
+themselves, we must still somehow assess a cost to sending the computation via
+the Zama protocol (and awaiting the result), which runs into the same issue as
+doing the computation 'ourselves'.
 
 ## Copyright
 
@@ -224,3 +231,4 @@ This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [grumplestiltskin]: https://github.com/mlabs-haskell/grumplestiltskin/tree/milestone-2
 [sha512-plutus]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/SHA512.hs
 [ed25519-plutus]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/Ed25519.hs
+[rust-binds]: https://github.com/cardano-scaling/haskell-accumulator
