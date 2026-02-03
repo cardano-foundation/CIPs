@@ -141,7 +141,7 @@ possible solutions.
 ### Choice of approach
 
 Each of the three previously-described approaches to making TFHE capabilities
-available have advantages and drawbacks, which makes the choice between then
+available have advantages and drawbacks, which makes the choice between them
 non-obvious. Which approach is the correct choice depends on many factors, some
 of which will require further research to properly assess. We present the
 factors we are currently aware of below.
