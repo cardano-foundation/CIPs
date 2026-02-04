@@ -87,7 +87,7 @@ Spam prevention options:
 
 ### Should Onchain Treasury Participate in DeFi?
 
-In Polkadot ecosystem, a large part of treasury activities are denominated in stables rather than its native token DOT. In order to meet such demand, Polkadot treausry indeed directly interacting with DeFi project to conduct dollar cost averaging selling DOT into stables. Do we want Cardano treasury to be able to participate in DeFi like Polkadot? Or do we prefer to stay clean and only use CMAT as custody of multi-assets only while conducting most active management offchain?
+In Polkadot ecosystem, a large part of treasury activities are denominated in stables rather than its native token DOT. In order to meet such demand, Polkadot treasury indeed directly interacting with DeFi project to conduct dollar cost averaging selling DOT into stables. Do we want Cardano treasury to be able to participate in DeFi like Polkadot? Or do we prefer to stay clean and only use CMAT as custody of multi-assets only while conducting most active management offchain?
 
 ### Technology Path in Implementation
 
