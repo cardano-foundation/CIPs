@@ -1,11 +1,12 @@
 ---
-CPS: TBD
+CPS: 26
 Title: Fully homomorphic encryption with programmable bootstrapping
 Category: Plutus
 Status: Open
 Authors: Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
-Discussions: https://github.com/cardano-foundation/CIPs/pull/1143
+Discussions: 
+    - Original discussion: https://github.com/cardano-foundation/CIPs/pull/1143
 Created: 2026-01-29
 License: Apache-2.0
 ---
@@ -226,7 +227,7 @@ doing the computation 'ourselves'.
 This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 [fully-homomorphic-encryption]: https://en.wikipedia.org/wiki/Homomorphic_encryption
-[tfhe]: https://en.wikipedia.org/wiki/Homomorphic_encryption
+[tfhe]: https://tfhe.github.io/tfhe/ 
 [zama]: https://www.zama.org/
 [grumplestiltskin]: https://github.com/mlabs-haskell/grumplestiltskin/tree/milestone-2
 [sha512-plutus]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/SHA512.hs
