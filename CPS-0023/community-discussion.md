@@ -44,7 +44,7 @@ Overall no strong opposition at general to the CMAT itself, seems that very much
 
 ### Full Recording
 
-The full recording is avaiable at YouTube - <https://www.youtube.com/watch?v=b-Vimpso3qw>
+The full recording is available on YouTube - <https://www.youtube.com/watch?v=b-Vimpso3qw>
 
 ### Full Transcript
 
