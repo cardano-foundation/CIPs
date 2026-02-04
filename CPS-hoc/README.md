@@ -255,11 +255,15 @@ UPLC, this would put it firmly outside the scope of this CPS. However, without
 _some_ way of handling the 'measuring' of applications of a fixed-point, it is
 hard to see how 'measuring' function arguments in general could ever happen.
 
-It is worth mentioning here that many (arguably even most) higher-order builtins
-would not require (or even want) function arguments that try to find fixed
-points of anything. However, even _detecting_ whether a function argument uses a
-fixed-point combinator somewhere is a difficult problem, for all the reasons
-stated previously.
+Another possibility would involve restricting function arguments to higher-order
+builtins to only applying builtins. This would avoid the problem of fixed-point
+combinator use, as no builtin provides this capability. This, however, is
+extremely restrictive: in particular, the standard `let` transform is forbidden
+by this. Arguably, this is less of a problem, as adding a `let` 'arm' to UPLC
+`Term`s is both easy and backwards-compatible. Furthermore, it is worth mentioning 
+that many (arguably even most) higher-order builtins
+would not require (or even want) function arguments that apply arbitrary
+functions.
 
 ## Copyright
 
