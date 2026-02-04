@@ -114,7 +114,7 @@ What technology path is more ideal in pursuing CMAT?
 
 - There is historical reason / previous discussion in ledger team, and make it a deliberate decision to NOT implementing Cardano treasury as an address. Therefore, pathway number 1 is not suggested from there.
 - [CIP159](https://github.com/cardano-foundation/CIPs/pull/1061) is the crucial infrastructure to enable multi-assets treasury withdrawal from user's point of view
-- Prefer to implement the treasury in a simpler way of holding `Value` rather than `Coin`, with extra guardrails on whitelisting and de-whitelisting. From there, also not directly implementing CIP-0159 account as treasury due to first point above.`
+- Prefer to implement the treasury in a simpler way of holding `Value` rather than `Coin`, with extra guardrails on whitelisting and de-whitelisting. From there, also not directly implementing CIP-0159 account as treasury due to first point above.
 
 ### Other Technical Consideration
 
