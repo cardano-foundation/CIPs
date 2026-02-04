@@ -381,37 +381,157 @@ Depending on the substandard and the specific programmable token implementation,
 - The authorization check ensures users maintain control over their tokens (except when third-party actions are explicitly defined)
 - ThirdPartyAct is limited to single-input operations to prevent DoS attacks and ensure predictable seizure behavior
 
+### CIP-113 Version
+
+A **CIP-113 version** is identified by the hash of the bootstrap transaction that initializes the framework (empty registry, protocol params, issuance script). This hash locks in all contract hashes for that deployment.
+
+| Network | Bootstrap Tx Hash (Version) |
+|---------|----------------------------|
+| Preview | `61fae36e28a62a65496907c9660da9cf5d27fa0e9054a04581e1d8a087fbd93e` |
+
 ### Implementing programmable tokens in DeFi protocols
 **TODO This section must be updated**
 
 ### Implementing programmable tokens in wallets and dApps
-**TODO This section must be updated**
+
+Wallets supporting programmable tokens MUST implement:
+1. **Balance queries** — display programmable token holdings
+2. **Transaction history** — track transfers in/out of user's smart wallet
+3. **Native transfers** — build TransferAct transactions (optional, nice-to-have)
+
+Admin operations (mint/burn/freeze/seize) are handled by token-specific dApps.
+
+#### Address Derivation
+
+Smart wallet address format: `(programmableLogicBase, userStakeCredential)`
+
+The `userStakeCredential` can be derived from either the user's payment key or staking key. This is up to the team developing the substandard.
+
+**Preview testnet parameters:**
+```
+programmableLogicBase script hash: f2182b00a37bd746e20575c9af01ab31312213514cd31e872e0a2a3e
+registry address: addr_test1wr3z0me2xnj7crmvwwdkf8d02p2jjyhxpwecp23utf8ywus6w78q6
+```
+
+**Example derivation:**
+
+Given user address `addr_test1qra006fdksqadv3z09a8lqf4aw8n62nmgkra9narr683x9rn2r00tud22p3ylwhk4s85764ndh5zdpnmfmfqleagml4qkhan0d`:
+- Payment key hash: `faf7e92db401d6b222797a7f8135eb8f3d2a7b4587d2cfa31e8f1314`
+- Staking key hash: `7350def5f1aa50624fbaf6ac0f4f6ab36de826867b4ed20fe7a8dfea`
+
+| Stake Credential Source | Prog Token Address |
+|------------------------|-------------------|
+| Payment key | `addr_test1zreps2cq5daaw3hzq46untcp4vcnzgsn29xdx8589c9z50h67l5jmdqp66ezy7t607qnt6u08548k3v86t86x850zv2q8hv2dj` |
+| Staking key | `addr_test1zreps2cq5daaw3hzq46untcp4vcnzgsn29xdx8589c9z50nn2r00tud22p3ylwhk4s85764ndh5zdpnmfmfqleagml4qe650tm` |
+
+#### Balance Queries
+
+Query UTxOs at the user's prog token address:
+
+```bash
+# Blockfrost API
+curl -H "project_id: $BLOCKFROST_API_KEY" \
+  "https://cardano-preview.blockfrost.io/api/v0/addresses/addr_test1zreps2cq5daaw3hzq46untcp4vcnzgsn29xdx8589c9z50nn2r00tud22p3ylwhk4s85764ndh5zdpnmfmfqleagml4qe650tm"
+```
+
+#### Identifying Programmable Tokens
+
+To verify a token is programmable, check if its policy ID exists as a `key` in the registry:
+
+```bash
+# Query registry UTxOs
+curl -H "project_id: $BLOCKFROST_API_KEY" \
+  "https://cardano-preview.blockfrost.io/api/v0/addresses/addr_test1wr3z0me2xnj7crmvwwdkf8d02p2jjyhxpwecp23utf8ywus6w78q6/utxos"
+```
+
+For each UTxO, decode the inline datum — the `key` field contains the policy ID of a registered programmable token.
+
+Example: policy `00216cc4179840e4d355e60cf071137e317d94a8de0fccf43b4b514a` is registered at tx `b0d4869018467a262b3df341f07350a86a38f08431041747f735d8712badf873` output index 2.
+
+#### Transaction History
+
+Follow balance changes at the user's prog token address to reconstruct transfer history.
+
+#### Native Transfers
+
+Example using [MeshSDK](https://meshjs.dev/):
+
+```typescript
+const txBuilder = new MeshTxBuilder({
+  fetcher: provider,
+  submitter: provider,
+});
+
+// Spend programmable token UTxOs
+for (const utxo of selectedUtxos) {
+  txBuilder
+    .spendingPlutusScriptV3()
+    .txIn(utxo.input.txHash, utxo.input.outputIndex)
+    .txInScript(logic_base.cbor)
+    .txInRedeemerValue(spendingRedeemer, "JSON")
+    .txInInlineDatumPresent();
+}
+
+// Withdraw-zero pattern for transfer validation
+txBuilder
+  .withdrawalPlutusScriptV3()
+  .withdrawal(substandard_transfer.reward_address, "0")
+  .withdrawalScript(substandard_transfer._cbor)
+  .withdrawalRedeemerValue(substandardTransferRedeemer, "JSON")
+
+  .withdrawalPlutusScriptV3()
+  .withdrawal(logic_global.reward_address, "0")
+  .withdrawalScript(logic_global.cbor)
+  .withdrawalRedeemerValue(programmableLogicGlobalRedeemer, "JSON")
+  .requiredSignerHash(senderCredential.toString())
+
+  // Outputs
+  .txOut(changeAddress, [{ unit: "lovelace", quantity: "1000000" }]);
+
+if (returningAmount > 0) {
+  txBuilder
+    .txOut(senderAddress, returningAssets)
+    .txOutInlineDatumValue(tokenDatum, "JSON");
+}
+
+txBuilder
+  .txOut(targetAddress, recipientAssets)
+  .txOutInlineDatumValue(tokenDatum, "JSON")
+
+  // Reference inputs (protocol params + registry)
+  .readOnlyTxInReference(protocolParamsUtxo.input.txHash, protocolParamsUtxo.input.outputIndex)
+  .readOnlyTxInReference(progTokenRegistry.input.txHash, progTokenRegistry.input.outputIndex)
+
+  .txInCollateral(collateral.input.txHash, collateral.input.outputIndex)
+  .selectUtxosFrom(walletUtxos)
+  .changeAddress(changeAddress);
+
+return await txBuilder.complete();
+```
+
+Full implementation with parameter derivation: [transfer.ts](https://github.com/cardano-foundation/cip113-programmable-tokens/blob/main/src/programmable-tokens-frontend/lib/mesh-sdk/transactions/transfer.ts#L25)
 
 #### Existing substandards
 
-**TODO This section must be updated**
-
-In order to validate a transfer, transfer managers MAY need to read informations about the state of the users involved in the transaction.
-
-However, depending on the implementation, said state MAY be managed in different ways.
-
-Some examples of state management may be:
-
+Substandards define token-specific behavior (Layer 3 components). Each substandard MAY manage user state differently:
 - no state
-- one state per user involved in the spending, to be queried by NFT.
-- one state per user involved in the transfer (both inputs and outputs), to be queried by NFT.
-- a single reference input representing the root of a merkleized state.
+- one state per user involved in the spending, queried by NFT (e.g., sender must provide a reference input containing their whitelist NFT)
+- one state per user involved in the transfer (inputs and outputs), queried by NFT (e.g., both sender and receiver must provide reference inputs proving KYC status)
 
-And many more state managements are possible, depending on the specific implementation.
+**Available substandards:**
 
-For this reason, we make explicit the need for sub standards
+| Substandard | Description | Repository |
+|-------------|-------------|------------|
+| **Dummy Token** | Simplest possible programmable token — requires a specific redeemer to allow mint/burn/transfer. Useful for developers getting familiar with the prog token stack. | [dummy](https://github.com/cardano-foundation/cip113-programmable-tokens/tree/main/src/substandards/dummy) |
+| **Freeze and Seize** | Simplified stablecoin contract with compliance features (freeze, unfreeze, seize). Useful for testing all prog token capabilities. | [freeze-and-seize](https://github.com/cardano-foundation/cip113-programmable-tokens/tree/main/src/substandards/freeze-and-seize) |
+| **BaFin Standard** | Regulatory-compliant token standard developed by FluidTokens. | [fn-bafin-cardano-sc](https://github.com/FluidTokens/fn-bafin-cardano-sc) |
 
 ## Rationale: how does this CIP achieve its goals?
 The current specification (Version 3.0) is the result of several iterations to create the best standard for programmable tokens.
 This standard safely extends the functionality of tokens on Cardano, in a scalable way and without disruptions, leveraging CNTs that live
 forever in a single smart contract.
 
-The proposal does not affect backward compatibilty being the first proposing a standard for programmability over transfers.
+The proposal does not affect backward compatibility being the first proposing a standard for programmability over transfers.
 
 Existing native tokens are not conflicting with the standard, instead, native tokes are used in this specification for various purposes.
 
