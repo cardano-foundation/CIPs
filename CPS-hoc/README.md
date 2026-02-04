@@ -62,9 +62,9 @@ We can see that both `CaseList` and `CaseData` are actually 'doubly
 higher-order' in their intent: not only do they _take_ functions as arguments,
 they also return a function. These could be costed for the following reasons:
 
-* None of the function arguments are ever called: we instead construct a
-  'dispatch function'. This calls the appropriate function argument based on its
-  (first-order) argument, and this _can_ be costed as a regular lambda.
+* None of the function arguments are ever called by the builtin: we instead construct 
+  a 'dispatch function'. This calls the appropriate function argument based on its
+  (first-order) argument, and this can be treated as a regular lambda.
 * The only thing the 'dispatch function' ends up doing is a pattern match on a
   data type, followed by a dispatch call, which introduces only a fixed and
   known amount of overhead.
