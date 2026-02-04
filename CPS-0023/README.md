@@ -110,7 +110,7 @@ There are several potential ways to implement CMATs:
 
 What technology path is more ideal in pursuing CMAT?
 
-#### Additional Note on Technology Pathway from Cardano Summit Day 0 Discussion'
+#### Additional Note on Technology Pathway from Cardano Summit Day 0 Discussion
 
 - There is historical reason / previous discussion in ledger team, and make it a deliberate decision to NOT implementing Cardano treasury as an address. Therefore, pathway number 1 is not suggested from there.
 - [CIP159](https://github.com/cardano-foundation/CIPs/pull/1061) is the crucial infrastructure to enable multi-assets treasury withdrawal from user's point of view
