@@ -1,6 +1,6 @@
 # Cardano Summit 2025 Day 0 Community Discussion
 
-In Cardano Summiy 2025 Day 0 Governance Day, this topic has been widely discussed in 2 sessions:
+At Cardano Summit 2025 Day 0 Governance Day, this topic has been widely discussed in 2 sessions:
 
 ## Governance Workshop
 
