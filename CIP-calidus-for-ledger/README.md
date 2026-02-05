@@ -249,7 +249,7 @@ This CIP depends on CIP-0151 version 2 and ignores registrations with other
 versions for ledger authorization. If CIP-0151 is revised with a new version,
 this CIP must be updated or superseded to recognize it.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - **Security**: Allows routine voting with a hot key while keeping cold keys
   offline, reducing exposure and operational risk.
