@@ -388,7 +388,57 @@ A **CIP-113 version** is identified by the hash of the bootstrap transaction tha
 | Preview | `61fae36e28a62a65496907c9660da9cf5d27fa0e9054a04581e1d8a087fbd93e` |
 
 ### Implementing programmable tokens in DeFi protocols
-**TODO This section must be updated**
+
+Programmable tokens are compatible with existing DeFi infrastructure. They are standard CNTs that live at the `programmableLogicBase` script address rather than user-controlled addresses.
+
+#### DEX Integration
+
+For AMM-style DEXes (e.g., Minswap, SundaeSwap):
+
+1. **Liquidity Provision**: LP tokens involving programmable tokens MUST be sent to the user's smart wallet address
+2. **Swaps**: Transactions MUST include the `transferLogicScript` withdrawal (via withdraw-zero pattern) and the relevant `registryNode` as reference input
+3. **Batcher Integration**: Batchers can process programmable token swaps by including all required reference inputs and batching multiple CIP-113 transfers in a single transaction
+
+Example implementation: [Minswap CIP-113 DEX](https://minswap-cip113-dev.fluidtokens.com/)
+
+#### Lending Protocols
+
+1. **Collateral**: Protocols receive tokens at a smart wallet address they control; `transferLogicScript` validation applies during deposit/withdrawal
+2. **Liquidations**: Liquidation transactions MUST include proper registry proofs
+3. **Substandard Considerations**: Protocols SHOULD verify the substandard before accepting tokens — some (e.g., freeze-and-seize) allow admin actions that could affect collateral
+
+#### Yield Aggregators and Vaults
+
+Vaults manage programmable tokens by:
+1. Receiving deposits at the vault's smart wallet address
+2. Moving tokens between protocols with proper validation on each transfer
+3. Sending withdrawals to users' smart wallet addresses
+
+#### Token Management dApps
+
+Token issuers use dedicated dApps for policy creation, minting, and admin operations.
+
+Example implementation: [CIP-113 Policy Manager](https://cip113-policy-manager-dev.fluidtokens.com/)
+
+#### Transaction Construction
+
+DeFi protocols constructing transactions with programmable tokens MUST:
+1. Include `registryNode` as reference input for each programmable token policy (or proof of non-registration)
+2. Execute `transferLogicScript` withdrawal (amount = 0) for each programmable token
+3. Send programmable tokens ONLY to properly derived smart wallet addresses (`programmableLogicBase` as payment credential, owner's stake credential)
+
+#### Gas Efficiency
+
+Programmable token transactions have additional script execution costs:
+- Each unique policy requires one registry proof
+- The `transferLogicScript` execution adds to transaction fees
+- Batching multiple transfers of the same token is more efficient than separate transactions
+
+#### Security Considerations
+
+1. **Substandard Verification**: Verify the substandard before integration — review `thirdPartyTransferLogicScript` to understand admin capabilities (freeze, seize, etc.)
+2. **Registry Integrity**: Verify using the canonical registry; monitor for spoofing attempts
+3. **Smart Wallet Security**: Users retain full control via stake credentials; protocols cannot access funds without proper validation
 
 ### Implementing programmable tokens in wallets and dApps
 
