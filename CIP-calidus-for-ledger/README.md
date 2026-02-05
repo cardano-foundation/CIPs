@@ -28,7 +28,7 @@ cold keys offline while preserving backward compatibility and the existing vote
 format defined in CIP-1694. The proposal is ledger-only and requires a future
 hard fork for activation.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIP-1694 assigns SPOs an on-chain voting role in governance actions, but current
 workflow requires pool cold keys to sign vote transactions. Cold keys are
