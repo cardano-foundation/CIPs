@@ -45,15 +45,12 @@ Notably, multi-asset treasuries are not without precedent. Other blockchain ecos
 The good solution to this CPS consists of 3 components:
 
 1. Well articulated proposals considering below:
-
    - Amend the Cardano Constitution:
-
      - To address potential other CNTs in the constitutions
      - Any guardrails in practice for inclusion of CNTs
      - Do we define net change limits in CNTs also
 
    - A new CIP for multi asset treasury covering below areas:
-
      - Exact specification to describe the ledger change
      - Analysis to take network security into account
      - Do we need new protocol parameters for CMAT
@@ -83,7 +80,7 @@ Spam prevention as if only whitelisted tokens can send into the treasury. Do we 
 Spam prevention options:
 
 - Introduce new governance action type with the function to add-new-asset to the treasuy, the gov action would be governed as other gov actions (CIP1694). Also comes with the usual 100k GA deposit.
-- Another alternative is simply coordinate offchain tool set to ignore non-whitelisted CNTs from indexer, but not enforcing onchain.
+- An alternative, which is not an option but related mitigation, is simply coordinate offchain tool set to ignore non-whitelisted CNTs from indexer, but not enforcing onchain.
 
 ### Should Onchain Treasury Participate in DeFi?
 
@@ -95,7 +92,7 @@ There are several potential ways to implement CMATs:
 
 1. Cardano Wallet as Treasury
 
-   > Implementing CMAT through ledger updates which transform the current Cardano Treasury files into an actuall address which can receive, hold and distribute multi assets
+   > Implementing CMAT through ledger updates which transform the current Cardano Treasury into an actuall address which can receive, hold and distribute multi assets
 
 2. Multi Asset Stake Address as Treasury ([CIP-0159](https://github.com/cardano-foundation/CIPs/pull/1061))
 
