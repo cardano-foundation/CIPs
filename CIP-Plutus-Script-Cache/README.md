@@ -1,6 +1,6 @@
 ---
 CIP: ???  
-Title: Plutus Script In-Memory Caching  
+Title: Plutus Script Caching  
 Category: Node  
 Status: Proposed  
 Authors:  
