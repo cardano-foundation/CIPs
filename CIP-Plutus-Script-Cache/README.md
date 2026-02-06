@@ -66,7 +66,7 @@ PlutusScriptCache:
   evictionPolicy: LRU
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This proposal follows the same spirit as performance optimizations in other smart contract chains (e.g. Solana's JIT caching model). It does not modify on-chain structures or Plutus semantics — only the **execution engine of node software**.
 
