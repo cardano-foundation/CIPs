@@ -8,7 +8,7 @@ Authors:
 Implementors: []  
 Discussions:  
   - https://github.com/IntersectMBO/cardano-ledger/blob/master/docs/adr/2024-08-14_009-refscripts-fee-change.md
-  - https://github.com/cardano-foundation/CIPs/pull/1031
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1031
 Created: 2025-05-01  
 License: CC-BY-4.0  
 ---
