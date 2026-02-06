@@ -1,5 +1,5 @@
 ---
-CIP: ???  
+CIP: 174
 Title: Plutus Script Caching  
 Category: Node  
 Status: Proposed  
