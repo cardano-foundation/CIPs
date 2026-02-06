@@ -1,7 +1,7 @@
 ---
 CIP: ???  
 Title: Plutus Script In-Memory Caching  
-Category: Plutus  
+Category: Node  
 Status: Proposed  
 Authors:  
   - Philip DiSarro <philip.disarro@gmail.com>  
