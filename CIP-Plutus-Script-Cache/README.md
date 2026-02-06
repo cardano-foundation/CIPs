@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 We propose introducing a memory-bound, Least Recently Used (LRU) in-memory caching layer within Cardano nodes to store deserialized Plutus scripts. This optimization will significantly reduce redundant deserialization operations and improve node performance, especially in high-throughput environments or dApps with widely reused scripts. Scripts not found in cache are lazily reloaded from transaction data or reference inputs via cold reload.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Currently, each Plutus script must be deserialized every time it is encountered during validation, even if it has been used in many recent transactions. This introduces non-trivial CPU overhead, especially for frequently invoked scripts like validators in DeFi protocols, DEXs, or DAOs.
 
