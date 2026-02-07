@@ -353,6 +353,12 @@ def validate_sections(content: str) -> List[str]:
                           if orig.lower() in missing_sections_lower}
         errors.append(f"Missing required sections: {', '.join(sorted(missing_sections))}")
 
+    # Check for unknown sections (not in required or optional)
+    allowed_sections_lower = required_sections_lower | optional_sections_lower
+    for header in h2_headers:
+        if header.lower() not in allowed_sections_lower:
+            errors.append(f"Unknown section: '{header}'. Only required and optional sections are allowed.")
+
     # Build a mapping from lowercase to expected capitalization
     expected_capitalization = {}
     for section in CPS_REQUIRED_SECTIONS:

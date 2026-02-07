@@ -50,7 +50,9 @@ Non-CIP labels (e.g., `Forum Post`, `Pull Request`) are allowed with any valid U
 
 ## Required Sections (H2 Headers)
 
-The following sections must exist in this order with **exact capitalization**:
+The following sections must exist in this order with **exact capitalization**.
+
+**No other H2 sections are allowed** except the optional sections listed below.
 
 | Order | Section |
 | ----- | ------- |
@@ -63,8 +65,8 @@ The following sections must exist in this order with **exact capitalization**:
 
 ## Optional Sections
 
-The following sections are allowed with exact capitalization
-they can appear after the `Open Questions`:
+The following sections are allowed with exact capitalization.
+They can appear after `Open Questions`:
 
 - `References`
 - `Appendices`
