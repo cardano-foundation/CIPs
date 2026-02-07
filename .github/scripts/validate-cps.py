@@ -79,12 +79,21 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str]]:
     
     # Extract frontmatter (lines between the two --- markers)
     frontmatter_lines = lines[1:end_idx]
-    frontmatter_text = '\n'.join(frontmatter_lines)
-    
+
+    # Preprocess: quote standalone '?' values (YAML interprets '?' as explicit key indicator)
+    processed_lines = []
+    for line in frontmatter_lines:
+        # Match lines like "CPS: ?" or "Category: ?" and quote the ?
+        if re.match(r'^[A-Za-z][A-Za-z ]*:\s+\?+\s*$', line):
+            line = re.sub(r':\s+(\?+)\s*$', r': "\1"', line)
+        processed_lines.append(line)
+
+    frontmatter_text = '\n'.join(processed_lines)
+
     # Extract remaining content (everything after the closing ---)
     remaining_lines = lines[end_idx + 1:]
     remaining_content = '\n'.join(remaining_lines)
-    
+
     try:
         frontmatter = yaml.safe_load(frontmatter_text)
         if frontmatter is None:
