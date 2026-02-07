@@ -30,8 +30,26 @@ jobs:
         run: |
           pip install pyyaml jsonschema
 
-      - name: Validate CPS files
+      - name: Get CPS files to validate
+        id: get-files
         run: |
-          FILES="${{ github.event.inputs.files }}"
+          # Get changed CPS files from the push
+          FILES=$(git diff --name-only HEAD~1 HEAD | grep -E '^CPS-[^/]+/README\.md$' || true)
+
+          if [ -z "$FILES" ]; then
+            echo "No CPS README.md files to validate"
+            echo "has_files=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Convert newlines to spaces for passing as arguments
+          FILES_SPACE=$(echo "$FILES" | tr '\n' ' ')
+          echo "has_files=true" >> $GITHUB_OUTPUT
+          echo "files=$FILES_SPACE" >> $GITHUB_OUTPUT
+
+      - name: Validate CPS files
+        if: steps.get-files.outputs.has_files == 'true'
+        run: |
+          FILES="${{ steps.get-files.outputs.files }}"
           echo "Validating CPS files: $FILES"
           python3 .github/scripts/validate-cps.py $FILES
