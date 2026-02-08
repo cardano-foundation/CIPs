@@ -33,8 +33,8 @@ jobs:
       - name: Get CPS files to validate
         id: get-files
         run: |
-          # Get changed CPS files from the push
-          FILES=$(git diff --name-only HEAD~1 HEAD | grep -E '^CPS-[^/]+/README\.md$' || true)
+          # Get changed CPS files from the push (exclude deleted files)
+          FILES=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD | grep -E '^CPS-[^/]+/README\.md$' || true)
 
           if [ -z "$FILES" ]; then
             echo "No CPS README.md files to validate"
