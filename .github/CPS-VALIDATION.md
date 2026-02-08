@@ -23,7 +23,7 @@ and no extra fields are allowed.
 
 | Field | Order | Validation Rules |
 | ----- | ----- | ---------------- |
-| **CPS** | 1 | Positive integer (`1`, `42`) or `?`/`??`/etc. for unassigned |
+| **CPS** | 1 | Positive integer (`1`, `42`) or `?`/`??`/etc. for unassigned. No leading zeros. |
 | **Title** | 2 | 1-100 characters, no backticks (`` ` ``) |
 | **Category** | 3 | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | `Open`, `Solved`, or `Inactive` (optionally with reason, e.g., `Inactive (Superseded)`) |
@@ -66,8 +66,10 @@ The following sections must exist in this order with **exact capitalization**.
 ## Optional Sections
 
 The following sections are allowed with exact capitalization.
-They can appear after `Open Questions`:
+They **must** appear after `Open Questions` and before `Copyright`:
 
 - `References`
 - `Appendices`
 - `Acknowledgments` / `Acknowledgements`
+
+Optional sections appearing before any required section (other than `Copyright`) will cause validation to fail.

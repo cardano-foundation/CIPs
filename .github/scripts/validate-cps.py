@@ -51,32 +51,32 @@ with open(SCHEMA_PATH, 'r', encoding='utf-8') as f:
     CPS_HEADER_SCHEMA = json.load(f)
 
 
-def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str]]:
+def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Optional[List[str]]]:
     """Parse YAML frontmatter from markdown content.
-    
+
     Returns:
-        Tuple of (frontmatter_dict, remaining_content) or (None, content) if no frontmatter
+        Tuple of (frontmatter_dict, remaining_content, raw_lines) or (None, content, None) if no frontmatter
     """
     # Check for frontmatter delimiters - must start with ---
     if not content.startswith('---'):
-        return None, content
-    
+        return None, content, None
+
     # Find the closing delimiter (--- on its own line)
     # Split on '\n---\n' or '\n---' at end of content
     lines = content.split('\n')
     if lines[0] != '---':
-        return None, content
-    
+        return None, content, None
+
     # Find the closing ---
     end_idx = None
     for i in range(1, len(lines)):
         if lines[i] == '---':
             end_idx = i
             break
-    
+
     if end_idx is None:
-        return None, content
-    
+        return None, content, None
+
     # Extract frontmatter (lines between the two --- markers)
     frontmatter_lines = lines[1:end_idx]
 
@@ -97,10 +97,13 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str]]:
     try:
         frontmatter = yaml.safe_load(frontmatter_text)
         if frontmatter is None:
-            return None, content
-        return frontmatter, remaining_content
+            return None, content, None
+        return frontmatter, remaining_content, frontmatter_lines
     except yaml.YAMLError as e:
-        return None, content
+        return None, content, None
+    except ValueError as e:
+        # Catches invalid date values that YAML tries to parse (e.g., month 13)
+        return None, content, None
 
 
 def extract_h2_headers(content: str) -> List[str]:
@@ -397,6 +400,25 @@ def validate_sections(content: str) -> List[str]:
             f"Got: {', '.join(found_required_order)}"
         )
 
+    # Check that optional sections appear only between "Open Questions" and "Copyright"
+    # Optional sections must not appear before any required section except Copyright
+    optional_sections_normalized = {s.lower() for s in CPS_OPTIONAL_SECTIONS}
+    required_before_optional = [s for s in CPS_REQUIRED_SECTIONS_ORDER if s != 'Copyright']
+
+    for i, header in enumerate(canonical_headers):
+        header_lower = header.lower()
+        if header_lower in optional_sections_normalized:
+            # This is an optional section - check what comes after it
+            for j in range(i + 1, len(canonical_headers)):
+                following_header = canonical_headers[j]
+                # If a required section (other than Copyright) follows an optional section, that's an error
+                if following_header in required_before_optional:
+                    errors.append(
+                        f"Optional section '{header}' appears before required section '{following_header}'. "
+                        f"Optional sections must appear after 'Open Questions' and before 'Copyright'."
+                    )
+                    break
+
     return errors
 
 
@@ -435,11 +457,18 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
         return False, [f"Error reading file: {e}"]
     
     # Parse frontmatter
-    frontmatter, remaining_content = parse_frontmatter(content)
+    frontmatter, remaining_content, raw_lines = parse_frontmatter(content)
     if frontmatter is None:
         errors.append("Missing or invalid YAML frontmatter (must start with '---' and end with '---')")
         return False, errors
-    
+
+    # Check for leading zeros in CPS field (YAML loses this information)
+    if raw_lines:
+        for line in raw_lines:
+            if re.match(r'^CPS:\s+0\d+', line):
+                errors.append("CPS number must not have leading zeros")
+                break
+
     # Validate header
     header_errors = validate_header(frontmatter)
     errors.extend(header_errors)
