@@ -115,7 +115,7 @@ Traditional governance mechanisms often suffer from inefficiencies, slow decisio
 - How much should the rewards be based on ADA delegation, the DRep’s participation or other factors?
 - What’s the impact of stakeholder rewards on Cardano’s treasury?
 
-## **References**
+## References
 - [Reward Schemes and Committee Sizes in Proof of Stake Governance](https://arxiv.org/abs/2406.10525)
 - [Should DReps receive compensation? Poll]()
 ## Copyright
