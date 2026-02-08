@@ -13,7 +13,6 @@ Each namespace defines a non-intersecting slices of the data.
 | gov/proposals/v0     | Update proposals                | 34       | address of the proposal in transactions |
 | pool_stake/v0        | Stake delegation                | 28       | stake pool keyhash |
 | nonce/v0             | Nonces                          | 1        | zero key |
-| pots/v0              | Accounting pots (reserves etc.) | 8        | epoch |
 | snapshots/v0         | snapshots                       | 32       | key type, stage, value type (see docs) |
 | utxo/v0              | UTXOs                           | 34       | utxo address in the transaction |
 

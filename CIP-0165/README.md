@@ -70,7 +70,6 @@ Each logical table/type is a namespace identified by a canonical string (e.g., `
 | gov/proposals/v0    | Update proposals                |
 | pool_stake/v0       | Stake delegation                |
 | nonce/v0            | Nonces                          |
-| pots/v0             | Accounting pots (reserves etc.) |
 | snapshots/v0        | snapshots                       |
 | utxo/v0             | UTXOs                           |
 
