@@ -1,5 +1,6 @@
 {
     "@context": {
+        "@language": "en",
         "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
         "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
         "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
