@@ -45,19 +45,23 @@ to reference their own outputs for validation purposes.
 
 ### Use cases
 
-#### Stateful dApps
+#### Combine publishing reference scripts with first usage
 
-Even for simple dApps consisting of a single script, currently deploying these
-dApps on Cardano requires multiple transactions. The minimal workflow for such
-a stateful dApp requires (1) deploying the dApp's script in the UTxO and (2)
-referencing this script (via reference inputs) to mint the relevant state
-tokens.
+Currently deploying stateful dApps on Cardano requires a multi-transaction
+workflow:
+- First transaction: Deploy the dApp's script as a reference script in the
+  UTxO.
+- Second transaction: Reference this script (via reference inputs) to mint
+  state tokens.
+
+(Note that this can be achieved swapping the order of transactions. However, it
+still requires two transactions)
 
 With the proposed changes, such applications could be deployed in a single
-transaction, which simultaneously produces the reference script UTxO's and
-mints the state token. This eliminates the need for submitting multiple
-transactions, thereby reducing costs, while at the same time improving the
-developer's experience.
+transaction, which simultaneously deploys the reference script UTxO's and mints
+the state token. This eliminates the need for submitting multiple transactions,
+thereby reducing costs, while at the same time improving the developer's
+experience.
 
 #### Nested transactions: order-agnostic script sharing across a batch
 
