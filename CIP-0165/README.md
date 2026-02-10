@@ -139,7 +139,7 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 - `chunk_format` : `u8` - format of the chunks, indicating compression scheme (see data compression table below)
 - `namespace` : `bstr` — namespace of the values stored in the CHUNK
 - `entries` : `DataEntry` — list of length-prefixed data entries
-- `footer {entries_count: u64, chunk_hash: blake28}` — hash value of the chunk of data, is used to keep integrity of the file.
+- `footer {entries_count: u32, chunk_hash: blake28}` — hash value of the chunk of data, is used to keep integrity of the file.
 
 `DataEntry` is a blob of a key-valued data. The structure of the `DataEntry` is the following:
 
