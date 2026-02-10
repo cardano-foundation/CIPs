@@ -24,40 +24,19 @@ the successful execution of a script in order to change owner.
 
 ## Motivation: Why is this CIP necessary?
 
-This CIP proposes a solution of Cardano Problem Statement 3
-([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/947)).
+Cardano native tokens (CNTs) are powerful but lack programmable transfer logic. Once minted, CNTs can move freely between addresses without restrictions. This limitation prevents implementing common token requirements such as:
 
-If adopted it would introduce programmability of the transfer and lifecycle of tokens.
-The solution proposed will meet these common needs:
+- **Regulated stablecoins** — Issuers cannot enforce compliance rules, freeze accounts, or seize tokens for legal/regulatory reasons
+- **Transfer restrictions** — No way to implement allowlists, denylists, or KYC requirements on token transfers
+- **Tokenized securities** — Securities require transfer restrictions and regulatory compliance that CNTs cannot enforce
 
-> 1) How to support wallets to start supporting validators?
+This CIP introduces programmable tokens — tokens that require successful script execution to change ownership. The standard enables these capabilities without a hard fork, using existing Cardano primitives (native tokens, stake credentials, withdraw-zero pattern).
 
-With the use of standard smart wallets, that the user can derive deterministically,
-and an on-chain registry of programmable tokens. Any new programmable token that is 
-registered in the on-chain registry is immediately supported by the smart wallet.
-
-> 2) How would wallets know how to interact with these tokens? - smart contract registry?
-
-The requirements for a valid transaction are described in this standard.
-
-From an indipendent party implementing the standard perspective,
-it will be clear how and where to find the necessary reference inputs
-to satisfy the smart wallet that handles the programmable tokens.
-
-> 3) Is there a possibility to have a transition period, so users won't have their funds blocked until the wallets start supporting smart tokens?
-
-Programmable tokens are normal native tokens in a smart wallet.
-
-There is no need for a transition period, because there will be no change from the ledger persepective.
-
-> 4) Can this be achieved without a hard fork?
-
-Yes.
-
-> 5) How to make validator scripts generic enough without impacting costs significantly?
-
-Validator scripts will be standard "withdraw 0" contracts.
-The impact on costs is strictly dependend on the specific implementation.
+The design addresses [CPS-0003](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0003/README.md) by providing:
+- Deterministic smart wallet addresses for immediate wallet support
+- An on-chain registry for discoverability
+- No transition period required — programmable tokens are normal CNTs from the ledger's perspective
+- Minimal cost impact via withdraw-zero validators
 
 ## Specification
 
@@ -100,7 +79,7 @@ These components form the common validation infrastructure shared by ALL program
 
 These components are token-specific and define the custom behavior of each programmable token. They are deployed per token and implement the "substandard":
 
-- `transferLogicScript`: A token-specific Withdraw-0 script that implements the custom transfer logic for user-initiated transfers. This script validates whether a transfer is allowed based on the token's rules (e.g., whitelist checks, transfer limits, compliance rules).
+- `transferLogicScript`: A token-specific Withdraw-0 script that implements the custom transfer logic for user-initiated transfers. This script validates whether a transfer is allowed based on the token's rules (e.g., allowlist checks, transfer limits, compliance rules).
 - `thirdPartyTransferLogicScript`: A token-specific Withdraw-0 script that defines admin/third-party actions on the programmable token. This includes privileged operations like seizure, forced transfers, or emergency actions that can be executed without explicit user permission.
 - `issuanceLogicScript`: A token-specific Withdraw-0 script that implements the custom minting/burning logic for the programmable token. It defines who can mint new tokens, under what conditions, and the burning rules.
 - `issuanceMintingPolicy`: The Minting script that mints/burns programmable tokens. While the script code is shared across all programmable tokens, each deployment is token-specific because the policy is parameterized by the hash of the token's specific issuanceLogicScript.
@@ -117,7 +96,7 @@ The creator wants to release a new programmable token.
 
 The registry (along with registrySpendScript and registryMintingPolicy), programmableLogicBase, and programmableLogicGlobal are already deployed on-chain as the shared infrastructure (Layers 1 and 2).
 
-The creator writes a new transferLogicScript where they define the rules to transfer the new token (e.g., whitelist checks, transfer limits).
+The creator writes a new transferLogicScript where they define the rules to transfer the new token (e.g., allowlist checks, transfer limits).
 
 (Optional) Then they write a new thirdPartyTransferLogicScript where they define who are the admins and what actions they can do without permission of any other user (e.g., seizure, forced transfers).
 
@@ -548,7 +527,7 @@ Full implementation with parameter derivation: [transfer.ts](https://github.com/
 
 Substandards define token-specific behavior (Layer 3 components). Each substandard MAY manage user state differently:
 - no state
-- one state per user involved in the spending, queried by NFT (e.g., sender must provide a reference input containing their whitelist NFT)
+- one state per user involved in the spending, queried by NFT (e.g., sender must provide a reference input containing their allowlist NFT)
 - one state per user involved in the transfer (inputs and outputs), queried by NFT (e.g., both sender and receiver must provide reference inputs proving KYC status)
 
 **Available substandards:**
