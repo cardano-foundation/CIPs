@@ -39,7 +39,7 @@ For detailed evolution history, see the [Rationale](#rationale-how-does-this-cip
 
 ## Motivation: why is this CIP necessary?
 
-This CIP proposes a solution at the Cardano Problem Statement 3 
+This CIP proposes a solution of Cardano Problem Statement 3
 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/947)).
 
 If adopted it would allow to introduce the programmability over the transfer of tokens
