@@ -93,9 +93,9 @@ introduced three builtin operations:
 * `ListToArray`, which converts a builtin list into a builtin array with the
   same contents in the same order.
 
-The intent behind CIP-138 arrays is to act as a 'transient' type within scripts:
-builtin arrays have no `Data` encoding that doesn't involve going through a
-builtin list. This creates two significant limitations:
+Currently, CIP-138 arrays lack a `Data` encoding, and no existing ledger type
+makes use of them. Thus, they currently act as a 'transient' type within
+scripts. However, there are two significant limitations to this use case:
 
 * There is no way to programmatically create a builtin array without first going
   through a builtin list; and
@@ -107,7 +107,14 @@ Both of these mean that any non-trivial computation involving arrays onchain
 requires a large number of intermediate lists. Not only do these take up onchain
 resources that shouldn't really have to be spent, given that they require a lot
 of 'hand rolling', they increase the possibility of errors (such as the infamous
-'off by one').
+'off by one'). 
+
+These issues become an even bigger problem if CIP-138 arrays were to get a
+native `Data` encoding, or if their use in ledger types were to increase. Unless
+scripts only need to check lengths or access elements, working with arrays
+provided by datums or ledger types would be much less convenient than for lists,
+which would paradoxically make such improvements far less useful than if they
+kept using lists.
 
 One solution would be to provide a builtin similar to the following:
 
