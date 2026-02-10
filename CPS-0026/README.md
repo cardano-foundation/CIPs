@@ -6,7 +6,7 @@ Status: Open
 Authors: Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions: 
-    - Original discussion: https://github.com/cardano-foundation/CIPs/pull/1143
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1143
 Created: 2026-01-29
 License: Apache-2.0
 ---
@@ -51,7 +51,7 @@ benchmarks in Plutus, which is why Cardano scripts have access to various
 cryptographic primitives as builtin operations. Something similar would need to
 exist for TFHE to be usable, but as current, it does not.
 
-## Use cases
+## Use Cases
 
 The use cases for TFHE would primarily be similar to those that people use
 regular cloud services for. Even in such cases, TFHE would be advantageous, as
