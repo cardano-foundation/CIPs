@@ -37,7 +37,7 @@ Previous specification versions are available in the [deprecated/](./deprecated/
 
 For detailed evolution history, see the [Rationale](#rationale-how-does-this-cip-achieve-its-goals) section.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This CIP proposes a solution of Cardano Problem Statement 3
 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/947)).
