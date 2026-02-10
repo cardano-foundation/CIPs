@@ -3,7 +3,6 @@ CIP: 113
 Title: Programmable token-like assets
 Category: Tokens
 Status: Proposed
-Version: 3.0
 Authors:
     - Michele Nuzzi <michele.nuzzi.2014@gmail.com>
     - Matteo Coppola <m.coppola.mazzetti@gmail.com>
@@ -22,20 +21,6 @@ This CIP proposes a standard for programmable tokens.
 
 We use the term "programmable tokens" to describe the family of tokens that require
 the successful execution of a script in order to change owner.
-
-## Specification Versions
-
-**Current Version: 3.0** (This document)
-
-This specification has evolved through community feedback:
-- **Version 0** (deprecated) - Initial proposal with Merkle tree account uniqueness, included Approve/TransferFrom patterns
-- **Version 1** (deprecated) - Removed Merkle trees, but had UTxO contention issues on receiver side
-- **Version 2** (deprecated) - Introduced stateManager/transferManager pattern with user registration requirement
-- **Version 3** (current) - Removed registration requirement, simplified to transferLogicScript pattern
-
-Previous specification versions are available in the [deprecated/](./deprecated/) directory.
-
-For detailed evolution history, see the [Rationale](#rationale-how-does-this-cip-achieve-its-goals) section.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -584,6 +569,18 @@ The proposal does not affect backward compatibility being the first proposing a 
 Existing native tokens are not conflicting with the standard, instead, native tokes are used in this specification for various purposes.
 
 ### History of the proposed standard
+
+This specification has evolved through community feedback:
+
+| Version | Status | Description |
+|---------|--------|-------------|
+| 0 | deprecated | Initial proposal with Merkle tree account uniqueness, included Approve/TransferFrom patterns |
+| 1 | deprecated | Removed Merkle trees, but had UTxO contention issues on receiver side |
+| 2 | deprecated | Introduced stateManager/transferManager pattern with user registration requirement |
+| 3 | **current** | Removed registration requirement, simplified to transferLogicScript pattern |
+
+Previous specification versions are available in the [deprecated/](./deprecated/) directory.
+
 The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) (Version 0) was quite different by the one shown in this document
 
 Main differences were:
