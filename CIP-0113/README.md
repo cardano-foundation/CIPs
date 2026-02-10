@@ -42,10 +42,8 @@ For detailed evolution history, see the [Rationale](#rationale-how-does-this-cip
 This CIP proposes a solution of Cardano Problem Statement 3
 ([CPS-0003](https://github.com/cardano-foundation/CIPs/pull/947)).
 
-If adopted it would allow to introduce the programmability over the transfer of tokens
-(programmable tokens) and their lifecycle.
-
-The solution proposed includes (answering to the open questions of CPS-0003):
+If adopted it would introduce programmability of the transfer and lifecycle of tokens.
+The solution proposed will meet these common needs:
 
 > 1) How to support wallets to start supporting validators?
 
