@@ -242,9 +242,6 @@ types:
         type: digest
         doc: blake28 hash of the entries in the record
 enums:
-  network_id:
-    0: mainnet
-    1: testnet
   chunk_format:
     0: raw
     1: zstd
