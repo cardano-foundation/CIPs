@@ -1,6 +1,6 @@
 ---
-CIP: "?"
-Title: "Ouroboros Tachýs - Ouroboros with a public slot leader schedule"
+CIP: ????
+Title: Ouroboros Tachys - faster Cardano partner chains
 Category: Consensus
 Status: Proposed
 Authors:
