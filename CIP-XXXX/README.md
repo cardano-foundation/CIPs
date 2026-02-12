@@ -358,7 +358,7 @@ Advantages
 Disadvantages:
 
  * It has no peer-reviewed specification yet. This CIP is the first step towards this.
-
+ * Other disadvantages may become apparent during the review process.
 
 
 ## Path to Active
