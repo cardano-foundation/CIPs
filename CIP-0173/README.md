@@ -14,104 +14,147 @@ License: CC-BY-4.0
 
 ## Abstract
 
-The Cardano Constitution requires treasury withdrawals and budgets to respect a net change limit for the treasury balance. Today, that limit is set as a periodic governance value that expires, forcing repeated proposals and votes. This CIP converts the Net Change Limit (NCL) into two updatable protocol parameters: `netChangeLimit` (a percentage) and `netChangePeriod` (an epoch lookback count). Together, they define an adaptive cap based on recent treasury revenue:
+The Cardano Constitution requires treasury withdrawals to respect a net change limit. Today, the net change limit is set via on-chain Info Actions that must be repeatedly voted on. In practice, multiple NCL Info Actions can coexist with different periods, thresholds, and approval timing, creating ambiguity about which one is legitimate and how the Constitutional Committee (CC) should treat those actions.
 
-`cap = (netChangeLimit / 100) * (treasury revenue over the previous netChangePeriod epochs)`
+This CIP removes that ambiguity by defining a single ledger-enforced mechanism.
 
-The cap applies to Cardano Blockchain ecosystem budgets and treasury withdrawals, directly tying spending to revenue over a recent, on-chain period. The ledger does not enforce this cap directly; instead, Constitutional Committee (CC) members use these parameters and ledger data to evaluate constitutionality under the Constitution's treasury guardrails. This design removes repeated "set a new NCL" votes while keeping constitutional oversight intact.
+It introduces two governance-updatable protocol parameters:
+
+- `netChangeLimit`: integer percentage (`>= 0`)
+- `netChangePeriod`: epoch lookback window (`> 0`)
+
+The ledger computes a withdrawal cap from recent treasury revenue (fees + emissions) and rejects Treasury Withdrawal governance actions at enactment when they exceed the remaining headroom.
+
+`cap(E) = floor(netChangeLimit * revenue(E) / 100)`
+
+where `revenue(E)` is treasury revenue over the previous `netChangePeriod` epochs.
+
+This creates a single canonical on-chain source of truth for this rule while preserving constitutional guardrails as a complementary mechanism for constraining parameter values.
 
 ## Motivation: why is this CIP necessary?
 
-The Constitution requires that (a) treasury withdrawals not violate a net change limit and (b) such withdrawals occur under an approved budget, with the Constitutional Committee ensuring constitutionality. Today, the NCL is treated as a time-bound governance value that must be re-proposed and re-ratified on a recurring basis. This leads to:
+The net change limit is currently set via on-chain Info Actions, which creates a repetitive and operationally heavy voting cycle. Those NCLs are typically forward-looking projections rather than backward-looking measurements of realized treasury flows. Multiple NCL Info Actions are often discussed or voted around the same period, and they may differ in projected period, approval thresholds, and approval timing. This leads to ambiguity about which NCL should govern treasury withdrawals.
 
-- **Redundant voting and fatigue.** The community must repeatedly vote on substantially the same limit to avoid expiry.
-- **Inconsistent budgeting cadence.** Budgets and withdrawals must align with the timing of NCL renewals rather than with operational needs.
-- **Procedural overhead.** Constitutional Committee review and governance action scheduling are burdened by periodic re-authorization that does not change policy intent.
+Key ambiguities include:
 
-By making NCL an updatable protocol parameter, Cardano can keep a standing, constitutionally grounded cap that is adjustable when needed but not forced to expire. This is consistent with the Constitution's treasury guardrails while making governance more predictable and less repetitive.
+- Competing NCL references. If multiple NCL Info Actions exist, should the legitimate one be the highest approved, the most recent approved, or something else?
+- CC role boundary. Should the CC approve NCL Info Actions themselves, or only use NCL when assessing the constitutionality of subsequent Treasury Withdrawals?
+
+This CIP moves to a ledger-enforced, lookback-based model over realized treasury revenue and withdrawals. Ledger-native enforcement is needed so that:
+
+- Rule application is deterministic. Equivalent actions are treated equivalently by all nodes.
+- Interpretation ambiguity is removed. Code is law.
+- Governance overhead is reduced. CC review no longer carries primary responsibility for arithmetic limit checks.
+- Budgeting remains adaptive to revenue. Spending capacity still scales from recent treasury inflows.
 
 ## Specification
 
 ### Overview
 
-This CIP introduces two protocol parameters that define the Net Change Limit (NCL):
+This CIP defines a ledger rule that enforces a net change limit for **Treasury Withdrawal** governance actions.
 
-- `netChangeLimit`: **positive integer percentage** (e.g., 20 means 20%). May be greater than 100.
-- `netChangePeriod`: **positive integer** number of epochs used as the revenue lookback window (default **73** epochs, ~1 year).
+### Protocol parameters
 
-These parameters are classified as **governance parameters** and are updatable via the standard protocol parameter change governance action. This CIP **recommends** a default value for `netChangePeriod` of **73 epochs** (approximately one year) to align with the Constitution's expected budget cadence; governance may adjust it as needed. The value of `netChangeLimit` is intentionally left to governance and will be selected through the implementation plan. The parameters do not introduce any new ledger enforcement rules for treasury withdrawals or budgets; instead, they are used by the Constitutional Committee to assess constitutionality.
+This CIP defines or updates two governance parameters:
 
-### Cap definition
+- `netChangeLimit`: integer percentage, `>= 0`.
+  - `0` is explicitly valid and means no treasury withdrawals can be enacted.
+  - Values greater than `100` are valid and would simply allow deficit spending.
+- `netChangePeriod`: integer number of epochs, `> 0`.
 
-For any point-in-time constitutional review of a budget or treasury withdrawal action, the NCL cap is computed as:
+No upper or lower bounds are imposed by this CIP for either parameter. These could optionally be set in the Constitution and enforced by guardrail scripts.
 
-`cap = (netChangeLimit / 100) * (treasury revenue over the previous netChangePeriod epochs)`
+### Revenue and withdrawal accounting
 
-**Treasury revenue** for the lookback period is defined as the sum of all inflows to the treasury recorded on-chain for those epochs, excluding withdrawals. In practice, this is derived from ledger-recorded treasury changes (e.g., treasury cut of rewards, fees, donations, or other protocol-defined inflows), as observed on-chain.
+For an enactment occurring in epoch `E`, let `N = netChangePeriod`.
 
-### Application to governance actions
+The lookback window is the previous `N` epochs:
 
-The Constitutional Committee should use the computed cap when evaluating:
+`[E - N, E - 1]`
 
-- **Cardano Blockchain ecosystem budgets** (Info actions) that authorize treasury withdrawals.
-- **Treasury withdrawal actions** that request ada from the treasury.
+The current epoch `E` is excluded from revenue lookback.
 
-The CC must determine:
+Define:
 
-1. Treasury revenue over the prior `netChangePeriod` epochs.
-2. Treasury outflows already **executed** within the same `netChangePeriod` lookback window.
-3. Treasury outflows already **allocated/authorized** (e.g., approved budgets and treasury withdrawals that have not yet been executed), which **count against the cap immediately upon approval**.
-4. Whether the new action would cause total treasury outflows to exceed the NCL cap.
+- `revenue(E)`: sum of treasury inflows from **fees + emissions** over `[E - N, E - 1]`.
+- `usedPast(E)`: sum of treasury withdrawals enacted over `[E - N, E - 1]`.
+- `usedCurrent(E, i)`: sum of treasury withdrawals already enacted earlier in epoch `E` before evaluating action `i`, using existing deterministic ledger enactment order.
 
-If the cap would be exceeded, the action should be deemed unconstitutional and not be ratified.
+Then:
 
-### Non-ledger enforcement
+- `cap(E) = floor(netChangeLimit * revenue(E) / 100)`
+- `used(E, i) = usedPast(E) + usedCurrent(E, i)`
 
-This CIP **does not** add a ledger rule to reject withdrawals that exceed the cap. Enforcement is constitutional and procedural:
+All arithmetic is in lovelace integers.
 
-- The Constitution already requires that withdrawals not violate the net change limit and that the CC affirm constitutionality.
-- The new parameters provide a standing, updatable definition of the net change limit for that review.
+### Enforcement rule
+
+For a Treasury Withdrawal action `i` with amount `w(i)`, enactment is allowed iff:
+
+`used(E, i) + w(i) <= cap(E)`
+
+If this inequality fails, the ledger **must reject enactment** of that Treasury Withdrawal action and **no treasury funds move** for that action.
+
+If multiple Treasury Withdrawal actions are enacted in the same epoch, checks are sequential in existing deterministic enactment order, and each successful enactment updates `usedCurrent(E, i)` for subsequent checks.
+
+### History edge behavior
+
+This CIP defines behavior for incomplete historical coverage:
+
+- If fewer than `netChangePeriod` prior epochs are available (e.g., early life of the rule), enforcement uses all available prior epochs.
+- If `netChangePeriod` is increased beyond currently retained history, enforcement applies immediately using available retained history, and effective lookback grows as additional epochs accumulate.
+
+Implementations may use any internal representation (including optimized storage), but observable enforcement behavior must match this specification.
+
+### Guardrails integration
+
+The normative enforcement path for withdrawal-limit violations is direct ledger rejection as defined above.
+
+Guardrail scripts are complementary in this CIP and may be used to constrain allowed ranges (upper/lower bounds) for `netChangeLimit` and `netChangePeriod` through constitutional processes. Withdrawal-limit enforcement in this CIP does not depend on selecting a script path.
 
 ## Rationale: how does this CIP achieve its goals?
 
-- **Aligns with constitutional guardrails.** The Constitution mandates a net change limit for treasury withdrawals and requires CC review. This CIP makes the limit explicit, updatable, and consistently applied.
-- **Reduces redundant voting.** By parameterizing the NCL instead of treating it as an expiring governance action, the community avoids repeated votes to re-establish the same limit.
-- **Improves predictability.** Budgets and withdrawals can be planned against a stable, formula-based cap derived from recent treasury revenue.
-- **Maintains human oversight.** Because the ledger does not enforce this cap, the CC retains discretion to interpret constitutional requirements and evaluate real-world context, consistent with its mandate.
-- **Direct revenue linkage.** Using a lookback of actual treasury inflows ties spending capacity to recent revenue, improving sustainability and predictability.
-- **Compatible with future guardrails.** The Constitution anticipates that guardrails (including on-chain scripts) may be introduced later. This CIP prepares the parameter structure now, while allowing guardrails to define safe bounds later.
+- **Closes the enforcement gap.** The ledger, not humans, enforces the net change limit rule.
+- **Deterministic and auditable.** The cap and admissibility check are fully specified and reproducible.
+- **Revenue-linked sustainability.** Withdrawals are bounded by recent treasury inflows from fees + emissions.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- **CIP Editor approval** confirming completeness, clarity, and alignment with the CIP process.
-- **Consensus on initial parameter values** for `netChangeLimit` and `netChangePeriod` prior to activation, including a vote on `netChangeLimit` and confirmation of the default 73-epoch lookback or an alternative.
-- **Governance ratification** of a protocol update that introduces these parameters, plus an on-chain parameter update setting initial values.
-- **Constitutional alignment** affirmed by the Constitutional Committee, including acknowledgment that treasury guardrails are satisfied using these parameters.
+- **CIP process acceptance** by CIP Editors with complete and unambiguous ledger-enforcement semantics.
+- **Ledger implementation available** in a released node/ledger version that enforces this rule for Treasury Withdrawals.
+- **Conformance tests available** covering at least:
+  - under-cap, exact-cap, and over-cap withdrawals
+  - multiple withdrawals in one epoch
+  - `netChangeLimit = 0`
+  - short-history startup behavior
+  - raised-`netChangePeriod` behavior with partial retained history.
+- **Governance activation complete** through required protocol update / hard fork process and initial parameter setting on-chain.
 
 ### Implementation Plan
 
 - **Specification finalization**
-  - Publish the CIP draft and gather feedback from governance bodies, dReps, SPOs, and CIP Editors.
-  - Adjust the parameter definitions for clarity if needed.
-- **Ledger and tooling updates**
-  - Introduce `netChangeLimit` and `netChangePeriod` as protocol parameters in the ledger and node implementation.
-  - Update governance tooling, budgeting workflows, and CC review guidance to use the new cap formula.
-- **Governance activation**
-  - Submit a protocol update (hard fork governance action if required) to add the new parameters.
-  - Submit a protocol parameter update action to set initial values, including a community vote to set `netChangeLimit`.
-- **Constitution and guardrails**
-  - Submit a Constitution update governance action to define guardrails for the new parameters, consistent with the Constitution.
-  - Ratify the updated Constitution.
-- **Operational rollout**
-  - Document the CC process for computing treasury revenue and evaluating the cap.
-  - Monitor early applications to ensure the method is consistent across reviews.
+  - Incorporate review feedback from governance bodies, implementors, and CIP Editors.
+  - Lock terminology against existing governance and ledger docs.
+- **Ledger and node work**
+  - Add/confirm protocol parameters `netChangeLimit` and `netChangePeriod` with bounds in this CIP.
+  - Implement rolling-window revenue and withdrawal accounting behavior per this spec.
+  - Enforce enactment-time rejection for over-limit Treasury Withdrawals.
+- **Testing and validation**
+  - Add deterministic conformance tests for window, arithmetic, same-epoch ordering, and edge cases.
+  - Validate no treasury movement occurs for over-limit actions.
+- **Governance rollout**
+  - Submit and ratify required governance actions to activate implementation.
+  - Set initial parameter values on-chain.
+- **Constitution and guardrails alignment**
+  - Define constitutional/guardrail bounds for parameter updates as a complementary control.
 
 ## References
 
 - [Cardano Blockchain Ecosystem Constitution](https://docs.intersectmbo.org/archive/cardano-governance-archive/cardano-constitution/read-the-cardano-constitution), Article IV (Cardano Blockchain Ecosystem Budget), especially Section 3 (net change limit and withdrawal constraints).
 - [Cardano Blockchain Ecosystem Constitution](https://docs.intersectmbo.org/archive/cardano-governance-archive/cardano-constitution/read-the-cardano-constitution), Appendix I, Treasury Guardrails (TREASURY-01a and TREASURY-02a).
+- [CIP-1694: A First Step Towards On-Chain Decentralized Governance](../CIP-1694/README.md)
 
 ## Copyright
 
