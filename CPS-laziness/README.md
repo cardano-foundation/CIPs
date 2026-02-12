@@ -6,7 +6,7 @@ Status: Open
 Authors: Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1150
 Created: 2026-02-12
 License: Apache-2.0
 ---
