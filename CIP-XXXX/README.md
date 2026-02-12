@@ -26,11 +26,24 @@ This CIP partially addresses [CPS-0017] and [CPS-0018], for the use case of part
 
 ## Table of contents
 
+<details>
+
 - [Abstract](#abstract)
-- [Motivation](#motivation)
+- [Motivation: why is this CIP
+  necessary?](#motivation-why-is-this-cip-necessary)
   - [Relationship to other proposed Ouroboros
     protocols](#relationship-to-other-proposed-ouroboros-protocols)
-- [Rationale](#rationale)
+- [Specification](#specification)
+  - [Naming: Tachýs](#naming-tachýs)
+  - [Introduction: Praos with a public slot leader
+    schedule](#introduction-praos-with-a-public-slot-leader-schedule)
+  - [Overview of the changes](#overview-of-the-changes)
+  - [Formal specification changes](#formal-specification-changes)
+  - [Consensus protocol changes](#consensus-protocol-changes)
+  - [No hard fork](#no-hard-fork)
+  - [Community consensus](#community-consensus)
+- [Rationale: how does this CIP achieve its
+  goals?](#rationale-how-does-this-cip-achieve-its-goals)
   - [The purpose of a private slot leader
     schedule](#the-purpose-of-a-private-slot-leader-schedule)
   - [The cost of a private slot leader
@@ -41,15 +54,6 @@ This CIP partially addresses [CPS-0017] and [CPS-0018], for the use case of part
     schedules](#protocols-with-public-slot-leader-schedules)
   - [Trade-offs of Ouroboros
     protocols](#trade-offs-of-ouroboros-protocols)
-- [Specification](#specification)
-  - [Naming: Tachýs](#naming-tachýs)
-  - [Introduction: Praos with a public slot leader
-    schedule](#introduction-praos-with-a-public-slot-leader-schedule)
-  - [Overview of the changes](#overview-of-the-changes)
-  - [Formal specification changes](#formal-specification-changes)
-  - [Consensus protocol changes](#consensus-protocol-changes)
-  - [No hard fork](#no-hard-fork)
-  - [Community consensus](#community-consensus)
 - [Path to Active](#path-to-active)
   - [Acceptance Criteria](#acceptance-criteria)
   - [Implementation Plan](#implementation-plan)
@@ -60,7 +64,9 @@ This CIP partially addresses [CPS-0017] and [CPS-0018], for the use case of part
 - [Acknowledgements](#acknowledgements)
 - [Copyright](#copyright)
 
-## Motivation
+</details>
+
+## Motivation: why is this CIP necessary?
 
 Either partner chains or layer 2 (L2) protocols are plausible solutions for a range of use cases. They both provide a way to scale Cardano without increasing throughput at the Layer 1, i.e. the Cardano mainnet. Partner chains can also act as bridges to other systems, and can provide a range of other special services and benefits.
 
@@ -118,116 +124,6 @@ Ouroboros Leios ([CIP-0164])
 : This addresses the problem of transaction throughput. In its latest incarnation as "Linear Leios" this takes the form of a one-off (rather than scalable) improvement in throughput by dramatically increasing the effective block size. Linear Leios is targeting a throughput improvement of 30x–60x compared to Cardano mainnet. Linear Leios is a substantial change, with a corresponding expected development time and cost. It is intended for deployment on Cardano mainnet. By contrast, Ouroboros Tachýs is more modest in its throughput goals, more modest in its expected development time and cost and is intended for deployment on Cardano partner chains.
 
 : In principle, since Linear Leios is a strict extension of Praos, Tachýs should be fully compatible with it. It should be possible to use Linear Leios with Tachýs giving even higher throughput than either technology on its own. Linear Leios may however result in higher transaction latency than a pure Tachýs deployment, and so for some partner chain use cases it may be preferable to disable Linear Leios.
-
-## Rationale
-
-Consider the main motivations:
-
- * higher transaction throughput (but not massive throughput);
- * lower time to transaction finality;
- * maintain ecosystem compatibility; and
- * reasonable time to deployment.
-
-In this section we explain how these motivations lead us to the proposed design.
-
-The constraint of ecosystem compatibility is a tight one. It means we cannot meaningfully change the block header format. This puts changes like Ouroboros Leios well out of scope. Additionally, the motivation for a relatively short time to deployment, and cost/benefit analysis also rule out large changes.
-
-Thus we looked for ideas requiring limited technical changes that can provide substantial – but not massive – throughput and latency improvements. We identified one such opportunity in the Praos private slot leader schedule.
-
-In summary, the rationale is that:
-
- * a private slot leader schedule is of little benefit in small networks; and
- * the cost of a private slot leader schedule is that blocks can only be made 1/4 as frequently as they could be with a public slot leader schedule;
- * thus in many small networks a public slot leader schedule would be the better trade-off.
-
-### The purpose of a private slot leader schedule
-
-Ouroboros Praos uses a private slot leader schedule. What this means is that each SPO knows when they themselves are due to make a block, and nobody else does. This secrecy can be a security benefit by helping to resist against distributed denial of service (DDoS) attacks on Cardano. A (successful) denial of service attack on Cardano would be an attack that pauses block production or limits the ability of users to submit transactions or to access new blocks.
-
-An attacker can use a network level attack on nodes in the system to try to overload them. This may be a simple IP-level flooding attack or potentially a more sophisticated attack at the level of the network protocols. If the attacker knows which nodes are due to make blocks and when they are due to make them, then the attacker can target just a few SPO's relays at a time. On the other hand, if the attacker does not know which nodes will make blocks and when, then the attacker has to target all the relays, or at least enough relays to suppress SPOs controlling a substantial portion of stake. In large networks like Cardano mainnet there is a big difference between targeting a handful of relays and having to target most or all of them. It's the difference between e.g. 10 relays and 1,000 or several thousand (depending on how comprehensive the attacker wants to be). The key point is that the resources needed by the attacker is orders of magnitude more in the case of the private slot leader schedule. This makes the attack much harder and more expensive to pull off.
-
-By contrast with Cardano mainnet, an L2 or a partner chain may have only a small handful of active participants. In this case, the difference between targeting one node and targeting them all is not great in absolute terms. And thus the DDoS resistance benefit of Praos is limited. In these "small" use cases, different approaches are needed to resist DDoS attacks. On the other hand, traditional arrangements for DDoS resistance are also easier to implement where there are fewer participants to coordinate.
-
-### The cost of a private slot leader schedule
-
-The cost of the private slot leader schedule in Ouroboros Praos is in terms of block frequency and thus transaction throughput and time to transaction finality.
-
-The security of Ouroboros Praos relies (amongst many other things) on a parameter called $\Delta$ (Delta), which is the maximum number of slots that it can take for a freshly produced block to be relayed across the network to all other block producers. In the Cardano mainnet this is 5 slots, which is 5 seconds. To ensure security, blocks cannot be produced too frequently. The intuition is that by having block production be slow enough, there are sufficiently frequent "quiet" periods where all blocks can finish being relayed and honest nodes can come to consensus, even in the face of a stake-holding adversary. Indeed the name Ouroboros Praos reflects this: the word "praos" ("πραος") translates as "calm", "meek" or "gentle".
-
-The upshot of this in practice – for the level of security chosen for Cardano mainnet – is that there is a factor of 4 between $\Delta$ (the time for blocks to be relayed) and the average time between blocks.
-
-**That is: in the time it takes for Ouroboros Praos to add one more block to the chain, four blocks (back to back) could be relayed by the underlying network layer.**
-
-This is the cost of a private slot leader schedule: the lost opportunity to create blocks.
-
-### The case for a public slot leader schedule
-
-By contrast to the "sparse" slot leader schedule in Praos, one can imagine a scheme with a "dense" slot leader schedule in which:
-
- * $\Delta$ is 1 slot;
- * the slot length is chosen to be the time to relay blocks (e.g. 5 seconds to be equivalent to mainnet); and
- * there is exactly one valid slot leader in each slot.
- 
-In this scheme we would produce and relay blocks back-to-back without any extra "quiet" periods. Instead of a ratio of 4 – as in Praos – the time interval between producing successive blocks and the maximum time to relay blocks would be equal.
-
-Note that this is _not_ about improving the maximum time to relay blocks. It is purely about the gaps in the schedule, or the lack of gaps. For _any_ value of the maximum time to relay blocks, the dense schedule has (on average) 4 times more opportunities to create blocks than the sparse schedule.
-
-A dense schedule can be achieved using a public slot leader schedule. A public slot leader schedule means that everyone (following the protocol) knows which SPOs are due to make a block and in which slots, for the whole epoch. The slot leader schedule (for an epoch) simply assigns each slot to an SPO. This has the straightforward property that every slot has exactly one valid slot leader.
-
-Note that because every slot has exactly one valid slot leader then – unlike in Praos – there can be no slot leader battles. There can only be block height battles, and only if blocks are delayed by more than $\Delta$.
-
-### Protocols with public slot leader schedules
-
-It is well known that BFT style protocols have these simple, dense, public slot leader schedules. There is a peer reviewed paper on [Ouroboros BFT], which is an Ouroboros-style take on classic BFT protocols. This is one plausible choice for a protocol for a partner chain.
-
-Another Ouroboros protocol with a public slot leader schedule is [Ouroboros Classic]. Although in Cardano, Ouroboros Classic was only used in a federated setting in the Byron era, the protocol is compatible with SPOs, delegation, and having block production be weighted by stake.
-
-The protocol that this CIP proposes – Ouroboros Tachýs – however is actually a variant of Praos, modified to use a public slot leader schedule.
-
-There are of course a wide range of other consensus protocols out there, but for important practical reasons we have to limit our choices to sufficiently "Ouroboros-like" protocols.
-
-1. The primary reason is ecosystem compatibility: changing the protocol can have far reaching consequences and can easily introduce incompatibilities that would cause a node using the protocol to not work with existing tooling.
-2. An important secondary reason is about ease of integration in existing or future Cardano node implementations. In particular the Haskell reference implementation is designed around the various assumptions and "shape" of the Ouroboros family of protocols. Stray too far from Ouroboros and integration and maintenance would become prohibitively difficult and expensive. The same is likely to be true to some greater-or-lesser extent in other alternative Cardano node implementations.
-
-### Trade-offs of Ouroboros protocols
-
-#### Ouroboros BFT
-
-Advantages:
-
- * It has a peer-reviewed specification.
-
-Disadvantages:
-
- * It is not compatible with the existing SPO scheme. It would need changes to how SPOs are managed on-chain, which may require transaction format changes.
- * It would require a new block header format.
- * It would not maintain ecosystem compatibility with Cardano using Praos, due to header format changes and possible changes for SPO management.
-
-#### Ouroboros Classic
-
-Advantages:
-
- * It has a peer-reviewed specification.
- * It is compatible with SPOs and delegation.
-
-Disadvantages:
-
- * It has complex MPC algorithm to agree the next epoch nonce.
- * MPC is hard to integrate and needs changes to the block body format.
- * It does not use KES.
- * It would not maintain ecosystem compatibility with Cardano using Praos, due to presence of MPC and lack of KES.
-
-#### Ouroboros Tachýs
-
-Advantages
-
- * It is fully compatible with SPOs and delegation.
- * It has a low complexity of implementation, integration, and maintenance.
- * It would maintain high degree of ecosystem compatibility, due to no changes in the block body or header formats.
-
-Disadvantages:
-
- * It has no peer-reviewed specification yet. This CIP is the first step towards this.
 
 
 ## Specification
@@ -352,6 +248,118 @@ Tools that do independent validation of blocks, and specifically block headers w
 [CIP-0001] calls for the presentation of evidence of consensus within the community and discussion of significant objections or concerns raised during the discussion.
 
 At the stage of initial publication of this CIP, the proposed design has only been reviewed by a handful of experts (acknowledged below). We invite review and discussion of this proposed CIP on (or referenced from) the CIP PR itself, and we will endeavour to address reasonable objections, concerns and suggestions.
+
+## Rationale: how does this CIP achieve its goals?
+
+Consider the main motivations:
+
+ * higher transaction throughput (but not massive throughput);
+ * lower time to transaction finality;
+ * maintain ecosystem compatibility; and
+ * reasonable time to deployment.
+
+In this section we explain how these motivations lead us to the proposed design.
+
+The constraint of ecosystem compatibility is a tight one. It means we cannot meaningfully change the block header format. This puts changes like Ouroboros Leios well out of scope. Additionally, the motivation for a relatively short time to deployment, and cost/benefit analysis also rule out large changes.
+
+Thus we looked for ideas requiring limited technical changes that can provide substantial – but not massive – throughput and latency improvements. We identified one such opportunity in the Praos private slot leader schedule.
+
+In summary, the rationale is that:
+
+ * a private slot leader schedule is of little benefit in small networks; and
+ * the cost of a private slot leader schedule is that blocks can only be made 1/4 as frequently as they could be with a public slot leader schedule;
+ * thus in many small networks a public slot leader schedule would be the better trade-off.
+
+### The purpose of a private slot leader schedule
+
+Ouroboros Praos uses a private slot leader schedule. What this means is that each SPO knows when they themselves are due to make a block, and nobody else does. This secrecy can be a security benefit by helping to resist against distributed denial of service (DDoS) attacks on Cardano. A (successful) denial of service attack on Cardano would be an attack that pauses block production or limits the ability of users to submit transactions or to access new blocks.
+
+An attacker can use a network level attack on nodes in the system to try to overload them. This may be a simple IP-level flooding attack or potentially a more sophisticated attack at the level of the network protocols. If the attacker knows which nodes are due to make blocks and when they are due to make them, then the attacker can target just a few SPO's relays at a time. On the other hand, if the attacker does not know which nodes will make blocks and when, then the attacker has to target all the relays, or at least enough relays to suppress SPOs controlling a substantial portion of stake. In large networks like Cardano mainnet there is a big difference between targeting a handful of relays and having to target most or all of them. It's the difference between e.g. 10 relays and 1,000 or several thousand (depending on how comprehensive the attacker wants to be). The key point is that the resources needed by the attacker is orders of magnitude more in the case of the private slot leader schedule. This makes the attack much harder and more expensive to pull off.
+
+By contrast with Cardano mainnet, an L2 or a partner chain may have only a small handful of active participants. In this case, the difference between targeting one node and targeting them all is not great in absolute terms. And thus the DDoS resistance benefit of Praos is limited. In these "small" use cases, different approaches are needed to resist DDoS attacks. On the other hand, traditional arrangements for DDoS resistance are also easier to implement where there are fewer participants to coordinate.
+
+### The cost of a private slot leader schedule
+
+The cost of the private slot leader schedule in Ouroboros Praos is in terms of block frequency and thus transaction throughput and time to transaction finality.
+
+The security of Ouroboros Praos relies (amongst many other things) on a parameter called $\Delta$ (Delta), which is the maximum number of slots that it can take for a freshly produced block to be relayed across the network to all other block producers. In the Cardano mainnet this is 5 slots, which is 5 seconds. To ensure security, blocks cannot be produced too frequently. The intuition is that by having block production be slow enough, there are sufficiently frequent "quiet" periods where all blocks can finish being relayed and honest nodes can come to consensus, even in the face of a stake-holding adversary. Indeed the name Ouroboros Praos reflects this: the word "praos" ("πραος") translates as "calm", "meek" or "gentle".
+
+The upshot of this in practice – for the level of security chosen for Cardano mainnet – is that there is a factor of 4 between $\Delta$ (the time for blocks to be relayed) and the average time between blocks.
+
+**That is: in the time it takes for Ouroboros Praos to add one more block to the chain, four blocks (back to back) could be relayed by the underlying network layer.**
+
+This is the cost of a private slot leader schedule: the lost opportunity to create blocks.
+
+### The case for a public slot leader schedule
+
+By contrast to the "sparse" slot leader schedule in Praos, one can imagine a scheme with a "dense" slot leader schedule in which:
+
+ * $\Delta$ is 1 slot;
+ * the slot length is chosen to be the time to relay blocks (e.g. 5 seconds to be equivalent to mainnet); and
+ * there is exactly one valid slot leader in each slot.
+ 
+In this scheme we would produce and relay blocks back-to-back without any extra "quiet" periods. Instead of a ratio of 4 – as in Praos – the time interval between producing successive blocks and the maximum time to relay blocks would be equal.
+
+Note that this is _not_ about improving the maximum time to relay blocks. It is purely about the gaps in the schedule, or the lack of gaps. For _any_ value of the maximum time to relay blocks, the dense schedule has (on average) 4 times more opportunities to create blocks than the sparse schedule.
+
+A dense schedule can be achieved using a public slot leader schedule. A public slot leader schedule means that everyone (following the protocol) knows which SPOs are due to make a block and in which slots, for the whole epoch. The slot leader schedule (for an epoch) simply assigns each slot to an SPO. This has the straightforward property that every slot has exactly one valid slot leader.
+
+Note that because every slot has exactly one valid slot leader then – unlike in Praos – there can be no slot leader battles. There can only be block height battles, and only if blocks are delayed by more than $\Delta$.
+
+### Protocols with public slot leader schedules
+
+It is well known that BFT style protocols have these simple, dense, public slot leader schedules. There is a peer reviewed paper on [Ouroboros BFT], which is an Ouroboros-style take on classic BFT protocols. This is one plausible choice for a protocol for a partner chain.
+
+Another Ouroboros protocol with a public slot leader schedule is [Ouroboros Classic]. Although in Cardano, Ouroboros Classic was only used in a federated setting in the Byron era, the protocol is compatible with SPOs, delegation, and having block production be weighted by stake.
+
+The protocol that this CIP proposes – Ouroboros Tachýs – however is actually a variant of Praos, modified to use a public slot leader schedule.
+
+There are of course a wide range of other consensus protocols out there, but for important practical reasons we have to limit our choices to sufficiently "Ouroboros-like" protocols.
+
+1. The primary reason is ecosystem compatibility: changing the protocol can have far reaching consequences and can easily introduce incompatibilities that would cause a node using the protocol to not work with existing tooling.
+2. An important secondary reason is about ease of integration in existing or future Cardano node implementations. In particular the Haskell reference implementation is designed around the various assumptions and "shape" of the Ouroboros family of protocols. Stray too far from Ouroboros and integration and maintenance would become prohibitively difficult and expensive. The same is likely to be true to some greater-or-lesser extent in other alternative Cardano node implementations.
+
+### Trade-offs of Ouroboros protocols
+
+#### Ouroboros BFT
+
+Advantages:
+
+ * It has a peer-reviewed specification.
+
+Disadvantages:
+
+ * It is not compatible with the existing SPO scheme. It would need changes to how SPOs are managed on-chain, which may require transaction format changes.
+ * It would require a new block header format.
+ * It would not maintain ecosystem compatibility with Cardano using Praos, due to header format changes and possible changes for SPO management.
+
+#### Ouroboros Classic
+
+Advantages:
+
+ * It has a peer-reviewed specification.
+ * It is compatible with SPOs and delegation.
+
+Disadvantages:
+
+ * It has complex MPC algorithm to agree the next epoch nonce.
+ * MPC is hard to integrate and needs changes to the block body format.
+ * It does not use KES.
+ * It would not maintain ecosystem compatibility with Cardano using Praos, due to presence of MPC and lack of KES.
+
+#### Ouroboros Tachýs
+
+Advantages
+
+ * It is fully compatible with SPOs and delegation.
+ * It has a low complexity of implementation, integration, and maintenance.
+ * It would maintain high degree of ecosystem compatibility, due to no changes in the block body or header formats.
+
+Disadvantages:
+
+ * It has no peer-reviewed specification yet. This CIP is the first step towards this.
+
+
 
 ## Path to Active
 
