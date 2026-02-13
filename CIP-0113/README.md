@@ -7,6 +7,7 @@ Authors:
     - Michele Nuzzi <michele.nuzzi.2014@gmail.com>
     - Matteo Coppola <m.coppola.mazzetti@gmail.com>
     - Philip DiSarro <philipdisarro@gmail.com>
+    - Giovanni Gargiulo <giovanni.gargiulo@cardanofoundation.org>
 Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/444
