@@ -12,6 +12,7 @@ Authors:
     - Sebastian Nagel <sebastian.nagel@ncoding.at>
 Implementors:
     - Cardano Scaling team <https://github.com/cardano-scaling>
+    - Blink Labs <https://github.com/blinklabs-io>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/876
 Created: 2024-08-02
