@@ -12,6 +12,8 @@ Implementors: []
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/444
     - https://github.com/cardano-foundation/CIPs/pull/944
+Solution-To:
+    - https://github.com/cardano-foundation/CIPs/blob/master/CPS-0003/README.md
 Created: 2023-01-14
 License: CC-BY-4.0
 ---
