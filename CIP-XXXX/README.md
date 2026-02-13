@@ -404,7 +404,7 @@ We are also grateful to Alexander Russell for useful discussion on the plausibil
 
 ## Copyright
 
-Copyright © 2026 Duncan Coutts and Philipp Kant. This work is licenced under [CC-BY-4.0].
+Copyright © 2026 Duncan Coutts and Philipp Kant. This work is licensed under [CC-BY-4.0].
 
 This work is *written by humans™*. No part is written by AI.
 
