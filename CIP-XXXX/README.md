@@ -66,7 +66,7 @@ Some of the use cases we identify benefit from reduced time to transaction final
 
 A final important motivation is time to deployment. There are useful use cases that would benefit from increased throughput and lower transaction latency soon. Waiting years would lose that value benefit.
 
-### Relationship to other proposed Ouroboros protocols
+### Relationship to other Ouroboros protocols
 
 #### Ouroboros Phalanx ([CIP-0161])
 This addresses the problem of grinding attacks and in doing so improves security (by making grinding attacks dramatically more costly) and improves time to transaction finality by allowing the finality analysis to assume grinding is less feasible. It works by adding a VDF, a variable delay function, to each block header that takes time to compute but is quick to verify. It changes the consensus block header format and rules and it thus requires a hard fork.
@@ -86,11 +86,11 @@ In principle, since Linear Leios is a strict extension of Praos, Tachýs should 
 
 ## Specification
 
-### Naming: Tachýs
+### Naming
 
 Every member of the Ouroboros family needs a name, and by convention a Greek name. The name "praos", or "πραοσ" means "calm" in English, and reflects the quiet periods in the Praos protocol. The authors are not native Greek speakers, but humbly suggest the Greek word "ταχύς". It means "swift", "speedy" or "rapid". The Latin script transliteration is "tachýs". A pronunciation note for English speakers: the emphasis is on the second syllable: "tach ees".
 
-### Introduction: Praos with a public slot leader schedule
+### Introduction
 
 The essential idea for Ouroboros Tachýs is to take Ouroboros Praos and make the minimal possible changes to make it use a public rather than a private slot leader schedule. In particular, the epoch structure and nonce computations are exactly the same, and it continues to use both VRF and KES.
 
