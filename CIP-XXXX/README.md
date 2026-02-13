@@ -24,48 +24,6 @@ The main disadvantage of Tachýs compared to Praos would be not having the DDoS 
 
 This CIP partially addresses [CPS-0017] and [CPS-0018], for the use case of partner chains.
 
-## Table of contents
-
-<details>
-
-- [Abstract](#abstract)
-- [Motivation: why is this CIP
-  necessary?](#motivation-why-is-this-cip-necessary)
-  - [Relationship to other proposed Ouroboros
-    protocols](#relationship-to-other-proposed-ouroboros-protocols)
-- [Specification](#specification)
-  - [Naming: Tachýs](#naming-tachýs)
-  - [Introduction: Praos with a public slot leader
-    schedule](#introduction-praos-with-a-public-slot-leader-schedule)
-  - [Overview of the changes](#overview-of-the-changes)
-  - [Formal specification changes](#formal-specification-changes)
-  - [Consensus protocol changes](#consensus-protocol-changes)
-  - [No hard fork](#no-hard-fork)
-  - [Community consensus](#community-consensus)
-- [Rationale: how does this CIP achieve its
-  goals?](#rationale-how-does-this-cip-achieve-its-goals)
-  - [The purpose of a private slot leader
-    schedule](#the-purpose-of-a-private-slot-leader-schedule)
-  - [The cost of a private slot leader
-    schedule](#the-cost-of-a-private-slot-leader-schedule)
-  - [The case for a public slot leader
-    schedule](#the-case-for-a-public-slot-leader-schedule)
-  - [Protocols with public slot leader
-    schedules](#protocols-with-public-slot-leader-schedules)
-  - [Trade-offs of Ouroboros
-    protocols](#trade-offs-of-ouroboros-protocols)
-- [Path to Active](#path-to-active)
-  - [Acceptance Criteria](#acceptance-criteria)
-  - [Implementation Plan](#implementation-plan)
-  - [The lack of consensus on the Consensus
-    specification](#the-lack-of-consensus-on-the-consensus-specification)
-- [Versioning](#versioning)
-- [References](#references)
-- [Acknowledgements](#acknowledgements)
-- [Copyright](#copyright)
-
-</details>
-
 ## Motivation: why is this CIP necessary?
 
 Either partner chains or layer 2 (L2) protocols are plausible solutions for a range of use cases. They both provide a way to scale Cardano without increasing throughput at the Layer 1, i.e. the Cardano mainnet. Partner chains can also act as bridges to other systems, and can provide a range of other special services and benefits.
