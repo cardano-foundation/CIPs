@@ -553,43 +553,18 @@ This specification has evolved through community feedback:
 
 | Version | Status | Description |
 |---------|--------|-------------|
-| 0 | deprecated | Initial proposal with Merkle tree account uniqueness, included Approve/TransferFrom patterns |
-| 1 | deprecated | Removed Merkle trees, but had UTxO contention issues on receiver side |
-| 2 | deprecated | Introduced stateManager/transferManager pattern with user registration requirement |
+| [0](./deprecated/v0.md) | deprecated | Initial proposal with Merkle tree account uniqueness, included Approve/TransferFrom patterns |
+| [1](./deprecated/v1.md) | deprecated | Removed Merkle trees, but had UTxO contention issues on receiver side |
+| [2](./deprecated/v2.md) | deprecated | Introduced stateManager/transferManager pattern with user registration requirement |
 | 3 | **current** | Removed registration requirement, simplified to transferLogicScript pattern |
 
-Previous specification versions are available in the [deprecated/](./deprecated/) directory.
+[Version 0](./deprecated/v0.md) used sorted Merkle trees to prove account uniqueness and included `TransferFrom`, `Approve` and `RevokeApproval` redeemers to emulate ERC20 patterns. This was abandoned due to logarithmic cost of account creation and [community feedback](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241) noting these methods were superfluous and dangerous.
 
-The [first proposed implementation](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58) (Version 0) was quite different by the one shown in this document
+[Version 1](./deprecated/v1.md) removed Merkle trees but required spending a UTxO on the receiver side, causing contention when multiple parties sent to the same receiver simultaneously.
 
-Main differences were:
-- [use of sorted merkle trees to prove uniqueness](https://github.com/cardano-foundation/CIPs/pull/444/commits/525ce39a89bde1ddb62e126e347828e3bf0feb58#diff-370b6563a47be474523d4f4dbfdf120c567c3c0135752afb61dc16c9a2de8d74R72) of an account during creation;
-- account credentials as asset name
+[Version 2](./deprecated/v2.md) introduced `stateManager` and `transferManager` contracts, requiring users to "register" before spending programmable tokens. This registration requirement was not well received.
 
-This path was abandoned due to the logaritmic cost of creation of accounts, on top of the complexity.
-
-Other crucial difference with the first proposed implementation was in the `accountManager` redeemers;
-which included definitions for `TransferFrom`, `Approve` and `RevokeApproval` redeemers, aiming to emulate ERC20's methods of `transferFrom` and `approve`;
-
-After [important feedback by the community](https://github.com/cardano-foundation/CIPs/pull/444#issuecomment-1399356241), 
-it was noted that such methods would not only have been superfluous, but also dangerous, and are hence removed in this specification.
-
-After a first round of community feedback, a
-[reviewed standard was proposed](https://github.com/cardano-foundation/CIPs/pull/444/commits/f45867d6651f94ba53503833098d550326913a0f)
-(Version 1).
-[This first revision even had a PoC implementation](https://github.com/HarmonicLabs/erc20-like/commit/0730362175a27cee7cec18386f1c368d8c29fbb8),
-but after further feedback from the community it was noted that the need to spend an UTxO on the receiving side could cause UTxO contention
-in the moment two or more parties would have wanted to send a programmable token to the same receiver at the same time.
-
-After Version 1, another improved standard was proposed (Version 2).
-Version 2 proposed a standard interface for programmable tokens, based on the exsistence of 2 contracts: the `stateManager` and the `transferManager`.
-
-By the Version 2 standard, each user must "register" to the policy by creating an utxo on the `stateManager` so that they could
-spend programmable tokens using the `transferManager`
-
-This soft requirement for registration was not well received from the community, and for this reason we are now at Version 3.0 of the standard.
-
-The specification proposed in this file addresses all the previous concerns.
+Version 3 (current) addresses all previous concerns by removing the registration requirement and simplifying to the `transferLogicScript` pattern.
 
 ## Path to Active
 
