@@ -334,7 +334,7 @@ The plan is to implement and integrate Ouroboros Tachýs into the Haskell refere
 The summary of the implementation plan is as follows:
 
  * This CIP, feedback and design refinement.
- * A detailed document providing the formal specification of Tachýs as a delta against the existing Cardano formal ledger specification. This will comply with [CIP-0084], but see the subsection below.
+ * A detailed document providing the formal specification of Tachýs as a delta against the existing Cardano formal ledger specification. This will comply with [CIP-0084], or if [CIP issue #1151] is resolved in time then we will endeavour to follow the new guidance.
  * A prototype (and tests) of the Tachýs consensus protocol, using the existing consensus framework from the Haskell node implementation.
  * Investigate in detail how best to integrate the additional protocol within the existing codebase, and solicit public feedback on a proposed strategy.
  * A trial integration of the new protocol within the existing codebase.
@@ -350,21 +350,8 @@ The authors intend to apply to the Cardano treasury (directly or indirectly) for
 
 The CIP authors have substantial experience with such core Cardano work: they comprise two of the three original authors of the [Cardano Shelley design], and together they were the architect and technical lead for the node team that implemented the Cardano Byron Reboot, Cardano Shelley, Mary, Alonzo and Babbage.
 
+[CIP issue #1151]: https://github.com/cardano-foundation/CIPs/issues/1151
 [Cardano Shelley design]: https://github.com/intersectmbo/cardano-ledger/releases/latest/download/shelley-delegation.pdf
-
-### The lack of consensus on the Consensus specification
-
-One issue where community assistance would help is the issue of clarity on the canonical reference for the Cardano consensus specification.
-
-The current Praos specification is given by the [Shelley ledger specification], as amended by the [Babbage era update]. There is also however a new effort to provide an [Agda consensus formalisation], in much the same way as the ledger has been re-specified in the [Agda ledger formalisation]. The new Agda consensus specification has not been declared canonical in any meaningful way, either by its authors or the wider community.
-
-Unfortunately, there is little clarity on this topic and clarity is needed in this area. [CIP-0161] for example, provides a delta against the Agda specification rather than the currently active Praos specification. [CIP-0001] gives a process for proposals regarding the Cardano ledger ([CIP-0084]), but no corresponding guidance for consensus CIPs.
-
-The implementation plan above says that we will follow [CIP-0084] and produce a delta against the currently active ledger specification document, but arguably it would be better to produce a delta against the Agda formalisation. This only makes sense however if it is clear that the Agda formalisation is ready and can become the canonical consensus specification.
-
-We suggest that it would be desirable to have a CIP to declare it canonical and provide a process for consensus CIPs in the style of [CIP-0084], and to update [CIP-0001] accordingly.
-
-See also [issue #1073](https://github.com/IntersectMBO/formal-ledger-specifications/issues/1073) for the formal ledger specification project.
 
 ## Versioning
 
@@ -386,8 +373,6 @@ This CIP can be expected to stabilise after a period of review and feedback, fol
 
 [Shelley ledger specification]: https://github.com/intersectmbo/cardano-ledger/releases/latest/download/shelley-ledger.pdf
 [Babbage era update]: https://github.com/intersectmbo/cardano-ledger/releases/latest/download/babbage-ledger.pdf
-[Agda ledger formalisation]: https://github.com/IntersectMBO/formal-ledger-specifications
-[Agda consensus formalisation]: https://github.com/IntersectMBO/ouroboros-consensus/tree/main/docs/agda-spec
 
 [Ouroboros Classic]: https://eprint.iacr.org/2016/889.pdf
 [Ouroboros BFT]: https://eprint.iacr.org/2018/1049.pdf
