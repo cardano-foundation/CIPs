@@ -569,6 +569,12 @@ This specification has evolved through community feedback:
 
 Version 3 (current) addresses all previous concerns by removing the registration requirement and simplifying to the `transferLogicScript` pattern.
 
+### Versioning
+
+Minor improvements, clarifications, or security fixes to this specification should be proposed via pull request to this CIP.
+
+Major redesigns that accomplish the same goals but with a fundamentally different approach should be proposed as a new CIP, clearly highlighting the limitations addressed or improvements made over this specification.
+
 ## Path to Active
 
 ### Acceptance Criteria
