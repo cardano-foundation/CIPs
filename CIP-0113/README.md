@@ -83,7 +83,7 @@ These components form the common validation infrastructure shared by ALL program
 These components are token-specific and define the custom behavior of each programmable token. They are deployed per token and implement the "substandard":
 
 - `transferLogicScript`: A token-specific Withdraw-0 script that implements the custom transfer logic for user-initiated transfers. This script validates whether a transfer is allowed based on the token's rules (e.g., allowlist checks, transfer limits, compliance rules).
-- `thirdPartyTransferLogicScript`: A token-specific Withdraw-0 script that defines admin/third-party actions on the programmable token. This includes privileged operations like seizure, forced transfers, or emergency actions that can be executed without explicit user permission.
+- `thirdPartyTransferLogicScript`: A token-specific Withdraw-0 script that defines third-party actions on the programmable token. Third parties could be any Cardano user or specific groups (e.g., admins). This enables operations like seizure, forced transfers, auto-compounding, or other custom logic that can be executed without explicit user permission.
 - `issuanceLogicScript`: A token-specific Withdraw-0 script that implements the custom minting/burning logic for the programmable token. It defines who can mint new tokens, under what conditions, and the burning rules.
 - `issuanceMintingPolicy`: The Minting script that mints/burns programmable tokens. While the script code is shared across all programmable tokens, each deployment is token-specific because the policy is parameterized by the hash of the token's specific issuanceLogicScript.
 - `globalState`: An optional token-specific unique UTxO whose datum contains global information regarding the token (e.g., if it's frozen, if transfers are paused, total supply, etc.). Not all tokens require a global state.
@@ -101,7 +101,7 @@ The registry (along with registrySpendScript and registryMintingPolicy), program
 
 The creator writes a new transferLogicScript where they define the rules to transfer the new token (e.g., allowlist checks, transfer limits).
 
-(Optional) Then they write a new thirdPartyTransferLogicScript where they define who are the admins and what actions they can do without permission of any other user (e.g., seizure, forced transfers).
+(Optional) Then they write a new thirdPartyTransferLogicScript where they define who can execute third-party actions and what those actions are (e.g., seizure, forced transfers, auto-compounding).
 
 Then they write a new issuanceLogicScript where they define who can mint and burn the new token.
 
@@ -115,7 +115,7 @@ Off-chain, any user can deterministically derive their smart wallet address (as 
 
 When a user wants to transfer some of their programmable tokens, the programmableLogicBase script delegates validation to the programmableLogicGlobal stake validator (via withdraw-zero pattern). For each token, a proof of registration (or non-registration) is required: if the policy is present in the registry then the associated transferLogicScript MUST be executed in the same transaction; if the policy is not present in the registry, the token is treated as a normal, non-programmable CNT and can always leave the programmableLogicBase script.
 
-At any moment, for each token, admins can execute privileged actions as defined in the thirdPartyTransferLogicScript.
+At any moment, for each token, third parties can execute actions as defined in the thirdPartyTransferLogicScript.
 
 At any moment, for each token, issuers can mint more tokens or burn existing ones that are held by them.
 
@@ -173,10 +173,10 @@ This script implements the custom logic for user-initiated transfers.
 
 MUST be a Credential (either PubKeyCredential or ScriptCredential with a 28-byte hash).
 
-Represents the credential of the "Withdraw 0" script that defines who is an admin (third party)
-and the admin actions on the programmable token.
+Represents the credential of the "Withdraw 0" script that defines who can execute third-party actions
+and what those actions are on the programmable token.
 
-This script is used for privileged actions (such as seizure or forced transfers) that can be executed without user permission.
+This script is used for actions (such as seizure, forced transfers, or auto-compounding) that can be executed without explicit user permission.
 
 #### `global_state_cs`
 
@@ -266,8 +266,8 @@ When using this constructor:
 
 #### ThirdPartyAct Constructor
 
-The `ThirdPartyAct` constructor is used when an admin (third party) wants to execute privileged actions on programmable tokens
-without the explicit permission of the token owner. This is specifically designed for **seizure operations** where tokens are removed from a user's smart wallet.
+The `ThirdPartyAct` constructor is used when a third party wants to execute actions on programmable tokens
+without the explicit permission of the token owner. Third parties could be any Cardano user or specific groups (e.g., admins). This is commonly used for **seizure operations** but can support any custom logic defined by the token's substandard.
 
 When using this constructor:
 1. `seize_input_idx`: The index (in the transaction inputs) of the UTxO from programmableLogicBase being seized
@@ -283,7 +283,7 @@ When using this constructor:
   - Have the same datum as the seized input
   - Contain the original value MINUS the seized tokens
 - At least some tokens MUST be removed (to prevent DoS attacks)
-- The authorization check for the stake credential is bypassed (admins don't need user permission)
+- The authorization check for the stake credential is bypassed (third parties don't need user permission)
 
 #### RegistryProof Requirements
 
@@ -316,7 +316,7 @@ The programmableLogicGlobal stake validator performs the following validation:
 1. **Authorization Check** (TransferAct only): For each spent UTxO from programmableLogicBase:
    - If the stake credential is a public key hash, verify the transaction is signed by that key
    - If the stake credential is a script hash, verify that script is executed in the transaction
-   - Exception: ThirdPartyAct bypasses this check (admins don't need user permission)
+   - Exception: ThirdPartyAct bypasses this check (third parties don't need user permission)
 
 2. **Proof Validation** (TransferAct only): For each RegistryProof:
    - Verify the referenced RegistryNode exists at the specified index in reference inputs
@@ -342,7 +342,7 @@ Depending on the substandard and the specific programmable token implementation,
 
 - The programmableLogicBase/programmableLogicGlobal split ensures all programmable tokens can only be spent if proper validation occurs
 - The RegistryProof mechanism prevents bypassing transfer restrictions by claiming a token is unregistered when it actually is registered
-- Third-party actions provide a mechanism for compliance (seizure, freezes) while maintaining clear on-chain definitions of admin powers
+- Third-party actions provide a mechanism for compliance (seizure, freezes) while maintaining clear on-chain definitions of third-party capabilities
 - The authorization check ensures users maintain control over their tokens (except when third-party actions are explicitly defined)
 - ThirdPartyAct is limited to single-input operations to prevent DoS attacks and ensure predictable seizure behavior
 
