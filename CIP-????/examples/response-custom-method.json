@@ -1,0 +1,19 @@
+{
+  "17": {
+    "msg": [
+      "Response to ranked infrastructure roadmap"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "surveyHash": "758b30b701373b0b2289cd28502136610f3e904b5256833f41d0717e10fa0bf3",
+      "customValue": {
+        "ranking": [
+          2,
+          0,
+          1
+        ]
+      }
+    }
+  }
+}

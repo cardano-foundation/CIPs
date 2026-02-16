@@ -1,0 +1,25 @@
+{
+  "17": {
+    "msg": [
+      "Initial parameter calibration"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Initial parameter calibration",
+      "description": "Choose an integer target for parameter X.",
+      "question": "Select initial value for parameter X",
+      "methodType": "urn:cardano:poll-method:numeric-range:v1",
+      "numericConstraints": {
+        "minValue": 10,
+        "maxValue": 1000,
+        "step": 5
+      },
+      "eligibility": [
+        "DRep",
+        "SPO",
+        "CC"
+      ],
+      "voteWeighting": "CredentialBased"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "17": {
+    "msg": [
+      "Response to initial parameter calibration"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "surveyHash": "5f813108613bc0e6a2edc8537cc20f4fd3c907470622d01e272baa2aa52e20f2",
+      "numericValue": 325
+    }
+  }
+}

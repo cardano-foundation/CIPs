@@ -1,0 +1,31 @@
+{
+  "17": {
+    "msg": [
+      "Dijkstra hard-fork CIP inclusion poll"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Dijkstra hard-fork CIP inclusion poll",
+      "description": "Signal support for inclusion of CIP-0136 in the hard fork bundle.",
+      "question": "Should CIP-0136 be included in the Dijkstra hard fork?",
+      "methodType": "urn:cardano:poll-method:single-choice:v1",
+      "options": [
+        "YES",
+        "NO",
+        "ABSTAIN"
+      ],
+      "eligibility": [
+        "Stakeholder"
+      ],
+      "voteWeighting": "StakeBased",
+      "referenceAction": {
+        "transactionId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "actionIndex": 0
+      },
+      "lifecycle": {
+        "startSlot": 120000000,
+        "endSlot": 120432000
+      }
+    }
+  }
+}
