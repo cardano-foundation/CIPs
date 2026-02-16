@@ -225,9 +225,10 @@ type ProgrammableLogicGlobalRedeemer {
         registryProofs: List<RegistryProof>
     }
     ThirdPartyAct {
-        seize_input_idx: Int,
-        seize_output_idx: Int,
-        registry_node_idx: Int
+        registry_node_idx: Int,
+        input_idxs: List<Int>,
+        outputs_start_idx: Int,
+        length_input_idxs: Int
     }
 }
 
@@ -269,20 +270,25 @@ When using this constructor:
 The `ThirdPartyAct` constructor is used when a third party wants to execute actions on programmable tokens
 without the explicit permission of the token owner. Third parties could be any Cardano user or specific groups (e.g., admins). This is commonly used for **seizure operations** but can support any custom logic defined by the token's substandard.
 
+This constructor supports **multiple UTxOs** in a single transaction for batch operations.
+
 When using this constructor:
-1. `seize_input_idx`: The index (in the transaction inputs) of the UTxO from programmableLogicBase being seized
-2. `seize_output_idx`: The index (in the transaction outputs) of the resulting UTxO after seizure
-3. `registry_node_idx`: The index (in reference inputs) of the RegistryNode for the token being seized
+1. `registry_node_idx`: The index (in reference inputs) of the RegistryNode for the token being acted upon
+2. `input_idxs`: A list of indices (in transaction inputs) pointing to the UTxOs from programmableLogicBase being acted upon
+3. `outputs_start_idx`: The index where corresponding outputs begin in the transaction outputs
+4. `length_input_idxs`: The expected length of `input_idxs` (used for validation)
+
+**Input/Output Pairing:**
+Each input at `input_idxs[i]` is paired with an output at `outputs_start_idx + i`. This allows batch processing of multiple UTxOs while maintaining a predictable structure.
 
 **Validation Requirements:**
-- Only ONE input from programmableLogicBase is allowed (the seized input at `seize_input_idx`)
 - The RegistryNode at `registry_node_idx` MUST exist and contain the token's configuration
 - The token's `third_party_transfer_logic_script` MUST be executed in the transaction (via withdraw-zero)
-- The output at `seize_output_idx` MUST:
-  - Have the same address as the seized input
-  - Have the same datum as the seized input
-  - Contain the original value MINUS the seized tokens
-- At least some tokens MUST be removed (to prevent DoS attacks)
+- For each input/output pair:
+  - The output MUST have the same address as the input
+  - The output MUST have the same datum as the input
+  - The output MUST contain the original value MINUS the seized/modified tokens
+- At least some tokens MUST be removed from each UTxO (to prevent DoS attacks)
 - The authorization check for the stake credential is bypassed (third parties don't need user permission)
 
 #### RegistryProof Requirements
@@ -344,7 +350,7 @@ Depending on the substandard and the specific programmable token implementation,
 - The RegistryProof mechanism prevents bypassing transfer restrictions by claiming a token is unregistered when it actually is registered
 - Third-party actions provide a mechanism for compliance (seizure, freezes) while maintaining clear on-chain definitions of third-party capabilities
 - The authorization check ensures users maintain control over their tokens (except when third-party actions are explicitly defined)
-- ThirdPartyAct is limited to single-input operations to prevent DoS attacks and ensure predictable seizure behavior
+- ThirdPartyAct supports batch operations on multiple UTxOs while requiring value changes to prevent DoS attacks
 
 ### CIP-113 Version
 
