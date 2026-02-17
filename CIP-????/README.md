@@ -19,7 +19,7 @@ This proposal defines a standardized transaction metadata format for creating an
 
 The format supports:
 - A single poll question per survey definition.
-- Optional linkage to governance actions.
+- Optional linkage to governance actions via governance action anchor metadata.
 - Deterministic response binding using both survey transaction id and survey hash.
 - Extensibility for custom voting methods.
 
@@ -47,6 +47,7 @@ This CIP reserves metadata label `17` for two payload types:
 - `surveyResponse`: survey response payload.
 
 A transaction MUST include exactly one of these payloads under label `17`.
+Survey metadata under label `17` is valid as a standalone mechanism and does not require any governance action.
 
 A survey is identified by:
 - `surveyTxId`: transaction id of the transaction that includes the `surveyDetails` payload.
@@ -68,10 +69,6 @@ A survey is identified by:
       "maxSelections": 4,
       "eligibility": ["Stakeholder"],
       "voteWeighting": "CredentialBased",
-      "referenceAction": {
-        "transactionId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "actionIndex": 0
-      },
       "lifecycle": {
         "startSlot": 120000000,
         "endSlot": 120432000
@@ -98,7 +95,6 @@ A survey is identified by:
 | `methodSchemaHash` | Hex String | Conditional | Required for custom methods; blake2b-256 hash of custom method schema bytes. |
 | `eligibility` | Array of Strings | No | Eligible responder classes. Allowed values: `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
 | `voteWeighting` | String | No | `"StakeBased"` or `"CredentialBased"`. Default is `"CredentialBased"` if absent. |
-| `referenceAction` | Object | No | Optional governance action linkage as `{ transactionId, actionIndex }`. |
 | `lifecycle` | Object | No | Optional lifecycle window using slot bounds: `{ startSlot, endSlot }`. |
 
 ### Method Types
@@ -176,13 +172,32 @@ A response is valid only if:
 
 `surveyTxId` and `surveyHash` are both required. A conflicting pair cannot redefine an existing survey; it only creates an invalid response.
 
-#### Optional governance linkage
+#### Governance action anchor linkage
 
-If `referenceAction` is present in `surveyDetails`, it MUST contain both:
-- `transactionId` (hex transaction id)
-- `actionIndex` (uint)
+Survey-to-action linkage is canonicalized as **Action -> Survey**.
+This linkage is optional and only applies when a governance action wants to attach a survey context.
 
-This pair is the canonical governance action reference for this standard.
+When a governance action links to a survey, the governance action anchor metadata MUST include:
+- `surveyRef.surveyTxId`
+- `surveyRef.surveyHash`
+
+Anchor schema:
+
+```json
+{
+  "specVersion": "1.0.0",
+  "kind": "cardano-governance-survey-link",
+  "surveyRef": {
+    "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+    "surveyHash": "44b7b4b7bad4dce5634b40f16966f45ee52981a7bc3cdd39542b4beffc25d8e9"
+  }
+}
+```
+
+Validation rules:
+- `surveyTxId` MUST resolve to a transaction that includes label `17` with `surveyDetails`.
+- `surveyHash` MUST equal the canonical hash of that `surveyDetails` payload.
+- If validation fails, the governance-action-to-survey link is invalid and tooling MUST NOT attach that survey to the action.
 
 #### Responder identity for deduplication
 
@@ -221,26 +236,30 @@ This CIP intentionally does not standardize stake snapshot timing or stake sourc
 ### Info Action Profile
 
 This CIP is general-purpose. For tools implementing the Info Action profile:
-- `referenceAction` MUST reference the Info Action’s governance action id.
+- The Info Action anchor metadata MUST include `surveyRef` as specified in [Governance action anchor linkage](#governance-action-anchor-linkage).
+- The `surveyRef` binding MUST be valid.
 - `lifecycle` MUST be present.
-- `lifecycle.startSlot` and `lifecycle.endSlot` MUST match the ledger-defined active lifetime of the referenced Info Action.
+- `lifecycle.startSlot` and `lifecycle.endSlot` MUST match the ledger-defined active lifetime of the referencing Info Action.
 - Responses outside the lifecycle window MUST be ignored.
 
 ### Transaction-level Constraints
 
 - A single label `17` payload MUST be either `surveyDetails` or `surveyResponse`, not both.
 - A response transaction MUST NOT reference itself: `surveyTxId` MUST differ from the response transaction id.
+- If governance-action linkage is provided, it MUST be encoded in governance action anchor metadata, not in `surveyDetails`.
 
 ### Block Explorer and dApp Implementation Guide
 
 1. Discover survey definitions by scanning metadata label `17` for `surveyDetails`.
 2. For each survey definition transaction, compute and cache `surveyHash`.
-3. Discover responses by scanning metadata label `17` for `surveyResponse`.
-4. Resolve each response to survey by `(surveyTxId, surveyHash)`.
-5. Validate response shape against the survey's `methodType` and constraints.
-6. Derive `responseCredential` using [Responder identity for deduplication](#responder-identity-for-deduplication).
-7. Apply latest-valid-response-wins ordering.
-8. Apply selected weighting mode and produce final tallies.
+3. Optionally discover governance actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
+4. If present, validate governance-action-to-survey linkage by `(surveyTxId, surveyHash)`.
+5. Discover responses by scanning metadata label `17` for `surveyResponse`.
+6. Resolve each response to survey by `(surveyTxId, surveyHash)`.
+7. Validate response shape against the survey's `methodType` and constraints.
+8. Derive `responseCredential` using [Responder identity for deduplication](#responder-identity-for-deduplication).
+9. Apply latest-valid-response-wins ordering.
+10. Apply selected weighting mode and produce final tallies.
 
 ### CDDL Schema
 
@@ -281,10 +300,6 @@ survey_details = {
   ? methodSchemaHash: hex_blake2b_256,
   ? eligibility: [* eligibility_role],
   ? voteWeighting: vote_weighting,
-  ? referenceAction: {
-    transactionId: hex_tx_id,
-    actionIndex: uint
-  },
   ? lifecycle: {
     startSlot: uint,
     endSlot: uint
@@ -324,6 +339,16 @@ cip_00xx_label_17_payload = {
 }
 
 cip_00xx_root = cip_00xx_label_17_payload
+
+; Governance action anchor metadata for Action -> Survey linkage
+governance_action_anchor_survey_link = {
+  specVersion: tstr,
+  kind: "cardano-governance-survey-link",
+  surveyRef: {
+    surveyTxId: hex_tx_id,
+    surveyHash: hex_blake2b_256
+  }
+}
 ```
 
 CDDL provides shape constraints. Method-specific mandatory and forbidden field rules in this document are normative and MUST also be enforced by tooling.
@@ -342,6 +367,7 @@ This revision defines version `1.0.0`.
 - A single-question model keeps each survey semantically coherent and avoids combining unrelated decisions.
 - Index-based option responses avoid text-matching ambiguity and improve interoperability.
 - Requiring both `surveyTxId` and `surveyHash` prevents weak linkage and reduces confusion between similar surveys.
+- Canonical `Action -> Survey` linkage via governance action anchors avoids circular transaction-reference dependencies.
 - URI-based method identifiers plus schema hash integrity enable safe extensibility for future/custom methods.
 - Latest-valid-response-wins gives participants a correction path while preserving deterministic tally behavior.
 - The Info Action profile gives governance tools strict interoperability while keeping the base standard general-purpose.

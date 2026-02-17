@@ -18,10 +18,6 @@
         "Stakeholder"
       ],
       "voteWeighting": "StakeBased",
-      "referenceAction": {
-        "transactionId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "actionIndex": 0
-      },
       "lifecycle": {
         "startSlot": 120000000,
         "endSlot": 120432000
