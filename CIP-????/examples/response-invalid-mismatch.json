@@ -1,0 +1,15 @@
+{
+  "17": {
+    "msg": [
+      "Invalid mismatched response"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "surveyHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "selection": [
+        2
+      ]
+    }
+  }
+}

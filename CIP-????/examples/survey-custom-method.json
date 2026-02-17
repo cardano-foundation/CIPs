@@ -1,0 +1,22 @@
+{
+  "17": {
+    "msg": [
+      "Ranked infrastructure roadmap"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Ranked infrastructure roadmap",
+      "description": "Custom ranked-choice method using an external schema.",
+      "question": "Rank the roadmap options in order of preference.",
+      "methodType": "https://example.org/cardano/methods/ranked-choice/v1",
+      "methodSchemaUri": "ipfs://bafybeigdyrzt6z6u3mri4u7mxh2r3e5f2trz7rxx2jx6d5yj4v5nx4qjxm",
+      "hashAlgorithm": "blake2b-256",
+      "methodSchemaHash": "6f1d9e1bc771ac5f8194f3152df64d9fda9ae28f42f23f8f4d0c9dcb2f4d8f7a",
+      "options": [
+        "Hydra UX",
+        "Mithril integration",
+        "Governance analytics"
+      ]
+    }
+  }
+}

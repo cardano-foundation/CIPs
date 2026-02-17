@@ -1,0 +1,16 @@
+{
+  "17": {
+    "msg": [
+      "Response to Dijkstra hard-fork CIP shortlist"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+      "surveyHash": "44b7b4b7bad4dce5634b40f16966f45ee52981a7bc3cdd39542b4beffc25d8e9",
+      "selection": [
+        1,
+        3
+      ]
+    }
+  }
+}
