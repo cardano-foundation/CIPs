@@ -7,17 +7,18 @@ Authors:
   - Nicolas Henin <nicolas.henin@iohk.io>
   - Raphael Toledo <raphael.toledo@iohk.io>
 Solution-To:
-  - CPS-0017
-  - CPS-0021
+  - CPS-0017: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0017
+  - CPS-0021: https://github.com/cardano-foundation/CIPs/blob/master/CPS-0021
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/1065
+  - https://github.com/cardano-foundation/CIPs/pull/1131
 Created: 2025-07-25
 License: Apache-2.0
 ---
 
 ## Abstract
 
-We propose an extension to Ouroboros Praos, called **Ouroboros Phalanx**. The name derives from the [**Phalanx**](https://en.wikipedia.org/wiki/Phalanx), an **Ancient Greek military formation** where soldiers stood in tightly packed units, shielding one another to form a nearly impenetrable defense. Just as the phalanx multiplied the strength of individual soldiers through coordination, this protocol enhances Cardano’s consensus by reinforcing its resistance to adversarial attacks.
+We propose an extension to Ouroboros, called **Ouroboros Phalanx**. The name derives from the [**Phalanx**](https://en.wikipedia.org/wiki/Phalanx), an **Ancient Greek military formation** where soldiers stood in tightly packed units, shielding one another to form a nearly impenetrable defense. Just as the phalanx multiplied the strength of individual soldiers through coordination, this protocol enhances Cardano’s consensus by reinforcing its resistance to adversarial attacks.
 
 At its core, **Phalanx Protocol** strengthens the **VRF-based randomness generation sub-protocol** that underpins leader election. It introduces an additional cryptographic primitive that is **lightweight for honest participants** yet **computationally expensive for adversaries** seeking to bias slot leader distributions. This design does not eliminate grinding attacks outright but makes them **economically infeasible at scale**.
 
@@ -32,6 +33,11 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
 
 - [Abstract](#abstract)
 - [Motivation: why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
+  - [Recommended Configuration](#recommended-configuration)
+  - [Security Improvements](#security-improvements)
+  - [Consensus Performance](#consensus-performance)
+  - [Relationship to Peras](#relationship-to-peras)
+  - [Technical Depth](#technical-depth)
 - [Specification](#specification)
   - [1. High-Level Overview ](#1-high-level-overview)
     - [1.1 Changes Relative to Praos](#11-changes-relative-to-praos)
@@ -65,20 +71,22 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
         - [3.2.5.2 ProvideMissingAttestedOutput & Tick Commands](#3252-providemissingattestedoutput--tick-commands)
       - [3.2.6 Closure Phase](#326-closure-phase)
         - [3.2.6.1. The States](#3261-the-states)
-            - [3.2.6.2. The Successful Scenario: The `Close` Command](#3262-the-successful-scenario-the-close-command)
-            - [3.2.6.3. `tick` Command](#3263-tick-command)
-            - [3.2.6.4. The Failure Scenario: Ungraceful Closure](#3264-the-failure-scenario-ungraceful-closure)
+        - [3.2.6.2. The Successful Scenario: The `Close` Command](#3262-the-successful-scenario-the-close-command)
+        - [3.2.6.3. `tick` Command](#3263-tick-command)
+        - [3.2.6.4. The Failure Scenario: Ungraceful Closure](#3264-the-failure-scenario-ungraceful-closure)
   - [4. Recommended Parameter Values](#4-recommended-parameter-values)
     - [4.1. VDF Security Parameters λ and ρ](#41-vdf-security-parameters-λ-and-ρ)
     - [4.2. Time Budget Tᵩ and Derived T](#42-time-budget-tᵩ-and-derived-t)
       - [4.2.1. Specialized ASIC vs CPU-Based Chips](#421-specialized-asic-vs-cpu-based-chips)
-      - [4.2.2. Deriving from Tᵩ to T](#421-deriving-from-tᵩ-to-t)
+      - [4.2.2. Deriving from Tᵩ to T](#422-deriving-from-tᵩ-to-t)
   - [5. Efficiency Analysis](#5-efficiency-analysis)
-    - [5.1. Block Publication](#51-block-publication)
-    - [5.2. Block Verification](#52-block-verification)
-      - [5.2.1. When Not Syncing](#521-when-not-syncing)
-      - [5.2.2. When Syncing](#522-when-syncing)
+    - [5.1. Phalanx Initialization](#51-phalanx-initialization)
+    - [5.2. Block Publication](#52-block-publication)
+    - [5.3. Block Verification](#53-block-verification)
+      - [5.3.1. When Not Syncing](#531-when-not-syncing)
+      - [5.3.2. When Syncing with aggregation](#532-when-syncing-with-aggregation)
   - [6. CDDL Schema for the Ledger](#6-cddl-schema-for-the-ledger)
+  - [7. Formal specification in Agda](#7-formal-specification-in-agda)
 
 - [Rationale: How does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
   - [1. How Phalanx Addresses CPS-21 - Ouroboros Randomness Manipulation ?](#1-how-phalanx-addresses-cps-21---ouroboros-randomness-manipulation)
@@ -123,7 +131,7 @@ Ouroboros Phalanx therefore represents a **complementary advancement**: reinforc
 
 ## Motivation: why is this CIP necessary?
 
-This proposal strengthens Cardano’s consensus protocol (Ouroboros Praos) against a class of attacks known as *grinding attacks*. These attacks allow adversaries to bias the randomness used in block leader elections in their favor, statistically slowing down settlement times and thys weakening the effectivness of Praos.
+This proposal strengthens Cardano’s consensus protocol (Ouroboros Praos) against a class of weaknesses known as *grinding attacks*. These attacks allow adversaries to bias the randomness used in block leader elections, statistically slowing settlement and weakening security guarantees.
 
 The improvement introduces an additional computation step that is lightweight for honest participants but significantly more expensive for attackers, making grinding attacks economically infeasible.
 
@@ -138,7 +146,7 @@ The algorithm is designed so that with **128-bit confidence**, all required proo
 
 ### Security Improvements
 
-The proposal increases substantially the computational cost of a grinding attack by a factor of approximately <strong>10<sup>10</sup></strong> compared to the current situation.  
+The proposal substantially increases the computational cost of a grinding attack by a factor of approximately <strong>10<sup>10</sup></strong> compared to the current situation.  
 
 To maintain this level of security over time:  
 - Governance may choose to **increase the 12-hour budget** as the cost of computation decreases.  
@@ -168,7 +176,7 @@ This translates into slower settlement and weaker guarantees for the network as 
 
 Peras is fully compatible with Praos:  
 - When enough committee members participate, it achieves **rapid settlement**.  
-- When they do not (e.g., if too many operators are offline), Peras **gracefully falls back to Praos**. Peras would only fall back to Praos if there were massive network disruption or an attack by a 25% adversary.  
+- When they do not (e.g., if too many operators are offline), Peras **gracefully falls back to Praos**.  
 
 In these fallback situations, the network still relies on Praos’ guarantees—precisely where Phalanx becomes relevant as a **complementary defense layer**. Phalanx ensures that even when Peras cannot certify blocks, the protocol still benefits from:  
 - **Stronger protection against grinding attacks**, and  
@@ -187,31 +195,31 @@ Please refer to the CPD "[Ouroboros Randomness Generation Sub-Protocol – The C
 
 ## Specification
 
-The core principle of the proposed protocol change is to **substantially escalate the computational cost of each grinding attempt for an adversary**. To achieve this, every honest participant is required to perform a designated computation for each block they produce over an epoch (**432,000 slots - 5 days**) - note that this computation can be preprocessed locally at the beginning of the epoch. Consequently, an adversary attempting a grinding attack must **recompute these operations for every single attempt**, while being **constrained by the grinding window**, which dramatically increases the resource expenditure. By enforcing this computational burden, we **drastically reduce the feasible number of grinding attempts** an adversary with a fixed resource budget can execute, making randomness manipulation **more expensive and significantly less practical**.
+The core principle of the proposed protocol change is to **substantially escalate the computational cost of each grinding attempt for an adversary**. To achieve this, every honest participant is required to perform a designated computation for each block they produce over an epoch (**432,000 slots - 5 days**). Consequently, an adversary attempting a grinding attack must **recompute these operations for every single attempt**, while being **constrained by the grinding window**, which dramatically increases the resource expenditure. By enforcing this computational burden, we **drastically reduce the feasible number of grinding attempts** an adversary with a fixed resource budget can execute, making randomness manipulation **more expensive and significantly less practical**.
  
 ### 1. High-Level Overview 
 
 #### 1.1. Changes Relative to Praos
 
-In **Phalanx** , the randomness generation and leader election flows are modified as follows:
+In **Phalanx**, the randomness generation and leader election flows are modified as follows:
 
 ![alt text](./image/Praos-vs-Phalanx-Highl-Level.png)
 
-1. The **stake distribution stabilization phase** is shifted **back by one epoch :** The **active** **stake distribution** $`\mathbf{SD}_e`$ used for leader election is now derived from the **end of $epoch_\text{e-3}$** instead of **$epoch_\text{e-2}$**  as in the original Praos protocol.  
+1. The **stake distribution stabilization phase** is shifted **back by one epoch:** The **active** **stake distribution** $`\mathbf{SD}_e`$ used for leader election is now derived from the **end of $epoch_\text{e-3}$** instead of **$epoch_\text{e-2}$** as in the original Praos protocol.  
 2. The **honest contribution inclusion phase**, which originally resulted in a **ηₑ candidate**, is also **shifted back by one epoch**, aligning with the adjusted **stake distribution stabilization**. This value is now referred to as the **pre-ηₑ candidate**, signifying its role as an **intermediate randomness nonce** in the sub-protocol.  
-3. The **pre-ηₑ candidate**, once stabilized (after $`3 \cdot \frac{k}{f}`$), undergoes a **sequence of incremental operations** using a **new deterministic cryptographic primitive Φ (Phi)**. This sequence spans a full epoch size, specifically during the interval:$`\left[\frac{9k}{f} \cdot \text{epoch}_{e-2},  \frac{9k}{f} \cdot \text{epoch}_{e-1}\right)`$.
-4. The final **ηₑ (eta nonce)**, resulting from the Φ computation, completely determined by the prior stabilized pre-seed pre-ηₑ, does not need stabilization and is availablea a whole $`\frac{k}{f}`$ slots before the start of $`\text{epoch}_e`$ .
+3. The **pre-ηₑ candidate**, once stabilized (after $`3 \cdot \frac{k}{f}`$), undergoes a **sequence of incremental operations** using a **new deterministic cryptographic primitive Φ (Phi)**. This sequence spans a full epoch size, specifically during the interval: $`\left[\frac{9k}{f} \cdot \text{epoch}_{e-2},  \frac{9k}{f} \cdot \text{epoch}_{e-1}\right)`$.
+4. The final **ηₑ (eta nonce)**, resulting from the Φ computation and completely determined by the prior stabilized pre-seed pre-ηₑ, does not need stabilization and is available a whole $`\frac{k}{f}`$ slots before the start of $`\text{epoch}_e`$.
 
 #### 1.2. Inputs & Outputs 
 
-The Randomness Generation sub-protocol pipelines two parallel streams η stream and Φ Stream, which synchronize at $`9 \cdot \frac{k}{f}`$ at each epoch :  
+The Randomness Generation sub-protocol pipelines two parallel streams, the η stream and the Φ stream, which synchronize at $`9.\frac{k}{f}`$ each epoch:  
 
 ![alt text](./image/Phalanx-Streams.png)
 
 ##### 1.2.1. The η stream 
 
    - Already present in Praos and retained in Phalanx 
-   - Updated with every block produced in the blockchain tree, a η stream captures intermediate values $`\eta^\text{evolving}_t`$ in the block headers, defined as follows:
+   - Updated with every block produced in the blockchain tree, the η stream captures intermediate values $`\eta^\text{evolving}_t`$ in the block headers, defined as follows:
 
 ```math
    \eta^{\text{evolving}}_{t+1} =
@@ -233,13 +241,13 @@ The Randomness Generation sub-protocol pipelines two parallel streams η stream 
 |---------------|-----------------|
 | $`\text{ProtocolParameter}_\text{extraEntropy} `$ | The evolving nonce is initialized using the extraEntropy field defined in the protocol parameters.|
 | $`\mathsf{VRF}^\text{Output}_\text{i} `$ | The **VRF output** generated by the $` \text{slot}_\text{i} `$ Leader and included in the block header |
-| $a\ \star\ b$    | The concatenation of $a$ and $b$ , followed by a BLAKE2b-256 hash computation.
+| $a\ \star\ b$    | The concatenation of $a$ and $b$, followed by a BLAKE2b-256 hash computation.
 
 
 ##### 1.2.2. The pre-ηₑ Synchronizations  
 
-- To generate $`\eta_\text{e}`$ for epoch $`e`$, the stream Φ Stream is reset with the value of η stream at $`t=9.\frac{k}{f}`$ at $epoch_{e-2}$
-- This specific value of η stream is referred to as **$`\text{pre-}\eta_e`$** and defined as :
+- To generate $`\eta_\text{e}`$ for epoch $`e`$, the Φ stream is reset with the value of the η stream at $`t=9.\frac{k}{f}`$ in $epoch_{e-2}$.
+- This specific value of the η stream is referred to as **$`\text{pre-}\eta_e`$** and defined as:
 ```math
 \text{pre-}\eta_e= \eta^{evolving}_{9.\frac{k}{f}(epoch_{e-2})}
 ```
@@ -252,19 +260,19 @@ The stream is bootstrapped by calling the parametrize function of the cryptograp
 ```math
 Φ.\text{Stream.State} \leftarrow \Phi.\text{parametrize}(\lambda, T_\Phi)
 ```
-where : 
+where: 
   -  $`\lambda`$ is a security parameter for the cryptographic primitive $`\Phi`$.
-  - $`T_\Phi`$, a time-bound parameter representing the required computation  $`\Phi`$ duration, independent of available computing power.
+  - $`T_\Phi`$, a time-bound parameter representing the required computation duration for $`\Phi`$, independent of available computing power.
   - Any change to these 2 parameters would require a decision through Cardano governance.
   - $\Phi.\text{Stream.State}$ will contain derived configuration specific to the algorithm and the cryptographic primitive used.
 
 ###### 1.2.3.2. The Lifecycle
 
-It is reset at every pre-ηₑ synchronization point every $`10.\frac{k}{f}`$ slots :
+It is reset at each pre-ηₑ synchronization point (every $`10.\frac{k}{f}`$ slots):
 ```math
 Φ.\text{Stream.State} \leftarrow \Phi.\text{initialize}(Φ.\text{Configuration}, \text{pre-}\eta)
 ```
-At each slot $t$, update the stream state by :   
+At each slot $t$, update the stream state by:   
 ```math
 Φ.\text{Stream.State} \leftarrow \Phi.\text{tick}(Φ.\text{Stream.State, t})
 ```
@@ -273,13 +281,13 @@ A node must be able to determine, based on the current state, whether it should 
 \{0,1\} \leftarrow \Phi.\text{shouldCompute}(Φ.\text{Stream.State, nextElectedSlot})
 ```
 A node must be able to compute a specific chunk of the $`\Phi`$ iterations independently of any global state. 
-The result is an *attested output*—a pair $`\phi_x =(\pi_x,\ o_x)`$ where : 
+The result is an *attested output*—a pair $`\phi_x =(\pi_x,\ o_x)`$ where: 
 
  - $`o_x`$ is the computed output for iteration $`x`$, 
  - $`\pi_x`$ is a cryptographic proof attesting that $`o_x`$ was correctly derived from the input according to the rules of $`\Phi`$. 
  - Since this operation may be long-lived, intermediate attested outputs should be persistable to disk, allowing the node to stop, resume, or cancel computation from the latest completed sub-computation.
 
-A subset of block-producing slots must include in their block bodies a unique attested output $`\phi_x`$ with $`x \in \{1,\ \dots,\ i \}`$ denoting the iteration index within the $`\Phi`$ computation :
+A subset of block-producing slots must include in their block bodies a unique attested output $`\phi_x`$ with $`x \in \{1,\ \dots,\ i \}`$ denoting the iteration index within the $`\Phi`$ computation:
   - Each attested output updates the stream state as follows:
 ```math
  \Phi.\text{StreamState} \leftarrow \Phi.\text{provideAttestedOutput}(\Phi.\text{StreamState},\ t,\ \phi_x)
@@ -310,7 +318,7 @@ At the synchronization point $`\text{pre-}\eta_{e+1}`$, the stream is closed pro
 
 #### 2.1. Expected Properties
 
-The Φ cryptographic primitive is a critical component of the Phalanx protocol, designed to increase the computational cost of grinding attacks while remaining efficient for honest participants. To achieve this, Φ must adhere to a set of well-defined properties that ensure its security, efficiency, and practical usability within the Cardano ecosystem. These properties are outlined in the table below :
+The Φ cryptographic primitive is a critical component of the Phalanx protocol, designed to increase the computational cost of grinding attacks while remaining efficient for honest participants. To achieve this, Φ must adhere to a set of well-defined properties that ensure its security, efficiency, and practical usability within the Cardano ecosystem. These properties are outlined in the table below:
 
 | **Property**              | **Description**                                                                                                   |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------|
@@ -326,28 +334,32 @@ The Φ cryptographic primitive is a critical component of the Phalanx protocol, 
 
 Verifiable Delayed Functions (VDFs) are cryptographic primitives designed to take a certain amount of time to compute, regardless of how much computing resources are available. This delay is enforced by requiring a specific number of sequential steps that cannot be easily sped up through parallel processing. Once the computation is done, the result, $`y = g^{2^T}`$, comes with a proof, $`\pi`$, that can be checked quickly and efficiently by anyone. Importantly, for a given input, the output is always the same (deterministic function), ensuring consistency. They usually rely on repeatedly squaring numbers in a mathematical setting that prevents shortcuts and enables quick verification.
 
-As one can see, VDFs present _functionality_, _determinism_, _efficient verification_ and _lower bound on computation_. The _compact representation_ depends on the chosen group as well as the instantiation, which we will tackle later on. The _implementation and maintenance_ is straightforward as the output of a VDF is a simple exponentiation of a group element, only the square operation is needed to be implemented to compute it. As for the proof, this depends on the precise VDF instantiation. Finally, the system is "adaptively secure" as we can set up a group with high security to be reused for a whole epoch or more, and set the number of squaring, also called difficulty, depending on how much computation we want the nodes to perform.
+As one can see, VDFs present _functionality_, _determinism_, _efficient verification_, and a _lower bound on computation_. The _compact representation_ depends on the chosen group as well as the instantiation, which we will tackle later on. The _implementation and maintenance_ are straightforward as the output of a VDF is a simple exponentiation of a group element; only the square operation needs to be implemented to compute it. As for the proof, this depends on the precise VDF instantiation. Finally, the system is "adaptively secure" as we can set up a group with high security to be reused for a whole epoch or more, and set the number of squarings, also called difficulty, depending on how much computation we want the nodes to perform.
 
 Verifiable Delayed Functions were introduced by Boneh et al. [[6]](https://eprint.iacr.org/2018/601.pdf) where the authors suggest several sequential functions combined with the use of proof systems in the incrementally verifiable computation framework (IVC) for viable proof generation and fast verification.
 VDF variants revolve around two primary SNARK-free designs: one from Pietrzak [[36]](https://drops.dagstuhl.de/storage/00lipics/lipics-vol124-itcs2019/LIPIcs.ITCS.2019.60/LIPIcs.ITCS.2019.60.pdf) and the second from Wesolowski [[35]](https://eprint.iacr.org/2018/623.pdf). They differ in the proof design. 
 
-In Wesolowski’s paper, the proof is defined as $g^{{2^T} /\ p}$ where $g$ is the challenge, $T$ the difficulty and $p$ is a prime number found by hashing the VDF input and output together.  
-The proof is thus a single group element that can be computed in at most $2\cdot T$ group operations and constant space, or $(1+1/s) \cdot T$ time where the number $s$ is both the number of processors and space while the verification takes $\text{log}_2 T$ scalar multiplications in $\mathbb{Z}/p$ and two small exponentiations in the group $\mathbb{G}$. The proving time can further be optimized to $O(T /\ \text{log}(T))$ group multiplications by reusing the evaluation intermediary results.  
-Wesolowski also presents aggregation and watermarking methods. The aggregation method does not consist in aggregating multiple proofs but computing a proof of several VDF challenges. This is done by batching all inputs and outputs together and creating a proof for this batched input. The watermarking is done by computing the VDF twice, once normally and another time on a combination of the challenger’s id and VDF input.
+In Wesolowski’s paper, the proof is defined as $g^{{2^T} /\ p}$ where $g$ is the challenge, $T$ the difficulty, and $p$ a prime number found by hashing the VDF input and output together.  
+The proof is thus a single group element that can be computed in at most $2\cdot T$ group operations and constant space, or $(1+1/s) \cdot T$ time, where the number $s$ is both the number of processors and available space, while the verification takes $\text{log}_2 T$ scalar multiplications in $\mathbb{Z}/p$ and two small exponentiations in the group $\mathbb{G}$. The proving time can further be optimized to $O(T /\ \text{log}(T))$ group multiplications by reusing the evaluation intermediary results.  
+Wesolowski also presents aggregation and watermarking methods. The aggregation method does not consist of aggregating multiple proofs but of computing a proof of several VDF challenges. This is done by batching all inputs and outputs together and creating a proof for this batched input. The watermarking is done by computing the VDF twice, once normally and another time on a combination of the challenger’s id and VDF input.
 
-In Pietrzak’s paper, the proof is a tuple of group elements $\pi = \{x^{2^{T / 2^i}}\}$, of size logarithmic in $T$, that can be computed in $(1+2 /\sqrt{T})\cdot T$ time and can be optimized to $O(\sqrt{T} \cdot \text{log}_2 T)$ multiplications. The verification takes $2 \cdot \text{log}_2T$ small exponentiations. Subsequent work on Pietrzak’s paper shows how VDFs challenges can be structured in a Merkle tree to get a proof of the whole tree.
+In Pietrzak’s paper, the proof is a tuple of group elements $\pi = \{x^{2^{T / 2^i}}\}$, of size logarithmic in $T$, that can be computed in $(1+2 /\sqrt{T})\cdot T$ time and can be optimized to $O(\sqrt{T} \cdot \text{log}_2 T)$ multiplications. The verification takes $2 \cdot \text{log}_2T$ small exponentiations. Subsequent work on Pietrzak’s paper shows how VDF challenges can be structured in a Merkle tree to get a proof of the whole tree.
 
-We will choose Wesolowski design over Pietrzark because of its space efficiency and possibility to aggregate proofs.
+We will choose Wesolowski's design over Pietrzak's because of its space efficiency and its ability to aggregate proofs.
 
-Specialized hardware such as ASICs can be used to evaluate VDF output much faster, up to a factor 5 in Chia's VDF project while Ethereum considers a factor 10. This, while unfortunate, is not prohibitive in our context as we only consider the use of VDFs for their computational cost. An attacker would still require a substantial budget to perform an anti-grinding attack in addition to purchasing at scale the specialized hardware that is not inexpensive nor readily available (Chia' ASICs can be purchased on a case per case basis for $1,000). We can also note that any solution would still be affected by hardware, like in the case of proof of works and hash farms.
+Specialized hardware such as ASICs can be used to evaluate VDF output much faster, up to a factor of 5 in Chia's VDF project, while Ethereum considers a factor of 10. This, while unfortunate, is not prohibitive in our context, as we only consider the use of VDFs for their computational cost. An attacker would still require a substantial budget to perform an anti-grinding attack in addition to purchasing specialized hardware at scale that is neither inexpensive nor readily available (Chia's ASICs can be purchased on a case-by-case basis for $1,000). We can also note that any solution would still be affected by hardware, like in the case of proofs of work and hash farms.
+
+Generic attacks leveraging lookup tables can reduce the overhead associated with computing Phalanx's overhead, irrespective of the underlying cryptographic primitive, including VDFs. Such attacks are particularly effective in scenarios where the same group is reused over time, thereby impacting Phalanx not only across epochs but also across concurrent challenges, since multiple instances are computed in parallel. It is worth noting that chaining challenges, as proposed in cascading VDF constructions, offers limited mitigation against these attacks when faced with a strong adversary.
+As there are no formal guarantees regarding the non-amortizability of the currently suggested function, VDFs, or any others, our recommendation represents but a best-effort design. Further research in this area could provide valuable insights, and once found, a non-amortizable primitive could be swiftly integrated in our design once they become readily available.
+Periodically refreshing the group and employing distinct groups for each parallel instantiation can help mitigate these generic amortization attacks, thereby preventing the possibility of batch verification of VDF outputs. We will show later that these changes, coupled with the inability to aggregate VDF instances, would only have a minimal influence on the performance of our design.
 
 #### 2.3. Wesolowski's VDF 
 
 ##### 2.3.1. VDF Primitives
 
-To define Wesolowski VDF construction, we first introduce a series of hash functions: $`\text{Hash}^{(n)}_\mathbb{N}`$, which samples random integers of $`n`$ bits, $`\text{Hash}^{(n)}_\text{prime}`$, which samples a random integer from the set of the first $`2^{2n}`$ prime numbers, and $`\text{Hash}_\mathbb{G}`$, which samples a random group element of the class group $`\mathbb{G}`$.
+To define Wesolowski's VDF construction, we first introduce a series of hash functions: $`\text{Hash}^{(n)}_\mathbb{N}`$, which samples random integers of $`n`$ bits, $`\text{Hash}^{(n)}_\text{prime}`$, which samples a random integer from the set of the first $`2^{2n}`$ prime numbers, and $`\text{Hash}_\mathbb{G}`$, which samples a random group element of the class group $`\mathbb{G}`$.
 
-We define the interface of a Verifiable Delay Function as $`\texttt{VDF} = (\texttt{Setup},\ \texttt{Evalute},\ \texttt{Prove},\ \texttt{Verify})`$, and define its underlying functions based on class groups as follows:
+We define the interface of a Verifiable Delay Function as $`\texttt{VDF} = (\texttt{Setup},\ \texttt{Evaluate},\ \texttt{Prove},\ \texttt{Verify})`$, and define its underlying functions based on class groups as follows:
 
 - $`(\mathbb{G},\ \Delta,\ \cdot) \leftarrow \texttt{VDF.Setup}(\lambda,\ \Delta_{\text{challenge}})`$
   Takes as input a **security parameter** $`\lambda \in \mathbb{N}`$ and a **challenge discriminant** $`\Delta_{\text{challenge}} \in \{0,1\}^*`$. This challenge discriminant acts as a source of public entropy used to deterministically derive the group discriminant $\Delta$, which defines a group of unknown order $\mathbb{G}$ along with its group operation $`\cdot`$. The use of a challenge ensures that the resulting group is unbiasable and unpredictable, preventing adversarial precomputation. We shall drop the group settings $`(\mathbb{G},\ \Delta,\ \cdot)`$ from further functions for readability. Internally, we expect the setup procedure to invoke the following sub-operations:
@@ -359,7 +371,7 @@ We define the interface of a Verifiable Delay Function as $`\texttt{VDF} = (\tex
 ```
 
 - $`y \leftarrow \texttt{VDF.Evaluate}(\ x,\ I)`$
-  Given a challenge $`x \in \mathbb{G}`$ and a number of iterations $`I \in \mathbb{N}`$, computes the  output $`y = x^{2^I}`$.
+  Given a challenge $`x \in \mathbb{G}`$ and a number of iterations $`I \in \mathbb{N}`$, computes the output $`y = x^{2^I}`$.
 
 - $`\pi \leftarrow \texttt{VDF.Prove}(\ x,\ y,\ I)`$ 
   Given a challenge and output $`(x,y) \in \mathbb{G}^2`$, computes the VDF  **proof** as $`\pi = x^{2^I / p}`$ where $`p \leftarrow \text{Hash}^{(2 \lambda)}_\text{prime}(x \| y)`$ is sampled from the first $`2^{2 \lambda}`$ prime numbers.
@@ -369,8 +381,8 @@ We define the interface of a Verifiable Delay Function as $`\texttt{VDF} = (\tex
 
 ##### 2.3.2. VDF Aggregation Primitives
 
-In this section, we present a mechanism for producing a Wesolowski VDF **aggregation proof**. This construction enables efficient synchronization for network participants and may play a central role in deriving the final epoch nonce $`\eta_e`$. 
-The aggregation mechanism has the following interface $`\texttt{VDF.Aggregation} = (\text{Init},\ \text{Update},\ \text{Prove},\ \text{Verify})`$ whose functions will be detailled afterwards. We assume that a class group $`\mathbb{G}`$ has already been set up, by $`(\mathbb{G},\ \Delta,\ \cdot) \leftarrow \texttt{VDF.Setup}(\lambda,\ \Delta_{\text{challenge}})`$.
+In this section, we present a mechanism for producing a Wesolowski VDF **aggregation proof**. This construction enables efficient synchronization for network participants and may play a central role in deriving the final epoch nonce $`\eta_e`$ when _the same group is reused across instances_.
+The aggregation mechanism has the following interface $`\texttt{VDF.Aggregation} = (\text{Init},\ \text{Update},\ \text{Prove},\ \text{Verify})`$ whose functions will be detailed afterwards. We assume that a class group $`\mathbb{G}`$ has already been set up by $`(\mathbb{G},\ \Delta,\ \cdot) \leftarrow \texttt{VDF.Setup}(\lambda,\ \Delta_{\text{challenge}})`$.
 
 **N.B.** We are showing here the core algorithms for simplicity and readability. In practice, we may use further techniques, for instance using an arbitrary byte and the epoch's number as personalization tags to ensure domain separation.
 
@@ -407,13 +419,13 @@ Once all VDF outputs have been generated and the accumulators updated, we can ge
 
 </center>
 
-The VDF aggregation proof $`\pi`$ can then be efficiently be verified using $`\texttt{VDF.Aggregation.Verify}`$.
+The VDF aggregation proof $`\pi`$ can then be efficiently verified using $`\texttt{VDF.Aggregation.Verify}`$.
 <center>
 
 | `Verify accumulators` | $`\{0,1\} \leftarrow \texttt{VDF.Aggregation.Verify}(\ (\text{Acc}_x,\ \text{Acc}_y,\ \_\alpha),\ I,\ \pi)`$     |
 | ------------------------- | ------------------------- |
 | **Input Parameters**      | <ul><li>$`(\text{Acc}_x,\ \text{Acc}_y,\ \alpha)`$ — Accumulators' state.</li><li>$`I \in \mathbb{N}`$ — Per-interval iteration count for the VDF.</li><li>$`\pi \in \mathbb{G}`$ — Aggregated VDF proof.</li></ul> |
-| **Steps**                 | <ol><li>Verfy the accumulators' proof:<br>$`b \leftarrow \texttt{VDF.Verify}(\text{Acc}_x,\ \text{Acc}_y,\ I,\ \pi)`$</li></ol>                                                                                                    |
+| **Steps**                 | <ol><li>Verify the accumulators' proof:<br>$`b \leftarrow \texttt{VDF.Verify}(\text{Acc}_x,\ \text{Acc}_y,\ I,\ \pi)`$</li></ol>                                                                                                    |
 | **Returned Output**       | $`b`$ — Verification bit.   |
 
 </center>
@@ -500,7 +512,7 @@ We split $`T_\Phi`$ into discrete **iterations**, each with the following proper
 - Iterations are fully independent and can be computed in parallel.
 - Slot leaders are responsible for submitting a proof of computation for the specific iteration assigned to them.
 - These computations are fully decoupled, there is no requirement to wait for previous iterations, enabling input precomputation and reducing latency.
-- All iterations must eventually be completed, and an additional and final iteration is used to aggregating all outputs along with a corresponding proof.
+- All iterations must eventually be completed.
 - The iterations are then used to compute the epoch randomness $\eta_e$.
 
 Each iteration is mapped to a specific interval, with the following constraints:
@@ -522,14 +534,14 @@ We define **4 sequential phases** in the stream lifecycle:
   The stream is configured but not yet active. Parameters such as $`\lambda`$ (computation hardness) and $`\#\text{iterations}_\phi`$ (number of iterations) are established during this phase.
 
 - 🟩 **Initialization Grace Phase**:
-  The stream is activated, and Stake Pool Operators (SPOs) are given a grace period to begin the first iteration of the computation.
+  The stream is activated, and Stake Pool Operators (SPOs) are given a grace period to initialize the Phalanx challenges and begin the first iteration of the computation.
 
 - 🟥 **Computation Phase**:
   During this phase, the protocol expects attested outputs to be published on-chain. It consists of **82 computation iterations**, each producing an intermediate output that contributes to the final result.
 
 - 🟦 **Catch-up & Closure Phase**:
   - A bounded recovery window that allows SPOs to submit any **missing attested outputs**, ensuring the completeness of the computation prior to finalization.
-  - A final dedicated interval to compute the **aggregation** of all previous outputs and derive the epoch’s final randomness $`\eta_e`$. This phase **seals the stream** and concludes a lifecycle.
+  - A final dedicated interval to derive the epoch’s final randomness $`\eta_e`$. This phase **seals the stream** and concludes a lifecycle.
 
 The diagram below illustrates how the lifecycle segment is structured:
 
@@ -568,16 +580,16 @@ Importantly, this **parametrization phase** occurs only once, either during the 
 
 #### 3.2.3.  🟩 Initialization Grace Phase
 
-Initialization occurs at every pre-ηₑ synchronization point, followed by an *Initialization Grace* period during which the protocol waits long enough for the first iteration to be computed and its proof to be included within the first computation interval. This process recurs every $`10 \cdot \frac{k}{f}`$ slots.
+Initialization occurs at every pre-ηₑ synchronization point, followed by an *Initialization Grace* period during which the protocol waits long enough for the group parameters to be set, the first iteration to be computed, and its proof to be included within the first computation interval. This process recurs every $`10 \cdot \frac{k}{f}`$ slots.
 
 ##### 3.2.3.1. Initialize Command
-We show here how to initialize the class-group based VDF algorithm when generating a group for each different epoch. Were we to use the same group for many, if not all, epochs, we would run these steps in the *Parametrization phase* and change the discriminant seed $`\Delta_{\text{challenge}}`$ accordingly, e.g. if we use the same group forever we could use $`\Delta_{\text{challenge}} \leftarrow \text{Hash}(\text{bin}(\text{``IOHKPhalanx2025"}))`$.
+We show here how to initialize the class-group-based VDF algorithm when generating a group for each different interval and epoch. Were we to use the same group for many, if not all, intervals or epochs, we would run these steps in the *Parametrization phase* and change the discriminant seed $`\Delta_{\text{challenge}}`$ accordingly, e.g., if we use the same group forever, we could use $`\Delta_{\text{challenge}} \leftarrow \text{Hash}(\text{bin}(\text{``IOHKPhalanx2025"}))`$.
 
 <center>
 
-| `Initialized` | $`\Phi.\text{Stream.State} \in \texttt{Initialized} : \left\{ \text{parametrized} \in \texttt{Parametrized},\ \text{group} \in \mathbb{G},\  \text{discriminant} \in \mathbb{Z},\ \text{operation} : \mathbb{G} \times \mathbb{G} \to \mathbb{G} \right\}`$|
+| `Initialized` | $`\Phi.\text{Stream.State} \in \texttt{Initialized} : \left\{ \text{parametrized} \in \texttt{Parametrized}, \text{discriminants}\ \{\Delta_i\} \in \mathbb{Z}^{120-36-1} \right\}`$|
 | ----------- | -------------- |
-| **Fields**  | <ul><li>$\text{parametrized} \in \texttt{Parametrized}$ — Reference to the prior configuration (security parameter and iteration count).</li><li>$\text{group} \in \mathbb{G}$ — VDF group used for exponentiation.</li><li>$\text{discriminant} \in \mathbb{Z}$ — Epoch-specific VDF discriminant.</li><li>$\text{operation} : \mathbb{G} \times \mathbb{G} \to \mathbb{G}$ — Group operation used for VDF evaluation (e.g., modular exponentiation).</li><li>$\text{epochId}_e \in \mathbb{N}$ — Numerical identifier for epoch $e$.</li><li>$\text{pre-}\eta_e \in \{0,1\}^{256}$ — 256-bit pre-nonce entropy for epoch $e$.</li></ul> |
+| **Fields**  | <ul><li>$\text{parametrized} \in \texttt{Parametrized}$ — Reference to the prior configuration (security parameter and iteration count).</li><li>$\text{discriminant} \{\Delta_i\}_I \in \mathbb{Z}$ — Epoch an interval-specific VDF discriminants entirely determining the groups' descriptions.</li><li>$\text{epochId}_e \in \mathbb{N}$ — Numerical identifier for epoch $e$.</li><li>$\text{pre-}\eta_e \in \{0,1\}^{256}$ — 256-bit pre-nonce entropy for epoch $e$.</li></ul> |
 
 </center>
 
@@ -586,8 +598,8 @@ We show here how to initialize the class-group based VDF algorithm when generati
 | `initialize`           | $\Phi.\text{Stream.State} \leftarrow \Phi.\text{Initialize}(\text{parametrizedState},\ \text{epochId}_e,\ \text{pre-}\eta_e)$ |
 | -------------------- | ----------------------------------------- |
 | **Input Parameters** | <ul><li>$\text{parametrizedState} = (\lambda,\ I) \in \texttt{Parametrized}$ — Configuration from the prior Parametrized state.</li><li>$\text{epochId}_e \in \mathbb{N}$ — Numerical identifier for epoch $e$.</li><li>$\text{pre-}\eta_e \in \{0,1\}^{256}$ — 256-bit pre-nonce entropy for epoch $e$.</li></ul>              |
-| **Derivation Logic** | <ul><li>$`\Delta_{\text{challenge}} \leftarrow \text{Hash}(\text{bin}(\text{epochId}_e) \ \|\ \text{pre-}\eta_e)`$</li><li>$`(\mathbb{G},\ \Delta,\ \cdot) \leftarrow \texttt{VDF.Setup}(\lambda,\ \Delta_{\text{challenge}})`$</li></ul> |
-| **Returned State**   | $`\texttt{Initialized} \left\{ \text{parametrized} \leftarrowtail (\lambda,\ I),\ \text{group} \leftarrowtail \mathbb{G},\ \text{discriminant} \leftarrowtail \Delta,\ \text{operation} \leftarrowtail \cdot , \ \text{epochId}_e \leftarrowtail \text{epochId}_e ,\ \text{pre-}\eta_e  \leftarrowtail \text{pre-}\eta_e  \right\}`$                                        |
+| **Derivation Logic** | <ul><li>$`\forall i \in [1, 120-36-1],\ \Delta_{\text{challenge}, i} \leftarrow \text{Hash}(b``init" \|\|\ \text{bin}(\text{epochId}_e) \ \|\|\ \text{pre-}\eta_e \ \|\| \ \text{bin}(i))`$</li><li>$`\forall i \in [1, 120-36-1],\ (\mathbb{G}_i,\ \Delta_i,\ \cdot) \leftarrow \texttt{VDF.Setup}(\lambda,\ \Delta_{\text{challenge}, i})`$</li></ul> |
+| **Returned State**   | $`\texttt{Initialized} \left\{ \text{parametrized} \leftarrowtail (\lambda,\ I),\ \text{discriminants} \leftarrowtail \{\Delta_i\} , \ \text{epochId}_e \leftarrowtail \text{epochId}_e ,\ \text{pre-}\eta_e  \leftarrowtail \text{pre-}\eta_e  \right\}`$                                        |
 
 </center>
 
@@ -637,10 +649,13 @@ To publish the first block of interval $`i \in [1..82]`$ of epoch $`e`$, the nod
 (y_i, \pi_i) \leftarrow \Phi.\text{compute}(\text{initialized} \in \texttt{Initialized},\ i \in \texttt{Interval})
 ```
 
-This function internally calls the VDF primitives: $`y_i \leftarrow \texttt{VDF.Evaluate}((\mathbb{G},\ \Delta,\ \cdot), \ x_i,\ I)`$ and $`\pi \leftarrow \texttt{VDF.Prove}((\mathbb{G},\ \Delta, \cdot),\ x_i,\ y_i,\ I)`$ with inputs constructed as:
+This function internally calls the VDF primitives:
+- $`y_i \leftarrow \texttt{VDF.Evaluate}((\mathbb{G}_i,\ \Delta_i,\ \cdot), \ x_i,\ I)`$ and
+- $`\pi \leftarrow \texttt{VDF.Prove}((\mathbb{G}_i,\ \Delta_i, \cdot),\ x_i,\ y_i,\ I)`$ 
 
+With inputs constructed as:
 - $`x_i \leftarrow \text{Hash}(\text{b``challenge"} ||\ \text{bin}(e) ||\ \text{pre-}\eta_e || \text{bin}(i))`$
-- The parameters $`(\mathbb{G}, \Delta, \cdot)`$ and $`I`$ are retrieved from the `Initialized` state.
+- The parameters $`(\mathbb{G}_i, \Delta_i, \cdot)`$ and $`I`$ are retrieved, or can be efficiently recomputed from the seeds retrieved, from the `Initialized` state.
 
 Finally, the node includes the attested outputs in the block header:
 
@@ -711,7 +726,7 @@ The `provideAttestedOutput` command is used to submit a new attested output $`\p
 | `provideAttestedOutput` | $`\Phi.\text{Stream.State} \leftarrow \Phi.\text{provideAttestedOutput}(\text{awaitingAttestedOutputState},\ \phi_i)`$ |
 |-------------------------|--------------------------------------------------------------------------------------------------------------------------|
 | **Input Parameters**    | <ul><li>$`\text{awaitingAttestedOutputState} \in \texttt{AwaitingAttestedOutput}`$ — Current state awaiting an attested output $`\phi_i`$ for interval $`i`$.</li><li>$`\phi_i = (y_i, \pi_i)`$ — Attested output and corresponding proof.</li></ul> |
-| **Property Check**      | <ul><li>Ensure $`\phi_i`$ is valid by verifying: $`\texttt{VDF.Verify}((\mathbb{G},\ \Delta,\ \cdot),\ x_i,\ y_i,\ I,\ \pi_i)`$</li> <li>Where:<br> $`x_i = \text{Hash}(\text{b``challenge"}\ \|\|\ \text{bin}(e)\ \|\|\ \text{pre-}\eta_e\ \|\|\ \text{bin}(i))`$<br> $`I \in \mathbb{N}`$ is the per-interval iteration count.</li></ul> |
+| **Property Check**      | <ul><li>Ensure $`\phi_i`$ is valid by verifying: $`\texttt{VDF.Verify}((\mathbb{G}_i,\ \Delta_i,\ \cdot),\ x_i,\ y_i,\ I,\ \pi_i)`$</li> <li>Where:<br> $`x_i = \text{Hash}(\text{b``challenge"}\ \|\|\ \text{bin}(e)\ \|\|\ \text{pre-}\eta_e\ \|\|\ \text{bin}(i))`$<br> $`I \in \mathbb{N}`$ is the per-interval iteration count.</li></ul> |
 | **Returned State**      | $`\texttt{AttestedOutputProvided}\ \{ \text{initialized},\ \text{currentSlot} + 1,\ \text{attestedOutputs}[i] \leftarrowtail \phi_i \}`$ — Updated state reflecting the verified attestation. |
 
 </center>
@@ -791,7 +806,7 @@ The `provideMissingAttestedOutput` command is used to submit a missing attested 
 | `provideMissingAttestedOutput` | $`\Phi.\text{Stream.State} \leftarrow \Phi.\text{provideMissingAttestedOutput}(\text{awaitingMissingAttestedOutputState},\ \phi_i)`$  |
 | ----- | --- |
 | **Input Parameters**           | <ul><li>$`\text{awaitingMissingAttestedOutputState} \in \texttt{AwaitingMissingAttestedOutput}`$ — State awaiting a missing attestation $`\phi_i`$ for interval $`i`$.</li><li>$`\phi_i = (y_i, \pi_i)`$ — Attested output and its proof.</li></ul>                                            |
-| **Property Check**             | <ul><li>Verify $`\phi_i`$ with: $`\texttt{VDF.Verify}((\mathbb{G},\ \Delta,\ \cdot),\ x_i,\ y_i,\ I,\ \pi_i)`$</li><li>Where:<br> $`x_i = \text{Hash}(\text{b``challenge"}\ \|\|\ \text{bin}(e)\ \|\|\ \text{pre-}\eta_e\ \|\|\ \text{bin}(i))`$</li><li>$`I \in \mathbb{N}`$ is the per-interval iteration count.</li></ul> |
+| **Property Check**             | <ul><li>Verify $`\phi_i`$ with: $`\texttt{VDF.Verify}((\mathbb{G}_i,\ \Delta_i,\ \cdot),\ x_i,\ y_i,\ I,\ \pi_i)`$</li><li>Where:<br> $`x_i = \text{Hash}(\text{b``challenge"}\ \|\|\ \text{bin}(e)\ \|\|\ \text{pre-}\eta_e\ \|\|\ \text{bin}(i))`$</li><li>$`I \in \mathbb{N}`$ is the per-interval iteration count.</li></ul> |
 | **Returned State**             | $`\texttt{MissingAttestedOutputProvided} \{ \text{initialized},\ \text{currentSlot} + 1,\ \text{attestedOutputs}[i] \leftarrowtail \phi_i \}`$ — Updated state reflecting the accepted missing output.                                                                                                      |
 
 </center>
@@ -823,17 +838,17 @@ Alternatively, when still waiting for an attestation and no block was produced, 
 
 #### 3.2.6 ⬛ Closure Phase
 
-We now enter the final phase of the lifecycle, during which all collected outputs are expected to be aggregated and recorded on-chain, and the seed $\eta_e$ derived and committed.
+We now enter the final phase of the lifecycle, during which all collected outputs are used to derive the seed $\eta_e$ which is then committed.
 
 **Successful Scenarios:**
 In these cases, all attested outputs have been provided by the end of the catch-up phase.
 
-- **Best-case scenario:** The closure phase begins at interval 84, giving the system 37 intervals to perform output aggregation and seed commitment under normal operating conditions.
+- **Best-case scenario:** The closure phase begins at interval 84, giving the system 37 intervals to perform seed commitment under normal operating conditions.
 - **Worst-case scenario:** The catch-up mechanism is fully utilized, and the system enters the closure phase at interval 120, the very last interval of the lifecycle segment. Even so, all necessary outputs have been successfully provided.
 
 **Failure Scenario:**
 
-This occurs when the lifecycle segment reaches its end (i.e., the full $10 \cdot \frac{k}{f}$ slots), and despite the entire duration of the catch-up mechanism (up to interval 120), either some required attested outputs remain missing, or all outputs have been delivered but the final aggregation has not occurred.
+This occurs when the lifecycle segment reaches its end (i.e., the full $10 \cdot \frac{k}{f}$ slots), and despite the entire duration of the catch-up mechanism (up to interval 120), either some required attested outputs remain missing.
 This scenario represents an extremely rare event—statistically far beyond 128-bit confidence—and reflects a severe disruption in which no blocks have been produced for over 36 hours. These edge cases are represented in the diagram by the transition `Tick / isUngracefullyClosable`.
 
 ##### 3.2.6.1. The States 
@@ -852,20 +867,19 @@ In this phase, we define two states:
 \right\}
 ```
 
-- `Closed`: This is a final state in the stream lifecycle. It signifies that the aggregated output has been computed and verified, and the final epoch randomness \$`\eta_e`\$ has been successfully derived—achieving the core objective of the protocol. This state is reached in response to either a `Close` command :
+- `Closed`: This is a final state in the stream lifecycle. It signifies that the final epoch randomness \$`\eta_e`\$ has been successfully derived—achieving the core objective of the protocol. This state is reached in response to either a `Close` command :
 
 ```math
 \Phi.\text{Stream.State} \in \texttt{Closed} : \left\{
   \begin{aligned}
     &\text{initialized}      &&\in\ \texttt{Initialized}, \\
     &\text{attestedOutputs}  &&\in\ \left[(y, \pi)\right]^{82}, \\
-    &\text{aggregatedOutput} &&\in\ (x, y, \pi), \\
     &\eta_e                  &&\in\ \{0,1\}^{256} 
   \end{aligned}
 \right\}
 ```
 
-- `UngracefullyClosed`: This is a terminal state in the stream lifecycle. It indicates that either not all expected attested outputs were provided, or the aggregated output could not be computed. As a result, $`{pre-}\eta_e`$ is returned as the final value of $`\eta_e`$. Statistically, this state is highly unlikely to occur, but it is explicitly handled for completeness and structural consistency of the state machine. The transition to this state is triggered by `Tick` in combination with the `isUngracefullyClosable` condition.
+- `UngracefullyClosed`: This is a terminal state in the stream lifecycle. It indicates that either not all expected attested outputs were provided. As a result, $`{pre-}\eta_e`$ is returned as the final value of $`\eta_e`$. Statistically, this state is highly unlikely to occur, but it is explicitly handled for completeness and structural consistency of the state machine. The transition to this state is triggered by `Tick` in combination with the `isUngracefullyClosable` condition.
 
 ```math
 \Phi.\text{Stream.State} \in \texttt{UngracefullyClosed} : \left\{
@@ -882,20 +896,17 @@ In this phase, we define two states:
 At this stage, the system is in the `AwaitingGracefulClosure` state. All necessary data has been collected, and a block can now be produced within the remaining time before the end of the stream lifecycle (as previously discussed, this could occur at the 84th or 120th interval, depending on how smoothly the lifecycle progressed).
 
 In this scenario, the first block producer within the remaining intervals must include the following values in the block body:
-
-- $`(y, \pi)`$: The aggregated output of the $`\Phi`$ computation, representing the final result and its corresponding proof.
 - $`\eta_e`$: The final objective of the protocol—a 256-bit epoch randomness beacon, which will be used to seed leader election in the next epoch.
 
 These values complete the stream and trigger the transition to the `Closed` state.
 
 <center>
 
-| `Close`    | $`\Phi.\text{Stream.State} \leftarrow \Phi.\text{Close}((x, y, \pi),\ \text{awaitingGracefulClosureState})`$  |
+| `Close`    | $`\Phi.\text{Stream.State} \leftarrow \Phi.\text{Close}(\{(y_i, \pi_i)\}_i,\ \text{awaitingGracefulClosureState})`$  |
 | -------------------- | ---- |
-| **Input Parameters** | <ul><li>$`\text{awaitingGracefulClosureState} \in \texttt{AwaitingGracefulClosure}`$ — State indicating readiness for closure.</li><li>$`(y,\ \pi)`$ — Aggregated output and its proof for the entire stream.</li></ul>                                                                                                    |
-| **Property Check**   | <ul><li>Verify the aggregated output with:<br> $`\texttt{VDF.Aggregation.Verify}((\mathbb{G},\ \Delta,\ \cdot),\ \lambda,\ x,\ y,\ \text{attestedOutputs},\ \pi)`$</li><li>Where:<br> $`\lambda`$ is the security parameter, <br> $`x`$ is the aggregated input of the $`\Phi`$ computation<br>$`\text{attestedOutputs} = \text{awaitingGracefulClosureState.attestedOutputs}`$</li></ul> |
-| **Epoch Randomness** | $`\eta_e = \text{Hash}^{(256)}(y)`$ — Apply the SHA-256 hash function to $`y`$.  |
-| **Returned State**   | $`\texttt{Closed} \{ \text{initialized},\ \text{attestedOutputs},\ (x, y, \pi),\ \eta_e \}`$ — Final state embedding the verified computation and the derived epoch randomness.  |
+| **Input Parameters** | <ul><li>$`\text{awaitingGracefulClosureState} \in \texttt{AwaitingGracefulClosure}`$ — State indicating readiness for closure.</li><li>$`\{(y_i,\ \pi_i)\}_i`$ — Set of outputs and proofs for the entire stream.</li></ul>                                                                                                    |
+| **Epoch Randomness** | $`\eta_e = \text{Hash}^{(256)}(\{y_i\}_{82})`$ — Apply the SHA-256 hash function to $`\{y_i\}_{82}`$.  |
+| **Returned State**   | $`\texttt{Closed} \{ \text{initialized},\ \text{attestedOutputs},\ \eta_e \}`$ — Final state embedding the verified computation and the derived epoch randomness.  |
 
 </center>
 
@@ -951,7 +962,7 @@ This strikes a balance between long-term security and practical efficiency:
 - On one hand, **breaking the class group** is considered harder than **finding a collision in a 256-bit hash** (our minimum security baseline).
 - On the other hand, by following the paper’s recommendation and selecting a slightly lower $`\rho = 64`$, we can **reduce the size of on-chain group elements** while maintaining sufficient resistance against grinding.
 
-Since Phalanx is designed to operate with a **single class group instance “for the lifetime of the protocol”** (reparametrization would require explicit governance intervention), this configuration $(\lambda, \rho) = (128, 64)$ ensures protocol simplicity, consistency, and operational predictability.
+To mitigate amortization attacks, based on lookup tables, and maximize their cost, we recommend designing Phalanx with **evolving epoch and interval-wise class group instances** with **fixed parametrization** (reparametrization would require explicit governance intervention), this configuration $(\lambda, \rho) = (128, 64)$ ensures protocol simplicity, consistency, and operational predictability.
 
 #### 4.2 Time Budget Tᵩ and Derived T
 
@@ -973,7 +984,7 @@ Critically, scaling this kind of grinding capability is expensive. For an advers
 
 In summary, while ASIC-equipped adversaries could, in theory, gain a computational advantage during the grinding window, the cost and scale required to pose a real threat remains high. Our mitigation strategy is to raise the honest baseline to neutralize this advantage and prepare for possible hardware evolution over time.
 
-##### 4.2.1 Deriving from Tᵩ to T
+##### 4.2.2 Deriving from Tᵩ to T
 
 We recommend a **12-hour computation budget** on standard **CPU-based machines**, which we estimate to be **10× slower** than specialized ASICs available to adversaries. This configuration corresponds to **Phalanx<sub>1/10</sub>** in terms of **time budget**, while achieving **Phalanx<sub>1/100</sub>** in terms of **security guarantees** against grinding attacks.
 
@@ -993,7 +1004,39 @@ Thanks to its well-established performance profile, this implementation provides
 
 ### 5. Efficiency analysis
 
-#### 5.1 Block Publication
+#### 5.1 Phalanx Initialization
+
+We now show benchmarks for setting up the VDFs, that is generate the group and challenges, for different discriminant sizes done on a Ubuntu computer with Intel® Core™ i9-14900HX with 32 cores and 64.0 GiB RAM.
+
+<center>
+
+|   Size Discriminant |  CreateDiscrimant (ms) | HashToClassGroup (ns) |
+|-------------------- | ---------------------- | --------------------- |
+|                 256 |                      1 |                  38   |
+|                 512 |                      1 |                  37   |
+|                1024 |                     11 |                  37   |
+|                2048 |                    133 |                  39   |
+|                4096 |                   1593 |                 690   |
+
+</center>
+
+An important question is to know how many class groups we can generate for a given security parameter, that is how many prime numbers equal to 1 modulo 4 exists of a certain bit length. We know that the prime-counting function, the function to count the number of prime lower than a variable $x$, can be lower bounded by $f(x) = x / \mathsf{ln}(x)$. As assymptotically all modulos occur equally, we can assume that for large numbers the number of discriminants is half the number of prime numbers. As we want to make sure the first bit of the prime number is set to one, we approximate a lower bound of number of class groups by $\#\Delta(x) = (f(x)-f(x/2))/2$.
+
+<center>
+
+|   Size Discriminant |  $f(2^x)$ | \#$\Delta(2^x)$ |
+|-------------------- | --------- | --------------- |
+|                 256 |   6.5E+74 |         1.6E+74 |
+|                 512 |  3.8E+151 |        9.4E+150 |
+|                1024 |  2.5E+305 |        5.1E+304 |
+|                2048 |  2.3E+613 |        4.6E+612 |
+|                4096 | 3.7E+1229 |       7.3E+1228 |
+
+</center>
+
+We can see that there are enough prime numbers to create class groups from.
+
+#### 5.2 Block Publication
 
 To publish a block, a node must:
 
@@ -1024,9 +1067,9 @@ We now show benchmarks for evaluating and proving together VDFs, as well as indi
 
 </center>
 
-#### 5.2 Block Verification
+#### 5.3 Block Verification
 
-##### 5.2.1 When Not Syncing
+##### 5.3.1 When Not Syncing
 
 To verify a VDF proof, a node performs:
 
@@ -1064,16 +1107,16 @@ We now show verification benchmarks for discriminants of different sizes done on
 
 </center>
 
-##### 5.2.2 When Syncing
+##### 5.3.2 When Syncing with aggregation
 
-When synching, the nodes only need to update the accumulators and verify the final aggregation proof. As such, the node perform in total arounf half as less operations than verifying all proofs individually. More particularly, we have:
+When syncing with aggregation, the nodes only need to update the accumulators and verify the final aggregation proof. As such, the nodes perform around half as many operations as verifying all proofs individually. More specifically, we have:
 * $2 \cdot N$ hashes,
 * $2 \cdot (N + 1)$ small exponentiations.
 * $2 \cdot N + 1$ group multiplications,
 
 Note: The exponentiations involving the $\alpha_i$ values are **half as expensive** as those in the full proof verification.
 
-For a discriminant of 4096 bits, we benchmarks the aggregation functions on the same machine as before. We can see that updating the accumulators in the aggregation indeed takes half time as much as verifying a single VDF proof, and verifying the aggregation is as cheap as a normal VDF proof and that proving the aggregation is more expensive than a VDF output, this is due to the absence of intermediary value found when evaluating the VDF input, but less expensive than evaluating a VDF.
+For a discriminant of 4096 bits, we benchmarked the aggregation functions on the same machine as before. We can see that updating the accumulators in the aggregation indeed takes half as much time as verifying a single VDF proof. Verifying the aggregation is as cheap as a normal VDF proof, and proving the aggregation is more expensive than a VDF output. This is due to the absence of an intermediate value found when evaluating the VDF input, but it is still less expensive than evaluating a VDF.
 
 <center>
 
@@ -1085,6 +1128,8 @@ For a discriminant of 4096 bits, we benchmarks the aggregation functions on the 
 |            $4096$ |   1,000,000 |                                 8.0E+00 |                                3.1E+01 |                                 1.7E+01 |
 
 </center>
+
+We can see that verifying the aggregation would only save 20ms or so, which is negligible when syncing.
 
 ### 6. CDDL Schema for the Ledger
 
@@ -1127,6 +1172,54 @@ The current **maximum block header size** in Cardano is **1100 bytes**, although
 - Total: **776 bytes**
 
 This would **exceed the 1500-bytes limit**, risking fragmentation and violating guidance from the Cardano networking team. We could safely decrease the group element size by decreasing the security parameters if we were to generate new class groups at each epoch. Doing so would however render the protocol more complex and potentially weaken the security of the protocol as we may have more chances to generate a weak class group.
+
+**Protocol Parameter Update Changes**. The Phalanx update also requires the addition of two new protocol parameters,
+`phalanx_security_parameter` and `phalanx_i_parameter`, as follows:
+
+```
+phalanx_security_parameter = uint .size 4
+phalanx_i_parameter = uint .size 4
+protocol_param_update =
+  { ? 0  : coin                   ; minfeeA
+    ...
+  , ? 33 : nonnegative_interval   ; minfee refscriptcoinsperbyte
+  , ? 34 : phalanx_security_parameter
+  , ? 35 : phalanx_i_parameter
+  }
+```
+
+### 7. Formal specification in Agda
+
+We also provide an update to the [Agda formal specfication](https://github.com/IntersectMBO/ouroboros-consensus/pull/1799)
+of the (on-chain component of the) consensus protocol that implements the anti-grinding measures. The following modules  
+contain the majority of the relevant changes, which we summarize here :
+
+- `Spec.VDF` : Defines a type representing VDF functionality, which is not instantiated with actual VDFs
+
+- `Spec.OutsVec` : Contains functionality for manipulating vectors of VDF outputs
+
+- `Spec.UpdateNonce` : Specifies a new transition type `UPDNONESTREAM`, which corresponds to a single stream in the Phalanx State Transition Diagram. Also, the `UPDN` transition is updated to represent the rules of three nonce streams being updated simultaneously :
+  (1) `pre-η-candidate` which is the VRF output of the previous epoch, and is being stabilized for several intervals,
+
+  (2) `ηstate` which is the state of the Phalanx state machine, using the VDF procedure to evolve the nonce, and
+
+  (3) `next-η` which is the output of the state machine once it has finished a complete VDF round, and it will become the real current epoch nonce in several intervals.
+
+- `InterfaceLibrary.Ledger` : Updated to include a `LedgerInterface` API call `getPhalanxCommand  : BlockBody -> UpdateNonceCommand`
+which returns the command (either nothing or a pair of group elements) to the Phalanx state machine
+
+- `Spec.TickNonce` : Just some renaming here
+
+- `Ledger.PParams` : Updated to support a new parameter group *Phalanx Security Group*, which contains the two parameters
+required to parametrize Phalanx, `phalanxSecurityParam` and `phalanxSecurityParam`, which will be adopted by the Phalanx
+protocol when entering the Initialized state
+
+- `Spec.Protocol` : Updated to call `UPDN` rule with the appropriate parameters. This
+includes the stake
+distribution from the correct epoch (which is one epoch before than the one used in Praos),
+the relevant values from the nonce streams, and the correct Phalanx parameters.
+
+- `Spec.ChainHead` : Updated to call the `PRTCL` and `TICKN` rules with the appropriate signal, state, and environment.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -1659,7 +1752,7 @@ VDF. Similarly to the other problems, we first start by generating an unknown or
 In our context, setting up RSA groups would be challenging to say the least, as we would need to generate groups of unknown order, that is the RSA modulus must be public while the underlying prime numbers must remain unknown. There is no known method to generate such groups, even inefficiently, which becomes especially critical if we have to do it repeatedly. Generating such a group might be achievable via multi-party computation (MPC) where the network would compute random numbers passing distributive primality tests. This would however be highly impractical.
 
 **Compliance.** RSA is compliant with a wide range of security standards and regulations. It is one of the most widely accepted public-key cryptosystems and has been incorporated into many cryptographic protocols, including SSL/TLS for secure web communication, digital signatures, and email encryption. RSA complies with industry standards such as FIPS 186-4, X.509, PKCS#1 and NIST guidelines.
-None of the methods, GNFS or VDFs, are proprietary and there exists open source code implementing these.
+None of the methods, GNFS or VDFs, are proprietary, and there are open-source implementations.
 
 ##### 3.2.2 ECC solutions
 
@@ -1681,7 +1774,7 @@ ECC is also vulnerable to post-quantum attacks and can be broken in polynomial t
 
 
 **Compliance.** ECC is widely compliant with numerous industry standards and regulations, making it a trusted choice for modern cryptographic applications, including NIST guidelines, FIPS 186-4 and IETF standards for secure communication protocols.
-None of the methods, Index Calculus or Pollard’s $\rho$, are proprietary and there exists open source code implementing these.
+None of the methods, Index Calculus or Pollard’s $\rho$, are proprietary, and there are open-source implementations.
 
 ##### 3.2.3 Class group solutions
 
@@ -1699,19 +1792,19 @@ VDF. Similarly to the CLPD, we first start by generating a discriminant and samp
 **Security Strength & Maturity.** Class group-based cryptography has reached a moderate level of maturity in cryptographic research. While not as widely deployed as more traditional cryptographic methods like RSA or ECC, class group cryptography has gained attention due to its potential resistance to quantum computing attacks. The mathematical foundations, particularly the hardness of the class group discrete logarithm problem, are well-understood, and class group cryptosystems have been rigorously analyzed. However, practical deployment is still in the early stages, with ongoing efforts focused on optimizing efficiency, key management, and standardization. 
 
 **Performance.** Class group-based cryptography is generally less efficient than RSA or ECC due to the size of their elements and the computational complexity of the composition of elements.
-More particularly, to achieve strong security, class groups’ discriminants must be several thousands bit long, and group elements half of this. Operations are thus costly, especially as composition in class groups rely on finding the greatest common denominator between such numbers that is particularly expensive.
+More particularly, to achieve strong security, class groups’ discriminants must be several thousand bits long, and group elements are half of this. Operations are thus costly, especially as composition in class groups relies on finding the greatest common divisor between such numbers, which is particularly expensive.
 
-**Deployability.**  Setting up class groups, even though their order is hidden, is much easier than previously discussed solutions as it consists in practice to generate a sufficiently long negative square-free random integer d, and such that d ≡ 1 mod 4. as discriminant. Generating a random element in a class group by hashing also is however more of a delicate but still feasible task as mentioned in [[11]](https://eprint.iacr.org/2024/034.pdf). Mysten Labs recently iterated on this work and published a more efficient and secure hash function [[38]](https://eprint.iacr.org/2024/295.pdf) to class groups. Interestingly, there exist algorithms that have been designed to reuse the underlying group such as cascaded and continuous VDFs [[13]](https://par.nsf.gov/servlets/purl/10159432).
+**Deployability.**  Setting up class groups, even though their order is hidden, is much easier than previously discussed solutions as it consists in practice of generating a sufficiently long negative square-free random integer d such that d ≡ 1 mod 4 as the discriminant. Generating a random element in a class group by hashing is, however, a more delicate but still feasible task as mentioned in [[11]](https://eprint.iacr.org/2024/034.pdf). Mysten Labs recently iterated on this work and published a more efficient and secure hash function [[38]](https://eprint.iacr.org/2024/295.pdf) for class groups. Interestingly, there exist algorithms that have been designed to reuse the underlying group such as cascaded and continuous VDFs [[13]](https://par.nsf.gov/servlets/purl/10159432).
 
-**Compliance.** Since class group-based cryptography is still being researched, it is not as broadly standardized or regulated as more established cryptographic techniques like ECC. That said, once formal standards and guidelines are developed and adopted, class group-based cryptography could achieve compliance with relevant legal and regulatory frameworks. None of the VDF proof generation algorithms are proprietary and there exists open source code implementing these. 
-Other groups
-We mostly focused on commonly used groups, such as RSA and ECC, and class groups whose usage have been increasing lately, notably because of the popularity of VDF primitives. There exist however other groups such as lattices which are one of the main candidates for post quantum cryptography, supersingular isogenies, whose security is dubious at the moment since the attack on SIDH in 2022, and hyperelliptic Jacobians groups, which are still novel and need further time to get confidence in their security and for more protocols to be built upon, to cite a few.
+**Compliance.** Since class group-based cryptography is still being researched, it is not as broadly standardized or regulated as more established cryptographic techniques like ECC. That said, once formal standards and guidelines are developed and adopted, class group-based cryptography could achieve compliance with relevant legal and regulatory frameworks. None of the VDF proof generation algorithms are proprietary, and there are open-source implementations. 
+Other groups:
+We mostly focused on commonly used groups, such as RSA and ECC, and class groups whose usage has been increasing lately, notably because of the popularity of VDF primitives. There exist, however, other groups such as lattices, which are among the main candidates for post-quantum cryptography, supersingular isogenies, whose security is dubious at the moment since the attack on SIDH in 2022, and hyperelliptic Jacobian groups, which are still novel and need further time to gain confidence in their security and for more protocols to be built upon, to cite a few.
 
 ##### 3.2.4 OWF solutions
 
-To widen our spectrum of solutions, we are now exploring solutions based on well-established non-trapdoored cryptographic functions and pair them with efficient proof systems to enable fast verification.
+To widen our spectrum of solutions, we are now exploring solutions based on well-established non-trapdoored cryptographic functions and pairing them with efficient proof systems to enable fast verification.
 Hash-based approaches are generally more cost-effective than asymmetric cryptography, do not depend on potentially vulnerable trapdoors, and can be implemented using widely deployed primitives. They are well understood both cryptographically and economically, especially given the prevalence of hash farms.
-The main drawback of hash functions lies in their verification: traditionally, verification requires recomputing the hashes, which can be too time-consuming for our use case, especially when considering synching. To address this, we propose leveraging proof systems, such as Succinct Non-interactive Arguments of Knowledge (SNARKs) and Scalable Transparent ARguments of Knowledge (STARKs) to reduce verification time. This introduces a modest overhead in the form of small proof sizes—on the order of hundreds of bytes—which remains acceptable.
+The main drawback of hash functions lies in their verification: traditionally, verification requires recomputing the hashes, which can be too time-consuming for our use case, especially when considering syncing. To address this, we propose leveraging proof systems, such as Succinct Non-interactive Arguments of Knowledge (SNARKs) and Scalable Transparent ARguments of Knowledge (STARKs), to reduce verification time. This introduces a modest overhead in the form of small proof sizes—on the order of hundreds of bytes—which remains acceptable.
 Although SNARKs are relatively new and involve complex protocols, their adoption is growing, with some blockchains like Mina and Midnight fully built around them. While their use may raise concerns, it remains a practical choice. It is worth noting, however, that SNARKs are not quantum-resistant—unlike their hash-based counterpart, STARKs, which do offer quantum resistance.
 
 ###### 3.2.4.1 Proofs of knowledge
@@ -1729,7 +1822,7 @@ Keccak [[25]](https://eprint.iacr.org/2015/389.pdf), selected through a NIST com
 BLAKE2 [[26]], developed as a high-performance finalist in the same SHA-3 competition, is favored for its speed and security, often outperforming both SHA-2 and SHA-3 in practical settings. While not standardized by NIST, BLAKE2 is widely trusted and increasingly adopted in modern cryptographic implementations.
 Together, these functions represent a balance of security, performance, and diversity in cryptographic hashing today.
 
-While these hash functions are very efficient on CPU, they are very expensive to verify with classic SNARKs, as the latter are working on prime fields and not bits. Proving hash evaluation is several orders of magnitude higher than evaluating on CPU making this solution very impractical. Simple benchmarks demonstrate such results, with the generation of a proof asserting the evaluation of a few hundreds of hashes taking tens of seconds, while the evaluation itself is of the order of the microsecond. For instance, according to Figure 1, the a hundred evaluations of SHA-256 would take 32μs on CPU and require 300,000 gates. To generate a proof of these evaluations, we would require a circuit of size 219 , i.e. the smallest power of 2 above 300,000, which takes 6s to 18s depending on the commitment scheme, making this solution, combining standard hash functions and SNARKs, highly impractical.
+While these hash functions are very efficient on a CPU, they are very expensive to verify with classic SNARKs, as the latter work over prime fields rather than bits. Proving hash evaluation is several orders of magnitude higher than evaluating on a CPU, making this solution very impractical. Simple benchmarks demonstrate such results, with the generation of a proof asserting the evaluation of a few hundred hashes taking tens of seconds, while the evaluation itself is of the order of the microsecond. For instance, according to Figure 1, a hundred evaluations of SHA-256 would take 32μs on a CPU and require 300,000 gates. To generate a proof of these evaluations, we would require a circuit of size 219, i.e. the smallest power of 2 above 300,000, which takes 6s to 18s depending on the commitment scheme, making this solution, combining standard hash functions and SNARKs, highly impractical.
 
 <center>
 
@@ -1760,35 +1853,35 @@ Table 2. Halo2 benchmarks, using KZG [[28]](https://www.cypherpunks.ca/~iang/pub
 </center>
 
 
-**Memory-hard functions (MHFs).** are primitives relying on hash functions designed to resist attacks by requiring significant memory and computational effort, making them particularly interesting in our use case, where memory would become another bottleneck to an adversary attempting a grinding attack.
+**Memory-hard functions (MHFs)** are primitives relying on hash functions designed to resist attacks by requiring significant memory and computational effort, making them particularly interesting in our use case, where memory would become another bottleneck for an adversary attempting a grinding attack.
 Argon2, the winner of the Password Hashing Competition in 2015, is the current industry standard due to its strong security, configurability, and resistance to known attacks.
 Balloon Hashing offers a simpler design focused on provable security guarantees and ease of analysis but is less widely adopted. 
 The MHF scrypt, introduced earlier and used notably in cryptocurrencies like Litecoin, was among the first practical memory-hard functions but has seen some theoretical attacks exploiting trade-offs between memory and computation. 
 Of the three, only Argon2 is formally standardized in RFC 9106 and recommended for new applications, while scrypt remains popular in legacy systems and Balloon Hashing is still primarily academic.
 Unfortunately, these primitives are much more expensive than hashes on CPU as well as on SNARKs, where the memory requirements become even more prohibitive.
 
-**SNARK-friendly hashes.** A novel branch of research started with the adoption of SNARKs to design SNARK friendly hash functions. We can classify them in two categories: algebraic or not. Algebraic hashes include, but are not limited to, Poseidon [[30]](https://www.usenix.org/system/files/sec21-grassi.pdf), Anemoi [[31]](https://hal.science/hal-04276646v1/file/2022-840%281%29.pdf), Rescue [[32]]((https://eprint.iacr.org/2020/1143.pdf)) which are based on prime fields. Choosing carefully the fields can result in optimizations of 2 to 3 orders of magnitude in SNARKs, but with higher CPU time unfortunately. For instance, a hundred evaluations of Poseidon hash would take 1.9ms, compared to 32μs for SHA-256, on CPU, but the proof generation would take 1s to 3s, compared to 6s to 18s for SHA-256.
-Other, non algebraic, hash functions have also been created such as Reinforced Concrete [[27]](https://dl.acm.org/doi/pdf/10.1145/3548606.3560686) and Monolith [[33]](https://ojs.ub.ruhr-uni-bochum.de/index.php/ToSC/article/download/11810/11315) to minimize the cost of binary operations by making the most of lookup tables, which store binary operations on vectors of bits.
-The fact that these hash functions are less efficient on CPUs is not problematic as we are only interested in computational cost. Unfortunately, the ratio between CPU and prove generation time still remains too high for our usage. More novel techniques in SNARKs, such as IVC or folding, would be needed to make the “snarkification” of hash practical but these progresses have yet to reach maturity, be it in both theory and practice.
-Another caveat to using SNARK-friendly hashes would be that adversaries could afford specialised hardware such as CPUs with special instructions such as AVX2, or GPUs, FPGAs or ASICs to accelerate prime field operations and widen the gap between honest users and adversaries.
+**SNARK-friendly hashes.** A novel branch of research has started with the adoption of SNARKs to design SNARK-friendly hash functions. We can classify them into two categories: algebraic and non-algebraic. Algebraic hashes include, but are not limited to, Poseidon [[30]](https://www.usenix.org/system/files/sec21-grassi.pdf), Anemoi [[31]](https://hal.science/hal-04276646v1/file/2022-840%281%29.pdf), Rescue [[32]]((https://eprint.iacr.org/2020/1143.pdf)), which are based on prime fields. Choosing the fields carefully can result in optimizations of 2 to 3 orders of magnitude in SNARKs, but with higher CPU time unfortunately. For instance, a hundred evaluations of the Poseidon hash would take 1.9ms, compared to 32μs for SHA-256, on a CPU, but the proof generation would take 1s to 3s, compared to 6s to 18s for SHA-256.
+Other non-algebraic hash functions have also been created, such as Reinforced Concrete [[27]](https://dl.acm.org/doi/pdf/10.1145/3548606.3560686) and Monolith [[33]](https://ojs.ub.ruhr-uni-bochum.de/index.php/ToSC/article/download/11810/11315), to minimize the cost of binary operations by making the most of lookup tables, which store binary operations on vectors of bits.
+The fact that these hash functions are less efficient on CPUs is not problematic as we are only interested in computational cost. Unfortunately, the ratio between CPU and proof generation time still remains too high for our usage. More novel techniques in SNARKs, such as IVC or folding, would be needed to make the “snarkification” of hashes practical, but this progress has yet to reach maturity, both in theory and in practice.
+Another caveat to using SNARK-friendly hashes would be that adversaries could afford specialised hardware such as CPUs with special instructions like AVX2, or GPUs, FPGAs, or ASICs to accelerate prime field operations and widen the gap between honest users and adversaries.
 
 ###### 3.2.4.3 Design
-Using OWFs and SNARKs in the context of Phalanx is straightforward. To each iteration is associated a input that we have to recursively hash a number of times set by the total duration and number of iterations with the desired primitive. Once the result is computed, a SNARK proof can be generated proving the correctness of the computation. We can remark that IVC based solutions are particularly adapted as a choice for SNARK primitves as we can prove a batch of iterations per step of IVC. Both the hash output and the SNARK are then published.
+Using OWFs and SNARKs in the context of Phalanx is straightforward. Each iteration is associated with an input that we have to recursively hash a number of times set by the total duration and number of iterations with the desired primitive. Once the result is computed, a SNARK proof can be generated proving the correctness of the computation. We can remark that IVC-based solutions are particularly well suited as SNARK primitives, as we can prove a batch of iterations per step of IVC. Both the hash output and the SNARK are then published.
 
 ###### 3.2.4.4 Properties
 
-**Security Strength & Maturity.** While traditional hashes have strong security, more novel ones, especially the more usable with SNARKs, can be deemed too novel for adoption. SNARKs, and SNARKs friendly primitives, are very complex pieces of technology that have been broken before and are still evolving at a rapid pace. SNARKs are not postquantum resistant but STARKs are.
+**Security Strength & Maturity.** While traditional hashes have strong security, more novel ones, especially those more usable with SNARKs, can be deemed too novel for adoption. SNARKs and SNARK-friendly primitives are very complex pieces of technology that have been broken before and are still evolving at a rapid pace. SNARKs are not post-quantum resistant but STARKs are.
 
-**Performance.** While hash functions are extremely efficient on commodity hardware, the proof generation with current SNARKs is far too slow for this solution to be practical
+**Performance.** While hash functions are extremely efficient on commodity hardware, the proof generation with current SNARKs is far too slow for this solution to be practical.
 
-**Deployability.**  SNARKs are difficult to deploy, they rely on different libraries that are not easy to update. Changing of SNARKs is also tedious as circuits would very likely need to be rewritten, adding further risk and complexity.
+**Deployability.**  SNARKs are difficult to deploy; they rely on different libraries that are not easy to update. Changing SNARKs is also tedious as circuits would very likely need to be rewritten, adding further risk and complexity.
 
-**Compliance.** Hash functions are standardized and libraries are easily available. SNARK solutions are not copyrighted, there is however a limited number of available libraries, which can either be open source or proprietary (SP1, RISC0, STARKNET…).
+**Compliance.** Hash functions are standardized and libraries are easily available. SNARK solutions are not copyrighted; however, there is a limited number of available libraries, which can either be open-source or proprietary (SP1, RISC0, STARKNET…).
 
 #### 3.3 Primitive recommendation
 
 The combination of OWFs and SNARKs, however elegant it may be for its modularity, is not practical for the proof generation overhead being prohibitive. 
-Trapdoor based solutions seem to be the best candidates for anti-grinding solutions. Out of the ones considered, VDFs seem the most practical primitive thanks to the possibility of reusing the group, and class groups offer the simplest deployment. The main caveat of such a solution is in its relative novelty, regular assessment would need to be done to ensure correct and up to date parametrization.
+Trapdoor-based solutions seem to be the best candidates for anti-grinding solutions. Out of the ones considered, VDFs seem the most practical primitives thanks to the possibility of reusing the group, and class groups offer the simplest deployment. The main caveat of such a solution is its relative novelty; regular assessment would need to be done to ensure correct and up-to-date parametrization.
 
 ## Path to Active
 
@@ -1866,6 +1959,6 @@ To fulfill the above criteria, the following steps are planned:
 ## Copyright
 This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-Portions of this document were prepared with the assistance of AI-based tools.The use of AI was limited to drafting, editing, and improving clarity of expression. All **technical ideas, specifications, and cryptographic designs** originate from the human authors, who take full responsibility for their novelty, correctness, and originality.  
+Portions of this document were prepared with the assistance of AI-based tools. The use of AI was limited to drafting, editing, and improving clarity of expression. All **technical ideas, specifications, and cryptographic designs** originate from the human authors, who take full responsibility for their novelty, correctness, and originality.  
 
 The AI contribution is comparable to that of a copy-editor: it helped improve formatting, emphasis, and readability, but did not generate or propose the underlying concepts.
