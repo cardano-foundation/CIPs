@@ -7,7 +7,7 @@ Authors:
     - Ryan Wiley <rian222@gmail.com>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1060
+    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1060
 Created: 2025-07-22
 License: CC-BY-4.0
 ---
@@ -93,7 +93,7 @@ Even a modest annual loss rate combined with ongoing rewards can, in theory, lea
 - **Economic Sustainability:** In the long term, as block-reward inflation tapers off, Cardano’s security will hinge on transaction fees and community participation. If a significant chunk of ADA is effectively out of economic circulation (yet still “consuming” rewards/fees), it means the active economy has to carry that burden. The security budget (total incentives for validators) would be partially drained to non-participants. This inefficiency will necessitate higher fees or protocol changes to compensate, which is undesirable for growth. In short, allowing lost stake and lost ADA to grow unchecked may undermine the sustainability of the network’s incentive model.
 
 
-## Open Questions 
+## Open Questions
 - How can the protocol reliably identify truly lost credentials?
 - Could an inactivity period (epochs/years) be acceptable before stake is considered “lost”?
 - Which economic / social mechanisms can prevent reward dilution without violating property rights?

@@ -1,17 +1,16 @@
 ---
 CPS: 20
-Title: Governance Stakeholder Incentivization  
-Status: Open  
-Category: Tools  
-Authors:  
-- Seomon (Cardano After Dark) <Seomonregister@gmail.com>  
-- Martin Marinov <martin.marinov@cardano.marketing>  
-- Sebastián Pereira Gutiérrez <sebpereira33@gmail.com> 
-Proposed Solutions:
-- 
-Discussions:  
-- https://github.com/cardano-foundation/CIPs/pull/997
-Created: 2025-02-13  
+Title: Governance Stakeholder Incentivization
+Category: Tools
+Status: Open
+Authors:
+- Seomon (Cardano After Dark) <Seomonregister@gmail.com>
+- Martin Marinov <martin.marinov@cardano.marketing>
+- Sebastián Pereira Gutiérrez <sebpereira33@gmail.com>
+Proposed Solutions: []
+Discussions:
+- Original pull request: https://github.com/cardano-foundation/CIPs/pull/997
+Created: 2025-02-13
 License: CC-BY-4.0
 ---
 
@@ -116,7 +115,7 @@ Traditional governance mechanisms often suffer from inefficiencies, slow decisio
 - How much should the rewards be based on ADA delegation, the DRep’s participation or other factors?
 - What’s the impact of stakeholder rewards on Cardano’s treasury?
 
-## **References**
+## References
 - [Reward Schemes and Committee Sizes in Proof of Stake Governance](https://arxiv.org/abs/2406.10525)
 - [Should DReps receive compensation? Poll]()
 ## Copyright

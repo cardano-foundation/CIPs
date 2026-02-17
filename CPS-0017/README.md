@@ -7,12 +7,11 @@ Authors:
   - Arnaud Bailly <arnaud.bailly@iohk.io>
   - Brian W. Bush <brian.bush@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
-Proposed Solutions: 
-	["CIP-0140 : Ouroboros Peras - Faster Settlement"
-	,"CIP-0161 : Ouroboros Phalanx - Breaking Grinding Incentives"
-	]
-Implementors: N/A
-Discussions: 
+Proposed Solutions:
+  - CIP-0140 | Ouroboros Peras - Faster Settlement: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0140
+  - CIP-0161 | Ouroboros Phalanx - Breaking Grinding Incentives: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0161
+Discussions:
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1065
 Created: 2024-09-30
 License: Apache-2.0
 ---
@@ -62,7 +61,7 @@ Cardano Dapps and DEXes vary quite a bit regarding how many confirmations they r
 
 When Cardano becomes used by large institutions or nation states, attacks on settlement may become more attractive and lucrative. Hence, it is not safe to assume that stake-based and grinding attacks will not occur in the future.
 
-## Use cases
+## Use Cases
 
 Fast settlement primarily benefits use cases where a party needs certainty, after a fixed amount of time, about the settlement status of a transaction. The generic use case follows.
 
@@ -119,7 +118,7 @@ Three approaches are under active consideration or development to address the se
 - *The protocol-parameter approach* simply lowers the active slot coefficient (currently set to 5% of the slots on `mainnet`) to a somewhat lower value, so that the block production rate and settlement are faster. This approach can only moderately shorten settlement times and does not mitigate against the aforementioned attacks.
 
 
-## Open questions
+## Open Questions
 
 - Is finality on the order of a couple of minutes feasible on Cardano? What is the theoretically fastest finality possible for a Praos-like consensus algorithm?
 - What definitions of settlement and finality are most relevant to Cardano stakeholder use cases? Is a single definition common to all use cases?

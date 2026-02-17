@@ -1,8 +1,8 @@
 ---
 CPS: 16
 Title: Cardano URIs
-Status: Open
 Category: Tools
+Status: Open
 Authors:
   - Adam Dean <adam@crypto2099.io>
 Proposed Solutions:
@@ -11,11 +11,11 @@ Proposed Solutions:
   - CIP-0107: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
   - CIP-0134: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0134
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/issues/836
-  - https://github.com/cardano-foundation/CIPs/pull/559
-  - https://github.com/cardano-foundation/CIPs/pull/635
-  - https://github.com/cardano-foundation/CIPs/pull/841
-  - https://github.com/cardano-foundation/CIPs/pull/888
+  - Issue - CIP-0013 Current state of integration and further advancements: https://github.com/cardano-foundation/CIPs/issues/836
+  - CIP-0013 pull request: https://github.com/cardano-foundation/CIPs/pull/559
+  - CIP-0107 pull request: https://github.com/cardano-foundation/CIPs/pull/635
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/841
+  - CIP-0134 pull request: https://github.com/cardano-foundation/CIPs/pull/888
 Created: 2024-06-15
 License: CC-BY-4.0
 ---
@@ -36,7 +36,7 @@ data. Well-defined URI schemes can provide a plethora of easy access and
 interaction methods, particularly to mobile users, since they can leverage
 deep-linking and QR technologies to pass data between applications.
 
-## Use cases
+## Use Cases
 
 The Cardano URI Scheme(s) that exist already present several fantastic use cases
 for URI schemes. We welcome additional or expanded definitions to be added to

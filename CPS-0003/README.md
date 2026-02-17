@@ -1,18 +1,19 @@
 ---
 CPS: 3
 Title: Smart Tokens
-Status: Open
 Category: Tokens
+Status: Open
 Authors:
     - Istvan Szentandrasi <szist@zoeldev.com>
     - Robert Phair <rphair@cosd.com>
 Proposed Solutions:
-    - CIP-0113: https://github.com/cardano-foundation/CIPs/pull/444
+    - CIP-0113?: https://github.com/cardano-foundation/CIPs/pull/444
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/382
-    - https://github.com/cardano-foundation/CIPs/pull/947
-    - https://github.com/cardano-foundation/CIPs/issues/969
+    - Original abandoned pull request (closed): https://github.com/cardano-foundation/CIPs/pull/382
+    - Resuscitate pull request (merged): https://github.com/cardano-foundation/CIPs/pull/947
+    - CIP-0113 | Removed potential implementation (issue): https://github.com/cardano-foundation/CIPs/issues/969
 Created: 2022-11-20
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -32,7 +33,7 @@ Even in the Babbage era, after the token is minted, there is no way to control t
 
 Similar to how UTxO addresses can be optionally fully controlled by smart-contracts, there could be potential also to optionally control other lifecycle points of a token than just forging on Cardano.
 
-## Use cases
+## Use Cases
 
 There are multiple use-cases that would benefit from having the ability to validate token interactions.
 

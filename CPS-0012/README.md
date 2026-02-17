@@ -1,14 +1,14 @@
 ---
 CPS: 12
 Title: Query Layer Standardization
-Status: Open
 Category: Tools
+Status: Open
 Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
     - Ryan Williams <ryan.williams@intersectmbo.org>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/625
+    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/625
 Created: 2023-11-27
 License: CC-BY-4.0
 ---
@@ -94,7 +94,7 @@ This will allow providers to voice concerns over potentially expensive or awkwar
 To address loss of avenue for differentiation, via data shape standard authors should seek to ensure there are other ways in which providers can differentiate.
 These could be built into the standard such as optional batching, allowing providers to offer tiers of batching support for their endpoints.
 
-## Use cases
+## Use Cases
 
 ### Multi-Provider Wallets
 

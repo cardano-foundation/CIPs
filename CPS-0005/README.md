@@ -1,18 +1,18 @@
 ---
 CPS: 5
 Title: Plutus Script Usability
-Status: Open
 Category: Plutus
+Status: Open
 Authors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Proposed Solutions:
-  - CIP-0038 (tentative)
-  - CIP-0057 (tentative)
-  - CIP-0069 (tentative)
-  - CIP-0087 (tentative)
+  - CIP-0038?: https://github.com/cardano-foundation/CIPs/pull/309
+  - CIP-0057: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0057
+  - CIP-0069: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0069
+  - CIP-0087?: https://github.com/cardano-foundation/CIPs/pull/440
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/497
-  - https://github.com/input-output-hk/Developer-Experience-working-group
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/497
+  - Developer Experience Working Group: https://github.com/input-output-hk/Developer-Experience-working-group
 Created: 2023-04-04
 License: CC-BY-4.0
 ---

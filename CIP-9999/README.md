@@ -60,8 +60,8 @@ Field                | Description
 `Category`           | One registered or well-known category covering one area of the ecosystem.
 `Status`             | Open \| Solved \| Inactive (..._reason_...)
 `Authors`            | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
-`Proposed Solutions` | A list of CIPs addressing the problem, if any
-`Discussions`        | A list of links where major technical discussions regarding this CPS happened. Links should include any discussion before submission, a link to the pull request that created the CPS, and any pull request that modifies it.
+`Proposed Solutions` | A list of labelled CIPs addressing the problem, if any
+`Discussions`        | A list of labelled links where major technical discussions regarding this CPS happened. Links should include any discussion before submission, a link to the pull request that created the CPS, and any pull request that modifies it.
 `Created`            | Date created on, in ISO 8601 (YYYY-MM-DD) format
 `License`            | Abbreviation of an approved license(s)
 
@@ -76,11 +76,13 @@ Status: Open
 Authors:
     - Alice <alice@domain.org>
     - Bob <bob@domain.org>
-Proposed Solutions: []
+Proposed Solutions:
+    - CIP-1234 | Solve the Trilemma: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1234
 Discussions:
-    - https://forum.cardano.org/t/solving-the-blockchain-trilemma/107720
-    - https://github.com/cardano-foundation/cips/pulls/9999
+    - Forum discussion: https://forum.cardano.org/t/solving-the-blockchain-trilemma/107720
+    - Original pull request: https://github.com/cardano-foundation/cips/pulls/9999
 Created: 2009-02-14
+License: CC-BY-4.0
 ---
 ```
 
@@ -171,7 +173,7 @@ Goals make it easier to assess whether a solution solves a problem. Goals also g
 
 Use cases are essential to understanding a problem and showing that a problem addresses a need. Without use cases, there is, in fact, no problem, and merely disliking a design doesn't make it problematic. A use case is also generally user-driven, which encourages the ecosystem to open a dialogue with users to build a system that is useful to others and not only well-designed for the mere satisfaction of engineers.
 
-### Open questions
+### Open Questions
 
 This section is meant to _save time_, especially for problem statement authors who will likely be the ones who end up reviewing proposed solutions. Open questions allow authors to state upfront elements they have already thought of and that any solution should consider in its design. Moreso, it is an opportunity to mention, for example, security considerations or common pitfalls that solutions should avoid.
 

@@ -1,13 +1,13 @@
 ---
 CPS: 11
 Title: Universal JSON Encoding for Domain Types
-Status: Open
 Category: Tools
+Status: Open
 Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/742
+    - Original pull request: https://github.com/cardano-foundation/cips/pulls/742
 Created: 2024-01-10
 License: CC-BY-4.0
 ---
@@ -33,7 +33,7 @@ As a result, software solutions are incompatible with each other, and dApp devel
 
 The [initiative](https://github.com/cardano-foundation/CIPs/pull/625) to standardize query layers on Cardano is currently blocked due to absence of a standardized JSON data schema. However, such a schema would be useful in contexts other than query layers, which is the reason why this CPS is separate.
 
-## Use cases
+## Use Cases
 
 - dApp developers want to have a definite encoding of JSON data, so that they don't need to specify the format themselves
 - dApp developers want to be sure they will be able to reuse data coming from different sources (third parties) without format changes
