@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 176
 Title: Non-segregated Block Body Serialization
 Category: Ledger
 Authors:
