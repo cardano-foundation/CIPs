@@ -1,0 +1,30 @@
+{
+  "@context": "...",
+  "hashAlgorithm": "blake2b-256",
+  "body": {
+    "title": "Increase Block Size to 96KB",
+    "abstract": "Update maxBlockBodySize parameter from 90112 to 98304 bytes.",
+    "motivation": "Current block size limits are constraining transaction throughput.",
+    "rationale": "Analysis shows network can safely handle larger blocks, improving user experience.",
+    "onChain": {
+      "@type": "ProposalProcedure",
+      "deposit": 100000000000,
+      "returnAddr": {
+        "network": "mainnet",
+        "paymentCred": null,
+        "stakeCred": {
+          "keyHash": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3"
+        }
+      },
+      "govAction": {
+        "@type": "ParameterChange",
+        "protocolParamUpdate": {
+          "maxBlockBodySize": 98304
+        },
+        "policyHash": null,
+        "prevGovActionId": null
+      }
+    }
+  },
+  "authors": []
+}
