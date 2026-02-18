@@ -22,7 +22,7 @@ The advantage of this Ouroboros variant would be a higher block production rate:
 
 The main disadvantage of Tachýs compared to Praos would be not having the DDoS resistance that Praos provides. For partner chains intended to have relatively few block producers, the DDoS resistance Praos provides is of limited benefit. Other forms of DDoS resistance are required, and are possible.
 
-This CIP partially addresses [CPS-0017] and [CPS-0018], for the use case of partner chains.
+This CIP addresses the problems of settlement speed and transaction throughput for the use case of partner chains. These are related to the problems of settlement speed and transaction throughput for the Cardano mainnet identified in [CPS-0017] and [CPS-0018].
 
 ## Motivation: why is this CIP necessary?
 
@@ -62,7 +62,7 @@ A crucial motivation for Ouroboros Tachýs is that of ecosystem compatibility. A
 
 The use cases we identify benefit from increased throughput, but do not require massive throughput. This is the same problem identified (for Cardano mainnet) in [CPS-0018] "Greater Transaction Throughput". Quantitatively, our rough target for these partner chains is 10x higher throughput than Cardano mainnet. Of the 10x target, 4x can be achieved by Ouroboros Tachýs, and the remaining 2.5x (or more) can be achieved by making partner chain networks geographically smaller, with fewer nodes and fewer hops between block producers and then tuning the protocol parameters for block size and block frequency accordingly.
 
-Some of the use cases we identify benefit from reduced time to transaction finality. This is the same problem identified in [CPS-0017] "Settlement Speed". Ouroboros Tachýs addresses this directly by allowing blocks to be created more frequently and thus any required threshold of block confirmations can be achieved in less time. Furthermore, in the partner chain setting there are different trust assumptions that may be reasonable, and some of these lead to dramatically lower settlement times (see the report by [Davies et al]).
+Some of the use cases we identify benefit from reduced time to transaction finality. This is the same problem identified (for Cardano mainnet) in [CPS-0017] "Settlement Speed". Ouroboros Tachýs addresses this directly by allowing blocks to be created more frequently and thus any required threshold of block confirmations can be achieved in less time. Furthermore, in the partner chain setting there are different trust assumptions that may be reasonable, and some of these lead to dramatically lower settlement times (see the report by [Davies et al]).
 
 A final important motivation is time to deployment. There are useful use cases that would benefit from increased throughput and lower transaction latency soon. Waiting years would lose that value benefit.
 
