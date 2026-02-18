@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: 177
 Title: Ouroboros Tachys - Faster Cardano partner chains
 Category: Consensus
 Status: Proposed
