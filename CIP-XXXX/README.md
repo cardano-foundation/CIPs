@@ -101,7 +101,7 @@ web+cardano://browse/v1?uri=https%3A%2F%2Fapp.sundae.fi%2Fexchange%3Fgiven%3Dada
 Local development app (HTTP localhost with port):
 
 ```
-web+cardano://browse/v1/http/localhost:3000/devPage
+web+cardano://browse/v1?uri=http%3A%2F%2Flocalhost%3A3000%2FdevPage
 ```
 
 ### ABNF Grammar
