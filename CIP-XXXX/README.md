@@ -139,7 +139,6 @@ payment or metadata intents, improving clarity and interoperability.
 - [ ] At least one major Cardano wallet implements support for the browse
   authority in web+cardano URIs, including launching its embedded browser with
   the specified path.
-- [ ] At least one dApp publishes deep links or QR codes using the browse scheme
   that work reliably across supported wallets.
 - [ ] Demonstrated user success in navigating from mobile device (e.g., native
   camera or link) into a wallet and then directly into the dApp or application
