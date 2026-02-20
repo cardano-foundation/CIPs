@@ -68,7 +68,7 @@ as:
 ### URI Format
 
 ```
-web+cardano://browse/<version>/<scheme>/<namespaced_domain>/<app-specific-path>?<parameters>
+web+cardano://browse/<version>?uri=<percent_encoded_uri>
 ```
 
 * **Authority (REQUIRED):** `browse`
