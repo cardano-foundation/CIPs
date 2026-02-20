@@ -104,19 +104,6 @@ Local development app (HTTP localhost with port):
 web+cardano://browse/v1?uri=http%3A%2F%2Flocalhost%3A3000%2FdevPage
 ```
 
-### ABNF Grammar
-
-``` 
-cardano-browse-uri = "web+cardano:" browse-path
-
-browse-path = "//browse" "/" version "/" scheme "/" namespaced-domain [ "/" app-path ] [ query ]
-version = "v1"
-scheme = ALPHA *( ALPHA / DIGIT / "." / "+" / "-" )
-namespaced-domain = *( ALPHA / DIGIT / "." / "-" )
-app-path = *( unreserved / pct-encoded / sub-delims / "/" )
-query = "?" *( unreserved / pct-encoded / sub-delims / "=" / "&" )
-```
-
 ### Wallet Behavior
 
 * Parse and validate version, scheme, and domain.
