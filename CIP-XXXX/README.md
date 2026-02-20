@@ -132,14 +132,6 @@ web+cardano://browse/v1?uri=http%3A%2F%2Flocalhost%3A3000%2FdevPage
 A dedicated `browse` authority isolates app navigation and launch intents from
 payment or metadata intents, improving clarity and interoperability.
 
-### Why use reverse domain names for `namespaced_domain`?
-
-* **Global uniqueness:** avoids collisions.
-* **Decentralized management:** no central registry needed.
-* **Developer familiarity:** matches Android, Apple, Java ecosystems.
-* **Verifiability:** can tie domains to apps via `.well-known` or DNS records.
-* **Cross-platform compatibility:** works on web, mobile, desktop.
-
 ### Why include a scheme in the path?
 
 * Removes ambiguity — scheme is required, not optional.
