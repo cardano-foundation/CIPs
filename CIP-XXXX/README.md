@@ -154,8 +154,6 @@ payment or metadata intents, improving clarity and interoperability.
   handling in at least one wallet.
     - Reference Implementation: https://github.com/crypto2099/cardano-uri-parser
     - NPM Package: https://www.npmjs.com/package/cardano-uri-parser
-- [ ] Collaborate with at least one dApp team to generate example deep links and
-  test them live (e.g., at events or with public beta testers).
 - [ ] Write integration guides or example code for wallet and dApp developers.
 - [ ] Monitor ecosystem adoption and collect feedback for potential refinements
   or amendments to the standard.
