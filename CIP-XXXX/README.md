@@ -71,13 +71,9 @@ as:
 web+cardano://browse/<version>?uri=<percent_encoded_uri>
 ```
 
-* **Authority (REQUIRED):** `browse`
-* **Version (REQUIRED):** `v1`
-* **Scheme (REQUIRED):** `https`, `http`, `ipfs`, etc.
-* **Namespaced domain (REQUIRED):** reverse domain name (e.g., `fi.sundae.app`)
-* **App-specific path (OPTIONAL):** full, url-encoded path within the app
-* **Query parameters (OPTIONAL):** optional, url-encoded query parameters passed
-  as-is to the app
+* **authority (REQUIRED):** `browse`
+* **version (REQUIRED):** `v1`
+* **percent_encoded_uri (REQUIRED):** percent-encoded URI (only `http` and `https` scheme is supported. If no scheme is defined, `https` scheme is assumed)
 
 ### Versioning
 
