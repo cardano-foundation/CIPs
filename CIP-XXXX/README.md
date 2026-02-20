@@ -108,10 +108,10 @@ web+cardano://browse/v1?uri=http%3A%2F%2Flocalhost%3A3000%2FdevPage
 
 * Parse and validate version, scheme, and domain.
 * Forward the entire app-specific path and query string to the app.
-* Apply allowlist/blocklist and security policies:
-    * Warn on `http` and `localhost`.
-    * Allow `https` by default.
-    * Resolve `ipfs` via trusted gateway or native resolver.
+* Suggested allowlist/blocklist and security policies:
+    * Each wallet may optionally implement its own allowed list of trusted domains where navigation would not require explicit permissions
+    * Each wallet may optionally implement a blacklist of known untrusted domains where the user would be shown a clear warning that the website is known to be malicious. With very explicit user permission user should still be allowed to navigate.
+    * For domains outside of allowlist / blacklist, wallet may want to show a warning and request explicit permission before navigating. This is to prevent unwanted IP / device info / other data exfiltration which can be obtained simply by loading a webpage
 
 ### Security Considerations
 
