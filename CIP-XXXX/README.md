@@ -95,7 +95,7 @@ the time of their authoring in terms of acceptance and adoption.
 Web app (SundaeSwap ADA <=> USDM Trading Page):
 
 ```
-web+cardano://browse/v1/https/fi.sundae.app/exchange?given=ada.lovelace&taken=c48cbb3d5e57ed56e276bc45f99ab39abe94e6cd7ac39fb402da47ad.0014df105553444d&routeIdent=64f35d26b237ad58e099041bc14c687ea7fdc58969d7d5b66e2540ef
+web+cardano://browse/v1?uri=https%3A%2F%2Fapp.sundae.fi%2Fexchange%3Fgiven%3Dada.lovelace%26taken%3Dc48cbb3d5e57ed56e276bc45f99ab39abe94e6cd7ac39fb402da47ad.0014df105553444d%26routeIdent%3D64f35d26b237ad58e099041bc14c687ea7fdc58969d7d5b66e2540ef
 ```
 
 IPFS app (simulated CID):
