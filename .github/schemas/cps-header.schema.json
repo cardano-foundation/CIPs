@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cardano-foundation/CIPs/.github/schemas/cps-header.schema.json",
+  "title": "CPS Header Schema",
+  "description": "JSON Schema for validating YAML frontmatter headers in Cardano Problem Statements (CPSs)",
+  "type": "object",
+  "required": [
+    "CPS",
+    "Title",
+    "Category",
+    "Status",
+    "Authors",
+    "Proposed Solutions",
+    "Discussions",
+    "Created",
+    "License"
+  ],
+  "properties": {
+    "CPS": {
+      "description": "The CPS number (without leading 0), or one or more '?' before number has been assigned",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\?+$"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "string",
+          "pattern": "^[1-9]\\d*$"
+        }
+      ]
+    },
+    "Title": {
+      "description": "A succinct and descriptive title. Don't use backticks (`) in titles since they disrupt formatting in other contexts. Must be less than 100 characters.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "not": {
+        "pattern": "`"
+      }
+    },
+    "Category": {
+      "description": "One of the editorially accepted categories covering one area of the ecosystem",
+      "type": "string",
+      "enum": [
+        "Meta",
+        "Wallets",
+        "Tokens",
+        "Metadata",
+        "Tools",
+        "Plutus",
+        "Ledger",
+        "Consensus",
+        "Network",
+        "?"
+      ]
+    },
+    "Status": {
+      "description": "Status of the CPS: Open, Solved, or Inactive (with optional reason)",
+      "type": "string",
+      "pattern": "^(Open|Solved|Inactive(?:\\s+\\(.*\\))?)$"
+    },
+    "Authors": {
+      "description": "A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^.+\\s+<.+>$",
+        "description": "Author entry in format: Name <email@domain.com>"
+      }
+    },
+    "Proposed Solutions": {
+      "description": "A list of CIPs addressing the problem, if any. Can be an empty array []. Each entry is 'Label: URL'. When label is CIP-NNNN, URL must be a GitHub CIPs repo link; use '?' suffix for PRs (candidates).",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^.+:\\s+https?://.+$",
+            "description": "Entry in format: 'Label: URL'"
+          },
+          {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Dictionary format: {'Label': 'URL'}"
+          }
+        ]
+      }
+    },
+    "Discussions": {
+      "description": "A list of links where major technical discussions regarding this CPS happened. Must include a link to the pull request that created the CPS. Each entry must have a label followed by a colon and URL. Can be a string 'Label: URL' or a dictionary {'Label': 'URL'}.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^.+:\\s+https?://.+$",
+            "description": "Entry in format: 'Label: URL'"
+          },
+          {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Dictionary format: {'Label': 'URL'}"
+          }
+        ]
+      }
+    },
+    "Created": {
+      "description": "Date created on, in ISO 8601 (YYYY-MM-DD) format",
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "format": "date"
+    },
+    "License": {
+      "description": "Abbreviation of an approved license",
+      "type": "string",
+      "enum": [
+        "CC-BY-4.0",
+        "Apache-2.0"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
+
