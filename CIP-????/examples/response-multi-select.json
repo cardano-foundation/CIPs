@@ -6,10 +6,15 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
-      "surveyHash": "44b7b4b7bad4dce5634b40f16966f45ee52981a7bc3cdd39542b4beffc25d8e9",
-      "selection": [
-        1,
-        3
+      "surveyHash": "f4c222fa6888e7e4ba9788d640c3498137d44bf291d11c009d21cc67da680122",
+      "answers": [
+        {
+          "questionId": "cip_shortlist",
+          "selection": [
+            1,
+            3
+          ]
+        }
       ]
     }
   }

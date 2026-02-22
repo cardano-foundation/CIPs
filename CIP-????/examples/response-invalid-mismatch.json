@@ -7,8 +7,13 @@
       "specVersion": "1.0.0",
       "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "surveyHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-      "selection": [
-        2
+      "answers": [
+        {
+          "questionId": "cip_0136_inclusion",
+          "selection": [
+            2
+          ]
+        }
       ]
     }
   }

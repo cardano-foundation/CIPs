@@ -18,7 +18,7 @@ License: CC-BY-4.0
 This proposal defines a standardized transaction metadata format for creating and responding to on-chain surveys and polls under metadata label `17`.
 
 The format supports:
-- A single poll question per survey definition.
+- One or more poll questions per survey definition.
 - Optional linkage to governance actions via governance action anchor metadata.
 - Deterministic response binding using both survey transaction id and survey hash.
 - Extensibility for custom voting methods.
@@ -32,9 +32,9 @@ Formal governance actions are intentionally constrained. Those constraints are u
 Examples include:
 - Polling candidate CIPs to decide hard-fork prioritization.
 - Voting on a line item of a budget proposal.
-- Gathering bounded numeric preferences (for example, initialization values for a new parameter).
+- Gathering bounded numeric preferences (for example, initialization values for several related parameters).
 
-A core design principle for this CIP is conceptual coherence: one survey corresponds to one question. Unrelated questions (for example, budget approval and CIP inclusion) should be represented as separate surveys.
+A core design principle for this CIP is grouping related questions in one survey while keeping shared governance constraints at the survey level. This avoids unnecessary survey proliferation for parameter bundles while preserving deterministic validation and tallying.
 
 Without a shared on-chain format, these workflows fragment across custom off-chain tools and incompatible schemas. This CIP provides a common metadata interface that wallets, explorers, governance dashboards, and indexers can implement consistently.
 
@@ -63,10 +63,15 @@ A survey is identified by:
       "specVersion": "1.0.0",
       "title": "Dijkstra hard-fork CIP shortlist",
       "description": "Select any number of candidate CIPs for potential inclusion in the Dijkstra hard fork.",
-      "question": "Which CIPs should be shortlisted for potential inclusion in Dijkstra?",
-      "methodType": "urn:cardano:poll-method:multi-select:v1",
-      "options": ["CIP-0108", "CIP-0119", "CIP-0136", "CIP-0149"],
-      "maxSelections": 4,
+      "questions": [
+        {
+          "questionId": "cip_shortlist",
+          "question": "Which CIPs should be shortlisted for potential inclusion in Dijkstra?",
+          "methodType": "urn:cardano:poll-method:multi-select:v1",
+          "options": ["CIP-0108", "CIP-0119", "CIP-0136", "CIP-0149"],
+          "maxSelections": 4
+        }
+      ],
       "eligibility": ["Stakeholder"],
       "voteWeighting": "CredentialBased",
       "lifecycle": {
@@ -78,14 +83,24 @@ A survey is identified by:
 }
 ```
 
-#### Survey fields
+#### Survey-level fields
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `specVersion` | String | Yes | Semantic version for this schema. This document defines `1.0.0`. |
 | `title` | String | Yes | Human-readable survey title. |
 | `description` | String | Yes | Human-readable survey context or rationale. |
-| `question` | String | Yes | Single question prompt for this survey. |
+| `questions` | Array of Question Objects | Yes | Survey questions. MUST contain at least one item. |
+| `eligibility` | Array of Strings | No | Eligible responder classes. Allowed values: `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
+| `voteWeighting` | String | No | `"StakeBased"` or `"CredentialBased"`. Default is `"CredentialBased"` if absent. |
+| `lifecycle` | Object | No | Optional lifecycle window using slot bounds: `{ startSlot, endSlot }`. |
+
+#### Question object fields (`questions[]` items)
+
+| Key | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `questionId` | String | Yes | Unique identifier within a survey. |
+| `question` | String | Yes | Question prompt. |
 | `methodType` | URI String | Yes | Voting method identifier. Built-ins are defined below. |
 | `options` | Array of Strings | Conditional | Required for option-based methods. |
 | `maxSelections` | Positive Integer | Conditional | Required for `multi-select`; absent or `1` for `single-choice`; forbidden for `numeric-range`. |
@@ -93,9 +108,8 @@ A survey is identified by:
 | `methodSchemaUri` | URI String | Conditional | Required for custom methods. |
 | `hashAlgorithm` | String | Conditional | Required for custom methods; MUST be `"blake2b-256"`. |
 | `methodSchemaHash` | Hex String | Conditional | Required for custom methods; blake2b-256 hash of custom method schema bytes. |
-| `eligibility` | Array of Strings | No | Eligible responder classes. Allowed values: `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
-| `voteWeighting` | String | No | `"StakeBased"` or `"CredentialBased"`. Default is `"CredentialBased"` if absent. |
-| `lifecycle` | Object | No | Optional lifecycle window using slot bounds: `{ startSlot, endSlot }`. |
+
+Question objects MUST NOT include `eligibility`, `voteWeighting`, or `lifecycle`. Those fields are survey-level only and apply uniformly to all questions in the survey.
 
 ### Method Types
 
@@ -104,11 +118,11 @@ Built-in `methodType` values in this version:
 - `urn:cardano:poll-method:multi-select:v1`
 - `urn:cardano:poll-method:numeric-range:v1`
 
-Rules:
+Rules (applied per question):
 - `single-choice`:
   - `options` MUST be present and contain at least 2 values.
   - `maxSelections` MUST be absent or set to `1`.
-  - Response MUST contain exactly one selected option index in `selection`.
+  - A response answer MUST contain exactly one selected option index in `selection`.
 - `multi-select`:
   - `options` MUST be present and contain at least 2 values.
   - `maxSelections` MUST be present, `>= 1`, and `<= len(options)`.
@@ -118,7 +132,7 @@ Rules:
   - `numericConstraints` MUST include `minValue` and `maxValue` as integers with `minValue <= maxValue`.
   - Optional `step` MUST be a positive integer.
   - `options` and `maxSelections` MUST be absent.
-  - Response MUST contain `numericValue` satisfying range and step constraints.
+  - Response answer MUST contain `numericValue` satisfying range and step constraints.
 
 Custom methods:
 - Any URI `methodType` that is not one of the built-ins is a custom method.
@@ -141,8 +155,13 @@ YES/NO/ABSTAIN semantics:
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
-      "surveyHash": "44b7b4b7bad4dce5634b40f16966f45ee52981a7bc3cdd39542b4beffc25d8e9",
-      "selection": [1, 3]
+      "surveyHash": "f4c222fa6888e7e4ba9788d640c3498137d44bf291d11c009d21cc67da680122",
+      "answers": [
+        {
+          "questionId": "cip_shortlist",
+          "selection": [1, 3]
+        }
+      ]
     }
   }
 }
@@ -155,12 +174,25 @@ YES/NO/ABSTAIN semantics:
 | `specVersion` | String | Yes | Semantic version. |
 | `surveyTxId` | Hex String | Yes | Transaction id of the `surveyDetails` transaction. |
 | `surveyHash` | Hex String | Yes | Blake2b-256 digest described in [Survey Hashing](#survey-hashing). |
+| `answers` | Array of Answer Objects | Yes | Response answers keyed by `questionId`. MUST be non-empty. |
+
+#### Answer object fields (`answers[]` items)
+
+| Key | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `questionId` | String | Yes | References a question in `surveyDetails.questions[]`. |
 | `selection` | Array of UInt | Conditional | Used by option-based methods (`single-choice`, `multi-select`). |
 | `numericValue` | Integer | Conditional | Used by `numeric-range`. |
 | `customValue` | Transaction Metadatum | Conditional | Used by custom methods. |
 
-For each `surveyResponse`, exactly one of `selection`, `numericValue`, or `customValue` MUST be present.
-For `multi-select`, `selection: []` is valid and indicates no survey options selected.
+Normative response-shape rules:
+- For `answers[]`:
+  - Each item MUST include `questionId`.
+  - Each `questionId` MUST reference an existing question in the referenced survey definition.
+  - Each item MUST include exactly one of `selection`, `numericValue`, or `customValue`.
+  - The chosen answer value key MUST be compatible with the referenced question's `methodType`.
+  - `questionId` values MUST be unique within one response payload.
+- For `multi-select`, `selection: []` is valid and indicates no survey options selected.
 
 ### Linking and Identity
 
@@ -189,7 +221,7 @@ Anchor schema:
   "kind": "cardano-governance-survey-link",
   "surveyRef": {
     "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
-    "surveyHash": "44b7b4b7bad4dce5634b40f16966f45ee52981a7bc3cdd39542b4beffc25d8e9"
+    "surveyHash": "f4c222fa6888e7e4ba9788d640c3498137d44bf291d11c009d21cc67da680122"
   }
 }
 ```
@@ -256,7 +288,7 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 4. If present, validate governance-action-to-survey linkage by `(surveyTxId, surveyHash)`.
 5. Discover responses by scanning metadata label `17` for `surveyResponse`.
 6. Resolve each response to survey by `(surveyTxId, surveyHash)`.
-7. Validate response shape against the survey's `methodType` and constraints.
+7. Validate each response answer against the corresponding survey question method and constraints.
 8. Derive `responseCredential` using [Responder identity for deduplication](#responder-identity-for-deduplication).
 9. Apply latest-valid-response-wins ordering.
 10. Apply selected weighting mode and produce final tallies.
@@ -286,10 +318,8 @@ numeric_constraints = {
   ? step: uint
 }
 
-survey_details = {
-  specVersion: tstr,
-  title: tstr,
-  description: tstr,
+survey_question = {
+  questionId: tstr,
   question: tstr,
   methodType: method_type,
   ? options: [+ tstr],
@@ -297,7 +327,14 @@ survey_details = {
   ? numericConstraints: numeric_constraints,
   ? methodSchemaUri: uri,
   ? hashAlgorithm: "blake2b-256",
-  ? methodSchemaHash: hex_blake2b_256,
+  ? methodSchemaHash: hex_blake2b_256
+}
+
+survey_details = {
+  specVersion: tstr,
+  title: tstr,
+  description: tstr,
+  questions: [+ survey_question],
   ? eligibility: [* eligibility_role],
   ? voteWeighting: vote_weighting,
   ? lifecycle: {
@@ -313,21 +350,22 @@ transaction_metadatum =
   / bytes .size (0..64)
   / text .size (0..64)
 
+answer_item = {
+  questionId: tstr,
+  selection: [* uint]
+} / {
+  questionId: tstr,
+  numericValue: int
+} / {
+  questionId: tstr,
+  customValue: transaction_metadatum
+}
+
 survey_response = {
   specVersion: tstr,
   surveyTxId: hex_tx_id,
   surveyHash: hex_blake2b_256,
-  selection: [* uint]
-} / {
-  specVersion: tstr,
-  surveyTxId: hex_tx_id,
-  surveyHash: hex_blake2b_256,
-  numericValue: int
-} / {
-  specVersion: tstr,
-  surveyTxId: hex_tx_id,
-  surveyHash: hex_blake2b_256,
-  customValue: transaction_metadatum
+  answers: [+ answer_item]
 }
 
 cip_00xx_label_17_payload = {
@@ -364,7 +402,9 @@ This revision defines version `1.0.0`.
 
 ## Rationale: how does this CIP achieve its goals?
 
-- A single-question model keeps each survey semantically coherent and avoids combining unrelated decisions.
+- Multi-question surveys let authors collect related signals (including mixed method types) in one survey object.
+- Survey-level required and governance fields preserve shared lifecycle/eligibility semantics across all included questions.
+- Question-level method fields keep validation explicit and deterministic per question.
 - Index-based option responses avoid text-matching ambiguity and improve interoperability.
 - Requiring both `surveyTxId` and `surveyHash` prevents weak linkage and reduces confusion between similar surveys.
 - Canonical `Action -> Survey` linkage via governance action anchors avoids circular transaction-reference dependencies.
@@ -376,8 +416,8 @@ This revision defines version `1.0.0`.
 
 ### Acceptance Criteria
 
-- [ ] At least two independent tools can create `surveyDetails` payloads with this single-question schema.
-- [ ] At least two independent tools can ingest `surveyResponse` payloads and produce matching tallies for shared test vectors.
+- [ ] At least two independent tools can create `surveyDetails` payloads with the `questions[]` schema.
+- [ ] At least two independent tools can ingest `surveyResponse` payloads with `answers[]` and produce matching tallies for shared test vectors.
 - [ ] At least one governance-facing tool implements the Info Action profile.
 - [ ] Label `17` is registered in `CIP-0010/registry.json`.
 
