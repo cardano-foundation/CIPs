@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 Stake Pool Operators (SPOs) must currently sign on-chain governance votes with
 pool cold keys. This CIP enables an alternate, authorized "hot" key for SPO
-voting by reusing the Calidus key registration defined in CIP-0151. The ledger
+voting by reusing the Calidus key registration defined in [CIP-0151 | On-Chain Registration - Stake Pools](https://github.com/cardano-foundation/CIPs/pull/999). The ledger
 will accept SPO votes signed by either the pool cold key (status quo) or the
 currently active Calidus key for that pool, as determined by the highest-nonce
 CIP-0151 registration metadata. No new certificate type is introduced. Instead,
