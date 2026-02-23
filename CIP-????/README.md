@@ -72,7 +72,7 @@ A survey is identified by:
           "maxSelections": 4
         }
       ],
-      "eligibility": ["Stakeholder"],
+      "eligibility": ["DRep"],
       "voteWeighting": "CredentialBased",
       "lifecycle": {
         "startSlot": 120000000,
