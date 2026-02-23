@@ -7,10 +7,12 @@ Authors:
   - Nicholas Clarke <nicholas.clarke@moduscreate.com>
   - Aleksandr Vershilov <alexander.vershilov@moduscreate.com>
   - João Santos Reis <joao.reis@moduscreate.com>
+  - Christopher Harrison <christopher.harrison@moduscreate.com>
 Implementors:
   - Nicholas Clarke <nicholas.clarke@moduscreate.com>
   - Aleksandr Vershilov <alexander.vershilov@moduscreate.com>
   - João Santos Reis <joao.reis@moduscreate.com>
+  - Christopher Harrison <christopher.harrison@moduscreate.com>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/1083
 Created: 2025-08-18
@@ -59,7 +61,7 @@ In order to provide types of the values and be able to store and verify only par
 
 #### Supported Namespaces
 
-Each logical table/type is a namespace identified by a canonical string (e.g., `"utxo"`, `"gov"`).
+Each logical table/type is a namespace identified by a canonical string (e.g., `"utxo"`, `"gov"`). Namespace identifiers are UTF-8 encoded; all comparisons and ordering use bytewise (lexicographic by Unicode codepoint) ordering on the UTF-8 byte representation.
 
 | Shortname           | Content                         |
 | ------------------- | ------------------------------- |
@@ -158,9 +160,10 @@ and updated as a whole, a single artificial key can be used.
 - data is stored in deterministically defined global order; in the lexical order of the keys;
 - all keys in the record must be unique;
 - all key-values in the record must refer to the same namespace;
+- `CHUNK` records are ordered by namespace using bytewise (UTF-8 lexicographic) ordering; all `CHUNK` records for a given namespace appear consecutively and before any `CHUNK` records for a namespace that sorts later;
+- within a namespace, all keys in `CHUNK` `n` must be lexicographically lower than all keys in `CHUNK` `n+1`;
 - readers should verify footer before relying on the data;
 - `chunk_hash = H(concat [ digest(e) | e in entries ])`;
-- all keys in `CHUNK` `n` must be lexicographically lower than all keys in `CHUNK` `n+1`.
 
 The format proposes support of data compression. For future-compatibility the format is described by the `chunk_format` field, and following variants are introduced:
 
@@ -181,7 +184,7 @@ When calculating and verifying hashes, its built over the uncompressed data.
 - `slot_no` : `u64` identifier of the blockchain point (slot number).
 - `total_entries`: `u64` — number of data entries in the file (integrity purpose only)
 - `total_chunks`: `u64` — number of chunks in the file (integrity purpose only)
-- `root_hash`: `Digest` - **Merkle root** of all `entry_e` in the file (see [Verification](#verification) section for details)
+- `root_hash`: `Digest` - **global Merkle root**, computed over the per-namespace Merkle roots in lexicographic namespace order (see [Verification](#verification) section for details)
 - `namespace_info`: a list of `{ entries_count, chunks_count, name, digest }` for each namespace in the file, where:
   - `entries_count`: `u64` — number of entries in the namespace
   - `chunks_count`: `u64` — number of chunks for the namespace
@@ -299,11 +302,27 @@ All concrete formats should be stored in an attachment to this CIP and stored in
 
 ### Verification
 
-Manifest stores overall root and per-namespace commitments. The Merkle root is computed as a root value of the Merkle trees over all the live entry digests in canonical order; tombstones excluded, last-writer-wins for overlays. The digest of each entry (defined as a `(key,value)` pair) for a namespace `ns_str` is computed as `H(0x01 || ns_str || key || value)`, where `H` is Blake2b-224.
+Manifest stores an overall global root and per-namespace commitments. Verification uses a two-level Merkle structure: each namespace has its own Merkle tree built over its entries, and the global Merkle tree is then built over the per-namespace roots, not directly over entries.
 
-To describe in detail, basic chunks store all the values in canonical key order. After having all values in the order we build a full Merkle tree of those values.
+#### Per-namespace Merkle trees
+
+For each namespace, a Merkle tree is constructed over all live entry digests in canonical key order; tombstones are excluded, last-writer-wins for overlays.
+
+The digest of each entry (the leaf hash), defined as a `(key,value)` pair for a namespace `ns_str`, is `H(0x01 || ns_str || key || value)`, where `H` is Blake2b-224 and `ns_str` is the UTF-8 encoded namespace name. Internal nodes are hashed as `H(0x00 || left || right)`. The `0x00` and `0x01` domain separators make leaf and internal-node hashes structurally distinct, preventing second pre-image attacks.
+
+The Merkle tree is unbalanced. During construction, entries are inserted in canonical order; whenever two subtrees at the same depth exist they are immediately merged into a node one depth up. On finalization, any remaining trailing subtrees are processed from shallowest to deepest: a trailing subtree whose depth is lower than its successor's is promoted -- its depth counter is incremented with its hash left unchanged -- until the depths match, at which point they are merged with `H(0x00 || left || right)`. This repeats until a single root digest remains.
+
+An empty namespace (zero entries) produces `H("")` as its root.
+
+Basic chunks store all the values in canonical key order; the namespace Merkle tree is built over all values in this order.
 
 The rule of thumb is that when we calculate a hash of the data we take into account only the live (non deleted) values in canonical order. In the case when there is a single dump without delta records, this is exactly the order of how values are stored. But when delta—records appear we need to take into account that in the following records there may be values that are smaller than the ones in the base and some values may be deleted or updated. As a result writer should calculate a live-set of values, which can be done by running a streaming multi-merge algorithm (when we search for a minimal value from multiple records). In the case a value exists in multiple records we use a last—writer—wins rule. If there is a tombstone, we consider a value deleted and do not include it in a live-set.
+
+#### Global Merkle tree
+
+The global Merkle tree is constructed from the per-namespace Merkle roots, not from entries directly. Namespace roots are taken in lexicographic (bytewise UTF-8) order of namespace name. Each namespace root is a leaf with digest `H(0x01 || namespace_root)`, where `namespace_root` is the 28-byte per-namespace Merkle root. (Note that the namespace name is _not_ included in the global tree leaf hash, unlike the entry hashes.) Internal nodes are formed identically to the per-namespace trees: `H(0x00 || left || right)` with the same unbalanced finalization procedure.
+
+An empty file (no namespaces) produces `H("")` as the global root.
 
 ### Extensibility
 
