@@ -1,44 +1,63 @@
 ---
 CIP: 175
-Title: SPO Governance Voting with Calidus Keys
+Title: Stake Pool Hot Credentials 
 Category: Ledger
 Status: Proposed
 Authors:
     - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
-    - CIP-0151 original pull request: https://github.com/cardano-foundation/CIPs/pull/999
-    - add SPO governance voting: https://github.com/cardano-foundation/CIPs/pull/1140
+    - https://github.com/cardano-foundation/CIPs/pull/999
+    - https://github.com/cardano-foundation/CIPs/pull/1140
 Created: 2026-01-22
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
-Stake Pool Operators (SPOs) must currently sign on-chain governance votes with
-pool cold keys. This CIP enables an alternate, authorized "hot" key for SPO
-voting by reusing the Calidus key registration defined in [CIP-0151 | On-Chain Registration - Stake Pools](https://github.com/cardano-foundation/CIPs/pull/999). The ledger
-will accept SPO votes signed by either the pool cold key (status quo) or the
-currently active Calidus key for that pool, as determined by the highest-nonce
-CIP-0151 registration metadata. No new certificate type is introduced. Instead,
-ledger state is extended to index validated CIP-0151 registrations (scope: stake
-pool), and the governance witness checks are updated to admit the Calidus key as
-an additional authorized signer. This change reduces operational risk by keeping
-cold keys offline while preserving backward compatibility and the existing vote
-format defined in CIP-1694. The proposal is ledger-only and requires a future
-hard fork for activation.
+Stake Pool Operators (SPOs) currently sign on-chain governance votes with pool
+cold keys. This CIP introduces new on-chain certificates that let a pool cold
+key authorize a governance hot credential for a stake pool. For
+`StakePoolVoter poolId`, the ledger accepts either:
+
+- the pool cold key witness, or
+- a witness that satisfies the currently authorized hot credential.
+
+Hot credentials are defined as governance `Credential` values (key hash or
+script hash), so native and Plutus script voting paths are supported from day
+one. This CIP also introduces a failsafe precedence rule where a cold-authorized
+vote supersedes a hot-authorized vote for the same pool and governance action.
+The proposal preserves the existing `StakePoolVoter` model from CIP-1694 and
+requires a future hard fork for activation.
 
 ## Motivation: Why is this CIP necessary?
 
-CIP-1694 assigns SPOs an on-chain voting role in governance actions, but current
-workflow requires pool cold keys to sign vote transactions. Cold keys are
-intended to remain offline. Repeated access increases risk of loss or compromise
-and adds operational friction. Meanwhile, CIP-0151 already standardizes a
-verifiable, on-chain registration of Calidus keys for stake pools, enabling an
-SPO-controlled hot key for routine authentication. Reusing that registration as
-the authorization source for on-chain voting aligns governance participation
-with established security practices and existing ecosystem tooling, while
-preserving the ability to vote with cold keys as a fallback.
+CIP-1694 gives SPOs an on-chain voting role, but cold-key-only operation is
+high-friction and increases operational risk because cold keys are meant to
+remain offline.
+
+Authorization for consensus-critical voting must be ledger-visible and
+ledger-validated. Transaction metadata is not the right substrate for this
+authorization path. A certificate-based design provides explicit state
+transitions, deterministic validation, and consistent tooling semantics.
+
+This CIP enables day-to-day governance operation through authorized hot
+credentials while preserving cold-key voting and adding an explicit emergency
+override model.
+
+## Goals
+
+- Add on-chain, certificate-driven authorization of SPO hot credentials.
+- Support both key and script credentials from initial deployment.
+- Preserve CIP-1694 `StakePoolVoter` semantics and cold-key voting.
+- Define deterministic precedence behavior where cold votes supersede hot votes.
+
+## Non-goals
+
+- Replacing CIP-0151.
+- Introducing new SPO voter types.
+- Defining final CBOR constructor tags in this draft (semantic specification
+  only).
 
 ## Specification
 
@@ -46,249 +65,195 @@ preserving the ability to vote with cold keys as a fallback.
 
 - **Pool cold key**: The Ed25519 key whose hash defines the Pool ID.
 - **Pool ID**: The blake2b-224 hash of the pool cold verification key.
-- **Calidus key**: The Ed25519 public key registered in CIP-0151 metadata for a
-  stake pool (registration payload field 7).
-- **Active Calidus key**: The Calidus key from the valid CIP-0151 registration
-  with the highest nonce for a given pool. A 32-byte zero key indicates
-  revocation (no active key).
+- **Hot credential**: A governance `Credential` authorized for a pool's
+  governance voting role. It may be either a key hash credential or script hash
+  credential.
+- **Hot authorization map**: Ledger state map
+  `poolGovHotCreds : Map PoolId Credential`.
+- **Vote source**: Authorization source for a recorded SPO vote:
+  `Cold | Hot`.
 
-### Data Source: CIP-0151 Registration Metadata
+### Certificate Semantics
 
-The ledger recognizes CIP-0151 registrations recorded under metadata label
-`867`, version `2`, with **Scope** = stake pool (`[1, poolID]`). The following
-fields are required (as per CIP-0151):
+This CIP introduces two new stake-pool governance certificates:
 
-- Version (0) = 2
-- Registration Payload (1)
-- Registration Witness (2)
+- `AuthStakePoolHotKey(poolId, hotCred)`
+- `ResignStakePoolHotKey(poolId)`
 
-Within the Registration Payload, the following fields are required:
+The certificates are semantic definitions in this draft. Final constructor IDs
+and concrete CBOR encoding are out of scope for this revision and are assigned
+in implementation artifacts for the activating hard fork.
 
-- Scope (1)
-- Feature Set (2)
-- Validation Method (3)
-- Nonce (4)
+### Certificate Validation Rules
 
-The optional Calidus Key (7) is used as the candidate key to authorize SPO
-voting.
+For both certificates:
 
-### Validation of CIP-0151 Registrations (Ledger Rule Additions)
+1. `poolId` MUST identify a currently registered pool.
+2. The transaction MUST include a valid witness by that pool's cold key.
+3. No deposit or refund applies.
+4. No anchor field is defined.
 
-To prevent unauthorized key claims, the ledger MUST validate CIP-0151
-registrations before they can influence voting authorization. A registration is
-**valid** for ledger purposes when all of the following hold:
+Additional transaction restrictions:
 
-1. The metadata conforms to CIP-0151 version 2 and scope = stake pool.
-2. The Registration Payload is CBOR-encoded exactly as specified by CIP-0151.
-3. The Registration Witness verifies the payload using a pool cold key whose
-   hash equals the specified Pool ID.
-4. The Validation Method is one of:
-   - **Method 0 (Ed25519 Key Signature)**, or
-   - **Method 2 (CIP-0008 Signature)**
-
-Registrations using unsupported methods (including Method 1) are ignored for
-on-chain voting authorization.
-
-#### Transaction-level Restrictions
-
-For consensus determinism and to simplify validation, the following additional
-constraints MUST hold for any transaction containing CIP-0151 stake-pool
-registrations:
-
-1. A transaction MUST NOT contain more than one CIP-0151 registration for the
-   same Pool ID. If multiple registrations for the same pool appear, the
+1. A transaction MUST NOT include more than one of these certificates for the
+   same `poolId`. If it does, the transaction is invalid.
+2. A transaction MUST NOT include any SPO governance vote for `poolId` if it
+   also includes one of these certificates for `poolId`. If it does, the
    transaction is invalid.
-2. A transaction MUST NOT contain both a CIP-0151 stake-pool registration and
-   a governance vote by that same pool. If both appear, the transaction is
-   invalid.
 
-> [!NOTE]
-> Validation Method 1 (Beacon/Reference Token) is intentionally excluded from
-> on-chain voting authorization in this CIP. It relies on an additional token
-> reference and policy constraints that are not currently validated by the
-> ledger for stake pools. Supporting Method 1 would require new on-chain
-> constraints tying the beacon policy to the pool cold key, which is outside
-> the scope of this proposal.
-
-#### Signature Payload Derivation (Strict)
-
-Let `payload` be the CIP-0151 Registration Payload object (the map at key `1`
-under metadata label `867`), encoded as CBOR with map keys in **ascending
-numeric order**.
-
-Define:
-
-- `payload_cbor` = CBOR encoding of `payload` (byte string)
-- `payload_hex` = ASCII byte string of lowercase hex digits encoding
-  `payload_cbor`, with **no prefix**
-- `sig_payload` = `blake2b-256(payload_hex)`
-
-All signature verification for stake-pool registrations in this CIP uses
-`sig_payload`.
-
-#### Method 0 (Ed25519 Key Signature) Witness Rules
-
-For `validation.method = 0`, the Registration Witness Array MUST contain a
-signature from the pool cold key that matches the Pool ID in the registration
-scope. The witness may be either:
-
-- **v1_witness**: `[pubkey, signature]`, or
-- **v2_witness**: `{ 0: uint, 1: pubkey, 2: signature }`
-
-Where:
-
-- `pubkey` is the Ed25519 cold verification key (32 bytes).
-- `signature` is the Ed25519 signature (64 bytes) over `sig_payload`.
-- `blake2b-224(pubkey)` equals the Pool ID in the registration scope.
-
-If multiple witnesses are present, at least one MUST satisfy these conditions.
-
-#### Method 2 (CIP-0008 / COSE) Witness Rules
-
-For `validation.method = 2`, the Registration Witness Array MUST contain a
-`COSE_Witness` as defined in CIP-0151 v2 CDDL:
-
-```
-COSE_Witness = {
-  ? 0 : uint,                ; Witness Type Identifier (optional or 0)
-    1 : COSE_Headers,        ; COSE Header Object
-    2 : COSE_Sign1_Payload,  ; COSE Signature Payload
-}
-```
-
-Validation MUST proceed as follows:
-
-1. Extract the Ed25519 public key from `COSE_Headers[-2]`. Its
-   `blake2b-224` hash MUST equal the Pool ID in the registration scope.
-2. Parse `COSE_Sign1_Payload = [protected, hashed, payload, signature]` with
-   lengths exactly as specified by CIP-0151 v2 CDDL.
-3. The `hashed` flag MUST be `0` (false). The `payload` field MUST equal
-   `sig_payload`.
-4. Verify the COSE signature according to CIP-0008 using:
-   - Ed25519 verification with the public key from step 1.
-   - `protected` as the COSE protected header bytes.
-   - `external_aad` set to `h''` (empty byte string).
-   - If the COSE algorithm header is present, it MUST identify Ed25519.
-
-If multiple witnesses are present, at least one MUST satisfy these conditions.
-
-> [!NOTE]
-> The `hashed` flag MUST be `0` to prevent ambiguous interpretation between
-> CIP-0008's optional pre-hashing and CIP-0151's required `sig_payload`
-> derivation. This ensures all implementations verify the same byte sequence.
-
-### Ledger Rule Integration (Conway)
-
-This CIP integrates at the Conway ledger rule layer and uses existing rule
-boundaries:
-
-- **ConwayLEDGER** (module `Cardano.Ledger.Conway.Rules.Ledger`): unchanged
-  sequencing, but the subordinate `UTXOW`/`UTXO` behavior is extended as
-  described below.
-- **UTXOW** (rule `"UTXOW"` in `Cardano.Ledger.Conway.Rules`): extends witness
-  verification for SPO votes by expanding the required key hash set.
-- **UTXO** (rule `"UTXO"` in `Cardano.Ledger.Conway.Rules`): updates the
-  `calidusKeys` map from validated CIP-0151 metadata found in transaction
-  auxiliary data.
-
-Within `Cardano.Ledger.Conway.UTxO`, `getConwayWitsVKeyNeeded` is the helper
-used to determine required key witnesses, including governance voters. This CIP
-extends `getConwayWitsVKeyNeeded` so that for each stake pool voter it admits
-either:
-
-- the pool cold key hash (status quo), or
-- the hash of the active Calidus key for that pool.
+`ResignStakePoolHotKey(poolId)` is valid even if no hot credential is currently
+authorized for `poolId`; it is a no-op in that case.
 
 ### Ledger State Extension
 
-Introduce a new ledger state mapping:
+Introduce:
 
 ```
-calidusKeys : Map PoolId (Nonce, Maybe CalidusKey)
+poolGovHotCreds : Map PoolId Credential
 ```
 
-Where `CalidusKey` is a 32-byte Ed25519 public key. The map is updated during
-transaction validation by scanning auxiliary data for CIP-0151 registrations
-that pass the validation criteria above. For Conway, this map is stored in
-ledger state and updated in the `ConwayUTXO` transition so it is available to
-`ConwayUTXOW` for witness checks. Per the transaction-level restrictions, a
-transaction that contains both a stake-pool registration and a vote by the same
-pool is invalid and thus does not update `calidusKeys`.
+State transitions:
 
-Update rule:
+- `AuthStakePoolHotKey(poolId, hotCred)` sets
+  `poolGovHotCreds[poolId] = hotCred` (overwrite allowed).
+- `ResignStakePoolHotKey(poolId)` removes `poolId` from the map if present.
 
-- If a valid registration is found for pool `p` with nonce `n`:
-  - If `n` is greater than the stored nonce for `p`, update `calidusKeys[p]` to
-    `(n, k)` where `k` is the Calidus key (or `None` if the key is 32 zero bytes).
-  - If `n` is less than or equal to the stored nonce, ignore the registration.
+No uniqueness constraint is imposed on `hotCred`. The same hot credential MAY be
+authorized for multiple pools.
 
-This map is a derived index of existing on-chain metadata and does not introduce
-new certificate types.
+Pool retirement lifecycle:
+
+- If a pool has a retirement certificate scheduled but not yet enacted, its hot
+  credential remains valid.
+- When retirement is enacted, the ledger clears that pool's
+  `poolGovHotCreds` entry.
 
 ### Governance Vote Authorization Change
 
-For each SPO vote in a transaction, the ledger currently requires a signature
-from the pool cold key (via the pool key hash in the vote credential). This CIP
-extends the authorization rule as follows:
+For each vote with `Voter = StakePoolVoter poolId`, authorization succeeds if
+either of the following holds:
 
-Define the authorized signer set for a pool `p` as:
+1. The transaction includes a valid witness by the pool cold key for `poolId`.
+2. `poolGovHotCreds[poolId] = hotCred` exists and transaction witnesses satisfy
+   `hotCred`.
 
-```
-AuthKeys(p) = { poolId(p) } ∪ { hash(calidusKey(p)) if active }
-```
+Hot credential satisfaction rules:
 
-A vote by an SPO for pool `p` is authorized if the transaction witness set
-contains a vkey witness whose key hash is in `AuthKeys(p)`.
+- If `hotCred` is a key credential, the corresponding vkey witness is required.
+- If `hotCred` is a script credential, a valid governance voting script witness
+  is required under existing Conway voting-script rules for
+  `StakePoolVoter poolId`.
+- Both native scripts and Plutus scripts are supported.
 
-All other vote semantics (vote format, anchors, role definitions, and tallying)
-remain unchanged.
+All other vote semantics (vote options, anchors, role structure, timing windows,
+and tallying model) remain as defined by CIP-1694 unless explicitly modified by
+this CIP.
+
+### Cold-over-Hot Override (Standalone Rule)
+
+This section is intentionally isolated in case future governance discussion
+chooses to revise or remove this behavior.
+
+For each `(govActionId, poolId)` vote slot, the ledger records both vote value
+and `VoteSource` (`Cold` or `Hot`).
+
+Overwrite rules:
+
+1. A `Cold` vote overwrites any existing `Hot` vote for the same
+   `(govActionId, poolId)`.
+2. A `Hot` vote MUST NOT overwrite an existing `Cold` vote for the same
+   `(govActionId, poolId)`.
+3. A later `Cold` vote MAY overwrite an earlier `Cold` vote.
+4. A later `Hot` vote MAY overwrite an earlier `Hot` vote, unless a `Cold` vote
+   has already been recorded for that pair.
+
+Effectively, once any cold-authorized vote exists for a given
+`(govActionId, poolId)`, that pair is locked against hot-authorized overwrites.
+This applies regardless of transaction or block ordering history.
+
+### Ledger Rule Integration (Conway)
+
+This CIP integrates at existing Conway rule boundaries:
+
+- **`UTXO`** applies certificate-driven updates to `poolGovHotCreds` and
+  enforces transaction-level constraints for these certificates.
+- **`UTXOW`** extends SPO vote witness authorization checks to allow either
+  pool cold or authorized hot credential satisfaction.
+- **`GOV`** (vote state handling) records `VoteSource` for stake-pool votes and
+  applies the cold-over-hot overwrite rules.
+
+The proposal does not require new voter types and keeps `StakePoolVoter` as the
+canonical SPO governance voter identity.
 
 ### Versioning
 
-This CIP depends on CIP-0151 version 2 and ignores registrations with other
-versions for ledger authorization. If CIP-0151 is revised with a new version,
-this CIP must be updated or superseded to recognize it.
+This CIP is semantically specified and does not depend on CIP-0151 for ledger
+authorization. Changes to CIP-0151 versions do not alter this CIP's consensus
+rules.
 
 ## Rationale: How does this CIP achieve its goals?
 
-- **Security**: Allows routine voting with a hot key while keeping cold keys
-  offline, reducing exposure and operational risk.
-- **Compatibility**: Retains cold-key voting as a fallback and does not alter
-  the on-chain vote structure defined in CIP-1694.
-- **Reuse of existing standards**: Leverages CIP-0151 metadata to avoid
-  introducing a new certificate type.
-- **Operational simplicity**: Key rotation and revocation follow the established
-  CIP-0151 nonce and zero-key semantics.
+- **Certificates, not metadata**: Governance authorization must be explicit
+  ledger state with deterministic rule evaluation.
+- **Operational security**: Day-to-day activity uses hot credentials while cold
+  keys remain available for high-assurance override and recovery.
+- **Compatibility**: Cold-key voting and `StakePoolVoter` semantics remain
+  intact.
+- **Future-proofing**: Credential-based payload supports key and script custody
+  models without a second hard-fork change.
+- **MPO support**: Explicitly permitting hot credential reuse across pools
+  supports multi-pool operational workflows.
 
 ### Backward Compatibility
 
-Existing transactions and wallets remain valid. Pools without a Calidus key
-continue to vote with cold keys. Tools may optionally implement Calidus signing
-without disrupting current governance flows.
+- Existing cold-key SPO voting remains valid and unchanged.
+- `StakePoolVoter poolId` remains the SPO voter representation.
+- This CIP introduces no dependency on transaction metadata.
+- CIP-0151 remains compatible as an off-chain identity/authentication mechanism.
+  Operators MAY reuse the same underlying key material for both systems, but it
+  is not required by consensus.
+
+## Security Considerations
+
+- **Hot credential compromise near deadline**:
+  Cold-over-hot precedence provides an emergency override path.
+- **Blast radius for shared hot credentials across multiple pools**:
+  This is allowed by design. Operators should consider script credentials (for
+  example multisig and timelock designs) to reduce single-key compromise risk.
+- **Script policy risk**:
+  Script credentials are opt-in; policy logic quality and tooling UX remain
+  operational concerns.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
 - [ ] Ledger implementation merged in at least one node client.
-- [ ] Compatible tooling available to register Calidus keys and submit SPO
-      votes signed by Calidus keys.
+- [ ] Ledger implementation includes:
+      `AuthStakePoolHotKey`/`ResignStakePoolHotKey`,
+      `poolGovHotCreds` state management, SPO vote authorization extension, and
+      cold-over-hot precedence behavior.
+- [ ] Compatible tooling available to create/submit new certificates and submit
+      SPO votes using key or script hot credentials.
 - [ ] Integrated in a hard fork release.
 - [ ] Implementation present within block producing nodes used by 80%+ of stake.
 
 ### Implementation Plan
 
-- Update ledger rules to validate CIP-0151 registrations and maintain the
-  `calidusKeys` mapping.
-- Extend SPO vote witness verification to accept the active Calidus key.
-- Update tooling and documentation to support Calidus vote signing.
+- Add certificate constructors and semantic validation for pool hot
+  authorization/resignation.
+- Add and maintain `poolGovHotCreds` in Conway ledger state.
+- Extend SPO vote witness verification for authorized hot credentials
+  (key and script forms).
+- Implement vote-source tracking and cold-over-hot overwrite behavior.
+- Update tooling and documentation for certificate flows and hot credential
+  voting.
 - Deploy in a future hard fork.
 
 ## References
 
 - [CIP-1694: On-chain decentralized governance](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694)
 - [CIP-0151: On-chain registration for stake pools (Calidus keys)](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0151)
-- [CIP-0008: Message signing](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0008)
 - [Cardano CLI governance vote submission](https://developers.cardano.org/docs/get-started/cardano-cli/governance/submit-votes/)
 
 ## Copyright
