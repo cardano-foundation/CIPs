@@ -1,6 +1,6 @@
 ---
 CIP: 175
-Title: Stake Pool Hot Credentials 
+Title: Stake Pool Hot Credentials
 Category: Ledger
 Status: Proposed
 Authors:
@@ -17,47 +17,31 @@ License: CC-BY-4.0
 
 Stake Pool Operators (SPOs) currently sign on-chain governance votes with pool
 cold keys. This CIP introduces new on-chain certificates that let a pool cold
-key authorize a governance hot credential for a stake pool. For
+key authorize a hot credential for a stake pool. For
 `StakePoolVoter poolId`, the ledger accepts either:
 
 - the pool cold key witness, or
 - a witness that satisfies the currently authorized hot credential.
 
-Hot credentials are defined as governance `Credential` values (key hash or
-script hash), so native and Plutus script voting paths are supported from day
-one. This CIP also introduces a failsafe precedence rule where a cold-authorized
-vote supersedes a hot-authorized vote for the same pool and governance action.
+Hot credentials are defined as `Credential` values (key hash or
+script hash), so native and Plutus script voting paths are supported.
 The proposal preserves the existing `StakePoolVoter` model from CIP-1694 and
 requires a future hard fork for activation.
 
 ## Motivation: Why is this CIP necessary?
 
-CIP-1694 gives SPOs an on-chain voting role, but cold-key-only operation is
+CIP-1694 gave SPOs an on-chain voting role, but cold-key-only operation is
 high-friction and increases operational risk because cold keys are meant to
 remain offline.
 
 Authorization for consensus-critical voting must be ledger-visible and
-ledger-validated. Transaction metadata is not the right substrate for this
-authorization path. A certificate-based design provides explicit state
-transitions, deterministic validation, and consistent tooling semantics.
+ledger-validated. Existing Calidus keys from CIP-0151 rely on transaction
+metadata, but is not the right substrate for on-chain voting.
+A certificate-based design provides explicit state transitions,
+deterministic validation, and consistent tooling semantics.
 
 This CIP enables day-to-day governance operation through authorized hot
-credentials while preserving cold-key voting and adding an explicit emergency
-override model.
-
-## Goals
-
-- Add on-chain, certificate-driven authorization of SPO hot credentials.
-- Support both key and script credentials from initial deployment.
-- Preserve CIP-1694 `StakePoolVoter` semantics and cold-key voting.
-- Define deterministic precedence behavior where cold votes supersede hot votes.
-
-## Non-goals
-
-- Replacing CIP-0151.
-- Introducing new SPO voter types.
-- Defining final CBOR constructor tags in this draft (semantic specification
-  only).
+credentials while preserving cold-key voting as it already works today.
 
 ## Specification
 
@@ -80,20 +64,14 @@ This CIP introduces two new stake-pool governance certificates:
 - `AuthStakePoolHotKey(poolId, hotCred)`
 - `ResignStakePoolHotKey(poolId)`
 
-The certificates are semantic definitions in this draft. Final constructor IDs
-and concrete CBOR encoding are out of scope for this revision and are assigned
-in implementation artifacts for the activating hard fork.
-
 ### Certificate Validation Rules
 
 For both certificates:
 
 1. `poolId` MUST identify a currently registered pool.
 2. The transaction MUST include a valid witness by that pool's cold key.
-3. No deposit or refund applies.
-4. No anchor field is defined.
 
-Additional transaction restrictions:
+Additional transaction restrictions to prevent ambiguity:
 
 1. A transaction MUST NOT include more than one of these certificates for the
    same `poolId`. If it does, the transaction is invalid.
@@ -149,10 +127,7 @@ All other vote semantics (vote options, anchors, role structure, timing windows,
 and tallying model) remain as defined by CIP-1694 unless explicitly modified by
 this CIP.
 
-### Cold-over-Hot Override (Standalone Rule)
-
-This section is intentionally isolated in case future governance discussion
-chooses to revise or remove this behavior.
+### Cold Key Override
 
 For each `(govActionId, poolId)` vote slot, the ledger records both vote value
 and `VoteSource` (`Cold` or `Hot`).
@@ -185,12 +160,6 @@ This CIP integrates at existing Conway rule boundaries:
 The proposal does not require new voter types and keeps `StakePoolVoter` as the
 canonical SPO governance voter identity.
 
-### Versioning
-
-This CIP is semantically specified and does not depend on CIP-0151 for ledger
-authorization. Changes to CIP-0151 versions do not alter this CIP's consensus
-rules.
-
 ## Rationale: How does this CIP achieve its goals?
 
 - **Certificates, not metadata**: Governance authorization must be explicit
@@ -213,16 +182,15 @@ rules.
   Operators MAY reuse the same underlying key material for both systems, but it
   is not required by consensus.
 
-## Security Considerations
+### Security Considerations
 
 - **Hot credential compromise near deadline**:
-  Cold-over-hot precedence provides an emergency override path.
+  Cold key override gives SPOs a failsafe in case their hot keys are suspected
+  to be compromised.  Additionally, large stake pool groups can mitigate this
+  risk further by choosing to use a multisig hot credential.
 - **Blast radius for shared hot credentials across multiple pools**:
   This is allowed by design. Operators should consider script credentials (for
   example multisig and timelock designs) to reduce single-key compromise risk.
-- **Script policy risk**:
-  Script credentials are opt-in; policy logic quality and tooling UX remain
-  operational concerns.
 
 ## Path to Active
 
