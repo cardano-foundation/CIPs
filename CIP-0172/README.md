@@ -86,19 +86,18 @@ prototype of the proposed changes (for Conway).
 ### Changes to the Ledger logic
 
 - The function `txscripts` needs to be modified to include scripts from `txouts`.
-- The function `getDatum` needs to be modified to include data from `txouts`.
 
 ## Rationale: How does this CIP achieve its goals?
 
-The current ledger logic prohibits transactions from accessing their own
-outputs during validation. However, this restriction comes at the cost of
-redundancy when the same script or datum serves dual purposes: being included
-in an output for future use and being required for current validation.
+The current logic in Ledger rules does not utilize scripts present in
+transaction outputs during validation. This restriction comes at the cost of
+redundancy when the same script serves dual purposes: being included in an
+output for future use and being required for current validation.
 
-This CIP achieves its goal by relaxing this restriction so that validation may
-reference scripts committed in the transaction body’s outputs, which
-removes the need to carry duplicate copies in witnesses and reduces transaction
-size and fees.
+This CIP achieves its goal by enhancing the Ledger rules so that validation may
+reference scripts committed in the transaction body’s outputs, which removes
+the need to carry duplicate copies in witnesses and reduces transaction size
+and fees.
 
 ### Backward compatibility
 
