@@ -18,25 +18,26 @@ own outputs during validation.
 
 ## Motivation: Why is this CIP necessary?
 
-Transaction outputs carry scripts (via reference scripts). However, the Cardano Ledger currently enforces a restriction
-that prevents a transaction from satisfying its validation requirements using
-scripts contained within its own outputs.
+Transaction outputs carry scripts (via reference scripts). However, the Cardano
+Ledger currently enforces a restriction that prevents a transaction from
+satisfying its validation requirements using scripts contained within its own
+outputs.
 
 This restriction creates a specific inefficiency: if a transaction produces an
 output containing a script that is also required to validate that same
 transaction, the transaction cannot utilize the copy present in the output.
-Instead, the transaction must provide a redundant copy of the same script in the transaction witnesses. This forced redundancy increases
-transaction size, and thus transaction fees, directly inflating the costs
-incurred by users.
+Instead, the transaction must provide a redundant copy of the same script in
+the transaction witnesses. This forced redundancy increases transaction size,
+and thus transaction fees, directly inflating the costs incurred by users.
 
-In combination with the upcoming feature of [nested transactions](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0118/README.md), in the
-Dijkstra era, the current restriction imposes a strict constraint in how
-scripts can be shared within a batch. Specifically, without this
-proposal, scripts produced in transaction outputs are only
-accessible to subsequent sub-transactions (via reference inputs). This forces
-transaction builders to artificially order transactions or to provide redundant
-copies of the same script (e.g., if two sub-transactions mutually
-depend on each other's script).
+In combination with the upcoming feature of [nested
+transactions](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0118/README.md),
+in the Dijkstra era, the current restriction imposes a strict constraint in how
+scripts can be shared within a batch. Specifically, without this proposal,
+scripts produced in transaction outputs are only accessible to subsequent
+sub-transactions (via reference inputs). This forces transaction builders to
+artificially order transactions or to provide redundant copies of the same
+script (e.g., if two sub-transactions mutually depend on each other's script).
 
 The key idea of this CIP is to remove this restriction, allowing transactions
 to reference their own outputs for validation purposes.
@@ -64,7 +65,8 @@ experience.
 #### Nested transactions: order-agnostic script sharing across a batch
 
 The nested transactions CIP specifies that scripts are to be shared among all
-sub- and top-level transactions within a batch (see [CIP-0118 > Changes to Transaction
+sub- and top-level transactions within a batch (see [CIP-0118 > Changes to
+Transaction
 Validity](https://github.com/carlostome/CIPs/tree/master/CIP-0118#changes-to-transaction-validity)).
 
 With the current restriction, this requirement can only be partially achieved
@@ -101,7 +103,8 @@ and fees.
 
 ### Backward compatibility
 
-The changes proposed in this CIP **do not break** backward compatibility of any of the older Plutus scripts.
+The changes proposed in this CIP **do not break** backward compatibility of any
+of the older Plutus scripts.
 
 ## Path to Active
 
@@ -115,4 +118,5 @@ The changes proposed in this CIP **do not break** backward compatibility of any 
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CIP is licensed under
+[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
