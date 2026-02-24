@@ -7,8 +7,8 @@ Authors:
     - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/999
-    - https://github.com/cardano-foundation/CIPs/pull/1140
+    - CIP-0151: https://github.com/cardano-foundation/CIPs/pull/999
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1140
 Created: 2026-01-22
 License: CC-BY-4.0
 ---
