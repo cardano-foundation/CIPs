@@ -337,7 +337,7 @@ See [test-vector.md](./test-vector.md) for deterministic examples, canonical CBO
 This specification uses semantic versioning in `specVersion`.
 This revision defines version `1.0.0`.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - A single-question model keeps each survey semantically coherent and avoids combining unrelated decisions.
 - Index-based option responses avoid text-matching ambiguity and improve interoperability.
