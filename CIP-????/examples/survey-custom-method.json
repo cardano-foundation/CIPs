@@ -21,7 +21,8 @@
             "Governance analytics"
           ]
         }
-      ]
+      ],
+      "voteWeighting": "CredentialBased"
     }
   }
 }

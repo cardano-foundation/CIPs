@@ -6,6 +6,7 @@ This file defines reproducible vectors for:
 - Latest-valid-response-wins behavior.
 - Invalid response detection for unresolved survey binding.
 - Governance action anchor linkage validation.
+- Weighting, eligibility, and role-validation behavior.
 
 ## Survey Definition Vectors
 
@@ -32,6 +33,8 @@ Source file: [examples/survey-multi-question-same-type.json](./examples/survey-m
 ### Vector 6: Multi-question mixed-type
 
 Source file: [examples/survey-multi-question-mixed-type.json](./examples/survey-multi-question-mixed-type.json)
+
+All survey definition examples are expected to include explicit `voteWeighting`.
 
 ## Survey Response Vectors
 
@@ -135,3 +138,44 @@ Expected validation behavior:
 
 Current anchor reference:
 - `surveyTxId = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb`
+
+## Weighting and Eligibility Security Vectors
+
+### Vector 14: Governance-linked response source requirement
+
+Expected validation behavior:
+- For governance-linked surveys, response transactions MUST include governance voting procedures.
+- A signer-only response (without governance voting procedures) is invalid for linked surveys.
+
+### Vector 15: Linked eligibility intersection
+
+Expected validation behavior:
+- For linked surveys, tooling derives `actionEligibility` from the governance action.
+- If `surveyDetails.eligibility` is present, effective eligibility is the intersection with `actionEligibility`.
+- If the intersection is empty, the linked survey configuration is invalid and responses MUST be ignored.
+
+### Vector 16: CredentialBased role verification
+
+Expected validation behavior:
+- In `CredentialBased`, if effective eligibility includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data.
+- Unverifiable role membership is invalid.
+- `Stakeholder` does not require role-membership verification.
+
+### Vector 17: StakeBased role-domain constraints
+
+Expected validation behavior:
+- `StakeBased` with `CC` eligibility is invalid.
+- If multiple stake roles are eligible (for example `DRep` and `SPO`), canonical tally output is per-role.
+- Tools MAY additionally publish merged/composite outputs.
+
+### Vector 18: Standalone StakeBased identity extraction and snapshot
+
+Expected validation behavior:
+- Standalone `StakeBased` surveys MUST define `lifecycle.endSlot`; stake snapshot is taken at `lifecycle.endSlot`.
+- Tooling MUST derive exactly one stake credential from stake-credential signals in chain data.
+- If zero or multiple distinct stake credentials are derivable, the response is invalid.
+
+### Vector 19: voteWeighting is mandatory
+
+Expected validation behavior:
+- A survey definition without `voteWeighting` is invalid.
