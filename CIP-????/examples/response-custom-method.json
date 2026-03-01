@@ -6,7 +6,6 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-      "surveyHash": "72ad19d7fbec3a6dca48d0c04b602148e1229f86cd53a59407e440086fece6b0",
       "answers": [
         {
           "questionId": "roadmap_rank",

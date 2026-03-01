@@ -6,7 +6,6 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
-      "surveyHash": "f4c222fa6888e7e4ba9788d640c3498137d44bf291d11c009d21cc67da680122",
       "answers": [
         {
           "questionId": "cip_shortlist",

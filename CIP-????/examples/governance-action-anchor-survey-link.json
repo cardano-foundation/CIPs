@@ -1,8 +1,5 @@
 {
   "specVersion": "1.0.0",
   "kind": "cardano-governance-survey-link",
-  "surveyRef": {
-    "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "surveyHash": "738b445f7b5fd79e04e35ca09b6487c71174667a713aa246c2679c6f3db31336"
-  }
+  "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 }

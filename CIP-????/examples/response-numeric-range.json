@@ -6,7 +6,6 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-      "surveyHash": "88cc7349c124c4b13b4bce244f9c5a2fbd365115cf1c0556102d047ea305c20f",
       "answers": [
         {
           "questionId": "parameter_x_initial_value",

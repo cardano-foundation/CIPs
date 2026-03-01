@@ -20,7 +20,7 @@ This proposal defines a standardized transaction metadata format for creating an
 The format supports:
 - One or more poll questions per survey definition.
 - Optional linkage to governance actions via governance action anchor metadata.
-- Deterministic response binding using both survey transaction id and survey hash.
+- Deterministic response binding using survey transaction id.
 - Extensibility for custom voting methods.
 
 The standard is general-purpose and can be used for governance and non-governance sentiment gathering. It also defines an Info Action profile for tools that want strict behavior when a survey is attached to a governance Info Action.
@@ -51,7 +51,6 @@ Survey metadata under label `17` is valid as a standalone mechanism and does not
 
 A survey is identified by:
 - `surveyTxId`: transaction id of the transaction that includes the `surveyDetails` payload.
-- `surveyHash`: blake2b-256 hash of canonical CBOR bytes of the envelope `{17: {"surveyDetails": ...}}` (excluding `msg`).
 
 ### Survey Definition Payload (`surveyDetails`)
 
@@ -155,7 +154,6 @@ YES/NO/ABSTAIN semantics:
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
-      "surveyHash": "f4c222fa6888e7e4ba9788d640c3498137d44bf291d11c009d21cc67da680122",
       "answers": [
         {
           "questionId": "cip_shortlist",
@@ -173,7 +171,6 @@ YES/NO/ABSTAIN semantics:
 | :--- | :--- | :--- | :--- |
 | `specVersion` | String | Yes | Semantic version. |
 | `surveyTxId` | Hex String | Yes | Transaction id of the `surveyDetails` transaction. |
-| `surveyHash` | Hex String | Yes | Blake2b-256 digest described in [Survey Hashing](#survey-hashing). |
 | `answers` | Array of Answer Objects | Yes | Response answers keyed by `questionId`. MUST be non-empty. |
 
 #### Answer object fields (`answers[]` items)
@@ -200,9 +197,7 @@ Normative response-shape rules:
 
 A response is valid only if:
 - `surveyTxId` resolves to a transaction that includes label `17` with `surveyDetails`.
-- `surveyHash` equals the computed hash of that survey definition payload.
-
-`surveyTxId` and `surveyHash` are both required. A conflicting pair cannot redefine an existing survey; it only creates an invalid response.
+- If `surveyTxId` cannot be resolved to such a transaction, the response is invalid.
 
 #### Governance action anchor linkage
 
@@ -210,8 +205,7 @@ Survey-to-action linkage is canonicalized as **Action -> Survey**.
 This linkage is optional and only applies when a governance action wants to attach a survey context.
 
 When a governance action links to a survey, the governance action anchor metadata MUST include:
-- `surveyRef.surveyTxId`
-- `surveyRef.surveyHash`
+- `surveyTxId`
 
 Anchor schema:
 
@@ -219,16 +213,13 @@ Anchor schema:
 {
   "specVersion": "1.0.0",
   "kind": "cardano-governance-survey-link",
-  "surveyRef": {
-    "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
-    "surveyHash": "f4c222fa6888e7e4ba9788d640c3498137d44bf291d11c009d21cc67da680122"
-  }
+  "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef"
 }
 ```
 
 Validation rules:
 - `surveyTxId` MUST resolve to a transaction that includes label `17` with `surveyDetails`.
-- `surveyHash` MUST equal the canonical hash of that `surveyDetails` payload.
+- Anchor metadata MUST use top-level `surveyTxId`; the legacy nested form `surveyRef.surveyTxId` is invalid for this version.
 - If validation fails, the governance-action-to-survey link is invalid and tooling MUST NOT attach that survey to the action.
 
 #### Responder identity for deduplication
@@ -239,15 +230,6 @@ Deterministic derivation order:
 1. If transaction includes governance voting procedures, use the voter credential key hash.
 2. Otherwise, transaction MUST include exactly one required signer, and that key hash is the `responseCredential`.
 3. If neither rule applies, the response is invalid for deterministic tallying.
-
-### Survey Hashing
-
-`surveyHash` MUST be computed as follows:
-1. Build the envelope object `{17: {"surveyDetails": <surveyDetails object>}}`.
-2. Do not include `msg` in the hash preimage.
-3. Serialize the envelope as canonical CBOR (deterministic map key ordering).
-4. Compute blake2b-256 over those bytes.
-5. Encode digest as lowercase hexadecimal.
 
 ### Duplicate and Ordering Semantics
 
@@ -268,8 +250,8 @@ This CIP intentionally does not standardize stake snapshot timing or stake sourc
 ### Info Action Profile
 
 This CIP is general-purpose. For tools implementing the Info Action profile:
-- The Info Action anchor metadata MUST include `surveyRef` as specified in [Governance action anchor linkage](#governance-action-anchor-linkage).
-- The `surveyRef` binding MUST be valid.
+- The Info Action anchor metadata MUST include top-level `surveyTxId` as specified in [Governance action anchor linkage](#governance-action-anchor-linkage).
+- The `surveyTxId` binding MUST be valid.
 - `lifecycle` MUST be present.
 - `lifecycle.startSlot` and `lifecycle.endSlot` MUST match the ledger-defined active lifetime of the referencing Info Action.
 - Responses outside the lifecycle window MUST be ignored.
@@ -283,15 +265,14 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 ### Block Explorer and dApp Implementation Guide
 
 1. Discover survey definitions by scanning metadata label `17` for `surveyDetails`.
-2. For each survey definition transaction, compute and cache `surveyHash`.
-3. Optionally discover governance actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
-4. If present, validate governance-action-to-survey linkage by `(surveyTxId, surveyHash)`.
-5. Discover responses by scanning metadata label `17` for `surveyResponse`.
-6. Resolve each response to survey by `(surveyTxId, surveyHash)`.
-7. Validate each response answer against the corresponding survey question method and constraints.
-8. Derive `responseCredential` using [Responder identity for deduplication](#responder-identity-for-deduplication).
-9. Apply latest-valid-response-wins ordering.
-10. Apply selected weighting mode and produce final tallies.
+2. Optionally discover governance actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
+3. If present, validate governance-action-to-survey linkage by `surveyTxId`.
+4. Discover responses by scanning metadata label `17` for `surveyResponse`.
+5. Resolve each response to survey by `surveyTxId`.
+6. Validate each response answer against the corresponding survey question method and constraints.
+7. Derive `responseCredential` using [Responder identity for deduplication](#responder-identity-for-deduplication).
+8. Apply latest-valid-response-wins ordering.
+9. Apply selected weighting mode and produce final tallies.
 
 ### CDDL Schema
 
@@ -364,7 +345,6 @@ answer_item = {
 survey_response = {
   specVersion: tstr,
   surveyTxId: hex_tx_id,
-  surveyHash: hex_blake2b_256,
   answers: [+ answer_item]
 }
 
@@ -382,10 +362,7 @@ cip_00xx_root = cip_00xx_label_17_payload
 governance_action_anchor_survey_link = {
   specVersion: tstr,
   kind: "cardano-governance-survey-link",
-  surveyRef: {
-    surveyTxId: hex_tx_id,
-    surveyHash: hex_blake2b_256
-  }
+  surveyTxId: hex_tx_id
 }
 ```
 
@@ -393,7 +370,7 @@ CDDL provides shape constraints. Method-specific mandatory and forbidden field r
 
 ### Test Vectors
 
-See [test-vector.md](./test-vector.md) for deterministic examples, canonical CBOR preimages, and expected hashes.
+See [test-vector.md](./test-vector.md) for deterministic examples and canonical CBOR payload vectors.
 
 ### Versioning
 
@@ -406,7 +383,7 @@ This revision defines version `1.0.0`.
 - Survey-level required and governance fields preserve shared lifecycle/eligibility semantics across all included questions.
 - Question-level method fields keep validation explicit and deterministic per question.
 - Index-based option responses avoid text-matching ambiguity and improve interoperability.
-- Requiring both `surveyTxId` and `surveyHash` prevents weak linkage and reduces confusion between similar surveys.
+- Binding responses and action links by `surveyTxId` keeps survey linkage deterministic and interoperable.
 - Canonical `Action -> Survey` linkage via governance action anchors avoids circular transaction-reference dependencies.
 - URI-based method identifiers plus schema hash integrity enable safe extensibility for future/custom methods.
 - Latest-valid-response-wins gives participants a correction path while preserving deterministic tally behavior.

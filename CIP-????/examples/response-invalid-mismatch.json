@@ -1,12 +1,11 @@
 {
   "17": {
     "msg": [
-      "Invalid mismatched response"
+      "Invalid unresolvable survey reference"
     ],
     "surveyResponse": {
       "specVersion": "1.0.0",
-      "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-      "surveyHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "surveyTxId": "9999999999999999999999999999999999999999999999999999999999999999",
       "answers": [
         {
           "questionId": "cip_0136_inclusion",
