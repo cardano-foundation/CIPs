@@ -111,6 +111,7 @@ Sources:
 - Latest response: [examples/response-duplicate-latest.json](./examples/response-duplicate-latest.json)
 
 Given both responses resolve to the same `(surveyTxId, responderRole, responseCredential)`:
+- Both responses are in the same epoch.
 - Older chain position: `(slot=120100000, txIndexInBlock=2, metadataPosition=0)`.
 - Latest chain position: `(slot=120100005, txIndexInBlock=0, metadataPosition=0)`.
 
@@ -135,7 +136,11 @@ Source:
 Expected validation behavior:
 - If top-level `surveyTxId` resolves to a `surveyDetails` transaction, the governance action is linked to that survey.
 - The legacy nested form `surveyRef.surveyTxId` is invalid for this version.
+- Linkage MUST additionally pass compatibility checks:
+  - `linkedRoleWeighting = roleWeighting ∩ actionEligibility` is non-empty.
+  - Survey `lifecycle` exactly matches the governance action active voting epoch window.
 - If validation fails, tooling MUST treat the action-to-survey linkage as invalid and MUST NOT attach that survey to the governance action.
+- Linkage invalidity does not invalidate the survey as standalone metadata.
 
 Current anchor reference:
 - `surveyTxId = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb`
@@ -148,17 +153,21 @@ Expected validation behavior:
 - For governance-linked surveys, response transactions MUST include governance voting procedures.
 - A signer-only response (without governance voting procedures) is invalid for linked surveys.
 
-### Vector 15: Linked role-weighting intersection
+### Vector 15: Invalid link compatibility (lifecycle or role mismatch)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-linked.json](./examples/survey-mixed-role-linked.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
 
 Expected validation behavior:
-- For linked surveys, tooling derives `actionEligibility` from the governance action.
-- `effectiveRoleWeighting` is derived by intersecting `roleWeighting` keys with `actionEligibility`, preserving configured weighting modes for surviving keys.
-- If the intersection is empty, the linked survey configuration is invalid and responses MUST be ignored.
+- If `roleWeighting ∩ actionEligibility` is empty, the action-to-survey link is invalid.
+- If survey lifecycle does not exactly equal the action voting epoch window, the action-to-survey link is invalid.
+- In both cases, tooling MUST ignore the linkage while keeping the survey valid as standalone metadata.
 
 ### Vector 16: CredentialBased role verification
 
 Expected validation behavior:
-- In `CredentialBased`, if effective role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response slot.
+- In `CredentialBased`, if active role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response slot.
 - Unverifiable role membership is invalid.
 - `Stakeholder` is residual-only and still requires a derivable stake credential for valid classification.
 
@@ -169,42 +178,23 @@ Expected validation behavior:
 - `Stakeholder: CredentialBased` is invalid.
 - Canonical tally output is per-role. Tools MAY additionally publish merged/composite outputs with disclosed logic.
 
-### Vector 18: Standalone lifecycle and timing semantics
+### Vector 18: Lifecycle and timing semantics
 
 Expected validation behavior:
-- Standalone surveys MUST define `lifecycle.startSlot` and `lifecycle.endSlot`.
+- All surveys MUST define `lifecycle.startEpoch` and `lifecycle.endEpoch`.
+- `startEpoch` MUST be strictly less than `endEpoch`.
+- Lifecycle bounds are inclusive (`startEpoch <= responseEpoch <= endEpoch`).
 - Role-membership checks are evaluated at response slot.
-- Stake, pledge, and credential counts/amounts are read at `lifecycle.endSlot`.
+- Stake, pledge, and credential weights are read at `lifecycle.endEpoch`.
 
 ### Vector 19: roleWeighting is mandatory
 
 Expected validation behavior:
 - A survey definition without `roleWeighting` is invalid.
+- A survey definition without `lifecycle` is invalid.
 - Legacy `eligibility` and `voteWeighting` fields are invalid for this draft model.
 
-### Vector 20: Valid linked `PledgeBased`
-
-Sources:
-- Survey definition: [examples/survey-pledge-based-linked.json](./examples/survey-pledge-based-linked.json)
-- Response: [examples/response-pledge-based-linked.json](./examples/response-pledge-based-linked.json)
-
-Expected validation behavior:
-- Survey is valid because `roleWeighting = {"SPO":"PledgeBased"}`.
-- Linked response identity is derived from governance voting procedures (SPO voter credential).
-- Weight is computed from the sum of live pledge over active registered pools mapped to the responder at the governance-linked snapshot.
-
-### Vector 21: Valid standalone `PledgeBased`
-
-Sources:
-- Survey definition: [examples/survey-pledge-based-standalone.json](./examples/survey-pledge-based-standalone.json)
-- Response: [examples/response-pledge-based-standalone.json](./examples/response-pledge-based-standalone.json)
-
-Expected validation behavior:
-- Survey is valid because `roleWeighting = {"SPO":"PledgeBased"}` and standalone `lifecycle` is present.
-- Standalone response must resolve to exactly one eligible `(responderRole, responseCredential)` candidate.
-- Weight is computed from live pledge at `lifecycle.endSlot` across active registered pools mapped to `responseCredential`.
-
-### Vector 22: Valid linked mixed-role weighting
+### Vector 20: Valid linked mixed-role weighting
 
 Sources:
 - Survey definition: [examples/survey-mixed-role-linked.json](./examples/survey-mixed-role-linked.json)
@@ -212,10 +202,10 @@ Sources:
 
 Expected validation behavior:
 - Survey is valid with mixed role weighting (`DRep: StakeBased`, `SPO: PledgeBased`).
-- Linked `effectiveRoleWeighting` is derived by intersection with `actionEligibility`.
+- Linked response identity is derived from governance voting procedures.
 - Canonical output is role-separated tally results.
 
-### Vector 23: Valid standalone mixed-role weighting
+### Vector 21: Valid standalone mixed-role weighting
 
 Sources:
 - Survey definition: [examples/survey-mixed-role-standalone.json](./examples/survey-mixed-role-standalone.json)
@@ -223,10 +213,10 @@ Sources:
 
 Expected validation behavior:
 - Survey is valid with mixed role weighting and required lifecycle.
-- Response is valid only if exactly one eligible `(responderRole, responseCredential)` candidate is derivable.
-- Membership checks occur at response slot; weighting uses `lifecycle.endSlot`.
+- Standalone response must resolve to exactly one eligible `(responderRole, responseCredential)` candidate.
+- Membership checks occur at response slot; weighting uses `lifecycle.endEpoch`.
 
-### Vector 24: Invalid role weighting (`CC: StakeBased`)
+### Vector 22: Invalid role weighting (`CC: StakeBased`)
 
 Source:
 - Survey definition: [examples/survey-invalid-roleweighting-cc-stakebased.json](./examples/survey-invalid-roleweighting-cc-stakebased.json)
@@ -234,7 +224,7 @@ Source:
 Expected validation behavior:
 - Survey is invalid because `CC` MAY only use `CredentialBased`.
 
-### Vector 25: Invalid role weighting (`Stakeholder: CredentialBased`)
+### Vector 23: Invalid role weighting (`Stakeholder: CredentialBased`)
 
 Source:
 - Survey definition: [examples/survey-invalid-roleweighting-stakeholder-credentialbased.json](./examples/survey-invalid-roleweighting-stakeholder-credentialbased.json)
@@ -242,7 +232,7 @@ Source:
 Expected validation behavior:
 - Survey is invalid because `Stakeholder` MAY only use `StakeBased`.
 
-### Vector 26: Invalid response (ambiguous role+credential candidates)
+### Vector 24: Invalid response (ambiguous role+credential candidates)
 
 Source:
 - Response: [examples/response-invalid-ambiguous-role-candidate.json](./examples/response-invalid-ambiguous-role-candidate.json)
@@ -250,7 +240,7 @@ Source:
 Expected validation behavior:
 - Response is invalid because more than one eligible `(responderRole, responseCredential)` candidate is derivable.
 
-### Vector 27: Invalid response (no eligible role+credential candidate)
+### Vector 25: Invalid response (no eligible role+credential candidate)
 
 Source:
 - Response: [examples/response-invalid-no-eligible-role-candidate.json](./examples/response-invalid-no-eligible-role-candidate.json)
@@ -258,15 +248,7 @@ Source:
 Expected validation behavior:
 - Response is invalid because no eligible `(responderRole, responseCredential)` candidate is derivable.
 
-### Vector 28: Invalid `PledgeBased` response (no active pool mapping)
-
-Source:
-- Response: [examples/response-invalid-pledge-based-no-active-pool.json](./examples/response-invalid-pledge-based-no-active-pool.json)
-
-Expected validation behavior:
-- Response is invalid because `responseCredential` maps to zero active registered pools at snapshot.
-
-### Vector 29: Invalid `PledgeBased` response (unresolved live pledge)
+### Vector 26: Invalid `PledgeBased` response (unresolved live pledge)
 
 Source:
 - Response: [examples/response-invalid-pledge-based-unresolved-live-pledge.json](./examples/response-invalid-pledge-based-unresolved-live-pledge.json)
@@ -281,9 +263,9 @@ Expected implementation behavior:
 - Successful JSON Schema validation does not imply semantic validity.
 - Tools MUST additionally enforce semantic rules from CIP prose, including:
   - governance-link resolution by `surveyTxId`
-  - linked `effectiveRoleWeighting` derivation and empty-intersection invalidity
+  - linked role/lifecycle compatibility checks and invalid-link handling
   - governance-linked response source requirements (governance voting procedures)
-  - role-membership verification requirements and standalone timing split
+  - role-membership verification requirements
   - single eligible `(responderRole, responseCredential)` derivation requirement
-  - `StakeBased` role-domain and snapshot/source rules
-  - `PledgeBased` signer-to-pool mapping and live-pledge snapshot/source rules
+  - epoch lifecycle window filtering and end-epoch snapshot rules
+  - `PledgeBased` signer-to-pool mapping and live-pledge resolution rules

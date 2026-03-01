@@ -22,6 +22,10 @@
       "roleWeighting": {
         "DRep": "StakeBased",
         "SPO": "PledgeBased"
+      },
+      "lifecycle": {
+        "startEpoch": 520,
+        "endEpoch": 523
       }
     }
   }

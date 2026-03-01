@@ -24,8 +24,8 @@
         "SPO": "PledgeBased"
       },
       "lifecycle": {
-        "startSlot": 122000000,
-        "endSlot": 122432000
+        "startEpoch": 530,
+        "endEpoch": 533
       }
     }
   }

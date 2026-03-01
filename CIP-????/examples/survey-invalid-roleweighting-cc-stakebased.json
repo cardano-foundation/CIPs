@@ -22,8 +22,8 @@
         "CC": "StakeBased"
       },
       "lifecycle": {
-        "startSlot": 121000000,
-        "endSlot": 121432000
+        "startEpoch": 510,
+        "endEpoch": 512
       }
     }
   }

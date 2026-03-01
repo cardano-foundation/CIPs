@@ -25,8 +25,8 @@
         "CC": "CredentialBased"
       },
       "lifecycle": {
-        "startSlot": 120000000,
-        "endSlot": 120432000
+        "startEpoch": 500,
+        "endEpoch": 504
       }
     }
   }
