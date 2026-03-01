@@ -164,7 +164,7 @@ Expected validation behavior:
 ### Vector 16: CredentialBased role verification
 
 Expected validation behavior:
-- In `CredentialBased`, if active role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response slot.
+- In `CredentialBased`, if active role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response time.
 - Unverifiable role membership is invalid.
 - `Stakeholder` is residual-only and still requires a derivable stake credential for valid classification.
 
@@ -181,8 +181,9 @@ Expected validation behavior:
 - All surveys MUST define `lifecycle.startEpoch` and `lifecycle.endEpoch`.
 - `startEpoch` MUST be strictly less than `endEpoch`.
 - Lifecycle bounds are inclusive (`startEpoch <= responseEpoch <= endEpoch`).
-- Role-membership checks are evaluated at response slot.
-- Stake, pledge, and credential weights are read at `lifecycle.endEpoch`.
+- Role-membership and credential eligibility checks are evaluated at response time.
+- `StakeBased` and `PledgeBased` weights are read at `lifecycle.endEpoch`.
+- `CredentialBased` weight is `1` per valid latest response.
 
 ### Vector 19: roleWeighting is mandatory
 
@@ -211,7 +212,7 @@ Sources:
 Expected validation behavior:
 - Survey is valid with mixed role weighting and required lifecycle.
 - Standalone response must resolve to exactly one eligible `(responderRole, responseCredential)` candidate.
-- Membership checks occur at response slot; weighting uses `lifecycle.endEpoch`.
+- Membership checks occur at response time. Weighting uses `lifecycle.endEpoch`.
 
 ## Invalid Scenarios
 
@@ -220,7 +221,6 @@ Expected validation behavior:
 - `Stakeholder: CredentialBased` is invalid because `Stakeholder` MAY only use `StakeBased`.
 - A standalone response is invalid if more than one eligible `(responderRole, responseCredential)` candidate is derivable.
 - A standalone response is invalid if no eligible `(responderRole, responseCredential)` candidate is derivable.
-- A `PledgeBased` response is invalid when live pledge cannot be resolved for the mapped active pool set at snapshot.
 
 ## Schema vs Semantic Validation Boundary
 

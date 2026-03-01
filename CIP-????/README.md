@@ -258,13 +258,14 @@ Deterministic derivation rules:
 5. A response is valid only if exactly one eligible `(responderRole, responseCredential)` candidate is derivable.
    - zero candidates is invalid,
    - multiple candidates is invalid.
-6. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response slot.
+6. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
 
 ### Lifecycle Semantics
 
 - `lifecycle` is mandatory for every survey definition.
-- `responseEpoch` is derived from the response transaction inclusion slot via ledger epoch mapping.
+- `responseEpoch` is derived from the response transaction inclusion via ledger epoch mapping.
 - Responses outside the inclusive lifecycle window are invalid.
+- Role-membership and credential eligibility checks are evaluated at response time.
 - For `StakeBased` and `PledgeBased`, weighting snapshots are taken at `lifecycle.endEpoch` for both linked and standalone surveys.
 
 ### Duplicate and Ordering Semantics
@@ -294,7 +295,6 @@ Latest-response semantics replace the full prior response for that tuple.
   - Declared pledge MUST NOT be used.
   - Snapshot point is `lifecycle.endEpoch`.
   - If `responseCredential` maps to zero active registered pools at snapshot, the response is invalid.
-  - If live pledge cannot be resolved for the mapped active pool set at snapshot, the response is invalid.
 - Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merged/composite outputs with disclosed merge logic.
 
 ### Security and Tooling Guidance
@@ -302,7 +302,7 @@ Latest-response semantics replace the full prior response for that tuple.
 - `CredentialBased` can be sybil attacked when governance-role validation is not applied.
 - Mixing weighting units across roles (count/stake/pledge) can obscure interpretation. Tools SHOULD expose per-role canonical tallies and clearly label any merged output.
 - Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from governance voting procedures and role eligibility is bounded by action voter classes.
-- `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge, but remains chain-state dependent; tools SHOULD disclose snapshot epoch and mapped pool set used for each weighted response.
+- `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge; tools SHOULD disclose snapshot epoch and mapped pool set used for each weighted response.
 
 ### Info Action Profile
 
@@ -330,9 +330,9 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 6. Validate each response answer against the corresponding survey question method and constraints.
 7. Derive exactly one eligible `(responderRole, responseCredential)` candidate using [Responder identity for deduplication](#responder-identity-for-deduplication).
 8. Filter responses by inclusive epoch lifecycle window.
-9. Enforce role-membership checks required by [Weighting Semantics](#weighting-semantics).
+9. Enforce role-membership and credential eligibility checks at response time as required by [Responder identity for deduplication](#responder-identity-for-deduplication) and [Weighting Semantics](#weighting-semantics).
 10. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)`.
-11. For `PledgeBased`, derive active pool set mapped to `responseCredential` at `lifecycle.endEpoch` and resolve live pledge values.
+11. At or after `lifecycle.endEpoch`, derive `StakeBased` and `PledgeBased` weights from snapshot state; for `PledgeBased`, derive active pool set mapped to `responseCredential` and resolve live pledge values.
 12. Apply selected per-role weighting and produce canonical per-role tallies (and optional merged views).
 
 ### CDDL Schema
