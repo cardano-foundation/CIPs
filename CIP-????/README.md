@@ -162,6 +162,7 @@ YES/NO/ABSTAIN semantics:
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+      "responderRole": "DRep",
       "answers": [
         {
           "questionId": "cip_shortlist",
@@ -179,6 +180,7 @@ YES/NO/ABSTAIN semantics:
 | :--- | :--- | :--- | :--- |
 | `specVersion` | String | Yes | Semantic version. |
 | `surveyTxId` | Hex String | Yes | Transaction id of the `surveyDetails` transaction. |
+| `responderRole` | String | Yes | Claimed responder role. MUST be one of `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
 | `answers` | Array of Answer Objects | Yes | Response answers keyed by `questionId`. MUST be non-empty. |
 
 #### Answer object fields (`answers[]` items)
@@ -191,6 +193,7 @@ YES/NO/ABSTAIN semantics:
 | `customValue` | Transaction Metadatum | Conditional | Used by custom methods. |
 
 Normative response-shape rules:
+- `surveyResponse.responderRole` MUST be present and MUST be one of `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`.
 - For `answers[]`:
   - Each item MUST include `questionId`.
   - Each `questionId` MUST reference an existing question in the referenced survey definition.
@@ -239,26 +242,32 @@ Validation rules:
 
 #### Responder identity for deduplication
 
-A tallying tool MUST derive both `responderRole` and `responseCredential` (credential key hash) from chain data, not from metadata text.
+A tallying tool MUST treat `surveyResponse.responderRole` as a required role claim and MUST validate it against chain-derived role evidence. `responseCredential` (credential key hash) MUST be derived from chain data.
 
 Deterministic derivation rules:
-1. Candidate derivation MUST consider all relevant chain evidence sources:
+1. `surveyResponse.responderRole` is mandatory and is a role claim, not authoritative identity by itself.
+2. Candidate derivation MUST consider all relevant chain evidence sources:
    - transaction-body `voting_procedures` entries (Conway transaction body field `19`),
    - required signers,
    - and stake-credential signals (for example withdrawals/certificates/`voting_procedures` entries carrying stake credentials).
-2. For governance-linked surveys, tooling MUST derive `linkedActionId` from the governance action that links the survey.
-3. For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
-4. For governance-linked surveys, `voting_procedures` MUST contain exactly one voter entry, and that voter entry MUST contain exactly one `(govActionId, votingProcedure)` entry.
-5. For governance-linked surveys, the single `govActionId` in `voting_procedures` MUST equal `linkedActionId`; otherwise the response is invalid.
-6. For governance-linked surveys, `responderRole` and `responseCredential` MUST be derived from that single `voting_procedures` voter entry.
-7. For governance-linked surveys, only candidates whose `responderRole` exists in `linkedRoleWeighting` are eligible.
-8. Stakeholder residual rule:
-   - if no governance-role candidate (`DRep`, `SPO`, or `CC`) is valid, tooling MUST classify as `Stakeholder` only when exactly one stake credential is derivable,
-   - if no stake credential is derivable, or multiple are derivable, the response is invalid.
-9. A response is valid only if exactly one eligible `(responderRole, responseCredential)` candidate is derivable.
-   - zero candidates is invalid,
-   - multiple candidates is invalid.
-10. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
+3. For governance-linked surveys, tooling MUST derive `linkedActionId` from the governance action that links the survey.
+4. For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
+5. For governance-linked surveys, `voting_procedures` MUST contain exactly one voter entry, and that voter entry MUST contain exactly one `(govActionId, votingProcedure)` entry.
+6. For governance-linked surveys, the single `govActionId` in `voting_procedures` MUST equal `linkedActionId`; otherwise the response is invalid.
+7. For governance-linked surveys, a response is valid only if:
+   - the role derived from the single `voting_procedures` voter entry exactly equals claimed `surveyResponse.responderRole`,
+   - claimed `surveyResponse.responderRole` exists in `linkedRoleWeighting`,
+   - exactly one eligible `responseCredential` is derivable from that single voter entry.
+8. For standalone surveys, a response is valid only if:
+   - claimed `surveyResponse.responderRole` exists in `roleWeighting`,
+   - candidate derivation is restricted to claimed `surveyResponse.responderRole`,
+   - exactly one eligible `responseCredential` is derivable for the claimed role.
+9. Stakeholder residual rule (standalone and linked):
+   - `Stakeholder` is valid only when no governance-role candidate (`DRep`, `SPO`, or `CC`) is valid,
+   - and exactly one stake credential is derivable,
+   - otherwise the response is invalid.
+10. A response is invalid when claimed `surveyResponse.responderRole` does not match chain-derived role evidence.
+11. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
 
 ### Epoch Semantics
 
@@ -306,12 +315,14 @@ Latest-response semantics replace the full prior response for that tuple.
 - Mixing weighting units across roles (count/stake/pledge) can obscure interpretation. Tools SHOULD expose per-role canonical tallies and clearly label any merged output.
 - Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from transaction-body `voting_procedures` and role eligibility is bounded by action voter classes.
 - `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge; tools SHOULD disclose snapshot epoch and mapped pool set used for each weighted response.
+- Required `responderRole` claims do not replace chain validation; tools MUST reject responses when claimed role and chain-derived role evidence disagree.
 
 ### Info Action Profile
 
 This CIP is general-purpose. For tools implementing the Info Action profile:
 - The Info Action anchor metadata MUST include top-level `surveyTxId` as specified in [Governance action anchor linkage](#governance-action-anchor-linkage).
 - The `surveyTxId` linkage MUST satisfy all linked-survey compatibility checks in [Governance action anchor linkage](#governance-action-anchor-linkage).
+- Responses MUST include claimed `responderRole`.
 - Responses MUST include a non-empty transaction-body `voting_procedures` element.
 - For linked responses, `voting_procedures` MUST contain exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry, and that `govActionId` MUST equal the linked action id.
 - `endEpoch` MUST exactly match the ledger-defined active voting end epoch of the referencing Info Action.
@@ -332,7 +343,7 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 4. Discover responses by scanning metadata label `17` for `surveyResponse`.
 5. Resolve each response to survey by `surveyTxId`.
 6. Validate each response answer against the corresponding survey question method and constraints.
-7. Derive exactly one eligible `(responderRole, responseCredential)` candidate using [Responder identity for deduplication](#responder-identity-for-deduplication), including linked-survey checks for `voting_procedures` cardinality and `linkedActionId` match.
+7. Validate claimed `responderRole` and derive exactly one eligible `responseCredential` for that claimed role using [Responder identity for deduplication](#responder-identity-for-deduplication), including linked-survey checks for `voting_procedures` cardinality and `linkedActionId` match.
 8. Filter responses by `responseEpoch <= endEpoch`.
 9. Enforce role-membership and credential eligibility checks at response time as required by [Responder identity for deduplication](#responder-identity-for-deduplication) and [Weighting Semantics](#weighting-semantics).
 10. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)`.
@@ -355,6 +366,9 @@ role_weighting = {
   ? CC: "CredentialBased",
   ? Stakeholder: "StakeBased"
 }
+
+responder_role =
+  "DRep" / "SPO" / "CC" / "Stakeholder"
 
 builtin_method_type =
   "urn:cardano:poll-method:single-choice:v1" /
@@ -410,6 +424,7 @@ answer_item = {
 survey_response = {
   specVersion: tstr,
   surveyTxId: hex_tx_id,
+  responderRole: responder_role,
   answers: [+ answer_item]
 }
 

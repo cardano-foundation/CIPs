@@ -6,6 +6,7 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "responderRole": "DRep",
       "answers": [
         {
           "questionId": "roadmap_rank",

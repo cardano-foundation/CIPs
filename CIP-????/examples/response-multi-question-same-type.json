@@ -6,6 +6,7 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "responderRole": "Stakeholder",
       "answers": [
         {
           "questionId": "max_block_body_size",

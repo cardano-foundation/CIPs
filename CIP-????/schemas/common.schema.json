@@ -47,6 +47,15 @@
       "additionalProperties": false,
       "minProperties": 1
     },
+    "responder_role": {
+      "type": "string",
+      "enum": [
+        "DRep",
+        "SPO",
+        "CC",
+        "Stakeholder"
+      ]
+    },
     "builtin_method_type": {
       "type": "string",
       "enum": [
@@ -349,6 +358,9 @@
         "surveyTxId": {
           "$ref": "#/$defs/hex_tx_id"
         },
+        "responderRole": {
+          "$ref": "#/$defs/responder_role"
+        },
         "answers": {
           "type": "array",
           "items": {
@@ -360,6 +372,7 @@
       "required": [
         "specVersion",
         "surveyTxId",
+        "responderRole",
         "answers"
       ],
       "additionalProperties": false
