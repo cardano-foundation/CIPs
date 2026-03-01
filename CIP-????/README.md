@@ -407,6 +407,19 @@ governance_action_anchor_survey_link = {
 
 CDDL provides shape constraints. Method-specific mandatory and forbidden field rules in this document are normative and MUST also be enforced by tooling.
 
+### JSON Schema
+
+This CIP also provides machine-readable JSON Schema files under [`./schemas`](./schemas):
+- [`schemas/common.schema.json`](./schemas/common.schema.json)
+- [`schemas/survey-details.schema.json`](./schemas/survey-details.schema.json)
+- [`schemas/survey-response.schema.json`](./schemas/survey-response.schema.json)
+- [`schemas/governance-action-anchor-survey-link.schema.json`](./schemas/governance-action-anchor-survey-link.schema.json)
+
+Schema authority and scope:
+- CDDL and normative prose in this document are authoritative.
+- JSON Schema files are interoperability aids for shape validation and MUST be kept consistent with this specification.
+- Cross-transaction and chain-state-dependent semantics (for example governance-link resolution, effective eligibility derivation, role-membership checks, and stake snapshot/source logic) are normative in prose and test vectors, and are not fully representable in standard JSON Schema.
+
 ### Test Vectors
 
 See [test-vector.md](./test-vector.md) for deterministic examples and canonical CBOR payload vectors.

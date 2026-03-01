@@ -179,3 +179,15 @@ Expected validation behavior:
 
 Expected validation behavior:
 - A survey definition without `voteWeighting` is invalid.
+
+## Schema vs Semantic Validation Boundary
+
+Expected implementation behavior:
+- JSON Schema validation SHOULD be used for payload shape validation.
+- Successful JSON Schema validation does not imply semantic validity.
+- Tools MUST additionally enforce semantic rules from CIP prose, including:
+  - governance-link resolution by `surveyTxId`
+  - linked `effectiveEligibility` derivation and empty-intersection invalidity
+  - governance-linked response source requirements (governance voting procedures)
+  - role-membership verification requirements for `CredentialBased`
+  - `StakeBased` role-domain and snapshot/source rules
