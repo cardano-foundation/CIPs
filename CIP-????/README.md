@@ -102,7 +102,6 @@ A survey is identified by:
 | `maxSelections` | Positive Integer | Conditional | Required for `multi-select`; absent or `1` for `single-choice`; forbidden for `numeric-range`. |
 | `numericConstraints` | Object | Conditional | Required for `numeric-range` method. |
 | `methodSchemaUri` | URI String | Conditional | Required for custom methods. |
-| `hashAlgorithm` | String | Conditional | Required for custom methods; MUST be `"blake2b-256"`. |
 | `methodSchemaHash` | Hex String | Conditional | Required for custom methods; blake2b-256 hash of raw bytes fetched from `methodSchemaUri`. |
 
 Question objects MUST NOT include `roleWeighting` or `endEpoch`. Those fields are survey-level only and apply uniformly to all questions in the survey.
@@ -146,7 +145,6 @@ Custom methods:
 - Any URI `methodType` that is not one of the built-ins is a custom method.
 - Custom methods MUST include all of:
   - `methodSchemaUri`
-  - `hashAlgorithm` set to `blake2b-256`
   - `methodSchemaHash`
 - `methodSchemaHash` MUST be computed over the exact raw bytes fetched from `methodSchemaUri` (no canonicalization or reformatting).
 - Custom methods MAY use `options`, but their semantics are defined by the referenced schema.
@@ -379,7 +377,6 @@ survey_question = {
   ? maxSelections: uint,
   ? numericConstraints: numeric_constraints,
   ? methodSchemaUri: uri,
-  ? hashAlgorithm: "blake2b-256",
   ? methodSchemaHash: hex_blake2b_256
 }
 

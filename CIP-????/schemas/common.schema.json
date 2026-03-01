@@ -108,9 +108,6 @@
         "methodSchemaUri": {
           "$ref": "#/$defs/uri"
         },
-        "hashAlgorithm": {
-          "type": "string"
-        },
         "methodSchemaHash": {
           "$ref": "#/$defs/hex_blake2b_256"
         }
@@ -240,14 +237,8 @@
           "then": {
             "required": [
               "methodSchemaUri",
-              "hashAlgorithm",
               "methodSchemaHash"
-            ],
-            "properties": {
-              "hashAlgorithm": {
-                "const": "blake2b-256"
-              }
-            }
+            ]
           }
         }
       ]
