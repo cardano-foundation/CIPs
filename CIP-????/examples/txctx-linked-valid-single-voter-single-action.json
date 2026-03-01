@@ -1,0 +1,34 @@
+{
+  "contextType": "linkedSurveyResponseTxContext",
+  "description": "Valid linked response context with exactly one voter and one linked governance action entry.",
+  "linkedSurveyTxId": "1515151515151515151515151515151515151515151515151515151515151515",
+  "linkedActionId": {
+    "txId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "govActionIx": 0
+  },
+  "votingProcedures": [
+    {
+      "voter": {
+        "role": "DRep",
+        "credential": "11111111111111111111111111111111111111111111111111111111"
+      },
+      "procedures": [
+        {
+          "govActionId": {
+            "txId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "govActionIx": 0
+          },
+          "vote": "yes"
+        }
+      ]
+    }
+  ],
+  "requiredSigners": [
+    "11111111111111111111111111111111111111111111111111111111"
+  ],
+  "responseTx": {
+    "slot": 120200000,
+    "txIndexInBlock": 0,
+    "metadataPosition": 0
+  }
+}

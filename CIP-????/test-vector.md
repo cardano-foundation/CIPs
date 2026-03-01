@@ -6,6 +6,7 @@ This file defines reproducible vectors for:
 - Latest-valid-response-wins behavior.
 - Invalid response detection for unresolved survey binding.
 - Governance action anchor linkage validation.
+- Linked-response tx-context validation for `voting_procedures` cardinality and linked action-id matching.
 - Role-weighting, role-validation, and mixed-role behavior.
 - `PledgeBased` live-pledge weighting behavior.
 
@@ -146,8 +147,13 @@ Current anchor reference:
 
 ### Vector 14: Governance-linked response source requirement
 
+Source:
+- Linked tx context: [examples/txctx-linked-valid-single-voter-single-action.json](./examples/txctx-linked-valid-single-voter-single-action.json)
+
 Expected validation behavior:
 - For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
+- For governance-linked surveys, `voting_procedures` MUST contain exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry.
+- The single `govActionId` MUST equal the linked governance action id.
 - A signer-only response (without transaction-body `voting_procedures`) is invalid for linked surveys.
 
 ### Vector 15: Invalid link compatibility (endEpoch or role mismatch)
@@ -166,7 +172,9 @@ Expected validation behavior:
 Expected validation behavior:
 - In `CredentialBased`, if active role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response time.
 - Unverifiable role membership is invalid.
-- `Stakeholder` is residual-only and still requires a derivable stake credential for valid classification.
+- `Stakeholder` is residual-only:
+  - if exactly one stake credential is derivable after governance-role candidates fail, tooling MUST classify as `Stakeholder`,
+  - if zero or multiple stake credentials are derivable, the response is invalid.
 
 ### Vector 17: Role-to-weighting compatibility constraints
 
@@ -199,7 +207,7 @@ Sources:
 
 Expected validation behavior:
 - Survey is valid with mixed role weighting (`DRep: StakeBased`, `SPO: PledgeBased`).
-- Linked response identity is derived from transaction-body `voting_procedures`.
+- Linked response identity is derived from the single voter entry in transaction-body `voting_procedures`.
 - Canonical output is role-separated tally results.
 
 ### Vector 21: Valid standalone mixed-role weighting
@@ -212,6 +220,46 @@ Expected validation behavior:
 - Survey is valid with mixed role weighting and required `endEpoch`.
 - Standalone response must resolve to exactly one eligible `(responderRole, responseCredential)` candidate.
 - Membership checks occur at response time. Weighting uses `endEpoch`.
+
+### Vector 22: Invalid linked response (`voting_procedures` action-id mismatch)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+
+Expected validation behavior:
+- Response is invalid because the single `govActionId` in `voting_procedures` does not match the linked governance action id.
+
+### Vector 23: Invalid linked response (`voting_procedures` cardinality)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+
+Expected validation behavior:
+- Response is invalid because linked responses MUST have exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry.
+
+### Vector 24: Valid linked response (`voting_procedures` strict shape)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+- Linked tx context: [examples/txctx-linked-valid-single-voter-single-action.json](./examples/txctx-linked-valid-single-voter-single-action.json)
+
+Expected validation behavior:
+- Linked response source requirement is satisfied when `voting_procedures` is non-empty, contains exactly one voter entry, contains exactly one inner `(govActionId, votingProcedure)` entry, and that `govActionId` matches the linked governance action id.
+
+### Vector 25: `PledgeBased` zero active pools at snapshot => zero weight
+
+Source:
+- Pledge weighting context: [examples/txctx-pledge-zero-pools-at-end.json](./examples/txctx-pledge-zero-pools-at-end.json)
+
+Expected validation behavior:
+- Response remains valid when SPO credential validity was established at response time.
+- If mapped active pool set is empty at `endEpoch`, `PledgeBased` contribution is weight `0`.
 
 ## Invalid Scenarios
 
@@ -229,7 +277,7 @@ Expected implementation behavior:
 - Tools MUST additionally enforce semantic rules from CIP text, including:
   - governance-link resolution by `surveyTxId`
   - linked role/end-epoch compatibility checks and invalid-link handling
-  - governance-linked response source requirements (non-empty transaction-body `voting_procedures`)
+  - governance-linked response source requirements (non-empty transaction-body `voting_procedures`, exactly-one voter+entry, and linked action-id match)
   - role-membership verification requirements
   - single eligible `(responderRole, responseCredential)` derivation requirement
   - end-epoch response cutoff and snapshot rules

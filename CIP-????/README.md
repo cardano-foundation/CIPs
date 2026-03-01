@@ -25,7 +25,7 @@ The format supports:
 
 The standard is general-purpose and can be used for governance and non-governance sentiment gathering. It also defines an Info Action profile for tools that want strict behavior when a survey is attached to a governance Info Action.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Formal governance actions are intentionally constrained. Those constraints are useful for protocol safety, but they are not sufficient for many community workflows that need structured sentiment data. This is particularly true for Info Actions, which are frustratingly limited in their ability to collect information from stakeholders.
 
@@ -103,7 +103,7 @@ A survey is identified by:
 | `numericConstraints` | Object | Conditional | Required for `numeric-range` method. |
 | `methodSchemaUri` | URI String | Conditional | Required for custom methods. |
 | `hashAlgorithm` | String | Conditional | Required for custom methods; MUST be `"blake2b-256"`. |
-| `methodSchemaHash` | Hex String | Conditional | Required for custom methods; blake2b-256 hash of custom method schema bytes. |
+| `methodSchemaHash` | Hex String | Conditional | Required for custom methods; blake2b-256 hash of raw bytes fetched from `methodSchemaUri`. |
 
 Question objects MUST NOT include `roleWeighting` or `endEpoch`. Those fields are survey-level only and apply uniformly to all questions in the survey.
 
@@ -148,6 +148,7 @@ Custom methods:
   - `methodSchemaUri`
   - `hashAlgorithm` set to `blake2b-256`
   - `methodSchemaHash`
+- `methodSchemaHash` MUST be computed over the exact raw bytes fetched from `methodSchemaUri` (no canonicalization or reformatting).
 - Custom methods MAY use `options`, but their semantics are defined by the referenced schema.
 
 YES/NO/ABSTAIN semantics:
@@ -230,6 +231,7 @@ Validation rules:
 - `surveyTxId` MUST resolve to a transaction that includes label `17` with `surveyDetails`.
 - Anchor metadata MUST use top-level `surveyTxId`; the legacy nested form `surveyRef.surveyTxId` is invalid for this version.
 - For linked surveys, `actionEligibility` MUST be derived from the linked governance action voter classes.
+- For linked surveys, tooling MUST derive the linked governance action id (`linkedActionId`) from the governance action that carries the survey-link anchor.
 - For linked surveys, `linkedRoleWeighting` is the intersection of `roleWeighting` keys with `actionEligibility`, preserving configured modes for surviving roles.
 - If `linkedRoleWeighting` is empty, the governance-action-to-survey link is invalid.
 - For linked surveys, tooling MUST derive the governance action active voting end epoch from ledger rules and require exact equality with survey `endEpoch`.
@@ -246,15 +248,19 @@ Deterministic derivation rules:
    - transaction-body `voting_procedures` entries (Conway transaction body field `19`),
    - required signers,
    - and stake-credential signals (for example withdrawals/certificates/`voting_procedures` entries carrying stake credentials).
-2. For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
-3. For governance-linked surveys, only candidates whose `responderRole` exists in `linkedRoleWeighting` are eligible.
-4. Stakeholder residual rule:
-   - if no governance-role candidate (`DRep`, `SPO`, or `CC`) is valid, tooling MAY classify as `Stakeholder` only when exactly one stake credential is derivable,
+2. For governance-linked surveys, tooling MUST derive `linkedActionId` from the governance action that links the survey.
+3. For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
+4. For governance-linked surveys, `voting_procedures` MUST contain exactly one voter entry, and that voter entry MUST contain exactly one `(govActionId, votingProcedure)` entry.
+5. For governance-linked surveys, the single `govActionId` in `voting_procedures` MUST equal `linkedActionId`; otherwise the response is invalid.
+6. For governance-linked surveys, `responderRole` and `responseCredential` MUST be derived from that single `voting_procedures` voter entry.
+7. For governance-linked surveys, only candidates whose `responderRole` exists in `linkedRoleWeighting` are eligible.
+8. Stakeholder residual rule:
+   - if no governance-role candidate (`DRep`, `SPO`, or `CC`) is valid, tooling MUST classify as `Stakeholder` only when exactly one stake credential is derivable,
    - if no stake credential is derivable, or multiple are derivable, the response is invalid.
-5. A response is valid only if exactly one eligible `(responderRole, responseCredential)` candidate is derivable.
+9. A response is valid only if exactly one eligible `(responderRole, responseCredential)` candidate is derivable.
    - zero candidates is invalid,
    - multiple candidates is invalid.
-6. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
+10. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
 
 ### Epoch Semantics
 
@@ -283,14 +289,17 @@ Latest-response semantics replace the full prior response for that tuple.
   - Weight is `1` per valid latest response.
   - This mode is not sybil resistant by itself; transaction fees are the primary spam cost.
 - `StakeBased`:
-  - Weight is stake in the applicable role domain.
   - Snapshot point is `endEpoch`.
+  - Weight is role-domain stake at snapshot:
+    - `DRep`: governance voting power of `responseCredential` at snapshot.
+    - `SPO`: active stake controlled by `responseCredential` across mapped active registered pools at snapshot.
+    - `Stakeholder`: ADA stake controlled by `responseCredential` at snapshot.
 - `PledgeBased`:
   - `SPO`-only mode.
   - Weight is the sum of live pledge over active registered pools mapped to `responseCredential` at snapshot.
   - Declared pledge MUST NOT be used.
   - Snapshot point is `endEpoch`.
-  - If `responseCredential` maps to zero active registered pools at snapshot, the response is invalid.
+  - If `responseCredential` maps to zero active registered pools at snapshot, the response remains valid and contributes weight `0`.
 - Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merged/composite outputs with disclosed merge logic.
 
 ### Security and Tooling Guidance
@@ -306,6 +315,7 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 - The Info Action anchor metadata MUST include top-level `surveyTxId` as specified in [Governance action anchor linkage](#governance-action-anchor-linkage).
 - The `surveyTxId` linkage MUST satisfy all linked-survey compatibility checks in [Governance action anchor linkage](#governance-action-anchor-linkage).
 - Responses MUST include a non-empty transaction-body `voting_procedures` element.
+- For linked responses, `voting_procedures` MUST contain exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry, and that `govActionId` MUST equal the linked action id.
 - `endEpoch` MUST exactly match the ledger-defined active voting end epoch of the referencing Info Action.
 - Responses with `responseEpoch > endEpoch` MUST be ignored.
 - Other governance action types may also link surveys; additional type-specific profiles are out of scope for this CIP version.
@@ -320,11 +330,11 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 
 1. Discover survey definitions by scanning metadata label `17` for `surveyDetails`.
 2. Optionally discover governance actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
-3. If present, validate governance-action-to-survey linkage by `surveyTxId`, linked role compatibility, and exact `endEpoch` equality with the action's canonical voting end epoch.
+3. If present, validate governance-action-to-survey linkage by `surveyTxId`, linked role compatibility, and exact `endEpoch` equality with the action's canonical voting end epoch; derive `linkedActionId`.
 4. Discover responses by scanning metadata label `17` for `surveyResponse`.
 5. Resolve each response to survey by `surveyTxId`.
 6. Validate each response answer against the corresponding survey question method and constraints.
-7. Derive exactly one eligible `(responderRole, responseCredential)` candidate using [Responder identity for deduplication](#responder-identity-for-deduplication).
+7. Derive exactly one eligible `(responderRole, responseCredential)` candidate using [Responder identity for deduplication](#responder-identity-for-deduplication), including linked-survey checks for `voting_procedures` cardinality and `linkedActionId` match.
 8. Filter responses by `responseEpoch <= endEpoch`.
 9. Enforce role-membership and credential eligibility checks at response time as required by [Responder identity for deduplication](#responder-identity-for-deduplication) and [Weighting Semantics](#weighting-semantics).
 10. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)`.
@@ -448,7 +458,7 @@ See [test-vector.md](./test-vector.md) for deterministic examples and canonical 
 This specification uses semantic versioning in `specVersion`.
 This revision defines version `1.0.0`.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - Multi-question surveys let authors collect related signals (including mixed method types) in one survey object.
 - Survey-level required and governance fields preserve shared end-epoch and role-weighting semantics across all included questions.
