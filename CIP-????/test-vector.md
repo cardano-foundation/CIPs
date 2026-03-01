@@ -6,7 +6,7 @@ This file defines reproducible vectors for:
 - Latest-valid-response-wins behavior.
 - Invalid response detection for unresolved survey binding.
 - Governance action anchor linkage validation.
-- Weighting, eligibility, and role-validation behavior.
+- Role-weighting, role-validation, and mixed-role behavior.
 - `PledgeBased` live-pledge weighting behavior.
 
 ## Survey Definition Vectors
@@ -35,7 +35,7 @@ Source file: [examples/survey-multi-question-same-type.json](./examples/survey-m
 
 Source file: [examples/survey-multi-question-mixed-type.json](./examples/survey-multi-question-mixed-type.json)
 
-All survey definition examples are expected to include explicit `voteWeighting`.
+All survey definition examples are expected to include explicit `roleWeighting`.
 
 ## Survey Response Vectors
 
@@ -110,7 +110,7 @@ Sources:
 - Older response: [examples/response-duplicate-older.json](./examples/response-duplicate-older.json)
 - Latest response: [examples/response-duplicate-latest.json](./examples/response-duplicate-latest.json)
 
-Given both responses resolve to the same `(surveyTxId, responseCredential)`:
+Given both responses resolve to the same `(surveyTxId, responderRole, responseCredential)`:
 - Older chain position: `(slot=120100000, txIndexInBlock=2, metadataPosition=0)`.
 - Latest chain position: `(slot=120100005, txIndexInBlock=0, metadataPosition=0)`.
 
@@ -140,7 +140,7 @@ Expected validation behavior:
 Current anchor reference:
 - `surveyTxId = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb`
 
-## Weighting and Eligibility Security Vectors
+## Role Weighting and Security Vectors
 
 ### Vector 14: Governance-linked response source requirement
 
@@ -148,38 +148,39 @@ Expected validation behavior:
 - For governance-linked surveys, response transactions MUST include governance voting procedures.
 - A signer-only response (without governance voting procedures) is invalid for linked surveys.
 
-### Vector 15: Linked eligibility intersection
+### Vector 15: Linked role-weighting intersection
 
 Expected validation behavior:
 - For linked surveys, tooling derives `actionEligibility` from the governance action.
-- If `surveyDetails.eligibility` is present, effective eligibility is the intersection with `actionEligibility`.
+- `effectiveRoleWeighting` is derived by intersecting `roleWeighting` keys with `actionEligibility`, preserving configured weighting modes for surviving keys.
 - If the intersection is empty, the linked survey configuration is invalid and responses MUST be ignored.
 
 ### Vector 16: CredentialBased role verification
 
 Expected validation behavior:
-- In `CredentialBased`, if effective eligibility includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data.
+- In `CredentialBased`, if effective role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response slot.
 - Unverifiable role membership is invalid.
-- `Stakeholder` does not require role-membership verification.
+- `Stakeholder` is residual-only and still requires a derivable stake credential for valid classification.
 
-### Vector 17: StakeBased role-domain constraints
-
-Expected validation behavior:
-- `StakeBased` with `CC` eligibility is invalid.
-- If multiple stake roles are eligible (for example `DRep` and `SPO`), canonical tally output is per-role.
-- Tools MAY additionally publish merged/composite outputs.
-
-### Vector 18: Standalone StakeBased identity extraction and snapshot
+### Vector 17: Role-to-weighting compatibility constraints
 
 Expected validation behavior:
-- Standalone `StakeBased` surveys MUST define `lifecycle.endSlot`; stake snapshot is taken at `lifecycle.endSlot`.
-- Tooling MUST derive exactly one stake credential from stake-credential signals in chain data.
-- If zero or multiple distinct stake credentials are derivable, the response is invalid.
+- `CC: StakeBased` is invalid.
+- `Stakeholder: CredentialBased` is invalid.
+- Canonical tally output is per-role. Tools MAY additionally publish merged/composite outputs with disclosed logic.
 
-### Vector 19: voteWeighting is mandatory
+### Vector 18: Standalone lifecycle and timing semantics
 
 Expected validation behavior:
-- A survey definition without `voteWeighting` is invalid.
+- Standalone surveys MUST define `lifecycle.startSlot` and `lifecycle.endSlot`.
+- Role-membership checks are evaluated at response slot.
+- Stake, pledge, and credential counts/amounts are read at `lifecycle.endSlot`.
+
+### Vector 19: roleWeighting is mandatory
+
+Expected validation behavior:
+- A survey definition without `roleWeighting` is invalid.
+- Legacy `eligibility` and `voteWeighting` fields are invalid for this draft model.
 
 ### Vector 20: Valid linked `PledgeBased`
 
@@ -188,7 +189,7 @@ Sources:
 - Response: [examples/response-pledge-based-linked.json](./examples/response-pledge-based-linked.json)
 
 Expected validation behavior:
-- Survey is valid because `voteWeighting = "PledgeBased"` and `eligibility = ["SPO"]`.
+- Survey is valid because `roleWeighting = {"SPO":"PledgeBased"}`.
 - Linked response identity is derived from governance voting procedures (SPO voter credential).
 - Weight is computed from the sum of live pledge over active registered pools mapped to the responder at the governance-linked snapshot.
 
@@ -199,19 +200,65 @@ Sources:
 - Response: [examples/response-pledge-based-standalone.json](./examples/response-pledge-based-standalone.json)
 
 Expected validation behavior:
-- Survey is valid because `voteWeighting = "PledgeBased"`, `eligibility = ["SPO"]`, and `lifecycle.endSlot` is present.
-- Standalone response must include exactly one required signer; that key hash is used as `responseCredential`.
+- Survey is valid because `roleWeighting = {"SPO":"PledgeBased"}` and standalone `lifecycle` is present.
+- Standalone response must resolve to exactly one eligible `(responderRole, responseCredential)` candidate.
 - Weight is computed from live pledge at `lifecycle.endSlot` across active registered pools mapped to `responseCredential`.
 
-### Vector 22: Invalid `PledgeBased` eligibility configuration
+### Vector 22: Valid linked mixed-role weighting
 
-Source:
-- Survey definition: [examples/survey-invalid-pledge-based-eligibility.json](./examples/survey-invalid-pledge-based-eligibility.json)
+Sources:
+- Survey definition: [examples/survey-mixed-role-linked.json](./examples/survey-mixed-role-linked.json)
+- Response: [examples/response-mixed-role-linked.json](./examples/response-mixed-role-linked.json)
 
 Expected validation behavior:
-- Survey is invalid because `PledgeBased` requires `eligibility` to be exactly `["SPO"]`.
+- Survey is valid with mixed role weighting (`DRep: StakeBased`, `SPO: PledgeBased`).
+- Linked `effectiveRoleWeighting` is derived by intersection with `actionEligibility`.
+- Canonical output is role-separated tally results.
 
-### Vector 23: Invalid `PledgeBased` response (no active pool mapping)
+### Vector 23: Valid standalone mixed-role weighting
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-standalone.json](./examples/survey-mixed-role-standalone.json)
+- Response: [examples/response-mixed-role-standalone.json](./examples/response-mixed-role-standalone.json)
+
+Expected validation behavior:
+- Survey is valid with mixed role weighting and required lifecycle.
+- Response is valid only if exactly one eligible `(responderRole, responseCredential)` candidate is derivable.
+- Membership checks occur at response slot; weighting uses `lifecycle.endSlot`.
+
+### Vector 24: Invalid role weighting (`CC: StakeBased`)
+
+Source:
+- Survey definition: [examples/survey-invalid-roleweighting-cc-stakebased.json](./examples/survey-invalid-roleweighting-cc-stakebased.json)
+
+Expected validation behavior:
+- Survey is invalid because `CC` MAY only use `CredentialBased`.
+
+### Vector 25: Invalid role weighting (`Stakeholder: CredentialBased`)
+
+Source:
+- Survey definition: [examples/survey-invalid-roleweighting-stakeholder-credentialbased.json](./examples/survey-invalid-roleweighting-stakeholder-credentialbased.json)
+
+Expected validation behavior:
+- Survey is invalid because `Stakeholder` MAY only use `StakeBased`.
+
+### Vector 26: Invalid response (ambiguous role+credential candidates)
+
+Source:
+- Response: [examples/response-invalid-ambiguous-role-candidate.json](./examples/response-invalid-ambiguous-role-candidate.json)
+
+Expected validation behavior:
+- Response is invalid because more than one eligible `(responderRole, responseCredential)` candidate is derivable.
+
+### Vector 27: Invalid response (no eligible role+credential candidate)
+
+Source:
+- Response: [examples/response-invalid-no-eligible-role-candidate.json](./examples/response-invalid-no-eligible-role-candidate.json)
+
+Expected validation behavior:
+- Response is invalid because no eligible `(responderRole, responseCredential)` candidate is derivable.
+
+### Vector 28: Invalid `PledgeBased` response (no active pool mapping)
 
 Source:
 - Response: [examples/response-invalid-pledge-based-no-active-pool.json](./examples/response-invalid-pledge-based-no-active-pool.json)
@@ -219,7 +266,7 @@ Source:
 Expected validation behavior:
 - Response is invalid because `responseCredential` maps to zero active registered pools at snapshot.
 
-### Vector 24: Invalid `PledgeBased` response (unresolved live pledge)
+### Vector 29: Invalid `PledgeBased` response (unresolved live pledge)
 
 Source:
 - Response: [examples/response-invalid-pledge-based-unresolved-live-pledge.json](./examples/response-invalid-pledge-based-unresolved-live-pledge.json)
@@ -234,8 +281,9 @@ Expected implementation behavior:
 - Successful JSON Schema validation does not imply semantic validity.
 - Tools MUST additionally enforce semantic rules from CIP prose, including:
   - governance-link resolution by `surveyTxId`
-  - linked `effectiveEligibility` derivation and empty-intersection invalidity
+  - linked `effectiveRoleWeighting` derivation and empty-intersection invalidity
   - governance-linked response source requirements (governance voting procedures)
-  - role-membership verification requirements for `CredentialBased`
+  - role-membership verification requirements and standalone timing split
+  - single eligible `(responderRole, responseCredential)` derivation requirement
   - `StakeBased` role-domain and snapshot/source rules
   - `PledgeBased` signer-to-pool mapping and live-pledge snapshot/source rules

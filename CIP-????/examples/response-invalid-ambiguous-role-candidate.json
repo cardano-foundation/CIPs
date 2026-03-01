@@ -1,0 +1,19 @@
+{
+  "17": {
+    "msg": [
+      "Invalid: multiple eligible role+credential candidates derived"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "1616161616161616161616161616161616161616161616161616161616161616",
+      "answers": [
+        {
+          "questionId": "resilience_budget",
+          "selection": [
+            1
+          ]
+        }
+      ]
+    }
+  }
+}

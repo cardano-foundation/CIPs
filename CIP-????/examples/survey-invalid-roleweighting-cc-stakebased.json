@@ -1,12 +1,12 @@
 {
   "17": {
     "msg": [
-      "Invalid PledgeBased eligibility configuration"
+      "Invalid roleWeighting configuration"
     ],
     "surveyDetails": {
       "specVersion": "1.0.0",
-      "title": "Invalid PledgeBased eligibility configuration",
-      "description": "This example is invalid because PledgeBased requires eligibility to be exactly ['SPO'].",
+      "title": "Invalid roleWeighting configuration",
+      "description": "This example is invalid because CC cannot use StakeBased.",
       "questions": [
         {
           "questionId": "invalid_mix",
@@ -18,11 +18,13 @@
           ]
         }
       ],
-      "eligibility": [
-        "SPO",
-        "DRep"
-      ],
-      "voteWeighting": "PledgeBased"
+      "roleWeighting": {
+        "CC": "StakeBased"
+      },
+      "lifecycle": {
+        "startSlot": 121000000,
+        "endSlot": 121432000
+      }
     }
   }
 }

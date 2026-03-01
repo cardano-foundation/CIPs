@@ -1,0 +1,32 @@
+{
+  "17": {
+    "msg": [
+      "Standalone mixed-role weighting survey"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Standalone mixed-role weighting survey",
+      "description": "Standalone survey that combines DRep StakeBased and SPO PledgeBased weighting.",
+      "questions": [
+        {
+          "questionId": "resilience_budget",
+          "question": "Choose preferred resilience budget track.",
+          "methodType": "urn:cardano:poll-method:single-choice:v1",
+          "options": [
+            "Conservative",
+            "Balanced",
+            "Aggressive"
+          ]
+        }
+      ],
+      "roleWeighting": {
+        "DRep": "StakeBased",
+        "SPO": "PledgeBased"
+      },
+      "lifecycle": {
+        "startSlot": 122000000,
+        "endSlot": 122432000
+      }
+    }
+  }
+}

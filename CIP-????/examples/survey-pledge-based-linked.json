@@ -19,10 +19,9 @@
           ]
         }
       ],
-      "eligibility": [
-        "SPO"
-      ],
-      "voteWeighting": "PledgeBased"
+      "roleWeighting": {
+        "SPO": "PledgeBased"
+      }
     }
   }
 }

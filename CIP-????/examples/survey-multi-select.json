@@ -21,10 +21,9 @@
           "maxSelections": 4
         }
       ],
-      "eligibility": [
-        "Stakeholder"
-      ],
-      "voteWeighting": "CredentialBased",
+      "roleWeighting": {
+        "DRep": "CredentialBased"
+      },
       "lifecycle": {
         "startSlot": 120000000,
         "endSlot": 120432000

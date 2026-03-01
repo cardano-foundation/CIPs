@@ -19,12 +19,15 @@
           }
         }
       ],
-      "eligibility": [
-        "DRep",
-        "SPO",
-        "CC"
-      ],
-      "voteWeighting": "CredentialBased"
+      "roleWeighting": {
+        "DRep": "CredentialBased",
+        "SPO": "CredentialBased",
+        "CC": "CredentialBased"
+      },
+      "lifecycle": {
+        "startSlot": 120000000,
+        "endSlot": 120432000
+      }
     }
   }
 }

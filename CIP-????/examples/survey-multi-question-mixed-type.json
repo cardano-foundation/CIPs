@@ -6,7 +6,7 @@
     "surveyDetails": {
       "specVersion": "1.0.0",
       "title": "Dijkstra governance preference bundle",
-      "description": "Collect mixed-method preferences in a single survey.",
+      "description": "Collect mixed-method preferences in a single survey with mixed role weighting.",
       "questions": [
         {
           "questionId": "cip_shortlist",
@@ -41,10 +41,14 @@
           }
         }
       ],
-      "eligibility": [
-        "Stakeholder"
-      ],
-      "voteWeighting": "CredentialBased"
+      "roleWeighting": {
+        "DRep": "StakeBased",
+        "SPO": "PledgeBased"
+      },
+      "lifecycle": {
+        "startSlot": 120000000,
+        "endSlot": 120432000
+      }
     }
   }
 }

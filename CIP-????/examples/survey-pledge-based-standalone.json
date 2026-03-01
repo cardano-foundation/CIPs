@@ -20,10 +20,9 @@
           "maxSelections": 2
         }
       ],
-      "eligibility": [
-        "SPO"
-      ],
-      "voteWeighting": "PledgeBased",
+      "roleWeighting": {
+        "SPO": "PledgeBased"
+      },
       "lifecycle": {
         "startSlot": 121000000,
         "endSlot": 121432000

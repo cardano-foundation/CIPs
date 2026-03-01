@@ -1,0 +1,28 @@
+{
+  "17": {
+    "msg": [
+      "Linked mixed-role weighting survey"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Linked mixed-role weighting survey",
+      "description": "Collect one response set while applying DRep stake weighting and SPO pledge weighting.",
+      "questions": [
+        {
+          "questionId": "gov_priority",
+          "question": "Which governance implementation stream should be prioritized?",
+          "methodType": "urn:cardano:poll-method:single-choice:v1",
+          "options": [
+            "Ledger simplification",
+            "Governance UX",
+            "Committee tooling"
+          ]
+        }
+      ],
+      "roleWeighting": {
+        "DRep": "StakeBased",
+        "SPO": "PledgeBased"
+      }
+    }
+  }
+}

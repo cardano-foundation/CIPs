@@ -71,8 +71,9 @@ A survey is identified by:
           "maxSelections": 4
         }
       ],
-      "eligibility": ["DRep"],
-      "voteWeighting": "CredentialBased",
+      "roleWeighting": {
+        "DRep": "CredentialBased"
+      },
       "lifecycle": {
         "startSlot": 120000000,
         "endSlot": 120432000
@@ -90,9 +91,8 @@ A survey is identified by:
 | `title` | String | Yes | Human-readable survey title. |
 | `description` | String | Yes | Human-readable survey context or rationale. |
 | `questions` | Array of Question Objects | Yes | Survey questions. MUST contain at least one item. |
-| `eligibility` | Array of Strings | No | Eligible responder classes. Allowed values: `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
-| `voteWeighting` | String | Yes | `"StakeBased"`, `"CredentialBased"`, or `"PledgeBased"`. |
-| `lifecycle` | Object | No | Optional lifecycle window using slot bounds: `{ startSlot, endSlot }`. |
+| `roleWeighting` | Object | Yes | Map from responder role to weighting mode. Keys MUST be a subset of `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"` and define eligibility exactly. |
+| `lifecycle` | Object | No | Lifecycle window using slot bounds: `{ startSlot, endSlot }`. Required for standalone surveys; optional for governance-linked surveys unless profile rules require it. |
 
 #### Question object fields (`questions[]` items)
 
@@ -108,18 +108,18 @@ A survey is identified by:
 | `hashAlgorithm` | String | Conditional | Required for custom methods; MUST be `"blake2b-256"`. |
 | `methodSchemaHash` | Hex String | Conditional | Required for custom methods; blake2b-256 hash of custom method schema bytes. |
 
-Question objects MUST NOT include `eligibility`, `voteWeighting`, or `lifecycle`. Those fields are survey-level only and apply uniformly to all questions in the survey.
+Question objects MUST NOT include `roleWeighting` or `lifecycle`. Those fields are survey-level only and apply uniformly to all questions in the survey.
 
-#### Eligibility and weighting configuration rules
+#### Role weighting configuration rules
 
-- `voteWeighting` MUST be present.
-- If `voteWeighting = "StakeBased"`:
-  - `eligibility`, if present, MUST NOT include `"CC"`.
-  - For standalone surveys (no governance-action linkage), `lifecycle.endSlot` MUST be present and is used as the snapshot point for stake weighting.
-- If `voteWeighting = "PledgeBased"`:
-  - `eligibility` MUST be present and MUST be exactly `["SPO"]`.
-  - For standalone surveys (no governance-action linkage), `lifecycle.endSlot` MUST be present and is used as the snapshot point for live-pledge weighting.
-- If `voteWeighting = "CredentialBased"` and `eligibility` includes any of `"DRep"`, `"SPO"`, or `"CC"`, tooling MUST enforce role-membership validation for those roles as specified in [Weighting Semantics](#weighting-semantics).
+- `roleWeighting` MUST be present and MUST include at least one role key.
+- Eligible responder classes are exactly the keys present in `roleWeighting`.
+- Allowed role-to-weighting mappings:
+  - `CC` MAY only use `"CredentialBased"`.
+  - `DRep` MAY use `"CredentialBased"` or `"StakeBased"`.
+  - `SPO` MAY use `"CredentialBased"`, `"StakeBased"`, or `"PledgeBased"`.
+  - `Stakeholder` MAY only use `"StakeBased"`.
+- For standalone surveys (no governance-action linkage), `lifecycle` MUST be present with `startSlot` and `endSlot`.
 
 ### Method Types
 
@@ -233,34 +233,38 @@ Validation rules:
 - Anchor metadata MUST use top-level `surveyTxId`; the legacy nested form `surveyRef.surveyTxId` is invalid for this version.
 - If validation fails, the governance-action-to-survey link is invalid and tooling MUST NOT attach that survey to the action.
 
-#### Effective eligibility for governance-linked surveys
+#### Effective role weighting for governance-linked surveys
 
 For surveys linked to a governance action through valid anchor metadata:
 - `actionEligibility` MUST be derived from the linked governance action voter classes.
-- If `surveyDetails.eligibility` is absent, `effectiveEligibility = actionEligibility`.
-- If `surveyDetails.eligibility` is present, `effectiveEligibility = actionEligibility ∩ surveyDetails.eligibility`.
+- `effectiveRoleWeighting` is derived by intersecting `roleWeighting` keys with `actionEligibility`, while preserving each surviving role's configured weighting mode.
 - If the intersection is empty, the linked survey configuration is invalid and responses MUST be ignored.
 
 #### Responder identity for deduplication
 
-A tallying tool MUST derive a `responseCredential` (credential key hash) from chain data, not from metadata text.
+A tallying tool MUST derive both `responderRole` and `responseCredential` (credential key hash) from chain data, not from metadata text.
 
 Deterministic derivation rules:
-1. For governance-linked surveys, the response transaction MUST include governance voting procedures. The voter credential key hash is the `responseCredential`.
-2. For standalone surveys with `voteWeighting = "CredentialBased"`:
-   - If governance voting procedures are present, use the voter credential key hash.
-   - Otherwise, transaction MUST include exactly one required signer, and that key hash is the `responseCredential`.
-3. For standalone surveys with `voteWeighting = "StakeBased"`:
-   - Tooling MUST derive exactly one stake credential from stake-credential signals in chain data (for example withdrawals, certificates, or governance voting procedures that carry a stake credential).
-   - If zero or multiple distinct stake credentials are derivable, the response is invalid.
-   - The derived stake credential key hash is the `responseCredential`.
-4. For surveys with `voteWeighting = "PledgeBased"`:
-   - For governance-linked surveys, `responseCredential` MUST be derived from governance voting procedures (SPO voter credential).
-   - For standalone surveys, response transaction MUST include exactly one required signer; that key hash is the `responseCredential`.
+1. Candidate derivation MUST consider all relevant chain evidence sources:
+   - governance voting procedures,
+   - required signers,
+   - and stake-credential signals (for example withdrawals/certificates/governance voting procedures carrying stake credentials).
+2. For governance-linked surveys:
+   - the response transaction MUST include governance voting procedures,
+   - only candidates whose `responderRole` exists in `effectiveRoleWeighting` are eligible.
+3. For standalone surveys:
+   - candidates are derived using the evidence sources listed above,
+   - role-membership checks are evaluated at the response transaction slot.
+4. Stakeholder residual rule:
+   - if no governance-role candidate (`DRep`, `SPO`, or `CC`) is valid, tooling MAY classify as `Stakeholder` only when exactly one stake credential is derivable,
+   - if no stake credential is derivable, or multiple are derivable, the response is invalid.
+5. A response is valid only if exactly one eligible `(responderRole, responseCredential)` candidate is derivable.
+   - zero candidates is invalid,
+   - multiple candidates is invalid.
 
 ### Duplicate and Ordering Semantics
 
-For a given tuple `(surveyTxId, responseCredential)`:
+For a given tuple `(surveyTxId, responderRole, responseCredential)`:
 - If multiple valid responses exist, the latest valid response wins.
 - Latest is determined by chain ordering tuple: `(slot, txIndexInBlock, metadataPosition)`.
 - `metadataPosition` is the position of label `17` payload in metadata processing order (for this label-specific standard it is typically `0`).
@@ -269,32 +273,31 @@ Latest-response semantics replace the full prior response for that tuple.
 
 ### Weighting Semantics
 
+- For each role key in effective role weighting, one valid latest response per `(surveyTxId, responderRole, responseCredential)` contributes to that role's tally.
 - `CredentialBased`:
-  - One valid latest response per `responseCredential` counts as weight `1`.
+  - Weight is `1` per valid latest response.
   - This mode is not sybil resistant by itself; transaction fees are the primary spam cost.
-  - If eligibility enforcement includes `"DRep"`, `"SPO"`, or `"CC"`, tooling MUST validate those role memberships from chain data for each response; responses that cannot be verified MUST be treated as invalid.
-  - `"Stakeholder"` does not require role-membership validation.
+  - For `DRep`, `SPO`, and `CC`, role membership MUST be verifiable from chain data at response slot.
 - `StakeBased`:
-  - One valid latest response per `responseCredential`, weighted by stake in the applicable role domain.
-  - `"CC"` MUST NOT be used with `StakeBased`.
+  - Weight is stake in the applicable role domain.
   - For governance-linked surveys, stake weighting MUST mirror the linked governance action's role-specific stake distribution and snapshot logic.
-  - For standalone surveys, stake weighting snapshot MUST be taken at `lifecycle.endSlot`.
-  - When multiple role domains are eligible, canonical results are per-role tallies. Tools MAY additionally publish merged/composite tallies.
+  - For standalone surveys, weight snapshot MUST use `lifecycle.endSlot`.
+  - For standalone surveys, role classification/membership checks occur at response slot; weighted stake amount is still read at `lifecycle.endSlot`.
 - `PledgeBased`:
-  - SPO-only mode. `eligibility` MUST be exactly `["SPO"]`.
-  - One valid latest response per `(surveyTxId, responseCredential)` is weighted by the sum of live pledge over all active registered pools mapped to `responseCredential` at snapshot.
-  - Declared pledge MUST NOT be used for weighting.
+  - `SPO`-only mode.
+  - Weight is the sum of live pledge over active registered pools mapped to `responseCredential` at snapshot.
+  - Declared pledge MUST NOT be used.
   - For governance-linked surveys, snapshot timing MUST mirror the linked governance action snapshot/distribution timing.
   - For standalone surveys, snapshot timing MUST use `lifecycle.endSlot`.
   - If `responseCredential` maps to zero active registered pools at snapshot, the response is invalid.
   - If live pledge cannot be resolved for the mapped active pool set at snapshot, the response is invalid.
+- Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merged/composite outputs with disclosed merge logic.
 
 ### Security and Tooling Guidance
 
-- `CredentialBased` can be sybil attacked when no governance-role validation is applied.
-- Tools SHOULD surface warning text for `CredentialBased` surveys, especially when `eligibility` is absent or includes `"Stakeholder"`.
-- Mixing stake domains (for example DRep and SPO) into one opaque total can obscure interpretation. Tools SHOULD always expose per-role canonical tallies even when publishing merged views.
-- Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from governance voting procedures and eligibility is bounded by action voter classes.
+- `CredentialBased` can be sybil attacked when governance-role validation is not applied.
+- Mixing weighting units across roles (count/stake/pledge) can obscure interpretation. Tools SHOULD expose per-role canonical tallies and clearly label any merged output.
+- Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from governance voting procedures and role eligibility is bounded by action voter classes.
 - `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge, but remains chain-state dependent; tools SHOULD disclose snapshot slot and mapped pool set used for each weighted response.
 
 ### Info Action Profile
@@ -303,7 +306,7 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 - The Info Action anchor metadata MUST include top-level `surveyTxId` as specified in [Governance action anchor linkage](#governance-action-anchor-linkage).
 - The `surveyTxId` binding MUST be valid.
 - Responses MUST include governance voting procedures.
-- `effectiveEligibility` MUST be derived as specified in [Effective eligibility for governance-linked surveys](#effective-eligibility-for-governance-linked-surveys).
+- `effectiveRoleWeighting` MUST be derived as specified in [Effective role weighting for governance-linked surveys](#effective-role-weighting-for-governance-linked-surveys).
 - `lifecycle` MUST be present.
 - `lifecycle.startSlot` and `lifecycle.endSlot` MUST match the ledger-defined active lifetime of the referencing Info Action.
 - Responses outside the lifecycle window MUST be ignored.
@@ -319,15 +322,15 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 1. Discover survey definitions by scanning metadata label `17` for `surveyDetails`.
 2. Optionally discover governance actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
 3. If present, validate governance-action-to-survey linkage by `surveyTxId`.
-4. For linked surveys, compute `effectiveEligibility` from governance action voter classes and optional survey eligibility intersection.
+4. For linked surveys, derive `effectiveRoleWeighting` from governance action voter classes and configured `roleWeighting`.
 5. Discover responses by scanning metadata label `17` for `surveyResponse`.
 6. Resolve each response to survey by `surveyTxId`.
 7. Validate each response answer against the corresponding survey question method and constraints.
-8. Derive `responseCredential` using [Responder identity for deduplication](#responder-identity-for-deduplication).
+8. Derive exactly one eligible `(responderRole, responseCredential)` candidate using [Responder identity for deduplication](#responder-identity-for-deduplication).
 9. Enforce role-membership checks required by [Weighting Semantics](#weighting-semantics).
-10. Apply latest-valid-response-wins ordering.
+10. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)`.
 11. For `PledgeBased`, derive active pool set mapped to `responseCredential` at snapshot and resolve live pledge values.
-12. Apply selected weighting mode and produce per-role canonical tallies (and optional merged views).
+12. Apply selected per-role weighting and produce canonical per-role tallies (and optional merged views).
 
 ### CDDL Schema
 
@@ -338,8 +341,13 @@ hex_tx_id = tstr .regexp "[0-9a-fA-F]{64}"
 hex_blake2b_256 = tstr .regexp "[0-9a-fA-F]{64}"
 uri = tstr
 
-eligibility_role = "DRep" / "SPO" / "CC" / "Stakeholder"
-vote_weighting = "StakeBased" / "CredentialBased" / "PledgeBased"
+; at least one key is required by normative prose
+role_weighting = {
+  ? DRep: ("CredentialBased" / "StakeBased"),
+  ? SPO: ("CredentialBased" / "StakeBased" / "PledgeBased"),
+  ? CC: "CredentialBased",
+  ? Stakeholder: "StakeBased"
+}
 
 builtin_method_type =
   "urn:cardano:poll-method:single-choice:v1" /
@@ -371,8 +379,7 @@ survey_details = {
   title: tstr,
   description: tstr,
   questions: [+ survey_question],
-  ? eligibility: [* eligibility_role],
-  voteWeighting: vote_weighting,
+  roleWeighting: role_weighting,
   ? lifecycle: {
     startSlot: uint,
     endSlot: uint
@@ -434,7 +441,7 @@ This CIP also provides machine-readable JSON Schema files under [`./schemas`](./
 Schema authority and scope:
 - CDDL and normative prose in this document are authoritative.
 - JSON Schema files are interoperability aids for shape validation and MUST be kept consistent with this specification.
-- Cross-transaction and chain-state-dependent semantics (for example governance-link resolution, effective eligibility derivation, role-membership checks, and stake snapshot/source logic) are normative in prose and test vectors, and are not fully representable in standard JSON Schema.
+- Cross-transaction and chain-state-dependent semantics (for example governance-link resolution, effective role-weighting derivation, role-membership checks, and stake snapshot/source logic) are normative in prose and test vectors, and are not fully representable in standard JSON Schema.
 
 ### Test Vectors
 
@@ -448,12 +455,12 @@ This revision defines version `1.0.0`.
 ## Rationale: how does this CIP achieve its goals?
 
 - Multi-question surveys let authors collect related signals (including mixed method types) in one survey object.
-- Survey-level required and governance fields preserve shared lifecycle/eligibility semantics across all included questions.
+- Survey-level required and governance fields preserve shared lifecycle and role-weighting semantics across all included questions.
 - Question-level method fields keep validation explicit and deterministic per question.
 - Index-based option responses avoid text-matching ambiguity and improve interoperability.
 - Binding responses and action links by `surveyTxId` keeps survey linkage deterministic and interoperable.
-- Requiring explicit `voteWeighting` removes ambiguous defaults and forces clear tally intent.
-- Governance-linked surveys can inherit governance voter-class constraints while still allowing surveys to narrow eligibility via intersection.
+- Requiring explicit `roleWeighting` removes ambiguous defaults and forces clear tally intent per role domain.
+- Governance-linked surveys can inherit governance voter-class constraints while still allowing surveys to narrow configured roles via intersection.
 - Role-aware validation and per-role stake tallies reduce sybil and mixed-domain interpretation risks.
 - `PledgeBased` adds an SPO-specific mode that uses live pledge instead of declared pledge for more defensible weighting.
 - Canonical `Action -> Survey` linkage via governance action anchors avoids circular transaction-reference dependencies.

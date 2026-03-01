@@ -1,7 +1,7 @@
 {
   "17": {
     "msg": [
-      "Ranked infrastructure roadmap"
+      "Custom ranked-choice survey"
     ],
     "surveyDetails": {
       "specVersion": "1.0.0",
@@ -22,7 +22,13 @@
           ]
         }
       ],
-      "voteWeighting": "CredentialBased"
+      "roleWeighting": {
+        "DRep": "CredentialBased"
+      },
+      "lifecycle": {
+        "startSlot": 120000000,
+        "endSlot": 120432000
+      }
     }
   }
 }

@@ -1,0 +1,19 @@
+{
+  "17": {
+    "msg": [
+      "Standalone mixed-role response"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "1616161616161616161616161616161616161616161616161616161616161616",
+      "answers": [
+        {
+          "questionId": "resilience_budget",
+          "selection": [
+            2
+          ]
+        }
+      ]
+    }
+  }
+}

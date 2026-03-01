@@ -19,22 +19,33 @@
       "type": "string",
       "format": "uri"
     },
-    "eligibility_role": {
-      "type": "string",
-      "enum": [
-        "DRep",
-        "SPO",
-        "CC",
-        "Stakeholder"
-      ]
-    },
-    "vote_weighting": {
-      "type": "string",
-      "enum": [
-        "StakeBased",
-        "CredentialBased",
-        "PledgeBased"
-      ]
+    "role_weighting": {
+      "type": "object",
+      "properties": {
+        "CC": {
+          "const": "CredentialBased"
+        },
+        "DRep": {
+          "type": "string",
+          "enum": [
+            "CredentialBased",
+            "StakeBased"
+          ]
+        },
+        "SPO": {
+          "type": "string",
+          "enum": [
+            "CredentialBased",
+            "StakeBased",
+            "PledgeBased"
+          ]
+        },
+        "Stakeholder": {
+          "const": "StakeBased"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
     },
     "builtin_method_type": {
       "type": "string",
@@ -280,14 +291,8 @@
           },
           "minItems": 1
         },
-        "eligibility": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/eligibility_role"
-          }
-        },
-        "voteWeighting": {
-          "$ref": "#/$defs/vote_weighting"
+        "roleWeighting": {
+          "$ref": "#/$defs/role_weighting"
         },
         "lifecycle": {
           "$ref": "#/$defs/lifecycle"
@@ -298,63 +303,10 @@
         "title",
         "description",
         "questions",
-        "voteWeighting"
+        "roleWeighting"
       ],
       "additionalProperties": false,
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "voteWeighting": {
-                "const": "StakeBased"
-              },
-              "eligibility": {
-                "type": "array"
-              }
-            },
-            "required": [
-              "voteWeighting",
-              "eligibility"
-            ]
-          },
-          "then": {
-            "properties": {
-              "eligibility": {
-                "not": {
-                  "contains": {
-                    "const": "CC"
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "voteWeighting": {
-                "const": "PledgeBased"
-              }
-            },
-            "required": [
-              "voteWeighting"
-            ]
-          },
-          "then": {
-            "required": [
-              "eligibility"
-            ],
-            "properties": {
-              "eligibility": {
-                "const": [
-                  "SPO"
-                ]
-              }
-            }
-          }
-        }
-      ],
-      "description": "Note: lifecycle.endSlot requirement for standalone StakeBased/PledgeBased surveys is semantic and enforced by CIP prose."
+      "description": "Note: standalone surveys require lifecycle.startSlot/endSlot and chain-state semantics are enforced by CIP prose."
     },
     "answer_item": {
       "oneOf": [

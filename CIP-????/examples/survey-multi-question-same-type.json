@@ -29,10 +29,13 @@
           }
         }
       ],
-      "eligibility": [
-        "Stakeholder"
-      ],
-      "voteWeighting": "CredentialBased"
+      "roleWeighting": {
+        "Stakeholder": "StakeBased"
+      },
+      "lifecycle": {
+        "startSlot": 120000000,
+        "endSlot": 120432000
+      }
     }
   }
 }

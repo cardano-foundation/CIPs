@@ -19,10 +19,9 @@
           ]
         }
       ],
-      "eligibility": [
-        "Stakeholder"
-      ],
-      "voteWeighting": "StakeBased",
+      "roleWeighting": {
+        "Stakeholder": "StakeBased"
+      },
       "lifecycle": {
         "startSlot": 120000000,
         "endSlot": 120432000
